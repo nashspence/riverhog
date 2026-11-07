@@ -137,3 +137,12 @@ def test_postgres_service_maintenance_retires_only_closed_original_cache_familie
     _service_family_units(
         tmp_path, monkeypatch, mode, unknown, database_url=database_url, maintained=True
     )
+
+
+@pytest.mark.parametrize("kind", ("finalizer", "payload"))
+def test_postgres_terminal_drain_fence_requires_original_worker_receiving(
+    database_url, tmp_path, monkeypatch, kind
+):
+    from tests.unit.test_archive_upload_maintenance import _terminal_drain_receiving
+
+    _terminal_drain_receiving(tmp_path, monkeypatch, kind, database_url=database_url)

@@ -197,7 +197,13 @@ class ArchiveFinalizerRegistry:
             if context is not None and context.terminal_id is not None:
                 if context.terminal_id != operation_id:
                     raise Conflict("retained finalizer has another terminal request")
-                return "drained" if context.drained else "fenced"
+                # A semantic drain can return before its original worker exits.
+                # Report drainage only after physical receiving removed that slot.
+                return (
+                    "drained"
+                    if context.drained and self._execution.status(key) == "untracked"
+                    else "fenced"
+                )
         finally:
             self._lock.release()
         # Validate the exact selected request before installing a local fence.

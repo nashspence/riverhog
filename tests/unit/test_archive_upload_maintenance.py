@@ -609,3 +609,91 @@ def test_each_construction_alternates_pending_payload_and_metadata_even_in_even_
     tmp_path, monkeypatch
 ):
     _fair_terminal_maintenance(tmp_path, monkeypatch)
+
+
+@pytest.mark.parametrize("kind", ("finalizer", "payload"))
+def test_terminal_drain_fence_requires_original_worker_receiving(tmp_path, monkeypatch, kind):
+    _terminal_drain_receiving(tmp_path, monkeypatch, kind)
+
+
+def _terminal_drain_receiving(tmp_path, monkeypatch, kind, *, database_url=None):
+    from riverhog_core.services import archive_upload_execution as execution_module
+
+    with _case(tmp_path, database_url=database_url) as case:
+        service = case.service
+        key, target = _scope(case)
+        original = Finalizer()
+        registry = (
+            service._archive_finalizers if kind == "finalizer" else service._archive_invocations
+        )
+        arguments = {
+            "target_incarnation": target,
+            "create": lambda: original,
+            "advance": lambda owner: owner.advance(),
+        }
+        if kind == "finalizer":
+            arguments["selection"] = "original"
+        else:
+            arguments["request_sha256"] = "a" * 64
+        assert registry.submit(key, **arguments) == "submitted"
+        _join(service)
+        assert len(registry.collect(limit=1)) == 1
+        original.pending = True
+        operation = _selected(case)
+        _clock(monkeypatch)
+        returned, release = threading.Event(), threading.Event()
+
+        class HeldExit(threading.Thread):
+            def run(self):
+                super().run()
+                returned.set()
+                assert release.wait(10)
+
+        monkeypatch.setattr(execution_module, "Thread", HeldExit)
+        try:
+            assert service.process_due_archive_uploads() == 1
+            assert returned.wait(5)
+            slot = service._archive_execution._slots[case.collection_id]
+            assert slot.future.done() and slot.worker.is_alive()
+            assert slot.future.result() == "closed"
+            # The original actor has closed, but the physical worker still owns
+            # its slot. Fencing cannot report received drainage at this point.
+            assert (
+                registry.fence_terminal(key, target_incarnation=target, operation_id=operation)
+                == "fenced"
+            )
+
+            def forbidden(*args, **kwargs):
+                pytest.fail("coordination cannot join the live terminal worker")
+
+            with monkeypatch.context() as patch:
+                patch.setattr(slot.worker, "join", forbidden)
+                assert registry.collect(limit=1) == ()
+                assert (
+                    registry.submit_terminal(key, target_incarnation=target, operation_id=operation)
+                    == "busy"
+                )
+            release.set()
+            slot.worker.join(timeout=10)
+            assert not slot.worker.is_alive()
+            assert service._archive_execution.status(key) == "awaiting-join"
+            assert (
+                registry.fence_terminal(key, target_incarnation=target, operation_id=operation)
+                == "fenced"
+            )
+            (completion,) = registry.collect(limit=1)
+            assert completion.result() == "closed"
+            assert service._archive_execution.status(key) == "untracked"
+            with service._archive_execution._lock:
+                assert (
+                    registry.fence_terminal(key, target_incarnation=target, operation_id=operation)
+                    == "fenced"
+                )
+            assert (
+                registry.fence_terminal(key, target_incarnation=target, operation_id=operation)
+                == "drained"
+            )
+            assert original.drains == [operation]
+            assert _record(case, operation)[:2] == ("draining", None)
+        finally:
+            release.set()
