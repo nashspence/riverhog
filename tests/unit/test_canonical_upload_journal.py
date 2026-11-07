@@ -18,7 +18,12 @@ from riverhog_core.catalog_models import (
     StorageIncarnationRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
+from riverhog_core.incremental_plan import (
+    incremental_volume_planner_checkpoint_bytes,
+    new_incremental_volume_planner,
+)
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_write_admission import initialize_archive_write_control
 from riverhog_core.services.collection_uploads import (
     SqlAlchemyCollectionUploadService,
 )
@@ -79,10 +84,15 @@ def test_staged_canonical_journal_seals_to_its_exact_tail(
                 last_activity_at="2026-01-01T00:00:00Z",
                 archive_phase_updated_at="2026-01-01T00:00:00Z",
                 archive_storage_prefix="collections/1",
-                planner_checkpoint_json="{}",
+                planner_checkpoint_json=incremental_volume_planner_checkpoint_bytes(
+                    new_incremental_volume_planner()
+                ).decode(),
             )
         )
         session.flush()
+        upload = session.get(CollectionUploadRecord, 1)
+        assert upload is not None
+        initialize_archive_write_control(session, upload)
         record = CollectionUploadProvenanceJournalRecord(
             collection_id=1,
             journal_id=expected.journal_id,
@@ -149,9 +159,16 @@ def test_completion_requirement_and_journal_selection_are_immutable(
                 last_activity_at="2026-01-01T00:00:00Z",
                 archive_phase_updated_at="2026-01-01T00:00:00Z",
                 archive_storage_prefix="collections/1",
-                planner_checkpoint_json="{}",
+                planner_checkpoint_json=incremental_volume_planner_checkpoint_bytes(
+                    new_incremental_volume_planner()
+                ).decode(),
             )
         )
+        session.flush()
+        upload = session.get(CollectionUploadRecord, 1)
+        assert upload is not None
+        initialize_archive_write_control(session, upload)
+
     service = SqlAlchemyCollectionUploadService(config, SimpleNamespace(), session_factory=factory)
     request.addfinalizer(service.close)
     first = "urn:uuid:11111111-1111-4111-8111-111111111111"

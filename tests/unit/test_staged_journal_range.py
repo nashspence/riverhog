@@ -19,6 +19,11 @@ from riverhog_core.catalog_models import (
     CollectionUploadRecord,
     StorageIncarnationRecord,
 )
+from riverhog_core.incremental_plan import (
+    incremental_volume_planner_checkpoint_bytes,
+    new_incremental_volume_planner,
+)
+from riverhog_core.services.archive_write_admission import initialize_archive_write_control
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_protocol import COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX as EXTENT
 from sqlalchemy import delete, event, update
@@ -66,10 +71,15 @@ def staged_transport(root, count, last_octets=EXTENT, *, first_octets=EXTENT):
                     last_activity_at="2026-01-01T00:00:00Z",
                     archive_phase_updated_at="2026-01-01T00:00:00Z",
                     archive_storage_prefix="collections/1",
-                    planner_checkpoint_json="{}",
+                    planner_checkpoint_json=incremental_volume_planner_checkpoint_bytes(
+                        new_incremental_volume_planner()
+                    ).decode(),
                 )
             )
             session.flush()
+            upload = session.get(CollectionUploadRecord, 1)
+            assert upload is not None
+            initialize_archive_write_control(session, upload)
             journal = Journal(
                 collection_id=1,
                 journal_id=JOURNAL,
