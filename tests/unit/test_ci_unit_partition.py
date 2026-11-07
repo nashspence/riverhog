@@ -454,3 +454,58 @@ def test_actual_make_partition_preserves_execution_and_parameter_evidence(
     ]
     workers = [row for row in rows if row.get("worker") != "controller"]
     assert sum(len(row["tests"]) for row in workers) == 2
+
+
+@pytest.mark.parametrize("fail_first", [False, True])
+def test_actual_shard_stops_before_queued_tail_after_failure(tmp_path, fail_first):
+    (tmp_path / "pytest.ini").write_text("[pytest]\n")
+    tests = tmp_path / "tests" / "unit"
+    tests.mkdir(parents=True)
+    (tests / "test_release_example.py").write_text("def test_release():\n    assert True\n")
+    (tests / "test_contract_example.py").write_text("def test_contract():\n    assert True\n")
+    started = tmp_path / "started"
+    started.mkdir()
+    tail = tmp_path / "tail-executed"
+    (tests / "test_example.py").write_text(
+        "import time\nfrom pathlib import Path\nimport pytest\n"
+        "@pytest.mark.parametrize('number',range(100))\n"
+        "def test_fact(number,worker_id):\n"
+        f"    started=Path({str(started)!r})\n"
+        "    (started/worker_id).touch()\n"
+        "    if number==0:\n"
+        "        deadline=time.monotonic()+20\n"
+        "        while len(list(started.iterdir()))<4:\n"
+        "            assert time.monotonic()<deadline\n"
+        "            time.sleep(0.001)\n"
+        f"        assert {not fail_first!r}\n"
+        "    time.sleep(0.01)\n"
+        "    if number==99:\n"
+        f"        Path({str(tail)!r}).touch()\n"
+    )
+    environment = {
+        key: value for key, value in os.environ.items() if key != "RIVERHOG_CI_UNIT_EXPECTED_FILE"
+    }
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts/ci_unit.py"),
+            "run",
+            "--shard",
+            "unit",
+            "tests/unit",
+        ],
+        cwd=tmp_path,
+        env={**environment, "PYTHONPATH": str(ROOT)},
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=45,
+    )
+    if fail_first:
+        assert result.returncode != 0
+        assert "1 failed" in result.stdout + result.stderr
+        assert not tail.exists()
+    else:
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "100 passed" in result.stdout
+        assert tail.exists()

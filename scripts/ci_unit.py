@@ -23,9 +23,9 @@ SHARDS = ("release", "contract", "unit")
 UNIT_PARTITIONS = ("1", "2", "3", "4")
 CI_SHARDS = ("release", "contract", *(f"unit-{part}" for part in UNIT_PARTITIONS))
 SHARD_PROFILES = {
-    "release": (2, "worksteal"),
-    "contract": (2, "worksteal"),
-    "unit": (4, "worksteal"),
+    "release": (2, "load"),
+    "contract": (2, "load"),
+    "unit": (4, "load"),
 }
 
 
@@ -275,6 +275,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "-n",
                 str(workers),
                 f"--dist={distribution}",
+                "--maxschedchunk=1",
                 *pytest_args,
                 *modules,
             ],
