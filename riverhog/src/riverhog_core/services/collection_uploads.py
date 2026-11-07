@@ -415,6 +415,7 @@ class _FinalizationClaim:
 
 
 if TYPE_CHECKING:
+    from riverhog_core.services.archive_payload_input import ArchivePayloadInput
     from riverhog_core.services.archive_payload_unit import (
         ArchivePayloadMirrorFactory,
         ArchivePayloadUnit,
@@ -458,7 +459,10 @@ class SqlAlchemyCollectionUploadService:
         self._archive_finalizers = ArchiveFinalizerRegistry(
             self._session_factory, self._archive_execution, self._archive_retention
         )
+        from .archive_payload_input import ArchivePayloadInputs
         from .archive_upload_invocations import ArchiveUploadInvocationRegistry
+
+        self._archive_inputs = ArchivePayloadInputs(config.archive_input)
 
         self._archive_invocations = ArchiveUploadInvocationRegistry(
             self._session_factory, self._archive_execution, self._archive_retention
@@ -2194,11 +2198,13 @@ class SqlAlchemyCollectionUploadService:
         volume_id: str,
         unit: int,
         plan_sha256: str,
-        content: bytes,
+        payload: ArchivePayloadInput,
         principal: Principal,
         mirror: ArchivePayloadMirrorFactory | None = None,
     ) -> ArchivePayloadUnit:
         from .archive_payload_unit import ArchivePayloadUnit
+
+        payload.require_pool(self._archive_inputs)
 
         return ArchivePayloadUnit(
             self,
@@ -2207,7 +2213,7 @@ class SqlAlchemyCollectionUploadService:
             volume_id=volume_id,
             unit=unit,
             plan_sha256=plan_sha256,
-            content=content,
+            payload=payload,
             principal=principal,
             mirror=mirror,
         )

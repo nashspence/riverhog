@@ -18,6 +18,7 @@ from riverhog_protocol import CATALOG_SYNC_PAGE_SIZE_MAX
 from sqlalchemy.engine import make_url
 
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
+from riverhog_core.archive_input_grants import ArchiveInputGrants
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
@@ -140,6 +141,7 @@ class RuntimeConfig:
     catalog_sync_page_size_max: int = CATALOG_SYNC_PAGE_SIZE_MAX
     catalog_sync_history_reap_batch_size: int = 100
     bootstrap_token: str = field(default="", repr=False)
+    archive_input: ArchiveInputGrants = field(default_factory=ArchiveInputGrants)
     archive_execution: ArchiveExecutionTuning = field(default_factory=ArchiveExecutionTuning)
     archive_write: ArchiveWriteGrants = field(default_factory=ArchiveWriteGrants)
     registration: RegistrationTuning = field(default_factory=RegistrationTuning)

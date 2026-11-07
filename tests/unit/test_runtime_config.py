@@ -499,3 +499,36 @@ def test_archive_execution_configuration_reserves_physical_terminal_headroom(tmp
             with pytest.raises(ValueError):
                 load_runtime_config()
         document["archive_execution"][field] = original
+
+
+def test_archive_input_grants_are_separate_operator_owned_plaintext_capacity(tmp_path, monkeypatch):
+    from riverhog_core.archive_input_grants import ArchiveInputGrants
+
+    path, document = _document(tmp_path, monkeypatch)
+    document["archive_input"] = {
+        "inputs": 7,
+        "inputs_per_target": 2,
+        "plaintext_bytes": "12MiB",
+        "plaintext_bytes_per_target": "4MiB",
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.archive_input == ArchiveInputGrants(
+        inputs=7,
+        inputs_per_target=2,
+        plaintext_bytes=12 * 1024**2,
+        plaintext_bytes_per_target=4 * 1024**2,
+    )
+    assert (
+        config.throughput_tuning.upload_max_inflight_bytes != config.archive_input.plaintext_bytes
+    )
+    for name in ("inputs", "inputs_per_target"):
+        for value in (0, -1, True, 1.5, "2"):
+            _write(path, {**document, "archive_input": {**document["archive_input"], name: value}})
+            with pytest.raises(ValueError):
+                load_runtime_config()
+    for name in ("plaintext_bytes", "plaintext_bytes_per_target"):
+        for value in ("0B", "-1B", True):
+            _write(path, {**document, "archive_input": {**document["archive_input"], name: value}})
+            with pytest.raises(ValueError):
+                load_runtime_config()

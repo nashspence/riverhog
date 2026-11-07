@@ -14,6 +14,7 @@ from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
 from time_formats import parse_duration
 
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
+from riverhog_core.archive_input_grants import ArchiveInputGrants
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
@@ -36,6 +37,7 @@ _RANGE = PackRangeRetrievalPolicy()
 _REGISTRATION = RegistrationTuning()
 _ARCHIVE_WRITE = ArchiveWriteGrants()
 _ARCHIVE_EXECUTION = ArchiveExecutionTuning()
+_ARCHIVE_INPUT = ArchiveInputGrants()
 
 
 class _Document(BaseModel):
@@ -161,6 +163,23 @@ class ArchiveWriteDocument(_Document):
             ),
             terminal_bytes=_bytes(self.terminal_bytes, "archive_write.terminal_bytes", 1),
             result_bytes=_bytes(self.result_bytes, "archive_write.result_bytes", 1),
+        )
+
+
+class ArchiveInputDocument(_Document):
+    inputs: int = Field(default=_ARCHIVE_INPUT.inputs, ge=1, strict=True)
+    inputs_per_target: int = Field(default=_ARCHIVE_INPUT.inputs_per_target, ge=1, strict=True)
+    plaintext_bytes: str = str(_ARCHIVE_INPUT.plaintext_bytes)
+    plaintext_bytes_per_target: str = str(_ARCHIVE_INPUT.plaintext_bytes_per_target)
+
+    def grants(self) -> ArchiveInputGrants:
+        return ArchiveInputGrants(
+            inputs=self.inputs,
+            inputs_per_target=self.inputs_per_target,
+            plaintext_bytes=_bytes(self.plaintext_bytes, "archive_input.plaintext_bytes", 1),
+            plaintext_bytes_per_target=_bytes(
+                self.plaintext_bytes_per_target, "archive_input.plaintext_bytes_per_target", 1
+            ),
         )
 
 
@@ -294,6 +313,7 @@ class RiverhogDocument(_Document):
     catalog_sync_history_retention: str = "30d"
     catalog_sync_page_size_max: int = Field(default=100, ge=1, le=100)
     catalog_sync_history_reap_batch_size: int = Field(default=100, ge=1)
+    archive_input: ArchiveInputDocument = Field(default_factory=ArchiveInputDocument)
     archive_execution: ArchiveExecutionDocument = Field(default_factory=ArchiveExecutionDocument)
     archive_write: ArchiveWriteDocument = Field(default_factory=ArchiveWriteDocument)
     registration: RegistrationDocument = Field(default_factory=RegistrationDocument)
@@ -413,6 +433,7 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         catalog_sync_history_retention=parse_duration(document.catalog_sync_history_retention),
         catalog_sync_page_size_max=document.catalog_sync_page_size_max,
         catalog_sync_history_reap_batch_size=document.catalog_sync_history_reap_batch_size,
+        archive_input=document.archive_input.grants(),
         archive_execution=document.archive_execution.tuning(),
         archive_write=document.archive_write.grants(),
         registration=document.registration.tuning(),

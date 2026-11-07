@@ -20,6 +20,10 @@ from riverhog_core.catalog_archive_write_models import (
 )
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
+from riverhog_core.services.archive_payload_input import (
+    ArchivePayloadInput,
+    ArchivePayloadRequest,
+)
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_core.stores.storage_adapter_archive_objects import (
     StorageAdapterArchiveResumableObjectStore,
@@ -32,6 +36,19 @@ from tests.unit.test_archive_upload_invocations import _receive
 from tests.unit.test_archive_write_execution import _executor
 from tests.unit.test_collection_upload_preparation import _case
 from tests.unit.test_collection_uploads import _CREATOR
+
+
+def _payload(service, key, target, volume, plan, content, *, principal=_CREATOR, unit=0):
+    epoch = ArchiveWriteAdmission(service._session_factory).bind_epoch(
+        key.collection_id, guard=service._payload_write_guard(key.collection_id, principal)
+    )
+    payload = service._archive_inputs.reserve(
+        ArchivePayloadRequest(key, target, epoch, volume, unit, plan, len(content), principal)
+    )
+    assert isinstance(payload, ArchivePayloadInput)
+    payload.append(content)
+    payload.seal()
+    return payload
 
 
 @contextmanager
@@ -93,7 +110,8 @@ def _service_actor(tmp_path, monkeypatch, kind, mode, *, database_url=None):
                 case.collection_id, guard=service._payload_write_guard(case.collection_id, _CREATOR)
             )
             key, target = _scope(case)
-            request = hashlib.sha256((kind + mode).encode()).hexdigest()
+            payload = _payload(service, key, target, case.object_id, case.plan_sha256, case.content)
+            request = payload.request_sha256
             registry, execution = service._archive_invocations, service._archive_execution
             originals = []
 
@@ -104,17 +122,18 @@ def _service_actor(tmp_path, monkeypatch, kind, mode, *, database_url=None):
                     volume_id=case.object_id,
                     unit=0,
                     plan_sha256=case.plan_sha256,
-                    content=case.content,
+                    payload=payload,
                     principal=_CREATOR,
                 )
                 originals.append(owner)
                 return owner
 
-            def submit(factory=create):
+            def submit(factory=create, *, incoming=payload):
                 return registry.submit(
                     key,
                     target_incarnation=target,
-                    request_sha256=request,
+                    request_sha256=incoming.request_sha256,
+                    payload=incoming,
                     create=factory,
                     advance=lambda owner: owner.advance(),
                 )
@@ -134,6 +153,7 @@ def _service_actor(tmp_path, monkeypatch, kind, mode, *, database_url=None):
                 create=create,
                 submit=submit,
                 originals=originals,
+                payload=payload,
                 adapter=adapter,
             )
 
@@ -206,7 +226,16 @@ def _preparation_retry(tmp_path, monkeypatch, kind, mode, committed, *, database
             "prepare",
             lambda **kwargs: pytest.fail("recreated original encryption preparation"),
         )
-        assert f.submit(lambda: pytest.fail("reconstructed original payload unit")) == "submitted"
+        incoming = _payload(
+            f.service, f.key, f.target, f.case.object_id, f.case.plan_sha256, f.case.content
+        )
+        assert incoming.request_sha256 == f.payload.request_sha256
+        assert (
+            f.submit(lambda: pytest.fail("reconstructed original payload unit"), incoming=incoming)
+            == "submitted"
+        )
+        assert incoming.released and not f.payload.released
+
         (second,) = _receive(f.registry, f.execution)
         assert second.result()["state"] == "committed"
         assert (
@@ -216,6 +245,7 @@ def _preparation_retry(tmp_path, monkeypatch, kind, mode, committed, *, database
         assert len(f.originals) == 1 and len(set(calls)) == 1
         assert len(set(f.preparations)) == 1
         assert [v.operation.kind for v in f.seen] == ["lookup", "begin", "part", "part", "complete"]
+        assert f.payload.released and not f.service._archive_inputs._inputs
         assert _stored(f)[1] is not None and not owner.has_pending
         assert f.registry.retire_idle(second)
 
@@ -291,7 +321,7 @@ def test_actual_service_payload_resumes_each_original_checkpoint_and_receipt(
             checkpoint, sealed, _ = _stored(f)
             assert checkpoint is not None
             assert (sealed is not None) is (phase in {"complete", "receipt"})
-            assert owner._content is None and not owner.has_pending
+            assert owner._input.released and not owner.has_pending
             with session_scope(f.case.factory) as session:
                 assert session.get(ArchiveUploadTerminalRecord, operation).phase == "draining"
             return
@@ -358,19 +388,21 @@ def _independent_unit(f, kind):
         collection_id, guard=f.service._payload_write_guard(collection_id, _CREATOR)
     )
     key, target = _scope(SimpleNamespace(factory=f.case.factory, collection_id=collection_id))
-    request = hashlib.sha256(b"independent unit").hexdigest()
+    payload = _payload(f.service, key, target, volume["volume_id"], volume["plan_sha256"], content)
+    request = payload.request_sha256
     assert (
         f.registry.submit(
             key,
             target_incarnation=target,
             request_sha256=request,
+            payload=payload,
             create=lambda: f.service._payload_unit_invocation(
                 key=key,
                 target_incarnation=target,
                 volume_id=volume["volume_id"],
                 unit=0,
                 plan_sha256=volume["plan_sha256"],
-                content=content,
+                payload=payload,
                 principal=_CREATOR,
             ),
             advance=lambda owner: owner.advance(),
@@ -420,7 +452,7 @@ def _held_terminal(
             if independent:
                 _independent_unit(f, kind)
             owner = f.originals[0]
-            assert owner.has_pending
+            assert owner.has_pending and not f.payload.released
             operation = _select_terminal(f)
             assert f.registry.collect(limit=1) == ()
             assert (
@@ -448,7 +480,7 @@ def _held_terminal(
             )
             (terminal,) = _receive(f.registry, f.execution)
             assert terminal.execution.terminal and terminal.result() == "closed"
-            assert f.seen == before and owner._content is None
+            assert f.seen == before and owner._input.released
             with pytest.raises(Conflict, match="fenced"):
                 owner.advance()
             with session_scope(f.case.factory) as session:
@@ -562,23 +594,27 @@ def test_actual_service_unit_keeps_the_selected_original_cache_receiver(
             built.append(writer)
             return writer
 
+        payload = _payload(
+            service, key, target, actor.case.object_id, actor.case.plan_sha256, actor.case.content
+        )
         owner = service._payload_unit_invocation(
             key=key,
             target_incarnation=target,
             volume_id=actor.case.object_id,
             unit=0,
             plan_sha256=actor.case.plan_sha256,
-            content=actor.case.content,
+            payload=payload,
             principal=_CREATOR,
             mirror=mirror,
         )
         registry, execution = service._archive_invocations, service._archive_execution
-        request = hashlib.sha256(b"selected original cache receiver").hexdigest()
+        request = payload.request_sha256
         assert (
             registry.submit(
                 key,
                 target_incarnation=target,
                 request_sha256=request,
+                payload=payload,
                 create=lambda: owner,
                 advance=lambda original: original.advance(),
             )
@@ -589,6 +625,7 @@ def test_actual_service_unit_keeps_the_selected_original_cache_receiver(
         assert len(built) == 1
         begin = built[0]._begin.cache_begin_call_id
         assert begin is not None
+        assert payload.released and service._archive_inputs._bytes == 0
         assert owner.has_pending and not registry.retire_idle(received)
         before = list(actor.seen), list(cache_calls)
         assert (
@@ -642,24 +679,28 @@ def test_uncertain_cache_constructor_keeps_original_archive_and_retention_charge
                 raise OSError("injected original cache constructor acknowledgement loss")
             return None if outcome == "missing" else joint.writer
 
+        payload = _payload(
+            service, key, target, actor.case.object_id, actor.case.plan_sha256, actor.case.content
+        )
         owner = service._payload_unit_invocation(
             key=key,
             target_incarnation=target,
             volume_id=actor.case.object_id,
             unit=0,
             plan_sha256=actor.case.plan_sha256,
-            content=actor.case.content,
+            payload=payload,
             principal=_CREATOR,
             mirror=mirror,
         )
         registry, execution = service._archive_invocations, service._archive_execution
-        request = hashlib.sha256(b"uncertain original cache constructor").hexdigest()
+        request = payload.request_sha256
 
         def submit():
             return registry.submit(
                 key,
                 target_incarnation=target,
                 request_sha256=request,
+                payload=payload,
                 create=lambda: owner,
                 advance=lambda original: original.advance(),
             )

@@ -22,6 +22,7 @@ from riverhog_core.services.archive_construction_retention import (
     ArchiveConstructionRetention,
 )
 from riverhog_core.services.archive_finalizer_terminal import TerminalDrainStatus
+from riverhog_core.services.archive_payload_input import ArchivePayloadInput
 from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
 from riverhog_core.services.archive_upload_execution import (
     ArchiveExecutionOccupied,
@@ -67,6 +68,8 @@ class _Invocation:
     reservation: ArchiveConstructionReservation
     create: Callable[[], RetainedArchiveUploadInvocation] = field(repr=False)
     advance: Callable[[RetainedArchiveUploadInvocation], object] = field(repr=False)
+    payload: ArchivePayloadInput | None = field(default=None, repr=False)
+    input_token: object = field(default_factory=object, repr=False)
     lock: Lock = field(default_factory=Lock)
     owner: RetainedArchiveUploadInvocation | None = None
     construction_failure: BaseException | None = None
@@ -92,6 +95,7 @@ class ArchiveUploadInvocationRegistry:
         execution: ArchiveUploadExecutionOwner,
         retention: ArchiveConstructionRetention,
     ) -> None:
+        self._input_owner = object()
         self._factory = factory
         self._execution = execution
         self._retention = retention
@@ -114,6 +118,35 @@ class ArchiveUploadInvocationRegistry:
         request_sha256: str,
         create: Callable[[], RetainedArchiveUploadInvocation],
         advance: Callable[[RetainedArchiveUploadInvocation], object],
+        payload: ArchivePayloadInput | None = None,
+    ) -> InvocationSubmission:
+        """Transfer the exact input, or withdraw only this unused incoming body."""
+        try:
+            if payload is not None:
+                payload.require_submission(
+                    self._input_owner, key, target_incarnation, request_sha256
+                )
+            return self._submit(
+                key,
+                target_incarnation=target_incarnation,
+                request_sha256=request_sha256,
+                create=create,
+                advance=advance,
+                payload=payload,
+            )
+        finally:
+            if payload is not None:
+                payload.discard_unretained(self._input_owner)
+
+    def _submit(
+        self,
+        key: ArchiveUploadExecutionKey,
+        *,
+        target_incarnation: str,
+        request_sha256: str,
+        create: Callable[[], RetainedArchiveUploadInvocation],
+        advance: Callable[[RetainedArchiveUploadInvocation], object],
+        payload: ArchivePayloadInput | None,
     ) -> InvocationSubmission:
         if not target_incarnation or re.fullmatch(r"[a-f0-9]{64}", request_sha256) is None:
             raise ValueError("upload invocation requires exact target and request identities")
@@ -128,6 +161,8 @@ class ArchiveUploadInvocationRegistry:
             context = self._invocations.get(request_sha256)
             if context is not None and context.construction is not construction:
                 raise Conflict("upload invocation identity belongs to another construction")
+            if context is None and payload is not None and payload.released:
+                raise Conflict("a retired payload input cannot construct another invocation")
             fresh = context is None
             if context is None:
                 if self._execution.status(key) != "untracked":
@@ -140,7 +175,11 @@ class ArchiveUploadInvocationRegistry:
                 if construction is None:
                     construction = _Construction(key, target_incarnation)
                     self._constructions[key.collection_id] = construction
-                context = _Invocation(request_sha256, construction, reservation, create, advance)
+                context = _Invocation(
+                    request_sha256, construction, reservation, create, advance, payload
+                )
+                if payload is not None:
+                    payload.retain(self._input_owner, context.input_token)
                 self._invocations[request_sha256] = context
                 construction.requests.append(request_sha256)
                 construction.remaining += 1
@@ -211,6 +250,8 @@ class ArchiveUploadInvocationRegistry:
                     or context.construction.target != outcome.target_incarnation
                 ):
                     raise Conflict("upload execution returned another original invocation")
+                if context.payload is not None:
+                    outcome.release_exception_frames()
                 if outcome.terminal:
                     context.terminal_received = outcome
                 else:
@@ -221,6 +262,8 @@ class ArchiveUploadInvocationRegistry:
                         context.succeeded = False
                     else:
                         context.succeeded = True
+                if context.payload is not None:
+                    context.payload.receive_joined(context.input_token, context.owner)
                 received.append(ArchiveUploadInvocationCompletion(context.request_sha256, outcome))
             return tuple(received)
         finally:
@@ -260,6 +303,8 @@ class ArchiveUploadInvocationRegistry:
                     context.construction_failure is not None
                     or context.owner is None
                     or context.owner.has_pending
+                    or context.payload is not None
+                    and not context.payload.released
                 ):
                     return False
                 return self._remove(context)
@@ -298,6 +343,9 @@ class ArchiveUploadInvocationRegistry:
     def _remove(self, context: _Invocation) -> bool:
         if not self._retention.retire(context.reservation, owner=self):
             return False
+        if context.payload is not None and not context.payload.released:
+            assert context.owner is None and context.construction_failure is None
+            context.payload.retire_unstarted(context.input_token)
         del self._invocations[context.request_sha256]
         group = context.construction
         group.requests.remove(context.request_sha256)

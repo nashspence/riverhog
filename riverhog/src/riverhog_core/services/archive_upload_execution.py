@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import traceback
 from collections import deque
 from collections.abc import Callable
 from concurrent.futures import Future
@@ -50,6 +51,23 @@ class ArchiveUploadExecutionCompletion:
 
     def result(self) -> object:
         return self._future.result()
+
+    def release_exception_frames(self) -> None:
+        """Drop joined worker locals while preserving its original exception."""
+        error = self._future.exception()
+        pending = [error] if error is not None else []
+        seen: set[int] = set()
+        while pending:
+            current = pending.pop()
+            if id(current) in seen:
+                continue
+            seen.add(id(current))
+            traceback.clear_frames(current.__traceback__)
+            for chained in (current.__cause__, current.__context__):
+                if chained is not None:
+                    pending.append(chained)
+            if isinstance(current, BaseExceptionGroup):
+                pending.extend(current.exceptions)
 
 
 @dataclass(slots=True)

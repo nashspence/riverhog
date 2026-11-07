@@ -36,6 +36,7 @@ from riverhog_core.provider_write_dispatch import ProviderWriteAdmissionRefused
 from riverhog_core.raw_upload import RawUploadCheckpoint, RawVolumeUploader
 from riverhog_core.raw_volume import parse_raw_volume_plan
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_payload_input import ArchivePayloadInput
 from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
 from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
@@ -154,7 +155,7 @@ class ArchivePayloadUnit:
         volume_id: str,
         unit: int,
         plan_sha256: str,
-        content: bytes,
+        payload: ArchivePayloadInput,
         principal: Principal,
         mirror: ArchivePayloadMirrorFactory | None,
     ) -> None:
@@ -164,7 +165,18 @@ class ArchivePayloadUnit:
         self._volume_id = volume_id
         self._unit_number = unit
         self._plan_sha256 = plan_sha256
-        self._content: bytes | None = content
+        request = payload.request
+        if (
+            request.key != key
+            or request.target_incarnation != target_incarnation
+            or request.volume_id != volume_id
+            or request.unit != unit
+            or request.plan_sha256 != plan_sha256
+            or request.principal != principal
+        ):
+            raise Conflict("payload actor differs from the original input")
+        self._input = payload
+        payload.bind_actor(self)
         self._principal = principal
         self._mirror = mirror
         self._mirror_unresolved = False
@@ -176,7 +188,8 @@ class ArchivePayloadUnit:
         self._lock = Lock()
         self._volume: _Volume | None = None
         self._binding: ArchiveStoreBinding | None = None
-        self._epoch: str | None = None
+        self._epoch = payload.request.epoch
+        self._epoch_verified = False
         self._pack: PackVolumeUploader | None = None
         self._raw: RawVolumeUploader | None = None
         self._pack_plan: PackVolumePlan | None = None
@@ -260,8 +273,13 @@ class ArchivePayloadUnit:
         if self._volume is None:
             self._volume = self._select()
         volume = self._volume
-        if self._epoch is None:
-            self._epoch = self._admission.bind_epoch(self._key.collection_id, guard=self._guard)
+        if not self._epoch_verified:
+            if (
+                self._admission.bind_epoch(self._key.collection_id, guard=self._guard)
+                != self._epoch
+            ):
+                raise Conflict("payload input admission epoch changed")
+            self._epoch_verified = True
         self._require_construction()
         current = self._service._archive_stores.require_incarnation(volume.store, self._target)
         if self._binding is None:
@@ -300,11 +318,10 @@ class ArchivePayloadUnit:
             _PayloadExecutor(self._service, volume.store, self._target, self._writes),
             placement_policy="archive_default",
         )
-        content = self._content
-        assert content is not None
+        content_bytes = self._input.request.plaintext_bytes
         if volume.kind == "pack":
             plan = parse_pack_volume_plan(volume.plan_json)
-            if len(content) != pack_unit_descriptors(plan)[self._unit_number].payload_bytes:
+            if content_bytes != pack_unit_descriptors(plan)[self._unit_number].payload_bytes:
                 raise BadRequest("pack upload unit payload length mismatch")
             self._pack_plan = plan
             self._pack = self._service._pack_uploader(
@@ -316,7 +333,7 @@ class ArchivePayloadUnit:
                 volume.unit_plaintext_bytes,
                 raw_plan.plaintext_bytes - self._unit_number * volume.unit_plaintext_bytes,
             )
-            if len(content) != expected:
+            if content_bytes != expected:
                 raise BadRequest("raw upload unit payload length mismatch")
             self._raw_plan = raw_plan
             self._digests = self._service._raw_volume_digests(self._key.collection_id, raw_plan)
@@ -418,7 +435,7 @@ class ArchivePayloadUnit:
     def _upload(self) -> None:
         if self._checkpoint is not None:
             return
-        assert self._opened is not None and self._content is not None
+        assert self._opened is not None
         if self._uploading is None:
             if self._pack is not None:
                 assert self._pack_plan is not None and isinstance(
@@ -428,7 +445,7 @@ class ArchivePayloadUnit:
                     plan=self._pack_plan,
                     checkpoint=self._opened,
                     unit_number=self._unit_number,
-                    payload_chunks=(self._content,),
+                    payload_chunks=(self._input.content(),),
                 )
             else:
                 assert (
@@ -440,7 +457,7 @@ class ArchivePayloadUnit:
                     plan=self._raw_plan,
                     checkpoint=self._opened,
                     unit_number=self._unit_number + 1,
-                    plaintext=self._content,
+                    plaintext=self._input.content(),
                 )
         self._checkpoint = self._uploading.run()
 
@@ -480,7 +497,9 @@ class ArchivePayloadUnit:
             if self._terminal_id is not None:
                 raise Conflict("original payload unit is fenced for its terminal request")
             if self._result is not None:
+                self._input.consumed(self)
                 return self._result
+            self._input.require_actor(self)
             self._initialize()
             self._prepare()
             self._open()
@@ -489,6 +508,7 @@ class ArchivePayloadUnit:
             self._result = self._service.get_unit(
                 self._key.collection_id, self._volume_id, self._unit_number
             )
+            self._input.consumed(self)
             return self._result
         finally:
             self._lock.release()
@@ -514,7 +534,7 @@ class ArchivePayloadUnit:
             for original in (self._opening, self._uploading):
                 if original is not None and not original.close():
                     return "busy"
-            self._content = None
+            self._input.consumed(self)
             self._candidate = None
             self._locally_closed = True
             writes = self._writes or self._archive
