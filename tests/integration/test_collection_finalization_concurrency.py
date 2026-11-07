@@ -239,3 +239,25 @@ def _point_readiness_after_terminal_lock(tmp_path, monkeypatch, *, database_url)
         # waited. The fresh UPDATE snapshot must still exclude the terminal.
         assert calls == [case.collection_id]
         assert _claim_snapshot(case) == before
+
+
+@pytest.mark.parametrize("kind", ("member-histories", "provenance-closure", "artifact-tree"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_original_catalog_batch_survives_commit_reply_loss(
+    database_url, tmp_path, monkeypatch, kind, committed
+):
+    from riverhog_core.runtime_config import RuntimeConfig
+
+    from tests.unit.test_archive_catalog_finalizer import _assert_original_catalog_batch
+
+    original_config = RuntimeConfig.for_testing
+
+    def config_for_case(**values):
+        return original_config(
+            journal_validation_workspace=tmp_path / "journal-validation", **values
+        )
+
+    monkeypatch.setattr(RuntimeConfig, "for_testing", staticmethod(config_for_case))
+    _assert_original_catalog_batch(
+        tmp_path, monkeypatch, kind, committed, database_url=database_url
+    )
