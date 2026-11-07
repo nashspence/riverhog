@@ -7175,7 +7175,7 @@ def _ready_for_finalization(session: Session, upload: CollectionUploadRecord) ->
         session.scalar(
             select(func.count(CollectionArchiveObjectUploadRecord.object_id)).where(
                 CollectionArchiveObjectUploadRecord.collection_id == upload.collection_id,
-                CollectionArchiveObjectUploadRecord.state == "sealed",
+                CollectionArchiveObjectUploadRecord.state == literal_column("'sealed'"),
             )
         )
         or 0
