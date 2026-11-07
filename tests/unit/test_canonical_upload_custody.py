@@ -29,7 +29,13 @@ from riverhog_core.catalog_models import (
     StorageIncarnationRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
+from riverhog_core.collection_plan import CollectionVolumePolicy
+from riverhog_core.incremental_plan import (
+    IncrementalVolumePlannerCheckpoint,
+    incremental_volume_planner_checkpoint_bytes,
+)
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_write_admission import initialize_archive_write_control
 from riverhog_core.services.collection_uploads import (
     SqlAlchemyCollectionUploadService,
     _artifact_payload,
@@ -106,7 +112,15 @@ def _construction(
                 last_activity_at="2026-01-01T00:00:00Z",
                 archive_phase_updated_at="2026-01-01T00:00:00Z",
                 archive_storage_prefix="collection/1",
-                planner_checkpoint_json="{}",
+                planner_checkpoint_json=incremental_volume_planner_checkpoint_bytes(
+                    IncrementalVolumePlannerCheckpoint(
+                        policy=CollectionVolumePolicy(),
+                        next_artifact_order=1,
+                        next_sequence=2,
+                        artifacts_seen=1,
+                        bytes_seen=3,
+                    )
+                ).decode(),
                 planner_next_sequence=2,
                 state="open",
                 artifact_count=1,
@@ -127,6 +141,9 @@ def _construction(
             )
         )
         session.flush()
+        upload = session.get(CollectionUploadRecord, 1)
+        assert upload is not None
+        initialize_archive_write_control(session, upload)
         session.add(
             CollectionUploadProvenanceJournalRecord(
                 collection_id=1,
