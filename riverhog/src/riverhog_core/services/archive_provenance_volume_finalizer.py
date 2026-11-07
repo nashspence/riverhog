@@ -12,6 +12,7 @@ from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_finalizer_reports import ArchiveFinalizerReports
 from riverhog_core.services.archive_finalizer_terminal import (
     ArchiveFinalizerTerminal,
     TerminalDrainStatus,
@@ -23,7 +24,6 @@ from riverhog_core.services.archive_provenance_volume_checkpoint import (
     ArchiveProvenanceVolumeSource,
 )
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
-from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 from riverhog_core.services.immutable_archive_writes import ImmutableArchiveWrites
 
 _Phase = Literal["bindings", "journal", "metadata", "commit"]
@@ -47,6 +47,7 @@ class ArchiveProvenanceVolumeFinalizer:
         self._archive_stores = archive_stores
         self._lock = threading.Lock()
         self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
+        self._reports = ArchiveFinalizerReports(factory, collection_id)
         self._volume: ArchiveProvenanceVolumeSource | None = None
         self._source: _Source | None = None
         self._actor: ImmutableArchiveWrites | None = None
@@ -58,14 +59,15 @@ class ArchiveProvenanceVolumeFinalizer:
     def has_pending(self) -> bool:
         # Original association or progress acknowledgement can remain after
         # physical retirement. This flag accounts only for this retained owner.
-        return self._volume is not None
+        return self._volume is not None or self._reports.has_pending
 
     def drain_terminal(self, operation_id: str) -> TerminalDrainStatus:
         """Fence this owner and drain its original child without releasing inputs."""
         if not self._lock.acquire(blocking=False):
             return "busy"
         try:
-            return self._terminal.drain_original(operation_id, self._actor)
+            original = self._reports if self._reports.has_pending else self._actor
+            return self._terminal.drain_original(operation_id, original)
         finally:
             self._lock.release()
 
@@ -75,7 +77,7 @@ class ArchiveProvenanceVolumeFinalizer:
             self._terminal.require_forward()
             if self._volume is not None:
                 return self._advance_original()
-            if drain_original_immutable_report(self._factory, self._collection_id):
+            if self._reports.advance():
                 return True
             with session_scope(self._factory) as session:
                 volume = ArchiveProvenanceVolumeSource.stage_next(

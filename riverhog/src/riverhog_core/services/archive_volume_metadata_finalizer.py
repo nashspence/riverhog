@@ -11,6 +11,7 @@ from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_finalizer_reports import ArchiveFinalizerReports
 from riverhog_core.services.archive_finalizer_terminal import (
     ArchiveFinalizerTerminal,
     TerminalDrainStatus,
@@ -18,7 +19,6 @@ from riverhog_core.services.archive_finalizer_terminal import (
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.archive_volume_metadata_writes import ArchiveVolumeMetadataWrites
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
-from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 
 
 class ArchiveVolumeMetadataFinalizer:
@@ -42,6 +42,7 @@ class ArchiveVolumeMetadataFinalizer:
         self._archive_stores = archive_stores
         self._lock = threading.Lock()
         self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
+        self._reports = ArchiveFinalizerReports(factory, collection_id)
         self._actor: ArchiveVolumeMetadataWrites | None = None
         self._source: ArchiveVolumeMetadataSource | None = None
         self._passphrase: str | None = None
@@ -49,14 +50,15 @@ class ArchiveVolumeMetadataFinalizer:
 
     @property
     def has_pending(self) -> bool:
-        return self._actor is not None
+        return self._actor is not None or self._reports.has_pending
 
     def drain_terminal(self, operation_id: str) -> TerminalDrainStatus:
         """Fence this owner and drain its original child without releasing inputs."""
         if not self._lock.acquire(blocking=False):
             return "busy"
         try:
-            return self._terminal.drain_original(operation_id, self._actor)
+            original = self._reports if self._reports.has_pending else self._actor
+            return self._terminal.drain_original(operation_id, original)
         finally:
             self._lock.release()
 
@@ -68,7 +70,7 @@ class ArchiveVolumeMetadataFinalizer:
             # Retain and retry this exact actor before selecting another source.
             if self._actor is not None:
                 return self._publish_current()
-            if drain_original_immutable_report(self._factory, self._collection_id):
+            if self._reports.advance():
                 return True
             # A positive observation is not closure. Actor loss cannot turn an
             # advanced source pointer into permission for the next writer.

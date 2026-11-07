@@ -9,6 +9,7 @@ from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_finalizer_reports import ArchiveFinalizerReports
 from riverhog_core.services.archive_finalizer_terminal import (
     ArchiveFinalizerTerminal,
     TerminalDrainStatus,
@@ -17,7 +18,6 @@ from riverhog_core.services.archive_provenance_structure_checkpoint import (
     ArchiveProvenanceStructureSource,
 )
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
-from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 from riverhog_core.services.immutable_archive_writes import ImmutableArchiveWrites
 
 
@@ -40,6 +40,7 @@ class ArchiveProvenanceStructureWriter:
         self._forward_guard = forward_guard
         self._lock = threading.Lock()
         self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
+        self._reports = ArchiveFinalizerReports(factory, collection_id)
         self._source: ArchiveProvenanceStructureSource | None = None
         self._actor: ImmutableArchiveWrites | None = None
         self._passphrase: str | None = None
@@ -47,14 +48,15 @@ class ArchiveProvenanceStructureWriter:
 
     @property
     def has_pending(self) -> bool:
-        return self._actor is not None
+        return self._actor is not None or self._reports.has_pending
 
     def drain_terminal(self, operation_id: str) -> TerminalDrainStatus:
         """Fence this owner and drain its original child without releasing inputs."""
         if not self._lock.acquire(blocking=False):
             return "busy"
         try:
-            return self._terminal.drain_original(operation_id, self._actor)
+            original = self._reports if self._reports.has_pending else self._actor
+            return self._terminal.drain_original(operation_id, original)
         finally:
             self._lock.release()
 
@@ -64,7 +66,7 @@ class ArchiveProvenanceStructureWriter:
             self._terminal.require_forward()
             if self._actor is not None:
                 return self._publish_current()
-            if drain_original_immutable_report(self._factory, self._collection_id):
+            if self._reports.advance():
                 return True
             with session_scope(self._factory) as session:
                 source = ArchiveProvenanceStructureSource.select_current(

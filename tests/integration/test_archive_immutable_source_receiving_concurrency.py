@@ -36,3 +36,25 @@ def test_postgres_original_report_preserves_source_through_lost_acknowledgement(
     _assert_original_report(
         tmp_path, monkeypatch, kind, "direct", phase, committed, database_url=database_url
     )
+
+
+@pytest.mark.parametrize(
+    "kind",
+    (
+        "archive-volume",
+        "root",
+        "provenance-authority",
+        "provenance-volume",
+        "tag",
+        "description",
+        "structure",
+        "journal",
+    ),
+)
+@pytest.mark.parametrize("phase", ("receive", "retire"))
+def test_postgres_metadata_owner_keeps_its_original_report(
+    database_url, tmp_path, monkeypatch, kind, phase
+):
+    from tests.unit.test_archive_finalizer_reports import _assert_metadata_report
+
+    _assert_metadata_report(tmp_path, monkeypatch, kind, phase, True, database_url=database_url)
