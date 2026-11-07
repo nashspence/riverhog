@@ -28,6 +28,7 @@ class ArchiveWriteControlRecord(Base):
     epoch: Mapped[str] = mapped_column(String(64))
     gate: Mapped[str] = mapped_column(String)
     next_call: Mapped[str] = mapped_column(Text)
+    custody_revision: Mapped[str] = mapped_column(Text, default="0", server_default=text("'0'"))
     terminal_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     __table_args__ = (
@@ -125,6 +126,7 @@ class ArchiveUploadTerminalRecord(Base):
     phase: Mapped[str] = mapped_column(String)
     frontier: Mapped[str] = mapped_column(Text)
     original_epoch: Mapped[str] = mapped_column(String(64))
+    custody_revision: Mapped[str] = mapped_column(Text, default="0", server_default=text("'0'"))
     drain_next_attempt_at: Mapped[str] = mapped_column(
         String,
         default="1970-01-01T00:00:00.000000000Z",

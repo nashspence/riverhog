@@ -80,6 +80,7 @@ def initialize_archive_write_control(session: Session, upload: CollectionUploadR
             epoch=secrets.token_hex(32),
             gate="open",
             next_call="0",
+            custody_revision="0",
         )
     )
 
@@ -741,6 +742,7 @@ class ArchiveWriteAdmission:
                     phase="draining",
                     frontier=control.next_call,
                     original_epoch=control.epoch,
+                    custody_revision=control.custody_revision,
                     drain_next_attempt_at=utc_timestamp_now(),
                 )
             )

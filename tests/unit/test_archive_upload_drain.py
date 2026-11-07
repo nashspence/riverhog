@@ -324,6 +324,7 @@ def _native_seal_before_logical_receipt(tmp_path, monkeypatch, kind, mode, *, da
         operation = _select_terminal(f)
         before = _inspect(f.case, operation)
         assert before.payload_sealed
+        assert before.custody_revision == before.selected_custody_revision == "1"
         assert not before.archive_unclosed
         with session_scope(f.case.factory) as session:
             original = session.get(ArchiveUploadTerminalRecord, operation)
@@ -336,7 +337,9 @@ def _native_seal_before_logical_receipt(tmp_path, monkeypatch, kind, mode, *, da
         (terminal,) = _receive(f.registry, f.execution)
         assert terminal.result() == "closed"
         assert f.seen == calls and _stored(f)[1] is not None
-        assert _inspect(f.case, operation).payload_sealed
+        after = _inspect(f.case, operation)
+        assert after.payload_sealed
+        assert after.custody_revision == after.selected_custody_revision == "1"
         with session_scope(f.case.factory) as session:
             original = session.get(ArchiveUploadTerminalRecord, operation)
             assert original.phase == "draining" and original.result_json is None

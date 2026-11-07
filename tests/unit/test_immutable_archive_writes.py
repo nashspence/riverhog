@@ -7,6 +7,7 @@ import pytest
 from riverhog_age import encrypt_age_scrypt
 from riverhog_core.archive_recovery_descriptor import ArchiveRecoveryDescriptorPublisher
 from riverhog_core.archive_root import ArchiveRootPublisher
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services import immutable_archive_admission as admission_module
@@ -21,6 +22,13 @@ from tests.unit.test_archive_authority_checkpoint import (
     _write,
 )
 from tests.unit.test_archive_volume_metadata_receiving import _count
+
+
+def _revision(fixture):
+    with session_scope(fixture.case.factory) as session:
+        return int(
+            session.get(ArchiveWriteControlRecord, fixture.case.collection_id).custody_revision
+        )
 
 
 def _actor(fixture, source):
@@ -91,9 +99,11 @@ def test_actual_shared_actor_retains_one_original_authority_invocation(
     with _authority_source(tmp_path, monkeypatch, mode) as fixture:
         _prior_root(fixture, kind)
         original = _actor(fixture, _source(fixture, kind))
+        revision = _revision(fixture)
         first = _publish(original)
         before = _snapshot(fixture)
         assert _publish(original) == first and _snapshot(fixture) == before
+        assert _revision(fixture) == revision + 1
         assert len(original.calls["observe"]) == len(original.calls["execute"]) == 1
         assert not original.actor.has_pending and _count(fixture.case) == 0
         assert (
@@ -112,6 +122,7 @@ def test_actual_authority_actor_replays_original_result_before_any_new_publisher
     with _authority_source(tmp_path, monkeypatch) as fixture:
         _prior_root(fixture, kind)
         original = _actor(fixture, _source(fixture, kind))
+        revision = _revision(fixture)
         transaction = admission_module.session_scope
         position = 2 if phase == "report" else 3
         calls = 0
@@ -147,6 +158,7 @@ def test_actual_authority_actor_replays_original_result_before_any_new_publisher
             result = _publish(original)
             assert _publish(original) == result
         assert original.actor._response_json == original_response
+        assert _revision(fixture) == revision + 1
         assert len(original.calls["observe"]) == len(original.calls["execute"]) == 1
         assert not original.actor.has_pending and _count(fixture.case) == 0
 
@@ -191,6 +203,7 @@ def test_actual_existing_root_observation_uses_original_unused_capability(
 ):
     with _authority_source(tmp_path, monkeypatch, mode) as fixture:
         source = _source(fixture, "root")
+        revision = _revision(fixture)
         physical = fixture.physical.put_immutable_object(
             object_path=source.publication.object_path,
             content=encrypt_age_scrypt(source.publication.plaintext, "fixture", log_n=1),
@@ -204,6 +217,8 @@ def test_actual_existing_root_observation_uses_original_unused_capability(
         assert result.stored_sha256 != original.actor._prepared.operation.request.stored_sha256
         assert len(original.calls["observe"]) == 1 and not original.calls["execute"]
         assert not original.actor.has_pending and _count(fixture.case) == 0
+        assert _revision(fixture) == revision + 1
+        assert _publish(original) == result and _revision(fixture) == revision + 1
         recovery = _source(fixture, "recovery")
         assert recovery.publication.descriptor.root.stored_sha256 == physical.stored_sha256
 
@@ -212,6 +227,7 @@ def _original_pair(fixture, monkeypatch):
     for kind in ("root", "recovery"):
         source = _source(fixture, kind)
         original = _actor(fixture, source)
+        revision = _revision(fixture)
         report = original.actor._admission.report
 
         def lost(*args, _original_report=report, **kwargs):
@@ -235,3 +251,5 @@ def _original_pair(fixture, monkeypatch):
         else:
             assert _snapshot(fixture)[1] is not None
         assert receipt is not None
+        assert _revision(fixture) == revision + 1
+        assert _publish(original) == receipt and _revision(fixture) == revision + 1

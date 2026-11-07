@@ -6,6 +6,7 @@ from typing import Protocol, TypeVar
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session, load_only, object_session
 
+from riverhog_core.archive_custody_revision import advance_archive_custody_revision
 from riverhog_core.catalog_archive_write_models import (
     ArchiveUploadTerminalRecord,
     ArchiveWriteControlRecord,
@@ -273,6 +274,8 @@ class SqlAlchemyArchiveUploadCheckpointStore:
         while next_unit in committed:
             next_unit += 1
         record.next_unit = next_unit
+        if merged.completed is not None and (previous is None or previous.completed is None):
+            advance_archive_custody_revision(session, upload.collection_id)
         record.state = "sealed" if merged.completed is not None else "uploading"
         if added_payload_bytes:
             upload.uploaded_payload_bytes = (

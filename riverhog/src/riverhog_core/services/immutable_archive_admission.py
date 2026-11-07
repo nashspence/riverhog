@@ -20,6 +20,7 @@ from riverhog_storage_adapter_protocol import (
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from riverhog_core.archive_custody_revision import advance_archive_custody_revision
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.catalog_archive_write_models import (
     ArchiveWriteControlRecord,
@@ -541,6 +542,7 @@ class ImmutableArchiveAdmission:
             if effect.state != "settled" and effect.observation_json is None:
                 if isinstance(response.result, ImmutableObjectReceipt):
                     apply_receipt(session, admitted.prepared, response.result)
+                    advance_archive_custody_revision(session, admitted.ticket.collection_id)
             if response.execution == "closed":
                 effect.state, effect.unresolved, effect.result_json = "settled", False, encoded
             elif effect.state != "settled":
@@ -580,6 +582,7 @@ class ImmutableArchiveAdmission:
                 raise Conflict("immutable archive unused observation conflicts with its outcome")
             if effect.state != "settled":
                 apply_receipt(session, admitted.prepared, receipt)
+                advance_archive_custody_revision(session, admitted.ticket.collection_id)
             effect.state, effect.unresolved, effect.result_json = "settled", False, encoded
 
     def record_unknown(self, admitted: AdmittedImmutableArchiveWrite) -> None:

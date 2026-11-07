@@ -72,6 +72,8 @@ class TerminalWriteRecords:
     cache_begin_retained: bool
     cache_write_retained: bool
     payload_sealed: bool
+    custody_revision: str
+    selected_custody_revision: str
 
 
 def lock_terminal_selection(
@@ -143,7 +145,7 @@ def inspect_terminal_write_records(
     optional cache effect must remain visible to terminal drainage independently
     of whether archive preservation can continue.
     """
-    lock_terminal_selection(session, collection_id, operation_id, nowait=nowait)
+    control, terminal = lock_terminal_selection(session, collection_id, operation_id, nowait=nowait)
 
     def retained(model: EffectModel, *, unclosed: bool) -> bool:
         return session.scalar(_record_query(model, collection_id, unclosed=unclosed)) is not None
@@ -158,4 +160,6 @@ def inspect_terminal_write_records(
         cache_begin_retained=retained(CachePopulationBeginRecord, unclosed=False),
         cache_write_retained=retained(CachePopulationWriteEffectRecord, unclosed=False),
         payload_sealed=session.scalar(_sealed_payload_query(collection_id)) is not None,
+        custody_revision=control.custody_revision,
+        selected_custody_revision=terminal.custody_revision,
     )

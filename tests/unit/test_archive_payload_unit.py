@@ -15,6 +15,7 @@ from riverhog_age import CHUNK_SIZE
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_archive_write_models import (
     ArchiveUploadTerminalRecord,
+    ArchiveWriteControlRecord,
     ArchiveWriteEffectRecord,
     ArchiveWritePreparationRecord,
 )
@@ -312,6 +313,9 @@ def test_actual_service_payload_resumes_each_original_checkpoint_and_receipt(
             from tests.unit.test_archive_upload_drain import _inspect
 
             before_receiving = _inspect(f.case, operation)
+            expected_revision = str(int(phase == "receipt" or phase == "complete" and committed))
+            assert before_receiving.custody_revision == expected_revision
+            assert before_receiving.selected_custody_revision == expected_revision
             assert before_receiving.payload_sealed is (
                 phase == "receipt" or phase == "complete" and committed
             )
@@ -327,7 +331,10 @@ def test_actual_service_payload_resumes_each_original_checkpoint_and_receipt(
             checkpoint, sealed, _ = _stored(f)
             assert checkpoint is not None
             assert (sealed is not None) is (phase in {"complete", "receipt"})
-            assert _inspect(f.case, operation).payload_sealed is (phase in {"complete", "receipt"})
+            after_receiving = _inspect(f.case, operation)
+            assert after_receiving.payload_sealed is (phase in {"complete", "receipt"})
+            assert after_receiving.custody_revision == str(int(phase in {"complete", "receipt"}))
+            assert after_receiving.selected_custody_revision == expected_revision
             assert owner._input.released and not owner.has_pending
             with session_scope(f.case.factory) as session:
                 assert session.get(ArchiveUploadTerminalRecord, operation).phase == "draining"
@@ -348,6 +355,10 @@ def test_actual_service_payload_resumes_each_original_checkpoint_and_receipt(
         assert [v.operation.kind for v in f.seen] == ["lookup", "begin", "part", "part", "complete"]
         assert len({v.call.call_id for v in f.seen}) == len(f.seen)
         assert _stored(f)[1] is not None
+        with session_scope(f.case.factory) as session:
+            assert (
+                session.get(ArchiveWriteControlRecord, f.key.collection_id).custody_revision == "1"
+            )
         assert f.registry.retire_idle(second)
 
 
