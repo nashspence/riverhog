@@ -60,10 +60,19 @@ from tests.unit.test_archive_root import MemoryImmutableStore
 
 
 def _construction(
-    tmp_path: Path, requirement: CollectionCompletionRequirementDocument | None = None
+    tmp_path: Path,
+    requirement: CollectionCompletionRequirementDocument | None = None,
+    *,
+    database_url: str | None = None,
 ) -> SimpleNamespace:
     config = RuntimeConfig.for_testing(
-        database_url=sqlite_url(tmp_path / "custody.db"), archive_scrypt_work_factor=1
+        database_url=database_url or sqlite_url(tmp_path / "custody.db"),
+        archive_scrypt_work_factor=1,
+        **(
+            {"journal_validation_workspace": tmp_path / "journal-validation"}
+            if database_url
+            else {}
+        ),
     )
     factory = make_session_factory(config.database_url)
     engine = factory.kw["bind"]
@@ -87,15 +96,25 @@ def _construction(
     )
     summary = validate_journal(primary.content, require_profiles=False)
     with session_scope(factory) as session:
-        session.add(
-            StorageIncarnationRecord(
-                id=incarnation_id,
-                kind="archive",
-                name="archive",
-                state="bound",
-                created_at="2026-01-01T00:00:00Z",
+        existing = session.scalar(
+            select(StorageIncarnationRecord.id).where(
+                StorageIncarnationRecord.kind == "archive",
+                StorageIncarnationRecord.name == "archive",
+                StorageIncarnationRecord.state == "bound",
             )
         )
+        if existing is not None:
+            incarnation_id = existing
+        else:
+            session.add(
+                StorageIncarnationRecord(
+                    id=incarnation_id,
+                    kind="archive",
+                    name="archive",
+                    state="bound",
+                    created_at="2026-01-01T00:00:00Z",
+                )
+            )
         session.flush()
         session.add(
             CollectionUploadRecord(

@@ -331,6 +331,9 @@ from riverhog_core.retrieval_cache_receipts import (
 )
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import KeyAuthorizationFence, require_key_authorization
+from riverhog_core.services.archive_artifact_custody_receipt import (
+    ArchiveArtifactCustodyReceiptSource,
+)
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
 from riverhog_core.services.collection_tags import (
@@ -3603,6 +3606,7 @@ class SqlAlchemyCollectionUploadService:
         pending_segment = None
         pending_structure = None
         receipt = None
+        receipt_source = None
         with read_snapshot(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, collection_id)
             artifact = session.get(CollectionUploadArtifactRecord, (collection_id, artifact_id))
@@ -3632,8 +3636,6 @@ class SqlAlchemyCollectionUploadService:
             primary = CollectionArtifactProvenanceBindingDocument.model_validate(
                 _provenance_binding_row(binding_row)
             )
-            accepted_inputs = binding_row.history_imports_ref_json
-            accepted_requirement = upload.completion_requirement_json
             anchor = HistoryJournalAnchor.from_mapping(primary.journal.model_dump(mode="json"))
             prefix, store_name = upload.archive_storage_prefix, upload.archive_store
             passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
@@ -3779,6 +3781,15 @@ class SqlAlchemyCollectionUploadService:
                         archive_objects=archive_objects(),
                         provenance_objects=objects.objects(),
                     )
+                    receipt_source = ArchiveArtifactCustodyReceiptSource.capture(
+                        session,
+                        upload,
+                        artifact,
+                        binding_row,
+                        receipt=receipt,
+                        completion_output_id=output_id,
+                        grants=self._config.archive_write,
+                    )
         if pending_structure is not None:
             return self._publish_next_provenance_structure(
                 collection_id, selected_object_id=pending_structure
@@ -3816,33 +3827,10 @@ class SqlAlchemyCollectionUploadService:
                         )
                     )
             return True
-        if receipt is None:
+        if receipt_source is None:
             return False
         with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            artifact = session.get(CollectionUploadArtifactRecord, (collection_id, artifact_id))
-            binding_row = session.get(
-                CollectionUploadArtifactProvenanceBindingRecord, (collection_id, artifact_id)
-            )
-            if (
-                upload is None
-                or artifact is None
-                or binding_row is None
-                or upload.state not in {"open", "closing", "uploading", "finalizing"}
-                or _provenance_binding_row(binding_row) != receipt.primary.model_dump(mode="json")
-                or upload.completion_requirement_json != accepted_requirement
-                or binding_row.history_imports_ref_json != accepted_inputs
-            ):
-                raise Conflict("early primary construction changed before receipt publication")
-            if artifact.custody_receipt_json is None:
-                artifact.custody_receipt_json = receipt.model_dump_json()
-                binding_row.completion_output_id = output_id
-                upload.safe_release_artifact_count += 1
-                upload.safe_release_artifact_bytes += artifact.bytes
+            receipt_source.apply(session)
         return True
 
     def _publish_initial_description(self, collection_id: int) -> bool:
