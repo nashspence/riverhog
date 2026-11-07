@@ -258,6 +258,7 @@ def _service_family_units(
     lose_transfer=False,
     refuse_parent=False,
     terminal_unknown=False,
+    maintained=False,
 ):
     from riverhog_age import CHUNK_SIZE, ResumableAgeScryptSession
     from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -435,6 +436,21 @@ def _service_family_units(
                 session.scalar(select(func.count()).select_from(CachePopulationWriteEffectRecord))
                 == 0
             ) is not unknown
+        if maintained:
+            before = list(actor.seen), list(cache_calls)
+            for _ in range(2):
+                service.process_due_archive_uploads(limit=1)
+            assert (actor.seen, cache_calls) == before
+            assert service._archive_inputs._bytes == 0
+            assert len(service._archive_retention._reservations) == int(unknown)
+            assert len(service._archive_cache_families._families) == int(unknown)
+            if unknown:
+                assert originals[0].has_pending
+                assert received_units[0].request_sha256 in registry._invocations
+            else:
+                assert not registry._invocations
+                assert all(not owner.has_pending for owner in originals)
+            return
         if terminal_unknown:
             assert unknown
             operation = actor.admission.select_terminal(
@@ -575,3 +591,39 @@ def test_parent_release_error_keeps_map_only_while_original_pin_is_charged(
     assert f.families.retire(payload)
     assert f.registry.retire_idle(received)
     assert not f.budget._reservations
+
+
+def test_bounded_parent_retirement_rotates_past_pending_family(owned, monkeypatch):
+    f = _families(owned)
+    first, _, status = f.submit(0)
+    assert status == "submitted"
+    _receive(f.registry, f.pool)[0].result()
+    other, owner, status = f.submit(1, request=_request(unit=1, volume_id="other"))
+    assert status == "submitted"
+    _receive(f.registry, f.pool)[0].result()
+    family = owner.mirror._family
+    owner.mirror.writes._begin = SimpleNamespace(has_pending=False)
+    family.complete = True
+    visits = []
+    actual = f.families._retire_family
+
+    def visit(scope, original):
+        visits.append(scope)
+        return actual(scope, original)
+
+    monkeypatch.setattr(f.families, "_retire_family", visit)
+    assert f.families.retire_ready(limit=1) == 0 and len(visits) == 1
+    assert f.families.retire_ready(limit=1) == 1 and len(visits) == 2
+    assert family.pin.active is False and owner.has_pending is False
+    assert not f.families.retire(first)
+    assert f.registry.retire_ready(limit=2) == 1
+    assert len(f.budget._reservations) == len(f.families._families) == 1
+    assert f.registry.completed(other.request_sha256) is None
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("unknown", (False, True))
+def test_service_maintenance_retires_closed_families_but_preserves_unknown_cache(
+    tmp_path, monkeypatch, mode, unknown
+):
+    _service_family_units(tmp_path, monkeypatch, mode, unknown, maintained=True)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from threading import Lock
@@ -98,7 +99,7 @@ class ArchiveCacheFamilies:
         self._invocations = invocations
         self._owner = object()
         self._lock = Lock()
-        self._families: dict[_Scope, _Family] = {}
+        self._families: OrderedDict[_Scope, _Family] = OrderedDict()
 
     def factory(
         self,
@@ -188,28 +189,47 @@ class ArchiveCacheFamilies:
             family = self._families.get(scope)
             if family is None:
                 return True
-            if not family.lock.acquire(blocking=False):
-                return False
-            try:
-                if (
-                    not (family.complete or family.terminal)
-                    or family.writes is None
-                    or family.writes.has_pending
-                ):
-                    return False
-                family.retiring = True
-                del self._families[scope]
-                try:
-                    released = family.pin.release(owner=self._owner)
-                except BaseException:
-                    if family.pin.active:
-                        self._families[scope] = family
-                    raise
-                if not released:
-                    self._families[scope] = family
-                    return False
-                return True
-            finally:
-                family.lock.release()
+            return self._retire_family(scope, family)
         finally:
             self._lock.release()
+
+    def retire_ready(self, *, limit: int) -> int:
+        """Visit bounded live parents fairly; pending originals keep their charge."""
+        if type(limit) is not int or limit < 1:
+            raise ValueError("cache family retirement limit must be positive")
+        if not self._lock.acquire(blocking=False):
+            return 0
+        try:
+            retired = 0
+            for _ in range(min(limit, len(self._families))):
+                scope, family = self._families.popitem(last=False)
+                self._families[scope] = family
+                retired += self._retire_family(scope, family)
+            return retired
+        finally:
+            self._lock.release()
+
+    def _retire_family(self, scope: _Scope, family: _Family) -> bool:
+        if not family.lock.acquire(blocking=False):
+            return False
+        try:
+            if (
+                not (family.complete or family.terminal)
+                or family.writes is None
+                or family.writes.has_pending
+            ):
+                return False
+            family.retiring = True
+            del self._families[scope]
+            try:
+                released = family.pin.release(owner=self._owner)
+            except BaseException:
+                if family.pin.active:
+                    self._families[scope] = family
+                raise
+            if not released:
+                self._families[scope] = family
+                return False
+            return True
+        finally:
+            family.lock.release()

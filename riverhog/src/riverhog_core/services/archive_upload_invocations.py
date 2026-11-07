@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from collections import deque
+from collections import OrderedDict, deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import partial
@@ -87,6 +87,7 @@ class _Construction:
     requests: deque[str] = field(default_factory=deque)
     terminal_id: str | None = None
     remaining: int = 0
+    terminal_turn: bool = True
 
 
 @dataclass(slots=True)
@@ -131,7 +132,7 @@ class ArchiveUploadInvocationRegistry:
         self._lock = Lock()
         self._closed = False
         self._constructions: dict[int, _Construction] = {}
-        self._invocations: dict[str, _Invocation] = {}
+        self._invocations: OrderedDict[str, _Invocation] = OrderedDict()
 
     def _construction(self, key: ArchiveUploadExecutionKey, target: str) -> _Construction | None:
         prior = self._constructions.get(key.collection_id)
@@ -388,27 +389,69 @@ class ArchiveUploadInvocationRegistry:
             context = self._invocations.get(completion.request_sha256)
             if context is None or context.received is not completion.execution:
                 raise Conflict("upload retirement is not its original received completion")
+            return self._retire_received(context)
+        finally:
+            self._lock.release()
+
+    def retire_ready(self, *, limit: int) -> int:
+        """Retire only exact joined successful originals, in bounded fair turns."""
+        if type(limit) is not int or limit < 1:
+            raise ValueError("upload invocation retirement limit must be positive")
+        if not self._lock.acquire(blocking=False):
+            return 0
+        try:
+            retired = 0
+            for _ in range(min(limit, len(self._invocations))):
+                request, context = self._invocations.popitem(last=False)
+                self._invocations[request] = context
+                if context.received is not None:
+                    retired += self._retire_received(context)
+            return retired
+        finally:
+            self._lock.release()
+
+    def _retire_received(self, context: _Invocation) -> bool:
+        if (
+            self._closed
+            or context.construction.terminal_id is not None
+            or not context.succeeded
+            or context.family_pin is not None
+            or self._execution.status(context.construction.key) != "untracked"
+            or not context.lock.acquire(blocking=False)
+        ):
+            return False
+        try:
             if (
-                self._closed
-                or context.construction.terminal_id is not None
-                or not context.succeeded
-                or context.family_pin is not None
-                or self._execution.status(context.construction.key) != "untracked"
-                or not context.lock.acquire(blocking=False)
+                context.construction_failure is not None
+                or context.owner is None
+                or context.owner.has_pending
+                or context.payload is not None
+                and not context.payload.released
             ):
                 return False
-            try:
-                if (
-                    context.construction_failure is not None
-                    or context.owner is None
-                    or context.owner.has_pending
-                    or context.payload is not None
-                    and not context.payload.released
-                ):
-                    return False
-                return self._remove(context)
-            finally:
-                context.lock.release()
+            return self._remove(context)
+        finally:
+            context.lock.release()
+
+    def terminal_turn(
+        self,
+        key: ArchiveUploadExecutionKey,
+        *,
+        target_incarnation: str,
+        operation_id: str,
+    ) -> Literal["busy", "untracked", "selected", "yielded"]:
+        """Alternate service work kinds using the charged original group only."""
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            group = self._construction(key, target_incarnation)
+            if group is None:
+                return "untracked"
+            if group.terminal_id != operation_id:
+                raise Conflict("upload terminal turn differs from the selected original request")
+            selected = group.terminal_turn
+            group.terminal_turn = not selected
+            return "selected" if selected else "yielded"
         finally:
             self._lock.release()
 

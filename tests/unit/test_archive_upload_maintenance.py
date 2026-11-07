@@ -13,7 +13,7 @@ from riverhog_core.catalog_archive_write_models import (
     ArchiveWriteControlRecord as Control,
 )
 from riverhog_core.catalog_db import session_scope
-from riverhog_core.services import archive_finalizer_maintenance as maintenance_module
+from riverhog_core.services import archive_upload_maintenance as maintenance_module
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from sqlalchemy import event, func, insert, select
 from time_formats import format_utc_timestamp, utc_now
@@ -81,28 +81,28 @@ def _actual_maintenance(tmp_path, monkeypatch, mode, *, database_url=None):
 
             with monkeypatch.context() as patch:
                 patch.setattr(slot.worker, "join", forbidden)
-                assert service.process_due_archive_finalizers() == 0
+                assert service.process_due_archive_uploads() == 0
                 assert slot.worker.is_alive() and len(calls) == 1
-                assert service.process_due_archive_finalizers() == 0
+                assert service.process_due_archive_uploads() == 0
             assert context.terminal_id == operation and context.owner is not None
             assert _record(original.case, operation)[:2] == ("draining", None)
             release.set()
             _join(service)
             # The original forward outcome is received before another physical
             # turn can use this construction's slot.
-            assert service.process_due_archive_finalizers() == 1
+            assert service.process_due_archive_uploads() == 1
             assert service._archive_execution.status(key) == "untracked"
             original_owner = context.owner
             now[0] += service._config.archive_upload_sweep_interval
-            assert service.process_due_archive_finalizers() == 1
+            assert service.process_due_archive_uploads() == 1
             _join(service)
-            assert service.process_due_archive_finalizers() == 1
+            assert service.process_due_archive_uploads() == 1
             assert context.drained and context.owner is original_owner
             assert _record(original.case, operation)[:2] == ("draining", None)
             assert service._archive_execution.status(key) == "untracked"
             assert not service._archive_finalizers.retire_idle(key, target_incarnation=target)
             # A local drained result never becomes cleanup or global success.
-            assert service.process_due_archive_finalizers() == 0 and len(calls) == 1
+            assert service.process_due_archive_uploads() == 0 and len(calls) == 1
         finally:
             release.set()
 
@@ -131,19 +131,19 @@ def test_failed_original_worker_is_received_without_erasing_constructor_uncertai
         _join(service)
         operation = _selected(case)
         now = _clock(monkeypatch)
-        assert service.process_due_archive_finalizers() == 2
+        assert service.process_due_archive_uploads() == 2
         _join(service)
-        assert service.process_due_archive_finalizers() == 1
+        assert service.process_due_archive_uploads() == 1
         context = service._archive_finalizers._contexts[case.collection_id]
         assert not context.drained and context.construction_failure is not None
         assert error.__name__ in caplog.text
         before = _record(case, operation)
-        assert service.process_due_archive_finalizers() == 0
+        assert service.process_due_archive_uploads() == 0
         assert _record(case, operation) == before
         now[0] += service._config.archive_upload_sweep_interval
-        assert service.process_due_archive_finalizers() == 1
+        assert service.process_due_archive_uploads() == 1
         _join(service)
-        assert service.process_due_archive_finalizers() == 1
+        assert service.process_due_archive_uploads() == 1
         assert not context.drained and _record(case, operation)[:2] == ("draining", None)
 
 
@@ -161,7 +161,7 @@ def test_due_scheduling_cannot_certify_an_untracked_original_or_readjudicate_a_r
 
         event.listen(engine, "before_cursor_execute", capture)
         try:
-            assert case.service.process_due_archive_finalizers() == 0
+            assert case.service.process_due_archive_uploads() == 0
         finally:
             event.remove(engine, "before_cursor_execute", capture)
         assert _record(case, operation)[:2] == ("draining", None)
@@ -170,7 +170,7 @@ def test_due_scheduling_cannot_certify_an_untracked_original_or_readjudicate_a_r
         assert len(updates) == 1 and "drain_next_attempt_at" in updates[0]
         assert "result_json" not in updates[0] and "phase=" not in updates[0]
         assert not any(s.lstrip().upper().startswith(("DELETE", "INSERT")) for s in statements)
-        assert case.service.process_due_archive_finalizers() == 0
+        assert case.service.process_due_archive_uploads() == 0
 
 
 @pytest.mark.parametrize("committed", (False, True))
@@ -209,16 +209,16 @@ def test_lost_due_schedule_reply_does_not_speculatively_dispatch(tmp_path, monke
         with monkeypatch.context() as patch:
             patch.setattr(maintenance_module, "session_scope", lost)
             with pytest.raises(OSError, match="due schedule"):
-                service.process_due_archive_finalizers()
+                service.process_due_archive_uploads()
         assert original.drains == [] and not service._archive_execution._slots
         before = _record(case, operation)
-        assert service.process_due_archive_finalizers() == int(not committed)
+        assert service.process_due_archive_uploads() == int(not committed)
         if committed:
             assert _record(case, operation) == before and original.drains == []
             now[0] += service._config.archive_upload_sweep_interval
-            assert service.process_due_archive_finalizers() == 1
+            assert service.process_due_archive_uploads() == 1
         _join(service)
-        service.process_due_archive_finalizers()
+        service.process_due_archive_uploads()
         assert original.drains == [operation]
         assert _record(case, operation)[:2] == ("draining", None)
 
@@ -282,7 +282,7 @@ def test_terminal_backoff_and_capacity_leave_an_independent_construction_progres
             _selected(other_case)
             _clock(monkeypatch)
             for _ in range(3):
-                service.process_due_archive_finalizers(limit=2)
+                service.process_due_archive_uploads(limit=2)
                 for slot in tuple(service._archive_execution._slots.values()):
                     if slot.key == other_key:
                         slot.worker.join(timeout=10)
@@ -409,7 +409,7 @@ def test_changed_construction_cannot_fence_or_replace_the_original_local_owner(
             value["archive_generation"] = "changed"
             row.construction_json = json.dumps(value, sort_keys=True, separators=(",", ":"))
         with pytest.raises(Conflict, match="another original construction"):
-            service.process_due_archive_finalizers()
+            service.process_due_archive_uploads()
         context = service._archive_finalizers._contexts[case.collection_id]
         assert context.owner is original and context.terminal_id is None
         assert original.drains == [] and _record(case, operation)[:2] == ("draining", None)
@@ -428,10 +428,10 @@ def test_sqlite_due_selection_defers_a_real_writer_without_changing_its_deadline
         with ThreadPoolExecutor(max_workers=1) as pool:
             with engine.connect().execution_options(sqlite_immediate_writer=True) as holder:
                 with holder.begin():
-                    future = pool.submit(case.service.process_due_archive_finalizers)
+                    future = pool.submit(case.service.process_due_archive_uploads)
                     assert future.result(timeout=3) == 0
                     assert _record(case, operation) == before
-        assert case.service.process_due_archive_finalizers() == 0
+        assert case.service.process_due_archive_uploads() == 0
         assert _record(case, operation)[2] > before[2]
         assert not case.service._archive_execution._slots
 
@@ -453,6 +453,159 @@ def test_unexpected_catalog_error_is_not_classified_as_busy_or_success(tmp_path,
 
         monkeypatch.setattr(maintenance_module, "_writer", failed)
         with pytest.raises(OperationalError, match="fixture error"):
-            case.service.process_due_archive_finalizers()
+            case.service.process_due_archive_uploads()
         assert _record(case, operation) == before
         assert not case.service._archive_execution._slots
+
+
+def _actual_payload_maintenance(
+    tmp_path, monkeypatch, kind, mode, *, database_url=None, held=False
+):
+    from tests.unit.test_archive_payload_unit import _select_terminal, _service_actor
+
+    with _service_actor(tmp_path, monkeypatch, kind, mode, database_url=database_url) as f:
+        entered, release = threading.Event(), threading.Event()
+        execute = f.executor.execute_write
+        calls = []
+
+        def provider(invocation, *, content=b""):
+            calls.append(invocation)
+            if held and invocation.operation.kind == "begin":
+                entered.set()
+                assert release.wait(10)
+            return execute(invocation, content=content)
+
+        monkeypatch.setattr(f.executor, "execute_write", provider)
+        try:
+            assert f.submit() == "submitted"
+            if held:
+                assert entered.wait(5)
+                operation = _select_terminal(f)
+                now = _clock(monkeypatch)
+                slot = f.execution._slots[f.key.collection_id]
+                with monkeypatch.context() as patch:
+                    patch.setattr(
+                        slot.worker,
+                        "join",
+                        lambda *args: pytest.fail("maintenance joined a live payload worker"),
+                    )
+                    assert f.service.process_due_archive_uploads() == 0
+                    assert slot.worker.is_alive()
+                assert not f.payload.released
+                release.set()
+                _join(f.service)
+                assert f.service.process_due_archive_uploads() == 1
+                assert not f.payload.released
+                before = list(calls)
+                now[0] += f.service._config.archive_upload_sweep_interval
+                assert f.service.process_due_archive_uploads() == 1
+                _join(f.service)
+                assert f.service.process_due_archive_uploads() == 1
+                context = f.registry._invocations[f.request]
+                assert context.drained and f.payload.released
+                assert calls == before
+                assert _record(f.case, operation)[:2] == ("draining", None)
+                assert len(f.service._archive_retention._reservations) == 1
+            else:
+                _join(f.service)
+                assert f.service.process_due_archive_uploads() == 2
+                assert (
+                    f.service.get_unit(f.key.collection_id, f.case.object_id, 0)["state"]
+                    == "committed"
+                )
+                assert f.payload.released and not f.registry._invocations
+                assert not f.service._archive_retention._reservations
+                assert f.service.process_due_archive_uploads() == 0
+        finally:
+            release.set()
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("held", (False, True))
+def test_actual_service_maintenance_receives_payloads_and_preserves_terminal_ownership(
+    tmp_path, monkeypatch, kind, mode, held
+):
+    _actual_payload_maintenance(tmp_path, monkeypatch, kind, mode, held=held)
+
+
+def _fair_terminal_maintenance(tmp_path, monkeypatch, *, database_url=None):
+    from tests.unit.test_archive_upload_invocations import Original
+    from tests.unit.test_collection_uploads import _CREATOR
+
+    class PendingFinalizer(Finalizer):
+        def drain_terminal(self, operation_id):
+            self.drains.append(operation_id)
+            return "pending"
+
+    with (
+        _case(tmp_path, database_url=database_url) as case,
+        _service(
+            SimpleNamespace(owner=case.service, case=case),
+            terminal_workers_per_target=2,
+        ) as service,
+    ):
+        cases = [case]
+        other = service.create_or_resume(
+            idempotency_key="fair-terminal",
+            ingest_source="fixture",
+            archive_store=None,
+            initiator=_CREATOR,
+            event_context=None,
+        )
+        cases.append(
+            SimpleNamespace(
+                collection_id=int(other["collection_id"]),
+                factory=case.factory,
+                owner=ArchiveWriteAdmission(case.factory),
+            )
+        )
+        owners = []
+        for number, current in enumerate(cases):
+            key, target = _scope(current)
+            metadata, payload = PendingFinalizer(), Original()
+            metadata.pending = payload.pending = True
+            assert (
+                service._archive_finalizers.submit(
+                    key,
+                    target_incarnation=target,
+                    selection="original",
+                    create=lambda metadata=metadata: metadata,
+                    advance=lambda a: True,
+                )
+                == "submitted"
+            )
+            _join(service)
+            service._archive_finalizers.collect(limit=1)[0].result()
+            request = format(number + 1, "064x")
+            assert (
+                service._archive_invocations.submit(
+                    key,
+                    target_incarnation=target,
+                    request_sha256=request,
+                    create=lambda payload=payload: payload,
+                    advance=lambda a: True,
+                )
+                == "submitted"
+            )
+            _join(service)
+            service._archive_invocations.collect(limit=1)[0].result()
+            operation = _selected(current)
+            owners.append((metadata, payload, operation))
+        now = _clock(monkeypatch)
+        for turn in range(4):
+            assert service.process_due_archive_uploads(limit=2) == 2
+            _join(service)
+            assert service.process_due_archive_uploads(limit=2) == 2
+            for metadata, payload, operation in owners:
+                assert len(payload.drains) == (turn + 2) // 2
+                assert len(metadata.drains) == (turn + 1) // 2
+                assert _record(case, operation)[:2] == ("draining", None)
+            now[0] += service._config.archive_upload_sweep_interval
+        assert len(service._archive_retention._reservations) == 4
+
+
+def test_each_construction_alternates_pending_payload_and_metadata_even_in_even_batches(
+    tmp_path, monkeypatch
+):
+    _fair_terminal_maintenance(tmp_path, monkeypatch)

@@ -1,4 +1,4 @@
-"""Bounded receiving and terminal drainage for service-owned finalizers."""
+"""Bounded receiving and terminal drainage for service-owned upload work."""
 
 from __future__ import annotations
 
@@ -18,11 +18,13 @@ from riverhog_core.catalog_archive_write_models import (
     ArchiveWriteControlRecord,
 )
 from riverhog_core.catalog_db import SessionFactory, catalog_write_contention, session_scope
+from riverhog_core.services.archive_cache_families import ArchiveCacheFamilies
 from riverhog_core.services.archive_finalizer_registry import ArchiveFinalizerRegistry
 from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
+from riverhog_core.services.archive_upload_invocations import ArchiveUploadInvocationRegistry
 from riverhog_core.services.archive_write_admission import _writer
 
-_LOG = logging.getLogger("riverhog_core.archive_finalizer_maintenance")
+_LOG = logging.getLogger("riverhog_core.archive_upload_maintenance")
 
 
 def _due_query(now: str, limit: int) -> Select[tuple[ArchiveUploadTerminalRecord]]:
@@ -48,49 +50,56 @@ def _due_query(now: str, limit: int) -> Select[tuple[ArchiveUploadTerminalRecord
     )
 
 
-class ArchiveFinalizerMaintenance:
-    """Poll original completions and submit due local terminal drains.
+class ArchiveUploadMaintenance:
+    """Receive original payload/metadata work and submit bounded terminal drains.
 
     This owner never adjudicates a terminal, disposes a preparation or reports
     global quiescence. A due time only controls scheduling; it cannot close an
     admitted invocation or release a physical worker. Original receiving runs
-    in the retained finalizer before the worker publishes its outcome.
+    in each retained owner before the worker publishes its outcome.
     """
 
     def __init__(
         self,
         factory: SessionFactory,
-        registry: ArchiveFinalizerRegistry,
+        finalizers: ArchiveFinalizerRegistry,
+        invocations: ArchiveUploadInvocationRegistry,
+        cache_families: ArchiveCacheFamilies,
         *,
         retry_after: timedelta,
     ) -> None:
         if retry_after.total_seconds() <= 0:
-            raise ValueError("archive finalizer retry interval must be positive")
+            raise ValueError("archive upload retry interval must be positive")
         self._factory = factory
-        self._registry = registry
+        self._finalizers = finalizers
+        self._invocations = invocations
+        self._cache_families = cache_families
         self._retry_after = retry_after
         self._lock = Lock()
 
     def process_due(self, *, limit: int) -> int:
         if type(limit) is not int or limit < 1:
-            raise ValueError("archive finalizer maintenance limit must be positive")
+            raise ValueError("archive upload maintenance limit must be positive")
         if not self._lock.acquire(blocking=False):
             return 0
         progressed = 0
         try:
-            completed = self._registry.collect(limit=limit)
-            progressed = len(completed)
-            for outcome in completed:
+            completed = self._finalizers.collect(limit=limit)
+            payloads = self._invocations.collect(limit=limit)
+            progressed = len(completed) + len(payloads)
+            for outcome in (*completed, *(value.execution for value in payloads)):
                 try:
                     outcome.result()
                 except BaseException as exc:
                     # The original actor/constructor failure remains retained.
                     # Receiving a failed physical result grants no disposal.
                     _LOG.warning(
-                        "archive finalizer worker failed: collection_id=%s error_type=%s",
+                        "archive upload worker failed: collection_id=%s error_type=%s",
                         outcome.key.collection_id,
                         type(exc).__name__,
                     )
+            progressed += self._cache_families.retire_ready(limit=limit)
+            progressed += self._invocations.retire_ready(limit=limit)
             now = utc_now()
             next_attempt = format_utc_timestamp(now + self._retry_after)
             with session_scope(self._factory) as session:
@@ -108,13 +117,37 @@ class ArchiveFinalizerMaintenance:
                 key = ArchiveUploadExecutionKey(
                     collection_id, hashlib.sha256(construction.encode()).hexdigest()
                 )
-                submission = self._registry.submit_terminal(
-                    key,
-                    target_incarnation=json.loads(construction)["archive_incarnation_id"],
-                    operation_id=operation_id,
-                    defer_if_busy=True,
+                target = json.loads(construction)["archive_incarnation_id"]
+                finalizers = self._finalizers.fence_terminal(
+                    key, target_incarnation=target, operation_id=operation_id, defer_if_busy=True
                 )
-                progressed += submission == "submitted"
+                invocations = self._invocations.fence_terminal(
+                    key, target_incarnation=target, operation_id=operation_id, defer_if_busy=True
+                )
+                if "busy" in (finalizers, invocations):
+                    continue
+                owners: tuple[ArchiveFinalizerRegistry | ArchiveUploadInvocationRegistry, ...] = (
+                    self._finalizers,
+                    self._invocations,
+                )
+                if finalizers == invocations == "fenced":
+                    turn = self._invocations.terminal_turn(
+                        key, target_incarnation=target, operation_id=operation_id
+                    )
+                    if turn in {"busy", "untracked"}:
+                        continue
+                    if turn == "selected":
+                        owners = (self._invocations, self._finalizers)
+                for owner in owners:
+                    submission = owner.submit_terminal(
+                        key,
+                        target_incarnation=target,
+                        operation_id=operation_id,
+                        defer_if_busy=True,
+                    )
+                    if submission == "submitted":
+                        progressed += 1
+                        break
             return progressed
         except OperationalError as exc:
             if catalog_write_contention(exc):

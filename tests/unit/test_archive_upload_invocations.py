@@ -479,3 +479,43 @@ def test_missing_original_upload_receiver_cannot_become_terminal_drainage(tmp_pa
             )
             == "fenced"
         )
+
+
+def test_bounded_ready_retirement_rotates_past_a_pending_original(owned):
+    registry, pool, budget = owned.make()
+    first = Original()
+    first.pending = True
+    assert _submit(registry, 1, create=lambda: first) == "submitted"
+    _receive(registry, pool)
+    assert _submit(registry, 2) == "submitted"
+    (second,) = _receive(registry, pool)
+    assert registry.retire_ready(limit=1) == 0
+    assert registry.retire_ready(limit=1) == 1
+    assert set(registry._invocations) == {_request(1)}
+    assert len(budget._reservations) == 1
+    first.pending = False
+    assert registry.retire_ready(limit=1) == 1
+    assert not registry._invocations and not budget._reservations
+    assert registry.completed(second.request_sha256) is None
+
+
+def test_ready_retirement_cannot_receive_a_live_or_uncollected_worker(owned):
+    registry, pool, budget = owned.make()
+    entered, release = threading.Event(), owned.event()
+
+    def held(owner):
+        entered.set()
+        assert release.wait(10)
+        return True
+
+    assert _submit(registry, advance=held) == "submitted"
+    assert entered.wait(10)
+    assert registry.retire_ready(limit=10) == 0
+    release.set()
+    for slot in tuple(pool._slots.values()):
+        slot.worker.join(timeout=10)
+        assert not slot.worker.is_alive()
+    assert registry.retire_ready(limit=10) == 0
+    assert len(budget._reservations) == 1
+    _receive(registry, pool)
+    assert registry.retire_ready(limit=10) == 1

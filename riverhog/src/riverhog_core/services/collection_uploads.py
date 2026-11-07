@@ -482,11 +482,13 @@ class SqlAlchemyCollectionUploadService:
             config=config,
             archive_stores=archive_stores,
         )
-        from .archive_finalizer_maintenance import ArchiveFinalizerMaintenance
+        from .archive_upload_maintenance import ArchiveUploadMaintenance
 
-        self._archive_finalizer_maintenance = ArchiveFinalizerMaintenance(
+        self._archive_upload_maintenance = ArchiveUploadMaintenance(
             self._session_factory,
             self._archive_finalizers,
+            self._archive_invocations,
+            self._archive_cache_families,
             retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
         )
         self._journal_validation_after: tuple[int, str] | None = None
@@ -3012,10 +3014,10 @@ class SqlAlchemyCollectionUploadService:
                 upload.archive_failure = "orphan discard interrupted before cleanup completed"
             return len(uploads)
 
-    def process_due_archive_finalizers(self, *, limit: int = 1) -> int:
+    def process_due_archive_uploads(self, *, limit: int = 1) -> int:
         if limit < 1:
             return 0
-        return self._archive_finalizer_maintenance.process_due(limit=limit)
+        return self._archive_upload_maintenance.process_due(limit=limit)
 
     def process_due_finalizations(self, *, limit: int = 1) -> int:
         if limit < 1:
