@@ -592,9 +592,27 @@ def _fair_terminal_maintenance(tmp_path, monkeypatch, *, database_url=None):
             service._archive_invocations.collect(limit=1)[0].result()
             operation = _selected(current)
             owners.append((metadata, payload, operation))
+        from riverhog_core.services import archive_upload_execution as execution_module
+
+        release = threading.Event()
+        thread = execution_module.Thread
+
+        class HeldStart(thread):
+            def run(self):
+                assert release.wait(10)
+                super().run()
+
         now = _clock(monkeypatch)
         for turn in range(4):
-            assert service.process_due_archive_uploads(limit=2) == 2
+            # Select the entire batch before workers can contend with the next
+            # construction's nonblocking admission checks.
+            release.clear()
+            with monkeypatch.context() as patch:
+                patch.setattr(execution_module, "Thread", HeldStart)
+                try:
+                    assert service.process_due_archive_uploads(limit=2) == 2
+                finally:
+                    release.set()
             _join(service)
             assert service.process_due_archive_uploads(limit=2) == 2
             for metadata, payload, operation in owners:
