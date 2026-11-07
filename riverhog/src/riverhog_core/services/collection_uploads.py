@@ -3380,6 +3380,7 @@ class SqlAlchemyCollectionUploadService:
             "member-histories": self._stage_member_histories,
             "provenance-closure": self._validate_provenance_closure,
             "artifact-tree": self._commit_archive_tree,
+            "catalog-projection": self._commit_catalog_projection,
         }
         return ArchiveCatalogFinalizer(
             self._session_factory,
@@ -4066,46 +4067,50 @@ class SqlAlchemyCollectionUploadService:
             if upload is None:
                 return False
             require_open_upload_writes(session, upload)
-            phase = upload.catalog_phase
-            if phase == "complete":
-                return False
-            if phase in {"artifact-set-identity", "inventory-identity"}:
-                _advance_catalog_identity(session, upload)
-            elif phase == "collection":
-                self._create_catalog_collection(session, upload)
-            elif phase == "tags":
-                _advance_catalog_tags(session, upload)
-            elif phase == "artifacts":
-                _advance_catalog_artifacts(session, upload)
-            elif phase == "journals":
-                _advance_catalog_journals(session, upload)
-            elif phase == "bindings":
-                _advance_catalog_bindings(session, upload)
-            elif phase == "provenance-segments":
-                _advance_catalog_provenance_segments(session, upload)
-            elif phase == "archive-objects":
-                self._advance_catalog_archive_objects(session, upload)
-            elif phase == "artifact-objects":
-                _advance_catalog_artifact_objects(session, upload)
-            elif phase == "index":
-                from .upload_journal_result import open_upload_journal_result
+            return self._commit_catalog_projection(session, upload)
 
-                _advance_catalog_canonical_index(
+    def _commit_catalog_projection(self, session: Session, upload: CollectionUploadRecord) -> bool:
+        collection_id = upload.collection_id
+        phase = upload.catalog_phase
+        if phase == "complete":
+            return False
+        if phase in {"artifact-set-identity", "inventory-identity"}:
+            _advance_catalog_identity(session, upload)
+        elif phase == "collection":
+            self._create_catalog_collection(session, upload)
+        elif phase == "tags":
+            _advance_catalog_tags(session, upload)
+        elif phase == "artifacts":
+            _advance_catalog_artifacts(session, upload)
+        elif phase == "journals":
+            _advance_catalog_journals(session, upload)
+        elif phase == "bindings":
+            _advance_catalog_bindings(session, upload)
+        elif phase == "provenance-segments":
+            _advance_catalog_provenance_segments(session, upload)
+        elif phase == "archive-objects":
+            self._advance_catalog_archive_objects(session, upload)
+        elif phase == "artifact-objects":
+            _advance_catalog_artifact_objects(session, upload)
+        elif phase == "index":
+            from .upload_journal_result import open_upload_journal_result
+
+            _advance_catalog_canonical_index(
+                session,
+                upload,
+                open_summary=lambda journal_id: open_upload_journal_result(
                     session,
-                    upload,
-                    open_summary=lambda journal_id: open_upload_journal_result(
-                        session,
-                        self._journal_validation_owner.root,
-                        collection_id,
-                        journal_id,
-                        catalog=admission_provenance_catalog(),
-                    ),
-                )
-            elif phase == "terminal":
-                self._publish_catalog_collection(session, upload)
-            else:  # pragma: no cover - constrained durable state
-                raise RuntimeError(f"unknown catalog finalization phase: {phase}")
-            return True
+                    self._journal_validation_owner.root,
+                    collection_id,
+                    journal_id,
+                    catalog=admission_provenance_catalog(),
+                ),
+            )
+        elif phase == "terminal":
+            self._publish_catalog_collection(session, upload)
+        else:  # pragma: no cover - constrained durable state
+            raise RuntimeError(f"unknown catalog finalization phase: {phase}")
+        return True
 
     def _create_catalog_collection(
         self,

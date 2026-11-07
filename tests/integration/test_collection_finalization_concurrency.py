@@ -261,3 +261,13 @@ def test_postgres_original_catalog_batch_survives_commit_reply_loss(
     _assert_original_catalog_batch(
         tmp_path, monkeypatch, kind, committed, database_url=database_url
     )
+
+
+@pytest.mark.parametrize("phase", ("artifact-set-identity", "artifacts", "terminal"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_exact_catalog_publication_survives_commit_reply_loss(
+    database_url, tmp_path, monkeypatch, phase, committed
+):
+    from tests.unit.test_archive_catalog_publication_receiving import _assert_publication_reply
+
+    _assert_publication_reply(tmp_path, monkeypatch, phase, committed, database_url=database_url)
