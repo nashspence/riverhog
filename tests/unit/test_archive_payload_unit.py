@@ -309,6 +309,12 @@ def test_actual_service_payload_resumes_each_original_checkpoint_and_receipt(
         before = list(f.seen)
         if terminal:
             operation = _select_terminal(f)
+            from tests.unit.test_archive_upload_drain import _inspect
+
+            before_receiving = _inspect(f.case, operation)
+            assert before_receiving.payload_sealed is (
+                phase == "receipt" or phase == "complete" and committed
+            )
             assert (
                 f.registry.submit_terminal(
                     f.key, target_incarnation=f.target, operation_id=operation
@@ -321,6 +327,7 @@ def test_actual_service_payload_resumes_each_original_checkpoint_and_receipt(
             checkpoint, sealed, _ = _stored(f)
             assert checkpoint is not None
             assert (sealed is not None) is (phase in {"complete", "receipt"})
+            assert _inspect(f.case, operation).payload_sealed is (phase in {"complete", "receipt"})
             assert owner._input.released and not owner.has_pending
             with session_scope(f.case.factory) as session:
                 assert session.get(ArchiveUploadTerminalRecord, operation).phase == "draining"

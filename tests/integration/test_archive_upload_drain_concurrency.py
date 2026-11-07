@@ -129,3 +129,24 @@ def test_postgres_terminal_inspection_refreshes_previously_loaded_owner_rows(
                     current.get(Upload, case.collection_id).archive_storage_prefix += "-changed"
             with pytest.raises(Conflict):
                 inspect_terminal_write_records(stale, case.collection_id, operation)
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+def test_postgres_terminal_custody_keeps_native_completion_before_logical_receipt(
+    database_url, tmp_path, monkeypatch, kind, mode
+):
+    from tests.unit.test_archive_upload_drain import _native_seal_before_logical_receipt
+
+    _native_seal_before_logical_receipt(
+        tmp_path, monkeypatch, kind, mode, database_url=database_url
+    )
+
+
+@pytest.mark.parametrize("sealed", (False, True))
+def test_postgres_terminal_sealed_payload_probe_is_indexed_across_unsealed_prefix(
+    database_url, tmp_path, sealed, record_property
+):
+    from tests.unit.test_archive_upload_drain import _sealed_probe_growth
+
+    _sealed_probe_growth(tmp_path, sealed, record_property, database_url=database_url)

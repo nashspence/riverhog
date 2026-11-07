@@ -4027,6 +4027,13 @@ class CollectionArchiveObjectUploadRecord(Base):
             sqlite_where=text("state != 'sealed' AND work_ready IS 1"),
         ),
         Index(
+            "ix_collection_archive_object_uploads_sealed",
+            "collection_id",
+            "object_id",
+            postgresql_where=text("(state) = 'sealed'"),
+            sqlite_where=text("state = 'sealed'"),
+        ),
+        Index(
             "ix_collection_archive_object_uploads_raw_boundary",
             "collection_id",
             "source_artifact_id",

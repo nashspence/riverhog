@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol.errors import Conflict, NotFound
-from sqlalchemy import Select, select
+from sqlalchemy import Select, literal_column, select
 from sqlalchemy.orm import Session
 
 from riverhog_core.catalog_archive_write_models import (
@@ -21,6 +21,7 @@ from riverhog_core.catalog_cache_write_models import (
     CachePopulationBeginRecord,
     CachePopulationWriteEffectRecord,
 )
+from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
 
 EffectModel = (
@@ -37,6 +38,18 @@ def _record_query(model: EffectModel, collection_id: int, *, unclosed: bool) -> 
     return query.limit(1)
 
 
+def _sealed_payload_query(collection_id: int) -> Select[tuple[str]]:
+    return (
+        select(CollectionArchiveObjectUploadRecord.object_id)
+        .where(
+            CollectionArchiveObjectUploadRecord.collection_id == collection_id,
+            CollectionArchiveObjectUploadRecord.state == literal_column("'sealed'"),
+        )
+        .limit(1)
+        .execution_options(include_unpublished_registration=True)
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class TerminalWriteRecords:
     """Catalog records alone grant no cleanup, execution closure or slot release.
@@ -44,6 +57,10 @@ class TerminalWriteRecords:
     Settled reports can still retain receiving/accounting obligations. Live
     dispatchers, retained actors, buffers and cleanup ownership have independent
     predicates even when every unclosed-record field is false.
+
+    A sealed payload row includes a native completed checkpoint whose logical
+    receipt is not yet applied. That positive custody fact must survive drainage;
+    its absence supplies neither execution closure nor disposal authority.
     """
 
     collection_id: int
@@ -54,6 +71,7 @@ class TerminalWriteRecords:
     archive_retained: bool
     cache_begin_retained: bool
     cache_write_retained: bool
+    payload_sealed: bool
 
 
 def lock_terminal_selection(
@@ -139,4 +157,5 @@ def inspect_terminal_write_records(
         archive_retained=retained(ArchiveWriteEffectRecord, unclosed=False),
         cache_begin_retained=retained(CachePopulationBeginRecord, unclosed=False),
         cache_write_retained=retained(CachePopulationWriteEffectRecord, unclosed=False),
+        payload_sealed=session.scalar(_sealed_payload_query(collection_id)) is not None,
     )

@@ -3123,4 +3123,6 @@ CREATE TABLE archive_cleanup_attempts (
 
 CREATE INDEX ix_archive_cleanup_attempts_terminal ON archive_cleanup_attempts (terminal_id, id);
 
+CREATE INDEX ix_collection_archive_object_uploads_sealed ON collection_archive_object_uploads (collection_id, object_id) WHERE state = 'sealed';
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

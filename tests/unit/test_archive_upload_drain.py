@@ -301,3 +301,179 @@ def test_catalog_record_queries_do_not_rescan_a_completed_prefix(tmp_path, owner
         assert max(counts) <= counts[0] + 4
         record_property("completed_prefix_counts", [16, 256, 4096])
         record_property("sqlite_selection_vm_instructions", counts)
+
+
+def _native_seal_before_logical_receipt(tmp_path, monkeypatch, kind, mode, *, database_url=None):
+    from tests.unit.test_archive_payload_unit import _select_terminal, _service_actor, _stored
+    from tests.unit.test_archive_upload_invocations import _receive
+
+    with _service_actor(tmp_path, monkeypatch, kind, mode, database_url=database_url) as f:
+
+        def missing_receipt(*args, **kwargs):
+            raise OSError("original logical receipt acknowledgement missing")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(f.service, "_record_sealed_volume", missing_receipt)
+            assert f.submit() == "submitted"
+            (forward,) = _receive(f.registry, f.execution)
+            with pytest.raises(OSError, match="logical receipt acknowledgement"):
+                forward.result()
+        checkpoint, receipt, _ = _stored(f)
+        assert checkpoint is not None and receipt is None
+        assert f.originals[0].has_pending
+        operation = _select_terminal(f)
+        before = _inspect(f.case, operation)
+        assert before.payload_sealed
+        assert not before.archive_unclosed
+        with session_scope(f.case.factory) as session:
+            original = session.get(ArchiveUploadTerminalRecord, operation)
+            assert original.phase == "draining" and original.result_json is None
+        calls = list(f.seen)
+        assert (
+            f.registry.submit_terminal(f.key, target_incarnation=f.target, operation_id=operation)
+            == "submitted"
+        )
+        (terminal,) = _receive(f.registry, f.execution)
+        assert terminal.result() == "closed"
+        assert f.seen == calls and _stored(f)[1] is not None
+        assert _inspect(f.case, operation).payload_sealed
+        with session_scope(f.case.factory) as session:
+            original = session.get(ArchiveUploadTerminalRecord, operation)
+            assert original.phase == "draining" and original.result_json is None
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+def test_terminal_custody_keeps_native_completion_before_logical_receipt(
+    tmp_path, monkeypatch, kind, mode
+):
+    _native_seal_before_logical_receipt(tmp_path, monkeypatch, kind, mode)
+
+
+@pytest.mark.parametrize("sealed", (False, True))
+def test_terminal_sealed_payload_probe_is_indexed_across_unsealed_prefix(
+    tmp_path, sealed, record_property
+):
+    _sealed_probe_growth(tmp_path, sealed, record_property)
+
+
+def _sealed_probe_growth(tmp_path, sealed, record_property, *, database_url=None):
+    from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord as Volume
+    from riverhog_core.services.archive_upload_drain import _sealed_payload_query
+    from sqlalchemy import insert, select
+
+    from tests.unit.test_collection_uploads import _CREATOR
+
+    with _case(tmp_path, database_url=database_url) as case:
+        with session_scope(case.factory) as session:
+            originals = list(
+                session.execute(
+                    select(Volume.__table__).where(Volume.collection_id == case.collection_id)
+                ).mappings()
+            )
+            template = dict(next(row for row in originals if row["object_id"] == case.object_id))
+            first_sequence = max(int(row["sequence"]) for row in originals) + 1
+        template.pop("source_last_part")
+        # These rows witness query work, not provider closure or custody authority.
+        foreign = case.service.create_or_resume(
+            idempotency_key="foreign-sealed-probe",
+            ingest_source="fixture",
+            archive_store=None,
+            initiator=_CREATOR,
+            event_context=None,
+        )
+        with session_scope(case.factory) as session:
+            session.execute(
+                insert(Volume.__table__),
+                [
+                    {
+                        **template,
+                        "collection_id": int(foreign["collection_id"]),
+                        "object_id": "foreign-sealed",
+                        "state": "sealed",
+                        "sequence": 0,
+                    }
+                ],
+            )
+            if sealed:
+                session.execute(
+                    insert(Volume.__table__),
+                    [
+                        {
+                            **template,
+                            "object_id": "selected-sealed",
+                            "state": "sealed",
+                            "sequence": first_sequence,
+                        }
+                    ],
+                )
+        counts = []
+        prior = 0
+        for count in (16, 256, 4096):
+            with session_scope(case.factory) as session:
+                session.execute(
+                    insert(Volume.__table__),
+                    [
+                        {
+                            **template,
+                            "object_id": "unsealed-" + str(index),
+                            "sequence": first_sequence + 1 + index,
+                            "state": "planned",
+                        }
+                        for index in range(prior, count)
+                    ],
+                )
+            prior = count
+            with session_scope(case.factory) as session:
+                query = _sealed_payload_query(case.collection_id)
+                sql = str(query.compile(session.get_bind(), compile_kwargs={"literal_binds": True}))
+                assert "checkpoint_json" not in sql and "plan_json" not in sql
+                if session.get_bind().dialect.name == "sqlite":
+                    instructions = 0
+                    connection = session.connection().connection.driver_connection
+
+                    def step():
+                        nonlocal instructions
+                        instructions += 1
+                        return 0
+
+                    connection.set_progress_handler(step, 1)
+                    try:
+                        found = session.scalar(query)
+                    finally:
+                        connection.set_progress_handler(None, 0)
+                    plan = session.connection().exec_driver_sql("EXPLAIN QUERY PLAN " + sql).all()
+                    assert any(
+                        "ix_collection_archive_object_uploads_sealed" in row[-1] for row in plan
+                    )
+                    cost = instructions
+                    metric = "sealed_payload_probe_sqlite_vm_steps"
+                else:
+                    session.connection().exec_driver_sql(
+                        "ANALYZE collection_archive_object_uploads"
+                    )
+                    found = session.scalar(query)
+                    document = (
+                        session.connection()
+                        .exec_driver_sql("EXPLAIN (ANALYZE TRUE, BUFFERS TRUE, FORMAT JSON) " + sql)
+                        .scalar_one()[0]
+                    )
+                    pending = [document["Plan"]]
+                    nodes = []
+                    while pending:
+                        node = pending.pop()
+                        nodes.append(node)
+                        pending.extend(node.get("Plans", []))
+                    if count == 4096:
+                        assert any(
+                            node.get("Index Name") == "ix_collection_archive_object_uploads_sealed"
+                            for node in nodes
+                        )
+                    root = document["Plan"]
+                    cost = root.get("Shared Hit Blocks", 0) + root.get("Shared Read Blocks", 0)
+                    assert cost <= 32
+                    metric = "sealed_payload_probe_postgresql_shared_blocks"
+                assert found == ("selected-sealed" if sealed else None)
+            counts.append((count + len(originals) + int(sealed), cost))
+        record_property(metric, counts)
+        assert max(n for _, n in counts) <= min(n for _, n in counts) + 32
