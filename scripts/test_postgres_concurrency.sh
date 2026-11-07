@@ -44,6 +44,7 @@ default_tests=(
   tests/integration/test_collection_deletion_concurrency.py
   tests/integration/test_collection_upload_custody_concurrency.py
   tests/integration/test_collection_finalization_concurrency.py
+  tests/integration/test_archive_artifact_custody_receipt_concurrency.py
   tests/integration/test_archive_volume_metadata_checkpoint_concurrency.py \
   tests/integration/test_archive_volume_metadata_receiving_concurrency.py
   tests/integration/test_archive_volume_metadata_writes_concurrency.py
