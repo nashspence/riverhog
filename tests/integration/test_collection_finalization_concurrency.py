@@ -18,6 +18,11 @@ from tests.unit.test_finalization_claim_readiness import (
     _fresh_coordinator,
     _seal,
 )
+from tests.unit.test_finalization_terminal_admission import (
+    _closed_catalog_stage,
+    _closed_claim,
+    _closed_readiness,
+)
 
 pytestmark = pytest.mark.integration
 
@@ -105,3 +110,28 @@ def test_postgres_stale_callback_rechecks_state_after_parent_lock(
                 assert upload.archive_claim_id == "f" * 64
             assert upload.archive_next_attempt_at is None
             assert upload.archive_failure == "current owner"
+
+
+@pytest.mark.parametrize("phase", ("queued", "retry"))
+def test_postgres_selected_terminal_excludes_fresh_finalization_claims(
+    database_url, tmp_path, phase
+):
+    _closed_claim(tmp_path, phase, database_url=database_url)
+
+
+@pytest.mark.parametrize("entry", ("batch", "point", "startup"))
+def test_postgres_selected_terminal_preserves_closed_workflow_state(database_url, tmp_path, entry):
+    _closed_readiness(tmp_path, entry, database_url=database_url)
+
+
+@pytest.mark.parametrize(
+    "stage",
+    (
+        "_stage_next_member_histories",
+        "_advance_provenance_closure_validation",
+        "_advance_archive_tree_checkpoint",
+        "_advance_catalog_projection",
+    ),
+)
+def test_postgres_selected_terminal_fences_forward_catalog_steps(database_url, tmp_path, stage):
+    _closed_catalog_stage(tmp_path, stage, database_url=database_url)

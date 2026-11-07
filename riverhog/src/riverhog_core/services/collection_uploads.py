@@ -150,6 +150,7 @@ from riverhog_provenance import (
     validate_journal_chunks,
 )
 from sqlalchemy import (
+    Select,
     asc,
     case,
     desc,
@@ -217,6 +218,7 @@ from riverhog_core.canonical_discovery_index import (
 from riverhog_core.canonical_discovery_relevance import (
     member_relevance,
 )
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_events import (
     begin_catalog_event,
@@ -3088,7 +3090,7 @@ class SqlAlchemyCollectionUploadService:
             _writer(session)
             uploads = list(
                 session.scalars(
-                    select(CollectionUploadRecord)
+                    _open_finalization_query()
                     .where(CollectionUploadRecord.state.in_(("closing", "uploading", "finalizing")))
                     .order_by(
                         CollectionUploadRecord.archive_phase_updated_at,
@@ -3099,6 +3101,8 @@ class SqlAlchemyCollectionUploadService:
                 )
             )
             for upload in uploads:
+                if require_archive_write_control(session, upload).gate != "open":
+                    continue
                 interrupted = upload.state == "finalizing" and upload.archive_phase == "finalizing"
                 if upload.state != "finalizing":
                     if not _ready_for_finalization(session, upload):
@@ -3169,9 +3173,10 @@ class SqlAlchemyCollectionUploadService:
         now = utc_timestamp_now()
         scheduled = 0
         with session_scope(self._session_factory) as session:
+            _writer(session)
             uploads = list(
                 session.scalars(
-                    select(CollectionUploadRecord)
+                    _open_finalization_query()
                     .where(CollectionUploadRecord.state.in_(("closing", "uploading")))
                     .order_by(
                         CollectionUploadRecord.archive_phase_updated_at,
@@ -3182,6 +3187,8 @@ class SqlAlchemyCollectionUploadService:
                 )
             )
             for upload in uploads:
+                if require_archive_write_control(session, upload).gate != "open":
+                    continue
                 if not _ready_for_finalization(session, upload):
                     continue
                 _mark_finalization_ready(upload, now=now)
@@ -3193,7 +3200,7 @@ class SqlAlchemyCollectionUploadService:
         with session_scope(self._session_factory) as session:
             _writer(session)
             upload = session.scalar(
-                select(CollectionUploadRecord)
+                _open_finalization_query()
                 .where(
                     CollectionUploadRecord.state == "finalizing",
                     CollectionUploadRecord.archive_phase.in_(("finalization_queued", "retry_wait")),
@@ -3209,6 +3216,8 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 return None
+            if require_archive_write_control(session, upload).gate != "open":
+                return None
             # Entering finalizing commits exact readiness under the upload lock.
             # Its closed plan and payload seals survive every bounded metadata step.
             upload.archive_phase = "finalizing"
@@ -3222,6 +3231,7 @@ class SqlAlchemyCollectionUploadService:
     def _schedule_finalization_if_ready(self, collection_id: int) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
@@ -3230,6 +3240,7 @@ class SqlAlchemyCollectionUploadService:
             if (
                 upload is None
                 or upload.state not in {"closing", "uploading"}
+                or require_archive_write_control(session, upload).gate != "open"
                 or not _ready_for_finalization(session, upload)
             ):
                 return
@@ -3988,6 +3999,7 @@ class SqlAlchemyCollectionUploadService:
         """Advance one bounded durable catalog-projection transaction."""
 
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
@@ -3995,6 +4007,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 return False
+            require_open_upload_writes(session, upload)
             phase = upload.catalog_phase
             if phase == "complete":
                 return False
@@ -4432,6 +4445,7 @@ class SqlAlchemyCollectionUploadService:
         session: Session,
         upload: CollectionUploadRecord,
     ) -> None:
+        require_open_upload_writes(session, upload)
         collection = session.get(CollectionRecord, upload.collection_id)
         if collection is None:
             raise RuntimeError("catalog collection projection is unavailable")
@@ -4474,12 +4488,16 @@ class SqlAlchemyCollectionUploadService:
         """Freeze final selections in bounded transactions before root publication."""
 
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
                 .with_for_update()
             )
-            if upload is None or upload.provenance_histories_sealed:
+            if upload is None:
+                return False
+            require_open_upload_writes(session, upload)
+            if upload.provenance_histories_sealed:
                 return False
             statement = select(CollectionUploadArtifactRecord).where(
                 CollectionUploadArtifactRecord.collection_id == collection_id
@@ -4702,12 +4720,16 @@ class SqlAlchemyCollectionUploadService:
         """Resolve each member against its exact primary canonical snapshot."""
 
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
                 .with_for_update()
             )
-            if upload is None or upload.provenance_closure_validated:
+            if upload is None:
+                return False
+            require_open_upload_writes(session, upload)
+            if upload.provenance_closure_validated:
                 return False
             if not upload.provenance_histories_sealed:
                 raise Conflict("final member history selections are not sealed")
@@ -5098,12 +5120,16 @@ class SqlAlchemyCollectionUploadService:
         """Commit the ID-ordered artifact set in bounded catalog scans."""
 
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
                 .with_for_update()
             )
-            if upload is None or upload.archive_tree_sha256 is not None:
+            if upload is None:
+                return False
+            require_open_upload_writes(session, upload)
+            if upload.archive_tree_sha256 is not None:
                 return False
             digest = (
                 CheckpointSHA256.from_state(upload.archive_tree_hash_state)
@@ -7276,6 +7302,18 @@ def _has_complete_payload_seal(upload: CollectionUploadRecord) -> bool:
         upload.artifact_count > 0
         and upload.payload_sealed_artifact_count == upload.artifact_count
         and upload.payload_sealed_artifact_bytes == upload.artifact_bytes
+    )
+
+
+def _open_finalization_query() -> Select[tuple[CollectionUploadRecord]]:
+    """Select work only from a construction whose forward gate is still open."""
+    return select(CollectionUploadRecord).where(
+        exists(
+            select(ArchiveWriteControlRecord.collection_id).where(
+                ArchiveWriteControlRecord.collection_id == CollectionUploadRecord.collection_id,
+                ArchiveWriteControlRecord.gate == "open",
+            )
+        )
     )
 
 
