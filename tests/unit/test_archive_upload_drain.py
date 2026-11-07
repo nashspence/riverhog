@@ -480,3 +480,83 @@ def _sealed_probe_growth(tmp_path, sealed, record_property, *, database_url=None
             counts.append((count + len(originals) + int(sealed), cost))
         record_property(metric, counts)
         assert max(n for _, n in counts) <= min(n for _, n in counts) + 32
+
+
+def _forward_mutation_after_selected_terminal(tmp_path, action, *, database_url=None):
+    import hashlib
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from riverhog_core.app_permissions import (
+        ALL_RESOURCES,
+        COLLECTION_TAGS_MANAGE,
+        ApplicationAccess,
+    )
+    from riverhog_core.catalog_models import CollectionUploadRecord
+    from riverhog_protocol import CollectionUploadProvenanceJournalCreateDocument
+
+    from tests.unit.test_collection_registration_operations import _member
+    from tests.unit.test_collection_uploads import _CREATOR
+
+    with _case(tmp_path, database_url=database_url) as original:
+        case = original
+        if action == "heartbeat":
+            opened = case.service.create_or_resume(
+                idempotency_key="selected-terminal-lease",
+                ingest_source="fixture",
+                archive_store=None,
+                initiator=_CREATOR,
+                event_context=None,
+                custody_mode="custody-transfer",
+            )
+            case = SimpleNamespace(**{**vars(case), "collection_id": int(opened["collection_id"])})
+        operation = _selected(case)
+
+        def snapshot():
+            with session_scope(case.factory) as session:
+                upload = session.get(CollectionUploadRecord, case.collection_id)
+                terminal = session.get(ArchiveUploadTerminalRecord, operation)
+                return (
+                    upload.state,
+                    upload.artifact_count,
+                    upload.artifact_bytes,
+                    upload.planner_checkpoint_json,
+                    upload.tag_staging_set_identity,
+                    upload.last_activity_at,
+                    upload.lease_expires_at,
+                    terminal.phase,
+                    terminal.result_json,
+                )
+
+        before = snapshot()
+        with pytest.raises(Conflict, match="archive write admission is closed"):
+            if action == "register":
+                case.service.register_artifacts(case.collection_id, [_member("2", 2)])
+            elif action == "complete":
+                case.service.complete(case.collection_id)
+            elif action == "tags":
+                principal = replace(
+                    _CREATOR,
+                    access=_CREATOR.access
+                    | frozenset({ApplicationAccess(COLLECTION_TAGS_MANAGE, ALL_RESOURCES)}),
+                )
+                case.service.add_tags(
+                    case.collection_id, ("classification/terminal",), principal=principal
+                )
+            elif action == "heartbeat":
+                case.service.heartbeat(case.collection_id)
+            else:
+                assert action == "journal"
+                case.service.create_provenance_journal(
+                    case.collection_id,
+                    "urn:uuid:8e2c3256-d72d-4c7f-8442-bf1a58890c41",
+                    CollectionUploadProvenanceJournalCreateDocument.model_validate(
+                        {"bytes": "1", "sha256": hashlib.sha256(b"\n").hexdigest()}
+                    ),
+                )
+        assert snapshot() == before
+
+
+@pytest.mark.parametrize("action", ("register", "complete", "tags", "heartbeat", "journal"))
+def test_selected_terminal_closes_legacy_forward_control_mutations(tmp_path, action):
+    _forward_mutation_after_selected_terminal(tmp_path, action)

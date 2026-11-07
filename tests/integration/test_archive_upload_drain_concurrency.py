@@ -150,3 +150,12 @@ def test_postgres_terminal_sealed_payload_probe_is_indexed_across_unsealed_prefi
     from tests.unit.test_archive_upload_drain import _sealed_probe_growth
 
     _sealed_probe_growth(tmp_path, sealed, record_property, database_url=database_url)
+
+
+@pytest.mark.parametrize("action", ("register", "complete", "tags", "heartbeat", "journal"))
+def test_postgres_selected_terminal_closes_legacy_forward_control_mutations(
+    database_url, tmp_path, action
+):
+    from tests.unit.test_archive_upload_drain import _forward_mutation_after_selected_terminal
+
+    _forward_mutation_after_selected_terminal(tmp_path, action, database_url=database_url)

@@ -831,6 +831,7 @@ class SqlAlchemyCollectionUploadService:
         canonical = _canonical_tag_batch(tags, allow_empty=False)
         _require_tag_assignment_access(principal, canonical)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized)
@@ -838,6 +839,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or upload.initiated_by_principal_id != principal.id:
                 raise NotFound(f"collection upload not found: {normalized}")
+            require_open_upload_writes(session, upload)
             existing_tag_count = _require_upload_create_access(
                 session,
                 normalized,
@@ -935,6 +937,7 @@ class SqlAlchemyCollectionUploadService:
             )
 
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -942,6 +945,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict(f"collection upload session is not open: {normalized_id}")
             if upload.active_registration_id is not None:
@@ -1062,6 +1066,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1069,6 +1074,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts raw source digests")
             artifact = session.scalar(
@@ -1158,6 +1164,7 @@ class SqlAlchemyCollectionUploadService:
         normalized_id = _collection_id(collection_id)
         encoded = canonical_json_bytes(requirement.model_dump(mode="json")).decode("utf-8")
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1165,6 +1172,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound("collection construction is unavailable")
+            require_open_upload_writes(session, upload)
             if upload.completion_requirement_json is not None:
                 if upload.completion_requirement_json != encoded:
                     raise Conflict("accepted completion requirement cannot be replaced")
@@ -1198,6 +1206,7 @@ class SqlAlchemyCollectionUploadService:
     ) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1205,6 +1214,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload does not accept provenance journals")
             if authority.selection_role == "completion":
@@ -1275,6 +1285,7 @@ class SqlAlchemyCollectionUploadService:
         after a crash without retaining or rereading disposable payload files.
         """
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == _collection_id(collection_id))
@@ -1282,6 +1293,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or upload.completion_requirement_json is None:
                 raise NotFound("execution construction has no accepted completion requirement")
+            require_open_upload_writes(session, upload)
             requirement = CollectionCompletionRequirementDocument.model_validate_json(
                 upload.completion_requirement_json
             )
@@ -1313,6 +1325,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1320,6 +1333,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts provenance bindings")
             for binding in batch.bindings:
@@ -1393,6 +1407,7 @@ class SqlAlchemyCollectionUploadService:
         normalized_id = _collection_id(collection_id)
         encoded = canonical_json_bytes(authority.to_mapping()).decode("utf-8")
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1403,6 +1418,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or binding is None:
                 raise NotFound("input selection has no accepted member primary")
+            require_open_upload_writes(session, upload)
             if binding.history_imports_ref_json is not None:
                 if binding.history_imports_ref_json != encoded:
                     raise Conflict("accepted input-history extent cannot be replaced")
@@ -1492,6 +1508,7 @@ class SqlAlchemyCollectionUploadService:
         except ValueError as exc:
             raise BadRequest(str(exc)) from exc
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1499,6 +1516,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts history structure")
             _stage_provenance_structure(
@@ -1524,6 +1542,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1531,6 +1550,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts final history bindings")
             for value in batch.bindings:
@@ -1600,6 +1620,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1607,6 +1628,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts materialization decisions")
             for decision in batch.decisions:
@@ -1660,6 +1682,7 @@ class SqlAlchemyCollectionUploadService:
         if offset < 0 or not chunk or len(chunk) > COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX:
             raise BadRequest("provenance append is outside its bounded transport contract")
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1675,6 +1698,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or record is None:
                 raise NotFound(f"collection upload provenance journal not found: {journal_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict(f"collection upload session is not open: {normalized_id}")
             if record.state != "accepting":
@@ -1729,6 +1753,15 @@ class SqlAlchemyCollectionUploadService:
     ) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update()
+            )
+            if upload is None:
+                raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             record = session.scalar(
                 select(CollectionUploadProvenanceJournalRecord)
                 .where(
@@ -1886,6 +1919,7 @@ class SqlAlchemyCollectionUploadService:
     ) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             collection = session.scalar(
                 select(CollectionRecord).where(
                     CollectionRecord.id == normalized_id,
@@ -1905,6 +1939,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state not in {"open", "closing", "uploading", "finalizing"}:
                 raise Conflict(f"collection upload session is {upload.state}: {normalized_id}")
             checkpoint = _planner_checkpoint(upload)
@@ -2485,6 +2520,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -2492,6 +2528,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.custody_mode != "custody-transfer":
                 raise Conflict("collection upload does not have a custody-transfer lease")
             if upload.state not in {"open", "closing"}:
