@@ -86,6 +86,7 @@ class ArchivePayloadInputs:
         self._lock = Lock()
         self._inputs: dict[int, ArchivePayloadInput] = {}
         self._bytes = 0
+        self._constructions: dict[ArchiveUploadExecutionKey, int] = {}
         self._targets: dict[str, tuple[int, int]] = {}
 
     def reserve(self, request: ArchivePayloadRequest) -> ArchivePayloadInput | InputRefusal:
@@ -105,8 +106,18 @@ class ArchivePayloadInputs:
             original = ArchivePayloadInput(self, request, amount)
             self._inputs[id(original)] = original
             self._bytes += amount
+            self._constructions[request.key] = self._constructions.get(request.key, 0) + 1
             self._targets[request.target_incarnation] = count + 1, used + amount
             return original
+        finally:
+            self._lock.release()
+
+    def status(self, key: ArchiveUploadExecutionKey) -> Literal["busy", "untracked", "retained"]:
+        """Observe exact local input retention; absence grants no global closure."""
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            return "retained" if key in self._constructions else "untracked"
         finally:
             self._lock.release()
 
@@ -132,6 +143,12 @@ class ArchivePayloadInputs:
                 del self._targets[original.request.target_incarnation]
             if retire:
                 del self._inputs[id(original)]
+                key = original.request.key
+                remaining = self._constructions[key] - 1
+                if remaining:
+                    self._constructions[key] = remaining
+                else:
+                    del self._constructions[key]
 
 
 class ArchivePayloadInput:

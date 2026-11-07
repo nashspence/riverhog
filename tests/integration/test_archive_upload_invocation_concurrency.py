@@ -7,6 +7,11 @@ from tests.integration.test_collection_upload_custody_concurrency import (
 )
 from tests.unit.test_archive_cache_families import _service_family_units
 from tests.unit.test_archive_payload_continuation import _two_units
+from tests.unit.test_archive_payload_ingress import (
+    _ingress_original_retry,
+    _input_selection_interlock,
+    _terminal_during_assembly,
+)
 from tests.unit.test_archive_payload_unit import _held_terminal, _preparation_retry
 from tests.unit.test_archive_upload_invocations import _actual_begin_receiving
 from tests.unit.test_upload_continuation import _retained_unit_retry
@@ -132,3 +137,23 @@ def test_postgres_terminal_child_receives_its_work_without_closing_unknown_cache
         database_url=database_url,
         terminal_unknown=True,
     )
+
+
+def test_postgres_incoming_body_is_visible_before_terminal_selection(
+    database_url, tmp_path, monkeypatch
+):
+    _input_selection_interlock(tmp_path, monkeypatch, database_url=database_url)
+
+
+def test_postgres_terminal_during_body_assembly_admits_no_fresh_provider_work(
+    database_url, tmp_path, monkeypatch
+):
+    _terminal_during_assembly(tmp_path, monkeypatch, database_url=database_url)
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_ingress_retry_preserves_original_preparation_and_input(
+    database_url, tmp_path, monkeypatch, committed, mode
+):
+    _ingress_original_retry(tmp_path, monkeypatch, committed, mode, database_url=database_url)

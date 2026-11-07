@@ -421,11 +421,12 @@ if TYPE_CHECKING:
         ArchiveCacheValidate,
         ArchivePayloadMirrorFactory,
     )
-    from riverhog_core.services.archive_payload_input import ArchivePayloadInput
+    from riverhog_core.services.archive_payload_input import ArchivePayloadInput, InputRefusal
     from riverhog_core.services.archive_payload_unit import (
         ArchivePayloadUnit,
     )
     from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
+    from riverhog_core.services.archive_upload_invocations import InvocationSubmission
 
 
 class SqlAlchemyCollectionUploadService:
@@ -2245,6 +2246,93 @@ class SqlAlchemyCollectionUploadService:
         payload.require_pool(self._archive_inputs)
         return self._archive_cache_families.factory(
             payload, create=create, grants=grants, validate_population=validate_population
+        )
+
+    def _reserve_payload_input(
+        self,
+        collection_id: int,
+        volume_id: str,
+        unit: int,
+        *,
+        plan_sha256: str,
+        principal: Principal,
+    ) -> ArchivePayloadInput | InputRefusal:
+        """Select current upload authority and reserve before assembling a body."""
+        from .archive_payload_input import ArchivePayloadInput, ArchivePayloadRequest
+        from .archive_upload_execution import ArchiveUploadExecutionKey
+
+        normalized_id = _collection_id(collection_id)
+        guard = self._payload_write_guard(normalized_id, principal)
+        original: ArchivePayloadInput | InputRefusal | None = None
+        try:
+            with session_scope(self._session_factory) as session:
+                _writer(session)
+                guard(session)
+                upload = session.scalar(ArchiveWriteAdmission._upload_query(normalized_id))
+                if upload is None:
+                    raise NotFound("collection upload construction is unavailable")
+                control = require_open_upload_writes(session, upload)
+                volume = session.get(
+                    CollectionArchiveObjectUploadRecord, (normalized_id, volume_id)
+                )
+                if (
+                    volume is None
+                    or type(unit) is not int
+                    or unit < 0
+                    or unit >= volume.total_units
+                ):
+                    raise NotFound("collection upload unit not found")
+                if volume.plan_sha256 != plan_sha256:
+                    raise Conflict("archive upload unit plan identity changed")
+                work = _unit_work_payload(volume, unit, committed=False)
+                request = ArchivePayloadRequest(
+                    key=ArchiveUploadExecutionKey(
+                        normalized_id,
+                        hashlib.sha256(control.construction_json.encode()).hexdigest(),
+                    ),
+                    target_incarnation=upload.archive_incarnation_id,
+                    epoch=control.epoch,
+                    volume_id=volume_id,
+                    unit=unit,
+                    plan_sha256=plan_sha256,
+                    plaintext_bytes=int(cast(str, work["payload_bytes"])),
+                    principal=principal,
+                )
+                original = self._archive_inputs.reserve(request)
+        except BaseException:
+            if isinstance(original, ArchivePayloadInput):
+                original.discard_unretained()
+            raise
+        # Installation precedes releasing the same upload lock used by terminal
+        # selection. A selected terminal cannot miss an incoming original body.
+        assert original is not None
+        return original
+
+    def _submit_payload_input(
+        self,
+        payload: ArchivePayloadInput,
+        *,
+        mirror: ArchivePayloadMirrorFactory | None = None,
+    ) -> InvocationSubmission:
+        """Install exact original input before any semantic constructor can run."""
+        payload.require_pool(self._archive_inputs)
+        request = payload.request
+        return self._archive_invocations.submit(
+            request.key,
+            target_incarnation=request.target_incarnation,
+            request_sha256=payload.request_sha256,
+            payload=payload,
+            create=lambda: self._payload_unit_invocation(
+                key=request.key,
+                target_incarnation=request.target_incarnation,
+                volume_id=request.volume_id,
+                unit=request.unit,
+                plan_sha256=request.plan_sha256,
+                payload=payload,
+                principal=request.principal,
+                mirror=mirror,
+            ),
+            advance=lambda owner: cast("ArchivePayloadUnit", owner).advance(),
         )
 
     def _payload_unit_invocation(
