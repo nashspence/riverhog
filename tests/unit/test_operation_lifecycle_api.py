@@ -78,7 +78,7 @@ from riverhog_protocol.collection_workflows import (
     processing_outcome_set_identity,
 )
 from riverhog_protocol.effect_settlement import ExternalEffectSettlement
-from riverhog_protocol.errors import Conflict, Forbidden, NotFound
+from riverhog_protocol.errors import Conflict, Forbidden
 from riverhog_protocol.no_output_settlement import NoOutputSettlement
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 from riverhog_provenance import (
@@ -107,7 +107,11 @@ def _tag_set_identity(*tags: str) -> str:
 
 def _container(tmp_path: Path, *, database_url: str | None = None) -> ServiceContainer:
     database_url = database_url or sqlite_url(tmp_path / "catalog.sqlite3")
-    baseline = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
+    baseline = RuntimeConfig.for_testing(
+        database_url=database_url,
+        archive_scrypt_work_factor=1,
+        journal_validation_workspace=tmp_path / "journal-validation",
+    )
     primary_config = replace(
         baseline.archive_store("archive"),
         name="primary",
@@ -278,6 +282,7 @@ def _finalize_upload(
 
 
 def test_riverhog_official_client_positive_disposable_lifecycle(
+    primary_store,
     tmp_path: Path,
 ) -> None:  # type: ignore[no-untyped-def]
     container = _container(tmp_path)
@@ -1111,6 +1116,8 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     def writer():
         return IncrementalDerivedCollectionWriter(
             target,
+            primary_store=primary_store,
+            member_inventory=lambda: (identity,),
             spec=spec,
             claim_id=claim_id,
             fence=claim_fence,
@@ -1221,9 +1228,17 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     published_retry = writer()
     try:
         assert published_retry.producer.collection_id == output_collection_id
-        # Publication retires the upload projection; the final root receipt resumes completion.
-        with pytest.raises(NotFound):
-            target.get_collection_upload_session_artifact(output_collection_id, OUTPUT_ID)
+        # Original member custody survives publication alongside the final-root receipt.
+        published_member = target.get_collection_upload_session_artifact(
+            output_collection_id, OUTPUT_ID
+        )
+        assert published_member["payload_sealed"] is True
+        assert published_member["custody_receipt"] == receipts[0].receipt.model_dump(mode="json")
+        published_custody = published_retry.producer.resume_artifact_custody(identity)
+        assert published_custody is not None
+        assert published_custody.receipt == receipts[0].receipt
+        assert published_custody.receipt.primary == primary
+        assert not output_payload_path.exists()
         replayed_output = published_retry.finish(
             execution_sha256=hashlib.sha256(execution_preimage).hexdigest(),
             disposition_set=disposition_identity,

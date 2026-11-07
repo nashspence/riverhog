@@ -16,3 +16,7 @@ class ConcurrentJournalChangeError(ProvenanceValidationError):
 
 class UnresolvedContractError(ProvenanceValidationError):
     """The exact referenced metadata contract is unavailable."""
+
+
+class JournalValidationCapacity(RuntimeError):
+    """The current existing validation atom needs more explicit resource admission."""

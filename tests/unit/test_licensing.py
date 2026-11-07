@@ -115,8 +115,14 @@ def test_custodial_state_licenses_match_source_packages_images_and_release_evide
 def test_every_workspace_distribution_uses_the_canonical_build_system() -> None:
     for pyproject in workspace_pyprojects(REPO_ROOT):
         config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+        requirements = ["hatchling>=1.31.0"]
+        if pyproject == REPO_ROOT / "packages/riverhog-client/pyproject.toml":
+            requirements.append("setuptools==84.2.1; sys_platform == 'win32'")
+            assert config["tool"]["hatch"]["build"]["targets"]["wheel"]["hooks"] == {
+                "custom": {"native-platforms": ["win32"]}
+            }
         assert config["build-system"] == {
-            "requires": ["hatchling>=1.31.0"],
+            "requires": requirements,
             "build-backend": "hatchling.build",
         }
 
@@ -145,6 +151,7 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
     assert contracts["project"]["dependencies"] == [
         "release-documentation-lib>=0.1,<0.2",
         "riverhog-canonical-json>=0.1,<0.2",
+        "sha256-continuation>=0.1,<0.2",
     ]
     assert contracts["project"]["license"] == "Apache-2.0"
     assert config["project"]["scripts"] == {

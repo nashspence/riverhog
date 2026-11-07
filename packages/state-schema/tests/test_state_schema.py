@@ -130,3 +130,33 @@ def test_interrupted_upgrade_rolls_back_and_can_be_reentered(
     assert columns_after_interruption == {"id", "payload"}
 
     assert schema.upgrade().current_revision == "v1_0002"
+
+
+def test_unknown_revision_is_incompatible_and_preserves_operational_state(tmp_path: Path) -> None:
+    from state_schema import StateSchemaError
+
+    migrations = tmp_path / "migrations"
+    _write_migrations(migrations)
+    database = tmp_path / "state.sqlite3"
+    schema = _schema(database, migrations)
+    schema.upgrade()
+    engine = sqlite_engine(database)
+    try:
+        with engine.begin() as connection:
+            connection.exec_driver_sql("INSERT INTO records VALUES (1, 'retained')")
+            connection.exec_driver_sql("UPDATE state_schema_revision SET version_num='unknown'")
+        assert schema.status().condition == "incompatible"
+        with pytest.raises(StateSchemaError, match="incompatible"):
+            schema.upgrade()
+        with engine.connect() as connection:
+            assert (
+                connection.exec_driver_sql("SELECT payload FROM records").scalar_one() == "retained"
+            )
+            assert (
+                connection.exec_driver_sql(
+                    "SELECT version_num FROM state_schema_revision"
+                ).scalar_one()
+                == "unknown"
+            )
+    finally:
+        engine.dispose()

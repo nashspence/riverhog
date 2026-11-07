@@ -36,6 +36,7 @@ dependencies = ["release-documentation-lib>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
   "riverhog-storage-adapter-protocol>=0.1,<0.2",
   "riverhog-storage-adapter-support>=0.1,<0.2",
+  "sha256-continuation>=0.1,<0.2",
   "sqlalchemy>=2.0,<2.1",
   "starlette>=0.37,<2.0",
   "state-schema>=0.1,<0.2",
@@ -61,6 +62,7 @@ riverhog-provenance = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 riverhog-storage-adapter-protocol = { workspace = true }
 riverhog-storage-adapter-support = { workspace = true }
+sha256-continuation = { workspace = true }
 state-schema = { workspace = true }
 time-formats = { workspace = true }
 

@@ -20,7 +20,7 @@ from uuid import uuid4
 import yaml
 from riverhog_canonical_json import canonical_json_bytes
 
-from scripts.ci_unit import SHARDS
+from scripts.ci_unit import CI_SHARDS, SHARDS, UNIT_PARTITIONS, ci_unit_command, unit_partition
 from scripts.validation_evidence import ValidationWork
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,12 +48,67 @@ PROCESSING_LANES = frozenset(
 IMAGE_GROUPS = ("core", "observers", "targets", "companions")
 NATIVE_TESTS = (
     "tests/platform/test_native_provenance.py",
+    "tests/unit/test_cli_upload_source_hashing.py",
+    "tests/unit/test_cli_upload_preview.py",
+    "tests/unit/test_cli_upload_state_admission.py",
+    "tests/unit/test_cli_upload_sqlite_resources.py",
+    "tests/unit/test_cli_upload_sqlite_policy.py",
+    "tests/unit/test_cli_upload_sqlite_process.py",
+    "tests/unit/test_cli_upload_primary_sqlite.py",
+    "tests/unit/test_cli_upload_storage_identity.py",
+    "tests/unit/test_cli_upload_windows_binding.py",
+    "tests/unit/test_cli_upload_windows_policy.py",
+    "packages/riverhog-provenance/tests/test_sqlite_connection_admission.py",
+    "packages/riverhog-provenance/tests/test_disposable_sqlite_admission.py",
+    "packages/riverhog-provenance/tests/test_corpus_sqlite_admission.py",
+    "packages/riverhog-provenance/tests/test_journal_authoring_admission.py",
+    "packages/riverhog-provenance/tests/test_journal_helper_admission.py",
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py",
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py",
+    "packages/riverhog-provenance/tests/test_history_membership_admission.py",
+    "packages/riverhog-archive-contracts/tests/test_history_builder_admission.py",
+    "packages/riverhog-archive-contracts/tests/test_history_heads_admission.py",
+    "packages/riverhog-client/tests/test_prepared_primary_barrier.py",
+    "packages/riverhog-client/tests/test_prepared_primary_documents.py",
+    "packages/riverhog-client/tests/test_prepared_primary_factory.py",
+    "packages/riverhog-client/tests/test_opaque_producer.py",
+    "packages/riverhog-client/tests/test_canonical_provenance_admission.py",
+    "packages/riverhog-client/tests/test_processing_provenance_admission.py",
+    "packages/riverhog-client/tests/test_completion_records_admission.py",
+    "packages/riverhog-client/tests/test_sqlite_owner_cleanup_status.py",
+    "packages/sqlite-admission/tests/test_connection_admission.py",
+    "packages/sqlite-admission/tests/test_blob_admission.py",
+    "packages/sqlite-admission/tests/test_operation_admission.py",
+    "packages/sqlite-admission/tests/test_connection_settings.py",
+    "packages/riverhog-provenance/tests/test_sqlite_connection_settings.py",
+    "packages/riverhog-client/tests/test_projection_connection_settings.py",
+    "packages/riverhog-client/tests/test_claimed_history_admission.py",
+    "packages/riverhog-client/tests/test_claimed_snapshot_admission.py",
+    "packages/riverhog-client/tests/test_claimed_verification_admission.py",
+    "packages/riverhog-client/tests/test_initial_tags_admission.py",
+    "packages/riverhog-client/tests/test_prepared_primary_native.py",
+    "packages/riverhog-client/tests/test_prepared_primary_native_vfs.py",
+    "packages/riverhog-client/tests/test_prepared_primary_runtime.py",
+    "packages/riverhog-client/tests/test_sqlite_application_resources.py",
+    "packages/riverhog-client/tests/test_prepared_primary_posix.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite_resources.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite_database_reserve.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite_progress_journal.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite_ready.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite_operations.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite_native.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite_preparation.py",
+    "packages/riverhog-client/tests/test_prepared_primary_sqlite_space.py",
+    "packages/riverhog-client/tests/test_prepared_primary_windows.py",
+    "packages/riverhog-client/tests/test_prepared_primary_vfs.py",
+    "packages/riverhog-client/tests/test_prepared_primary_store.py",
     "some-implementations/gogurt/application/tests",
     "tests/platform/test_end_user_artifacts.py",
 )
 
 
-def validation_workloads() -> tuple[ValidationWork, ...]:
+def validation_workloads(*, names: Sequence[str] | None = None) -> tuple[ValidationWork, ...]:
     """Derive required work; optional speed goals do not authorize or gate execution."""
     work = [ValidationWork(name, ("make", name)) for name in REPOSITORY_TARGETS]
     from scripts.ci_make import maintained_make_targets
@@ -68,6 +123,10 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
     work.extend(
         ValidationWork(f"unit-{name}", ("make", "unit-shard", f"UNIT_SHARD={name}"))
         for name in SHARDS
+    )
+    work.extend(
+        ValidationWork(f"unit-unit-{part}", ci_unit_command(f"unit-{part}"))
+        for part in UNIT_PARTITIONS
     )
     work.extend(
         ValidationWork(f"image-{name}", ("make", "image-qualification", f"IMAGE_GROUP={name}"))
@@ -156,9 +215,34 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
     )
     if len({item.name for item in work}) != len(work):
         raise ValueError("each validation workload must have exactly one definition")
-    from scripts.validation_witnesses import discover_test_witnesses, operation_projection
+    from scripts.validation_witnesses import (
+        TestWitness,
+        discover_test_witnesses,
+        operation_projection,
+    )
 
-    witnesses = discover_test_witnesses(ROOT)
+    if names is not None:
+        requested = set(names)
+        work = [item for item in work if item.name in requested]
+    selected = {item.name for item in work}
+    required_gates = selected | (
+        {"unit-unit"} if any(name.startswith("unit-unit-") for name in selected) else set()
+    )
+    witnesses = tuple(
+        witness
+        for witness in discover_test_witnesses(ROOT)
+        if required_gates.intersection(witness.gates)
+    )
+
+    def applies(name: str, witness: TestWitness) -> bool:
+        if name in witness.gates:
+            return True
+        return (
+            name.startswith("unit-unit-")
+            and "unit-unit" in witness.gates
+            and name == "unit-unit-" + unit_partition(witness.node_id)
+        )
+
     declarations = {}
     for witness in witnesses:
         if witness.operation is not None:
@@ -168,14 +252,14 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
         replace(
             item,
             growth_witnesses=tuple(
-                witness.id for witness in witnesses if item.name in witness.gates
+                witness.id for witness in witnesses if applies(item.name, witness)
             ),
             growth_declarations=tuple(
                 sorted(
                     {
                         declarations[witness.id]
                         for witness in witnesses
-                        if item.name in witness.gates and witness.id in declarations
+                        if applies(item.name, witness) and witness.id in declarations
                     }
                 )
             ),
@@ -185,23 +269,26 @@ def validation_workloads() -> tuple[ValidationWork, ...]:
 
 
 def validation_work(name: str) -> ValidationWork:
-    from scripts.ci_make import maintained_make_targets
-
-    for work in validation_workloads():
-        if work.name == name:
-            return work
-    if re.fullmatch(r"build-[a-zA-Z0-9_-]+", name) and "build-%" in maintained_make_targets(
-        ROOT / "Makefile"
-    ):
-        return ValidationWork(name, ("make", name))
-    raise ValueError(f"unknown maintained validation workload: {name}")
+    return require_validation_work((name,))[0]
 
 
 def require_validation_work(names: Sequence[str]) -> tuple[ValidationWork, ...]:
-    """Require known, unique work identities, never numerical target approval."""
+    """Require known unique work and bind only operations owned by that selection."""
     if not names or len(set(names)) != len(names):
         raise ValueError("expected workloads must be nonempty and unique")
-    return tuple(validation_work(name) for name in names)
+    from scripts.ci_make import maintained_make_targets
+
+    available = {item.name: item for item in validation_workloads(names=names)}
+    has_image_pattern = "build-%" in maintained_make_targets(ROOT / "Makefile")
+    selected = []
+    for name in names:
+        work = available.get(name)
+        if work is None:
+            if not has_image_pattern or re.fullmatch(r"build-[a-zA-Z0-9_-]+", name) is None:
+                raise ValueError(f"unknown maintained validation workload: {name}")
+            work = ValidationWork(name, ("make", name))
+        selected.append(work)
+    return tuple(selected)
 
 
 def validation_environment(work: ValidationWork, run_id: str) -> dict[str, str]:
@@ -232,6 +319,7 @@ def validation_environment(work: ValidationWork, run_id: str) -> dict[str, str]:
         ):
             raise ValueError("qualified work has Make execution overrides")
         environment.pop(variable, None)
+    environment.pop("UNIT_PARTITION", None)
     environment.update(RIVERHOG_CI_LANE=work.name, RIVERHOG_CI_RUN_ID=run_id)
     return environment
 
@@ -420,7 +508,11 @@ def qualify_images(targets: Sequence[str], graph: dict[str, Any]) -> None:
 
 
 def native_platform() -> None:
-    run([sys.executable, "-m", "pytest", "-q", *NATIVE_TESTS])
+    evidence = os.environ.get("RIVERHOG_CI_TIMING_DIR")
+    tests = [sys.executable, "-m", "pytest", "-q", "--maxfail=1"]
+    if evidence:
+        tests.extend(("--junitxml", str(Path(evidence) / "native-pytest.xml")))
+    run([*tests, *NATIVE_TESTS])
     command = [
         sys.executable,
         "scripts/qualify_installation.py",
@@ -430,6 +522,8 @@ def native_platform() -> None:
         "--listener-lifecycle-repetitions",
         "12",
     ]
+    if evidence:
+        command.extend(("--summary", str(Path(evidence) / "installation.json")))
     evidence = os.environ.get("GOGURT_FAILURE_EVIDENCE_DIR")
     if evidence:
         command.extend(("--gogurt-evidence-dir", evidence))
@@ -451,7 +545,7 @@ def plan(graph: dict[str, Any]) -> dict[str, object]:
                 for target in REPOSITORY_TARGETS
             ]
         },
-        "units": {"shard": list(SHARDS)},
+        "units": {"shard": list(CI_SHARDS)},
         "images": {
             "include": [
                 {

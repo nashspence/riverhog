@@ -600,6 +600,9 @@ class CollectionArtifactRecord(Base):
     artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     bytes: Mapped[int] = mapped_column(BigInteger)
     sha256: Mapped[str] = mapped_column(String(64))
+    # Operational custody evidence is not reconstructible from archive authority.
+    # Keep it across index rebuilds, without loading it during ordinary catalog reads.
+    custody_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True, deferred=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -1830,6 +1833,9 @@ class AppKeyRecord(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True)
     app: Mapped[str] = mapped_column(String)
     token_sha256: Mapped[str] = mapped_column(String(64))
+    access_generation: Mapped[str] = mapped_column(
+        String(64), nullable=False, default=lambda: secrets.token_hex(32)
+    )
     monthly_download_quota_bytes: Mapped[int | None] = mapped_column(
         BigInteger,
         default=0,
@@ -2333,6 +2339,11 @@ class RetrievalCacheObjectRecord(Base):
 class RetrievalCachePopulationRecord(Base):
     __tablename__ = "retrieval_cache_populations"
 
+    generation: Mapped[str] = mapped_column(String(64), default=lambda: secrets.token_hex(32))
+    begin_call_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    closed_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    publication_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+
     source_store: Mapped[str] = mapped_column(String, primary_key=True)
     source_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
@@ -2369,8 +2380,24 @@ class RetrievalCachePopulationRecord(Base):
             "expected_bytes >= 1",
             name="ck_retrieval_cache_populations_expected_bytes",
         ),
+        Index(
+            "ix_retrieval_cache_populations_reap",
+            "begin_call_id",
+            "updated_at",
+            "source_store",
+            "collection_id",
+            "object_id",
+        ),
+        Index(
+            "ix_retrieval_cache_populations_source_reap",
+            "begin_call_id",
+            "source_store",
+            "collection_id",
+            "object_id",
+        ),
         CheckConstraint(
-            "state IN ('waiting','admitting','admitted','writing','abandoning')",
+            "state IN ('waiting','admitting','admitted','writing',"
+            "'sealed','published','abandoning')",
             name="ck_retrieval_cache_populations_state",
         ),
         CheckConstraint(
@@ -2378,9 +2405,18 @@ class RetrievalCachePopulationRecord(Base):
             "AND state IN ('waiting','abandoning') OR "
             "cache_store IS NOT NULL AND object_path IS NOT NULL AND "
             "(write_token IS NULL AND state = 'admitting' OR "
-            "write_token IS NOT NULL AND state IN ('admitted','writing') OR "
+            "write_token IS NOT NULL AND state IN ('admitted','writing','sealed','published') OR "
             "state = 'abandoning')",
             name="ck_retrieval_cache_populations_session",
+        ),
+        CheckConstraint(
+            "state NOT IN ('sealed','published') OR "
+            "begin_call_id IS NOT NULL AND closed_receipt_json IS NOT NULL",
+            name="ck_retrieval_cache_populations_closed_receipt",
+        ),
+        CheckConstraint(
+            "publication_json IS NULL OR state = 'published' AND closed_receipt_json IS NOT NULL",
+            name="ck_retrieval_cache_populations_publication",
         ),
     )
 
@@ -2604,12 +2640,20 @@ class CollectionUploadRecord(Base):
     archive_attempt_count: Mapped[int] = mapped_column(Integer, default=0)
     archive_next_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
     archive_last_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    archive_claim_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     archive_failure: Mapped[str | None] = mapped_column(String, nullable=True)
     archive_storage_prefix: Mapped[str] = mapped_column(String)
     delivery_context_id: Mapped[str] = mapped_column(
         String, nullable=False, default=lambda: f"urn:uuid:{uuid.uuid4()}"
     )
     planner_checkpoint_json: Mapped[str] = mapped_column(Text)
+    planner_next_sequence: Mapped[int] = mapped_column(
+        archive_sequence_type(), default=0, server_default=text(f"'{_ARCHIVE_SEQUENCE_ZERO}'")
+    )
+    registration_revision: Mapped[int] = mapped_column(
+        BigInteger, default=0, server_default=text("0")
+    )
+    active_registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     archive_tree_next_artifact_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
     )
@@ -2652,11 +2696,17 @@ class CollectionUploadRecord(Base):
         archive_sequence_type(), default=0, server_default=text(f"'{_ARCHIVE_SEQUENCE_ZERO}'")
     )
     provenance_archive_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
+    provenance_archive_binding_tree_state: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Each completed journal consumes at least one v1 archive sequence.
+    provenance_archive_journal_count: Mapped[int] = mapped_column(
+        archive_sequence_type(), default=0, server_default=text(f"'{_ARCHIVE_SEQUENCE_ZERO}'")
+    )
     provenance_archive_ordered_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     provenance_archive_terminal_receipt_json: Mapped[str | None] = mapped_column(
         Text, nullable=True
     )
     provenance_archive_root_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    archive_root_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     final_authority_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     catalog_phase: Mapped[str] = mapped_column(
         String, default="artifact-set-identity", server_default=text("'artifact-set-identity'")
@@ -2755,6 +2805,18 @@ class CollectionUploadRecord(Base):
         ),
         CheckConstraint("artifact_count >= 0", name="ck_collection_uploads_artifact_count"),
         CheckConstraint(
+            _fixed_lowercase_integer_check("planner_next_sequence", 64),
+            name="ck_collection_uploads_planner_sequence",
+        ),
+        CheckConstraint(
+            "registration_revision >= 0",
+            name="ck_collection_uploads_registration_revision",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("active_registration_id", 64),
+            name="ck_collection_uploads_active_registration",
+        ),
+        CheckConstraint(
             "archive_tree_next_artifact_order >= 0",
             name="ck_collection_uploads_tree_progress",
         ),
@@ -2766,7 +2828,8 @@ class CollectionUploadRecord(Base):
             "provenance_validation_next_artifact_order >= 0 AND "
             "provenance_archive_next_artifact_order >= 0 AND "
             "provenance_archive_current_journal_offset >= 0 AND "
-            f"{_fixed_lowercase_integer_check('provenance_archive_next_sequence', 64)}",
+            f"{_fixed_lowercase_integer_check('provenance_archive_next_sequence', 64)} AND "
+            f"{_fixed_lowercase_integer_check('provenance_archive_journal_count', 64)}",
             name="ck_collection_uploads_provenance_progress",
         ),
         CheckConstraint(
@@ -2907,11 +2970,25 @@ class CollectionUploadTagPublicationFrontierRecord(Base):
             name="ck_collection_upload_tag_frontier_receipt",
         ),
         Index(
-            "ix_collection_upload_tag_frontier_work",
+            "ix_upload_tag_frontier_receipts",
             "collection_id",
-            "published",
-            "expanded",
             "node_digest",
+            sqlite_where=text("published IS 1"),
+            postgresql_where=text("published IS true"),
+        ),
+        Index(
+            "ix_upload_tag_frontier_expand_pending",
+            "collection_id",
+            "node_digest",
+            sqlite_where=text("expanded IS 0"),
+            postgresql_where=text("expanded IS false"),
+        ),
+        Index(
+            "ix_upload_tag_frontier_publish_pending",
+            "collection_id",
+            "node_digest",
+            sqlite_where=text("published IS 0"),
+            postgresql_where=text("published IS false"),
         ),
     )
 
@@ -2961,7 +3038,16 @@ class CollectionUploadArtifactRecord(Base):
     payload_sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
     custody_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
+    registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
     __table_args__ = (
+        Index(
+            "ix_upload_members_registration", "collection_id", "registration_id", "artifact_order"
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("registration_id", 64),
+            name="ck_upload_members_registration",
+        ),
         ForeignKeyConstraint(
             ["collection_id"],
             ["collection_uploads.collection_id"],
@@ -3893,21 +3979,35 @@ class CollectionArchiveObjectUploadRecord(Base):
     source_artifact_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     source_first_part: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     source_part_count: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    source_last_part: Mapped[int | None] = mapped_column(
+        BigInteger, Computed("source_first_part + source_part_count", persisted=True)
+    )
     unit_plaintext_bytes: Mapped[int] = mapped_column(BigInteger)
     plan_json: Mapped[str] = mapped_column(Text)
     plan_sha256: Mapped[str] = mapped_column(String(64))
     state: Mapped[str] = mapped_column(String, default="planned")
+    work_ready: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"))
     checkpoint_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     sealed_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     metadata_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    cache_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    cache_publication_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
     uploaded_bytes: Mapped[int] = mapped_column(BigInteger, default=0)
     uploaded_units: Mapped[int] = mapped_column(Integer, default=0)
+    next_unit: Mapped[int] = mapped_column(Integer, default=0, server_default=text("0"))
     total_units: Mapped[int] = mapped_column(Integer, default=0)
     updated_at: Mapped[str] = mapped_column(String)
     sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
 
+    registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
     __table_args__ = (
+        Index("ix_upload_plans_registration", "collection_id", "registration_id", "sequence"),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("registration_id", 64),
+            name="ck_upload_plans_registration",
+        ),
         ForeignKeyConstraint(
             ["collection_id"],
             ["collection_uploads.collection_id"],
@@ -3919,9 +4019,33 @@ class CollectionArchiveObjectUploadRecord(Base):
             "sequence",
             unique=True,
         ),
+        Index(
+            "ix_collection_archive_object_uploads_ready_sequence",
+            "collection_id",
+            "sequence",
+            postgresql_where=text("((state) != 'sealed') AND (work_ready IS true)"),
+            sqlite_where=text("state != 'sealed' AND work_ready IS 1"),
+        ),
+        Index(
+            "ix_collection_archive_object_uploads_raw_boundary",
+            "collection_id",
+            "source_artifact_id",
+            "source_last_part",
+        ),
+        Index(
+            "ix_collection_archive_object_uploads_pending_source",
+            "collection_id",
+            "source_artifact_id",
+            postgresql_where=text("((state) != 'sealed') OR (sealed_receipt_json IS NULL)"),
+            sqlite_where=text("state != 'sealed' OR sealed_receipt_json IS NULL"),
+        ),
         CheckConstraint(
             _fixed_lowercase_integer_check("sequence", 64),
             name="ck_archive_object_uploads_sequence",
+        ),
+        CheckConstraint(
+            "cache_publication_json IS NULL OR cache_receipt_json IS NOT NULL",
+            name="ck_archive_object_uploads_cache_publication",
         ),
         CheckConstraint("plaintext_bytes >= 0", name="ck_archive_object_uploads_plaintext"),
         CheckConstraint("source_bytes >= 0", name="ck_archive_object_uploads_source"),
@@ -3941,12 +4065,38 @@ class CollectionArchiveObjectUploadRecord(Base):
         CheckConstraint("uploaded_units >= 0", name="ck_archive_object_uploads_uploaded_units"),
         CheckConstraint("total_units >= 0", name="ck_archive_object_uploads_total_units"),
         CheckConstraint(
+            "next_unit >= 0 AND next_unit <= uploaded_units",
+            name="ck_archive_object_uploads_next_unit",
+        ),
+        CheckConstraint(
             "uploaded_units <= total_units",
             name="ck_archive_object_uploads_unit_progress",
         ),
     )
 
     upload: Mapped[CollectionUploadRecord] = relationship(back_populates="archive_objects")
+
+
+class CollectionArchiveObjectUploadUnitRecord(Base):
+    """Exact committed-unit facts projected atomically from the owning checkpoint."""
+
+    __tablename__ = "collection_archive_object_upload_units"
+
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    object_id: Mapped[str] = mapped_column(String, primary_key=True)
+    unit: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id", "object_id"],
+            [
+                "collection_archive_object_uploads.collection_id",
+                "collection_archive_object_uploads.object_id",
+            ],
+            ondelete="CASCADE",
+        ),
+        CheckConstraint("unit >= 0", name="ck_archive_object_upload_units_unit"),
+    )
 
 
 class CollectionUploadArtifactVolumeRecord(Base):
@@ -3958,7 +4108,20 @@ class CollectionUploadArtifactVolumeRecord(Base):
     artifact_id: Mapped[str] = mapped_column(String(64), primary_key=True)
     object_id: Mapped[str] = mapped_column(String, primary_key=True)
 
+    registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
     __table_args__ = (
+        Index(
+            "ix_upload_coverage_registration",
+            "collection_id",
+            "registration_id",
+            "artifact_id",
+            "object_id",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("registration_id", 64),
+            name="ck_upload_coverage_registration",
+        ),
         ForeignKeyConstraint(
             ["collection_id", "artifact_id"],
             [
@@ -3975,5 +4138,10 @@ class CollectionUploadArtifactVolumeRecord(Base):
             ],
             ondelete="CASCADE",
         ),
-        Index("ix_collection_upload_artifact_volumes_object", "collection_id", "object_id"),
+        Index(
+            "ix_collection_upload_artifact_volumes_object",
+            "collection_id",
+            "object_id",
+            "artifact_id",
+        ),
     )

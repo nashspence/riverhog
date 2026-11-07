@@ -12,14 +12,16 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from collections import deque
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from types import FunctionType
+from typing import Any, Literal, get_args
 
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
 from stove0_protocol import CollectionRootIdentityRef, PlanningJobStatus
-from stove0_target_protocol import AcceptedTargetJob, TargetJobStatus, TransformPlan
+from stove0_target_protocol import AcceptedTargetJob, TargetJobState, TargetJobStatus, TransformPlan
 
 
 def stove(path: str, payload: Any = None, *, timeout: float = 30) -> dict[str, Any]:
@@ -31,10 +33,26 @@ def stove(path: str, payload: Any = None, *, timeout: float = 30) -> dict[str, A
             "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        document = json.load(response)
-    assert isinstance(document, dict)
-    return document
+    deadline = time.monotonic() + timeout
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise TimeoutError("stove0 metadata request exhausted its original deadline")
+        try:
+            with urllib.request.urlopen(request, timeout=remaining) as response:
+                document = json.load(response)
+            assert isinstance(document, dict)
+            return document
+        except urllib.error.HTTPError as exc:
+            if exc.code != 503:
+                raise
+            exc.close()
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError(
+                    "stove0 metadata request exhausted its original deadline"
+                ) from exc
+            time.sleep(min(1.0, remaining))
 
 
 def recipe_id() -> str:
@@ -64,6 +82,61 @@ def work_diagnostic(row: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def wait_failure_annotation(
+    reason: Literal["terminal-work", "completion-deadline"],
+    *,
+    rows: list[dict[str, Any]],
+    progress: list[dict[str, Any]],
+    elapsed_seconds: int,
+    snapshot_age_seconds: int | None,
+    status_timeouts: int,
+) -> None:
+    """Report only fixed state names and counts from already-observed metadata.
+
+    The full-work snapshot may predate the latest progress read. Keep their
+    counts separate and state its age. Never copy identities, failure messages,
+    response bodies, paths or scheduler payloads into the annotation.
+    """
+    from stove0_operator_contracts import WorkPhase
+
+    phases = get_args(WorkPhase)
+    target_states = get_args(TargetJobState)
+
+    def phase_counts(values: list[dict[str, Any]]) -> dict[str, int]:
+        return {phase: sum(row.get("phase") == phase for row in values) for phase in phases}
+
+    targets = [row["target_status"] for row in rows if isinstance(row.get("target_status"), dict)]
+    diagnostic = {
+        "format": "riverhog-processing-wait-diagnostic/v1",
+        "reason": reason,
+        "elapsed_seconds": elapsed_seconds,
+        "full_work_snapshot_age_seconds": snapshot_age_seconds,
+        "status_timeouts": status_timeouts,
+        "full_work_count": len(rows),
+        "latest_progress_count": len(progress),
+        "full_work_phase_counts": phase_counts(rows),
+        "latest_progress_phase_counts": phase_counts(progress),
+        "full_work_target_state_counts": {
+            state: sum(target.get("state") == state for target in targets)
+            for state in target_states
+        },
+        "full_work_with_output": sum(row.get("output") is not None for row in rows),
+        "full_work_with_target_settlement": sum(
+            row.get("target_settlement") is not None for row in rows
+        ),
+        "full_work_failure_count": sum(row.get("failure") is not None for row in rows),
+        "full_work_target_failure_count": sum(
+            target.get("failure") is not None for target in targets
+        ),
+    }
+    print(
+        "::error title=Processing wait qualification::"
+        + json.dumps(diagnostic, sort_keys=True, separators=(",", ":")),
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 def wait() -> None:
     from stove0_operator_contracts import WorkProgress
 
@@ -73,11 +146,17 @@ def wait() -> None:
     work_ids: tuple[str, ...] = ()
     previous = None
     next_progress = started
+    next_work_refresh = started
+    latest_progress: list[dict[str, Any]] = []
+    snapshot_at: float | None = None
+    status_timeouts = 0
     while (now := time.monotonic()) < deadline:
         try:
-            if not work_ids:
+            if not work_ids or now >= next_work_refresh:
                 rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+                snapshot_at = now
                 work_ids = tuple(row["work_id"] for row in rows)
+                next_work_refresh = now + 60
             progress = []
             for work_id in work_ids:
                 status = WorkProgress.model_validate(
@@ -86,8 +165,10 @@ def wait() -> None:
                 assert status.work_id == work_id
                 progress.append(status.model_dump(mode="json"))
         except TimeoutError:
+            status_timeouts += 1
             time.sleep(0.5)
             continue
+        latest_progress = progress
         terminal_failure = next(
             (
                 row
@@ -97,12 +178,21 @@ def wait() -> None:
             None,
         )
         if terminal_failure is not None:
+            wait_failure_annotation(
+                "terminal-work",
+                rows=rows,
+                progress=latest_progress,
+                elapsed_seconds=int(now - started),
+                snapshot_age_seconds=None if snapshot_at is None else int(now - snapshot_at),
+                status_timeouts=status_timeouts,
+            )
             exact = stove("/v1/work/" + terminal_failure["work_id"], timeout=5)
             raise RuntimeError(canonical_json_bytes(work_diagnostic(exact)).decode())
         if progress and all(row["phase"] == "complete" for row in progress):
             # Completion still inspects every complete work and its target/output
             # evidence. Newly created work remains in the wait set.
             rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
+            snapshot_at = now
             work_ids = tuple(row["work_id"] for row in rows)
             if rows and all(row["phase"] == "complete" for row in rows):
                 assert any(
@@ -124,6 +214,14 @@ def wait() -> None:
             )
             previous, next_progress = current, now + 60
         time.sleep(0.5)
+    wait_failure_annotation(
+        "completion-deadline",
+        rows=rows,
+        progress=latest_progress,
+        elapsed_seconds=int(now - started),
+        snapshot_age_seconds=None if snapshot_at is None else int(now - snapshot_at),
+        status_timeouts=status_timeouts,
+    )
     read_error = None
     try:
         rows = stove("/v1/work?page_size=100&sort=updated_at&order=asc", timeout=5)["work"]
@@ -168,34 +266,53 @@ def await_admission() -> None:
     next_progress = started
     preview_ids: tuple[str, ...] = ()
     scheduler_conflicts = 0
+    scheduler_timeouts = 0
+    status_timeouts = 0
+    read_pending = False
     diagnostic: dict[str, Any] = {"expected": expected, "scheduler_conflicts": 0}
     while (now := time.monotonic()) < deadline:
-        try:
-            result = stove(
-                "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 1}, timeout=5
-            )
-        except urllib.error.HTTPError as error:
-            if error.code != 409:
-                raise
-            with error:
-                code, _message, _details = parse_operation_error_payload(
-                    STOVE0_HTTP_ERROR_AUTHORITY,
-                    "run_scheduler",
-                    status=error.code,
-                    payload=json.load(error),
+        result: dict[str, Any] = {"admission": None}
+        if not read_pending:
+            try:
+                result = stove(
+                    "/v1/admin/scheduler/run", {"role": "controller", "work_limit": 1}, timeout=5
                 )
-            assert code == "conflict"
-            # An independent controller may commit progress before this tick loses
-            # its cursor CAS. The durable milestone still establishes completion.
-            scheduler_conflicts += 1
-            result = {"admission": None}
-        diagnostic["scheduler_conflicts"] = scheduler_conflicts
+            except TimeoutError:
+                # The request may have committed; inspect durable state before another tick.
+                scheduler_timeouts += 1
+            except urllib.error.HTTPError as error:
+                if error.code != 409:
+                    raise
+                with error:
+                    code, _message, _details = parse_operation_error_payload(
+                        STOVE0_HTTP_ERROR_AUTHORITY,
+                        "run_scheduler",
+                        status=error.code,
+                        payload=json.load(error),
+                    )
+                assert code == "conflict"
+                # An independent controller may commit before this tick loses its cursor CAS.
+                scheduler_conflicts += 1
+        diagnostic.update(
+            scheduler_conflicts=scheduler_conflicts,
+            scheduler_timeouts=scheduler_timeouts,
+            status_timeouts=status_timeouts,
+            elapsed_seconds=int(now - started),
+        )
         if result["admission"] is not None:
             assert result["admission"]["failures"] == [], result
         previews = result.get("previews") or {}
         if previews.get("progressed"):
             preview_ids = tuple(dict.fromkeys(previews["progressed"]))
-        payload = stove("/v1/admissions?page_size=100&sort=admission_id&order=asc", timeout=5)
+        try:
+            payload = stove("/v1/admissions?page_size=100&sort=admission_id&order=asc", timeout=5)
+        except TimeoutError:
+            status_timeouts += 1
+            diagnostic["status_timeouts"] = status_timeouts
+            read_pending = True
+            time.sleep(0.5)
+            continue
+        read_pending = False
         matches = [
             row
             for row in payload["admissions"]
@@ -205,12 +322,26 @@ def await_admission() -> None:
         row = matches[0] if matches else {}
         current = row.get("state")
         if current == expected:
+            if scheduler_timeouts or status_timeouts:
+                print(
+                    canonical_json_bytes(
+                        {
+                            "proof": "admission-control-recovery",
+                            "expected": expected,
+                            "elapsed_seconds": int(now - started),
+                            "scheduler_timeouts": scheduler_timeouts,
+                            "status_timeouts": status_timeouts,
+                        }
+                    ).decode(),
+                    file=sys.stderr,
+                    flush=True,
+                )
             return
         if current is not None:
             assert current in state_order, row
             assert state_order[current] < state_order[expected], row
         if current != previous or now >= next_progress:
-            planning = []
+            planning: list[dict[str, object]] = []
             for job_id in preview_ids:
                 try:
                     status = stove("/v1/workflow-previews/" + job_id, timeout=5)
@@ -237,6 +368,8 @@ def await_admission() -> None:
                 "planning": planning,
                 "preview_failures": previews.get("failures", []),
                 "scheduler_conflicts": scheduler_conflicts,
+                "scheduler_timeouts": scheduler_timeouts,
+                "status_timeouts": status_timeouts,
             }
             print(canonical_json_bytes(diagnostic).decode(), file=sys.stderr, flush=True)
             previous, next_progress = current, now + 60
@@ -562,15 +695,71 @@ def target_records() -> None:
     print(f"settled target queue: {len(jobs)} distinct successful jobs")
 
 
+def qualification_failure_annotation(error: Exception) -> None:
+    """Locate an uncaught qualification failure without copying its payload.
+
+    Only this source's declared function names and line numbers are retained;
+    imported callbacks and exception messages do not enter the annotation.
+    The caller re-raises the original exception and preserves process failure.
+    """
+    owned = {
+        value.__code__
+        for value in globals().values()
+        if isinstance(value, FunctionType) and value.__globals__ is globals()
+    }
+    frames: deque[dict[str, object]] = deque(maxlen=3)
+    trace = error.__traceback__
+    while trace is not None:
+        code = trace.tb_frame.f_code
+        if code in owned:
+            frames.append({"function": code.co_name, "line": trace.tb_lineno})
+        trace = trace.tb_next
+    diagnostic: dict[str, object] = {
+        "format": "riverhog-processing-failure-diagnostic/v1",
+        "failure_class": "unexpected",
+        "source_frames": list(frames),
+    }
+    if isinstance(error, urllib.error.HTTPError):
+        if type(error.code) is int and 100 <= error.code <= 599:
+            diagnostic.update(failure_class="http-status", http_status=error.code)
+    else:
+        for error_type, category in (
+            (AssertionError, "assertion"),
+            (TimeoutError, "timeout"),
+            (OSError, "filesystem"),
+            (ValueError, "value"),
+            (KeyError, "key"),
+            (TypeError, "type"),
+            (RuntimeError, "runtime"),
+        ):
+            if isinstance(error, error_type):
+                diagnostic["failure_class"] = category
+                break
+    print(
+        "::error title=Processing qualification::"
+        + json.dumps(diagnostic, sort_keys=True, separators=(",", ":")),
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 def main() -> None:
-    {
-        "admission": await_admission,
-        "admission-work": admission_work,
-        "invoke": invoke,
-        "wait": wait,
-        "snapshot": snapshot,
-        "target-records": target_records,
-    }[sys.argv[1]]()
+    try:
+        {
+            "admission": await_admission,
+            "admission-work": admission_work,
+            "invoke": invoke,
+            "wait": wait,
+            "snapshot": snapshot,
+            "target-records": target_records,
+        }[sys.argv[1]]()
+    except Exception as error:
+        try:
+            qualification_failure_annotation(error)
+        except Exception:
+            # A reporting failure does not replace the failure being qualified.
+            pass
+        raise
 
 
 if __name__ == "__main__":

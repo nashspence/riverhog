@@ -19,7 +19,7 @@ from state_schema import (
     assert_schema_matches_metadata,
     attach_sha256_string_constraints,
 )
-from state_schema.sqlalchemy_schema import _check_expression
+from state_schema.sqlalchemy_schema import _check_expression, _index_definition
 
 
 def _metadata(*, state_default: str, check: str, index: bool = True) -> MetaData:
@@ -245,3 +245,66 @@ def test_migration_owned_baseline_converges_fresh_and_upgraded_state(
             engine.dispose()
 
     assert fingerprint(existing) == fingerprint(fresh)
+
+
+@pytest.mark.parametrize(
+    "declared,reflected",
+    [
+        (
+            "state NOT IN ('retiring','directory') OR collection_id IS NULL",
+            "((state)::text <> ALL ((ARRAY['retiring'::character varying, "
+            "'directory'::character varying])::text[])) OR (collection_id IS NULL)",
+        ),
+        (
+            "collection_id IS NULL AND state NOT IN ('retiring','directory')",
+            "((collection_id IS NULL) AND ((state)::text <> ALL "
+            "((ARRAY['retiring'::character varying, 'directory'::character varying])::text[])))",
+        ),
+        (
+            "(collection_id IS NULL) = (journal_id IS NULL)",
+            "collection_id IS NULL) = (journal_id IS NULL",
+        ),
+    ],
+)
+def test_postgres_predicate_deparsing_preserves_exact_boolean_meaning(declared, reflected):
+    assert _check_expression(declared) == _check_expression(reflected)
+
+
+@pytest.mark.parametrize(
+    "changed",
+    [
+        "state <> ANY (ARRAY['retiring','directory']) OR collection_id IS NULL",
+        "state = ALL (ARRAY['retiring','directory']) OR collection_id IS NULL",
+        "state NOT IN ('retiring','failed') OR collection_id IS NULL",
+        "state NOT IN ('retiring','directory') AND collection_id IS NULL",
+        "state NOT IN ('retiring','directory') OR collection_id IS NOT NULL",
+    ],
+)
+def test_postgres_predicate_normalization_rejects_changed_operators_values_and_nulls(changed):
+    declared = "state NOT IN ('retiring','directory') OR collection_id IS NULL"
+    assert _check_expression(changed) != _check_expression(declared)
+
+
+def test_predicate_normalization_keeps_compound_boolean_grouping():
+    left = "(a IS NULL OR b IS NULL) AND c IS NULL"
+    right = "a IS NULL OR (b IS NULL AND c IS NULL)"
+    assert _check_expression(left) != _check_expression(right)
+    assert _check_expression("(a IS NULL) = (b IS NULL)") != _check_expression(
+        "(a IS NULL) = (b IS NOT NULL)"
+    )
+
+
+def test_postgres_partial_index_normalizes_only_equivalent_predicates():
+    head = "CREATE INDEX ix_orphans ON jobs (workspace_id) WHERE "
+    reflected = (
+        "CREATE INDEX ix_orphans ON public.jobs USING btree (workspace_id) WHERE "
+        "((collection_id IS NULL) AND ((state)::text <> ALL "
+        "((ARRAY['retiring'::character varying, 'directory'::character varying])::text[])))"
+    )
+    expected = head + "collection_id IS NULL AND state NOT IN ('retiring','directory')"
+    assert _index_definition(expected, dialect="postgresql") == _index_definition(
+        reflected, dialect="postgresql"
+    )
+    assert _index_definition(expected, dialect="postgresql") != _index_definition(
+        head + "collection_id IS NULL", dialect="postgresql"
+    )

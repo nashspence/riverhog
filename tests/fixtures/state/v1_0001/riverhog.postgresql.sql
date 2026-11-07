@@ -11,6 +11,7 @@ CREATE TABLE app_keys (
 	id VARCHAR NOT NULL,
 	app VARCHAR NOT NULL,
 	token_sha256 VARCHAR(64) NOT NULL,
+	access_generation VARCHAR(64) NOT NULL,
 	monthly_download_quota_bytes BIGINT,
 	created_at VARCHAR NOT NULL,
 	expires_at VARCHAR,
@@ -20,7 +21,8 @@ CREATE TABLE app_keys (
 	PRIMARY KEY (id),
 	CONSTRAINT ck_app_keys_download_quota CHECK (monthly_download_quota_bytes IS NULL OR monthly_download_quota_bytes >= 0),
 	CONSTRAINT ck_app_keys_token_sha256 CHECK (length(token_sha256) = 64),
-	CONSTRAINT ck_app_keys_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_app_keys_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_app_keys_access_generation_hex CHECK (length(access_generation) = 64 AND lower(access_generation) = access_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(access_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_app_keys_active ON app_keys (revoked_at, expires_at, id);
@@ -395,6 +397,7 @@ CREATE TABLE collection_artifacts (
 	artifact_id VARCHAR(64) NOT NULL,
 	bytes BIGINT NOT NULL,
 	sha256 VARCHAR(64) NOT NULL,
+	custody_receipt_json TEXT,
 	PRIMARY KEY (collection_id, artifact_id),
 	FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE,
 	CONSTRAINT ck_collection_artifacts_bytes CHECK (bytes >= 0 AND bytes < 9223372036854775808),
@@ -778,10 +781,14 @@ CREATE TABLE collection_uploads (
 	archive_attempt_count INTEGER NOT NULL,
 	archive_next_attempt_at VARCHAR,
 	archive_last_attempt_at VARCHAR,
+	archive_claim_id VARCHAR(64),
 	archive_failure VARCHAR,
 	archive_storage_prefix VARCHAR NOT NULL,
 	delivery_context_id VARCHAR NOT NULL,
 	planner_checkpoint_json TEXT NOT NULL,
+	planner_next_sequence VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
+	registration_revision BIGINT DEFAULT 0 NOT NULL,
+	active_registration_id VARCHAR(64),
 	archive_tree_next_artifact_order BIGINT DEFAULT 0 NOT NULL,
 	archive_tree_after_artifact_id VARCHAR(64),
 	archive_tree_hash_state TEXT,
@@ -802,9 +809,12 @@ CREATE TABLE collection_uploads (
 	provenance_archive_current_journal_offset BIGINT DEFAULT 0 NOT NULL,
 	provenance_archive_next_sequence VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
 	provenance_archive_hash_state TEXT,
+	provenance_archive_binding_tree_state TEXT,
+	provenance_archive_journal_count VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
 	provenance_archive_ordered_sha256 VARCHAR(64),
 	provenance_archive_terminal_receipt_json TEXT,
 	provenance_archive_root_receipt_json TEXT,
+	archive_root_receipt_json TEXT,
 	final_authority_json TEXT,
 	catalog_phase VARCHAR DEFAULT 'artifact-set-identity' NOT NULL,
 	catalog_cursor_json TEXT DEFAULT '{}' NOT NULL,
@@ -824,7 +834,7 @@ CREATE TABLE collection_uploads (
 	CONSTRAINT ck_collection_uploads_artifact_count CHECK (artifact_count >= 0),
 	CONSTRAINT ck_collection_uploads_tree_progress CHECK (archive_tree_next_artifact_order >= 0),
 	CONSTRAINT ck_collection_uploads_volume_progress CHECK (length(archive_volume_next_sequence) = 64 AND lower(archive_volume_next_sequence) = archive_volume_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_volume_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
-	CONSTRAINT ck_collection_uploads_provenance_progress CHECK (provenance_validation_next_artifact_order >= 0 AND provenance_archive_next_artifact_order >= 0 AND provenance_archive_current_journal_offset >= 0 AND length(provenance_archive_next_sequence) = 64 AND lower(provenance_archive_next_sequence) = provenance_archive_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_uploads_provenance_progress CHECK (provenance_validation_next_artifact_order >= 0 AND provenance_archive_next_artifact_order >= 0 AND provenance_archive_current_journal_offset >= 0 AND length(provenance_archive_next_sequence) = 64 AND lower(provenance_archive_next_sequence) = provenance_archive_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0 AND length(provenance_archive_journal_count) = 64 AND lower(provenance_archive_journal_count) = provenance_archive_journal_count AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_journal_count, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collection_uploads_catalog_phase CHECK (catalog_phase IN ('artifact-set-identity','inventory-identity','collection','tags','artifacts','journals','bindings','provenance-segments','archive-objects','artifact-objects','index','terminal','complete')),
 	CONSTRAINT ck_collection_uploads_artifact_bytes CHECK (artifact_bytes >= 0),
 	CONSTRAINT ck_collection_uploads_payload_sealed_artifact_count CHECK (payload_sealed_artifact_count >= 0 AND payload_sealed_artifact_count <= artifact_count),
@@ -862,7 +872,12 @@ CREATE TABLE collection_uploads (
 	CONSTRAINT ck_sha256_c13ae3d276f577ae CHECK (provenance_archive_after_artifact_id IS NULL OR length(provenance_archive_after_artifact_id) = 64 AND lower(provenance_archive_after_artifact_id) = provenance_archive_after_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_after_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_uploads_provenance_archive_ordered_sha256_hex CHECK (provenance_archive_ordered_sha256 IS NULL OR length(provenance_archive_ordered_sha256) = 64 AND lower(provenance_archive_ordered_sha256) = provenance_archive_ordered_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_archive_ordered_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_uploads_catalog_artifact_set_identity_hex CHECK (catalog_artifact_set_identity IS NULL OR length(catalog_artifact_set_identity) = 64 AND lower(catalog_artifact_set_identity) = catalog_artifact_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_uploads_catalog_inventory_identity_hex CHECK (catalog_inventory_identity IS NULL OR length(catalog_inventory_identity) = 64 AND lower(catalog_inventory_identity) = catalog_inventory_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_inventory_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_collection_uploads_catalog_inventory_identity_hex CHECK (catalog_inventory_identity IS NULL OR length(catalog_inventory_identity) = 64 AND lower(catalog_inventory_identity) = catalog_inventory_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_inventory_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_active_registration CHECK (length(active_registration_id) = 64 AND lower(active_registration_id) = active_registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(active_registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_uploads_active_registration_id_hex CHECK (active_registration_id IS NULL OR length(active_registration_id) = 64 AND lower(active_registration_id) = active_registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(active_registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_archive_claim_id_hex CHECK (archive_claim_id IS NULL OR length(archive_claim_id) = 64 AND lower(archive_claim_id) = archive_claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_uploads_planner_sequence CHECK (length(planner_next_sequence) = 64 AND lower(planner_next_sequence) = planner_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(planner_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_uploads_registration_revision CHECK (registration_revision >= 0)
 );
 
 CREATE INDEX ix_collection_uploads_artifact_bytes ON collection_uploads (artifact_bytes, collection_id);
@@ -909,6 +924,10 @@ CREATE TABLE key_download_usage (
 );
 
 CREATE TABLE retrieval_cache_populations (
+	generation VARCHAR(64) NOT NULL,
+	begin_call_id VARCHAR(64),
+	closed_receipt_json TEXT,
+	publication_json TEXT,
 	source_store VARCHAR NOT NULL,
 	source_incarnation_id VARCHAR(36) NOT NULL,
 	collection_id BIGINT NOT NULL,
@@ -926,8 +945,12 @@ CREATE TABLE retrieval_cache_populations (
 	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
 	CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1),
-	CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','abandoning')),
-	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning'))
+	CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','sealed','published','abandoning')),
+	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing','sealed','published') OR state = 'abandoning')),
+	CONSTRAINT ck_retrieval_cache_populations_closed_receipt CHECK (state NOT IN ('sealed','published') OR begin_call_id IS NOT NULL AND closed_receipt_json IS NOT NULL),
+	CONSTRAINT ck_retrieval_cache_populations_publication CHECK (publication_json IS NULL OR state = 'published' AND closed_receipt_json IS NOT NULL),
+	CONSTRAINT ck_retrieval_cache_populations_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_retrieval_cache_populations_begin_call_id_hex CHECK (begin_call_id IS NULL OR length(begin_call_id) = 64 AND lower(begin_call_id) = begin_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(begin_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_retrieval_cache_populations_store_state ON retrieval_cache_populations (cache_store, state, updated_at, collection_id, source_store, object_id);
@@ -1045,22 +1068,30 @@ CREATE TABLE collection_archive_object_uploads (
 	source_artifact_id VARCHAR(64),
 	source_first_part BIGINT,
 	source_part_count BIGINT,
+	source_last_part BIGINT GENERATED ALWAYS AS (source_first_part + source_part_count) STORED,
 	unit_plaintext_bytes BIGINT NOT NULL,
 	plan_json TEXT NOT NULL,
 	plan_sha256 VARCHAR(64) NOT NULL,
 	state VARCHAR NOT NULL,
+	work_ready BOOLEAN DEFAULT false NOT NULL,
 	checkpoint_json TEXT,
 	sealed_receipt_json TEXT,
 	metadata_receipt_json TEXT,
+	cache_receipt_json TEXT,
+	cache_publication_json TEXT,
 	failure TEXT,
 	uploaded_bytes BIGINT NOT NULL,
 	uploaded_units INTEGER NOT NULL,
+	next_unit INTEGER DEFAULT 0 NOT NULL,
 	total_units INTEGER NOT NULL,
 	updated_at VARCHAR NOT NULL,
 	sealed_at VARCHAR,
+	registration_id VARCHAR(64),
 	PRIMARY KEY (collection_id, object_id),
+	CONSTRAINT ck_upload_plans_registration CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_archive_object_uploads_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_archive_object_uploads_cache_publication CHECK (cache_publication_json IS NULL OR cache_receipt_json IS NOT NULL),
 	CONSTRAINT ck_archive_object_uploads_plaintext CHECK (plaintext_bytes >= 0),
 	CONSTRAINT ck_archive_object_uploads_source CHECK (source_bytes >= 0),
 	CONSTRAINT ck_archive_object_uploads_source_parts CHECK (kind = 'pack' AND source_artifact_id IS NULL AND source_first_part IS NULL AND source_part_count IS NULL OR kind = 'segment' AND source_artifact_id IS NOT NULL AND source_first_part >= 0 AND source_part_count > 0),
@@ -1069,12 +1100,22 @@ CREATE TABLE collection_archive_object_uploads (
 	CONSTRAINT ck_archive_object_uploads_uploaded_bytes CHECK (uploaded_bytes >= 0),
 	CONSTRAINT ck_archive_object_uploads_uploaded_units CHECK (uploaded_units >= 0),
 	CONSTRAINT ck_archive_object_uploads_total_units CHECK (total_units >= 0),
+	CONSTRAINT ck_archive_object_uploads_next_unit CHECK (next_unit >= 0 AND next_unit <= uploaded_units),
 	CONSTRAINT ck_archive_object_uploads_unit_progress CHECK (uploaded_units <= total_units),
 	CONSTRAINT ck_collection_archive_object_uploads_source_artifact_id_hex CHECK (source_artifact_id IS NULL OR length(source_artifact_id) = 64 AND lower(source_artifact_id) = source_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_archive_object_uploads_plan_sha256_hex CHECK (length(plan_sha256) = 64 AND lower(plan_sha256) = plan_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_collection_archive_object_uploads_plan_sha256_hex CHECK (length(plan_sha256) = 64 AND lower(plan_sha256) = plan_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_archive_object_uploads_registration_id_hex CHECK (registration_id IS NULL OR length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
+CREATE INDEX ix_upload_plans_registration ON collection_archive_object_uploads (collection_id, registration_id, sequence);
+
 CREATE UNIQUE INDEX ux_collection_archive_object_uploads_sequence ON collection_archive_object_uploads (collection_id, sequence);
+
+CREATE INDEX ix_collection_archive_object_uploads_ready_sequence ON collection_archive_object_uploads (collection_id, sequence) WHERE ((state) != 'sealed') AND (work_ready IS true);
+
+CREATE INDEX ix_collection_archive_object_uploads_raw_boundary ON collection_archive_object_uploads (collection_id, source_artifact_id, source_last_part);
+
+CREATE INDEX ix_collection_archive_object_uploads_pending_source ON collection_archive_object_uploads (collection_id, source_artifact_id) WHERE ((state) != 'sealed') OR (sealed_receipt_json IS NULL);
 
 CREATE TABLE collection_archive_objects (
 	collection_id BIGINT NOT NULL,
@@ -1637,6 +1678,7 @@ CREATE TABLE collection_upload_artifacts (
 	raw_part_commitment_sha256 VARCHAR(64),
 	payload_sealed_at VARCHAR,
 	custody_receipt_json TEXT,
+	registration_id VARCHAR(64),
 	PRIMARY KEY (collection_id, artifact_id),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_collection_upload_artifacts_order CHECK (artifact_order >= 0),
@@ -1647,8 +1689,12 @@ CREATE TABLE collection_upload_artifacts (
 	CONSTRAINT ck_collection_upload_artifacts_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_upload_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_upload_artifacts_raw_part_ordered_sha256_hex CHECK (raw_part_ordered_sha256 IS NULL OR length(raw_part_ordered_sha256) = 64 AND lower(raw_part_ordered_sha256) = raw_part_ordered_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_ordered_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_ca35dbfa303620e0 CHECK (raw_part_commitment_sha256 IS NULL OR length(raw_part_commitment_sha256) = 64 AND lower(raw_part_commitment_sha256) = raw_part_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_sha256_ca35dbfa303620e0 CHECK (raw_part_commitment_sha256 IS NULL OR length(raw_part_commitment_sha256) = 64 AND lower(raw_part_commitment_sha256) = raw_part_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_upload_artifacts_registration_id_hex CHECK (registration_id IS NULL OR length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_upload_members_registration CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)
 );
+
+CREATE INDEX ix_upload_members_registration ON collection_upload_artifacts (collection_id, registration_id, artifact_order);
 
 CREATE INDEX idx_collection_upload_artifacts_collection_id ON collection_upload_artifacts (collection_id, artifact_id);
 
@@ -1789,7 +1835,11 @@ CREATE TABLE collection_upload_tag_publication_frontier (
 	CONSTRAINT ck_sha256_6acac9b414fb5e15 CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_upload_tag_frontier_work ON collection_upload_tag_publication_frontier (collection_id, published, expanded, node_digest);
+CREATE INDEX ix_upload_tag_frontier_receipts ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE published IS true;
+
+CREATE INDEX ix_upload_tag_frontier_expand_pending ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE expanded IS false;
+
+CREATE INDEX ix_upload_tag_frontier_publish_pending ON collection_upload_tag_publication_frontier (collection_id, node_digest) WHERE published IS false;
 
 CREATE TABLE collection_upload_tags (
 	collection_id BIGINT NOT NULL,
@@ -2051,13 +2101,18 @@ CREATE TABLE collection_upload_artifact_volumes (
 	collection_id BIGINT NOT NULL,
 	artifact_id VARCHAR(64) NOT NULL,
 	object_id VARCHAR NOT NULL,
+	registration_id VARCHAR(64),
 	PRIMARY KEY (collection_id, artifact_id, object_id),
 	FOREIGN KEY(collection_id, artifact_id) REFERENCES collection_upload_artifacts (collection_id, artifact_id) ON DELETE CASCADE,
 	FOREIGN KEY(collection_id, object_id) REFERENCES collection_archive_object_uploads (collection_id, object_id) ON DELETE CASCADE,
-	CONSTRAINT ck_collection_upload_artifact_volumes_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_collection_upload_artifact_volumes_artifact_id_hex CHECK (length(artifact_id) = 64 AND lower(artifact_id) = artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_upload_artifact_volumes_registration_id_hex CHECK (registration_id IS NULL OR length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_upload_coverage_registration CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)
 );
 
-CREATE INDEX ix_collection_upload_artifact_volumes_object ON collection_upload_artifact_volumes (collection_id, object_id);
+CREATE INDEX ix_upload_coverage_registration ON collection_upload_artifact_volumes (collection_id, registration_id, artifact_id, object_id);
+
+CREATE INDEX ix_collection_upload_artifact_volumes_object ON collection_upload_artifact_volumes (collection_id, object_id, artifact_id);
 
 CREATE TABLE collection_upload_member_histories (
 	collection_id BIGINT NOT NULL,
@@ -2421,6 +2476,49 @@ CREATE INDEX ix_collection_artifacts_id_trgm ON collection_artifacts USING gin (
 CREATE INDEX ix_collection_artifacts_sha_trgm ON collection_artifacts USING gin (sha256 gin_trgm_ops)
 ;
 
+CREATE TABLE cache_population_begins (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	source_store VARCHAR NOT NULL,
+	object_id VARCHAR NOT NULL,
+	population_generation VARCHAR(64) NOT NULL,
+	cache_store VARCHAR NOT NULL,
+	cache_incarnation_id VARCHAR(36) NOT NULL,
+	completion_call_id VARCHAR(64),
+	executor_id VARCHAR(64) NOT NULL,
+	dispatch_sha256 VARCHAR(64) NOT NULL,
+	request_sha256 VARCHAR(64) NOT NULL,
+	request_json TEXT NOT NULL,
+	state VARCHAR NOT NULL,
+	unresolved BOOLEAN NOT NULL,
+	control_bytes BIGINT NOT NULL,
+	result_capacity_bytes BIGINT NOT NULL,
+	cleanup_capacity_bytes BIGINT NOT NULL,
+	observation_json TEXT,
+	result_json TEXT,
+	PRIMARY KEY (id),
+	CONSTRAINT uq_cache_population_begins_generation UNIQUE (population_generation),
+	CONSTRAINT ck_cache_population_begins_state CHECK (state IN ('armed','uncertain','settled')),
+	CONSTRAINT ck_cache_population_begins_capacity CHECK (control_bytes > 0 AND result_capacity_bytes > 0 AND cleanup_capacity_bytes > 0),
+	CONSTRAINT ck_cache_population_begins_outcome CHECK (state = 'settled' AND unresolved IS false AND result_json IS NOT NULL OR state IN ('armed','uncertain') AND unresolved IS true AND result_json IS NULL),
+	CONSTRAINT ck_cache_population_begins_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_population_generation_hex CHECK (length(population_generation) = 64 AND lower(population_generation) = population_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(population_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_completion_call_id_hex CHECK (completion_call_id IS NULL OR length(completion_call_id) = 64 AND lower(completion_call_id) = completion_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(completion_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_executor_id_hex CHECK (length(executor_id) = 64 AND lower(executor_id) = executor_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(executor_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_begins_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_cache_population_begins_capacity ON cache_population_begins (collection_id, id);
+
+CREATE INDEX ix_cache_population_begins_object ON cache_population_begins (source_store, collection_id, object_id);
+
+CREATE INDEX ix_cache_population_begins_pending ON cache_population_begins (collection_id, unresolved, id);
+
+CREATE INDEX ix_retrieval_cache_populations_reap ON retrieval_cache_populations (begin_call_id, updated_at, source_store, collection_id, object_id);
+
+CREATE INDEX ix_retrieval_cache_populations_source_reap ON retrieval_cache_populations (begin_call_id, source_store, collection_id, object_id);
+
 CREATE INDEX ix_collection_processing_capability_scope_owner ON collection_processing_capabilities (artifact_scope_capability_id, id);
 
 CREATE TABLE collection_upload_provenance_capture_segments (
@@ -2624,5 +2722,405 @@ CREATE TABLE collection_upload_provenance_retired_preparations (
 	CONSTRAINT ck_upload_retired_preparation_version CHECK (length(version) = 64 AND lower(version) = version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_upload_retired_preparation_phase CHECK (phase >= 0 AND phase < 7)
 );
+
+CREATE TABLE journal_validation_jobs (
+	workspace_id VARCHAR(32) NOT NULL, 
+	collection_id BIGINT, 
+	journal_id VARCHAR(45), 
+	attempt_id VARCHAR NOT NULL, 
+	source_binding_json TEXT NOT NULL, 
+	certificate_binding_json TEXT NOT NULL, 
+	worker_epoch BIGINT NOT NULL, 
+	version VARCHAR(64) NOT NULL, 
+	state VARCHAR NOT NULL, 
+	progress_json TEXT, 
+	outcome_json TEXT, 
+	failure TEXT, 
+	PRIMARY KEY (workspace_id), 
+	FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE SET NULL, 
+	CONSTRAINT ck_journal_validation_source_link CHECK ((collection_id IS NULL) = (journal_id IS NULL)), 
+	CONSTRAINT ck_journal_validation_retired_source CHECK (state NOT IN ('retiring','directory') OR collection_id IS NULL), 
+	CONSTRAINT ck_journal_validation_worker_epoch CHECK (worker_epoch >= 0), 
+	CONSTRAINT ck_journal_validation_state CHECK (state IN ('opening','active','complete','failed','lost','retiring','directory')), 
+	CONSTRAINT ck_journal_validation_workspace CHECK (length(workspace_id) = 32 AND lower(workspace_id) = workspace_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(workspace_id, '0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0), 
+	CONSTRAINT ck_journal_validation_outcome CHECK (state NOT IN ('complete','failed') OR outcome_json IS NOT NULL), 
+	CONSTRAINT ck_journal_validation_jobs_version_hex CHECK (length(version) = 64 AND lower(version) = version AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_journal_validation_orphan_workspace ON journal_validation_jobs (workspace_id) WHERE collection_id IS NULL AND state NOT IN ('retiring','directory');
+
+CREATE INDEX ix_journal_validation_state_workspace ON journal_validation_jobs (state, workspace_id);
+
+CREATE UNIQUE INDEX uq_journal_validation_source ON journal_validation_jobs (collection_id, journal_id) WHERE collection_id IS NOT NULL;
+
+CREATE TABLE discovery_validation_jobs (
+	workspace_id VARCHAR(32) NOT NULL,
+	build_id VARCHAR(36),
+	attempt_id VARCHAR(32) NOT NULL,
+	admission_sha256 VARCHAR(64) NOT NULL,
+	archive_generation VARCHAR(64) NOT NULL,
+	archive_root_sha256 VARCHAR(64) NOT NULL,
+	provenance_identity VARCHAR(64) NOT NULL,
+	artifact_set_identity VARCHAR(64) NOT NULL,
+	journal_count TEXT NOT NULL,
+	build_epoch BIGINT NOT NULL,
+	policy_sha256 VARCHAR(64) NOT NULL,
+	catalog_sha256 VARCHAR(64) NOT NULL,
+	worker_epoch BIGINT NOT NULL,
+	version VARCHAR(64) NOT NULL,
+	state VARCHAR NOT NULL,
+	source_manifest_sha256 VARCHAR(64),
+	source_count TEXT,
+	selection_manifest_sha256 VARCHAR(64),
+	selection_count TEXT,
+	failure TEXT,
+	PRIMARY KEY (workspace_id),
+	FOREIGN KEY(build_id) REFERENCES collection_provenance_index_generations (build_id) ON DELETE SET NULL,
+	CONSTRAINT ck_discovery_validation_build_epoch CHECK (build_epoch >= 1),
+	CONSTRAINT ck_discovery_validation_worker_epoch CHECK (worker_epoch >= 0),
+	CONSTRAINT ck_discovery_validation_state CHECK (state IN ('preparing','seeding','ready','active','lost','retiring','directory')),
+	CONSTRAINT ck_discovery_validation_retired CHECK (state NOT IN ('retiring','directory') OR build_id IS NULL),
+	CONSTRAINT ck_discovery_validation_pinned_inputs CHECK (source_manifest_sha256 IS NULL AND source_count IS NULL AND selection_manifest_sha256 IS NULL AND selection_count IS NULL OR source_manifest_sha256 IS NOT NULL AND source_count IS NOT NULL AND selection_manifest_sha256 IS NOT NULL AND selection_count IS NOT NULL),
+	CONSTRAINT ck_discovery_validation_ready_inputs CHECK (state NOT IN ('ready','active') OR source_manifest_sha256 IS NOT NULL),
+	CONSTRAINT ck_discovery_validation_lost_reason CHECK (state != 'lost' OR failure IS NOT NULL),
+	CONSTRAINT ck_discovery_validation_workspace_id CHECK (length(workspace_id) = 32 AND lower(workspace_id) = workspace_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(workspace_id,'0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0),
+	CONSTRAINT ck_discovery_validation_attempt_id CHECK (length(attempt_id) = 32 AND lower(attempt_id) = attempt_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_id,'0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0),
+	CONSTRAINT ck_discovery_validation_jobs_admission_sha256_hex CHECK (length(admission_sha256) = 64 AND lower(admission_sha256) = admission_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(admission_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_archive_generation_hex CHECK (length(archive_generation) = 64 AND lower(archive_generation) = archive_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_archive_root_sha256_hex CHECK (length(archive_root_sha256) = 64 AND lower(archive_root_sha256) = archive_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_provenance_identity_hex CHECK (length(provenance_identity) = 64 AND lower(provenance_identity) = provenance_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(provenance_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_artifact_set_identity_hex CHECK (length(artifact_set_identity) = 64 AND lower(artifact_set_identity) = artifact_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_policy_sha256_hex CHECK (length(policy_sha256) = 64 AND lower(policy_sha256) = policy_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(policy_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_catalog_sha256_hex CHECK (length(catalog_sha256) = 64 AND lower(catalog_sha256) = catalog_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(catalog_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_version_hex CHECK (length(version) = 64 AND lower(version) = version AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_source_manifest_sha256_hex CHECK (source_manifest_sha256 IS NULL OR length(source_manifest_sha256) = 64 AND lower(source_manifest_sha256) = source_manifest_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_manifest_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_discovery_validation_jobs_selection_manifest_sha256_hex CHECK (selection_manifest_sha256 IS NULL OR length(selection_manifest_sha256) = 64 AND lower(selection_manifest_sha256) = selection_manifest_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(selection_manifest_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_discovery_validation_orphan_workspace ON discovery_validation_jobs (workspace_id) WHERE build_id IS NULL AND state NOT IN ('retiring','directory');
+
+CREATE INDEX ix_discovery_validation_state_workspace ON discovery_validation_jobs (state, workspace_id);
+
+CREATE UNIQUE INDEX uq_discovery_validation_build ON discovery_validation_jobs (build_id) WHERE build_id IS NOT NULL;
+
+CREATE TABLE collection_registrations (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	principal_id VARCHAR NOT NULL,
+	construction_json TEXT NOT NULL,
+	request_sha256 VARCHAR(64) NOT NULL,
+	request_json TEXT NOT NULL,
+	new_members_json TEXT NOT NULL,
+	base_checkpoint_json TEXT NOT NULL,
+	base_revision TEXT NOT NULL,
+	stage_frontier_json TEXT NOT NULL,
+	verify_frontier_json TEXT NOT NULL,
+	stage_chain VARCHAR(64) NOT NULL,
+	verify_chain VARCHAR(64) NOT NULL,
+	stage_totals_json TEXT NOT NULL,
+	verify_totals_json TEXT NOT NULL,
+	coverage_audit_after_artifact_id VARCHAR(64),
+	coverage_audit_after_object_id VARCHAR,
+	coverage_audited_rows TEXT NOT NULL,
+	phase VARCHAR NOT NULL,
+	execution_epoch VARCHAR(64) NOT NULL,
+	authorized_tag_set_identity VARCHAR(64) NOT NULL,
+	key_id VARCHAR,
+	key_app VARCHAR,
+	key_generation VARCHAR(64),
+	claim_id VARCHAR,
+	acknowledgement_json TEXT,
+	failure_json TEXT,
+	disposition_json TEXT,
+	cleanup_phase VARCHAR,
+	due_at VARCHAR,
+	created_at VARCHAR NOT NULL,
+	updated_at VARCHAR NOT NULL,
+	PRIMARY KEY (id),
+	CONSTRAINT ck_collection_registrations_phase CHECK (phase IN ('staging','verifying','auditing','ready','published','paused','cleaning','disposed','failed')),
+	CONSTRAINT ck_collection_registrations_key CHECK (key_id IS NULL AND key_app IS NULL AND key_generation IS NULL OR key_id IS NOT NULL AND key_app IS NOT NULL AND key_generation IS NOT NULL),
+	CONSTRAINT ck_collection_registrations_ack CHECK (phase <> 'published' OR acknowledgement_json IS NOT NULL),
+	CONSTRAINT ck_collection_registrations_published CHECK (acknowledgement_json IS NULL OR phase = 'published'),
+	CONSTRAINT ck_collection_registrations_cleanup CHECK (cleanup_phase IS NULL OR cleanup_phase IN ('coverage','plans','members','summaries','finish','done')),
+	CONSTRAINT ck_collection_registrations_disposition CHECK (phase NOT IN ('cleaning','disposed') OR disposition_json IS NOT NULL),
+	CONSTRAINT ck_collection_registrations_cleanup_required CHECK (phase NOT IN ('cleaning','disposed') OR cleanup_phase IS NOT NULL),
+	CONSTRAINT ck_collection_registrations_disposed CHECK (phase <> 'disposed' OR cleanup_phase = 'done'),
+	CONSTRAINT ck_collection_registrations_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_stage_chain_hex CHECK (length(stage_chain) = 64 AND lower(stage_chain) = stage_chain AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stage_chain, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_verify_chain_hex CHECK (length(verify_chain) = 64 AND lower(verify_chain) = verify_chain AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(verify_chain, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_57c49f0cfe6bea1d CHECK (coverage_audit_after_artifact_id IS NULL OR length(coverage_audit_after_artifact_id) = 64 AND lower(coverage_audit_after_artifact_id) = coverage_audit_after_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(coverage_audit_after_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_execution_epoch_hex CHECK (length(execution_epoch) = 64 AND lower(execution_epoch) = execution_epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_authorized_tag_set_identity_hex CHECK (length(authorized_tag_set_identity) = 64 AND lower(authorized_tag_set_identity) = authorized_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authorized_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_registrations_key_generation_hex CHECK (key_generation IS NULL OR length(key_generation) = 64 AND lower(key_generation) = key_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(key_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_collection_registrations_collection ON collection_registrations (collection_id, id);
+
+CREATE INDEX ix_collection_registrations_due ON collection_registrations (phase, due_at, collection_id, id);
+
+CREATE INDEX ix_collection_registrations_request ON collection_registrations (collection_id, request_sha256);
+
+CREATE TABLE collection_registration_volumes (
+	registration_id VARCHAR(64) NOT NULL,
+	sequence VARCHAR(64) NOT NULL,
+	object_id VARCHAR NOT NULL,
+	kind VARCHAR NOT NULL,
+	PRIMARY KEY (registration_id, sequence),
+	FOREIGN KEY(registration_id) REFERENCES collection_registrations (id),
+	CONSTRAINT ck_collection_registration_volumes_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	CONSTRAINT ck_collection_registration_volumes_kind CHECK (kind IN ('pack','segment')),
+	CONSTRAINT ck_collection_registration_volumes_registration_id_hex CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE archive_write_controls (
+	collection_id BIGINT NOT NULL,
+	construction_json TEXT NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	gate VARCHAR NOT NULL,
+	next_call TEXT NOT NULL,
+	terminal_id VARCHAR(64),
+	PRIMARY KEY (collection_id),
+	CONSTRAINT ck_archive_write_controls_gate CHECK (gate IN ('open','closed')),
+	CONSTRAINT ck_archive_write_controls_terminal CHECK (terminal_id IS NULL OR gate = 'closed'),
+	CONSTRAINT ck_archive_write_controls_epoch_hex CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_controls_terminal_id_hex CHECK (terminal_id IS NULL OR length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE archive_write_preparations (
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	identity_json TEXT NOT NULL,
+	preparation_json TEXT NOT NULL,
+	PRIMARY KEY (collection_id, object_id),
+	FOREIGN KEY(collection_id) REFERENCES archive_write_controls (collection_id)
+);
+
+CREATE TABLE archive_write_effects (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	sequence TEXT NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	executor_id VARCHAR(64) NOT NULL,
+	dispatch_sha256 VARCHAR(64) NOT NULL,
+	request_sha256 VARCHAR(64) NOT NULL,
+	request_json TEXT NOT NULL,
+	resource VARCHAR NOT NULL,
+	kind VARCHAR NOT NULL,
+	state VARCHAR NOT NULL,
+	unresolved BOOLEAN NOT NULL,
+	control_bytes BIGINT NOT NULL,
+	result_capacity_bytes BIGINT NOT NULL,
+	observation_json TEXT,
+	result_json TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(collection_id, object_id) REFERENCES archive_write_preparations (collection_id, object_id),
+	CONSTRAINT ck_archive_write_effects_kind CHECK (kind IN ('begin','part','complete','lookup','put')),
+	CONSTRAINT ck_archive_write_effects_state CHECK (state IN ('armed','uncertain','settled')),
+	CONSTRAINT ck_archive_write_effects_bytes CHECK (control_bytes > 0 AND result_capacity_bytes > 0),
+	CONSTRAINT ck_archive_write_effects_result CHECK (state <> 'settled' OR result_json IS NOT NULL),
+	CONSTRAINT ck_archive_write_effects_unsettled CHECK (state = 'settled' OR result_json IS NULL),
+	CONSTRAINT ck_archive_write_effects_unresolved CHECK (state = 'settled' AND unresolved IS false OR state IN ('armed','uncertain') AND unresolved IS true),
+	CONSTRAINT ck_archive_write_effects_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_effects_epoch_hex CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_effects_executor_id_hex CHECK (length(executor_id) = 64 AND lower(executor_id) = executor_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(executor_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_effects_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_effects_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_archive_write_effects_capacity ON archive_write_effects (collection_id, id);
+
+CREATE INDEX ix_archive_write_effects_pending ON archive_write_effects (collection_id, unresolved, id);
+
+CREATE INDEX ix_archive_write_effects_volume ON archive_write_effects (collection_id, object_id, unresolved, resource);
+
+CREATE TABLE archive_upload_terminals (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	request_json TEXT NOT NULL,
+	principal_id VARCHAR NOT NULL,
+	kind VARCHAR NOT NULL,
+	phase VARCHAR NOT NULL,
+	frontier TEXT NOT NULL,
+	original_epoch VARCHAR(64) NOT NULL,
+	drain_next_attempt_at VARCHAR DEFAULT '1970-01-01T00:00:00.000000000Z' NOT NULL,
+	result_json TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(collection_id) REFERENCES archive_write_controls (collection_id),
+	CONSTRAINT ck_archive_upload_terminals_kind CHECK (kind IN ('cancel','discard')),
+	CONSTRAINT ck_archive_upload_terminals_phase CHECK (phase IN ('draining','refused-sealed','needs-reconfirmation','cleanup-ready','cleaning','done')),
+	CONSTRAINT ck_archive_upload_terminals_result CHECK (phase <> 'done' OR result_json IS NOT NULL),
+	CONSTRAINT ck_archive_upload_terminals_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_upload_terminals_original_epoch_hex CHECK (length(original_epoch) = 64 AND lower(original_epoch) = original_epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(original_epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_archive_upload_terminals_collection ON archive_upload_terminals (collection_id, id);
+
+CREATE TABLE collection_archive_object_upload_units (
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	unit INTEGER NOT NULL,
+	PRIMARY KEY (collection_id, object_id, unit),
+	FOREIGN KEY(collection_id, object_id) REFERENCES collection_archive_object_uploads (collection_id, object_id) ON DELETE CASCADE,
+	CONSTRAINT ck_archive_object_upload_units_unit CHECK (unit >= 0)
+);
+
+CREATE TABLE cache_population_write_effects (
+	id VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	source_store VARCHAR NOT NULL,
+	object_id VARCHAR NOT NULL,
+	population_generation VARCHAR(64) NOT NULL,
+	cache_store VARCHAR NOT NULL,
+	cache_incarnation_id VARCHAR(36) NOT NULL,
+	begin_call_id VARCHAR(64) NOT NULL,
+	kind VARCHAR NOT NULL,
+	resource VARCHAR NOT NULL,
+	executor_id VARCHAR(64) NOT NULL,
+	dispatch_sha256 VARCHAR(64) NOT NULL,
+	request_sha256 VARCHAR(64) NOT NULL,
+	request_json TEXT NOT NULL,
+	state VARCHAR NOT NULL,
+	unresolved BOOLEAN NOT NULL,
+	control_bytes BIGINT NOT NULL,
+	result_capacity_bytes BIGINT NOT NULL,
+	cleanup_capacity_bytes BIGINT NOT NULL,
+	observation_json TEXT,
+	result_json TEXT,
+	PRIMARY KEY (id),
+	CONSTRAINT ck_cache_write_effects_kind CHECK (kind IN ('part','complete')),
+	CONSTRAINT ck_cache_write_effects_state CHECK (state IN ('armed','uncertain','settled')),
+	CONSTRAINT ck_cache_write_effects_capacity CHECK (control_bytes > 0 AND result_capacity_bytes > 0 AND cleanup_capacity_bytes > 0),
+	CONSTRAINT ck_cache_write_effects_outcome CHECK (state = 'settled' AND unresolved IS false AND result_json IS NOT NULL OR state IN ('armed','uncertain') AND unresolved IS true AND result_json IS NULL),
+	CONSTRAINT ck_cache_population_write_effects_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_population_generation_hex CHECK (length(population_generation) = 64 AND lower(population_generation) = population_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(population_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_begin_call_id_hex CHECK (length(begin_call_id) = 64 AND lower(begin_call_id) = begin_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(begin_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_executor_id_hex CHECK (length(executor_id) = 64 AND lower(executor_id) = executor_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(executor_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_write_effects_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_cache_write_effects_capacity ON cache_population_write_effects (collection_id, id);
+
+CREATE INDEX ix_cache_write_effects_pending ON cache_population_write_effects (collection_id, unresolved, id);
+
+CREATE INDEX ix_cache_write_effects_session ON cache_population_write_effects (begin_call_id, unresolved, resource, id);
+
+CREATE INDEX ix_cache_write_effects_object ON cache_population_write_effects (source_store, collection_id, object_id);
+
+CREATE TABLE collection_upload_provenance_journal_publications (
+	collection_id BIGINT NOT NULL,
+	plaintext_sha256 VARCHAR(64) NOT NULL,
+	source_json TEXT NOT NULL,
+	source_sha256 VARCHAR(64) NOT NULL,
+	receipt_json TEXT,
+	PRIMARY KEY (collection_id, plaintext_sha256),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_journal_publication_source CHECK (length(source_json) > 0),
+	CONSTRAINT ck_sha256_b2d44a0b6ebd9697 CHECK (length(plaintext_sha256) = 64 AND lower(plaintext_sha256) = plaintext_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plaintext_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_565b9cec51421e53 CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_upload_provenance_volume_publications (
+	collection_id BIGINT NOT NULL,
+	sequence VARCHAR(64) NOT NULL,
+	document_json TEXT NOT NULL,
+	source_json TEXT NOT NULL,
+	source_sha256 VARCHAR(64) NOT NULL,
+	binding_payload_sha256 VARCHAR(64),
+	payload_receipt_json TEXT,
+	metadata_receipt_json TEXT,
+	progress_receipt_json TEXT,
+	PRIMARY KEY (collection_id, sequence),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT uq_provenance_volume_publication_binding_payload UNIQUE (collection_id, binding_payload_sha256),
+	CONSTRAINT ck_provenance_volume_publication_source CHECK (length(document_json) > 0 AND length(source_json) > 0),
+	CONSTRAINT ck_sha256_b1573a8532a0665b CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_749d13725ffed583 CHECK (binding_payload_sha256 IS NULL OR length(binding_payload_sha256) = 64 AND lower(binding_payload_sha256) = binding_payload_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(binding_payload_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_upload_provenance_authority_publications (
+	collection_id BIGINT NOT NULL,
+	role VARCHAR NOT NULL,
+	document_json TEXT NOT NULL,
+	source_json TEXT NOT NULL,
+	source_sha256 VARCHAR(64) NOT NULL,
+	receipt_json TEXT,
+	progress_receipt_json TEXT,
+	PRIMARY KEY (collection_id, role),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_provenance_authority_role CHECK (role IN ('terminal','root')),
+	CONSTRAINT ck_provenance_authority_source CHECK (length(document_json) > 0 AND length(source_json) > 0),
+	CONSTRAINT ck_sha256_12eb1cba1c399936 CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_upload_initial_descriptions (
+	collection_id BIGINT NOT NULL,
+	document_json TEXT,
+	source_json TEXT NOT NULL,
+	source_sha256 VARCHAR(64) NOT NULL,
+	receipt_json TEXT,
+	progress_receipt_json TEXT,
+	PRIMARY KEY (collection_id),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_initial_description_source CHECK (length(source_json) > 0),
+	CONSTRAINT ck_initial_description_physical_receipt CHECK (document_json IS NOT NULL OR receipt_json IS NULL),
+	CONSTRAINT ck_collection_upload_initial_descriptions_source_sha256_hex CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE collection_upload_initial_tag_publications (
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	role VARCHAR NOT NULL,
+	document_bytes BYTEA NOT NULL,
+	source_json TEXT NOT NULL,
+	source_sha256 VARCHAR(64) NOT NULL,
+	receipt_json TEXT,
+	progress_receipt_json TEXT,
+	PRIMARY KEY (collection_id, object_id),
+	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
+	CONSTRAINT ck_initial_tag_publication_source CHECK (role IN ('state','expand','node','head') AND length(document_bytes) > 0 AND length(source_json) > 0),
+	CONSTRAINT ck_initial_tag_physical_receipt CHECK (role IN ('node','head') OR receipt_json IS NULL),
+	CONSTRAINT ck_sha256_2ea99c99b63cd9a9 CHECK (length(source_sha256) = 64 AND lower(source_sha256) = source_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_archive_upload_terminals_draining_due ON archive_upload_terminals (drain_next_attempt_at, id) WHERE phase = 'draining';
+
+CREATE TABLE archive_cleanup_pages (
+	terminal_id VARCHAR(64) NOT NULL, 
+	request_sha256 VARCHAR(64) NOT NULL, 
+	inventory_call_id VARCHAR(64) NOT NULL, 
+	inventory_request_json TEXT NOT NULL, 
+	request_json TEXT NOT NULL, 
+	disposed_json TEXT NOT NULL, 
+	PRIMARY KEY (terminal_id), 
+	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id), 
+	CONSTRAINT ck_archive_cleanup_pages_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
+	CONSTRAINT ck_archive_cleanup_pages_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
+	CONSTRAINT ck_archive_cleanup_pages_inventory_call_id_hex CHECK (length(inventory_call_id) = 64 AND lower(inventory_call_id) = inventory_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(inventory_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE TABLE archive_cleanup_attempts (
+	id VARCHAR(64) NOT NULL, 
+	terminal_id VARCHAR(64) NOT NULL, 
+	page_sha256 VARCHAR(64), 
+	dispatch_sha256 VARCHAR(64) NOT NULL, 
+	invocation_json TEXT NOT NULL, 
+	unresolved BOOLEAN NOT NULL, 
+	control_bytes TEXT NOT NULL, 
+	provider_requests TEXT NOT NULL, 
+	in_flight TEXT NOT NULL, 
+	response_json TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id), 
+	CONSTRAINT ck_archive_cleanup_attempts_closed CHECK (unresolved IS true OR response_json IS NOT NULL), 
+	CONSTRAINT ck_archive_cleanup_attempts_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
+	CONSTRAINT ck_archive_cleanup_attempts_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
+	CONSTRAINT ck_archive_cleanup_attempts_page_sha256_hex CHECK (page_sha256 IS NULL OR length(page_sha256) = 64 AND lower(page_sha256) = page_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(page_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
+	CONSTRAINT ck_archive_cleanup_attempts_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_archive_cleanup_attempts_terminal ON archive_cleanup_attempts (terminal_id, id);
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

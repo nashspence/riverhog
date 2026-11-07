@@ -11,7 +11,7 @@ import json
 import re
 import sqlite3
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import (
@@ -25,6 +25,9 @@ from riverhog_growth_contracts import (
     declare_growth,
 )
 from riverhog_provenance_contracts import require_canonical_uuid_urn
+
+from ._admission_growth import admission_declaration
+from .errors import JournalValidationCapacity
 
 ALGORITHM = "riverhog-correction-projection/v1"
 MAX_ROWS = 64
@@ -186,7 +189,7 @@ class StaleCorrectionWork(RuntimeError):
     """The supplied operation or proposal no longer owns its private checkpoint."""
 
 
-class CorrectionCapacity(RuntimeError):
+class CorrectionCapacity(JournalValidationCapacity):
     """The next exact row atom needs a larger work-byte admission."""
 
 
@@ -238,6 +241,15 @@ class CorrectionState:
 
 
 @dataclass(frozen=True)
+class CorrectionAdmission:
+    operation: str
+    source_binding: str
+    attempt_id: str
+    prior: tuple[object, ...] | None
+    after: CorrectionState
+
+
+@dataclass(frozen=True)
 class CorrectionBatch:
     operation: str
     attempt_id: str
@@ -253,6 +265,51 @@ def install(db: sqlite3.Connection) -> None:
         "algorithm TEXT NOT NULL, attempt_id TEXT NOT NULL, binding TEXT NOT NULL, "
         "checkpoint TEXT NOT NULL);"
         "CREATE INDEX active_changed_seed ON assertions(assertion_id) WHERE active = 1;"
+    )
+
+
+def _phase_declaration(operation: str) -> Declaration:
+    planning = operation == "prepare"
+    base = _declaration(operation)
+    return replace(
+        base,
+        id="riverhog-provenance.sqlite-correction-projection-"
+        + ("plan" if planning else "application")
+        + ".growth/v1",
+        scope="detached-correction-projection-plan"
+        if planning
+        else "owner-transaction-correction-projection-application",
+        starts_at=(
+            "load one exact retained retirement or seeding checkpoint outside a transaction"
+            if planning
+            else "accept an exact admitted retirement or seeding plan inside the parent transaction"
+        ),
+        ends_at=(
+            "return a bounded detached row proposal without changing native state"
+            if planning
+            else "return native changes and progress while preserving the parent transaction"
+        ),
+        bounds=tuple(
+            replace(bound, relation="equal", expression=Expression("constant", value=0, unit=COUNT))
+            if planning and bound.metric == "changed_rows"
+            else bound
+            for bound in base.bounds
+        ),
+        conditions=(
+            *base.conditions,
+            "The exact proposal is admitted under the recorded row/byte budget; planning is "
+            "detached and application runs inside its owner's transaction.",
+        ),
+        invariants=(
+            *base.invariants,
+            "Planning never writes; application neither commits nor rolls back the parent "
+            "transaction.",
+        ),
+        limitations=(
+            *base.limitations,
+            "Admission, parent publication and transaction control require caller composition; "
+            "this phase does not claim execution of the standalone retire or seed operation.",
+        ),
     )
 
 
@@ -275,45 +332,82 @@ class CorrectionWork:
         if self.db.in_transaction:
             raise RuntimeError("correction work requires a closed owner transaction")
 
-    def initialize(self) -> CorrectionState:
-        """Explicitly start a new operation after any preceding one completed."""
-        self._require_detached()
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
-            with closing(
-                self.db.execute(
-                    "SELECT algorithm, attempt_id, substr(checkpoint, 1, ?) "
-                    "FROM journal_correction_work WHERE operation = ?",
-                    (_HEADER_OCTETS + 1, self.operation),
-                )
-            ) as cursor:
-                old = cursor.fetchone()
-            version = 0
-            if old is not None:
-                if old[0] != ALGORITHM:
-                    raise RuntimeError("unknown correction projection algorithm")
-                prior = CorrectionState.from_json(old[2], self.operation)
-                if old[1] == self.attempt_id or not prior.done:
-                    raise StaleCorrectionWork("correction operation is already bound")
-                version = prior.version + 1
-            state = CorrectionState(
-                "maps" if self.operation == "retire" else "seed", version=version
-            )
+    def _admission(self) -> CorrectionAdmission:
+        with closing(
             self.db.execute(
-                "INSERT INTO journal_correction_work VALUES (?, ?, ?, ?, ?) "
-                "ON CONFLICT(operation) DO UPDATE SET algorithm=excluded.algorithm, "
-                "attempt_id=excluded.attempt_id, binding=excluded.binding, "
-                "checkpoint=excluded.checkpoint",
-                (self.operation, ALGORITHM, self.attempt_id, self.source_binding, state.to_json()),
-            ).close()
+                "SELECT algorithm, attempt_id, substr(checkpoint, 1, ?) "
+                "FROM journal_correction_work WHERE operation = ?",
+                (_HEADER_OCTETS + 1, self.operation),
+            )
+        ) as cursor:
+            old = cursor.fetchone()
+        version = 0
+        if old is not None:
+            if old[0] != ALGORITHM:
+                raise RuntimeError("unknown correction projection algorithm")
+            prior = CorrectionState.from_json(old[2], self.operation)
+            if old[1] == self.attempt_id or not prior.done:
+                raise StaleCorrectionWork("correction operation is already bound")
+            version = prior.version + 1
+        state = CorrectionState("maps" if self.operation == "retire" else "seed", version=version)
+        return CorrectionAdmission(
+            self.operation,
+            self.source_binding,
+            self.attempt_id,
+            None if old is None else tuple(old),
+            state,
+        )
+
+    @declare_growth(
+        admission_declaration(
+            identifier="correction-projection",
+            subject="riverhog_provenance._correction_projection.CorrectionWork.prepare_admission",
+            planning=True,
+        )
+    )
+    def prepare_admission(self) -> CorrectionAdmission:
+        self._require_detached()
+        return self._admission()
+
+    @declare_growth(
+        admission_declaration(
+            identifier="correction-projection",
+            subject="riverhog_provenance._correction_projection.CorrectionWork._admit",
+            planning=False,
+        )
+    )
+    def _admit(self, batch: CorrectionAdmission) -> CorrectionState:
+        if not self.db.in_transaction:
+            raise RuntimeError("child admission requires an owner transaction")
+        if self._admission() != batch:
+            raise StaleCorrectionWork("child admission was superseded")
+        self.db.execute(
+            "INSERT INTO journal_correction_work VALUES (?, ?, ?, ?, ?) "
+            "ON CONFLICT(operation) DO UPDATE SET algorithm=excluded.algorithm, "
+            "attempt_id=excluded.attempt_id, binding=excluded.binding, "
+            "checkpoint=excluded.checkpoint",
+            (
+                self.operation,
+                ALGORITHM,
+                self.attempt_id,
+                self.source_binding,
+                batch.after.to_json(),
+            ),
+        ).close()
+        return batch.after
+
+    def initialize(self) -> CorrectionState:
+        batch = self.prepare_admission()
+        self.db.execute("BEGIN IMMEDIATE").close()
+        try:
+            state = self._admit(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
         return state
 
-    def _read_header(self) -> CorrectionState:
-        self._require_detached()
+    def _read_checkpoint(self) -> CorrectionState:
         with closing(
             self.db.execute(
                 "SELECT algorithm, substr(checkpoint, 1, ?) FROM journal_correction_work "
@@ -327,6 +421,10 @@ class CorrectionWork:
         if row[0] != ALGORITHM:
             raise RuntimeError("unknown correction projection algorithm")
         return CorrectionState.from_json(row[1], self.operation)
+
+    def _read_header(self) -> CorrectionState:
+        self._require_detached()
+        return self._read_checkpoint()
 
     def load(self) -> CorrectionState:
         state = self._read_header()
@@ -365,6 +463,7 @@ class CorrectionWork:
                         raise RuntimeError("correction seed completed before its active tail")
         return state
 
+    @declare_growth(_phase_declaration("prepare"))
     def prepare(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> CorrectionBatch:
         if type(row_budget) is not int or not 1 <= row_budget <= MAX_ROWS:
             raise ValueError("correction row budget must be between one and 64")
@@ -438,6 +537,53 @@ class CorrectionWork:
             tuple(keys),
         )
 
+    @declare_growth(_phase_declaration("_apply"))
+    def _apply(self, batch: CorrectionBatch) -> CorrectionState:
+        if not self.db.in_transaction:
+            raise RuntimeError("child application requires an owner transaction")
+        if (batch.operation, batch.attempt_id, batch.source_binding) != (
+            self.operation,
+            self.attempt_id,
+            self.source_binding,
+        ):
+            raise StaleCorrectionWork("correction proposal belongs to another operation")
+        before = CorrectionState.from_json(batch.before_json, self.operation)
+        if before.done:
+            # A finished worker still verifies its fence before reporting completion.
+            current = self._read_checkpoint()
+            if current != before:
+                raise StaleCorrectionWork("finished correction proposal was superseded")
+            return current
+        with closing(
+            self.db.execute(
+                "UPDATE journal_correction_work SET checkpoint = ? WHERE operation = ? "
+                "AND algorithm = ? AND attempt_id = ? AND binding = ? AND checkpoint = ?",
+                (
+                    batch.after.to_json(),
+                    self.operation,
+                    ALGORITHM,
+                    self.attempt_id,
+                    self.source_binding,
+                    batch.before_json,
+                ),
+            )
+        ) as cursor:
+            if cursor.rowcount != 1:
+                raise StaleCorrectionWork("correction proposal was superseded")
+        for key in batch.keys:
+            if self.operation == "retire":
+                with closing(
+                    self.db.execute(
+                        f"DELETE FROM {before.phase} WHERE rowid = ?",
+                        (key,),
+                    )
+                ) as cursor:
+                    if cursor.rowcount != 1:
+                        raise RuntimeError("correction aggregate changed outside its work fence")
+            else:
+                self.db.execute("INSERT OR IGNORE INTO changes VALUES (?)", (key,)).close()
+        return batch.after
+
     def commit(self, batch: CorrectionBatch) -> CorrectionState:
         self._require_detached()
         if (batch.operation, batch.attempt_id, batch.source_binding) != (
@@ -455,41 +601,12 @@ class CorrectionWork:
             return current
         try:
             self.db.execute("BEGIN IMMEDIATE").close()
-            with closing(
-                self.db.execute(
-                    "UPDATE journal_correction_work SET checkpoint = ? WHERE operation = ? "
-                    "AND algorithm = ? AND attempt_id = ? AND binding = ? AND checkpoint = ?",
-                    (
-                        batch.after.to_json(),
-                        self.operation,
-                        ALGORITHM,
-                        self.attempt_id,
-                        self.source_binding,
-                        batch.before_json,
-                    ),
-                )
-            ) as cursor:
-                if cursor.rowcount != 1:
-                    raise StaleCorrectionWork("correction proposal was superseded")
-            for key in batch.keys:
-                if self.operation == "retire":
-                    with closing(
-                        self.db.execute(
-                            f"DELETE FROM {before.phase} WHERE rowid = ?",
-                            (key,),
-                        )
-                    ) as cursor:
-                        if cursor.rowcount != 1:
-                            raise RuntimeError(
-                                "correction aggregate changed outside its work fence"
-                            )
-                else:
-                    self.db.execute("INSERT OR IGNORE INTO changes VALUES (?)", (key,)).close()
+            state = self._apply(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
-        return batch.after
+        return state
 
     @declare_growth(_declaration("retire"))
     def retire(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> CorrectionState:

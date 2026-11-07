@@ -12,6 +12,7 @@ from a_riverhog_direct_relations_contract_lib import VOCABULARY_SHA256
 from pydantic import JsonValue
 from riverhog_archive_contracts import BOUND_HISTORY_EXTENT
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_client import PrimaryStore, ordered_primary_inventory
 from riverhog_client.canonical_completion import CompletionRecord
 from riverhog_client.completion_records import CompletionRecords
 from riverhog_client.processing import (
@@ -410,10 +411,12 @@ class TargetExecutionRuntime:
         runtime: ClaimedCollectionRuntime | CollectionTransformRuntime,
         *,
         session: TargetExecutionSession | None = None,
+        primary_store: PrimaryStore | None = None,
     ) -> None:
         self.request = request
         self.runtime = runtime
         self.session = session
+        self._primary_store = primary_store
         self._runtime_binding: Any = None
         self._workspaces: list[ProcessingWorkspace] = []
         self._publications: list[TargetCollectionPublication] = []
@@ -447,6 +450,7 @@ class TargetExecutionRuntime:
                 declaration.job_id, fallback=capability_token
             )
         runtime: ClaimedCollectionRuntime | CollectionTransformRuntime
+        primary_store: PrimaryStore | None = None
         if workflow.result_kind == "external-effect":
             runtime = ClaimedCollectionRuntime.from_capability(
                 base_url=authority.riverhog_base_url,
@@ -474,26 +478,41 @@ class TargetExecutionRuntime:
                 ),
                 output_policy=workflow.output_policy,
             )
-            runtime = CollectionTransformRuntime.from_capability(
-                base_url=authority.riverhog_base_url,
-                capability_token=capability_token,
-                allow_insecure_http=authority.allow_insecure_http,
-                spec=spec,
-                claim_id=declaration.claim_id,
-                fence=declaration.fence,
-                execution_id=declaration.job_id,
-                work_id=work.work_id,
-                controller_evidence=evidence.model_dump(
-                    mode="json",
-                    by_alias=True,
-                    exclude_none=True,
-                ),
-                producer_app="stove0-worker",
-                producer_version=producer_version,
-                cancellation_check=cancellation_check,
-                input_retrieval_policy=workflow.input_retrieval_policy,
-            )
-        return cls(request, runtime, session=session)
+            if session is None or session.state_root is None or session.primary_state is None:
+                raise ValueError(
+                    "transform publication requires target-owned durable primary state"
+                )
+            primary_store = session.open_primary_store()
+            state_root = session.state_root
+            try:
+                runtime = CollectionTransformRuntime.from_capability(
+                    primary_store=primary_store,
+                    member_inventory=lambda: ordered_primary_inventory(
+                        primary_store,
+                        TargetOutputCheckpoint.iter_members(state_root, request=request),
+                    ),
+                    base_url=authority.riverhog_base_url,
+                    capability_token=capability_token,
+                    allow_insecure_http=authority.allow_insecure_http,
+                    spec=spec,
+                    claim_id=declaration.claim_id,
+                    fence=declaration.fence,
+                    execution_id=declaration.job_id,
+                    work_id=work.work_id,
+                    controller_evidence=evidence.model_dump(
+                        mode="json",
+                        by_alias=True,
+                        exclude_none=True,
+                    ),
+                    producer_app="stove0-worker",
+                    producer_version=producer_version,
+                    cancellation_check=cancellation_check,
+                    input_retrieval_policy=workflow.input_retrieval_policy,
+                )
+            except BaseException:
+                primary_store.close()
+                raise
+        return cls(request, runtime, session=session, primary_store=primary_store)
 
     def __enter__(self) -> Self:
         self.runtime.__enter__()
@@ -524,6 +543,9 @@ class TargetExecutionRuntime:
             self.runtime.__exit__(exc_type, exc, tb)
         except Exception as cleanup_exc:
             failures.append(cleanup_exc)
+        else:
+            if self._primary_store is not None:
+                self._primary_store.close()
         try:
             self._input_client.close()
         except Exception as cleanup_exc:

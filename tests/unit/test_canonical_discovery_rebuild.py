@@ -8,7 +8,7 @@ from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core import canonical_discovery_rebuild as rebuild
 from riverhog_core.canonical_discovery_index import StaleIndexBuild, begin_index_build
 from riverhog_core.catalog_db import session_scope
-from riverhog_core.catalog_models import CollectionArchiveObjectRecord
+from riverhog_core.catalog_models import CollectionArchiveObjectRecord, CollectionArtifactRecord
 from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexGenerationRecord as Generation,
 )
@@ -30,11 +30,26 @@ from tests.support.qualification.canonical_history_scale import (
 
 def test_archive_only_rebuild_retains_shared_roots_and_exact_member_scope(tmp_path: Path) -> None:
     fixture = publish_shared_history(tmp_path, members=2)
+
+    def receipts():
+        with session_scope(fixture.container.session_factory) as session:
+            return dict(
+                session.execute(
+                    select(
+                        CollectionArtifactRecord.artifact_id,
+                        CollectionArtifactRecord.custody_receipt_json,
+                    ).where(CollectionArtifactRecord.collection_id == fixture.collection_id)
+                ).all()
+            )
+
     try:
+        original = receipts()
+        assert len(original) == 2 and all(original.values())
         first = measure_archive_rebuild(fixture, cold=True)
         repeated = measure_archive_rebuild(fixture)
         assert first["archive_object_reads"] > 0
         assert repeated["archive_object_reads"] == 0
+        assert receipts() == original
     finally:
         fixture.container.close()
 

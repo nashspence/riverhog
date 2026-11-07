@@ -135,6 +135,8 @@ from stove0_target_support import (
 )
 from stove0_target_support.output_checkpoint import TargetOutputCheckpoint
 
+from tests.support.prepared_primary import PRIMARY_STATE_POLICY
+
 REPO_ROOT = Path(__file__).resolve().parents[5]
 _EXECUTION_PREIMAGE = canonical_json_bytes({"format": "fixture-execution/v1", "optional": None})
 _EXECUTION_SHA256 = hashlib.sha256(_EXECUTION_PREIMAGE).hexdigest()
@@ -731,6 +733,7 @@ def test_persistent_status_preserves_embedded_authority_number_types(tmp_path: P
     )
     state_root = tmp_path / "state"
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -1584,6 +1587,7 @@ def test_persistent_target_requires_and_executes_advertised_semantic_validation(
 
     with pytest.raises(ValueError, match="semantic validators"):
         PersistentTargetService(
+            primary_state=PRIMARY_STATE_POLICY,
             descriptor=target,
             operations={operation.id: operation},
             state_root=tmp_path / "missing-validator",
@@ -1595,6 +1599,7 @@ def test_persistent_target_requires_and_executes_advertised_semantic_validation(
             raise ValueError("fixture suffix policy rejected the intent")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "validated",
@@ -1621,6 +1626,7 @@ def test_persistent_target_service_uses_canonical_public_error_codes(tmp_path: P
     operation, target, request = _request()
     status = _success_status(operation, request)
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "target-state",
@@ -1761,6 +1767,7 @@ def test_v1_persisted_target_fixture_recovers_active_custody_without_repeating_e
         raise AssertionError("fixture recovery must not execute during restart")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -1839,6 +1846,7 @@ def test_persistent_target_prunes_only_expired_terminal_request_pairs(
         os.utime(path, (expired_mtime, expired_mtime))
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -1887,6 +1895,7 @@ def test_persistent_target_resumes_exact_declaration_without_storing_authority(
         raise TargetExecutionInapplicable("unsupported-content", "fixture input")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -1903,7 +1912,7 @@ def test_persistent_target_resumes_exact_declaration_without_storing_authority(
     finally:
         service.close()
 
-    persisted = b"\n".join(path.read_bytes() for path in state_root.iterdir())
+    persisted = b"\n".join(path.read_bytes() for path in state_root.rglob("*") if path.is_file())
     assert b"first-secret" not in persisted
     assert b"riverhog.invalid" not in persisted
 
@@ -1925,6 +1934,7 @@ def test_target_waiters_have_no_payload_slots_and_cancel_without_execution(tmp_p
         raise TargetExecutionCanceled
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -1972,6 +1982,7 @@ def test_unstarted_jobs_survive_restart_and_need_fresh_authority(
         raise TargetExecutionInapplicable("fixture.unsupported/v1", "fixture")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -2005,6 +2016,7 @@ def test_unknown_cancellation_survives_restart_and_fences_late_put(tmp_path: Pat
         raise AssertionError("a canceled invocation must not start")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -2024,6 +2036,7 @@ def test_unknown_cancellation_survives_restart_and_fences_late_put(tmp_path: Pat
     finally:
         service.close()
     restarted = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -2041,6 +2054,7 @@ def test_cancellation_tombstone_recovers_before_accepted_status_writes(tmp_path:
     operation, target, request = _request()
     _write_model(tmp_path / f"{request.declaration.job_id}.cancel.json", request.accepted())
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -2069,6 +2083,7 @@ def test_queue_pressure_refuses_before_acceptance_and_preserves_refresh(tmp_path
         raise TargetExecutionCanceled
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -2144,6 +2159,7 @@ def test_deferred_admission_uses_no_payload_and_other_invocations_progress(tmp_p
         return _success_status(operation, request)
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -2203,6 +2219,7 @@ def test_cancel_during_probe_releases_only_its_late_owned_grant(
         raise AssertionError("late grants cannot revive canceled work")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -2231,6 +2248,7 @@ def test_cancel_during_probe_releases_only_its_late_owned_grant(
 def test_active_target_state_has_one_exclusive_process_owner(tmp_path: Path) -> None:
     operation, target, request = _request()
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -2239,6 +2257,7 @@ def test_active_target_state_has_one_exclusive_process_owner(tmp_path: Path) -> 
     try:
         with pytest.raises(RuntimeError, match="active owner"):
             PersistentTargetService(
+                primary_state=PRIMARY_STATE_POLICY,
                 descriptor=target,
                 operations={operation.id: operation},
                 state_root=tmp_path,
@@ -2247,6 +2266,7 @@ def test_active_target_state_has_one_exclusive_process_owner(tmp_path: Path) -> 
     finally:
         service.close()
     replacement = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -2272,6 +2292,7 @@ def test_persistent_target_shutdown_and_operator_cancel_have_distinct_state(
         raise TargetExecutionCanceled
 
     interrupted = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "interrupted",
@@ -2284,6 +2305,7 @@ def test_persistent_target_shutdown_and_operator_cancel_have_distinct_state(
 
     started.clear()
     canceled = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "canceled",
@@ -2332,6 +2354,7 @@ def test_running_target_receives_capability_refresh_without_persisting_secrets(
         raise TargetExecutionInapplicable("fixture-inapplicable", "fixture input")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -2358,7 +2381,7 @@ def test_running_target_receives_capability_refresh_without_persisting_secrets(
         service.close()
 
     assert tokens == ["first-secret", "replacement-secret"]
-    persisted = b"\n".join(path.read_bytes() for path in state_root.iterdir())
+    persisted = b"\n".join(path.read_bytes() for path in state_root.rglob("*") if path.is_file())
     assert b"first-secret" not in persisted
     assert b"replacement-secret" not in persisted
     assert b"riverhog.invalid" not in persisted
@@ -2420,7 +2443,11 @@ def test_queued_target_constructs_runtime_with_refreshed_authority_before_claim_
 
     state = tmp_path / "state"
     service = PersistentTargetService(
-        descriptor=target, operations={operation.id: operation}, state_root=state, execute=execute
+        primary_state=PRIMARY_STATE_POLICY,
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=state,
+        execute=execute,
     )
     try:
         service.put_job(request)
@@ -2446,7 +2473,7 @@ def test_queued_target_constructs_runtime_with_refreshed_authority_before_claim_
     finally:
         start.set()
         service.close()
-    persisted = b"\n".join(path.read_bytes() for path in state.iterdir())
+    persisted = b"\n".join(path.read_bytes() for path in state.rglob("*") if path.is_file())
     assert b"first-secret" not in persisted
     assert b"refreshed-queued-secret" not in persisted
     assert b"callback-secret" not in persisted
@@ -2485,6 +2512,7 @@ def test_running_target_refreshes_callback_access_and_rejects_endpoint_changes(
 
     state_root = tmp_path / "state"
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -2522,7 +2550,7 @@ def test_running_target_refreshes_callback_access_and_rejects_endpoint_changes(
         proceed.set()
         service.close()
     assert tokens == ["Bearer callback-secret", "Bearer renewed-callback-secret"]
-    persisted = b"\n".join(path.read_bytes() for path in state_root.iterdir())
+    persisted = b"\n".join(path.read_bytes() for path in state_root.rglob("*") if path.is_file())
     for secret in (b"callback-secret", b"renewed-callback-secret", b"wrong-secret"):
         assert secret not in persisted
 
@@ -2559,6 +2587,7 @@ def test_restart_before_publication_preserves_semantic_execution_identity(
         return restarted
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -2602,6 +2631,7 @@ def test_persisted_publication_survives_lost_response_and_process_restart(
         return success
 
     first = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -2628,6 +2658,7 @@ def test_persisted_publication_survives_lost_response_and_process_restart(
         raise AssertionError("published target output must not execute again")
 
     restarted = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -2644,7 +2675,7 @@ def test_persisted_publication_survives_lost_response_and_process_restart(
     finally:
         restarted.close()
 
-    persisted = b"\n".join(path.read_bytes() for path in state_root.iterdir())
+    persisted = b"\n".join(path.read_bytes() for path in state_root.rglob("*") if path.is_file())
     assert b"first-secret" not in persisted
     assert b"replacement-secret" not in persisted
 
@@ -2671,6 +2702,7 @@ def test_persisted_effect_receipt_replays_without_repeating_external_effect(
         return status
 
     first = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -2692,6 +2724,7 @@ def test_persisted_effect_receipt_replays_without_repeating_external_effect(
         raise AssertionError("a persisted external effect must not execute again")
 
     restarted = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
@@ -2725,6 +2758,7 @@ def test_uncertain_effect_commit_stays_interrupted_and_never_auto_repeats(
         raise TargetEffectCommitUncertain("fixture external commit is uncertain")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "uncertain-effect-state",
@@ -2760,6 +2794,7 @@ def test_terminal_target_jobs_release_process_local_bookkeeping(tmp_path: Path) 
         raise TargetExecutionInapplicable("fixture-content", "fixture input")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "state",
@@ -2797,6 +2832,7 @@ def test_published_success_wins_late_cancel_and_cleanup_failure(tmp_path: Path) 
         raise RuntimeError("post-publication cleanup failed")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "state",
@@ -2872,6 +2908,7 @@ def test_target_failure_classes_remain_distinct_from_content_inapplicability(
         raise failure
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / code,
@@ -2945,7 +2982,7 @@ def test_publication_checkpoint_keeps_exact_evidence_and_original_attempt(tmp_pa
     assert retry.pre_root.attempt == 1
     assert retry.pre_root == original.pre_root
     assert b"".join(retry.execution.read()) == _EXECUTION_PREIMAGE
-    persisted = b"\n".join(path.read_bytes() for path in tmp_path.iterdir())
+    persisted = b"\n".join(path.read_bytes() for path in tmp_path.rglob("*") if path.is_file())
     assert b"first-secret" not in persisted
     assert b"callback-secret" not in persisted
     assert b"riverhog.invalid" not in persisted
@@ -3037,6 +3074,7 @@ def test_persistent_target_resumes_sealed_publication_without_rerunning_operatio
         raise AssertionError("sealed publication must not invoke the target operation")
 
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -3129,6 +3167,7 @@ def test_checkpoint_retention_keeps_failed_unpublished_evidence(tmp_path: Path) 
     )
     _write_model(tmp_path / f"{job_id}.status.json", failed)
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -3435,6 +3474,7 @@ def test_live_target_retention_prunes_expired_terminal_records_without_restart(t
 
     operation, descriptor, request = _request()
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=descriptor,
         operations={operation.id: operation},
         state_root=tmp_path / "state",
@@ -3461,6 +3501,7 @@ def test_live_target_retention_prunes_expired_terminal_records_without_restart(t
 def test_accepted_declaration_reads_current_state_and_rejects_symlinks(tmp_path: Path) -> None:
     operation, target, request = _request()
     service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path,
@@ -3486,3 +3527,62 @@ def test_accepted_declaration_reads_current_state_and_rejects_symlinks(tmp_path:
     finally:
         path.unlink(missing_ok=True)
         service.close()
+
+
+def test_target_publication_state_is_initialized_by_an_explicit_fresh_worker_and_never_replaced(
+    tmp_path,
+):
+    import shutil
+
+    from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
+
+    _operation, _target, request = _request()
+    state = tmp_path / "state"
+    state.mkdir(mode=0o700)
+    session = TargetExecutionSession(
+        request,
+        1,
+        ClaimedCollectionRuntimeRegistry(),
+        state_root=state,
+        primary_state=PRIMARY_STATE_POLICY,
+        initialize_primary=True,
+    )
+    root = state / f"{request.declaration.job_id}.primary"
+    assert not root.exists()
+    with session.open_primary_store() as store:
+        assert not store.publication_started
+        assert store.session_for(b"fixture-exact-creation") is None
+        assert store.publication_started
+    shutil.rmtree(root)
+    with pytest.raises(FileNotFoundError):
+        session.open_primary_store()
+    restarted = TargetExecutionSession(
+        request,
+        2,
+        ClaimedCollectionRuntimeRegistry(),
+        state_root=state,
+        primary_state=PRIMARY_STATE_POLICY,
+    )
+    with pytest.raises(FileNotFoundError):
+        restarted.open_primary_store()
+    assert not root.exists()
+
+
+def test_target_publication_policy_requires_explicit_scope_and_rejects_unknown_fields():
+    from stove0_target_support import publication_state_policy
+
+    with pytest.raises(ValueError, match="must declare"):
+        publication_state_policy("FIXTURE_TARGET", {})
+    policy = publication_state_policy(
+        "FIXTURE_TARGET", {"FIXTURE_TARGET_PRIMARY_STATE": PRIMARY_STATE_POLICY.model_dump_json()}
+    )
+    assert policy == PRIMARY_STATE_POLICY
+    with pytest.raises(ValueError):
+        publication_state_policy(
+            "FIXTURE_TARGET",
+            {
+                "FIXTURE_TARGET_PRIMARY_STATE": (
+                    '{"scope":{"service":"fixture","account":"fixture"},"unknown":true}'
+                )
+            },
+        )

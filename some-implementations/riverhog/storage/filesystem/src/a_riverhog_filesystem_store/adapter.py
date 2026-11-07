@@ -23,11 +23,19 @@ from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Self, cast
+from typing import Any, Literal, Self, cast
 
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
+    BeginWriteOperation,
     BinaryContent,
+    CleanupCandidate,
+    CleanupExecutionResult,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
+    CleanupInvocation,
+    CleanupItemOutcome,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -40,6 +48,9 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWriteObservation,
+    OpenWritePage,
     ReadPreparationRequest,
     ReadReady,
     ReadStatus,
@@ -47,11 +58,20 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterRejection,
     WriteCompleteRequest,
     WriteCompletionPrecondition,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
+    cleanup_execution_result,
+    cleanup_inventory_execution_result,
+    execute_write_invocation,
+    unknown_cleanup_execution,
+    validate_cleanup_inventory_response,
+    validate_open_write_page_response,
+    write_operation_sha256,
 )
 from time_formats import format_utc_timestamp, utc_now
 
@@ -59,6 +79,7 @@ from a_riverhog_filesystem_store.incarnation import (
     StorageIncarnationError,
     read_storage_incarnation_fd,
 )
+from a_riverhog_filesystem_store.inventory import FilesystemInventory
 
 _WRITE_FORMAT = "riverhog-filesystem-write/v1"
 _OBJECT_FORMAT = "riverhog-filesystem-object/v1"
@@ -460,6 +481,7 @@ class FilesystemStorageAdapter:
             config.root,
             os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
         )
+        self._inventory: FilesystemInventory | None = None
         instance_fd: int | None = None
         instance_locked = False
         try:
@@ -486,21 +508,32 @@ class FilesystemStorageAdapter:
             instance_locked = True
             self._instance_fd = instance_fd
             self._reconcile_private_state()
+            self._inventory = FilesystemInventory(self._root)
+            self._index_private_namespace()
         except BaseException:
-            if instance_fd is not None:
-                if instance_locked:
-                    fcntl.flock(instance_fd, fcntl.LOCK_UN)
-                os.close(instance_fd)
-            os.close(root_fd)
+            try:
+                if self._inventory is not None:
+                    self._inventory.close()
+            finally:
+                if instance_fd is not None:
+                    if instance_locked:
+                        fcntl.flock(instance_fd, fcntl.LOCK_UN)
+                    os.close(instance_fd)
+                os.close(root_fd)
             raise
 
     def close(self) -> None:
-        if self._closed:
-            return
-        self._closed = True
-        fcntl.flock(self._instance_fd, fcntl.LOCK_UN)
-        os.close(self._instance_fd)
-        os.close(self._root_fd)
+        with self._capacity_lock:
+            if self._closed:
+                return
+            self._closed = True
+            try:
+                if self._inventory is not None:
+                    self._inventory.close()
+            finally:
+                fcntl.flock(self._instance_fd, fcntl.LOCK_UN)
+                os.close(self._instance_fd)
+                os.close(self._root_fd)
 
     def __enter__(self) -> Self:
         return self
@@ -520,6 +553,13 @@ class FilesystemStorageAdapter:
             maximum_segment_count=None,
         )
 
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        return execute_write_invocation(
+            self, invocation, content=content, profile="joined-single-attempt"
+        )
+
     def readiness(self) -> None:
         """Verify that the root and its private state remain accessible.
 
@@ -530,10 +570,96 @@ class FilesystemStorageAdapter:
         self._require_open()
         os.fstat(self._instance_fd)
         os.statvfs(self._root)
+        with self._capacity_lock:
+            if self._inventory is None:
+                raise RuntimeError("filesystem inventory is unavailable")
+            self._inventory.check()
         for name in ("objects", "writes", "staging"):
             details = (self._root / name).stat(follow_symlinks=False)
             if not stat.S_ISDIR(details.st_mode):
                 raise RuntimeError("filesystem adapter internal path is not a directory")
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        """Dispose exact selected identities under the existing filesystem owner.
+
+        The serial local profile has no lower-provider network requests. One
+        adapter hop remains conservatively charged even for direct execution.
+        Namespace work is proportional to selected items plus indexed seeks;
+        unlink/fsync latency and filesystem allocation are not constant-cost claims.
+        """
+        try:
+            invocation._require_exact_request()
+            self._require_open()
+            if invocation.call.target_incarnation != self._incarnation_id:
+                return unknown_cleanup_execution(invocation)
+        except Exception:
+            return unknown_cleanup_execution(invocation)
+        if isinstance(invocation.request, CleanupInventoryStepRequest):
+            try:
+                page = self.list_cleanup_candidates(invocation.request.inventory)
+                return cleanup_inventory_execution_result(
+                    invocation, page, provider_requests=1, execution="closed"
+                )
+            except Exception:
+                return unknown_cleanup_execution(invocation)
+        items: list[CleanupItemOutcome] = []
+        execution: Literal["closed", "unknown"] = "closed"
+        stopped = False
+        for candidate in invocation.request.inventory.candidates:
+            outcome: Literal["disposed", "pending", "deferred", "rejected", "unknown"]
+            if stopped:
+                outcome = "deferred"
+            else:
+                try:
+                    outcome = self._cleanup_selected_candidate(candidate)
+                except Exception:
+                    outcome = "unknown"
+                if outcome == "unknown":
+                    execution = "unknown"
+                    stopped = True
+            items.append(CleanupItemOutcome(candidate=candidate, outcome=outcome))
+        return cleanup_execution_result(
+            invocation, tuple(items), provider_requests=1, execution=execution
+        )
+
+    def _cleanup_selected_candidate(
+        self, candidate: CleanupCandidate
+    ) -> Literal["disposed", "rejected", "unknown"]:
+        if candidate.kind == "deletion_marker":
+            return "rejected"
+        if candidate.kind == "object_revision":
+            self.delete_object(
+                DeleteObjectRequest(
+                    object=ObjectLocator(
+                        object_path=candidate.object_path, revision=candidate.token
+                    ),
+                    mode="exact_revision",
+                )
+            )
+            # Absence also retires a conservative entry left by a lost reply.
+            with self._capacity_lock:
+                if self._inventory is None:
+                    return "unknown"
+                self._inventory.remove(candidate)
+            return "disposed"
+        object_key = self._object_key(candidate.object_path)
+        with self._capacity_lock, self._gate(object_key).write():
+            self._require_open()
+            write_dir = self._write_dir_by_key(object_key)
+            state_path = write_dir / "state.json"
+            if write_dir.exists():
+                if not state_path.exists():
+                    # A partial private directory has no exact token to dispose.
+                    return "unknown"
+                state = _WriteState.from_json(self._read_json(state_path))
+                if state.object_path != candidate.object_path:
+                    return "unknown"
+                if state.token == candidate.token:
+                    self._remove_write_dir(object_key)
+            if self._inventory is None:
+                return "unknown"
+            self._inventory.remove(candidate)
+            return "disposed"
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
         self._require_open()
@@ -554,12 +680,14 @@ class FilesystemStorageAdapter:
                         )
                     return state.session()
             self._check_physical_capacity(request.expected_bytes)
+            token = uuid.uuid4().hex
+            self._index_candidate(request.object_path, "open_write", token)
             write_dir.mkdir(parents=True, mode=_INTERNAL_MODE)
             payload_path = write_dir / "payload.data"
             try:
                 self._create_reserved_file(payload_path, request.expected_bytes)
                 state = _WriteState(
-                    token=uuid.uuid4().hex,
+                    token=token,
                     object_path=request.object_path,
                     expected_bytes=request.expected_bytes,
                     content_type=request.content_type,
@@ -760,6 +888,118 @@ class FilesystemStorageAdapter:
             return self._completed_receipt(record)
         finally:
             gate.release_read()
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        self._require_open()
+        if request.target_incarnation != self._incarnation_id:
+            raise StorageIncarnationError("filesystem cleanup inventory incarnation changed")
+        scope = hashlib.sha256(
+            json.dumps(
+                ["filesystem-cleanup-inventory/v1", self._incarnation_id, request.object_prefix],
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        after = None
+        if request.continuation is not None:
+            try:
+                cursor = json.loads(request.continuation)
+                if (
+                    not isinstance(cursor, dict)
+                    or set(cursor) != {"scope", "after"}
+                    or cursor["scope"] != scope
+                ):
+                    raise ValueError("cleanup cursor scope changed")
+                after = CleanupCandidate.model_validate(cursor["after"])
+                if not after.object_path.startswith(request.object_prefix):
+                    raise ValueError("cleanup cursor namespace changed")
+            except (ValueError, TypeError, KeyError) as exc:
+                raise StorageAdapterRejection(
+                    "traversal_invalidated", "cleanup inventory cursor changed"
+                ) from exc
+        with self._capacity_lock:
+            if self._inventory is None:
+                raise RuntimeError("filesystem inventory is unavailable")
+            candidates = self._inventory.page(
+                request.object_prefix, after=after, limit=request.maximum_items
+            )
+        exhausted = len(candidates) < request.maximum_items
+        continuation = (
+            None
+            if exhausted
+            else json.dumps(
+                {"scope": scope, "after": candidates[-1].model_dump(mode="json")},
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        )
+        page = CleanupInventoryPage(
+            object_prefix=request.object_prefix,
+            target_incarnation=self._incarnation_id,
+            candidates=candidates,
+            scanned_items=len(candidates),
+            continuation=continuation,
+            exhausted=exhausted,
+        )
+        if (
+            len(page.model_dump_json(exclude_none=True).encode("utf-8"))
+            > request.maximum_response_bytes
+        ):
+            raise StorageAdapterRejection(
+                "request_too_large", "cleanup inventory response grant is too small"
+            )
+        validate_cleanup_inventory_response(request, page)
+        return page
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        self._require_open()
+        if request.target_incarnation != self._incarnation_id:
+            raise StorageIncarnationError("filesystem storage incarnation differs from observation")
+        if request.continuation is not None:
+            raise StorageAdapterRejection(
+                "traversal_invalidated", "unknown open-write continuation"
+            )
+        key = self._object_key(request.object_path)
+        observations: tuple[OpenWriteObservation, ...] = ()
+        gate = self._gate(key)
+        gate.acquire_read()
+        try:
+            state_path = self._write_dir_by_key(key) / "state.json"
+            if state_path.exists():
+                state = self._read_write_state(state_path, request.object_path)
+                start = WriteStartRequest(
+                    object_path=state.object_path,
+                    expected_bytes=state.expected_bytes,
+                    content_type=state.content_type,
+                    required_identity_assertions=state.required_identity_assertions,
+                    placement_policy=state.placement_policy,
+                )
+                observations = (
+                    OpenWriteObservation(
+                        write_token=state.token,
+                        begin_request_sha256=write_operation_sha256(
+                            BeginWriteOperation(request=start)
+                        ),
+                    ),
+                )
+        finally:
+            gate.release_read()
+        page = OpenWritePage(
+            object_path=request.object_path,
+            target_incarnation=self._incarnation_id,
+            observations=observations,
+            scanned_items=len(observations),
+            exhausted=True,
+        )
+        if (
+            len(page.model_dump_json(exclude_none=True).encode("utf-8"))
+            > request.maximum_response_bytes
+        ):
+            raise StorageAdapterRejection(
+                "request_too_large", "open-write response grant is too small"
+            )
+        validate_open_write_page_response(request, page)
+        return page
 
     def abort_write(self, session: WriteSession) -> None:
         self._require_open()
@@ -969,6 +1209,8 @@ class FilesystemStorageAdapter:
             self._verify_object_path_file(object_dir, request.object.object_path)
             if request.mode == "all_versions":
                 shutil.rmtree(object_dir)
+                if self._inventory is not None:
+                    self._inventory.remove_key(object_key, kind="object_revision")
                 self._prune_empty_parents(object_dir.parent, stop=self._root / "objects")
                 return
             if request.mode == "current":
@@ -995,10 +1237,20 @@ class FilesystemStorageAdapter:
                 return
             current_revision = self._read_current_revision(object_dir)
             shutil.rmtree(revision_dir)
+            if self._inventory is not None:
+                self._inventory.remove(
+                    CleanupCandidate(
+                        object_path=request.object.object_path,
+                        kind="object_revision",
+                        token=revision,
+                    )
+                )
             if current_revision == revision:
                 (object_dir / "current").unlink(missing_ok=True)
             revisions_dir = object_dir / "revisions"
-            if not any(revisions_dir.iterdir()):
+            with os.scandir(revisions_dir) as entries:
+                empty = next(entries, None) is None
+            if empty:
                 shutil.rmtree(object_dir)
                 self._prune_empty_parents(object_dir.parent, stop=self._root / "objects")
             else:
@@ -1019,6 +1271,8 @@ class FilesystemStorageAdapter:
                 with self._gate(object_key).write():
                     if object_dir.exists():
                         shutil.rmtree(object_dir)
+                        if self._inventory is not None:
+                            self._inventory.remove_key(object_key, kind="object_revision")
                         affected += 1
             self._prune_empty_tree(self._root / "objects")
         return affected
@@ -1127,6 +1381,25 @@ class FilesystemStorageAdapter:
             if not any(revisions_dir.iterdir()) and not (object_dir / "current").exists():
                 shutil.rmtree(object_dir)
         self._prune_empty_tree(self._root / "objects")
+
+    def _index_candidate(
+        self, object_path: str, kind: Literal["object_revision", "open_write"], token: str
+    ) -> None:
+        if self._inventory is not None:
+            self._inventory.add(CleanupCandidate(object_path=object_path, kind=kind, token=token))
+
+    def _index_private_namespace(self) -> None:
+        for object_dir in self._iter_object_dirs():
+            object_path = (object_dir / "path").read_text(encoding="utf-8")
+            if self._object_key(object_path) != object_dir.name:
+                raise RuntimeError("filesystem inventory object identity differs")
+            for revision_dir in (object_dir / "revisions").iterdir():
+                self._index_candidate(object_path, "object_revision", revision_dir.name)
+        for write_dir in (self._root / "writes").glob("*/*/*"):
+            state = _WriteState.from_json(self._read_json(write_dir / "state.json"))
+            if self._object_key(state.object_path) != write_dir.name:
+                raise RuntimeError("filesystem inventory write identity differs")
+            self._index_candidate(state.object_path, "open_write", state.token)
 
     def _require_open(self) -> None:
         if self._closed:
@@ -1481,6 +1754,7 @@ class FilesystemStorageAdapter:
         write_dir: Path,
         record: _ObjectRecord,
     ) -> None:
+        self._index_candidate(record.object_path, "object_revision", record.revision)
         object_dir = self._ensure_object_dir(object_key, record.object_path)
         revisions_dir = object_dir / "revisions"
         revision_dir = self._revision_dir(object_key, record.revision)
@@ -1524,6 +1798,7 @@ class FilesystemStorageAdapter:
         staging_path: Path,
         record: _ObjectRecord,
     ) -> None:
+        self._index_candidate(record.object_path, "object_revision", record.revision)
         object_dir = self._ensure_object_dir(object_key, record.object_path)
         revisions_dir = object_dir / "revisions"
         revision_dir = self._revision_dir(object_key, record.revision)
@@ -1734,7 +2009,18 @@ class FilesystemStorageAdapter:
             if missing_ok:
                 return
             raise RuntimeError("filesystem write directory is missing")
+        candidate = None
+        state_path = write_dir / "state.json"
+        if self._inventory is not None and state_path.exists():
+            state = _WriteState.from_json(self._read_json(state_path))
+            if self._object_key(state.object_path) != object_key:
+                raise RuntimeError("filesystem write directory differs from its object identity")
+            candidate = CleanupCandidate(
+                object_path=state.object_path, kind="open_write", token=state.token
+            )
         shutil.rmtree(write_dir)
+        if self._inventory is not None and candidate is not None:
+            self._inventory.remove(candidate)
         self._prune_empty_parents(write_dir.parent, stop=self._root / "writes")
 
     def _iter_object_dirs(self) -> Iterator[Path]:

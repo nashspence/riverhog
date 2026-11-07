@@ -27,6 +27,7 @@ from stove0_target_support import (
     TARGET_HTTP_OPERATIONS,
     TargetHttpBinding,
     TargetHttpResponse,
+    publication_state_policy,
     terminal_state_retention_seconds,
 )
 
@@ -222,6 +223,7 @@ def target_main(argv: Sequence[str] | None = None) -> int:
     )
     with resource as admission:
         target = NvencAv1OpusTargetService(
+            primary_state=publication_state_policy(prefix),
             state_root=Path(
                 os.getenv(f"{prefix}_STATE_ROOT", "/var/lib/a-stove0-nvenc-av1-opus-target")
             ),

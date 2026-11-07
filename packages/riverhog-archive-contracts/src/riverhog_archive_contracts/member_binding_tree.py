@@ -6,7 +6,12 @@ import hashlib
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import (
+    canonical_json_bytes,
+    format_scalar,
+    parse_scalar,
+    require_canonical_json,
+)
 
 from .member_history import MemberHistoryBinding
 
@@ -30,6 +35,107 @@ def _leaf(binding: MemberHistoryBinding) -> bytes:
 
 def _node(left: bytes, right: bytes) -> bytes:
     return hashlib.sha256(_NODE + left + right).digest()
+
+
+@dataclass(frozen=True, slots=True)
+class MemberBindingTreeCheckpoint:
+    """Resume root verification without replaying completed member bindings.
+
+    This is work state, not source authentication. The owner must retain its
+    exact source binding and compare count/root to independent archive authority.
+    The frontier is bounded by the existing 256-bit artifact identity space.
+    """
+
+    count: int = 0
+    previous_artifact_id: str | None = None
+    frontier: tuple[str | None, ...] = ()
+
+    def __post_init__(self) -> None:
+        if type(self.count) is not int or not 0 <= self.count <= 2**256:
+            raise ValueError("member binding checkpoint count is invalid")
+        if type(self.frontier) is not tuple or len(self.frontier) != self.count.bit_length():
+            raise ValueError("member binding checkpoint frontier extent is invalid")
+        if self.count == 0:
+            if self.previous_artifact_id is not None:
+                raise ValueError("empty member binding checkpoint has a previous member")
+        else:
+            if self.previous_artifact_id is None:
+                raise ValueError("member binding checkpoint lacks its previous member")
+            _hex(self.previous_artifact_id)
+            if self.count > int(self.previous_artifact_id, 16) + 1:
+                raise ValueError("member binding checkpoint count exceeds its ordered ID range")
+        for level, digest in enumerate(self.frontier):
+            if bool(self.count & (1 << level)) != (digest is not None):
+                raise ValueError("member binding checkpoint frontier coverage is invalid")
+            if digest is not None:
+                _hex(digest)
+
+    def append(self, binding: MemberHistoryBinding) -> MemberBindingTreeCheckpoint:
+        """Hash one exact binding and at most 256 existing frontier branches."""
+        if (
+            self.previous_artifact_id is not None
+            and binding.artifact_id <= self.previous_artifact_id
+        ):
+            raise ValueError("member history bindings are not strictly ID ordered")
+        frontier = list(self.frontier)
+        carry = _leaf(binding)
+        level = 0
+        while level < len(frontier) and frontier[level] is not None:
+            left = frontier[level]
+            assert left is not None
+            carry = _node(bytes.fromhex(left), carry)
+            frontier[level] = None
+            level += 1
+        if level == len(frontier):
+            frontier.append(carry.hex())
+        else:
+            frontier[level] = carry.hex()
+        return MemberBindingTreeCheckpoint(self.count + 1, binding.artifact_id, tuple(frontier))
+
+    @property
+    def root_sha256(self) -> str:
+        """Fold at most 256 occupied levels using the archive's existing split rule."""
+        folded: bytes | None = None
+        for digest in self.frontier:
+            if digest is not None:
+                node = bytes.fromhex(digest)
+                folded = node if folded is None else _node(node, folded)
+        if folded is None:
+            raise ValueError("member binding tree cannot be empty")
+        return folded.hex()
+
+    def to_json_bytes(self) -> bytes:
+        return canonical_json_bytes(
+            {
+                "format": "riverhog-member-binding-tree-checkpoint/v1",
+                "count": format_scalar("nonnegative", self.count),
+                "previous_artifact_id": self.previous_artifact_id,
+                "frontier": list(self.frontier),
+            }
+        )
+
+    @classmethod
+    def from_json_bytes(cls, raw: bytes) -> MemberBindingTreeCheckpoint:
+        # At most 257 positions, 256 SHA-256 values, a 78-digit count and one ID.
+        if type(raw) is not bytes or len(raw) > 32 * 1024:
+            raise ValueError("member binding checkpoint exceeds its identity-derived byte bound")
+        value = require_canonical_json(raw)
+        if (
+            not isinstance(value, dict)
+            or set(value) != {"format", "count", "previous_artifact_id", "frontier"}
+            or value["format"] != "riverhog-member-binding-tree-checkpoint/v1"
+            or not isinstance(value["frontier"], list)
+        ):
+            raise ValueError("member binding checkpoint fields are invalid")
+        previous = value["previous_artifact_id"]
+        if previous is not None and not isinstance(previous, str):
+            raise ValueError("member binding checkpoint previous ID is invalid")
+        frontier: list[str | None] = []
+        for digest in value["frontier"]:
+            if digest is not None and not isinstance(digest, str):
+                raise ValueError("member binding checkpoint frontier digest is invalid")
+            frontier.append(digest)
+        return cls(parse_scalar("nonnegative", value["count"]), previous, tuple(frontier))
 
 
 @dataclass(frozen=True, slots=True)
@@ -155,6 +261,7 @@ def verify_binding_inclusion(
 
 
 __all__ = [
+    "MemberBindingTreeCheckpoint",
     "BindingTreeCommitment",
     "binding_tree_commitment",
     "verify_binding_inclusion",

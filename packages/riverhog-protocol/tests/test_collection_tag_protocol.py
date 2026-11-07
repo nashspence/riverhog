@@ -41,6 +41,15 @@ def test_collection_tag_contract_accepts_exact_case_sensitive_nfc_unicode() -> N
         "a" * (COLLECTION_TAG_UTF8_BYTES_MAX + 1),
         "🦆" * (COLLECTION_TAG_UTF8_BYTES_MAX // 4 + 1),
     ),
+    ids=(
+        "empty",
+        "leading-whitespace",
+        "trailing-whitespace",
+        "line-break",
+        "non-nfc",
+        "oversized-ascii",
+        "oversized-utf8",
+    ),
 )
 def test_collection_tag_contract_rejects_noncanonical_values(value: str) -> None:
     with pytest.raises(ValidationError):

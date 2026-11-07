@@ -29,13 +29,6 @@
       "title": "Force Path Style",
       "type": "boolean"
     },
-    "max_attempts": {
-      "default": 8,
-      "maximum": 100,
-      "minimum": 1,
-      "title": "Max Attempts",
-      "type": "integer"
-    },
     "max_pool_connections": {
       "default": 32,
       "maximum": 4096,
@@ -58,15 +51,6 @@
     "region": {
       "minLength": 1,
       "title": "Region",
-      "type": "string"
-    },
-    "retry_mode": {
-      "default": "standard",
-      "enum": [
-        "standard",
-        "adaptive"
-      ],
-      "title": "Retry Mode",
       "type": "string"
     },
     "root_prefix": {

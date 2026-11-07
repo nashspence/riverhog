@@ -10,6 +10,7 @@ from typing import Literal, Self
 
 from config_validation import load_validated_yaml_config, read_secret_file
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from riverhog_client import PrimaryStatePolicy
 from riverhog_protocol import CollectionDescription, CollectionTag
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
@@ -51,6 +52,7 @@ class SourceConfig(ConfigModel):
 class _FtpSpoolPolicy(ConfigModel):
     host_id: str = Field(min_length=1, max_length=255)
     riverhog_base_url: str = Field(min_length=1, max_length=2048)
+    primary_state: PrimaryStatePolicy
     allow_insecure_http: bool = False
     provenance_observer: str = Field(min_length=1, max_length=255)
     sources: tuple[SourceConfig, ...] = Field(min_length=1)

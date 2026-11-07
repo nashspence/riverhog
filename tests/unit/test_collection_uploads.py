@@ -55,7 +55,7 @@ from riverhog_core.incremental_plan import (
     incremental_volume_planner_checkpoint_bytes,
     parse_incremental_volume_planner_checkpoint,
 )
-from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
+from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission, RetrievalCacheReceipt
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.canonical_provenance import SqlAlchemyCanonicalProvenanceService
 from riverhog_core.services.catalog_sync import SqlAlchemyCatalogSyncService
@@ -100,13 +100,13 @@ from tests.unit.test_pack_upload import MemoryResumableStore
 
 _CREATOR = Principal(
     id="uploader",
-    key_id="key-1",
+    key_id=None,
     access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
 )
 
 _TAGGED_CREATOR = Principal(
     id="tagged-uploader",
-    key_id="tagged-key-1",
+    key_id=None,
     access=frozenset(
         {
             ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES),
@@ -241,6 +241,34 @@ class _MemoryResumableCache:
             expected_bytes=expected_bytes,
             write_token=session.write_token,
             admitted_at="2026-08-08T00:00:00.000000000Z",
+        )
+
+    def observe_completed_population(
+        self,
+        *,
+        owner: str,
+        source_store: str,
+        collection_id: int,
+        object_id: str,
+        expected_bytes: int,
+    ) -> RetrievalCacheReceipt | None:
+        _ = owner
+        completed = self.resumable.find_completed_write(
+            object_path=f"cache/{source_store}/{collection_id}/{object_id}",
+            expected_bytes=expected_bytes,
+            expected_content_type="application/octet-stream",
+            expected_metadata={},
+        )
+        if completed is None:
+            return None
+        return RetrievalCacheReceipt(
+            cache_store="memory",
+            object_path=completed.object_path,
+            revision=completed.revision,
+            stored_bytes=completed.bytes,
+            stored_sha256=None,
+            cached_at=completed.completed_at,
+            verified_at=completed.completed_at,
         )
 
     def resumable_object_store(self, **_: object) -> MemoryResumableStore:
@@ -406,7 +434,7 @@ def _upload_provenance_journal(
         )
         offset += len(chunk)
     service.seal_provenance_journal(collection_id, journal_id)
-    for _ in range(64):
+    for _ in range(10000):
         status = service.get_provenance_journal(collection_id, journal_id)
         if status["state"] in {"sealed", "failed"}:
             assert status["state"] == "sealed", status["failure"]
@@ -486,13 +514,14 @@ def _service_with_archive_objects(
     *,
     policy: CollectionVolumePolicy | None = None,
     throughput_tuning: ArchiveThroughputTuning | None = None,
+    database_url: str | None = None,
 ) -> tuple[
     SqlAlchemyCollectionUploadService,
     RuntimeConfig,
     MemoryResumableStore,
     MemoryImmutableStore,
 ]:
-    database_url = sqlite_url(tmp_path / "catalog.sqlite3")
+    database_url = database_url or sqlite_url(tmp_path / "catalog.sqlite3")
     config = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     initialize_db(database_url)
     with session_scope(make_session_factory(database_url)) as session:
@@ -616,6 +645,7 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
         collection_id,
         str(volume["volume_id"]),
         0,
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )
@@ -663,6 +693,7 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
         reencrypted_collection_id,
         str(reencrypted_volume["volume_id"]),
         0,
+        principal=_CREATOR,
         plan_sha256=str(reencrypted_volume["plan_sha256"]),
         content=content,
     )
@@ -747,6 +778,7 @@ def test_restore_required_ingress_commits_encrypted_cache_with_initial_lease(
         collection_id,
         str(volume["volume_id"]),
         int(unit["unit"]),
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )
@@ -885,6 +917,7 @@ def test_mandatory_primary_and_member_history_survive_encrypted_archive_publicat
                 collection_id,
                 str(volume["volume_id"]),
                 int(unit["unit"]),
+                principal=_CREATOR,
                 plan_sha256=str(volume["plan_sha256"]),
                 content=payload,
             )
@@ -1075,6 +1108,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
         collection_id,
         str(volume["volume_id"]),
         0,
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )
@@ -1086,10 +1120,33 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
     assert queued["archive_phase"] == "finalization_queued"
     assert queued["latest_failure"] is None
     assert queued["archive_next_attempt_at"] is not None
+    artifact_id = ArtifactId(f"{2:064x}")
+    original_receipt = _custody_until(service, collection_id, artifact_id)
+    with session_scope(make_session_factory(config.database_url)) as session:
+        original_octets = session.get(
+            CollectionUploadArtifactRecord, (collection_id, str(artifact_id))
+        ).custody_receipt_json
     finalized = _process_until(service, collection_id)
     assert finalized["state"] == "finalized"
     assert finalized["custody"] == {"state": "complete"}
     assert finalized["custody_mode"] == custody_mode
+    published_member = service.get_artifact(collection_id, artifact_id)
+    assert published_member["custody_receipt"] == original_receipt
+    assert published_member["payload_sealed"] is True
+    with session_scope(make_session_factory(config.database_url)) as session:
+        assert session.get(CollectionUploadRecord, collection_id) is None
+        assert (
+            session.get(
+                CollectionArtifactRecord, (collection_id, str(artifact_id))
+            ).custody_receipt_json
+            == original_octets
+        )
+    service.require_read_access(collection_id, _CREATOR)
+    service.require_read_access(collection_id, _DELETER)
+    with pytest.raises(NotFound):
+        service.require_read_access(collection_id, replace(_CREATOR, access=frozenset()))
+    with pytest.raises(NotFound):
+        service.require_read_access(collection_id, _OTHER_DELETER)
     assert finalized["description"] == description
     assert finalized["description_revision"] == (1 if description is not None else 0)
     assert finalized["description_publication"] == (
@@ -1184,6 +1241,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
     )
     assert resumed["collection_id"] == str(collection_id)
     assert resumed["state"] == "finalized"
+    assert service.get_artifact(collection_id, artifact_id) == published_member
     changed_custody_mode = (
         "custody-transfer" if custody_mode == "producer-retained" else "producer-retained"
     )
@@ -1277,6 +1335,7 @@ def test_closed_custody_transfer_keeps_lease_until_final_tail_is_custodied(
         collection_id,
         str(volume["volume_id"]),
         int(unit["unit"]),
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )
@@ -1339,6 +1398,7 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
         collection_id,
         str(volume["volume_id"]),
         int(unit["unit"]),
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=b"".join(contents[str(source["artifact_id"])] for source in unit["sources"]),
     )
@@ -1603,6 +1663,7 @@ def test_server_owned_membership_is_independent_of_registration_order(
                     collection_id,
                     str(volume["volume_id"]),
                     int(unit["unit"]),
+                    principal=_CREATOR,
                     plan_sha256=str(volume["plan_sha256"]),
                     content=payload,
                 )
@@ -1776,6 +1837,7 @@ def test_startup_reconciles_interrupted_finalization_from_its_durable_checkpoint
         collection_id,
         str(volume["volume_id"]),
         0,
+        principal=_CREATOR,
         plan_sha256=str(volume["plan_sha256"]),
         content=content,
     )

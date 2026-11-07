@@ -62,8 +62,8 @@ def create(path, count=3, history=0, payload=1):
     )
     with closing(connect(path)) as db:
         db.execute(
-            "INSERT INTO frames VALUES (?, ?, ?)",
-            ("0", prior.json_bytes, canonical_json_bytes(prior.reference)),
+            "INSERT INTO frames VALUES (?, ?, ?, ?)",
+            ("0", prior.json_bytes, canonical_json_bytes(prior.reference), prefix.sha256_state),
         )
         db.execute(
             "INSERT INTO journal_prefix VALUES (1, ?, ?, ?)",
@@ -484,18 +484,20 @@ def test_native_correction_uses_verified_targets_before_prefix_publication(
     replacement = copy.deepcopy(original)
     replacement["assertion_id"], replacement["name"] = new_id(), "Changed label"
     observed = []
-    native = CorrectionTargets.advance
+    native = CorrectionTargets._apply
 
-    def advance(self, **options):
+    def apply(self, batch):
+        assert self.db.in_transaction
         prefix = self.db.execute("SELECT checkpoint FROM journal_prefix").fetchone()[0]
         before = self.db.total_changes
-        state = native(self, **options)
+        state = native(self, batch)
         assert self.db.total_changes - before <= 65
         assert self.db.execute("SELECT checkpoint FROM journal_prefix").fetchone()[0] == prefix
+        assert self.db.in_transaction
         observed.append(state.phase)
         return state
 
-    monkeypatch.setattr(CorrectionTargets, "advance", advance)
+    monkeypatch.setattr(CorrectionTargets, "_apply", apply)
     raw = append_correction(
         journal,
         [target],
@@ -571,7 +573,8 @@ class WorkConnection(sqlite3.Connection):
         return result
 
     @contextmanager
-    def observe(self):
+    def observe(self, *, weights=None):
+        was_in_transaction = self.in_transaction
         self.metrics = {
             name: 0
             for name in (
@@ -585,7 +588,7 @@ class WorkConnection(sqlite3.Connection):
                 "sqlite_vm_instructions",
             )
         }
-        self.statements, self.weights = [], {}
+        self.statements, self.weights = [], dict(weights or {})
         before = self.total_changes
         original = implementation.canonical_json_bytes
 
@@ -622,7 +625,7 @@ class WorkConnection(sqlite3.Connection):
             self.set_progress_handler(None, 0)
             self.set_authorizer(None)
             self.metrics["changed_rows"] = self.total_changes - before
-        assert not self.in_transaction
+        assert self.in_transaction == was_in_transaction
         assert all(cursor.closed for _sql, _parameters, cursor in self.statements)
         for sql, parameters, _cursor in self.statements:
             if not sql.startswith(("SELECT", "UPDATE", "DELETE")):
@@ -636,15 +639,9 @@ class WorkConnection(sqlite3.Connection):
             assert "SEARCH" in plan and "SCAN" not in plan and "USE TEMP" not in plan
 
 
-@pytest.mark.growth_witness(
-    "riverhog-correction-target-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._correction_targets.CorrectionTargets.advance",
-)
-def test_cold_indexed_targets_record_actual_rows_bytes_and_vm_work(tmp_path, record_property):
-    binding = growth_binding(CorrectionTargets.advance)
+def target_unit_samples(tmp_path, operation):
+    binding = growth_binding(getattr(CorrectionTargets, operation))
     projection = project_bindings((binding,))
-    samples = []
     regimes = [
         (1, 0, 1, True),
         (1, 1, 1, False),
@@ -687,8 +684,26 @@ def test_cold_indexed_targets_record_actual_rows_bytes_and_vm_work(tmp_path, rec
             with closing(connect(path, factory=WorkConnection)) as db:
                 current = work(db, frame)
                 before = current.load()
-                with db.observe() as metrics:
-                    after = current.advance(row_budget=quantum, byte_budget=admission)
+                unchanged = contents(db) if operation != "advance" else None
+                if operation == "_apply":
+                    with db.observe():
+                        batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                    weights = dict(db.weights)
+                    db.execute("BEGIN IMMEDIATE").close()
+                    with db.observe(weights=weights) as metrics:
+                        after = current._apply(batch)
+                    assert after == batch.after and db.in_transaction
+                    db.rollback()
+                elif operation == "prepare":
+                    with db.observe() as metrics:
+                        batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                    after = batch.after
+                    assert not db.in_transaction
+                else:
+                    with db.observe() as metrics:
+                        after = current.advance(row_budget=quantum, byte_budget=admission)
+                if unchanged is not None:
+                    assert contents(db) == unchanged
                 assert metrics["changed_rows"] <= quantum + 1
                 assert metrics["payload_fetched_octets"] == 0
                 if terminal:
@@ -711,9 +726,43 @@ def test_cold_indexed_targets_record_actual_rows_bytes_and_vm_work(tmp_path, rec
                     "delegates": {},
                 }
                 validate_execution_samples(projection, binding.declaration.id, [sample])
-                samples.append(sample)
-    assert len(samples) == 21
+                yield sample
+
+
+@pytest.mark.growth_witness(
+    "riverhog-correction-target-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._correction_targets.CorrectionTargets.advance",
+)
+def test_cold_indexed_targets_record_actual_rows_bytes_and_vm_work(tmp_path, record_property):
+    samples = []
     record_property("growth_samples", samples)
+    samples.extend(target_unit_samples(tmp_path, "advance"))
+    assert len(samples) == 21
+
+
+@pytest.mark.growth_witness(
+    "riverhog-correction-targets-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._correction_targets.CorrectionTargets.prepare",
+)
+def test_actual_detached_correction_targets_plan(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    samples.extend(target_unit_samples(tmp_path, "prepare"))
+    assert len(samples) == 21
+
+
+@pytest.mark.growth_witness(
+    "riverhog-correction-targets-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._correction_targets.CorrectionTargets._apply",
+)
+def test_actual_owner_transaction_correction_targets_application(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    samples.extend(target_unit_samples(tmp_path, "_apply"))
+    assert len(samples) == 21
 
 
 @pytest.mark.parametrize("phase", ["apply", "clean", "done"])

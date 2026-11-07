@@ -17,6 +17,10 @@ from pydantic import BaseModel, ValidationError
 from riverhog_canonical_json import parse_identity_json
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
+    CleanupExecutionResult,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
+    CleanupInvocation,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -28,6 +32,8 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWritePage,
     ReadPreparationRequest,
     ReadStatus,
     SmallObjectWriteRequest,
@@ -37,6 +43,8 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -119,6 +127,8 @@ class StorageAdapterHttpBinding:
         method: str,
         path: str,
         body: bytes = b"",
+        *,
+        expected_incarnation: str | None = None,
     ) -> StorageAdapterHttpResponse:
         normalized_method = method.upper()
         if normalized_method == "POST" and path in FRAMED_STORAGE_ADAPTER_HTTP_PATHS:
@@ -152,6 +162,28 @@ class StorageAdapterHttpBinding:
                 session = self.adapter.begin_write(start_request)
                 validate_write_session_response(start_request, session)
                 return _model_response(session)
+            if normalized_method == "POST" and path == "/v1/cleanup/execute":
+                invocation = self._parse(body, CleanupInvocation)
+                try:
+                    invocation._require_exact_request(request_bytes=len(body))
+                except ValueError as exc:
+                    raise StorageAdapterServiceError(
+                        413, "request_too_large", "cleanup wire control grant is too small"
+                    ) from exc
+                if expected_incarnation is not None and (
+                    expected_incarnation != invocation.call.target_incarnation
+                    or invocation.adapter_hops_remaining != 0
+                ):
+                    raise StorageAdapterServiceError(
+                        400, "invalid_request", "cleanup incarnation precondition differs"
+                    )
+                return _model_response(self.adapter.execute_cleanup(invocation))
+            if normalized_method == "POST" and path == "/v1/cleanup/inventory":
+                inventory_request = self._parse(body, CleanupInventoryRequest)
+                return _model_response(self.adapter.list_cleanup_candidates(inventory_request))
+            if normalized_method == "POST" and path == "/v1/writes/open":
+                open_request = self._parse(body, OpenWriteListRequest)
+                return _model_response(self.adapter.list_open_writes(open_request))
             if normalized_method == "POST" and path == "/v1/writes/segments":
                 list_request = self._parse(body, WriteSegmentListRequest)
                 segment_page = self.adapter.list_segments(list_request)
@@ -282,6 +314,12 @@ class StorageAdapterHttpBinding:
                     "invalid_request",
                     "adapter request Content-Length is invalid",
                 )
+            if normalized_method == "POST" and path == "/v1/writes/execute":
+                invocation, content = self._parse_framed_stream(
+                    chunks, WriteInvocation, content_length=content_length
+                )
+                execution = self.adapter.execute_write(invocation, content=content)
+                return _model_response(execution)
             if normalized_method == "POST" and path == "/v1/writes/segment":
                 segment_request, content = self._parse_framed_stream(
                     chunks,
@@ -430,6 +468,22 @@ def _storage_operation(*args: Any, **kwargs: Any) -> HttpOperationContract:
 
 STORAGE_ADAPTER_HTTP_OPERATIONS = (
     _storage_operation(
+        "POST",
+        "/v1/cleanup/execute",
+        CleanupInvocation,
+        CleanupExecutionResult,
+        "json",
+        errors=_adapter_errors("request_too_large"),
+    ),
+    _storage_operation(
+        "POST",
+        "/v1/writes/execute",
+        WriteInvocation,
+        WriteExecutionResult,
+        "framed",
+        errors=_adapter_errors("length_required", "request_too_large"),
+    ),
+    _storage_operation(
         "GET",
         "/v1/adapter",
         response_type=AdapterDescriptor,
@@ -450,6 +504,22 @@ STORAGE_ADAPTER_HTTP_OPERATIONS = (
         WriteSegmentReceipt,
         "framed",
         errors=_adapter_errors("length_required", "request_too_large", "invalid_path", "not_found"),
+    ),
+    _storage_operation(
+        "POST",
+        "/v1/cleanup/inventory",
+        CleanupInventoryRequest,
+        CleanupInventoryPage,
+        "json",
+        errors=_adapter_errors("request_too_large", "invalid_path", "traversal_invalidated"),
+    ),
+    _storage_operation(
+        "POST",
+        "/v1/writes/open",
+        OpenWriteListRequest,
+        OpenWritePage,
+        "json",
+        errors=_adapter_errors("request_too_large", "invalid_path", "traversal_invalidated"),
     ),
     _storage_operation(
         "POST",

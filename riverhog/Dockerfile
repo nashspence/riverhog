@@ -34,6 +34,7 @@ COPY packages/riverhog-growth-contracts packages/riverhog-growth-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-age packages/riverhog-age
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
+COPY packages/sqlite-admission packages/sqlite-admission
 COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY packages/riverhog-protocol packages/riverhog-protocol

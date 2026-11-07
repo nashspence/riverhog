@@ -323,7 +323,15 @@ def test_initial_catalog_publication_waits_for_exact_canonical_index() -> None:
         )
         session.commit()
         for _ in range(3):
-            _advance_catalog_canonical_index(session, upload)
+            _advance_catalog_canonical_index(
+                session,
+                upload,
+                open_summary=lambda journal_id: validate_journal(
+                    produced.content,
+                    catalog=ContractCatalog((collection_production_contract(),)),
+                    require_profiles=False,
+                ),
+            )
             session.commit()
         assert upload.catalog_phase == "terminal"
         assert collection.is_published is False

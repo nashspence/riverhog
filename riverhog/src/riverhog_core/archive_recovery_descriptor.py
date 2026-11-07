@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import hashlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from riverhog_archive_contracts import (
     RECOVERY_DESCRIPTOR_PATH,
@@ -10,10 +10,11 @@ from riverhog_archive_contracts import (
     CollectionEncryptionBinding,
     RecoveryDescriptor,
 )
+from riverhog_storage_adapter_protocol import SmallObjectWriteRequest
 
 from riverhog_core.archive_formats import RECOVERY_DESCRIPTOR_STORAGE_FORMAT
 from riverhog_core.archive_root import SealedArchiveRoot
-from riverhog_core.ports.archive_objects import ImmutableArchiveObjectStore
+from riverhog_core.ports.archive_objects import ImmutableArchiveObjectStore, ImmutableObjectReceipt
 
 RECOVERY_DESCRIPTOR_CONTENT_TYPE = "application/vnd.riverhog.recovery-descriptor+json"
 
@@ -48,6 +49,86 @@ class SealedRecoveryDescriptor:
     content: builtins.bytes
 
 
+@dataclass(frozen=True, slots=True)
+class ArchiveRecoveryDescriptorPublication:
+    """Exact plaintext recovery bytes bound to the original stored root."""
+
+    archive_storage_prefix: str
+    content: bytes = field(repr=False)
+    descriptor: RecoveryDescriptor = field(init=False, repr=False)
+    sha256: str = field(init=False)
+
+    def __post_init__(self) -> None:
+        prefix = self.archive_storage_prefix.strip("/")
+        if not prefix:
+            raise ValueError("archive storage prefix must not be empty")
+        if not isinstance(self.content, bytes):
+            raise TypeError("archive recovery content must be immutable bytes")
+        object.__setattr__(self, "archive_storage_prefix", prefix)
+        object.__setattr__(self, "descriptor", RecoveryDescriptor.from_json_bytes(self.content))
+        object.__setattr__(self, "sha256", hashlib.sha256(self.content).hexdigest())
+
+    @classmethod
+    def from_root(
+        cls,
+        *,
+        archive_storage_prefix: str,
+        root: SealedArchiveRoot,
+        encryption: CollectionEncryptionBinding,
+    ) -> ArchiveRecoveryDescriptorPublication:
+        return cls(
+            archive_storage_prefix,
+            build_recovery_descriptor(
+                encryption=encryption,
+                root_relative_path=root.relative_path,
+                root_stored_bytes=root.stored_bytes,
+                root_stored_sha256=root.stored_sha256,
+            ),
+        )
+
+    @property
+    def object_path(self) -> str:
+        return f"{self.archive_storage_prefix}/{RECOVERY_DESCRIPTOR_PATH}"
+
+    @property
+    def required_identity_assertions(self) -> dict[str, str]:
+        return {
+            "riverhog-format": RECOVERY_DESCRIPTOR_STORAGE_FORMAT,
+            "riverhog-sha256": self.sha256,
+            "riverhog-root-stored-sha256": self.descriptor.root.stored_sha256,
+        }
+
+    def request(self) -> SmallObjectWriteRequest:
+        return SmallObjectWriteRequest(
+            object_path=self.object_path,
+            content_type=RECOVERY_DESCRIPTOR_CONTENT_TYPE,
+            required_identity_assertions=self.required_identity_assertions,
+            placement_policy="immediate_default",
+            mode="create_only",
+            stored_bytes=len(self.content),
+            stored_sha256=self.sha256,
+        )
+
+    def require_request(self, request: SmallObjectWriteRequest) -> None:
+        if request != self.request():
+            raise ValueError("archive recovery request differs from its source")
+
+    def sealed_receipt(self, receipt: ImmutableObjectReceipt) -> SealedRecoveryDescriptor:
+        if receipt.object_path != self.object_path or receipt.stored_bytes != len(self.content):
+            raise RuntimeError("immutable descriptor store returned an inconsistent receipt")
+        if receipt.stored_sha256 != self.sha256:
+            raise RuntimeError("immutable descriptor store changed the recovery descriptor")
+        return SealedRecoveryDescriptor(
+            object_path=receipt.object_path,
+            relative_path=RECOVERY_DESCRIPTOR_PATH,
+            revision=receipt.revision,
+            bytes=len(self.content),
+            sha256=self.sha256,
+            completed_at=receipt.completed_at,
+            content=self.content,
+        )
+
+
 class ArchiveRecoveryDescriptorPublisher:
     """Publish the plaintext key-selection contract for one immutable root."""
 
@@ -61,38 +142,15 @@ class ArchiveRecoveryDescriptorPublisher:
         root: SealedArchiveRoot,
         encryption: CollectionEncryptionBinding,
     ) -> SealedRecoveryDescriptor:
-        prefix = archive_storage_prefix.strip("/")
-        if not prefix:
-            raise ValueError("archive storage prefix must not be empty")
-        content = build_recovery_descriptor(
-            encryption=encryption,
-            root_relative_path=root.relative_path,
-            root_stored_bytes=root.stored_bytes,
-            root_stored_sha256=root.stored_sha256,
+        publication = ArchiveRecoveryDescriptorPublication.from_root(
+            archive_storage_prefix=archive_storage_prefix, root=root, encryption=encryption
         )
-        sha256 = hashlib.sha256(content).hexdigest()
-        object_path = f"{prefix}/{RECOVERY_DESCRIPTOR_PATH}"
+        request = publication.request()
         receipt = self._object_store.put_immutable_object(
-            object_path=object_path,
-            content=content,
-            content_type=RECOVERY_DESCRIPTOR_CONTENT_TYPE,
-            required_identity_assertions={
-                "riverhog-format": RECOVERY_DESCRIPTOR_STORAGE_FORMAT,
-                "riverhog-sha256": sha256,
-                "riverhog-root-stored-sha256": root.stored_sha256,
-            },
-            placement_policy="immediate_default",
+            object_path=request.object_path,
+            content=publication.content,
+            content_type=request.content_type,
+            required_identity_assertions=request.required_identity_assertions,
+            placement_policy=request.placement_policy,
         )
-        if receipt.object_path != object_path or receipt.stored_bytes != len(content):
-            raise RuntimeError("immutable descriptor store returned an inconsistent receipt")
-        if receipt.stored_sha256 != sha256:
-            raise RuntimeError("immutable descriptor store changed the recovery descriptor")
-        return SealedRecoveryDescriptor(
-            object_path=receipt.object_path,
-            relative_path=RECOVERY_DESCRIPTOR_PATH,
-            revision=receipt.revision,
-            bytes=len(content),
-            sha256=sha256,
-            completed_at=receipt.completed_at,
-            content=content,
-        )
+        return publication.sealed_receipt(receipt)

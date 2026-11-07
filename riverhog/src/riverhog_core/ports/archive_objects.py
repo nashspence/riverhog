@@ -4,7 +4,21 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Protocol
 
-from riverhog_storage_adapter_protocol import ObjectPlacementPolicy
+from riverhog_storage_adapter_protocol import (
+    BinaryContent,
+    CleanupExecutionResult,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
+    CleanupInvocation,
+    ObjectPlacementPolicy,
+    SmallObjectWriteRequest,
+    WriteExecutionResult,
+    WriteInvocation,
+    WriteOperation,
+)
+from riverhog_storage_adapter_protocol import (
+    ImmutableObjectReceipt as AdapterImmutableObjectReceipt,
+)
 
 from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
 
@@ -65,6 +79,30 @@ class CompletedObjectReceipt:
     retrieval_cache: RetrievalCacheReceipt | None = None
 
 
+class ArchiveObjectWriteExecutor(Protocol):
+    """Correlated execution evidence from the selected effect-owning adapter."""
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult: ...
+
+
+class ArchiveObjectCleanupPort(Protocol):
+    """One independently selected target; archive and cache disposal do not share authority."""
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage: ...
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult: ...
+
+
+class ArchiveWriteOperationExecutor(Protocol):
+    """The workflow owner admits an exact operation before assigning its invocation."""
+
+    def execute_write_operation(
+        self, operation: WriteOperation, *, content: bytes = b""
+    ) -> WriteExecutionResult: ...
+
+
 class ArchiveResumableObjectStore(Protocol):
     def write_constraints(self) -> ResumableWriteConstraints: ...
 
@@ -122,6 +160,20 @@ class ImmutableObjectReceipt:
     stored_bytes: int
     stored_sha256: str
     completed_at: str
+
+
+class ImmutableArchiveObjectObserver(Protocol):
+    """Read-only compatible object authority, independent of write execution."""
+
+    def observe_immutable_object(
+        self, request: SmallObjectWriteRequest
+    ) -> AdapterImmutableObjectReceipt | None: ...
+
+
+class ImmutableArchiveWritePort(
+    ArchiveObjectWriteExecutor, ImmutableArchiveObjectObserver, Protocol
+):
+    """One selected immutable execution owner and its read-only observer."""
 
 
 class ImmutableArchiveObjectStore(Protocol):

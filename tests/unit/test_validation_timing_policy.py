@@ -45,7 +45,7 @@ def test_sequential_parent_make_flags_do_not_change_required_child_work(monkeypa
 
 def test_running_attempt_records_start_and_conditions_before_execution(tmp_path, monkeypatch):
     work = qualification.ValidationWork("start-proof", ("true",))
-    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
+    monkeypatch.setattr(qualification, "validation_workloads", lambda **_selection: (work,))
     monkeypatch.setattr(
         timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True}
     )
@@ -90,7 +90,7 @@ def test_check_cli_never_promotes_target_into_exit_status(
     work = qualification.ValidationWork(
         "test", ("true",), target, growth_witnesses=("owner/bound",)
     )
-    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
+    monkeypatch.setattr(qualification, "validation_workloads", lambda **_selection: (work,))
     path = tmp_path / "run.json"
     path.write_bytes(canonical_json_bytes(row(work, seconds, code, {"owner/bound": growth})))
     status = timing.main(
@@ -110,7 +110,7 @@ def test_check_cli_never_promotes_target_into_exit_status(
 
 def test_cli_evidence_absence_not_optional_target_absence_fails(tmp_path, monkeypatch):
     work = qualification.ValidationWork("test", ("true",))
-    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
+    monkeypatch.setattr(qualification, "validation_workloads", lambda **_selection: (work,))
     path = tmp_path / "run.json"
     path.write_bytes(canonical_json_bytes(row(work)))
     args = [
@@ -134,7 +134,7 @@ def test_runner_records_once_without_speed_gate_and_preserves_growth(
     tmp_path, monkeypatch, target, growth, capsys
 ):
     work = qualification.ValidationWork("test", ("true",), target, growth_witnesses=("bound",))
-    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
+    monkeypatch.setattr(qualification, "validation_workloads", lambda **_selection: (work,))
     monkeypatch.setattr(
         timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True}
     )
@@ -210,7 +210,7 @@ def test_native_subprocess_no_target_executes_once_and_no_comparison_blocks(tmp_
             f"from pathlib import Path; Path({str(marker)!r}).write_text('once')",
         ),
     )
-    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
+    monkeypatch.setattr(qualification, "validation_workloads", lambda **_selection: (work,))
     monkeypatch.setattr(
         timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True}
     )
@@ -222,7 +222,7 @@ def test_independent_safety_failure_retains_original_exit_not_speed_goal(tmp_pat
     work = qualification.ValidationWork(
         "safety", (sys.executable, "-c", "raise SystemExit(8)"), 1e9
     )
-    monkeypatch.setattr(qualification, "validation_workloads", lambda: (work,))
+    monkeypatch.setattr(qualification, "validation_workloads", lambda **_selection: (work,))
     monkeypatch.setattr(
         timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True}
     )
@@ -238,3 +238,61 @@ def test_recursive_make_directory_flags_are_observations_not_work_selectors(monk
     monkeypatch.setenv("MFLAGS", "-w -j4")
     with pytest.raises(ValueError, match="execution overrides"):
         qualification.validation_environment(work, "recursive-make")
+
+
+@pytest.mark.parametrize(
+    ("names", "expected_operations"),
+    [
+        (None, ["owned.step", "unrelated.step"]),
+        (("lint", "compile"), ["owned.step"]),
+        (("build",), []),
+    ],
+)
+def test_qualification_resolves_only_growth_operations_owned_by_requested_work(
+    monkeypatch, names, expected_operations
+):
+    from scripts import validation_witnesses
+    from scripts.validation_witnesses import TestWitness
+
+    witnesses = (
+        TestWitness(
+            "owned/v1",
+            "tests/owned.py::test_owned",
+            ("lint", "compile"),
+            "a" * 64,
+            "owned.step",
+        ),
+        TestWitness(
+            "unrelated/v1",
+            "tests/other.py::test_other",
+            ("unit",),
+            "b" * 64,
+            "unrelated.step",
+        ),
+    )
+    monkeypatch.setattr(validation_witnesses, "discover_test_witnesses", lambda _: witnesses)
+    calls = []
+
+    def project(operation, *, root):
+        calls.append(operation)
+        return {}, {"id": operation + ".growth/v1", "projection_sha256": "c" * 64}
+
+    monkeypatch.setattr(validation_witnesses, "operation_projection", project)
+    work = (
+        qualification.validation_workloads()
+        if names is None
+        else qualification.require_validation_work(names)
+    )
+    assert calls == expected_operations
+    by_name = {item.name: item for item in work}
+    if names is not None:
+        assert tuple(by_name) == names
+    for name in ("lint", "compile"):
+        if name in by_name:
+            assert by_name[name].growth_witnesses == ("owned/v1",)
+            assert by_name[name].growth_declarations == (("owned.step.growth/v1", "c" * 64),)
+    if names is None:
+        assert by_name["unit"].growth_witnesses == ("unrelated/v1",)
+        assert by_name["unit"].growth_declarations == (("unrelated.step.growth/v1", "c" * 64),)
+    if "build" in by_name:
+        assert by_name["build"].growth_witnesses == by_name["build"].growth_declarations == ()

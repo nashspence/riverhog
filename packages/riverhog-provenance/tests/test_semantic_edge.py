@@ -8,6 +8,7 @@ import subprocess
 import sys
 from contextlib import closing, contextmanager
 from dataclasses import replace
+from functools import wraps
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
@@ -19,8 +20,9 @@ from riverhog_provenance import (
     reference,
     validate_journal,
 )
+from riverhog_provenance._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from riverhog_provenance._generic_semantics import GenericSemantics
-from riverhog_provenance._journal_prefix import PrefixState
+from riverhog_provenance._journal_prefix import JournalPrefix, PrefixState
 from riverhog_provenance._online_dag import OnlineDag
 from riverhog_provenance._semantic_edge import (
     EdgeState,
@@ -33,6 +35,7 @@ from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal import JournalFrame
 from riverhog_provenance.journal_store import JournalStore
 from sha256_continuation import CheckpointSHA256
+from test_online_dag import graph_dimensions
 
 
 def identity(ordinal):
@@ -350,7 +353,7 @@ def test_missing_or_changed_semantic_subject_is_never_reset(tmp_path, field):
         assert content(db) == before
 
 
-def test_native_wrapper_drives_fenced_units_without_the_whole_edge_driver(
+def test_native_wrapper_drives_parent_fenced_units_without_the_whole_edge_driver(
     journal, who, catalog, monkeypatch
 ):
     with validate_journal(journal, catalog=catalog) as summary:
@@ -364,20 +367,21 @@ def test_native_wrapper_drives_fenced_units_without_the_whole_edge_driver(
             general=reference(old["id"], "artifact"),
         )
     seen = []
-    original = GenericSemantics.advance
+    original = GenericSemantics._apply
 
-    def advance(self, **options):
+    def apply(self, batch):
+        assert self.db.in_transaction
         prefix = self.db.execute("SELECT * FROM journal_prefix").fetchall()
-        state = original(self, step_budget=1)
+        state = original(self, batch)
         assert self.db.execute("SELECT * FROM journal_prefix").fetchall() == prefix
-        assert not self.db.in_transaction
+        assert self.db.in_transaction
         seen.append(state.phase)
         return state
 
     def unbounded(*args, **options):
         pytest.fail("native semantic insertion used the whole edge driver")
 
-    monkeypatch.setattr(GenericSemantics, "advance", advance)
+    monkeypatch.setattr(GenericSemantics, "_apply", apply)
     monkeypatch.setattr(OnlineDag, "add", unbounded)
     raw = append_assertions(
         journal,
@@ -566,6 +570,7 @@ class WorkConnection(sqlite3.Connection):
 
     @contextmanager
     def observe(self):
+        was_in_transaction = self.in_transaction
         self.metrics = {
             name: 0
             for name in (
@@ -609,7 +614,7 @@ class WorkConnection(sqlite3.Connection):
             self.set_progress_handler(None, 0)
             self.set_authorizer(None)
             self.metrics["changed_rows"] = self.total_changes - before
-        assert not self.in_transaction
+        assert self.in_transaction == was_in_transaction
         assert all(cursor.closed for _sql, _parameters, cursor in self.statements)
         for sql, parameters, _cursor in self.statements:
             if sql.startswith(("SELECT", "UPDATE", "DELETE")):
@@ -675,18 +680,135 @@ def seeded(db, count, cycle):
     return edges
 
 
-@pytest.mark.growth_witness(
-    "riverhog-semantic-edge-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._semantic_edge.SemanticEdge.advance",
-)
-def test_actual_cold_source_fenced_graph_units(tmp_path, record_property):
-    binding = growth_binding(SemanticEdge.advance)
+def parameter_octets(parameters):
+    return sum(
+        len(value) if isinstance(value, bytes) else len(str(value).encode())
+        for value in parameters
+        if value is not None
+    )
+
+
+def child_input_dimensions(parent_dimensions, operation):
+    if operation.__qualname__.startswith("SemanticEdge."):
+        names = {dimension.name for dimension in growth_binding(operation).declaration.dimensions}
+        return {name: parent_dimensions[name] for name in names}
+    return {
+        "retained_rows": parent_dimensions["graph_retained_rows"],
+        "row_budget": 1
+        if operation.__name__ == "_prepare_start"
+        else parent_dimensions["row_budget"],
+        "metadata_row_octets": parent_dimensions["graph_metadata_row_octets"],
+    }
+
+
+def observed_work(db, before, changes, start):
+    result = {name: value - before[name] for name, value in db.metrics.items()}
+    result["changed_rows"] = db.total_changes - changes
+    statements = db.statements[start:]
+    result["bound_parameter_octets"] = sum(
+        parameter_octets(parameters) for _sql, parameters, _cursor in statements
+    )
+    result["written_value_octets"] = sum(
+        parameter_octets(parameters)
+        for sql, parameters, _cursor in statements
+        if sql.startswith(("INSERT", "UPDATE", "DELETE"))
+    )
+    return result
+
+
+def complete_sample(frame, primitive):
+    binding = frame["binding"]
     projection = project_bindings((binding,))
-    digest = hashlib.sha256(
-        canonical_json_bytes(projection["declarations"][binding.declaration.id])
-    ).hexdigest()
-    samples = []
+    metrics = dict(primitive)
+    for bound in binding.declaration.bounds:
+        if not bound.metric.startswith(("graph_", "edge_", "checkpoint_")):
+            continue
+        underlying = bound.metric.split("_", 1)[1]
+        metrics[bound.metric] = sum(
+            sample["metrics"].get(bound.metric, sample["metrics"].get(underlying, 0))
+            for calls in frame["delegates"].values()
+            for sample in calls
+        )
+    metrics = {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds}
+    sample = {
+        "declaration": binding.declaration.id,
+        "declaration_sha256": hashlib.sha256(
+            canonical_json_bytes(projection["declarations"][binding.declaration.id])
+        ).hexdigest(),
+        "dimensions": frame["dimensions"],
+        "metrics": metrics,
+        "delegates": frame["delegates"],
+    }
+    validate_execution_samples(projection, binding.declaration.id, [sample])
+    return sample
+
+
+@contextmanager
+def observe_graph_tree(
+    db,
+    root_binding,
+    dimensions,
+    *,
+    child_dimensions=child_input_dimensions,
+    operation_owner=None,
+):
+    root = {
+        "binding": root_binding,
+        "dimensions": dimensions,
+        "delegates": {name: [] for name, _operation in root_binding.delegates},
+    }
+    stack = [root]
+    pending = [root_binding]
+    operations = set()
+    while pending:
+        current = pending.pop()
+        for _name, operation in current.delegates:
+            if operation not in operations:
+                operations.add(operation)
+                pending.append(growth_binding(operation))
+
+    def instrument(operation):
+        @wraps(operation)
+        def run(*args, **kwargs):
+            if not db.recording:
+                return operation(*args, **kwargs)
+            assert args and args[0].db is db
+            parent = stack[-1]
+            tags = [name for name, child in parent["binding"].delegates if child is operation]
+            assert len(tags) == 1
+            binding = growth_binding(operation)
+            frame = {
+                "binding": binding,
+                "dimensions": child_dimensions(parent["dimensions"], operation),
+                "delegates": {name: [] for name, _child in binding.delegates},
+            }
+            before, changes, start = dict(db.metrics), db.total_changes, len(db.statements)
+            stack.append(frame)
+            try:
+                return operation(*args, **kwargs)
+            finally:
+                assert stack.pop() is frame
+                sample = complete_sample(frame, observed_work(db, before, changes, start))
+                parent["delegates"][tags[0]].append(sample)
+
+        return run
+
+    with pytest.MonkeyPatch.context() as patch:
+        for operation in operations:
+            owner = (
+                operation_owner(operation)
+                if operation_owner is not None
+                else SemanticEdge
+                if operation.__qualname__.startswith("SemanticEdge.")
+                else OnlineDag
+            )
+            patch.setattr(owner, operation.__name__, instrument(operation))
+        yield root
+    assert stack == [root]
+
+
+def semantic_edge_samples(tmp_path, measured_operation, *, samples):
+    binding = growth_binding(getattr(SemanticEdge, measured_operation))
     phases = (
         "start",
         "initialize",
@@ -740,25 +862,59 @@ def test_actual_cold_source_fenced_graph_units(tmp_path, record_property):
                     len(str(value[0])) for value in db.execute("SELECT level FROM dag_levels")
                 )
                 envelope = 1024 + len(current.binding) + sum(len(v) for v in prefix) + 8 * width
+                native_dimensions = graph_dimensions(current.checker, budget)
+                envelope = max(envelope, native_dimensions["metadata_row_octets"])
+                all_dimensions = {
+                    "retained_rows": retained,
+                    "row_budget": budget,
+                    "metadata_row_octets": envelope,
+                    "graph_retained_rows": native_dimensions["retained_rows"],
+                    "graph_metadata_row_octets": native_dimensions["metadata_row_octets"],
+                    "graph_start_calls": int(phase == "start"),
+                    "graph_transition_calls": int(phase not in {"start", "complete", "done"}),
+                    "graph_application_calls": int(phase not in {"complete", "done"}),
+                }
+                dimensions = {
+                    dimension.name: all_dimensions[dimension.name]
+                    for dimension in binding.declaration.dimensions
+                }
                 with closing(connect(path)) as stored:
                     db.backup(stored)
             with closing(connect(path, factory=WorkConnection)) as db:
                 current = work(db)
-                with db.observe() as metrics:
-                    current.advance(row_budget=budget)
+                with observe_graph_tree(db, binding, dimensions) as frame:
+                    if measured_operation == "prepare":
+                        before = db.total_changes
+                        with db.observe() as metrics:
+                            batch = current.prepare(row_budget=budget)
+                        assert not db.in_transaction and db.total_changes == before
+                        current.commit(batch)
+                    elif measured_operation == "_apply":
+                        batch = current.prepare(row_budget=budget)
+                        db.execute("BEGIN IMMEDIATE").close()
+                        try:
+                            with db.observe() as metrics:
+                                after = current._apply(batch)
+                            assert db.in_transaction and after == batch.after
+                            db.commit()
+                        except BaseException:
+                            db.rollback()
+                            raise
+                    else:
+                        assert measured_operation == "advance"
+                        with db.observe() as metrics:
+                            current.advance(row_budget=budget)
                 assert metrics["adjacency_rows"] <= budget
-                sample = {
-                    "declaration": binding.declaration.id,
-                    "declaration_sha256": digest,
-                    "dimensions": {
-                        "retained_rows": retained,
-                        "row_budget": budget,
-                        "metadata_row_octets": envelope,
-                    },
-                    "metrics": dict(metrics),
-                    "delegates": {},
-                }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                primitive = dict(metrics)
+                primitive["bound_parameter_octets"] = sum(
+                    parameter_octets(parameters) for _sql, parameters, _cursor in db.statements
+                )
+                primitive["written_value_octets"] = sum(
+                    parameter_octets(parameters)
+                    for sql, parameters, _cursor in db.statements
+                    if sql.startswith(("INSERT", "UPDATE", "DELETE"))
+                )
+                sample = complete_sample(frame, primitive)
                 samples.append(sample)
                 # Validate the suffix without including its work in the measured unit.
                 with closing(sqlite3.connect(":memory:")) as suffix_db:
@@ -773,4 +929,141 @@ def test_actual_cold_source_fenced_graph_units(tmp_path, record_property):
                     else:
                         suffix.result()
     assert len(samples) == 96
+
+
+@pytest.mark.growth_witness(
+    "riverhog-semantic-edge-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._semantic_edge.SemanticEdge.advance",
+)
+def test_actual_cold_source_fenced_graph_units(tmp_path, record_property):
+    samples = []
     record_property("growth_samples", samples)
+    semantic_edge_samples(tmp_path, "advance", samples=samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-semantic-edge-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._semantic_edge.SemanticEdge.prepare",
+)
+def test_actual_detached_semantic_edge_plan(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    semantic_edge_samples(tmp_path, "prepare", samples=samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-semantic-edge-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._semantic_edge.SemanticEdge._apply",
+)
+def test_actual_owner_transaction_semantic_edge_application(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    semantic_edge_samples(tmp_path, "_apply", samples=samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-semantic-edge-terminal-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._semantic_edge.SemanticEdge.result",
+)
+def test_actual_cold_semantic_edge_terminal_result(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    binding = growth_binding(SemanticEdge.result)
+    for outcome in ("accepted", "cycle", "self"):
+        for count in (1, 15, 16, 17, 129, 1025):
+            path = tmp_path / f"terminal-{outcome}-{count}.sqlite3"
+            create(path)
+            options = {"target": identity(2000)} if outcome == "self" else {}
+            with closing(sqlite3.connect(":memory:")) as db:
+                with closing(connect(path)) as original:
+                    original.backup(db)
+                seeded(db, count, outcome == "cycle")
+                current = work(db, **options)
+                current.initialize()
+                finish(current, budget=64)
+                retained = sum(
+                    db.execute("SELECT count(*) FROM " + table).fetchone()[0]
+                    for table in content(db)
+                )
+                prefix = db.execute("SELECT binding,checkpoint FROM journal_prefix").fetchone()
+                native = graph_dimensions(current.checker, 1)
+                dimensions = {
+                    "retained_rows": retained,
+                    "row_budget": 1,
+                    "metadata_row_octets": max(
+                        native["metadata_row_octets"],
+                        8192 + len(current.binding) + sum(len(value) for value in prefix),
+                    ),
+                }
+                before = content(db)
+                with closing(connect(path)) as destination:
+                    db.backup(destination)
+            with closing(connect(path, factory=WorkConnection)) as db:
+                current = work(db, **options)
+                with db.observe() as metrics:
+                    if outcome == "accepted":
+                        current.result()
+                    else:
+                        with pytest.raises(
+                            ProvenanceValidationError,
+                            match="cycle" if outcome == "cycle" else "itself",
+                        ):
+                            current.result()
+                primitive = dict(metrics)
+                primitive["bound_parameter_octets"] = sum(
+                    parameter_octets(p) for _s, p, _c in db.statements
+                )
+                primitive["written_value_octets"] = 0
+                frame = {"binding": binding, "dimensions": dimensions, "delegates": {}}
+                samples.append(complete_sample(frame, primitive))
+                assert content(db) == before and not db.in_transaction
+    assert len(samples) == 18
+
+
+@pytest.mark.parametrize("replaced", [False, True])
+def test_maximum_parent_binding_is_retained_and_fenced_beyond_eight_kib(
+    tmp_path, catalog, replaced
+):
+    path = tmp_path / "wide-parent.sqlite3"
+    create(path)
+    with closing(connect(path)) as db:
+
+        def prefix_binding(source):
+            return JournalPrefix(
+                db,
+                attempt_id="prefix-attempt",
+                source_binding=source,
+                catalog=catalog,
+                require_profiles=False,
+            ).binding
+
+        source = "source:"
+        source += "x" * (PREFIX_BINDING_OCTETS_MAX - len(prefix_binding(source)))
+        binding = prefix_binding(source)
+        assert len(binding) == PREFIX_BINDING_OCTETS_MAX
+        db.execute("UPDATE journal_prefix SET binding=?", (binding,)).close()
+        db.commit()
+        current = work(db, source_binding=descriptor(catalog_sha256=catalog.checkpoint_sha256()))
+        batch = current.prepare_admission()
+        assert batch.prefix[1] == binding
+        if replaced:
+            changed = prefix_binding(source[:-1] + "y")
+            assert changed[:8192] == binding[:8192] and changed != binding
+            db.execute("UPDATE journal_prefix SET binding=?", (changed,)).close()
+            db.commit()
+        before = content(db)
+        db.execute("BEGIN IMMEDIATE").close()
+        if replaced:
+            with pytest.raises(StaleSemanticEdge, match="superseded"):
+                current._admit(batch)
+            db.rollback()
+            assert content(db) == before
+        else:
+            assert current._admit(batch) == batch.after
+            db.commit()
+            # The child must also retain and reread the complete copied manifest.
+            assert current.load() == batch.after

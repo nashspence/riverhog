@@ -1,3 +1,7 @@
+primary_state:
+  scope:
+    service: qualification-service
+    account: qualification-account
 token_file: /run/secrets/review0-token
 samplers:
   - id: fake-sampler

@@ -26,12 +26,14 @@ dependencies = ["release-documentation-lib>=0.1,<0.2",
   "riverhog-growth-contracts>=0.1,<0.2",
   "sha256-continuation>=0.1,<0.2",
   "time-formats>=0.1,<0.2",
+  "sqlite-admission>=0.1,<0.2",
 ]
 
 [project.optional-dependencies]
 test = ["pytest>=8,<10", "rdflib>=7,<8"]
 
 [tool.uv.sources]
+sqlite-admission = { workspace = true }
 release-documentation-lib = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
 riverhog-canonical-json = { workspace = true }

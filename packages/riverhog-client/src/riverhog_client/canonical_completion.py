@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import builtins
 import hashlib
+import sqlite3
 import uuid
 from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass
@@ -22,6 +23,7 @@ from riverhog_protocol.collection_production_provenance import (
     collection_production_profile,
 )
 from riverhog_provenance import (
+    JournalStore,
     JournalSummary,
     assertion,
     create_journal,
@@ -61,6 +63,8 @@ def write_completion_journal(
     late_assertions: Iterable[Mapping[str, Any]] = (),
     journal_id: str | None = None,
     recorded_at: str | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> JournalSummary:
     """Record late evidence through a distinct recording activity, never a new generation.
 
@@ -146,6 +150,8 @@ def write_completion_journal(
         journal_id=journal_id,
         recorded_at=recorded_at,
         entry_id="urn:uuid:" + str(uuid.uuid5(namespace, "entry:0")),
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     )
 
     def batches() -> Iterator[Mapping[str, Any]]:
@@ -244,6 +250,8 @@ def write_completion_journal(
         catalog=catalog,
         recorded_at=recorded_at,
         entry_ids=entry_ids(),
+        connection_factory=connection_factory,
+        on_storage_open=on_storage_open,
     )
 
 
@@ -260,10 +268,12 @@ def build_completion_journal(
     late_assertions: Iterable[Mapping[str, Any]] = (),
     journal_id: str | None = None,
     recorded_at: str | None = None,
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[JournalStore], None] | None = None,
 ) -> bytes:
     """Materialize a completion journal for callers that explicitly need bytes."""
     with BytesIO() as destination:
-        write_completion_journal(
+        with write_completion_journal(
             destination,
             requirement=requirement,
             records=records,
@@ -276,8 +286,10 @@ def build_completion_journal(
             late_assertions=late_assertions,
             journal_id=journal_id,
             recorded_at=recorded_at,
-        )
-        return destination.getvalue()
+            connection_factory=connection_factory,
+            on_storage_open=on_storage_open,
+        ):
+            return destination.getvalue()
 
 
 __all__ = ["CompletionRecord", "build_completion_journal", "write_completion_journal"]

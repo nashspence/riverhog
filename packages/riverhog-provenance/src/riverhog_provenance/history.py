@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import hashlib
+import shutil
 import sqlite3
 from collections import OrderedDict
 from collections.abc import Callable, Iterable, Iterator, Mapping
+from dataclasses import dataclass
 from pathlib import Path
-from tempfile import TemporaryDirectory
-from typing import Any, Self
+from tempfile import mkdtemp
+from typing import Any, Self, cast
 
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
@@ -24,6 +26,15 @@ from riverhog_archive_contracts import (
     source_binding_proof_object_path,
 )
 from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
+from riverhog_growth_contracts import (
+    COUNT,
+    OCTETS,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+)
 from riverhog_provenance_contracts import ContractCatalog, ExternalReference
 
 from .delivery import selected_delivery_occurrence
@@ -35,24 +46,169 @@ from .journal import (
     iter_journal_frames,
     validate_journal_chunks,
 )
+from .journal_store import JournalStore
+
+
+def _pending_declaration(kind: str) -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    return Declaration(
+        id=f"riverhog-provenance.history-pending-{kind}.growth/v1",
+        authority="riverhog-provenance",
+        subjects=(f"riverhog_provenance.history.MemberHistoryClosure._pending_{kind}",),
+        scope="native-history-pending-work-point-selection",
+        starts_at="select the first unfinished registered obligation from the owned closure",
+        ends_at="close the SQLite cursor and return at most one detached exact work record",
+        dimensions=(
+            Dimension(
+                "registered_jobs", COUNT, "All retained completed and pending jobs of this kind."
+            ),
+            Dimension(
+                "candidate_octets",
+                OCTETS,
+                "Maximum complete registered record width, measured before selection.",
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                count(1),
+                "One indexed pending selection, including an empty queue.",
+            ),
+            Bound(
+                "returned_rows", COUNT, "upper", count(1), "The exact first pending row or no row."
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                Expression("dimension", name="candidate_octets"),
+                "All detached fields are accounted for without payload abbreviation.",
+            ),
+            Bound(
+                "closed_cursors",
+                COUNT,
+                "upper",
+                count(1),
+                "Close the selection cursor before returning; "
+                "retain an unconfirmed close for retry.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        count(512),
+                        Expression(
+                            "product",
+                            terms=(
+                                count(128),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="registered_jobs"),
+                                                count(2),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "The pending index skips completed work; VM constants depend on the SQLite engine.",
+            ),
+            Bound(
+                "json_calls",
+                COUNT,
+                "equal",
+                count(0),
+                "Selection returns the stored exact binding or anchor without decoding it.",
+            ),
+            Bound(
+                "hashed_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Selection neither rehashes a source nor establishes source authority.",
+            ),
+        ),
+        conditions=(
+            "The closure owns its current SQLite schema with its pending partial indexes.",
+            "Row-byte input describes complete registered records, including every field.",
+            "SQLite VM counts are engine dependent; lock waits and elapsed time are observations.",
+        ),
+        invariants=(
+            "Previously completed obligations remain in the full deduplication relations.",
+            "Pending rows preserve insertion order, including new dependencies.",
+            "Selection changes no completion, source, import or semantic state.",
+        ),
+        limitations=(
+            "History visits, source validation, imports, writes and cleanup have separate costs.",
+            "This primitive supplies neither a complete closure bound nor fresh authorization.",
+        ),
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class DocumentaryNode:
+    """Native interpretation of one value in the documentary reference language.
+
+    A detached reference terminates this node. Otherwise, descend selects the
+    original dictionary values or list items; opaque JSON and scalars terminate.
+    The caller owns bounded traversal, source coordinates and current custody.
+    """
+
+    reference: dict[str, Any] | None
+    descend: bool
+
+
+_DOCUMENTARY_CHILDREN = DocumentaryNode(None, True)
+_DOCUMENTARY_TERMINAL = DocumentaryNode(None, False)
+_EXTERNAL_FIELDS = ("scope", "journal_id", "entry", "assertion_id", "object_id", "object_type")
+
+
+def inspect_documentary_node(value: object) -> DocumentaryNode:
+    """Classify one decoded node without visiting or retaining its children.
+
+    Exact canonical endpoint records use the maintained reference model. An
+    opaque JSON wrapper never exposes references from its profile payload.
+    Field probes stay fixed even for wide dictionaries; reference metadata uses
+    the existing UUID, digest, object-type and sequence domains.
+    """
+    if isinstance(value, dict):
+        if (
+            len(value) == len(_EXTERNAL_FIELDS)
+            and value.get("scope") == "external"
+            and all(key in value for key in _EXTERNAL_FIELDS)
+        ):
+            selected = ExternalReference.model_validate(value).model_dump(mode="json")
+            return DocumentaryNode(selected, False)
+        if len(value) == 2 and value.get("type") == "json" and "value" in value:
+            return _DOCUMENTARY_TERMINAL
+        return _DOCUMENTARY_CHILDREN
+    return _DOCUMENTARY_CHILDREN if isinstance(value, list) else _DOCUMENTARY_TERMINAL
 
 
 def _external_references(value: object) -> Iterator[dict[str, Any]]:
-    if isinstance(value, dict):
-        if value.get("scope") == "external":
-            # Only canonical endpoint records are dependencies. An opaque profile
-            # may contain unrelated data which happens to have a scope field.
-            fields = {"scope", "journal_id", "entry", "assertion_id", "object_id", "object_type"}
-            if set(value) == fields:
-                yield ExternalReference.model_validate(value).model_dump(mode="json")
-                return
-        if value.get("type") == "json" and set(value) == {"type", "value"}:
-            return  # Opaque profile data is not a canonical endpoint language.
-        for child in value.values():
-            yield from _external_references(child)
-    elif isinstance(value, list):
-        for child in value:
-            yield from _external_references(child)
+    selected = inspect_documentary_node(value)
+    if selected.reference is not None:
+        yield selected.reference
+    elif selected.descend:
+        if isinstance(value, dict):
+            for child in value.values():
+                yield from _external_references(child)
+        elif isinstance(value, list):
+            for child in value:
+                yield from _external_references(child)
 
 
 def _prefix(chunks: Iterable[bytes], count: int) -> Iterator[bytes]:
@@ -72,58 +228,125 @@ def _prefix(chunks: Iterable[bytes], count: int) -> Iterator[bytes]:
             close()
 
 
+def _remove_directory(path: Path) -> None:
+    try:
+        shutil.rmtree(path)
+    except FileNotFoundError:
+        if path.exists():
+            raise
+
+
 class MemberHistoryMembership:
     """Transient local query projection of a previously verified closure.
 
     Images are process-local cache data, never archive authority or wire evidence.
     The caller retains the exact root, selection and extent and current read fences.
+    A supplied factory admits the connection before query setup and owns unreturned
+    connection files. Early retention preserves a close-ready owner; unconfirmed
+    cursor, connection or directory cleanup requires explicit retry.
     """
 
-    def __init__(self, image: bytes) -> None:
-        self._scratch = TemporaryDirectory(prefix="riverhog-history-membership-")
-        path = Path(self._scratch.name) / "membership.sqlite3"
-        path.write_bytes(image)
-        self._db = sqlite3.connect(path)
+    def __init__(
+        self,
+        image: bytes,
+        *,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
+    ) -> None:
+        self._closing = False
+        self._connection_closed = False
+        self._directory_removed = False
         self._cursors: set[sqlite3.Cursor] = set()
+        self._root = Path(mkdtemp(prefix="riverhog-history-membership-"))
+        path = self._root / "membership.sqlite3"
         try:
+            path.write_bytes(image)
+        except BaseException:
+            _remove_directory(self._root)
+            raise
+        connect = sqlite3.connect if connection_factory is None else connection_factory
+        try:
+            self._db = connect(path)
+        except BaseException:
+            if connection_factory is None:
+                _remove_directory(self._root)
+            raise
+        try:
+            if on_storage_open is not None:
+                on_storage_open(self)
+            self._require_open()
             self._db.execute("PRAGMA query_only = ON")
             self._db.execute("PRAGMA cache_size = -512")
         except BaseException:
-            self._db.close()
-            self._scratch.cleanup()
+            if not self._closing:
+                self.close()
             raise
 
+    def _require_open(self) -> None:
+        if self._closing:
+            raise RuntimeError("member history membership is closed")
+
     def __enter__(self) -> Self:
+        self._require_open()
         return self
 
     def __exit__(self, *_exc: object) -> None:
-        for cursor in self._cursors:
-            cursor.close()
-        self._cursors.clear()
-        self._db.close()
-        self._scratch.cleanup()
+        if not self._closing:
+            self.close()
 
-    def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
-        cursor = self._db.execute("SELECT anchor FROM journals ORDER BY identity")
+    def close(self) -> None:
+        self._closing = True
+        for cursor in tuple(self._cursors):
+            cursor.close()
+            self._cursors.remove(cursor)
+        if not self._connection_closed:
+            self._db.close()
+            self._connection_closed = True
+        if not self._directory_removed:
+            _remove_directory(self._root)
+            self._directory_removed = True
+
+    def _execute(self, statement: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self._require_open()
+        return self._db.execute(statement, parameters)
+
+    def _release_cursor(self, cursor: sqlite3.Cursor) -> None:
+        if not self._closing and cursor in self._cursors:
+            try:
+                cursor.close()
+            except BaseException:
+                self._closing = True
+                raise
+            self._cursors.remove(cursor)
+
+    def _row(self, statement: str, parameters: tuple[Any, ...] = ()) -> tuple[Any, ...] | None:
+        cursor = self._execute(statement, parameters)
         self._cursors.add(cursor)
         try:
-            for (encoded,) in cursor:
-                yield HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
+            self._require_open()
+            return cast(tuple[Any, ...] | None, cursor.fetchone())
         finally:
-            if cursor in self._cursors:
-                self._cursors.remove(cursor)
-                cursor.close()
+            self._release_cursor(cursor)
+
+    def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
+        cursor = self._execute("SELECT anchor FROM journals ORDER BY identity")
+        self._cursors.add(cursor)
+        try:
+            while True:
+                self._require_open()
+                row = cursor.fetchone()
+                if row is None:
+                    break
+                yield HistoryJournalAnchor.from_mapping(require_canonical_json(row[0]))
+        finally:
+            self._release_cursor(cursor)
 
     def journal_anchor(self, journal_id: str) -> HistoryJournalAnchor | None:
-        row = self._db.execute(
-            "SELECT anchor FROM journals WHERE identity = ?", (journal_id,)
-        ).fetchone()
+        row = self._row("SELECT anchor FROM journals WHERE identity = ?", (journal_id,))
         return HistoryJournalAnchor.from_mapping(require_canonical_json(row[0])) if row else None
 
     def contains_structure_object(self, path: str) -> bool:
-        return (
-            self._db.execute("SELECT 1 FROM objects WHERE path = ?", (path,)).fetchone() is not None
-        )
+        return self._row("SELECT 1 FROM objects WHERE path = ?", (path,)) is not None
 
 
 class MemberHistoryClosure:
@@ -133,6 +356,14 @@ class MemberHistoryClosure:
     URLs or imports a dependency's effective graph into a selected root. Selection
     sets, dependency work and deduplication are stored on disk; each journal is
     evaluated independently by the unchanged canonical engine.
+
+    The optional factory admits the worklist and temporary membership-copy
+    connections. Early retention receives a close-ready owner before schema work.
+    Unreturned factory connections keep independent file custody; an uncertain
+    close requires an explicit retry. Journal snapshots use a separate factory
+    and retain both validation storage and each actual returned reader before
+    handoff. Borrowed readers share their snapshot connection and outlive cache
+    eviction or closure close. Membership-image loading has its own owner.
     """
 
     def __init__(
@@ -142,6 +373,10 @@ class MemberHistoryClosure:
         *,
         member_role: str,
         catalog: ContractCatalog | None = None,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
+        journal_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_journal_storage_open: Callable[[JournalStore], None] | None = None,
     ) -> None:
         self.store = store
         self.read_journal = read_journal
@@ -149,61 +384,183 @@ class MemberHistoryClosure:
         self.catalog = catalog
         self._summaries: OrderedDict[bytes, JournalSummary] = OrderedDict()
         self._summary_bytes = 0
-        self._scratch = TemporaryDirectory(prefix="riverhog-history-closure-")
-        self._db = sqlite3.connect(Path(self._scratch.name) / "closure.sqlite3")
-        self._db.execute("PRAGMA cache_size = -512")
-        self._db.executescript(
-            "CREATE TABLE histories (identity TEXT, extent TEXT, binding BLOB, done INTEGER, "
-            "PRIMARY KEY(identity, extent));"
-            "CREATE TABLE imports (source TEXT, target TEXT, PRIMARY KEY(source, target));"
-            "CREATE TABLE snapshots (identity TEXT PRIMARY KEY, anchor BLOB, done INTEGER);"
-            "CREATE TABLE journals (identity TEXT PRIMARY KEY, size TEXT, anchor BLOB);"
-            "CREATE TABLE objects (path TEXT PRIMARY KEY);"
-            "CREATE TABLE reference_journals (identity TEXT PRIMARY KEY, sha256 TEXT, size TEXT);"
-            "CREATE TABLE reference_assertions (journal TEXT, entry TEXT, sequence TEXT, "
-            "json_sha256 TEXT, assertion TEXT, object TEXT, type TEXT, prefix_sha256 TEXT, "
-            "prefix_bytes TEXT, PRIMARY KEY(journal, entry, assertion));"
-        )
+        self._connection_factory = connection_factory
+        self._journal_connection_factory = journal_connection_factory
+        self._on_journal_storage_open = on_journal_storage_open
+        self._closing = False
+        self._connection_closed = False
+        self._directory_removed = False
+        self._cursors: set[sqlite3.Cursor] = set()
+        self._pending_summary: JournalSummary | None = None
+        self._copy_connection: sqlite3.Connection | None = None
+        self._copy_directory: Path | None = None
+        self._copy_connection_closed = False
+        self._root = Path(mkdtemp(prefix="riverhog-history-closure-"))
+        connect = sqlite3.connect if connection_factory is None else connection_factory
+        try:
+            self._db = connect(self._root / "closure.sqlite3")
+        except BaseException:
+            if connection_factory is None:
+                shutil.rmtree(self._root)
+            raise
+        try:
+            if on_storage_open is not None:
+                on_storage_open(self)
+            self._require_open()
+            self._db.execute("PRAGMA cache_size = -512")
+            self._db.executescript(
+                "CREATE TABLE histories (identity TEXT, extent TEXT, binding BLOB, done INTEGER, "
+                "PRIMARY KEY(identity, extent));"
+                "CREATE INDEX pending_histories ON histories(done) WHERE done = 0;"
+                "CREATE TABLE imports (source TEXT, target TEXT, PRIMARY KEY(source, target));"
+                "CREATE TABLE snapshots (identity TEXT PRIMARY KEY, anchor BLOB, done INTEGER);"
+                "CREATE INDEX pending_snapshots ON snapshots(done) WHERE done = 0;"
+                "CREATE TABLE journals (identity TEXT PRIMARY KEY, size TEXT, anchor BLOB);"
+                "CREATE TABLE objects (path TEXT PRIMARY KEY);"
+                "CREATE TABLE reference_journals "
+                "(identity TEXT PRIMARY KEY, sha256 TEXT, size TEXT);"
+                "CREATE TABLE reference_assertions (journal TEXT, entry TEXT, sequence TEXT, "
+                "json_sha256 TEXT, assertion TEXT, object TEXT, type TEXT, prefix_sha256 TEXT, "
+                "prefix_bytes TEXT, PRIMARY KEY(journal, entry, assertion));"
+            )
+        except BaseException:
+            if not self._closing:
+                self.close()
+            raise
+
+    def _require_open(self) -> None:
+        if self._closing:
+            raise RuntimeError("member history closure is closed")
 
     def __enter__(self) -> Self:
+        self._require_open()
         return self
 
     def __exit__(self, *_exc: object) -> None:
-        for summary in self._summaries.values():
+        if not self._closing:
+            self.close()
+
+    def _discard_copy(self) -> None:
+        if self._copy_connection is None:
+            return
+        try:
+            if not self._copy_connection_closed:
+                self._copy_connection.close()
+                self._copy_connection_closed = True
+            assert self._copy_directory is not None
+            _remove_directory(self._copy_directory)
+        except BaseException:
+            self._closing = True
+            raise
+        self._copy_connection = None
+        self._copy_directory = None
+        self._copy_connection_closed = False
+
+    def close(self) -> None:
+        self._closing = True
+        self._discard_copy()
+        for cursor in tuple(self._cursors):
+            cursor.close()
+            self._cursors.remove(cursor)
+        if self._pending_summary is not None:
+            self._pending_summary.close()
+            self._pending_summary = None
+        while self._summaries:
+            key, summary = next(iter(self._summaries.items()))
             summary.close()
-        self._summaries.clear()
-        self._summary_bytes = 0
-        self._db.close()
-        self._scratch.cleanup()
+            del self._summaries[key]
+            self._summary_bytes -= summary.journal_bytes
+        if not self._connection_closed:
+            self._db.close()
+            self._connection_closed = True
+        if not self._directory_removed:
+            _remove_directory(self._root)
+            self._directory_removed = True
+
+    def _execute(self, statement: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self._require_open()
+        return self._db.execute(statement, parameters)
+
+    def _rows(self, statement: str) -> Iterator[tuple[Any, ...]]:
+        cursor = self._execute(statement)
+        self._cursors.add(cursor)
+        try:
+            while True:
+                self._require_open()
+                row = cursor.fetchone()
+                if row is None:
+                    break
+                yield row
+        finally:
+            self._release_cursor(cursor)
+
+    def _release_cursor(self, cursor: sqlite3.Cursor) -> None:
+        if not self._closing and cursor in self._cursors:
+            try:
+                cursor.close()
+            except BaseException:
+                self._closing = True
+                raise
+            self._cursors.remove(cursor)
+
+    def _pending_row(self, statement: str) -> tuple[Any, ...] | None:
+        cursor = self._execute(statement)
+        self._cursors.add(cursor)
+        try:
+            self._require_open()
+            return cast(tuple[Any, ...] | None, cursor.fetchone())
+        finally:
+            self._release_cursor(cursor)
 
     def _object(self, path: str) -> None:
-        self._db.execute("INSERT OR IGNORE INTO objects VALUES (?)", (path,))
+        self._require_open()
+        self._execute("INSERT OR IGNORE INTO objects VALUES (?)", (path,))
 
     def _history(self, binding: MemberHistoryBinding, extent: str) -> None:
+        self._require_open()
         if extent not in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):
             raise ValueError("unsupported history request extent")
-        self._db.execute(
+        self._execute(
             "INSERT OR IGNORE INTO histories VALUES (?, ?, ?, 0)",
             (binding.history_sha256, extent, canonical_json_bytes(binding.to_mapping())),
         )
 
     def _snapshot(self, anchor: HistoryJournalAnchor) -> None:
+        self._require_open()
         encoded = canonical_json_bytes(anchor.to_mapping())
-        self._db.execute(
+        self._execute(
             "INSERT OR IGNORE INTO snapshots VALUES (?, ?, 0)",
             (hashlib.sha256(encoded).hexdigest(), encoded),
         )
-        old = self._db.execute(
+        old = self._execute(
             "SELECT size FROM journals WHERE identity = ?", (anchor.journal_id,)
         ).fetchone()
         if old is None or int(old[0]) < anchor.prefix_bytes:
-            self._db.execute(
+            self._execute(
                 "INSERT OR REPLACE INTO journals VALUES (?, ?, ?)",
                 (anchor.journal_id, str(anchor.prefix_bytes), encoded),
             )
 
+    def _borrow_summary(self, summary: JournalSummary) -> JournalSummary:
+        reader = summary.borrow()
+        self._pending_summary = reader
+        try:
+            if self._on_journal_storage_open is not None and reader._store is not None:
+                self._on_journal_storage_open(reader._store)
+        except BaseException:
+            try:
+                reader.close()
+            except BaseException:
+                self._closing = True
+                raise
+            self._pending_summary = None
+            raise
+        self._pending_summary = None
+        return reader
+
     def summary_at(self, anchor: HistoryJournalAnchor) -> JournalSummary:
         """Return an owned exact snapshot; cache eviction does not close its lease."""
+        self._require_open()
         key = canonical_json_bytes(anchor.to_mapping())
         chunks = _prefix(
             self.read_journal(anchor.journal_id, anchor.prefix_bytes), anchor.prefix_bytes
@@ -218,32 +575,45 @@ class MemberHistoryClosure:
             if digest.hexdigest() != anchor.prefix_sha256:
                 raise ProvenanceValidationError("canonical journal prefix identity changed")
             self._summaries.move_to_end(key)
-            return cached.borrow()
+            self._require_open()
+            return self._borrow_summary(cached)
         summary = validate_journal_chunks(
             chunks,
             catalog=self.catalog,
             expected_anchor=anchor.to_mapping(),
             require_exact_tail=True,
             require_profiles=False,
+            connection_factory=self._journal_connection_factory,
+            on_storage_open=self._on_journal_storage_open,
         )
         # Cache capacity bounds working state, never accepted journal extents.
+        self._pending_summary = summary
+        self._require_open()
         budget = 4 * 1024 * 1024
         if summary.journal_bytes <= budget:
             while self._summaries and (
                 len(self._summaries) >= 32 or self._summary_bytes + summary.journal_bytes > budget
             ):
-                _, removed = self._summaries.popitem(last=False)
+                old_key, removed = next(iter(self._summaries.items()))
+                try:
+                    removed.close()
+                except BaseException:
+                    self._closing = True
+                    raise
+                del self._summaries[old_key]
                 self._summary_bytes -= removed.journal_bytes
-                removed.close()
             self._summaries[key] = summary
+            self._pending_summary = None
             self._summary_bytes += summary.journal_bytes
-            return summary.borrow()
+            return self._borrow_summary(summary)
+        self._pending_summary = None
         return summary
 
     def _reference_anchor(self, reference: Mapping[str, Any]) -> HistoryJournalAnchor:
+        self._require_open()
         selected = ExternalReference.model_validate(reference).model_dump(mode="json")
         journal_id = selected["journal_id"]
-        cached = self._db.execute(
+        cached = self._execute(
             "SELECT sha256, size FROM reference_journals WHERE identity = ?", (journal_id,)
         ).fetchone()
         digest = hashlib.sha256()
@@ -273,7 +643,7 @@ class MemberHistoryClosure:
                         for _, row in iter_assertions(document["body"].get("assertions", {})):
                             if "id" not in row:
                                 continue
-                            self._db.execute(
+                            self._execute(
                                 "INSERT INTO reference_assertions "
                                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                 (
@@ -288,12 +658,12 @@ class MemberHistoryClosure:
                                     str(count),
                                 ),
                             )
-                    self._db.execute(
+                    self._execute(
                         "INSERT INTO reference_journals VALUES (?, ?, ?)",
                         (journal_id, digest.hexdigest(), str(count)),
                     )
                 except BaseException:
-                    self._db.execute(
+                    self._execute(
                         "DELETE FROM reference_assertions WHERE journal = ?", (journal_id,)
                     )
                     raise
@@ -301,7 +671,7 @@ class MemberHistoryClosure:
             close = getattr(chunks, "close", None)
             if close is not None:
                 close()
-        row = self._db.execute(
+        row = self._execute(
             "SELECT sequence, json_sha256, object, type, prefix_sha256, prefix_bytes "
             "FROM reference_assertions WHERE journal = ? AND entry = ? AND assertion = ?",
             (journal_id, selected["entry"]["entry_id"], selected["assertion_id"]),
@@ -325,6 +695,7 @@ class MemberHistoryClosure:
         )
 
     def _visit_history(self, binding: MemberHistoryBinding, extent: str) -> None:
+        self._require_open()
         history = self.store.descriptor(binding)
         self._object(member_history_object_path(binding.history_sha256))
         for authority in (history.roots, history.imports):
@@ -336,11 +707,11 @@ class MemberHistoryClosure:
             self._snapshot(selected.journal)
         for imported in self.store.imports(binding):
             source_binding = self._accept_import(imported)
-            self._db.execute(
+            self._execute(
                 "INSERT OR IGNORE INTO imports VALUES (?, ?)",
                 (binding.history_sha256, source_binding.history_sha256),
             )
-            cycle = self._db.execute(
+            cycle = self._execute(
                 "WITH RECURSIVE descendants(id) AS (SELECT target FROM imports WHERE source = ? "
                 "UNION SELECT target FROM imports JOIN descendants ON source = id) "
                 "SELECT 1 FROM descendants WHERE id = ? LIMIT 1",
@@ -350,6 +721,7 @@ class MemberHistoryClosure:
                 raise ProvenanceValidationError("cyclic member-history imports")
 
     def _accept_import(self, imported: MemberHistoryImport) -> MemberHistoryBinding:
+        self._require_open()
         proof = self.store.source_proof(imported)
         source = self.store.descriptor(proof.binding)
         with self.summary_at(source.primary.journal) as primary:
@@ -369,36 +741,57 @@ class MemberHistoryClosure:
 
     def resolve_import(self, imported: MemberHistoryImport) -> None:
         """Validate an accepted early input selection, before output H can be sealed."""
+        self._require_open()
         self._accept_import(imported)
         self._drain()
 
     def resolve(self, binding: MemberHistoryBinding, *, extent: str) -> None:
+        self._require_open()
         self._history(binding, extent)
         self._drain()
 
     def resolve_snapshot(self, anchor: HistoryJournalAnchor) -> None:
         """Validate early construction custody without claiming a finalized H."""
+        self._require_open()
         self._snapshot(anchor)
         self._drain()
 
+    @declare_growth(_pending_declaration("history"))
+    def _pending_history(self) -> tuple[str, str, bytes] | None:
+        self._require_open()
+        return cast(
+            tuple[str, str, bytes] | None,
+            self._pending_row(
+                "SELECT identity, extent, binding FROM histories "
+                "WHERE done = 0 ORDER BY rowid LIMIT 1"
+            ),
+        )
+
+    @declare_growth(_pending_declaration("snapshot"))
+    def _pending_snapshot(self) -> tuple[str, bytes] | None:
+        self._require_open()
+        return cast(
+            tuple[str, bytes] | None,
+            self._pending_row(
+                "SELECT identity, anchor FROM snapshots WHERE done = 0 ORDER BY rowid LIMIT 1"
+            ),
+        )
+
     def _drain(self) -> None:
+        self._require_open()
         while True:
-            pending = self._db.execute(
-                "SELECT identity, extent, binding FROM histories WHERE done = 0 LIMIT 1"
-            ).fetchone()
+            pending = self._pending_history()
             if pending is not None:
                 identity, requested, encoded = pending
                 self._visit_history(
                     MemberHistoryBinding.from_mapping(require_canonical_json(encoded)), requested
                 )
-                self._db.execute(
+                self._execute(
                     "UPDATE histories SET done = 1 WHERE identity = ? AND extent = ?",
                     (identity, requested),
                 )
                 continue
-            snapshot = self._db.execute(
-                "SELECT identity, anchor FROM snapshots WHERE done = 0 LIMIT 1"
-            ).fetchone()
+            snapshot = self._pending_snapshot()
             if snapshot is None:
                 return
             identity, encoded = snapshot
@@ -415,15 +808,17 @@ class MemberHistoryClosure:
                 parent = summary.frames[0].document["body"]["journal"].get("forked_from")
                 if parent is not None:
                     self._snapshot(HistoryJournalAnchor.from_mapping(parent))
-                self._db.execute("UPDATE snapshots SET done = 1 WHERE identity = ?", (identity,))
+                self._execute("UPDATE snapshots SET done = 1 WHERE identity = ?", (identity,))
 
     def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
         """Largest required exact prefix per journal, never a substituted current head."""
-        for (encoded,) in self._db.execute("SELECT anchor FROM journals ORDER BY identity"):
+        self._require_open()
+        for (encoded,) in self._rows("SELECT anchor FROM journals ORDER BY identity"):
             yield HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
 
     def journal_anchor(self, journal_id: str) -> HistoryJournalAnchor | None:
-        row = self._db.execute(
+        self._require_open()
+        row = self._execute(
             "SELECT anchor FROM journals WHERE identity = ?", (journal_id,)
         ).fetchone()
         return HistoryJournalAnchor.from_mapping(require_canonical_json(row[0])) if row else None
@@ -434,32 +829,57 @@ class MemberHistoryClosure:
         A larger closure remains usable without caching; capacity never limits
         accepted history. No journal graph or causal authority is unioned.
         """
-        pages = self._db.execute("PRAGMA page_count").fetchone()[0]
-        page_bytes = self._db.execute("PRAGMA page_size").fetchone()[0]
+        self._require_open()
+        pages = self._execute("PRAGMA page_count").fetchone()[0]
+        page_bytes = self._execute("PRAGMA page_size").fetchone()[0]
         if pages * page_bytes > max_bytes:
             return None
         self._db.commit()
-        path = Path(self._scratch.name) / "membership.sqlite3"
-        copy = sqlite3.connect(path)
+        directory = Path(mkdtemp(prefix="riverhog-history-copy-"))
+        path = directory / "membership.sqlite3"
+        connect = sqlite3.connect if self._connection_factory is None else self._connection_factory
         try:
+            copy = connect(path)
+        except BaseException:
+            if self._connection_factory is None:
+                _remove_directory(directory)
+            raise
+        self._copy_connection = copy
+        self._copy_directory = directory
+        self._copy_connection_closed = False
+        try:
+            self._require_open()
             self._db.backup(copy)
-        finally:
-            copy.close()
-        return path.read_bytes()
+            try:
+                copy.close()
+            except BaseException:
+                self._closing = True
+                raise
+            self._copy_connection_closed = True
+            image = path.read_bytes()
+            self._discard_copy()
+            return image
+        except BaseException:
+            if not self._closing:
+                self._discard_copy()
+            raise
 
     def snapshots(self) -> Iterator[HistoryJournalAnchor]:
         """Every exact selected or required snapshot, without a latest-head union."""
-        for (encoded,) in self._db.execute("SELECT anchor FROM snapshots ORDER BY identity"):
+        self._require_open()
+        for (encoded,) in self._rows("SELECT anchor FROM snapshots ORDER BY identity"):
             yield HistoryJournalAnchor.from_mapping(require_canonical_json(encoded))
 
     def contains_journal(self, journal_id: str) -> bool:
+        self._require_open()
         return (
-            self._db.execute("SELECT 1 FROM journals WHERE identity = ?", (journal_id,)).fetchone()
+            self._execute("SELECT 1 FROM journals WHERE identity = ?", (journal_id,)).fetchone()
             is not None
         )
 
     def structure_objects(self) -> Iterator[bytes]:
-        for (path,) in self._db.execute("SELECT path FROM objects ORDER BY path"):
+        self._require_open()
+        for (path,) in self._rows("SELECT path FROM objects ORDER BY path"):
             content = read_bounded_history_object(self.store.read_object(path), 4 * 1024 * 1024)
             if provenance_structure_identity(content).relative_path != path:
                 raise ProvenanceValidationError("history structure path differs from its bytes")
@@ -467,9 +887,8 @@ class MemberHistoryClosure:
 
     def contains_structure_object(self, path: str) -> bool:
         """Whether this exact structural object supports the resolved selections."""
-        return (
-            self._db.execute("SELECT 1 FROM objects WHERE path = ?", (path,)).fetchone() is not None
-        )
+        self._require_open()
+        return self._execute("SELECT 1 FROM objects WHERE path = ?", (path,)).fetchone() is not None
 
 
 __all__ = ["MemberHistoryClosure", "MemberHistoryMembership"]

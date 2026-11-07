@@ -31,7 +31,12 @@ class _RetrievalService:
         return 0
 
 
-def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizations() -> None:
+def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizations(
+    monkeypatch,
+) -> None:
+    registrations = SimpleNamespace(process_due=Mock(return_value=0))
+    factory = Mock(return_value=registrations)
+    monkeypatch.setattr(api_app, "CollectionRegistrationOwner", factory)
     collection_uploads = SimpleNamespace(
         requeue_interrupted_finalizations_for_startup=Mock(return_value=2),
         requeue_interrupted_orphan_discards_for_startup=Mock(return_value=1),
@@ -87,6 +92,8 @@ def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizatio
     collection_uploads.requeue_interrupted_orphan_discards_for_startup.assert_called_once_with(
         limit=100
     )
+    factory.assert_called_once_with(collection_uploads)
+    registrations.process_due.assert_called_once_with(limit=1)
     collection_uploads.process_due_provenance_journal_validations.assert_called_once_with(limit=1)
     collection_uploads.process_due_finalizations.assert_called_once_with(limit=1)
     collection_uploads.reap_expired_custody_transfers.assert_called_once_with(limit=100)
@@ -103,10 +110,15 @@ def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizatio
     lifecycle_events.reap_expired_contexts.assert_called_once_with()
 
 
-def test_archive_maintenance_drains_bounded_progress_before_idle_interval() -> None:
+def test_archive_maintenance_drains_bounded_progress_before_idle_interval(monkeypatch) -> None:
     async def exercise() -> None:
         finalizations = Mock(side_effect=[1, 1, 0])
         zero = Mock(return_value=0)
+        monkeypatch.setattr(
+            api_app,
+            "CollectionRegistrationOwner",
+            Mock(return_value=SimpleNamespace(process_due=zero)),
+        )
         container = cast(
             ServiceContainer,
             SimpleNamespace(

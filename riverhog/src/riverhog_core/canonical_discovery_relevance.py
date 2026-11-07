@@ -7,14 +7,13 @@ shared context, or matching payload bytes as an attribution to a member.
 from __future__ import annotations
 
 import contextlib
-import hashlib
 import json
 import sqlite3
 import sys
 from collections.abc import Iterator, Mapping
 from pathlib import Path
 from types import TracebackType
-from typing import Any, Self
+from typing import Any, Self, cast
 
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
@@ -22,6 +21,15 @@ from riverhog_archive_contracts import (
     MemberHistoryBinding,
 )
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_growth_contracts import (
+    COUNT,
+    OCTETS,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+)
 from riverhog_protocol.artifact_identity import ArtifactMemberIdentityDocument
 from riverhog_protocol.provenance_transport import CollectionArtifactProvenanceBindingDocument
 from riverhog_provenance import (
@@ -38,6 +46,118 @@ from riverhog_core.provenance_binding import verify_member_binding
 from riverhog_core.scratch_workspace import scratch_directory
 
 type RelevanceKey = tuple[str, str, str]
+
+
+def _pending_declaration(kind: str) -> Declaration:
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    return Declaration(
+        id=f"riverhog-server.discovery-pending-{kind}.growth/v1",
+        authority="riverhog-server",
+        subjects=(f"riverhog_core.canonical_discovery_relevance.MemberRelevance._pending_{kind}",),
+        scope="canonical-discovery-pending-work-point-selection",
+        starts_at=(
+            "select the first unfinished registered obligation from the owned relevance traversal"
+        ),
+        ends_at="close the SQLite cursor and return at most one detached exact work record",
+        dimensions=(
+            Dimension(
+                "registered_jobs", COUNT, "All retained completed and pending jobs of this kind."
+            ),
+            Dimension(
+                "candidate_octets",
+                OCTETS,
+                "Maximum complete registered record width, measured before selection.",
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "equal",
+                count(1),
+                "One indexed pending selection, including an empty queue.",
+            ),
+            Bound(
+                "returned_rows", COUNT, "upper", count(1), "The exact first pending row or no row."
+            ),
+            Bound(
+                "returned_octets",
+                OCTETS,
+                "upper",
+                Expression("dimension", name="candidate_octets"),
+                "All detached fields are accounted for without payload abbreviation.",
+            ),
+            Bound(
+                "closed_cursors",
+                COUNT,
+                "upper",
+                count(1),
+                "Any created selection cursor is closed before returning or propagating a failure.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        count(512),
+                        Expression(
+                            "product",
+                            terms=(
+                                count(128),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                Expression("dimension", name="registered_jobs"),
+                                                count(2),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "The pending index skips completed work; VM constants depend on the SQLite engine.",
+            ),
+            Bound(
+                "json_calls",
+                COUNT,
+                "equal",
+                count(0),
+                "Selection returns the stored exact state or history view without decoding it.",
+            ),
+            Bound(
+                "hashed_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Selection neither rehashes a source nor establishes source authority.",
+            ),
+        ),
+        conditions=(
+            "The relevance traversal owns its current SQLite schema "
+            "with its pending partial indexes.",
+            "Row-byte input describes complete registered records, including every field.",
+            "SQLite VM counts are engine dependent; lock waits and elapsed time are observations.",
+        ),
+        invariants=(
+            "Previously completed obligations remain in the full deduplication relations.",
+            "Pending rows preserve insertion order, including new dependencies.",
+            "Selection changes no completion, source, import or semantic state.",
+        ),
+        limitations=(
+            "Relevance traversal, source validation, imports, writes and cleanup "
+            "have separate costs.",
+            "This primitive supplies neither a complete discovery bound nor fresh authorization.",
+        ),
+    )
 
 
 class MemberRelevance(Mapping[RelevanceKey, frozenset[str]]):
@@ -61,10 +181,12 @@ class MemberRelevance(Mapping[RelevanceKey, frozenset[str]]):
                 "CREATE TABLE states(journal TEXT, prefix TEXT, state TEXT, "
                 "scope TEXT, value BLOB, "
                 "done INTEGER, PRIMARY KEY(journal, prefix, state, scope));"
+                "CREATE INDEX pending_states ON states(done) WHERE done = 0;"
                 "CREATE TABLE causal(reference BLOB PRIMARY KEY);"
                 "CREATE TABLE views(history TEXT, extent TEXT, binding BLOB, "
                 "own INTEGER, done INTEGER, "
                 "PRIMARY KEY(history, extent));"
+                "CREATE INDEX pending_views ON views(done) WHERE done = 0;"
             )
         except BaseException:
             self._scratch.__exit__(*sys.exc_info())
@@ -124,6 +246,26 @@ class MemberRelevance(Mapping[RelevanceKey, frozenset[str]]):
             (summary.journal_id, summary.journal_sha256, row["assertion_id"], scope),
         )
 
+    @declare_growth(_pending_declaration("state"))
+    def _pending_state(self) -> tuple[str, str, str, str, bytes] | None:
+        with contextlib.closing(
+            self.db.execute(
+                "SELECT journal, prefix, state, scope, value FROM states "
+                "WHERE done = 0 ORDER BY rowid LIMIT 1"
+            )
+        ) as rows:
+            return cast(tuple[str, str, str, str, bytes] | None, rows.fetchone())
+
+    @declare_growth(_pending_declaration("view"))
+    def _pending_view(self) -> tuple[str, str, bytes, int] | None:
+        with contextlib.closing(
+            self.db.execute(
+                "SELECT history, extent, binding, own FROM views "
+                "WHERE done = 0 ORDER BY rowid LIMIT 1"
+            )
+        ) as rows:
+            return cast(tuple[str, str, bytes, int] | None, rows.fetchone())
+
     def anchors(self) -> Iterator[Mapping[str, Any]]:
         for (anchor,) in self.db.execute("SELECT anchor FROM snapshots ORDER BY journal, prefix"):
             yield json.loads(anchor)
@@ -153,26 +295,20 @@ def _anchored_snapshot(
 ) -> JournalSummary:
     if full.anchor == anchor:
         return full.borrow()
-    digest = hashlib.sha256()
-    size = 0
-    for index, frame in enumerate(full.frames):
-        digest.update(frame.encoded)
-        size += len(frame.encoded)
-        if frame.reference == anchor["through"]:
-            if (
-                digest.hexdigest() != anchor["prefix_sha256"]
-                or size != int(anchor["prefix_bytes"])
-                or full.journal_id != anchor["journal_id"]
-            ):
-                raise ProvenanceValidationError("foreign prefix anchor differs")
-            return validate_journal_chunks(
-                (item.encoded for item in full.frames[: index + 1]),
-                expected_anchor=anchor,
-                require_exact_tail=True,
-                catalog=catalog,
-                require_profiles=False,
-            )
-    raise ProvenanceValidationError("foreign prefix anchor is absent")
+    try:
+        index = int(anchor["through"]["sequence"])
+        selected = full.anchor_at(index)
+    except (IndexError, TypeError, ValueError) as error:
+        raise ProvenanceValidationError("foreign prefix anchor is absent") from error
+    if selected != anchor:
+        raise ProvenanceValidationError("foreign prefix anchor differs")
+    return validate_journal_chunks(
+        (item.encoded for item in full.frames[: index + 1]),
+        expected_anchor=anchor,
+        require_exact_tail=True,
+        catalog=catalog,
+        require_profiles=False,
+    )
 
 
 def member_relevance(
@@ -223,21 +359,13 @@ def member_relevance(
                     raise ProvenanceValidationError("input history journal is outside the corpus")
                 with foreign.borrow() as foreign:
                     through = ref["entry"]
-                    digest = hashlib.sha256()
-                    size = 0
-                    anchor: dict[str, Any] | None = None
-                    for frame in foreign.frames:
-                        digest.update(frame.encoded)
-                        size += len(frame.encoded)
-                        if frame.reference == through:
-                            anchor = {
-                                "journal_id": foreign.journal_id,
-                                "through": through,
-                                "prefix_sha256": digest.hexdigest(),
-                                "prefix_bytes": str(size),
-                            }
-                            break
-                    if anchor is None:
+                    try:
+                        anchor = foreign.anchor_at(int(through["sequence"]))
+                    except (IndexError, TypeError, ValueError) as error:
+                        raise ProvenanceValidationError(
+                            "input history foreign entry is absent"
+                        ) from error
+                    if anchor["through"] != through:
                         raise ProvenanceValidationError("input history foreign entry is absent")
                 target = resolve_anchor(anchor)
                 row = target.graph_validation.objects.get(ref["object_id"])
@@ -351,10 +479,8 @@ def member_relevance(
             if occurrence is not None and occurrence["artifact_id"] == selected_artifact_id:
                 enqueue_state(primary, candidate, "recorded-history")
 
-        while pending := found.db.execute(
-            "SELECT journal, prefix, state, scope, value FROM states WHERE done = 0 LIMIT 1"
-        ).fetchone():
-            journal_id, prefix_sha256, state_id, scope, encoded = pending
+        while pending_state := found._pending_state():
+            journal_id, prefix_sha256, state_id, scope, encoded = pending_state
             (anchor,) = found.db.execute(
                 "SELECT anchor FROM snapshots WHERE journal = ? AND prefix = ?",
                 (journal_id, prefix_sha256),
@@ -388,10 +514,8 @@ def member_relevance(
                 canonical_json_bytes(history_binding.to_mapping()),
             ),
         )
-        while pending := found.db.execute(
-            "SELECT history, extent, binding, own FROM views WHERE done = 0 LIMIT 1"
-        ).fetchone():
-            history_id, extent, encoded, own = pending
+        while pending_view := found._pending_view():
+            history_id, extent, encoded, own = pending_view
             selected_binding = MemberHistoryBinding.from_mapping(json.loads(encoded))
             selected_history = closure.store.descriptor(selected_binding)
             with closure.summary_at(selected_history.primary.journal) as selected_primary:

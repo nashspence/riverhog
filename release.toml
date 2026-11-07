@@ -78,7 +78,7 @@ provider_qualification_runtime = "provider-qualification"
 
 [governance.boundary_freeze]
 status = "frozen"
-protected_boundary_sha256 = "04dba8930542eef98c1bc7fa13a5e2d399f03c6a21b6e28bbcbaafdc2341952e"
+protected_boundary_sha256 = "27b323c4efb58c8a4c061d2f8ced6cf1340853176fd2877cc70ce8dca3c5bf10"
 protected_components = [
   "config-validation",
   "gogurt",
@@ -463,6 +463,7 @@ reusable_library = [
   "some-implementations/stove0/packages/target-protocol",
   "some-implementations/stove0/packages/target-support",
   "packages/sha256-continuation",
+  "packages/sqlite-admission",
   "packages/time-formats",
 ]
 internal_build_unit = [

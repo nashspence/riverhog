@@ -357,8 +357,8 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "images",
     }
     jobs = workflow["jobs"]
-    caps = {"repository": "2", "units": "3", "compose": "7", "images": "2", "client-platforms": "3"}
-    assert sum(map(int, caps.values())) == 17
+    caps = {"repository": "2", "units": "6", "compose": "7", "images": "2", "client-platforms": "3"}
+    assert sum(map(int, caps.values())) == 20
     for name, cap in caps.items():
         job = jobs[name]
         assert job["strategy"]["fail-fast"] == "false"
@@ -435,7 +435,7 @@ def test_ci_gate_covers_every_job_and_rejects_non_successful_dependencies() -> N
     workflow = yaml.load(CI_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
     gate = workflow["jobs"]["gate"]
     assert gate["name"] == "CI gate"
-    assert gate["if"] == "always()"
+    assert gate["if"] == "always() && !cancelled()"
     assert gate["runs-on"] == "ubuntu-24.04"
     assert set(gate["needs"]) == set(workflow["jobs"]) - {"gate"}
     step = next(step for step in gate["steps"] if "CI_DEPENDENCIES" in step.get("env", {}))
@@ -701,7 +701,7 @@ def test_release_required_checks_bind_the_exhaustive_ci_gate_and_codeql() -> Non
     codeql = yaml.load(CODEQL_WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
     gate = workflow["jobs"]["gate"]
-    assert gate["if"] == "always()"
+    assert gate["if"] == "always() && !cancelled()"
     assert set(gate["needs"]) == set(workflow["jobs"]) - {"gate"}
     analyze = codeql["jobs"]["analyze"]
     assert analyze["name"] == "Analyze (${{ matrix.language }})"

@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import secrets
 from collections.abc import Iterator, Sequence
+from dataclasses import dataclass
 from datetime import timedelta
 from typing import Any
 
@@ -111,6 +112,82 @@ def require_current_principal(session: Session, principal: Principal) -> None:
             raise NotFound("application key authorization changed")
 
 
+@dataclass(frozen=True, slots=True)
+class KeyAuthorizationFence:
+    """A retained authorization view reference, never a credential or permission."""
+
+    key_id: str
+    app: str
+    generation: str
+
+
+def retain_key_authorization(
+    session: Session, principal: Principal, *, for_update: bool = True
+) -> KeyAuthorizationFence | None:
+    """Pin a validated current view while holding the application's key fence.
+
+    The caller owns the early SQLite writer transaction and checks the operation's
+    permissions and construction scope in that same transaction. A background
+    continuation can then check this reference without reloading the grant set.
+    Read-only controls select the same current proof from one read snapshot.
+    """
+    if principal.key_id is None:
+        return None
+    fence = retain_key_validity(session, principal.key_id, for_update=for_update)
+    require_current_principal(session, principal)
+    if not principal.has_artifact_scope and (
+        principal.authorization_view_identity is None or fence.app != principal.id
+    ):
+        raise NotFound("application key authorization view is required")
+    return fence
+
+
+def retain_key_validity(
+    session: Session, key_id: str, *, for_update: bool = True
+) -> KeyAuthorizationFence:
+    """Retain a live key generation, without granting application or claim access.
+
+    Delegated owners validate their exact current claim and permission separately
+    in the same transaction. This point reference does not contain either.
+    """
+    statement = select(AppKeyRecord).where(AppKeyRecord.id == key_id)
+    if for_update:
+        statement = statement.with_for_update()
+    key = session.scalar(statement.execution_options(populate_existing=True))
+    if key is None or _status(key, now=format_utc_timestamp(utc_now())) != "active":
+        raise NotFound("application key is no longer active")
+    return KeyAuthorizationFence(key.id, key.app, key.access_generation)
+
+
+def require_key_authorization(
+    session: Session,
+    fence: KeyAuthorizationFence,
+    *,
+    for_update: bool = True,
+    nowait: bool = False,
+) -> None:
+    """Check current validity and generation, retaining the key row by default.
+
+    An owner that already holds this exact row can recheck expiry after waiting
+    on a later lock without acquiring an earlier lock class again.
+    """
+    statement = select(AppKeyRecord).where(AppKeyRecord.id == fence.key_id)
+    if for_update:
+        statement = statement.with_for_update(nowait=nowait)
+    key = session.scalar(statement.execution_options(populate_existing=True))
+    if key is None or _status(key, now=format_utc_timestamp(utc_now())) != "active":
+        raise NotFound("application key is no longer active")
+    if key.app != fence.app or key.access_generation != fence.generation:
+        raise NotFound("application key authorization changed")
+
+
+def _begin_key_mutation(session: Session) -> None:
+    # FOR UPDATE is a key-row fence on PostgreSQL; SQLite needs the writer before
+    # the read so a stale read/modify/write cannot overwrite a newer grant set.
+    if session.get_bind().dialect.name == "sqlite":
+        session.connection(execution_options={"sqlite_immediate_writer": True})
+
+
 def _validate_list(*, page_size: int, sort: str, order: str, fields: frozenset[str]) -> None:
     validate_page_size(page_size)
     if sort not in fields:
@@ -217,10 +294,12 @@ class SqlAlchemyAppKeyService:
         normalized_key_id = normalize_key_id(key_id)
         now = format_utc_timestamp(utc_now())
         with session_scope(self._session_factory) as session:
+            _begin_key_mutation(session)
             record = _require_key(
                 session,
                 app=normalized_app,
                 key_id=normalized_key_id,
+                for_update=True,
             )
             if _status(record, now=now) != "active":
                 raise BadRequest("only an active application key can be rotated")
@@ -245,10 +324,12 @@ class SqlAlchemyAppKeyService:
         normalized_key_id = normalize_key_id(key_id)
         now = format_utc_timestamp(utc_now())
         with session_scope(self._session_factory) as session:
+            _begin_key_mutation(session)
             record = _require_key(
                 session,
                 app=normalized_app,
                 key_id=normalized_key_id,
+                for_update=True,
             )
             if record.revoked_at is None:
                 record.revoked_at = now
@@ -298,8 +379,12 @@ class SqlAlchemyAppKeyService:
             raise Forbidden("an application key cannot grant access it does not hold")
         now = format_utc_timestamp(utc_now())
         with session_scope(self._session_factory) as session:
-            _require_key(session, app=normalized_app, key_id=normalized_key_id)
+            _begin_key_mutation(session)
+            record = _require_key(
+                session, app=normalized_app, key_id=normalized_key_id, for_update=True
+            )
             _require_access_targets(session, normalized_access)
+            record.access_generation = secrets.token_hex(32)
             session.execute(
                 delete(AppKeyAccessGrantRecord).where(
                     AppKeyAccessGrantRecord.key_id == normalized_key_id
@@ -335,7 +420,10 @@ class SqlAlchemyAppKeyService:
             raise Forbidden("an application key cannot grant access it does not hold")
         now = format_utc_timestamp(utc_now())
         with session_scope(self._session_factory) as session:
-            _require_key(session, app=normalized_app, key_id=normalized_key_id)
+            _begin_key_mutation(session)
+            record = _require_key(
+                session, app=normalized_app, key_id=normalized_key_id, for_update=True
+            )
             current = tuple(_record_access(session, normalized_key_id))
             if added in current:
                 raise Conflict(
@@ -343,6 +431,7 @@ class SqlAlchemyAppKeyService:
                 )
             updated = normalize_access((*current, added))
             _require_access_targets(session, (added,))
+            record.access_generation = secrets.token_hex(32)
             session.add(
                 AppKeyAccessGrantRecord(
                     key_id=normalized_key_id,
@@ -364,7 +453,10 @@ class SqlAlchemyAppKeyService:
         normalized_key_id = normalize_key_id(key_id)
         removed = normalize_access((access,))[0]
         with session_scope(self._session_factory) as session:
-            _require_key(session, app=normalized_app, key_id=normalized_key_id)
+            _begin_key_mutation(session)
+            record = _require_key(
+                session, app=normalized_app, key_id=normalized_key_id, for_update=True
+            )
             current = tuple(_record_access(session, normalized_key_id))
             if removed not in current:
                 raise NotFound(
@@ -375,6 +467,7 @@ class SqlAlchemyAppKeyService:
                 raise BadRequest(
                     "cannot remove the final application access binding; revoke the key instead"
                 )
+            record.access_generation = secrets.token_hex(32)
             session.execute(
                 delete(AppKeyAccessGrantRecord).where(
                     AppKeyAccessGrantRecord.key_id == normalized_key_id,
@@ -966,12 +1059,17 @@ def _authorization_view_identity(
     )
 
 
-def _require_key(session: Session, *, app: str, key_id: str) -> AppKeyRecord:
+def _require_key(
+    session: Session, *, app: str, key_id: str, for_update: bool = False
+) -> AppKeyRecord:
+    statement = select(AppKeyRecord).where(
+        AppKeyRecord.id == key_id,
+        AppKeyRecord.app == app,
+    )
     record = session.scalar(
-        select(AppKeyRecord).where(
-            AppKeyRecord.id == key_id,
-            AppKeyRecord.app == app,
-        )
+        statement.with_for_update().execution_options(populate_existing=True)
+        if for_update
+        else statement
     )
     if record is None:
         raise NotFound(f"app key not found: {key_id}")

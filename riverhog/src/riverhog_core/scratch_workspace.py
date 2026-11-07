@@ -35,13 +35,24 @@ def capacity_errors() -> Iterator[None]:
         raise ServiceUnavailable("temporary workspace capacity exhausted") from None
 
 
+def _require_scratch_capacity() -> None:
+    if shutil.disk_usage(tempfile.gettempdir()).free < _MINIMUM_FREE_BYTES:
+        raise ServiceUnavailable("temporary workspace capacity exhausted")
+
+
+def create_scratch_directory(*, prefix: str) -> Path:
+    """Create private scratch whose caller explicitly owns removal and retries."""
+    with capacity_errors():
+        _require_scratch_capacity()
+        return Path(tempfile.mkdtemp(prefix=prefix))
+
+
 @contextlib.contextmanager
 def scratch_directory(*, prefix: str) -> Iterator[str]:
     # Capacity is the configured filesystem/quota. This physical reserve governs
     # admission of an operation, not metadata, member count, or collection extent.
     with capacity_errors():
-        if shutil.disk_usage(tempfile.gettempdir()).free < _MINIMUM_FREE_BYTES:
-            raise ServiceUnavailable("temporary workspace capacity exhausted")
+        _require_scratch_capacity()
         with tempfile.TemporaryDirectory(prefix=prefix) as directory:
             yield directory
 

@@ -2,16 +2,13 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from typing import Any
 
-from riverhog_canonical_json import SEQUENCE256_MAX, canonical_json_bytes
 from riverhog_provenance.framing import JournalFramePosition
+from riverhog_provenance.topology_checkpoint import TopologyCaptureCheckpoint
 from riverhog_provenance.topology_facts import (
     TOPOLOGY_CAPTURE_ALGORITHM,
-    TopologyArrayCursor,
-    TopologyFrameCursor,
     advance_topology_frame,
     plan_topology_frame,
 )
@@ -29,109 +26,13 @@ from . import upload_journal_epochs as epochs
 
 
 @dataclass(frozen=True, slots=True)
-class _Header:
-    active: TopologyFrameCursor | None
-    facts: int
-    last: tuple[int, str, int, str] | None
-
-
-def _number(value: object) -> int:
-    if not isinstance(value, str) or not value.isascii() or not value.isdecimal():
-        raise ValueError("invalid topology checkpoint scalar")
-    number = int(value)
-    if str(number) != value or not 0 <= number <= SEQUENCE256_MAX:
-        raise ValueError("invalid topology checkpoint scalar")
-    return number
-
-
-def _digest(value: object) -> str:
-    if (
-        not isinstance(value, str)
-        or len(value) != 64
-        or any(c not in "0123456789abcdef" for c in value)
-    ):
-        raise ValueError("invalid topology checkpoint digest")
-    return value
-
-
-def _encode(header: _Header) -> str:
-    def array(value: TopologyArrayCursor) -> list[str]:
-        return [str(value.offset), str(value.end), str(value.index), str(value.count)]
-
-    active = header.active
-    value = {
-        "active": None
-        if active is None
-        else {
-            "json_sha256": active.json_sha256,
-            "retracts": array(active.retracts),
-            "relations": array(active.relations),
-        },
-        "facts": str(header.facts),
-        "last": None
-        if header.last is None
-        else [
-            str(header.last[0]),
-            header.last[1],
-            str(header.last[2]),
-            header.last[3],
-        ],
-    }
-    return canonical_json_bytes(value).decode()
-
-
-def _decode(raw: str) -> _Header:
-    try:
-        value = json.loads(raw)
-        if not isinstance(value, dict) or set(value) != {"active", "facts", "last"}:
-            raise ValueError("invalid topology checkpoint shape")
-        active = value["active"]
-        if active is not None:
-            if not isinstance(active, dict) or set(active) != {
-                "json_sha256",
-                "retracts",
-                "relations",
-            }:
-                raise ValueError("invalid topology frame checkpoint shape")
-
-            def array(value: object) -> TopologyArrayCursor:
-                if not isinstance(value, list) or len(value) != 4:
-                    raise ValueError("invalid topology array checkpoint shape")
-                offset, end, index, count = map(_number, value)
-                if offset > end or index > count:
-                    raise ValueError("invalid topology array checkpoint extent")
-                return TopologyArrayCursor(offset, end, index, count)
-
-            active = TopologyFrameCursor(
-                _digest(active["json_sha256"]),
-                array(active["retracts"]),
-                array(active["relations"]),
-            )
-        last = value["last"]
-        if last is not None:
-            if (
-                not isinstance(last, list)
-                or len(last) != 4
-                or last[1] not in {"retracts", "relations"}
-            ):
-                raise ValueError("invalid topology last fact checkpoint shape")
-            last = (_number(last[0]), last[1], _number(last[2]), _digest(last[3]))
-        header = _Header(active, _number(value["facts"]), last)
-        if (header.facts == 0) != (last is None) or _encode(header) != raw:
-            raise ValueError("topology checkpoint is inconsistent or noncanonical")
-        return header
-    except (ValueError, TypeError, KeyError, OverflowError) as exc:
-        raise RuntimeError("invalid retained topology checkpoint") from exc
-
-
-@dataclass(frozen=True, slots=True)
 class _Work:
     source: source_owner._UploadJournalValidationWork
     version: int
     next_frame: int
     state: str
     cursor_json: str
-    header: _Header
+    header: TopologyCaptureCheckpoint
 
 
 def _fence(work: _Work) -> tuple[Any, ...]:
@@ -171,7 +72,7 @@ def _begin(
             or row.topology_algorithm != TOPOLOGY_CAPTURE_ALGORITHM
         ):
             raise RuntimeError("topology checkpoint binding differs from its attempt")
-        header = _decode(row.topology_cursor_json)
+        header = TopologyCaptureCheckpoint.from_json(row.topology_cursor_json)
         work = _Work(
             source,
             row.version,
@@ -258,7 +159,7 @@ class _SourceChanged(Exception):
 class _Advance:
     next_frame: int
     state: str
-    header: _Header
+    header: TopologyCaptureCheckpoint
     facts: tuple[dict[str, Any], ...]
 
 
@@ -337,7 +238,7 @@ def _compute(factory: SessionFactory, work: _Work) -> _Advance | None:
         last = (work.next_frame, fact["array_kind"], fact["item_ordinal"], fact["json_sha256"])
     next_frame = work.next_frame + int(result.complete)
     state = "complete" if next_frame == work.source.cursor.frame_count else "scanning"
-    header = _Header(
+    header = TopologyCaptureCheckpoint(
         None if result.complete else result.cursor, work.header.facts + len(facts), last
     )
     return _Advance(next_frame, state, header, facts)
@@ -362,7 +263,7 @@ def _commit(factory: SessionFactory, work: _Work, advance: _Advance) -> bool:
                 version=work.version + 1,
                 topology_next_frame=advance.next_frame,
                 topology_state=advance.state,
-                topology_cursor_json=_encode(advance.header),
+                topology_cursor_json=advance.header.to_json(),
             )
             .returning(Scan.collection_id)
         ).scalar_one_or_none()

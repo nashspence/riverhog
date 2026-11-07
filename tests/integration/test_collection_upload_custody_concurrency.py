@@ -7,6 +7,7 @@ from collections.abc import Callable, Iterator
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import replace
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -127,8 +128,13 @@ def database_url() -> Iterator[str]:
 
 def _services(
     database_url: str,
+    tmp_path: Path,
 ) -> tuple[SqlAlchemyCollectionUploadService, SqlAlchemyCollectionUploadService]:
-    base = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
+    base = RuntimeConfig.for_testing(
+        database_url=database_url,
+        archive_scrypt_work_factor=1,
+        journal_validation_workspace=tmp_path / "journal-validation",
+    )
     archive = replace(base.archive_store("archive"), name="archive")
     config = replace(
         base,
@@ -187,7 +193,7 @@ def _upload_provenance_journal(
         )
         offset += len(chunk)
     service.seal_provenance_journal(collection_id, journal_id)
-    for _ in range(64):
+    for _ in range(10000):
         status = service.get_provenance_journal(collection_id, journal_id)
         if status["state"] in {"sealed", "failed"}:
             assert status["state"] == "sealed", status["failure"]
@@ -246,8 +252,9 @@ def _initial_tag_identity(tags: tuple[str, ...]) -> str:
 
 def test_postgres_upload_tag_authorization_never_returns_the_accumulated_set(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
-    service, _other = _services(database_url)
+    service, _other = _services(database_url, tmp_path)
     tags = tuple(f"scope/tag-{index:04d}" for index in range(301))
     principal = Principal(
         id="bounded-tag-uploader",
@@ -309,8 +316,9 @@ def test_postgres_upload_tag_authorization_never_returns_the_accumulated_set(
 
 def test_a_riverhog_cli_reconciles_real_closed_discovery_without_replaying_tags(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
-    service, _other = _services(database_url)
+    service, _other = _services(database_url, tmp_path)
     tags = [f"camera/retry-{index:04d}" for index in range(205)]
     principal = Principal(
         id="a-riverhog-cli-retry",
@@ -385,8 +393,9 @@ def test_a_riverhog_cli_reconciles_real_closed_discovery_without_replaying_tags(
 def test_postgres_upload_protects_a_reused_tag_root_before_its_first_commit(
     database_url: str,
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
-    service, _other = _services(database_url)
+    service, _other = _services(database_url, tmp_path)
     factory = make_session_factory(database_url)
     with session_scope(factory) as session:
         tag_set, _created = build_collection_tag_set(session, ("source:camera",))
@@ -453,8 +462,9 @@ def test_postgres_upload_protects_a_reused_tag_root_before_its_first_commit(
 
 def test_postgres_upload_reuse_fails_before_commit_after_reclamation_claim(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
-    service, _other = _services(database_url)
+    service, _other = _services(database_url, tmp_path)
     factory = make_session_factory(database_url)
     with session_scope(factory) as session:
         tag_set, _created = build_collection_tag_set(session, ("source:camera",))
@@ -516,8 +526,9 @@ def _race(
 
 def test_exact_concurrent_registration_is_one_physical_planner_step(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
-    first, second = _services(database_url)
+    first, second = _services(database_url, tmp_path)
     collection_id = _create(first)
 
     results = _race(
@@ -544,8 +555,9 @@ def test_exact_concurrent_registration_is_one_physical_planner_step(
 
 def test_distinct_concurrent_registrations_preserve_both_members(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
-    first, second = _services(database_url)
+    first, second = _services(database_url, tmp_path)
     collection_id = _create(first)
     first_artifact = {**_ARTIFACT, "artifact_id": "3" * 64}
     second_artifact = {**_ARTIFACT, "artifact_id": "2" * 64}
@@ -573,9 +585,10 @@ def test_distinct_concurrent_registrations_preserve_both_members(
 
 def test_concurrent_provenance_retry_commits_one_next_ordinal(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
     journal_id = "urn:uuid:00000000-0000-4000-8000-000000000077"
-    first, second = _services(database_url)
+    first, second = _services(database_url, tmp_path)
     opened = first.create_or_resume(
         idempotency_key="fixture-provenance",
         ingest_source="fixture",
@@ -624,9 +637,10 @@ def test_concurrent_provenance_retry_commits_one_next_ordinal(
 
 def test_provenance_append_and_expiry_serialize_at_the_custody_fence(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
     journal_id = "urn:uuid:00000000-0000-4000-8000-000000000078"
-    first, second = _services(database_url)
+    first, second = _services(database_url, tmp_path)
     opened = first.create_or_resume(
         idempotency_key="fixture-provenance-fence",
         ingest_source="fixture",
@@ -689,8 +703,9 @@ def test_provenance_append_and_expiry_serialize_at_the_custody_fence(
 
 def test_heartbeat_and_expiry_serialize_without_losing_resumable_custody(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
-    first, second = _services(database_url)
+    first, second = _services(database_url, tmp_path)
     collection_id = _create(first)
     first.register_artifacts(collection_id, (_ARTIFACT,))
     _expire(database_url, collection_id)
@@ -726,8 +741,9 @@ def test_heartbeat_and_expiry_serialize_without_losing_resumable_custody(
 
 def test_completion_and_expiry_have_one_serial_terminal_intent(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
-    first, second = _services(database_url)
+    first, second = _services(database_url, tmp_path)
     collection_id = _create(first)
     first.register_artifacts(collection_id, (_ARTIFACT,))
     _bind_primary(first, collection_id, _ARTIFACT["artifact_id"], b"")
@@ -752,8 +768,9 @@ def test_completion_and_expiry_have_one_serial_terminal_intent(
 
 def test_guarded_discard_and_exact_resume_cannot_both_win_for_old_custody(
     database_url: str,
+    tmp_path: Path,
 ) -> None:
-    first, second = _services(database_url)
+    first, second = _services(database_url, tmp_path)
     collection_id = _create(first)
     first.register_artifacts(collection_id, (_ARTIFACT,))
     _expire(database_url, collection_id)
@@ -779,9 +796,9 @@ def test_guarded_discard_and_exact_resume_cannot_both_win_for_old_custody(
 
 @pytest.mark.parametrize("invalid_prefix", [False, True])
 def test_native_journal_validation_releases_catalog_lock_and_fences_replaced_attempt(
-    database_url, monkeypatch, invalid_prefix
+    database_url, monkeypatch, invalid_prefix, tmp_path: Path
 ):
-    first, replacement = _services(database_url)
+    first, replacement = _services(database_url, tmp_path)
     collection_id = _create(first)
     observed = BoundedSourceObserver().observe(BytesSource(b"detached validation"))
     raw = create_journal(observed.graph_fragment(), recorded_by_agent_id=observed.observer_agent_id)
@@ -805,34 +822,38 @@ def test_native_journal_validation_releases_catalog_lock_and_fences_replaced_att
     )
     first.append_provenance_journal(collection_id, journal_id, offset=0, content=raw)
     paused, resume = threading.Event(), threading.Event()
-    native = collection_uploads_module.validate_journal_chunks
+    from riverhog_provenance import JournalValidationSession
+
+    native = JournalValidationSession.advance
     expected_failure = None
     if invalid_prefix:
         with pytest.raises(collection_uploads_module.ProvenanceValidationError) as rejected:
-            native(
+            collection_uploads_module.validate_journal_chunks(
                 (raw,),
                 catalog=collection_uploads_module.admission_provenance_catalog(),
                 require_profiles=False,
             )
         expected_failure = str(rejected.value)[:1000]
 
-    def waiting(chunks, **kwargs):
-        iterator = iter(chunks)
-        initial = next(iterator)
+    def waiting(native_session, budget):
         assert first._session_factory.kw["bind"].pool.checkedout() == 0
+        assert replacement._session_factory.kw["bind"].pool.checkedout() == 0
         paused.set()
         if not resume.wait(30):
             raise TimeoutError("native validation was not resumed")
+        return native(native_session, budget)
 
-        def continued():
-            yield initial
-            yield from iterator
+    def reach_native_validation():
+        for _ in range(10000):
+            status = first.seal_provenance_journal(collection_id, journal_id)
+            if paused.is_set():
+                return status
+            assert status["state"] == "validating", status
+        raise AssertionError("native validation was not reached")
 
-        return native(continued(), **kwargs)
-
-    monkeypatch.setattr(collection_uploads_module, "validate_journal_chunks", waiting)
+    monkeypatch.setattr(JournalValidationSession, "advance", waiting)
     with ThreadPoolExecutor(max_workers=1) as pool:
-        future = pool.submit(first.seal_provenance_journal, collection_id, journal_id)
+        future = pool.submit(reach_native_validation)
         try:
             assert paused.wait(10)
             with session_scope(replacement._session_factory) as session:
@@ -846,12 +867,16 @@ def test_native_journal_validation_releases_catalog_lock_and_fences_replaced_att
                     .with_for_update()
                 )
                 assert record is not None and record.state == "validating"
-                record.capture_attempt_id = str(uuid4())
+                original_attempt = record.capture_attempt_id
+                record.capture_phase = "pending"
+                session.flush()
+                collection_uploads_module._begin_upload_journal_capture(session, record)
+                assert record.capture_attempt_id != original_attempt
         finally:
             resume.set()
         stale = future.result(timeout=30)
     assert stale["state"] == "validating" and stale["anchor"] is None
-    for _ in range(32):
+    for _ in range(10000):
         current = replacement.seal_provenance_journal(collection_id, journal_id)
         if current["state"] != "validating":
             break
@@ -867,7 +892,9 @@ def test_native_journal_validation_releases_catalog_lock_and_fences_replaced_att
 
 
 @pytest.mark.parametrize("phase", range(7))
-def test_retired_journal_preparation_is_bounded_and_fenced_across_workers(database_url, phase):
+def test_retired_journal_preparation_is_bounded_and_fenced_across_workers(
+    database_url, phase, tmp_path: Path
+):
     from riverhog_core.services import upload_journal_cleanup as cleanup
     from riverhog_core.services import upload_journal_epochs as epochs
     from sqlalchemy import insert, update
@@ -876,7 +903,7 @@ def test_retired_journal_preparation_is_bounded_and_fenced_across_workers(databa
     from tests.unit.test_journal_preparation_retirement import rows
     from tests.unit.test_journal_summary_consumers import source
 
-    first, _second = _services(database_url)
+    first, _second = _services(database_url, tmp_path)
     collection_id = _create(first)
     journal_id = "urn:uuid:11111111-1111-4111-8111-111111111111"
     raw = source(journal_id=journal_id)
@@ -971,13 +998,19 @@ def test_retired_journal_preparation_is_bounded_and_fenced_across_workers(databa
         pytest.fail("retired attempts stopped making bounded progress")
     assert count(old.attempt_id) == count(current.attempt_id) == 0
     assert count(replacement.attempt_id) == 3
-    assert (
-        b"".join(
-            collection_uploads_module._iter_upload_journal_validation_chunks(
-                second_factory, replacement
-            )
-        )
-        == raw
+    from riverhog_core.services.upload_journal_source import UploadJournalValidationSource
+
+    source_reader = UploadJournalValidationSource(
+        second_factory,
+        replacement,
+        catalog=collection_uploads_module.admission_provenance_catalog(),
     )
+    pieces, offset = [], 0
+    while offset < len(raw):
+        piece = source_reader.read_window(offset, min(65536, len(raw) - offset))
+        assert piece
+        pieces.append(piece)
+        offset += len(piece)
+    assert b"".join(pieces) == raw
     status = first.get_provenance_journal(collection_id, journal_id)
     assert status["state"] == "validating" and status["anchor"] is None

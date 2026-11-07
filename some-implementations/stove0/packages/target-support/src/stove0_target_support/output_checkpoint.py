@@ -4,13 +4,18 @@ from __future__ import annotations
 
 import hashlib
 import os
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_client import (
+    RetainedPrimaryObservation,
+    retained_primary_observation,
+)
 from riverhog_client.processing import ProcessingWorkspace
-from riverhog_client.producer import ProducerFile
+from riverhog_client.producer import ProducerArtifactIdentity, ProducerFile
 from riverhog_protocol import ArtifactId
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_protocol import Sha256
@@ -34,6 +39,7 @@ class TargetOutputCheckpoint(BaseModel):
     workspace_relative_path: str
     materialization_hint: tuple[str, ...] | None
     allow_missing_materialization_hint: bool
+    observation_inputs: dict[str, Any]
 
     @staticmethod
     def _path(root: Path, request: TargetJobRequest, output_id: str) -> Path:
@@ -92,6 +98,33 @@ class TargetOutputCheckpoint(BaseModel):
         return checkpoint
 
     @classmethod
+    def iter_members(
+        cls, root: Path, *, request: TargetJobRequest
+    ) -> Iterator[ProducerArtifactIdentity]:
+        """Enumerate the existing output owner, one bounded checkpoint at a time."""
+        directory = root / f"{request.declaration.job_id}.outputs"
+        if directory.is_symlink():
+            raise ValueError("target output checkpoint directory must not be a symlink")
+        try:
+            entries = os.scandir(directory)
+        except FileNotFoundError:
+            return
+        with entries:
+            for entry in entries:
+                if not entry.is_file(follow_symlinks=False):
+                    raise ValueError("target output checkpoint must be a regular file")
+                checkpoint = cls._read(Path(entry.path), request)
+                if checkpoint is None:
+                    raise ValueError("target output inventory changed during closure")
+                expected = (
+                    hashlib.sha256(checkpoint.output.id.encode("utf-8")).hexdigest() + ".json"
+                )
+                if entry.name != expected:
+                    raise ValueError("target output inventory has another semantic identity")
+                output = checkpoint.output
+                yield ProducerArtifactIdentity(output.artifact_id, output.bytes, output.sha256)
+
+    @classmethod
     def load(
         cls, root: Path, *, request: TargetJobRequest, output_id: str
     ) -> TargetOutputCheckpoint | None:
@@ -142,6 +175,7 @@ class TargetOutputCheckpoint(BaseModel):
             workspace_relative_path=relative,
             materialization_hint=source.materialization_hint,
             allow_missing_materialization_hint=source.allow_missing_materialization_hint,
+            observation_inputs=dict(retained_primary_observation(source.observation).inputs),
         )
         encoded = canonical_json_bytes(checkpoint.model_dump(mode="json"))
         if len(encoded) > _MAX_CHECKPOINT_BYTES:
@@ -171,6 +205,7 @@ class TargetOutputCheckpoint(BaseModel):
             self.output.artifact_id,
             materialization_hint=self.materialization_hint,
             allow_missing_materialization_hint=self.allow_missing_materialization_hint,
+            observation=RetainedPrimaryObservation(self.observation_inputs),
         )
 
 

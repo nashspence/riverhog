@@ -142,7 +142,7 @@ Use the versions of tools and libraries fixed by the repository rather than rely
 
 Run focused tests while working. Cover relevant failure, interruption, and retry paths as well as success. New components must enter the existing validation gates, not sit outside them. Check built and installed software where packaging, platform behavior, or handoffs are affected. A declared operation is not evidence that it ran correctly.
 
-Before pushing, run:
+Before pushing directly to `main`, run:
 
 ```bash
 make lint
@@ -151,7 +151,9 @@ make dist-smoke
 make build
 ```
 
-For substantial integration or handoff validation and release-related work, also run `make linux-qualification`, the exhaustive local qualification path. Use `make help` for current command guidance.
+For integration work on a pull-request branch, run `make lint` and focused tests of the changed owners before checkpoint pushes. Use the pull request’s required CI suites for complete qualification. Work may continue while CI runs; inspect failures promptly and cancel superseded runs as needed. Before merging or handing work back, require complete passing checks for the exact final source and its tested merge checkout.
+
+When exhaustive local qualification is needed, run `make linux-qualification` instead of those four separate commands. This path includes the complete unit shards, lint, distribution smoke tests, image qualification, and Linux lifecycle checks. Use `make help` for current command guidance.
 
 After pushing, watch that exact commit’s required GitHub Actions checks through completion. Fix failures before handing work back. A skipped or blocked check is not a pass; report the gap rather than claiming complete validation. Do not remove required coverage or weaken a check merely to make a result green.
 
@@ -161,7 +163,7 @@ In short, **validate the actual change through every required gate, not a nearby
 
 ## Keep authorization separate from validation
 
-[Release governance](release.toml) and the [release workflows](.github/workflows/) define branch, qualification, and publication requirements. Direct maintainer commits to `main` are the current pre-v1 development path, with required checks for every pushed commit.
+[Release governance](release.toml) and the [release workflows](.github/workflows/) define branch, qualification, and publication requirements. Main remains the pre-v1 development authority, with required checks for delivered changes. Maintainers may commit directly or use pull requests to validate integration branches before merging.
 
 Updating the release branch requires explicit approval of a fully green commit. This does not select a *release candidate*, a version chosen for release testing.
 
