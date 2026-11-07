@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from threading import Lock
-from typing import TYPE_CHECKING, Literal
+from typing import Literal, Protocol
 
 from riverhog_age import UploadState
 from riverhog_protocol.errors import BadRequest, Conflict, NotFound, ServiceUnavailable
@@ -15,9 +15,9 @@ from riverhog_storage_adapter_protocol import WriteExecutionResult, WriteOperati
 from sqlalchemy.exc import OperationalError
 
 from riverhog_core.app_permissions import Principal
-from riverhog_core.archive_store_registry import ArchiveStoreBinding
+from riverhog_core.archive_store_registry import ArchiveStoreBinding, ArchiveStoreRegistry
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
-from riverhog_core.catalog_db import catalog_write_contention, session_scope
+from riverhog_core.catalog_db import SessionFactory, catalog_write_contention, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
 from riverhog_core.domain.archive import (
     PackVolumePlan,
@@ -27,25 +27,79 @@ from riverhog_core.domain.archive import (
 )
 from riverhog_core.pack_upload import PackUploadCheckpoint, PackVolumeUploader
 from riverhog_core.pack_volume import pack_unit_descriptors, parse_pack_volume_plan
+from riverhog_core.ports.archive_objects import ArchiveResumableObjectStore
+from riverhog_core.ports.archive_upload_checkpoints import (
+    PackUploadCheckpointStore,
+    RawUploadCheckpointStore,
+)
 from riverhog_core.provider_write_dispatch import ProviderWriteAdmissionRefused
 from riverhog_core.raw_upload import RawUploadCheckpoint, RawVolumeUploader
 from riverhog_core.raw_volume import parse_raw_volume_plan
+from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
 from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
 from riverhog_core.services.mirrored_archive_upload_writes import MirroredArchiveUploadWrites
 from riverhog_core.stores.executing_archive_objects import ExecutingArchiveResumableObjectStore
+from riverhog_core.stores.sqlalchemy_archive_upload_checkpoints import (
+    SqlAlchemyArchiveUploadCheckpointStore,
+)
 from riverhog_core.upload_continuation import UploadContinuation
-
-if TYPE_CHECKING:
-    from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 
 type _Checkpoint = PackUploadCheckpoint | RawUploadCheckpoint
 type _Writes = ArchiveUploadWrites | MirroredArchiveUploadWrites
 type ArchivePayloadMirrorFactory = Callable[
     [ArchiveUploadWrites, Guard], MirroredArchiveUploadWrites
 ]
+
+
+class ArchivePayloadService(Protocol):
+    """The collection owner's capabilities used by one retained payload unit."""
+
+    _config: RuntimeConfig
+    _archive_stores: ArchiveStoreRegistry
+    _session_factory: SessionFactory
+    _checkpoints: SqlAlchemyArchiveUploadCheckpointStore
+
+    def _payload_write_guard(self, collection_id: int, principal: Principal) -> Guard: ...
+
+    def _pack_uploader(
+        self,
+        object_store: ArchiveResumableObjectStore,
+        *,
+        passphrase_id: str,
+        checkpoint_store: PackUploadCheckpointStore | None = None,
+    ) -> PackVolumeUploader: ...
+
+    def _raw_uploader(
+        self,
+        object_store: ArchiveResumableObjectStore,
+        *,
+        passphrase_id: str,
+        checkpoint_store: RawUploadCheckpointStore | None = None,
+    ) -> RawVolumeUploader: ...
+
+    def _raw_volume_digests(self, collection_id: int, plan: RawVolumePlan) -> tuple[str, ...]: ...
+
+    def _retain_volume_preparation(
+        self,
+        *,
+        admission: ArchiveWriteAdmission,
+        collection_id: int,
+        volume_id: str,
+        epoch: str,
+        identity: Mapping[str, str],
+        guard: Guard,
+        load: Callable[[], UploadState | None],
+        prepare: Callable[[], UploadState],
+    ) -> UploadState: ...
+
+    def _record_sealed_volume(
+        self, collection_id: int, receipt: SealedPackVolume | SealedRawVolume
+    ) -> None: ...
+
+    def get_unit(self, collection_id: int, volume_id: str, unit: int) -> dict[str, object]: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -65,7 +119,7 @@ class _PayloadExecutor:
 
     def __init__(
         self,
-        service: SqlAlchemyCollectionUploadService,
+        service: ArchivePayloadService,
         store: str,
         target: str,
         writes: _Writes,
@@ -93,7 +147,7 @@ class ArchivePayloadUnit:
 
     def __init__(
         self,
-        service: SqlAlchemyCollectionUploadService,
+        service: ArchivePayloadService,
         *,
         key: ArchiveUploadExecutionKey,
         target_incarnation: str,
