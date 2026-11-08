@@ -47,6 +47,7 @@ default_tests=(
   tests/integration/test_archive_upload_terminal_tags.py
   tests/integration/test_archive_upload_terminal_key.py
   tests/integration/test_upload_terminal_read_authority.py
+  tests/integration/test_upload_cancel_authority.py
   tests/integration/test_collection_upload_custody_concurrency.py
   tests/integration/test_collection_finalization_concurrency.py
   tests/integration/test_archive_artifact_custody_receipt_concurrency.py

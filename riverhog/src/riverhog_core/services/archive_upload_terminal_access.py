@@ -26,7 +26,7 @@ from riverhog_core.services.collection_upload_authority import (
 )
 
 
-def _require_creator_scope(
+def require_terminal_creator_scope(
     session: Session, selector: TerminalTagSelector, principal: Principal
 ) -> None:
     """Check the selected original set without counting today's staged rows.
@@ -69,7 +69,7 @@ def require_terminal_read_access(
         raise NotFound("collection upload terminal not found")
     control, _, selector = read_terminal_selection(session, collection_id, operation_id)
     if json.loads(control.construction_json)["principal_id"] == principal.id:
-        _require_creator_scope(session, selector, principal)
+        require_terminal_creator_scope(session, selector, principal)
         return
     if not principal.allows_collection(COLLECTIONS_DELETE, collection_id):
         raise NotFound("collection upload terminal not found")

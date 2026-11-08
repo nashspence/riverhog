@@ -340,7 +340,12 @@ from riverhog_core.services.archive_artifact_custody_receipt import (
     ArchiveArtifactCustodyReceiptSource,
 )
 from riverhog_core.services.archive_provenance_journal_checkpoint import ProvenanceJournalRange
-from riverhog_core.services.archive_upload_terminal_access import require_terminal_read_access
+from riverhog_core.services.archive_upload_drain import read_terminal_selection
+from riverhog_core.services.archive_upload_terminal_access import (
+    require_terminal_creator_scope,
+    require_terminal_read_access,
+)
+from riverhog_core.services.archive_upload_terminal_tags import upload_terminal_tag_selector
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.collection_tags import (
@@ -1012,6 +1017,70 @@ class SqlAlchemyCollectionUploadService:
             upload = session.get(CollectionUploadRecord, normalized)
             if upload is None or not _upload_visible_to_deleter(session, upload, principal):
                 raise NotFound(f"collection upload not found: {normalized}")
+
+    def _cancel_write_guard(
+        self, collection_id: int, principal: Principal
+    ) -> Callable[[Session], None]:
+        """Retain current creator rights over this original cancel selection.
+
+        The caller starts SQLite's early writer and owns this short transaction.
+        Key, claim and upload locks follow that order and defer on contention.
+        A permission proof is reusable only for the same immutable principal,
+        unchanged key generation and original selected tag set. Lease/state
+        eligibility, sealed custody, quiescence and disposal remain separate.
+        """
+        normalized_id = _collection_id(collection_id)
+        authorized = False
+        key: KeyAuthorizationFence | None = None
+        authorized_tags: str | None = None
+
+        def guard(session: Session) -> None:
+            nonlocal authorized, key, authorized_tags
+            if authorized and key is not None:
+                require_key_authorization(session, key, nowait=True)
+            else:
+                key = retain_upload_key(session, principal, nowait=True)
+            claim_id = retain_upload_claim(session, principal.id, principal.key_id, nowait=True)
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update(nowait=True)
+                .execution_options(populate_existing=True)
+            )
+            if upload is None or upload.initiated_by_principal_id != principal.id:
+                raise NotFound(f"collection upload not found: {normalized_id}")
+            control = require_archive_write_control(session, upload)
+            if control.terminal_id is None:
+                if control.gate != "open":
+                    raise Conflict("archive upload terminal selection is unavailable")
+                selector = upload_terminal_tag_selector(upload)
+            else:
+                if control.gate != "closed":
+                    raise Conflict("archive upload terminal selection is not current")
+                _, terminal, selector = read_terminal_selection(
+                    session, normalized_id, control.terminal_id
+                )
+                if (
+                    terminal.kind != "cancel"
+                    or terminal.principal_id != principal.id
+                    or terminal.key_id != principal.key_id
+                ):
+                    raise Conflict("a different archive upload terminal request was selected")
+            if not authorized or authorized_tags != selector.tag_set_identity:
+                require_terminal_creator_scope(session, selector, principal)
+            # Permission traversal can take time. Retained rows prevent mutation;
+            # expiry still advances and must be checked after that work.
+            if key is not None:
+                require_key_authorization(session, key, for_update=False)
+            if (
+                retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
+                != claim_id
+            ):
+                raise Conflict("collection upload execution authority changed")
+            authorized_tags = selector.tag_set_identity
+            authorized = True
+
+        return guard
 
     def _discard_write_guard(
         self, collection_id: int, principal: Principal
