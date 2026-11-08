@@ -9,6 +9,7 @@ from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_protocol.errors import Conflict
 from riverhog_protocol.paths import text_search_key
 
+from tests.support.finalization import drive_finalization_turn
 from tests.unit.test_archive_catalog_finalizer import _lose_commit_reply
 from tests.unit.test_collection_upload_preparation import _case
 from tests.unit.test_collection_uploads import _bind_primary
@@ -36,7 +37,7 @@ def _publication_case(tmp_path, monkeypatch, phase="terminal", *, database_url=N
                 owner = case.service._catalog_finalization_owner(claim, kind="catalog-projection")
                 yield case, claim, owner
                 return
-            assert case.service.process_due_finalizations() == 1
+            drive_finalization_turn(case.service)
         pytest.fail("maintained finalization did not reach the selected catalog phase")
 
 

@@ -128,6 +128,7 @@ def test_archive_maintenance_drains_bounded_progress_before_idle_interval(monkey
                     process_due_provenance_journal_validations=zero,
                     process_due_custody_receipts=zero,
                     process_due_finalizations=finalizations,
+                    has_unreceived_archive_work=lambda: False,
                     reap_expired_custody_transfers=zero,
                 ),
                 collection_workflows=SimpleNamespace(
@@ -161,6 +162,7 @@ def test_archive_maintenance_drains_bounded_progress_before_idle_interval(monkey
             api_app._run_archive_upload_reaper(
                 lambda: container,
                 sweep_interval=timedelta(days=1),
+                receive_interval=timedelta(milliseconds=100),
                 operation_lock=asyncio.Lock(),
             )
         )
@@ -242,5 +244,47 @@ def test_retrieval_restore_reaper_drains_restartable_steps_before_idle_interval(
         task.cancel()
         with pytest.raises(asyncio.CancelledError):
             await task
+
+    asyncio.run(exercise())
+
+
+def test_archive_reaper_receives_active_workers_without_repeating_unrelated_sweeps(monkeypatch):
+    async def exercise():
+        turns = []
+        finished = asyncio.Event()
+        active = [True]
+        loop = asyncio.get_running_loop()
+
+        def process(container, *, startup_recovery=False, execution_only=False):
+            turns.append("receive" if execution_only else "sweep")
+            assert startup_recovery is (len(turns) == 1)
+            if turns == ["sweep", "receive", "receive"]:
+                active[0] = False
+                return True
+            if turns == ["sweep", "receive", "receive", "sweep"]:
+                loop.call_soon_threadsafe(finished.set)
+            return False
+
+        monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
+        container = SimpleNamespace(
+            collection_uploads=SimpleNamespace(has_unreceived_archive_work=lambda: active[0])
+        )
+        task = asyncio.create_task(
+            api_app._run_archive_upload_reaper(
+                lambda: container,
+                sweep_interval=timedelta(days=1),
+                receive_interval=timedelta(milliseconds=10),
+                operation_lock=asyncio.Lock(),
+            )
+        )
+        try:
+            await asyncio.wait_for(finished.wait(), timeout=5)
+            assert turns == ["sweep", "receive", "receive", "sweep"]
+            await asyncio.sleep(0.03)
+            assert len(turns) == 4
+        finally:
+            task.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await task
 
     asyncio.run(exercise())

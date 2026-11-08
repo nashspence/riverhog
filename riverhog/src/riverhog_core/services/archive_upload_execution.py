@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 import traceback
-from collections import deque
+from collections import OrderedDict
 from collections.abc import Callable
 from concurrent.futures import Future
 from dataclasses import dataclass, field
@@ -104,9 +104,23 @@ class ArchiveUploadExecutionOwner:
         self._lock = Lock()
         self._closed = False
         self._slots: dict[int, _Slot] = {}
-        self._poll: deque[int] = deque()
+        self._poll: dict[int, OrderedDict[int, None]] = {}
         self._counts = {False: 0, True: 0}
         self._targets: dict[tuple[bool, str], int] = {}
+
+    def has_unreceived_work(self) -> bool:
+        """Hint that short receiving polls may help, without waiting for a lock.
+
+        Slots include running workers and physically joined results that still
+        need their original receiver. A busy observation stays conservative.
+        Neither value supplies semantic or global closure authority.
+        """
+        if not self._lock.acquire(blocking=False):
+            return True
+        try:
+            return bool(self._slots)
+        finally:
+            self._lock.release()
 
     def try_submit(
         self,
@@ -155,7 +169,7 @@ class ArchiveUploadExecutionOwner:
             )
             slot = _Slot(key, target_incarnation, terminal, owner, identity, future, worker)
             self._slots[key.collection_id] = slot
-            self._poll.append(key.collection_id)
+            self._poll.setdefault(id(owner), OrderedDict())[key.collection_id] = None
             self._counts[terminal] += 1
             self._targets[target] = self._targets.get(target, 0) + 1
             try:
@@ -164,7 +178,6 @@ class ArchiveUploadExecutionOwner:
                 # A started worker remains charged even if startup acknowledgement
                 # failed. Only an original thread that never started is withdrawn.
                 if worker.ident is None:
-                    self._poll.remove(key.collection_id)
                     self._remove(slot)
                 raise
             return "submitted"
@@ -194,9 +207,10 @@ class ArchiveUploadExecutionOwner:
     ) -> tuple[ArchiveUploadExecutionCompletion, ...]:
         """Inspect at most limit slots for the exact local receiving owner.
 
-        Other work kinds retain their original outcome and capacity charge.
-        Matching an owner is only local routing, never admission or closure
-        authority. Bounded rotation permits independent receivers to progress.
+        Each receiver rotates only its own charged slots. Interleaved polls by
+        another receiver cannot reset that progress or consume its outcomes.
+        Buckets exist only while physical work is retained, including joined
+        results that have not been received. Owner identity never uses equality.
         """
         if type(limit) is not int or limit < 1:
             raise ValueError("upload execution collection limit must be positive")
@@ -204,14 +218,15 @@ class ArchiveUploadExecutionOwner:
             return ()
         try:
             completed = []
-            for _ in range(min(limit, len(self._poll))):
-                collection_id = self._poll.popleft()
+            poll = self._poll.get(id(owner))
+            if poll is None:
+                return ()
+            for _ in range(min(limit, len(poll))):
+                collection_id, _ = poll.popitem(last=False)
+                poll[collection_id] = None
                 slot = self._slots[collection_id]
-                if slot.owner is not owner:
-                    self._poll.append(collection_id)
-                    continue
+                assert slot.owner is owner
                 if slot.worker.is_alive():
-                    self._poll.append(collection_id)
                     continue
                 # Future.done alone is insufficient: callbacks, thread-local
                 # destructors and original frames may outlive result publication.
@@ -219,7 +234,6 @@ class ArchiveUploadExecutionOwner:
                 if not slot.future.done():
                     # Missing original evidence stays charged. A dead local
                     # thread cannot supply an invented successful outcome.
-                    self._poll.append(collection_id)
                     continue
                 completed.append(
                     ArchiveUploadExecutionCompletion(
@@ -237,6 +251,11 @@ class ArchiveUploadExecutionOwner:
             self._lock.release()
 
     def _remove(self, slot: _Slot) -> None:
+        receiver = id(slot.owner)
+        poll = self._poll[receiver]
+        del poll[slot.key.collection_id]
+        if not poll:
+            del self._poll[receiver]
         del self._slots[slot.key.collection_id]
         self._counts[slot.terminal] -= 1
         target = (slot.terminal, slot.target_incarnation)

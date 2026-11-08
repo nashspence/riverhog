@@ -44,6 +44,8 @@ from riverhog_protocol.errors import Conflict, NotFound, PreconditionFailed, Ser
 from riverhog_provenance import BoundedSourceObserver, BytesSource
 from sqlalchemy import select
 
+from tests.support.finalization import drive_finalization_turn
+from tests.support.immutable_archive import MemoryImmutableArchiveStore
 from tests.support.upload_api import UploadServiceApi
 from tests.unit.archive_object_fixtures import MemoryArchiveStore
 from tests.unit.artifact_scope_fixtures import persisted_artifact_scope
@@ -52,7 +54,6 @@ from tests.unit.storage_incarnation_fixtures import (
     fixture_storage_incarnation_id,
     seed_storage_incarnation,
 )
-from tests.unit.test_archive_root import MemoryImmutableStore
 from tests.unit.test_pack_upload import MemoryResumableStore
 
 MIB = 1024 * 1024
@@ -344,8 +345,10 @@ def _seed_collection(
             seed_storage_incarnation(session, "cache", "memory")
     resumable = MemoryResumableStore()
     ranges = MemoryArchiveRangeStore(resumable)
-    root_store = MemoryImmutableStore()
     archive_store = DirectArchiveStore(resumable, read_mode=read_mode)
+    root_store = MemoryImmutableArchiveStore(
+        fixture_storage_incarnation_id("archive", "archive"), backing=archive_store
+    )
     archive_registry = ArchiveStoreRegistry(
         {
             "archive": ArchiveStoreBinding(
@@ -353,6 +356,7 @@ def _seed_collection(
                 store=cast(ArchiveStore, archive_store),
                 resumable_objects=resumable,
                 immutable_objects=root_store,
+                immutable_writes=root_store,
                 object_ranges=ranges,
             )
         }
@@ -466,9 +470,10 @@ def _seed_collection(
     for _ in range(256):
         if uploads.get(collection_id)["state"] == "finalized":
             break
-        assert uploads.process_due_finalizations(limit=1) == 1
+        drive_finalization_turn(uploads)
     else:
         raise AssertionError("bounded collection finalization did not terminate")
+    uploads.close()
 
     with session_scope(make_session_factory(database_url)) as session:
         session.add(

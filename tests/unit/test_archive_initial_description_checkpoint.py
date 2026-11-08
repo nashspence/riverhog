@@ -16,6 +16,7 @@ from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services.archive_initial_description_checkpoint import (
     ArchiveInitialDescriptionSource as Source,
 )
+from riverhog_core.services.collection_uploads import _initial_description_receipt
 from riverhog_core.services.immutable_archive_admission import ImmutableArchiveAdmission
 from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 from riverhog_core.services.immutable_archive_writes import ImmutableArchiveWrites
@@ -141,6 +142,17 @@ def _complete(f):
         upload = session.get(Upload, f.case.collection_id)
         revision = 1 if f.source.has_publication else 0
         assert upload.description_revision == revision
+        catalog = _initial_description_receipt(upload)
+        physical = f.source.received(session)
+        if physical is None:
+            assert catalog is None
+        else:
+            assert catalog is not None
+            assert catalog["object_path"] == physical.object_path
+            assert catalog["provider_revision"] == physical.revision
+            assert catalog["stored_bytes"] == physical.stored_bytes
+            assert catalog["stored_sha256"] == physical.stored_sha256
+            assert catalog["published_at"] == physical.published_at
         original = json.loads(f.source.source_json)
         assert upload.description_identity == collection_description_identity(
             archive_root_sha256=original["archive_root_sha256"],

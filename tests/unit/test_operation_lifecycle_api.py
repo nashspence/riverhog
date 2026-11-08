@@ -90,11 +90,17 @@ from sqlalchemy import select
 
 from tests.operation_observer import OperationObserver, TimeoutNeutralTestClient
 from tests.provenance_observer import native_provenance_provider
+from tests.support.finalization import drive_finalization_turn
+from tests.support.immutable_archive import MemoryImmutableArchiveStore
 from tests.support.qualification.live_archive_recovery import qualify_offline_history_recovery
 from tests.support.uploaded_archive import UploadedArchiveStore
 from tests.unit.archive_object_fixtures import archive_store_binding
 from tests.unit.db_helpers import sqlite_url
-from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
+from tests.unit.storage_incarnation_fixtures import (
+    fixture_storage_incarnation_id,
+    seed_storage_incarnation,
+)
+from tests.unit.test_collection_uploads import _ArchiveRanges
 
 SOURCE_ID = ArtifactId("1" * 64)
 OUTPUT_ID = ArtifactId("2" * 64)
@@ -103,6 +109,21 @@ OUTPUT_ID = ArtifactId("2" * 64)
 def _tag_set_identity(*tags: str) -> str:
     with prepare_initial_collection_tags(tags) as prepared:
         return prepared.tag_set_identity
+
+
+def _uploaded_archive_binding(config, name):
+    store = UploadedArchiveStore(passphrases=config.archive_passphrases)
+    root = MemoryImmutableArchiveStore(
+        fixture_storage_incarnation_id("archive", name), backing=store
+    )
+    ranges = _ArchiveRanges(store, store, root)
+    store.read_stored = ranges.read_stored
+    return replace(
+        archive_store_binding(store, name=name),
+        immutable_objects=root,
+        immutable_writes=root,
+        object_ranges=ranges,
+    )
 
 
 def _container(tmp_path: Path, *, database_url: str | None = None) -> ServiceContainer:
@@ -135,12 +156,8 @@ def _container(tmp_path: Path, *, database_url: str | None = None) -> ServiceCon
         seed_storage_incarnation(session, "archive", "secondary")
     stores = ArchiveStoreRegistry(
         {
-            "primary": archive_store_binding(
-                UploadedArchiveStore(passphrases=config.archive_passphrases), name="primary"
-            ),
-            "secondary": archive_store_binding(
-                UploadedArchiveStore(passphrases=config.archive_passphrases), name="secondary"
-            ),
+            "primary": _uploaded_archive_binding(config, "primary"),
+            "secondary": _uploaded_archive_binding(config, "secondary"),
         }
     )
     allowances = SqlAlchemyDownloadAllowance(config, session_factory=session_factory)
@@ -227,7 +244,7 @@ class _LocalApi(ApiClient):
     def get_collection_upload_session(self, collection_id):
         if self.workers is not None:
             self.workers.collection_uploads.process_due_custody_receipts()
-            self.workers.collection_uploads.process_due_finalizations()
+            drive_finalization_turn(self.workers.collection_uploads)
         return super().get_collection_upload_session(collection_id)
 
     def seal_collection_upload_session_provenance_journal(self, collection_id, journal_id):
@@ -277,7 +294,7 @@ def _finalize_upload(
     for _ in range(256):
         if api.get_collection_upload_session(collection_id)["state"] == "finalized":
             return
-        assert container.collection_uploads.process_due_finalizations() == 1
+        drive_finalization_turn(container.collection_uploads)
     raise AssertionError("bounded collection finalization did not terminate")
 
 

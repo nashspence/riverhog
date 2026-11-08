@@ -160,17 +160,21 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
 
     monkeypatch.setattr(source, "Thread", RetainedThread)
     owner = owned.make(forward_workers=1)
+    assert not owner.has_unreceived_work()
+    with owner._lock:
+        assert owner.has_unreceived_work()
     original = object()
     assert _submit(owner, 1, lambda: original) == "submitted"
     assert returned.wait(5)
     slot = owner._slots[1]
     assert slot.future.done() and slot.future.result() is original
-    assert slot.worker.is_alive()
+    assert slot.worker.is_alive() and owner.has_unreceived_work()
     assert owner.collect(owner=None, limit=1) == ()
     assert _submit(owner, 2, lambda: pytest.fail("physical capacity still held")) == "capacity"
     assert _submit(owner, 1, lambda: pytest.fail("original outcome still held")) == "retained"
     release.set()
     _joined(owner)
+    assert owner.has_unreceived_work()
     joins = []
     actual_join = slot.worker.join
 
@@ -181,7 +185,7 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
     monkeypatch.setattr(slot.worker, "join", observe_join)
     (result,) = owner.collect(owner=None, limit=1)
     assert joins == [0]
-    assert result.result() is original
+    assert result.result() is original and not owner.has_unreceived_work()
     assert _submit(owner, 2, lambda: None) == "submitted"
 
 
@@ -337,6 +341,7 @@ def test_one_service_owns_configured_capacity_and_joins_before_dependency_shutdo
         "terminal_workers_per_target",
         "retained_constructions",
         "retained_constructions_per_target",
+        "receive_poll_interval_ms",
     ],
 )
 @pytest.mark.parametrize("value", [0, -1, True, 1.5, "2"])
@@ -442,7 +447,6 @@ def test_receiver_identity_keeps_foreign_results_and_capacity_charged(owned, mon
 
     with monkeypatch.context() as patch:
         patch.setattr(foreign.worker, "join", forbidden_join)
-        assert pool.collect(limit=1, owner=first) == ()
         assert pool._counts[False] == 2 and pool.status(_key(1)) == "awaiting-join"
         (received,) = pool.collect(limit=1, owner=first)
         assert received.key == _key(2) and received.owner is first
@@ -539,7 +543,6 @@ def test_each_receiving_quantum_is_bounded_across_foreign_and_stuck_work(owned):
     pool._slots[1].worker.join(timeout=5)
     assert not pool._slots[1].worker.is_alive()
     assert pool.collect(limit=1, owner=current) == ()
-    assert pool.collect(limit=1, owner=current) == ()
     (completion,) = pool.collect(limit=1, owner=current)
     assert completion.key == _key(3) and completion.result() == "independent"
     assert pool.status(_key(1)) == "awaiting-join"
@@ -598,3 +601,63 @@ def test_same_receiver_cannot_adopt_another_original_invocation(owned):
     _joined(pool)
     (completion,) = pool.collect(limit=1, owner=receiver)
     assert completion.identity is another and completion.result() == "another"
+
+
+@pytest.mark.parametrize("foreign_count", (0, 1, 4))
+def test_receivers_make_independent_progress_with_interleaved_bounded_polls(owned, foreign_count):
+    ready_count = 3
+    pool = owned.make(
+        forward_workers=1 + ready_count + foreign_count,
+        forward_workers_per_target=1 + ready_count + foreign_count,
+    )
+    receiver = object()
+    foreign_receivers = [object() for _ in range(foreign_count)]
+    empty_receiver = object()
+    release, entered = owned.event(), threading.Event()
+    assert (
+        pool.try_submit(
+            _key(1),
+            target_incarnation="target-a",
+            terminal=False,
+            owner=receiver,
+            work=lambda: _blocked(entered, release),
+        )
+        == "submitted"
+    )
+    assert entered.wait(5)
+    for number in range(2, ready_count + 2):
+        assert (
+            pool.try_submit(
+                _key(number),
+                target_incarnation="target-a",
+                terminal=False,
+                owner=receiver,
+                work=lambda number=number: number,
+            )
+            == "submitted"
+        )
+        pool._slots[number].worker.join(timeout=5)
+        assert not pool._slots[number].worker.is_alive()
+    for offset, foreign in enumerate(foreign_receivers, start=ready_count + 2):
+        assert (
+            pool.try_submit(
+                _key(offset),
+                target_incarnation="target-a",
+                terminal=False,
+                owner=foreign,
+                work=lambda: "foreign",
+            )
+            == "submitted"
+        )
+        pool._slots[offset].worker.join(timeout=5)
+        assert not pool._slots[offset].worker.is_alive()
+    received = []
+    for _ in range(ready_count + 1):
+        received.extend(pool.collect(limit=1, owner=receiver))
+        assert pool.collect(limit=1, owner=empty_receiver) == ()
+        for foreign in foreign_receivers:
+            for completion in pool.collect(limit=1, owner=foreign):
+                assert completion.owner is foreign and completion.result() == "foreign"
+    assert [completion.result() for completion in received] == list(range(2, ready_count + 2))
+    assert pool.status(_key(1)) == "running"
+    assert pool._counts[False] == 1

@@ -166,6 +166,7 @@ from sqlalchemy import (
     update,
 )
 from sqlalchemy.engine import CursorResult
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session, load_only, selectinload
 from state_schema import read_snapshot
 from time_formats import (
@@ -220,7 +221,12 @@ from riverhog_core.canonical_discovery_relevance import (
     member_relevance,
 )
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
-from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
+from riverhog_core.catalog_db import (
+    SessionFactory,
+    catalog_write_contention,
+    make_session_factory,
+    session_scope,
+)
 from riverhog_core.catalog_events import (
     begin_catalog_event,
     open_catalog_tag_visibility,
@@ -539,6 +545,9 @@ class SqlAlchemyCollectionUploadService:
         from .archive_upload_execution import ArchiveUploadExecutionOwner
 
         self._archive_execution = ArchiveUploadExecutionOwner(config.archive_execution)
+        from .archive_finalization_due import ArchiveFinalizationDue
+
+        self._finalization_due = ArchiveFinalizationDue(self._session_factory)
         from .archive_construction_retention import ArchiveConstructionRetention
         from .archive_finalizer_registry import ArchiveFinalizerRegistry
 
@@ -3403,32 +3412,33 @@ class SqlAlchemyCollectionUploadService:
             return 0
         return self._archive_upload_maintenance.process_due(limit=limit)
 
+    def has_unreceived_archive_work(self) -> bool:
+        """A local poll hint; this grants no provider closure or global quiescence."""
+        return self._archive_execution.has_unreceived_work()
+
     def process_due_finalizations(self, *, limit: int = 1) -> int:
         if limit < 1:
             return 0
-        self._schedule_ready_finalizations(limit=max(100, limit))
-        processed = 0
-        for _ in range(limit):
-            claim = self._claim_due_finalization()
-            if claim is None:
-                break
-            try:
-                self._reconcile_sealed_volume_receipts(claim.collection_id)
-                self._finalize(claim)
-            except Exception as exc:
-                self._record_finalization_retry(claim, exc)
-                _LOG.exception(
-                    "collection archive finalization failed; retry scheduled: collection_id=%s",
-                    claim.collection_id,
-                )
-            processed += 1
-        return processed
+        # Receive joined physical results and original workflow feedback before
+        # any fresh candidate can acquire another durable claim.
+        progressed = self.process_due_archive_uploads(limit=limit)
+        try:
+            progressed += self._schedule_ready_finalizations(limit=max(100, limit))
+        except OperationalError as error:
+            if catalog_write_contention(error):
+                return progressed
+            raise
+        now = utc_timestamp_now()
+        for collection_id in self._finalization_due.select(now, limit=limit):
+            if self._submit_finalization_if_due(collection_id, now=now) == "submitted":
+                progressed += 1
+        return progressed
 
     def _schedule_ready_finalizations(self, *, limit: int) -> int:
         now = utc_timestamp_now()
         scheduled = 0
         with session_scope(self._session_factory) as session:
-            _writer(session)
+            _writer(session, defer_if_busy=True)
             uploads = list(
                 session.scalars(
                     _open_finalization_query()
@@ -3642,7 +3652,9 @@ class SqlAlchemyCollectionUploadService:
                 collection_id,
                 "collection-finalization",
                 partial(self._finalization_owner, claim, admission=admission),
-                lambda owner: cast(ArchiveFinalizationPipeline, owner).advance(),
+                lambda owner: self._advance_finalization_owner(
+                    claim, cast(ArchiveFinalizationPipeline, owner)
+                ),
                 lambda progressed: self._requeue_finalization_step(claim),
                 resume_original=False,
                 claim_guard=require_due,
@@ -3819,43 +3831,58 @@ class SqlAlchemyCollectionUploadService:
             forward_guard=claim.guard,
         )
 
-    def _finalize(self, claim: _FinalizationClaim) -> None:
-        collection_id = claim.collection_id
-        if self._drain_archive_immutable_report(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._stage_next_member_histories(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._advance_provenance_closure_validation(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._publish_next_provenance_structure(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._advance_archive_tree_checkpoint(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._publish_next_archive_volume_metadata(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._publish_next_provenance_archive_object(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._publish_final_authority(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._publish_custody_receipts(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._publish_initial_tags(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._publish_initial_description(collection_id):
-            self._requeue_finalization_step(claim)
-            return
-        if self._advance_catalog_projection(collection_id):
-            self._requeue_finalization_step(claim)
+    def _advance_finalization_owner(
+        self, claim: _FinalizationClaim, owner: ArchiveFinalizationPipeline
+    ) -> bool:
+        try:
+            return owner.advance()
+        except Exception as error:
+            try:
+                self._record_retained_finalization_failure(claim, error)
+            except Exception as feedback_error:
+                # Diagnostic failure cannot replace the original semantic
+                # outcome, release its claim, or discard its retained receiver.
+                _LOG.warning(
+                    "collection finalization diagnostic failed: collection_id=%s error_type=%s",
+                    claim.collection_id,
+                    type(feedback_error).__name__,
+                )
+            raise
+
+    def _record_retained_finalization_failure(
+        self, claim: _FinalizationClaim, error: Exception
+    ) -> None:
+        message = f"{type(error).__name__}: {error}"[:1000]
+        try:
+            with session_scope(self._session_factory) as session:
+                _writer(session, defer_if_busy=True)
+                parent = session.scalar(
+                    select(CollectionUploadRecord.collection_id)
+                    .where(CollectionUploadRecord.collection_id == claim.collection_id)
+                    .with_for_update(nowait=True)
+                )
+                if parent is None:
+                    return
+                session.execute(
+                    update(CollectionUploadRecord)
+                    .where(
+                        CollectionUploadRecord.collection_id == claim.collection_id,
+                        CollectionUploadRecord.state == "finalizing",
+                        CollectionUploadRecord.archive_phase == "finalizing",
+                        CollectionUploadRecord.archive_claim_id == claim.claim_id,
+                        exists(
+                            select(ArchiveWriteControlRecord.collection_id).where(
+                                ArchiveWriteControlRecord.collection_id == claim.collection_id,
+                                ArchiveWriteControlRecord.gate == "open",
+                            )
+                        ),
+                    )
+                    .values(archive_failure=message)
+                    .execution_options(synchronize_session=False)
+                ).close()
+        except OperationalError as feedback_error:
+            if not catalog_write_contention(feedback_error):
+                raise
 
     def _publish_final_authority(self, collection_id: int) -> bool:
         """Publish the bounded immutable root once and persist its exact receipts."""

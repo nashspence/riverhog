@@ -328,7 +328,17 @@ class ArchiveInitialDescriptionSource:
                     description=original["description"],
                 ),
                 "description_publication_receipt_json": (
-                    None if receipt is None else self._projection(receipt)
+                    None
+                    if receipt is None
+                    else _json(
+                        {
+                            "object_path": receipt.object_path,
+                            "provider_revision": receipt.revision,
+                            "stored_bytes": receipt.stored_bytes,
+                            "stored_sha256": receipt.stored_sha256,
+                            "published_at": receipt.published_at,
+                        }
+                    )
                 ),
             },
         }

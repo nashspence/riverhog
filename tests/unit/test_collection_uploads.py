@@ -91,11 +91,15 @@ from riverhog_provenance import (
 )
 from sqlalchemy import select
 
+from tests.support.finalization import drive_finalization_turn
+from tests.support.immutable_archive import MemoryImmutableArchiveStore
 from tests.support.uploaded_archive import UploadedArchiveStore
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
-from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
-from tests.unit.test_archive_root import MemoryImmutableStore
+from tests.unit.storage_incarnation_fixtures import (
+    fixture_storage_incarnation_id,
+    seed_storage_incarnation,
+)
 from tests.unit.test_pack_upload import MemoryResumableStore
 
 _CREATOR = Principal(
@@ -147,7 +151,8 @@ class _ArchiveRanges:
         if object_path in self.immutable.objects:
             content = self.immutable.objects[object_path].content
         elif object_path in self.resumable.objects:
-            content = self.resumable.objects[object_path][0]
+            stored = self.resumable.objects[object_path]
+            content = stored if isinstance(stored, bytes) else stored[0]
         else:
             content = self.metadata.objects[object_path]
         return content
@@ -404,7 +409,7 @@ def _process_until(
         current = service.get(collection_id)
         if current["state"] == "finalized" or current["archive_phase"] == archive_phase:
             return current
-        assert service.process_due_finalizations() == 1
+        drive_finalization_turn(service)
     raise AssertionError("bounded finalization did not reach the expected state")
 
 
@@ -519,7 +524,7 @@ def _service_with_archive_objects(
     SqlAlchemyCollectionUploadService,
     RuntimeConfig,
     MemoryResumableStore,
-    MemoryImmutableStore,
+    MemoryImmutableArchiveStore,
 ]:
     database_url = database_url or sqlite_url(tmp_path / "catalog.sqlite3")
     config = RuntimeConfig.for_testing(
@@ -532,12 +537,15 @@ def _service_with_archive_objects(
         seed_storage_incarnation(session, "archive", "archive")
     archive_store = UploadedArchiveStore(passphrases=config.archive_passphrases)
     resumable = MemoryResumableStore()
-    root = MemoryImmutableStore()
+    root = MemoryImmutableArchiveStore(
+        fixture_storage_incarnation_id("archive", "archive"), backing=archive_store
+    )
     archive_store.read_stored = _ArchiveRanges(archive_store, resumable, root).read_stored
     binding = replace(
         archive_store_binding(archive_store),
         resumable_objects=resumable,
         immutable_objects=root,
+        immutable_writes=root,
         object_ranges=_ArchiveRanges(archive_store, resumable, root),
     )
     return (
@@ -587,12 +595,15 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
     }
     archive_store = UploadedArchiveStore(passphrases=passphrases)
     resumable = MemoryResumableStore()
-    root = MemoryImmutableStore()
+    root = MemoryImmutableArchiveStore(
+        fixture_storage_incarnation_id("archive", "archive"), backing=archive_store
+    )
     archive_store.read_stored = _ArchiveRanges(archive_store, resumable, root).read_stored
     binding = replace(
         archive_store_binding(archive_store),
         resumable_objects=resumable,
         immutable_objects=root,
+        immutable_writes=root,
         object_ranges=_ArchiveRanges(archive_store, resumable, root),
     )
 
@@ -729,11 +740,14 @@ def test_restore_required_ingress_commits_encrypted_cache_with_initial_lease(
     archive_resumable = MemoryResumableStore()
     cache = _MemoryResumableCache()
     archive_store = MemoryArchiveStore(read_mode="restore_required")
-    root = MemoryImmutableStore()
+    root = MemoryImmutableArchiveStore(
+        fixture_storage_incarnation_id("archive", "archive"), backing=archive_store
+    )
     binding = replace(
         archive_store_binding(archive_store),
         resumable_objects=archive_resumable,
         immutable_objects=root,
+        immutable_writes=root,
         object_ranges=_ArchiveRanges(archive_store, archive_resumable, root),
     )
     service = SqlAlchemyCollectionUploadService(
@@ -1676,7 +1690,7 @@ def test_server_owned_membership_is_independent_of_registration_order(
             result = service.get(collection_id)
             if result["state"] == "finalized":
                 break
-            assert service.process_due_finalizations() == 1
+            drive_finalization_turn(service)
             with session_scope(make_session_factory(config.database_url)) as session:
                 upload = session.get(CollectionUploadRecord, collection_id)
                 if upload is not None and upload.archive_tree_sha256 is not None:

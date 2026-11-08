@@ -20,6 +20,7 @@ class ArchiveExecutionTuning:
     terminal_workers_per_target: int = 1
     retained_constructions: int = 16
     retained_constructions_per_target: int = 4
+    receive_poll_interval_ms: int = 100
 
     def __post_init__(self) -> None:
         for name in (
@@ -29,6 +30,7 @@ class ArchiveExecutionTuning:
             "terminal_workers_per_target",
             "retained_constructions",
             "retained_constructions_per_target",
+            "receive_poll_interval_ms",
         ):
             value = getattr(self, name)
             if type(value) is not int or value < 1:
