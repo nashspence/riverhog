@@ -50,3 +50,28 @@ def test_postgres_contended_claim_observation_retains_original_pipeline(
     test_contended_claim_observation_stays_in_the_same_retained_pipeline(
         tmp_path, monkeypatch, database_url=database_url
     )
+
+
+@pytest.mark.parametrize("committed", (False, True))
+def test_postgres_atomic_claim_registration_resolves_transaction_reply(
+    database_url, tmp_path, monkeypatch, committed
+):
+    from tests.unit.test_finalization_claim_registration import (
+        test_actual_claim_registration_resolves_rollback_and_lost_commit_reply,
+    )
+
+    test_actual_claim_registration_resolves_rollback_and_lost_commit_reply(
+        tmp_path, monkeypatch, committed, database_url=database_url
+    )
+
+
+def test_postgres_atomic_claim_registration_defers_contended_parent(
+    database_url, tmp_path, monkeypatch
+):
+    from tests.unit.test_finalization_claim_registration import (
+        test_claim_registration_defers_contended_parent_without_installing_worker,
+    )
+
+    test_claim_registration_defers_contended_parent_without_installing_worker(
+        tmp_path, monkeypatch, database_url=database_url
+    )

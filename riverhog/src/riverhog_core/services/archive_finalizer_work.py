@@ -109,7 +109,11 @@ class ArchiveFinalizerWork:
         *,
         resume_original: bool = True,
         claim_guard: Guard | None = None,
+        register_claim: Guard | None = None,
     ) -> FinalizerSubmission:
+        if register_claim is not None and resume_original:
+            raise ValueError("claim registration requires a fresh finalizer turn")
+
         def construct() -> ArchiveFinalizerProgress:
             original = create()
             return ArchiveFinalizerProgress(
@@ -150,7 +154,7 @@ class ArchiveFinalizerWork:
                     if not resume_original:
                         return "closed"
                     return self._registry.resume(key, target_incarnation=target)
-                return self._registry.submit(
+                result = self._registry.submit(
                     key,
                     target_incarnation=target,
                     selection=selection,
@@ -158,6 +162,9 @@ class ArchiveFinalizerWork:
                     advance=lambda owner: cast(ArchiveFinalizerProgress, owner).advance(),
                     resume_original=resume_original,
                 )
+                if result == "submitted" and register_claim is not None:
+                    register_claim(session)
+                return result
         except OperationalError as exc:
             if catalog_write_contention(exc):
                 return "busy"

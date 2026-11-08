@@ -458,6 +458,10 @@ class _ArtifactCustodySelection:
             raise ValueError("artifact custody selection requires exactly one verified step")
 
 
+class _FinalizationNotDue(Exception):
+    """The point-selected workflow no longer has a due fresh turn."""
+
+
 @dataclass(frozen=True)
 class _FinalizationClaim:
     """An exact workflow turn; it grants no provider or terminal authority."""
@@ -3583,6 +3587,71 @@ class SqlAlchemyCollectionUploadService:
             kind=kind,
             advance=bodies[kind],
         )
+
+    def _submit_finalization_if_due(
+        self, collection_id: int, *, now: str
+    ) -> FinalizerSubmission | None:
+        """Register the exact original before committing a fresh workflow nonce."""
+        from threading import Event
+
+        from .archive_finalization_admission import OriginalFinalizationAdmission
+        from .archive_finalization_pipeline import ArchiveFinalizationPipeline
+
+        claim = _FinalizationClaim(collection_id, secrets.token_hex(32))
+        ready = Event()
+        admission = OriginalFinalizationAdmission(
+            self._session_factory,
+            collection_id=collection_id,
+            claim_id=claim.claim_id,
+            ready=ready,
+        )
+
+        def require_due(session: Session) -> None:
+            selected = session.scalar(
+                select(CollectionUploadRecord.collection_id).where(
+                    CollectionUploadRecord.collection_id == collection_id,
+                    CollectionUploadRecord.state == "finalizing",
+                    CollectionUploadRecord.archive_phase.in_(("finalization_queued", "retry_wait")),
+                    CollectionUploadRecord.archive_next_attempt_at.is_not(None),
+                    CollectionUploadRecord.archive_next_attempt_at <= now,
+                )
+            )
+            if selected is None:
+                raise _FinalizationNotDue
+
+        def register_claim(session: Session) -> None:
+            # The parent/control locks still cover the successful local
+            # registration. The registered worker cannot select children until
+            # this exact transaction exits, including rollback or lost reply.
+            session.execute(
+                update(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == collection_id)
+                .values(
+                    archive_phase="finalizing",
+                    archive_phase_updated_at=now,
+                    archive_last_attempt_at=now,
+                    archive_next_attempt_at=None,
+                    archive_failure=None,
+                    archive_claim_id=claim.claim_id,
+                )
+                .execution_options(synchronize_session=False)
+            ).close()
+
+        try:
+            return self._archive_finalizer_work._submit(
+                collection_id,
+                "collection-finalization",
+                partial(self._finalization_owner, claim, admission=admission),
+                lambda owner: cast(ArchiveFinalizationPipeline, owner).advance(),
+                lambda progressed: self._requeue_finalization_step(claim),
+                resume_original=False,
+                claim_guard=require_due,
+                register_claim=register_claim,
+            )
+        except _FinalizationNotDue:
+            return None
+        finally:
+            ready.set()
 
     def _submit_finalization(self, claim: _FinalizationClaim) -> FinalizerSubmission:
         """Keep the original pipeline and claim until its workflow reply is received."""
