@@ -223,13 +223,11 @@ def test_bad_selection_and_missing_construction_start_no_workers(tmp_path, monke
 def test_closed_admission_is_not_replaced_by_submission_labels(tmp_path, monkeypatch):
     with _original(tmp_path, monkeypatch, "description") as original, _service(original) as service:
         _terminal(original)
-        assert _submit(service, original) == "submitted"
-        with pytest.raises(Conflict):
-            _completed(service)
+        with pytest.raises(Conflict, match="original archive finalizer is unavailable"):
+            _submit(service, original)
         assert _count(original.case) == 0
-        assert not service._archive_finalizers._contexts[
-            original.case.collection_id
-        ].owner.has_pending
+        assert not service._archive_finalizers._contexts
+        assert not service._archive_execution._slots
 
 
 def test_changed_construction_cannot_adopt_pending_original(tmp_path, monkeypatch):

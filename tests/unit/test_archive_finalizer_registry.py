@@ -599,3 +599,58 @@ def test_missing_original_finalizer_receiver_cannot_become_terminal_drainage(tmp
             )
             == "fenced"
         )
+
+
+def test_original_only_resume_cannot_install_an_untracked_constructor(owned):
+    registry, pool = owned.make()
+    with pytest.raises(Conflict, match="original archive finalizer is unavailable"):
+        registry.resume(_key(), target_incarnation="target-a")
+    assert registry._contexts == {} and pool._slots == {}
+    assert registry._retention._reservations == {}
+
+
+@pytest.mark.parametrize("pending", (False, True))
+def test_original_only_resume_keeps_exact_original_and_never_calls_its_factory(owned, pending):
+    registry, pool = owned.make()
+    original, created = Finalizer(), []
+    original.pending = pending
+
+    def create():
+        created.append(original)
+        return original
+
+    assert _submit(registry, create=create) == "submitted"
+    (first,) = _receive(registry, pool)
+    assert first.result().progressed
+    context = registry._contexts[1]
+    assert registry.resume(_key(), target_incarnation="target-a") == "submitted"
+    (resumed,) = _receive(registry, pool)
+    if pending:
+        assert resumed.result().selection == "original"
+    else:
+        with pytest.raises(Conflict, match="original archive finalizer is unavailable"):
+            resumed.result()
+    assert context.owner is original and created == [original]
+    assert original.calls == ["original"] * (2 if pending else 1)
+
+
+def test_original_only_resume_retains_unknown_constructor_without_reconstruction(owned):
+    registry, pool = owned.make()
+    calls = []
+
+    def create():
+        calls.append("constructor")
+        raise OSError("injected constructor acknowledgement")
+
+    assert _submit(registry, create=create) == "submitted"
+    (failed,) = _receive(registry, pool)
+    with pytest.raises(OSError, match="constructor acknowledgement"):
+        failed.result()
+    context = registry._contexts[1]
+    failure = context.construction_failure
+    assert registry.resume(_key(), target_incarnation="target-a") == "submitted"
+    (resumed,) = _receive(registry, pool)
+    with pytest.raises(Conflict, match="constructor outcome is unresolved"):
+        resumed.result()
+    assert context.construction_failure is failure and calls == ["constructor"]
+    assert not registry.retire_idle(_key(), target_incarnation="target-a")

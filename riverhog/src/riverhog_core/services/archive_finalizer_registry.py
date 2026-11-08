@@ -179,6 +179,46 @@ class ArchiveFinalizerRegistry:
             # selected continuation runs before another source is considered.
             return ArchiveFinalizerTurn(context.selection, context.advance())
 
+    def resume(
+        self, key: ArchiveUploadExecutionKey, *, target_incarnation: str
+    ) -> FinalizerSubmission:
+        """Submit only the retained original; this path cannot install a constructor."""
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            if self._closed:
+                return "closed"
+            context = self._existing(key, target_incarnation)
+            if context is None:
+                raise Conflict("original archive finalizer is unavailable")
+            if context.terminal_id is not None:
+                raise Conflict("retained finalizer is fenced for its terminal request")
+            return self._execution.try_submit(
+                key,
+                target_incarnation=target_incarnation,
+                terminal=False,
+                work=lambda: self._resume_original(context),
+                owner=self,
+            )
+        finally:
+            self._lock.release()
+
+    def _resume_original(self, context: _Context) -> ArchiveFinalizerTurn:
+        with context.lock:
+            with self._lock:
+                if context.terminal_id is not None or self._closed:
+                    raise Conflict("retained finalizer cannot start forward work")
+            if context.construction_failure is not None:
+                raise Conflict("original finalizer constructor outcome is unresolved")
+            if (
+                context.owner is None
+                or context.advance is None
+                or context.selection is None
+                or not context.owner.has_pending
+            ):
+                raise Conflict("original archive finalizer is unavailable")
+            return ArchiveFinalizerTurn(context.selection, context.advance())
+
     def collect(self, *, limit: int) -> tuple[ArchiveUploadExecutionCompletion, ...]:
         return self._execution.collect(limit=limit, owner=self)
 

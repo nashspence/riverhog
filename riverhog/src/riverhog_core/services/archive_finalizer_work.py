@@ -9,11 +9,13 @@ from functools import partial
 from typing import Literal, Protocol, cast
 
 from riverhog_protocol.errors import NotFound
-from state_schema import read_snapshot
+from sqlalchemy import select
+from sqlalchemy.exc import OperationalError
 
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
-from riverhog_core.catalog_db import SessionFactory
+from riverhog_core.catalog_db import SessionFactory, catalog_write_contention, session_scope
+from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.archive_authority_finalizer import ArchiveAuthorityFinalizer
 from riverhog_core.services.archive_finalizer_progress import ArchiveFinalizerProgress
@@ -38,7 +40,7 @@ from riverhog_core.services.archive_provenance_volume_finalizer import (
 )
 from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
 from riverhog_core.services.archive_volume_metadata_finalizer import ArchiveVolumeMetadataFinalizer
-from riverhog_core.services.archive_write_admission import Guard
+from riverhog_core.services.archive_write_admission import Guard, _writer
 
 MetadataFinalizerKind = Literal[
     "archive-volumes",
@@ -105,17 +107,6 @@ class ArchiveFinalizerWork:
         advance: Callable[[RetainedArchiveFinalizer], bool],
         receive: Callable[[bool], None],
     ) -> FinalizerSubmission:
-        # This indexed point read retains no locks across worker submission and
-        # invokes no semantic constructor, encryption, provider or key lookup.
-        with read_snapshot(self._factory) as session:
-            control = session.get(ArchiveWriteControlRecord, collection_id)
-            if control is None:
-                raise NotFound("archive finalizer construction is unavailable")
-            construction = control.construction_json
-        key = ArchiveUploadExecutionKey(
-            collection_id, hashlib.sha256(construction.encode()).hexdigest()
-        )
-
         def construct() -> ArchiveFinalizerProgress:
             original = create()
             return ArchiveFinalizerProgress(
@@ -126,13 +117,43 @@ class ArchiveFinalizerWork:
                 receive=receive,
             )
 
-        return self._registry.submit(
-            key,
-            target_incarnation=json.loads(construction)["archive_incarnation_id"],
-            selection=selection,
-            create=construct,
-            advance=lambda owner: cast(ArchiveFinalizerProgress, owner).advance(),
-        )
+        # Parent/control locks cover only local registration, never a provider
+        # wait or semantic continuation. A terminal cannot observe absence and
+        # then miss a newly installed constructor. Contention defers submission.
+        try:
+            with session_scope(self._factory) as session:
+                _writer(session, defer_if_busy=True)
+                parent = session.scalar(
+                    select(CollectionUploadRecord.collection_id)
+                    .where(CollectionUploadRecord.collection_id == collection_id)
+                    .with_for_update(nowait=True)
+                )
+                control = session.get(
+                    ArchiveWriteControlRecord,
+                    collection_id,
+                    with_for_update={"nowait": True},
+                    populate_existing=True,
+                )
+                if control is None:
+                    raise NotFound("archive finalizer construction is unavailable")
+                construction = control.construction_json
+                key = ArchiveUploadExecutionKey(
+                    collection_id, hashlib.sha256(construction.encode()).hexdigest()
+                )
+                target = json.loads(construction)["archive_incarnation_id"]
+                if parent is None or control.gate != "open":
+                    return self._registry.resume(key, target_incarnation=target)
+                return self._registry.submit(
+                    key,
+                    target_incarnation=target,
+                    selection=selection,
+                    create=construct,
+                    advance=lambda owner: cast(ArchiveFinalizerProgress, owner).advance(),
+                )
+        except OperationalError as exc:
+            if catalog_write_contention(exc):
+                return "busy"
+            raise
 
     def submit_metadata(
         self,
