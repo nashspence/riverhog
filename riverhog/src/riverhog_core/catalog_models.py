@@ -2795,6 +2795,22 @@ class CollectionUploadRecord(Base):
         ),
         Index("ix_collection_uploads_opened_at", "opened_at", "collection_id"),
         Index("ix_collection_uploads_state", "state", "collection_id"),
+        Index(
+            "ix_collection_uploads_finalization_due",
+            "state",
+            "archive_next_attempt_at",
+            "collection_id",
+            sqlite_where=text(
+                "state = 'finalizing' AND "
+                "archive_phase IN ('finalization_queued', 'retry_wait') AND "
+                "archive_next_attempt_at IS NOT NULL"
+            ),
+            postgresql_where=text(
+                "((state) = 'finalizing') AND "
+                "((archive_phase) = ANY ((ARRAY['finalization_queued', 'retry_wait']))) AND "
+                "archive_next_attempt_at IS NOT NULL"
+            ),
+        ),
         Index("ix_collection_uploads_artifact_count", "artifact_count", "collection_id"),
         Index("ix_collection_uploads_artifact_bytes", "artifact_bytes", "collection_id"),
         Index(

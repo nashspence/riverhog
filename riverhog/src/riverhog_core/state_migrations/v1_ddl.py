@@ -980,6 +980,9 @@ CREATE INDEX ix_collection_uploads_search_trgm ON collection_uploads (search_tex
 CREATE INDEX ix_collection_uploads_state ON collection_uploads (state, collection_id)
     """.strip(),
     """
+CREATE INDEX ix_collection_uploads_finalization_due ON collection_uploads (state, archive_next_attempt_at, collection_id) WHERE state = 'finalizing' AND archive_phase IN ('finalization_queued', 'retry_wait') AND archive_next_attempt_at IS NOT NULL
+    """.strip(),
+    """
 CREATE UNIQUE INDEX ux_collection_uploads_principal_idempotency_key ON collection_uploads (initiated_by_principal_id, idempotency_key)
     """.strip(),
     """
@@ -3606,6 +3609,9 @@ CREATE INDEX ix_collection_uploads_search_trgm ON collection_uploads USING gin (
     """.strip(),
     """
 CREATE INDEX ix_collection_uploads_state ON collection_uploads (state, collection_id)
+    """.strip(),
+    """
+CREATE INDEX ix_collection_uploads_finalization_due ON collection_uploads (state, archive_next_attempt_at, collection_id) WHERE state = 'finalizing' AND archive_phase IN ('finalization_queued', 'retry_wait') AND archive_next_attempt_at IS NOT NULL
     """.strip(),
     """
 CREATE UNIQUE INDEX ux_collection_uploads_principal_idempotency_key ON collection_uploads (initiated_by_principal_id, idempotency_key)
