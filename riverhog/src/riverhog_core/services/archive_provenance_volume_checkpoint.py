@@ -151,6 +151,14 @@ class ArchiveProvenanceVolumeSource:
             forward_guard(session)
         upload = _upload(session, collection_id)
         sequence = upload.provenance_archive_next_sequence
+        ArchiveWriteAdmission.require_no_unresolved_calls(session, collection_id)
+        if upload.provenance_archive_terminal_receipt_json is not None:
+            from .archive_provenance_authority_checkpoint import ArchiveProvenanceAuthoritySource
+
+            ArchiveProvenanceAuthoritySource.load(
+                session, collection_id, role="terminal"
+            ).verify_progress(session)
+            return None
         _claim(upload, sequence)
         assert upload.archive_tree_sha256 is not None
         try:
@@ -164,7 +172,6 @@ class ArchiveProvenanceVolumeSource:
         )
         if not 0 <= upload.provenance_archive_journal_count <= sequence:
             raise Conflict("provenance volume journal count is invalid")
-        ArchiveWriteAdmission.require_no_unresolved_calls(session, collection_id)
         control = ArchiveWriteAdmission._control(session, upload)
         ArchiveWriteAdmission._terminal_lock(session, control)
         if control.gate != "open":

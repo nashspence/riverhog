@@ -10,6 +10,7 @@ from collections import OrderedDict
 from collections.abc import Callable, Generator, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from datetime import timedelta
+from functools import partial
 from itertools import islice
 from typing import TYPE_CHECKING, Any, TypedDict, cast
 
@@ -477,6 +478,10 @@ if TYPE_CHECKING:
     from riverhog_core.services.archive_catalog_finalizer import (
         ArchiveCatalogFinalizer,
         CatalogFinalizationKind,
+    )
+    from riverhog_core.services.archive_finalization_pipeline import (
+        ArchiveFinalizationPipeline,
+        ArchiveFinalizationStage,
     )
     from riverhog_core.services.archive_payload_input import ArchivePayloadInput, InputRefusal
     from riverhog_core.services.archive_payload_unit import (
@@ -3439,6 +3444,133 @@ class SqlAlchemyCollectionUploadService:
             claim_id=claim.claim_id,
             kind=kind,
             advance=bodies[kind],
+        )
+
+    def _finalization_owner(self, claim: _FinalizationClaim) -> ArchiveFinalizationPipeline:
+        """Compose one retained workflow turn without constructing semantic children."""
+        from .archive_authority_finalizer import ArchiveAuthorityFinalizer
+        from .archive_finalization_pipeline import (
+            ArchiveFinalizationPipeline,
+            ArchiveFinalizationStagePlan,
+        )
+        from .archive_initial_description_finalizer import ArchiveInitialDescriptionFinalizer
+        from .archive_initial_tag_finalizer import ArchiveInitialTagFinalizer
+        from .archive_provenance_authority_finalizer import ArchiveProvenanceAuthorityFinalizer
+        from .archive_provenance_structure_writer import ArchiveProvenanceStructureWriter
+        from .archive_provenance_volume_finalizer import ArchiveProvenanceVolumeFinalizer
+        from .archive_volume_metadata_finalizer import ArchiveVolumeMetadataFinalizer
+        from .immutable_archive_receiving import OriginalImmutableArchiveReport
+
+        fixed = ArchiveFinalizationStagePlan.fixed
+        return ArchiveFinalizationPipeline(
+            self._session_factory,
+            collection_id=claim.collection_id,
+            stages=(
+                fixed(
+                    partial(
+                        OriginalImmutableArchiveReport, self._session_factory, claim.collection_id
+                    )
+                ),
+                fixed(partial(self._catalog_finalization_owner, claim, kind="member-histories")),
+                fixed(partial(self._catalog_finalization_owner, claim, kind="provenance-closure")),
+                fixed(
+                    partial(
+                        ArchiveProvenanceStructureWriter,
+                        self._session_factory,
+                        collection_id=claim.collection_id,
+                        config=self._config,
+                        archive_stores=self._archive_stores,
+                        forward_guard=claim.guard,
+                    )
+                ),
+                fixed(partial(self._catalog_finalization_owner, claim, kind="artifact-tree")),
+                fixed(
+                    partial(
+                        ArchiveVolumeMetadataFinalizer,
+                        self._session_factory,
+                        collection_id=claim.collection_id,
+                        config=self._config,
+                        archive_stores=self._archive_stores,
+                        forward_guard=claim.guard,
+                    )
+                ),
+                fixed(
+                    partial(
+                        ArchiveProvenanceVolumeFinalizer,
+                        self._session_factory,
+                        collection_id=claim.collection_id,
+                        config=self._config,
+                        archive_stores=self._archive_stores,
+                        forward_guard=claim.guard,
+                    )
+                ),
+                fixed(
+                    partial(
+                        ArchiveProvenanceAuthorityFinalizer,
+                        self._session_factory,
+                        collection_id=claim.collection_id,
+                        config=self._config,
+                        archive_stores=self._archive_stores,
+                        forward_guard=claim.guard,
+                    )
+                ),
+                fixed(
+                    partial(
+                        ArchiveAuthorityFinalizer,
+                        self._session_factory,
+                        collection_id=claim.collection_id,
+                        config=self._config,
+                        archive_stores=self._archive_stores,
+                        forward_guard=claim.guard,
+                    )
+                ),
+                ArchiveFinalizationStagePlan(partial(self._select_finalization_custody, claim)),
+                fixed(
+                    partial(
+                        ArchiveInitialTagFinalizer,
+                        self._session_factory,
+                        collection_id=claim.collection_id,
+                        config=self._config,
+                        archive_stores=self._archive_stores,
+                        forward_guard=claim.guard,
+                    )
+                ),
+                fixed(
+                    partial(
+                        ArchiveInitialDescriptionFinalizer,
+                        self._session_factory,
+                        collection_id=claim.collection_id,
+                        config=self._config,
+                        archive_stores=self._archive_stores,
+                        forward_guard=claim.guard,
+                    )
+                ),
+                fixed(partial(self._catalog_finalization_owner, claim, kind="catalog-projection")),
+            ),
+        )
+
+    def _select_finalization_custody(
+        self, claim: _FinalizationClaim
+    ) -> Callable[[], ArchiveFinalizationStage] | None:
+        """Select an exact member before its tracked semantic constructor starts."""
+        with session_scope(self._session_factory) as session:
+            claim.guard(session)
+            artifact_id = session.scalar(
+                select(CollectionUploadArtifactRecord.artifact_id)
+                .where(
+                    CollectionUploadArtifactRecord.collection_id == claim.collection_id,
+                    CollectionUploadArtifactRecord.custody_receipt_json.is_(None),
+                )
+                .order_by(CollectionUploadArtifactRecord.artifact_id)
+                .limit(1)
+            )
+        if artifact_id is None:
+            return None
+        return partial(
+            self._artifact_custody_owner,
+            claim.collection_id,
+            str(artifact_id),
+            forward_guard=claim.guard,
         )
 
     def _finalize(self, claim: _FinalizationClaim) -> None:
