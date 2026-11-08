@@ -43,6 +43,7 @@ def _case(
     use_cache=False,
     artifact_count=None,
     unit_plaintext_bytes=CHUNK_SIZE,
+    custody_mode="producer-retained",
 ):
     service, config, provider, roots = _service_with_archive_objects(
         tmp_path,
@@ -62,6 +63,7 @@ def _case(
             ingest_source="fixture",
             archive_store=None,
             use_cache=use_cache,
+            custody_mode=custody_mode,
             initiator=_CREATOR,
             event_context=None,
         )

@@ -3285,11 +3285,14 @@ class SqlAlchemyCollectionUploadService:
     ) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
                 .with_for_update()
             )
+            if upload is not None:
+                require_archive_write_control(session, upload)
             record = session.get(
                 CollectionArchiveObjectUploadRecord,
                 (collection_id, receipt.volume_id),
@@ -3307,7 +3310,8 @@ class SqlAlchemyCollectionUploadService:
             record.next_unit = len(receipt.parts)
             record.uploaded_bytes = receipt.stored_bytes
             if upload is not None:
-                _touch_upload(upload, config=self._config, now=now)
+                # Original receiving records custody, never fresh writer activity.
+                # Lease renewal remains with an authenticated heartbeat operation.
                 upload.archive_phase_updated_at = now
                 _record_payload_custody_progress(session, upload, record, now=now)
 

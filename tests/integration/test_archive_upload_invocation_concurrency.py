@@ -157,3 +157,16 @@ def test_postgres_ingress_retry_preserves_original_preparation_and_input(
     database_url, tmp_path, monkeypatch, committed, mode
 ):
     _ingress_original_retry(tmp_path, monkeypatch, committed, mode, database_url=database_url)
+
+
+@pytest.mark.parametrize("terminal", (False, True))
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+@pytest.mark.parametrize("lease", ("2000-01-01T00:00:00Z", "2100-01-01T00:00:00Z"))
+def test_postgres_original_seal_receiving_preserves_writer_lease(
+    database_url, tmp_path, monkeypatch, kind, lease, terminal
+):
+    from tests.unit.test_upload_terminal_receiving import _receive_original_seal
+
+    _receive_original_seal(
+        tmp_path, monkeypatch, kind, "direct", lease, database_url=database_url, terminal=terminal
+    )

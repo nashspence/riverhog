@@ -53,8 +53,16 @@ def _payload(service, key, target, volume, plan, content, *, principal=_CREATOR,
 
 
 @contextmanager
-def _service_actor(tmp_path, monkeypatch, kind, mode, *, database_url=None):
-    with _case(tmp_path, kind, content=b"x" * CHUNK_SIZE, database_url=database_url) as case:
+def _service_actor(
+    tmp_path, monkeypatch, kind, mode, *, database_url=None, custody_mode="producer-retained"
+):
+    with _case(
+        tmp_path,
+        kind,
+        content=b"x" * CHUNK_SIZE,
+        database_url=database_url,
+        custody_mode=custody_mode,
+    ) as case:
         service = case.service
         with session_scope(case.factory) as session:
             upload = session.get(CollectionUploadRecord, case.collection_id)
