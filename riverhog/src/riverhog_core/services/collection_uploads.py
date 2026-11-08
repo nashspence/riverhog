@@ -3523,23 +3523,7 @@ class SqlAlchemyCollectionUploadService:
                 return
             store_name = upload.archive_store
             passphrase_id = upload.passphrase_id
-            pending = list(
-                session.execute(
-                    select(
-                        CollectionArchiveObjectUploadRecord.object_id,
-                        CollectionArchiveObjectUploadRecord.kind,
-                        CollectionArchiveObjectUploadRecord.plan_json,
-                        CollectionArchiveObjectUploadRecord.checkpoint_json,
-                    )
-                    .where(
-                        CollectionArchiveObjectUploadRecord.collection_id == collection_id,
-                        CollectionArchiveObjectUploadRecord.state == "sealed",
-                        CollectionArchiveObjectUploadRecord.sealed_receipt_json.is_(None),
-                    )
-                    .order_by(CollectionArchiveObjectUploadRecord.sequence)
-                    .limit(64)
-                )
-            )
+            pending = list(session.execute(_native_seal_receipts_query(collection_id, limit=64)))
         for volume_id, kind, plan_json, checkpoint_json in pending:
             if checkpoint_json is None:
                 raise RuntimeError(f"sealed archive volume has no checkpoint: {volume_id}")
@@ -7778,6 +7762,30 @@ def _has_complete_payload_seal(upload: CollectionUploadRecord) -> bool:
         upload.artifact_count > 0
         and upload.payload_sealed_artifact_count == upload.artifact_count
         and upload.payload_sealed_artifact_bytes == upload.artifact_bytes
+    )
+
+
+def _native_seal_receipts_query(
+    collection_id: int, *, limit: int
+) -> Select[tuple[str, str, str, str | None]]:
+    """Select pending native seal facts without revisiting other volume history."""
+    if type(limit) is not int or limit < 1:
+        raise ValueError("native seal receiving limit must be positive")
+    return (
+        select(
+            CollectionArchiveObjectUploadRecord.object_id,
+            CollectionArchiveObjectUploadRecord.kind,
+            CollectionArchiveObjectUploadRecord.plan_json,
+            CollectionArchiveObjectUploadRecord.checkpoint_json,
+        )
+        .where(
+            CollectionArchiveObjectUploadRecord.collection_id == collection_id,
+            CollectionArchiveObjectUploadRecord.state == literal_column("'sealed'"),
+            CollectionArchiveObjectUploadRecord.sealed_receipt_json.is_(None),
+        )
+        .order_by(CollectionArchiveObjectUploadRecord.sequence)
+        .limit(limit)
+        .execution_options(include_unpublished_registration=True)
     )
 
 

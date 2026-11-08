@@ -2575,3 +2575,60 @@ def test_postgres_mutable_actor_terminal_fence_defers_actual_row_locks(
                 )
             assert actor.journal._terminal_operation_id is None
         assert actor.journal.drain_terminal(selected) == "closed"
+
+
+@pytest.mark.parametrize("pending", (0, 1, 7))
+def test_postgres_native_seal_receiving_uses_its_partial_index_with_generic_plans(
+    isolated_database_url, tmp_path, record_property, pending
+):
+    from riverhog_core.services.collection_uploads import _native_seal_receipts_query
+    from sqlalchemy.dialects import postgresql
+
+    from tests.unit.test_native_seal_receipt_selection import _pending_native_seals
+
+    with _pending_native_seals(tmp_path, 1000, pending, database_url=isolated_database_url) as (
+        case,
+        expected,
+    ):
+        statement = _native_seal_receipts_query(case.collection_id, limit=2)
+        compiled = statement.compile(dialect=postgresql.dialect(paramstyle="numeric_dollar"))
+        assert len(compiled.positiontup) == 2
+        values = tuple(compiled.params[name] for name in compiled.positiontup)
+        assert values == (case.collection_id, 2)
+        with case.factory.kw["bind"].begin() as connection:
+            connection.exec_driver_sql("ANALYZE collection_archive_object_uploads")
+            connection.exec_driver_sql("SET LOCAL plan_cache_mode = force_generic_plan")
+            connection.exec_driver_sql(
+                "PREPARE native_seal_receipts(BIGINT, INTEGER) AS " + str(compiled)
+            )
+            execute = (
+                pgsql.SQL("EXECUTE native_seal_receipts({}, {})")
+                .format(*(pgsql.Literal(value) for value in values))
+                .as_string(connection.connection.driver_connection)
+            )
+            result = connection.exec_driver_sql(
+                "EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) " + execute
+            ).scalar_one()[0]["Plan"]
+            rows = connection.exec_driver_sql(execute).all()
+            connection.exec_driver_sql("DEALLOCATE native_seal_receipts")
+
+        def walk(node):
+            yield node
+            for child in node.get("Plans", ()):
+                yield from walk(child)
+
+        nodes = list(walk(result))
+        native = [
+            node
+            for node in nodes
+            if node.get("Index Name") == "ix_collection_archive_object_uploads_receiving"
+        ]
+        assert len(native) == 1, result
+        assert not any(node["Node Type"] == "Sort" for node in nodes), result
+        assert native[0].get("Rows Removed by Filter", 0) == 0, result
+        assert native[0]["Actual Rows"] == min(pending, 2), result
+        assert [row.object_id for row in rows] == expected[:2]
+        record_property("completed_seal_prefix", 1000)
+        record_property("unsealed_prefix", 1000)
+        record_property("pending_receipts", pending)
+        record_property("native_index_rows", native[0]["Actual Rows"])

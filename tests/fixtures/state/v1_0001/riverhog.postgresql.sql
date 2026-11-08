@@ -3142,4 +3142,6 @@ CREATE TABLE archive_upload_terminal_tags (
 
 CREATE INDEX ix_archive_upload_terminal_tags_root ON archive_upload_terminal_tags (root_sha256, terminal_id);
 
+CREATE INDEX ix_collection_archive_object_uploads_receiving ON collection_archive_object_uploads (collection_id, sequence) WHERE ((state) = 'sealed') AND sealed_receipt_json IS NULL;
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

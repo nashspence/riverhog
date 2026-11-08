@@ -4034,6 +4034,13 @@ class CollectionArchiveObjectUploadRecord(Base):
             sqlite_where=text("state = 'sealed'"),
         ),
         Index(
+            "ix_collection_archive_object_uploads_receiving",
+            "collection_id",
+            "sequence",
+            postgresql_where=text("((state) = 'sealed') AND sealed_receipt_json IS NULL"),
+            sqlite_where=text("state = 'sealed' AND sealed_receipt_json IS NULL"),
+        ),
+        Index(
             "ix_collection_archive_object_uploads_raw_boundary",
             "collection_id",
             "source_artifact_id",
