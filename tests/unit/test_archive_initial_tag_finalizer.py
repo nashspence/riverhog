@@ -18,7 +18,7 @@ from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_protocol import collection_tag_set_identity
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
 
-from tests.unit.test_archive_authority_finalizer import _different_claim, _replace_claim
+from tests.unit.finalization_claim_fixtures import _different_claim, _replace_claim
 from tests.unit.test_archive_initial_tag_checkpoint import (
     _orphan,
     _publish,

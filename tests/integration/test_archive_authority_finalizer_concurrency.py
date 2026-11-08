@@ -14,13 +14,9 @@ from sqlalchemy import event, select, text
 from tests.integration.test_collection_upload_custody_concurrency import (
     database_url as database_url,
 )
+from tests.unit.finalization_claim_fixtures import _different_claim
 from tests.unit.test_archive_authority_checkpoint import _authority_source, _snapshot
-from tests.unit.test_archive_authority_finalizer import (
-    _different_claim,
-    _fresh,
-    _owner,
-    _prior_root,
-)
+from tests.unit.test_archive_authority_finalizer import _fresh, _owner, _prior_root
 from tests.unit.test_archive_volume_metadata_receiving import _count
 from tests.unit.test_finalization_claim_readiness import _current_claim, _fresh_coordinator
 

@@ -18,7 +18,7 @@ from riverhog_core.services.archive_finalizer_terminal import (
 )
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.archive_volume_metadata_writes import ArchiveVolumeMetadataWrites
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
 
 
 class ArchiveVolumeMetadataFinalizer:
@@ -35,11 +35,13 @@ class ArchiveVolumeMetadataFinalizer:
         collection_id: int,
         config: RuntimeConfig,
         archive_stores: ArchiveStoreRegistry,
+        forward_guard: Guard | None = None,
     ) -> None:
         self._factory = factory
         self._collection_id = collection_id
         self._config = config
         self._archive_stores = archive_stores
+        self._forward_guard = forward_guard
         self._lock = threading.Lock()
         self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
         self._reports = ArchiveFinalizerReports(factory, collection_id)
@@ -84,6 +86,8 @@ class ArchiveVolumeMetadataFinalizer:
                 )
                 if upload is None:
                     return False
+                if self._forward_guard is not None:
+                    self._forward_guard(session)
                 admission.require_no_unresolved_calls(session, self._collection_id)
                 if upload.archive_tree_sha256 is None:
                     return False
@@ -92,7 +96,10 @@ class ArchiveVolumeMetadataFinalizer:
                         raise Conflict("archive terminal metadata has no ordered commitment")
                     return False
                 source = ArchiveVolumeMetadataSource.load(
-                    session, self._collection_id, upload.archive_volume_next_sequence
+                    session,
+                    self._collection_id,
+                    upload.archive_volume_next_sequence,
+                    forward_guard=self._forward_guard,
                 )
             binding = self._archive_stores.require_incarnation(
                 source.archive_store, source.archive_incarnation_id

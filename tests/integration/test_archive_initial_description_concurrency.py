@@ -16,7 +16,7 @@ from sqlalchemy import event, select, text
 from tests.integration.test_collection_upload_custody_concurrency import (
     database_url as database_url,
 )
-from tests.unit.test_archive_authority_finalizer import _different_claim
+from tests.unit.finalization_claim_fixtures import _different_claim
 from tests.unit.test_archive_initial_description_checkpoint import (
     _admit,
     _cold_receive,

@@ -44,7 +44,7 @@ from riverhog_core.services.archive_provenance_journal_checkpoint import (
     ArchiveProvenanceJournalSource,
     ProvenanceJournalRange,
 )
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.immutable_archive_preparation import (
     ImmutableArchivePreparation,
     PreparedImmutableArchiveObject,
@@ -135,12 +135,20 @@ class ArchiveProvenanceVolumeSource:
     source_json: str = field(repr=False)
     document_json: str = field(repr=False)
     publication: ArchiveProvenancePublication = field(repr=False)
+    forward_guard: Guard | None = field(default=None, repr=False, compare=False)
 
     @classmethod
     def stage_next(
-        cls, session: Session, collection_id: int, *, grants: ArchiveWriteGrants
+        cls,
+        session: Session,
+        collection_id: int,
+        *,
+        grants: ArchiveWriteGrants,
+        forward_guard: Guard | None = None,
     ) -> ArchiveProvenanceVolumeSource | None:
         _writer(session)
+        if forward_guard is not None:
+            forward_guard(session)
         upload = _upload(session, collection_id)
         sequence = upload.provenance_archive_next_sequence
         _claim(upload, sequence)
@@ -218,7 +226,9 @@ class ArchiveProvenanceVolumeSource:
                 )
             )
             session.flush()
-        source = cls.load(session, collection_id, sequence, role="metadata")
+        source = cls.load(
+            session, collection_id, sequence, role="metadata", forward_guard=forward_guard
+        )
         if source.source_json != _json(_context(upload)):
             raise Conflict("provenance volume original cursor changed")
         source.write_grants(grants)
@@ -226,7 +236,13 @@ class ArchiveProvenanceVolumeSource:
 
     @classmethod
     def load(
-        cls, session: Session, collection_id: int, sequence: int, *, role: Role
+        cls,
+        session: Session,
+        collection_id: int,
+        sequence: int,
+        *,
+        role: Role,
+        forward_guard: Guard | None = None,
     ) -> ArchiveProvenanceVolumeSource:
         upload = _upload(session, collection_id)
         row = session.get(
@@ -304,7 +320,15 @@ class ArchiveProvenanceVolumeSource:
             )
         else:
             raise Conflict("unsupported provenance volume physical source role")
-        return cls(collection_id, sequence, role, row.source_json, row.document_json, publication)
+        return cls(
+            collection_id,
+            sequence,
+            role,
+            row.source_json,
+            row.document_json,
+            publication,
+            forward_guard,
+        )
 
     @property
     def document(self) -> ProvenanceVolumeDocument:
@@ -338,6 +362,8 @@ class ArchiveProvenanceVolumeSource:
         return upload, row
 
     def _forward(self, session: Session) -> Volume:
+        if self.forward_guard is not None:
+            self.forward_guard(session)
         upload, row = self._source(session)
         _claim(upload, self.sequence)
         if self.source_json != _json(_context(upload)):
@@ -690,6 +716,8 @@ class ArchiveProvenanceVolumeSource:
         if row.progress_receipt_json is not None:
             self._verify_progress(session, upload, row)
             return False
+        if self.forward_guard is not None:
+            self.forward_guard(session)
         _claim(upload, self.sequence)
         if self.source_json != _json(_context(upload)):
             raise Conflict("provenance volume original cursor changed")

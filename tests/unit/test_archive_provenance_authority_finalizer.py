@@ -17,8 +17,11 @@ from riverhog_core.services.archive_provenance_authority_checkpoint import (
 from riverhog_core.services.archive_provenance_authority_finalizer import (
     ArchiveProvenanceAuthorityFinalizer,
 )
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.immutable_archive_preparation import ImmutableArchivePreparation
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
 
+from tests.unit.finalization_claim_fixtures import _different_claim, _replace_claim
 from tests.unit.test_archive_provenance_authority_checkpoint import (
     _authority_source,
     _commit,
@@ -28,9 +31,10 @@ from tests.unit.test_archive_provenance_authority_checkpoint import (
 )
 from tests.unit.test_archive_provenance_journal_writer import _lose_ack
 from tests.unit.test_archive_volume_metadata_receiving import _count
+from tests.unit.test_finalization_claim_readiness import _current_claim
 
 
-def _owner(f):
+def _owner(f, *, forward_guard=None):
     with session_scope(f.case.factory) as session:
         name = session.get(Upload, f.case.collection_id).archive_store
     binding = replace(
@@ -41,7 +45,11 @@ def _owner(f):
     config = replace(f.case.service._config, archive_write=f.original_grants)
     registry = ArchiveStoreRegistry({name: binding})
     owner = ArchiveProvenanceAuthorityFinalizer(
-        f.case.factory, collection_id=f.case.collection_id, config=config, archive_stores=registry
+        f.case.factory,
+        collection_id=f.case.collection_id,
+        config=config,
+        archive_stores=registry,
+        forward_guard=forward_guard,
     )
     return SimpleNamespace(
         owner=owner, config=config, binding=binding, registry=registry, name=name
@@ -78,7 +86,8 @@ def test_original_authority_actor_precedes_new_config_target_key_and_source_afte
     tmp_path, monkeypatch, role, phase, committed
 ):
     with _authority_source(tmp_path, monkeypatch, role) as f:
-        original = _owner(f)
+        claim = _current_claim(f.case)
+        original = _owner(f, forward_guard=claim.guard)
         before = _snapshot(f)
         with _lose_ack(monkeypatch, phase, committed):
             with pytest.raises(OSError, match="injected journal writer"):
@@ -138,13 +147,21 @@ def test_retained_original_authority_progress_ack_precedes_fresh_configuration(
     tmp_path, monkeypatch, role, committed
 ):
     with _authority_source(tmp_path, monkeypatch, role) as f:
-        original = _owner(f)
+        claim = _current_claim(f.case)
+        original = _owner(f, forward_guard=claim.guard)
         assert original.owner.advance()
         with _lose_progress_ack(monkeypatch, committed):
             with pytest.raises(OSError, match="authority progress"):
                 original.owner.advance()
         assert original.owner.has_pending and original.owner._actor is None
         original.owner._config = original.owner._archive_stores = None
+        before = _snapshot(f)
+        _replace_claim(f.case, _different_claim(claim))
+        if not committed:
+            with pytest.raises(Conflict, match="original finalization claim"):
+                original.owner.advance()
+            assert original.owner.has_pending and _snapshot(f) == before
+            _replace_claim(f.case, claim.claim_id)
         if committed:
             _orphan(f)
         calls = dict(f.calls)
@@ -253,3 +270,51 @@ def test_original_authority_preparation_retry_retains_selected_crypto_inputs(tmp
             assert original.owner.advance()
         assert len(inputs) == 2 and inputs[0] == inputs[1]
         assert f.calls == {name: value + 1 for name, value in f.before_calls.items()}
+
+
+@pytest.mark.parametrize("role", ("terminal", "root"))
+def test_provenance_authority_staging_requires_original_claim(tmp_path, monkeypatch, role):
+    with _authority_source(tmp_path, monkeypatch, role) as f:
+        claim = _current_claim(f.case)
+        original = _owner(f, forward_guard=claim.guard)
+        before = _snapshot(f)
+        calls = dict(f.calls)
+        _replace_claim(f.case, _different_claim(claim))
+        with pytest.raises(Conflict, match="original finalization claim"):
+            original.owner.advance()
+        assert not original.owner.has_pending and _snapshot(f) == before
+        assert f.calls == calls and _count(f.case) == 0
+
+
+@pytest.mark.parametrize("role", ("terminal", "root"))
+@pytest.mark.parametrize("boundary", ("preparation", "admission"))
+def test_provenance_authority_rechecks_original_claim_after_source_selection(
+    tmp_path, monkeypatch, role, boundary
+):
+    with _authority_source(tmp_path, monkeypatch, role) as f:
+        claim = _current_claim(f.case)
+        original = _owner(f, forward_guard=claim.guard)
+        calls = dict(f.calls)
+        owner_type, method = (
+            (ArchiveWriteAdmission, "bind_epoch")
+            if boundary == "preparation"
+            else (ImmutableArchivePreparation, "prepare")
+        )
+        advance = getattr(owner_type, method)
+
+        def changed(owner, *args, **kwargs):
+            result = advance(owner, *args, **kwargs)
+            _replace_claim(f.case, _different_claim(claim))
+            return result
+
+        with monkeypatch.context() as patch:
+            patch.setattr(owner_type, method, changed)
+            with pytest.raises(Conflict, match="original finalization claim"):
+                original.owner.advance()
+        actor = original.owner._actor
+        assert actor is not None and original.owner.has_pending
+        assert (actor._prepared is None) == (boundary == "preparation")
+        assert f.calls == calls and _count(f.case) == 0
+        _replace_claim(f.case, claim.claim_id)
+        assert original.owner.advance() and not original.owner.has_pending
+        assert f.calls == {name: value + 1 for name, value in calls.items()}

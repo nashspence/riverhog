@@ -15,6 +15,7 @@ from riverhog_core.services.immutable_archive_preparation import ImmutableArchiv
 from riverhog_protocol.errors import Conflict, NotFound, ServiceUnavailable
 from sqlalchemy import delete, event, update
 
+from tests.unit.finalization_claim_fixtures import _different_claim, _replace_claim
 from tests.unit.test_archive_authority_checkpoint import _authority_source, _snapshot
 from tests.unit.test_archive_volume_metadata_finalizer import _owner as _volume_owner
 from tests.unit.test_archive_volume_metadata_receiving import _count
@@ -240,16 +241,6 @@ def test_completed_authority_requires_its_actual_original_pair_proof(tmp_path, m
         with pytest.raises(Conflict, match="receiving proof"):
             _fresh(original).advance()
         assert len(original.calls["execute"]) == 2 and _count(fixture.case) == 0
-
-
-def _different_claim(claim):
-    return ("0" if claim.claim_id[0] != "0" else "1") + claim.claim_id[1:]
-
-
-def _replace_claim(case, claim_id):
-    with session_scope(case.factory) as session:
-        upload = session.get(Upload, case.collection_id)
-        upload.archive_claim_id = claim_id
 
 
 @pytest.mark.parametrize("kind", ["root", "recovery"])

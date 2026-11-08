@@ -39,7 +39,7 @@ from riverhog_core.immutable_archive_identity import require_immutable_archive_r
 from riverhog_core.incremental_plan import parse_incremental_volume_planner_checkpoint
 from riverhog_core.pack_volume import parse_pack_volume_plan
 from riverhog_core.ports.archive_objects import ImmutableObjectReceipt
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
 from riverhog_core.services.immutable_archive_preparation import (
     ImmutableArchivePreparation,
     PreparedImmutableArchiveObject,
@@ -95,6 +95,7 @@ class ArchiveVolumeMetadataSource:
     object_id: str | None
     identity_json: str = field(repr=False)
     publication: ArchiveVolumeMetadataPublication = field(repr=False)
+    forward_guard: Guard | None = field(default=None, repr=False, compare=False)
 
     @classmethod
     def capture(
@@ -104,6 +105,7 @@ class ArchiveVolumeMetadataSource:
         record: CollectionArchiveObjectUploadRecord | None,
         document: CollectionArchiveVolumeDocument | CollectionArchiveTerminalDocument,
         total_volumes: int,
+        forward_guard: Guard | None = None,
     ) -> ArchiveVolumeMetadataSource:
         publication = ArchiveVolumeMetadataPublication.from_document(
             archive_storage_prefix=upload.archive_storage_prefix, document=document
@@ -132,11 +134,17 @@ class ArchiveVolumeMetadataSource:
             record.object_id if record is not None else None,
             _json({"construction": _parent_identity(upload), "volume": _volume_identity(record)}),
             publication,
+            forward_guard,
         )
 
     @classmethod
     def load(
-        cls, session: Session, collection_id: int, sequence: int
+        cls,
+        session: Session,
+        collection_id: int,
+        sequence: int,
+        *,
+        forward_guard: Guard | None = None,
     ) -> ArchiveVolumeMetadataSource:
         """Rebuild one original document from indexed, source-owned facts."""
         upload = session.scalar(
@@ -191,7 +199,13 @@ class ArchiveVolumeMetadataSource:
             )
         else:
             raise Conflict("archive volume metadata original sequence is outside its construction")
-        return cls.capture(upload=upload, record=record, document=document, total_volumes=total)
+        return cls.capture(
+            upload=upload,
+            record=record,
+            document=document,
+            total_volumes=total,
+            forward_guard=forward_guard,
+        )
 
     @property
     def archive_store(self) -> str:
@@ -326,6 +340,8 @@ class ArchiveVolumeMetadataSource:
 
     def guard(self, session: Session) -> None:
         """Require the already accepted finalizer claim without renewing producer custody."""
+        if self.forward_guard is not None:
+            self.forward_guard(session)
         upload = self._parent(session)
         if (
             upload.state != "finalizing"

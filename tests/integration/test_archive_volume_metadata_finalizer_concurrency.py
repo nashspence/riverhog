@@ -10,6 +10,9 @@ from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_protocol.errors import Conflict
 from sqlalchemy import event, select, text
 
+from tests.integration.finalization_claim_fixtures import (
+    assert_replaced_claim_refused_after_parent_wait,
+)
 from tests.integration.test_collection_upload_custody_concurrency import (
     database_url as database_url,
 )
@@ -120,3 +123,14 @@ def test_postgres_finalizer_checks_closure_and_claim_under_actual_parent_lock(
         expected = int(change == "unresolved")
         assert _count(case) == _snapshot(case)[0] == expected
         assert len(original.calls["execute"]) == len(original.calls["observe"]) == expected
+
+
+def test_postgres_archive_metadata_rechecks_original_claim_after_parent_wait(
+    database_url, tmp_path, monkeypatch
+):
+    with _metadata_source(tmp_path, monkeypatch, database_url=database_url) as f:
+        claim = _current_claim(f.case)
+        original = _owner(f, forward_guard=claim.guard)
+        assert_replaced_claim_refused_after_parent_wait(f.case, claim, original.owner.advance)
+        assert not original.owner.has_pending and _count(f.case) == 0
+        assert original.calls == {"observe": [], "execute": []}

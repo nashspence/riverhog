@@ -23,7 +23,7 @@ from riverhog_core.services.archive_provenance_journal_checkpoint import (
 from riverhog_core.services.archive_provenance_volume_checkpoint import (
     ArchiveProvenanceVolumeSource,
 )
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.immutable_archive_writes import ImmutableArchiveWrites
 
 _Phase = Literal["bindings", "journal", "metadata", "commit"]
@@ -40,11 +40,13 @@ class ArchiveProvenanceVolumeFinalizer:
         collection_id: int,
         config: RuntimeConfig,
         archive_stores: ArchiveStoreRegistry,
+        forward_guard: Guard | None = None,
     ) -> None:
         self._factory = factory
         self._collection_id = collection_id
         self._config = config
         self._archive_stores = archive_stores
+        self._forward_guard = forward_guard
         self._lock = threading.Lock()
         self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
         self._reports = ArchiveFinalizerReports(factory, collection_id)
@@ -81,7 +83,10 @@ class ArchiveProvenanceVolumeFinalizer:
                 return True
             with session_scope(self._factory) as session:
                 volume = ArchiveProvenanceVolumeSource.stage_next(
-                    session, self._collection_id, grants=self._config.archive_write
+                    session,
+                    self._collection_id,
+                    grants=self._config.archive_write,
+                    forward_guard=self._forward_guard,
                 )
                 if volume is None:
                     return False
@@ -95,7 +100,11 @@ class ArchiveProvenanceVolumeFinalizer:
                 elif volume.document.payload.kind == "bindings":
                     phase = "bindings"
                     source = ArchiveProvenanceVolumeSource.load(
-                        session, self._collection_id, volume.sequence, role="bindings"
+                        session,
+                        self._collection_id,
+                        volume.sequence,
+                        role="bindings",
+                        forward_guard=self._forward_guard,
                     )
                 else:
                     phase, source = "journal", volume

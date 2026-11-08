@@ -18,7 +18,7 @@ from riverhog_core.services.archive_finalizer_terminal import (
 from riverhog_core.services.archive_provenance_authority_checkpoint import (
     ArchiveProvenanceAuthoritySource,
 )
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
 from riverhog_core.services.immutable_archive_writes import ImmutableArchiveWrites
 
 
@@ -32,11 +32,13 @@ class ArchiveProvenanceAuthorityFinalizer:
         collection_id: int,
         config: RuntimeConfig,
         archive_stores: ArchiveStoreRegistry,
+        forward_guard: Guard | None = None,
     ) -> None:
         self._factory = factory
         self._collection_id = collection_id
         self._config = config
         self._archive_stores = archive_stores
+        self._forward_guard = forward_guard
         self._lock = threading.Lock()
         self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
         self._reports = ArchiveFinalizerReports(factory, collection_id)
@@ -70,7 +72,10 @@ class ArchiveProvenanceAuthorityFinalizer:
                 return True
             with session_scope(self._factory) as session:
                 source = ArchiveProvenanceAuthoritySource.stage_next(
-                    session, self._collection_id, grants=self._config.archive_write
+                    session,
+                    self._collection_id,
+                    grants=self._config.archive_write,
+                    forward_guard=self._forward_guard,
                 )
                 if source is None:
                     return False

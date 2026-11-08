@@ -36,7 +36,7 @@ from riverhog_core.ports.archive_objects import ImmutableObjectReceipt
 from riverhog_core.services.archive_provenance_volume_checkpoint import (
     ArchiveProvenanceVolumeSource,
 )
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.immutable_archive_preparation import (
     ImmutableArchivePreparation,
     PreparedImmutableArchiveObject,
@@ -193,12 +193,20 @@ class ArchiveProvenanceAuthoritySource:
     source_json: str = field(repr=False)
     document_json: str = field(repr=False)
     publication: ArchiveProvenancePublication = field(repr=False)
+    forward_guard: Guard | None = field(default=None, repr=False, compare=False)
 
     @classmethod
     def stage_next(
-        cls, session: Session, collection_id: int, *, grants: ArchiveWriteGrants
+        cls,
+        session: Session,
+        collection_id: int,
+        *,
+        grants: ArchiveWriteGrants,
+        forward_guard: Guard | None = None,
     ) -> ArchiveProvenanceAuthoritySource | None:
         _writer(session)
+        if forward_guard is not None:
+            forward_guard(session)
         upload = _upload(session, collection_id)
         ArchiveWriteAdmission.require_no_unresolved_calls(session, collection_id)
         if upload.provenance_archive_root_receipt_json is not None:
@@ -241,7 +249,7 @@ class ArchiveProvenanceAuthoritySource:
             )
             session.add(row)
             session.flush()
-        source = cls.load(session, collection_id, role=role)
+        source = cls.load(session, collection_id, role=role, forward_guard=forward_guard)
         if source.source_json != _json(original):
             raise Conflict("provenance authority original cursor changed")
         source.write_grants(grants)
@@ -249,7 +257,12 @@ class ArchiveProvenanceAuthoritySource:
 
     @classmethod
     def load(
-        cls, session: Session, collection_id: int, *, role: Role
+        cls,
+        session: Session,
+        collection_id: int,
+        *,
+        role: Role,
+        forward_guard: Guard | None = None,
     ) -> ArchiveProvenanceAuthoritySource:
         upload = _upload(session, collection_id)
         row = session.get(
@@ -296,7 +309,9 @@ class ArchiveProvenanceAuthoritySource:
                 raise Conflict("provenance authority original document changed")
         except (KeyError, TypeError, ValueError) as exc:
             raise Conflict("provenance authority original source is invalid") from exc
-        return cls(collection_id, role, row.source_json, row.document_json, publication)
+        return cls(
+            collection_id, role, row.source_json, row.document_json, publication, forward_guard
+        )
 
     def _source(self, session: Session) -> tuple[Upload, Authority]:
         current = self.load(session, self.collection_id, role=self.role)
@@ -324,6 +339,8 @@ class ArchiveProvenanceAuthoritySource:
         return replace(grants, metadata_preparation_bytes=remaining)
 
     def guard(self, session: Session) -> None:
+        if self.forward_guard is not None:
+            self.forward_guard(session)
         upload, row = self._source(session)
         _claim(upload)
         ArchiveWriteAdmission.require_no_unresolved_calls(session, self.collection_id)
@@ -498,6 +515,8 @@ class ArchiveProvenanceAuthoritySource:
         if row.progress_receipt_json is not None:
             self.verify_progress(session)
             return False
+        if self.forward_guard is not None:
+            self.forward_guard(session)
         _claim(upload)
         ArchiveWriteAdmission.require_no_unresolved_calls(session, self.collection_id)
         if self.source_json != _json(_context(session, upload, self.role)):

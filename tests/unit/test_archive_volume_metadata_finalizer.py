@@ -17,15 +17,18 @@ from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services import immutable_archive_admission as admission_module
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.archive_volume_metadata_finalizer import ArchiveVolumeMetadataFinalizer
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.immutable_archive_preparation import ImmutableArchivePreparation
 from riverhog_protocol.errors import Conflict, NotFound, ServiceUnavailable
 from sqlalchemy import event, select
 
+from tests.unit.finalization_claim_fixtures import _different_claim, _replace_claim
 from tests.unit.test_archive_volume_metadata_checkpoint import _snapshot
 from tests.unit.test_archive_volume_metadata_receiving import _count, _metadata_source
 from tests.unit.test_finalization_claim_readiness import _current_claim, _fresh_coordinator
 
 
-def _owner(fixture, *, audit=True):
+def _owner(fixture, *, audit=True, forward_guard=None):
     case = fixture.case
     calls = {"observe": [], "execute": []}
 
@@ -71,7 +74,11 @@ def _owner(fixture, *, audit=True):
     registry = ArchiveStoreRegistry({name: binding})
     config = replace(case.service._config, archive_write=fixture.grants)
     owner = ArchiveVolumeMetadataFinalizer(
-        case.factory, collection_id=case.collection_id, config=config, archive_stores=registry
+        case.factory,
+        collection_id=case.collection_id,
+        config=config,
+        archive_stores=registry,
+        forward_guard=forward_guard,
     )
     return SimpleNamespace(
         case=case,
@@ -126,7 +133,8 @@ def test_finalizer_retains_same_actor_after_reply_loss_and_advanced_source(
     tmp_path, monkeypatch, phase, committed
 ):
     with _metadata_source(tmp_path, monkeypatch) as fixture:
-        original = _owner(fixture)
+        claim = _current_claim(fixture.case)
+        original = _owner(fixture, forward_guard=claim.guard)
         transaction = admission_module.session_scope
         position = 3 if phase == "report" else 4
         calls = 0
@@ -155,6 +163,7 @@ def test_finalizer_retains_same_actor_after_reply_loss_and_advanced_source(
             patch.setattr(admission_module, "session_scope", lost)
             with pytest.raises(OSError, match="injected finalizer"):
                 original.owner.advance()
+        _replace_claim(fixture.case, _different_claim(claim))
         original.owner._config = None
         original.owner._archive_stores = None
         actor = original.owner._actor
@@ -460,3 +469,47 @@ def test_actual_many_part_pack_metadata_uses_independent_configured_preparation_
                 "metadata_preparation_grant": current_grant.metadata_preparation_bytes,
             },
         )
+
+
+def test_archive_metadata_selection_requires_its_original_claim(tmp_path, monkeypatch):
+    with _metadata_source(tmp_path, monkeypatch) as f:
+        claim = _current_claim(f.case)
+        original = _owner(f, forward_guard=claim.guard)
+        before = _snapshot(f.case)
+        _replace_claim(f.case, _different_claim(claim))
+        with pytest.raises(Conflict, match="original finalization claim"):
+            original.owner.advance()
+        assert not original.owner.has_pending and _snapshot(f.case) == before
+        assert original.calls == {"observe": [], "execute": []} and _count(f.case) == 0
+
+
+@pytest.mark.parametrize("boundary", ("preparation", "admission"))
+def test_archive_metadata_rechecks_original_claim_after_source_selection(
+    tmp_path, monkeypatch, boundary
+):
+    with _metadata_source(tmp_path, monkeypatch) as f:
+        claim = _current_claim(f.case)
+        original = _owner(f, forward_guard=claim.guard)
+        owner_type, method = (
+            (ArchiveWriteAdmission, "bind_epoch")
+            if boundary == "preparation"
+            else (ImmutableArchivePreparation, "prepare")
+        )
+        advance = getattr(owner_type, method)
+
+        def changed(owner, *args, **kwargs):
+            result = advance(owner, *args, **kwargs)
+            _replace_claim(f.case, _different_claim(claim))
+            return result
+
+        with monkeypatch.context() as patch:
+            patch.setattr(owner_type, method, changed)
+            with pytest.raises(Conflict, match="original finalization claim"):
+                original.owner.advance()
+        actor = original.owner._actor
+        assert actor is not None and original.owner.has_pending
+        assert (actor._prepared is None) == (boundary == "preparation")
+        assert original.calls == {"observe": [], "execute": []} and _count(f.case) == 0
+        _replace_claim(f.case, claim.claim_id)
+        assert original.owner.advance() and not original.owner.has_pending
+        assert len(original.calls["execute"]) == 1
