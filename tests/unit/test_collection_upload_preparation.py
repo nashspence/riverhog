@@ -302,6 +302,7 @@ def test_terminal_selection_during_crypto_preparation_prevents_provider_dispatch
                     kind="cancel",
                     request={"selected": "exact-request"},
                     principal_id=_CREATOR.id,
+                    key_id=_CREATOR.key_id,
                     grants=case.service._config.archive_write,
                     guard=case.service._payload_write_guard(case.collection_id, _CREATOR),
                     validate_selection=lambda session, upload: None,

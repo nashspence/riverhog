@@ -127,10 +127,11 @@ def lock_terminal_selection(
             terminal.collection_id != collection_id
             or terminal.id != hashlib.sha256(terminal.request_json.encode()).hexdigest()
             or canonical_json_bytes(value).decode() != terminal.request_json
-            or set(value) != {"construction", "kind", "principal_id", "request"}
+            or set(value) != {"construction", "kind", "principal_id", "key_id", "request"}
             or canonical_json_bytes(value["construction"]).decode() != control.construction_json
             or value["kind"] != terminal.kind
             or value["principal_id"] != terminal.principal_id
+            or value["key_id"] != terminal.key_id
             or control.next_call != terminal.frontier
             or control.epoch == terminal.original_epoch
         ):

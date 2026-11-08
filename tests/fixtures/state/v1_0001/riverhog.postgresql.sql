@@ -2941,6 +2941,7 @@ CREATE TABLE archive_upload_terminals (
 	collection_id BIGINT NOT NULL,
 	request_json TEXT NOT NULL,
 	principal_id VARCHAR NOT NULL,
+	key_id VARCHAR,
 	kind VARCHAR NOT NULL,
 	phase VARCHAR NOT NULL,
 	frontier TEXT NOT NULL,

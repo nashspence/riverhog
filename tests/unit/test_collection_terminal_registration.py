@@ -98,6 +98,7 @@ def _select(service, principal, collection_id, *, kind="cancel"):
         kind=kind,
         request={"fixture": "exact-original-terminal"},
         principal_id=principal.id,
+        key_id=principal.key_id,
         grants=service._config.archive_write,
         guard=service._payload_write_guard(collection_id, principal),
         validate_selection=lambda *args: None,

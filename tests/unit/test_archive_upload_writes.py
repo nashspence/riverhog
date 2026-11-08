@@ -425,6 +425,7 @@ def test_terminal_selection_retains_exact_late_provider_outcome(tmp_path, monkey
                         kind="cancel",
                         request={"fixture": phase},
                         principal_id=_CREATOR.id,
+                        key_id=_CREATOR.key_id,
                         grants=actor.case.service._config.archive_write,
                         guard=actor.case.service._payload_write_guard(
                             actor.case.collection_id, _CREATOR
@@ -561,6 +562,7 @@ def test_actual_http_timeout_and_negative_observation_do_not_close_late_admitted
                     kind="cancel",
                     request={"fixture": "actual-http-" + phase},
                     principal_id=_CREATOR.id,
+                    key_id=_CREATOR.key_id,
                     grants=actor.case.service._config.archive_write,
                     guard=actor.case.service._payload_write_guard(
                         actor.case.collection_id, _CREATOR
@@ -768,6 +770,7 @@ def _selected_terminal(actor):
         kind="cancel",
         request={"fixture": "original-upload-actor"},
         principal_id=_CREATOR.id,
+        key_id=_CREATOR.key_id,
         grants=actor.case.service._config.archive_write,
         guard=actor.case.service._payload_write_guard(actor.case.collection_id, _CREATOR),
         validate_selection=lambda *args: None,

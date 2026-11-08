@@ -163,6 +163,7 @@ def _terminal(case):
         kind="cancel",
         request={"fixture": "cache-begin"},
         principal_id=_CREATOR.id,
+        key_id=_CREATOR.key_id,
         grants=case.config.archive_write,
         guard=case.guard,
         validate_selection=lambda *args: None,

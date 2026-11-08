@@ -26,6 +26,7 @@ def _terminal(f):
         kind="cancel",
         request={"fixture": "immutable-terminal"},
         principal_id="uploader",
+        key_id=None,
         grants=f.grants,
         guard=lambda session: None,
         validate_selection=lambda *args: None,

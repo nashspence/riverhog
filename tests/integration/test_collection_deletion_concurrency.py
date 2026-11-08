@@ -1987,6 +1987,7 @@ def test_postgres_claim_renewal_preserves_selected_output_gate(database_url, kin
         kind=kind,
         request={"fixture": "selected-original-output"},
         principal_id=transform.id,
+        key_id=transform.key_id,
         grants=service._config.archive_write,
         guard=lambda session: None,
         validate_selection=lambda *args: None,

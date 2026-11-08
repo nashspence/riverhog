@@ -697,6 +697,7 @@ class ArchiveWriteAdmission:
         kind: str,
         request: Mapping[str, Any],
         principal_id: str,
+        key_id: str | None,
         grants: ArchiveWriteGrants,
         guard: Guard,
         validate_selection: Callable[[Session, CollectionUploadRecord], None],
@@ -704,6 +705,8 @@ class ArchiveWriteAdmission:
         """Persist selection only; the terminal owner adjudicates rights before cleanup."""
         if kind not in {"cancel", "discard"} or not principal_id:
             raise ValueError("archive upload terminal selection is invalid")
+        if key_id is not None and (not isinstance(key_id, str) or not key_id):
+            raise ValueError("upload terminal selecting key identity is invalid")
         with session_scope(self._factory) as session:
             _writer(session)
             guard(session)
@@ -723,13 +726,14 @@ class ArchiveWriteAdmission:
                     "construction": json.loads(control.construction_json),
                     "kind": kind,
                     "principal_id": principal_id,
+                    "key_id": key_id,
                     "request": request,
                 }
             )
             operation_id = _sha(encoded)
             prior = session.get(ArchiveUploadTerminalRecord, operation_id)
             if prior is not None:
-                if prior.request_json != encoded:
+                if prior.request_json != encoded or prior.key_id != key_id:
                     raise Conflict("archive upload terminal request preimage changed")
                 load_terminal_tag_selector(session, prior.id)
                 return prior.id
@@ -753,6 +757,7 @@ class ArchiveWriteAdmission:
                     collection_id=collection_id,
                     request_json=encoded,
                     principal_id=principal_id,
+                    key_id=key_id,
                     kind=kind,
                     phase="draining",
                     frontier=control.next_call,

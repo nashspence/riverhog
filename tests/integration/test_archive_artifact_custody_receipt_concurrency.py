@@ -60,6 +60,7 @@ def test_postgres_custody_acknowledgement_rechecks_terminal_after_parent_wait(
                     kind="cancel",
                     request={"fixture": "custody-acknowledgement-wait"},
                     principal_id="uploader",
+                    key_id=None,
                     grants=case.config.archive_write,
                     guard=lambda session: None,
                     validate_selection=lambda *args: None,

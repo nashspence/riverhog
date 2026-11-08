@@ -53,6 +53,7 @@ def _select(case, *, grants=GRANTS, validate_selection=None):
         kind="cancel",
         request={"selected": "original-tag-scope"},
         principal_id=_CREATOR.id,
+        key_id=_CREATOR.key_id,
         grants=grants,
         guard=_guard,
         validate_selection=validate_selection or (lambda session, upload: None),

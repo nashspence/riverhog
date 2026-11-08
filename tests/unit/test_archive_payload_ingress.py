@@ -33,6 +33,7 @@ def _terminal(f, *, validate=lambda session, upload: None):
         kind="cancel",
         request={"fixture": f.request},
         principal_id=_CREATOR.id,
+        key_id=_CREATOR.key_id,
         grants=f.service._config.archive_write,
         guard=f.service._payload_write_guard(f.case.collection_id, _CREATOR),
         validate_selection=validate,

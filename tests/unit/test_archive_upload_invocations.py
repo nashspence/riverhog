@@ -320,6 +320,7 @@ def _actual_begin_receiving(tmp_path, monkeypatch, kind, mode, *, database_url=N
                 kind="cancel",
                 request={"fixture": "retained-unit"},
                 principal_id=_CREATOR.id,
+                key_id=_CREATOR.key_id,
                 grants=case.service._config.archive_write,
                 guard=guard,
                 validate_selection=lambda session, upload: None,

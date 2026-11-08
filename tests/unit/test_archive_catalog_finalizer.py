@@ -179,6 +179,7 @@ def test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batc
             kind="cancel",
             request={"fixture": "original-catalog-turn"},
             principal_id="uploader",
+            key_id=None,
             grants=case.service._config.archive_write,
             guard=lambda session: None,
             validate_selection=lambda *args: None,

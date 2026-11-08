@@ -177,6 +177,7 @@ def _terminal(joint):
         kind="cancel",
         request={"fixture": "joint-begin"},
         principal_id=_CREATOR.id,
+        key_id=_CREATOR.key_id,
         grants=actor.case.service._config.archive_write,
         guard=actor.case.service._payload_write_guard(actor.case.collection_id, _CREATOR),
         validate_selection=lambda *args: None,

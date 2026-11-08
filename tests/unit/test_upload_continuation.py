@@ -299,6 +299,7 @@ def test_service_registry_retains_the_exact_logical_unit_after_checkpoint_failur
                     kind="cancel",
                     request={"original": request},
                     principal_id=_CREATOR.id,
+                    key_id=_CREATOR.key_id,
                     grants=actor.case.service._config.archive_write,
                     guard=actor.case.service._payload_write_guard(
                         actor.case.collection_id, _CREATOR

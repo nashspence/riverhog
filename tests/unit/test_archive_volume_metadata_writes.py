@@ -345,6 +345,7 @@ def test_original_actor_receives_closed_result_after_terminal_and_forward_state_
                 kind="discard",
                 request={"fixture": "original-metadata"},
                 principal_id="fixture-operator",
+                key_id=None,
                 grants=fixture.grants,
                 guard=terminal_guard,
                 validate_selection=lambda *args: None,

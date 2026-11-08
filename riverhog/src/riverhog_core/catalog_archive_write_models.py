@@ -122,6 +122,7 @@ class ArchiveUploadTerminalRecord(Base):
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE)
     request_json: Mapped[str] = mapped_column(Text)
     principal_id: Mapped[str] = mapped_column(String)
+    key_id: Mapped[str | None] = mapped_column(String, nullable=True)
     kind: Mapped[str] = mapped_column(String)
     phase: Mapped[str] = mapped_column(String)
     frontier: Mapped[str] = mapped_column(Text)

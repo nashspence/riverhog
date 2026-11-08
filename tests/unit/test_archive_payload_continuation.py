@@ -224,6 +224,7 @@ def _two_units(
                 kind="cancel",
                 request={"fixture": "next-unit-receiving"},
                 principal_id=_CREATOR.id,
+                key_id=_CREATOR.key_id,
                 grants=case.service._config.archive_write,
                 guard=case.service._payload_write_guard(case.collection_id, _CREATOR),
                 validate_selection=lambda session, upload: None,

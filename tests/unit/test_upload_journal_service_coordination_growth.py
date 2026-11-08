@@ -338,6 +338,7 @@ def scheduling_samples(root, samples, *, large=True):
                     kind="cancel",
                     request={"fixture": "readiness-admission"},
                     principal_id="uploader",
+                    key_id=None,
                     grants=ArchiveWriteGrants(),
                     guard=lambda session: None,
                     validate_selection=lambda session, upload: None,

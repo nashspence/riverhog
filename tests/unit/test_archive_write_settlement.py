@@ -209,6 +209,7 @@ def _assert_lost_checkpoint_report(case, monkeypatch):
         kind="cancel",
         request={"selection": "exact-original"},
         principal_id=_CREATOR.id,
+        key_id=_CREATOR.key_id,
         grants=GRANTS,
         guard=_guard,
         validate_selection=lambda session, upload: None,

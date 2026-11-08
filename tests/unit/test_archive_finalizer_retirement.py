@@ -100,6 +100,7 @@ def _assert_atomic_retirement(case, monkeypatch):
                 kind="cancel",
                 request={"fixture": "interlocked-finalizer-retirement"},
                 principal_id="uploader",
+                key_id=None,
                 grants=case.service._config.archive_write,
                 guard=lambda session: None,
                 validate_selection=validate,

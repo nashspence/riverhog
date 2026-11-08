@@ -324,6 +324,7 @@ def test_original_preparation_survives_parent_retirement_without_new_dispatch_au
             kind="cancel",
             request={"fixture": "metadata"},
             principal_id=_CREATOR.id,
+            key_id=_CREATOR.key_id,
             grants=case.grants,
             guard=case.guard,
             validate_selection=lambda *args: None,

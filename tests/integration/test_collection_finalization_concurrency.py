@@ -192,6 +192,7 @@ def _point_readiness_after_terminal_lock(tmp_path, monkeypatch, *, database_url)
                         kind="cancel",
                         request={"fixture": "point-readiness-wait"},
                         principal_id="uploader",
+                        key_id=None,
                         grants=case.service._config.archive_write,
                         guard=lambda session: None,
                         validate_selection=lambda session, upload: None,

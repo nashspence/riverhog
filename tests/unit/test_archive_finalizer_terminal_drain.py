@@ -118,6 +118,7 @@ def _terminal(original):
         kind="cancel",
         request={"fixture": "retained-finalizer-terminal"},
         principal_id="uploader",
+        key_id=None,
         grants=original.grants,
         guard=lambda session: None,
         validate_selection=lambda *args: None,

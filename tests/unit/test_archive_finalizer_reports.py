@@ -151,6 +151,7 @@ def test_terminal_drains_the_metadata_owners_original_report(tmp_path, monkeypat
             kind="cancel",
             request={"fixture": "metadata-report"},
             principal_id="uploader",
+            key_id=None,
             grants=case.service._config.archive_write,
             guard=lambda session: None,
             validate_selection=lambda *args: None,

@@ -458,6 +458,7 @@ def _service_family_units(
                 kind="cancel",
                 request={"fixture": "family terminal"},
                 principal_id=_CREATOR.id,
+                key_id=_CREATOR.key_id,
                 grants=service._config.archive_write,
                 guard=service._payload_write_guard(case.collection_id, _CREATOR),
                 validate_selection=lambda session, upload: None,

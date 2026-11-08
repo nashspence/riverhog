@@ -85,6 +85,7 @@ def _terminal(case):
         kind="cancel",
         request={"fixture": "custody-receipt"},
         principal_id="uploader",
+        key_id=None,
         grants=case.config.archive_write,
         guard=lambda session: None,
         validate_selection=lambda *args: None,

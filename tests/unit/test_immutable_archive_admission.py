@@ -78,6 +78,7 @@ def _select(case):
         kind="cancel",
         request={"original": "metadata-owner"},
         principal_id=_CREATOR.id,
+        key_id=_CREATOR.key_id,
         grants=case.grants,
         guard=case.guard,
         validate_selection=lambda session, upload: None,

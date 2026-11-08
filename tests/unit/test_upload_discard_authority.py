@@ -43,6 +43,7 @@ def _select(case, principal, guard):
         kind="discard",
         request={"challenge": "original-discard-scope"},
         principal_id=principal.id,
+        key_id=principal.key_id,
         grants=case.service._config.archive_write,
         guard=guard,
         validate_selection=lambda session, upload: None,

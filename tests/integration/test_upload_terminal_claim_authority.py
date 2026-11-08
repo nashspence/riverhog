@@ -81,6 +81,7 @@ def _selected_output(database_url):
             kind="discard",
             request={"challenge": "selected-output-scope"},
             principal_id="deletion-operator",
+            key_id=None,
             grants=service._config.archive_write,
             guard=guard,
             validate_selection=lambda *args: None,
