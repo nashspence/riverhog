@@ -483,6 +483,7 @@ if TYPE_CHECKING:
         ArchiveFinalizationPipeline,
         ArchiveFinalizationStage,
     )
+    from riverhog_core.services.archive_finalizer_registry import FinalizerSubmission
     from riverhog_core.services.archive_payload_input import ArchivePayloadInput, InputRefusal
     from riverhog_core.services.archive_payload_unit import (
         ArchivePayloadUnit,
@@ -3444,6 +3445,18 @@ class SqlAlchemyCollectionUploadService:
             claim_id=claim.claim_id,
             kind=kind,
             advance=bodies[kind],
+        )
+
+    def _submit_finalization(self, claim: _FinalizationClaim) -> FinalizerSubmission:
+        """Keep the original pipeline and claim until its workflow reply is received."""
+        from .archive_finalization_pipeline import ArchiveFinalizationPipeline
+
+        return self._archive_finalizer_work._submit(
+            claim.collection_id,
+            "collection-finalization",
+            partial(self._finalization_owner, claim),
+            lambda owner: cast(ArchiveFinalizationPipeline, owner).advance(),
+            lambda progressed: self._requeue_finalization_step(claim),
         )
 
     def _finalization_owner(self, claim: _FinalizationClaim) -> ArchiveFinalizationPipeline:
