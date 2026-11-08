@@ -11,7 +11,7 @@ import json
 from riverhog_protocol.errors import Conflict, NotFound
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from time_formats import utc_timestamp_now
+from time_formats import parse_utc_timestamp, utc_epoch_ns_now, utc_timestamp_now
 
 from riverhog_core.app_permissions import Principal
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
@@ -64,6 +64,37 @@ def retain_upload_claim(
         or claim.consumer_key_id != key_id
     ):
         raise NotFound("collection upload execution authority is no longer active")
+    return str(claim.id)
+
+
+def retain_inactive_upload_claim(
+    session: Session, principal_id: str, *, nowait: bool = False
+) -> str | None:
+    """Retain the original output's inactive processing claim before its parent.
+
+    The caller supplies the principal from the exact original construction and
+    owns the early SQLite writer. A processing output with a missing claim is
+    unknown, not an unclaimed output. Retaining this row interlocks renewal for
+    the caller's short transaction; it neither prohibits later renewal nor
+    supplies orphan selection, current deletion rights or cleanup permission.
+    """
+    if not principal_id.startswith("processing:"):
+        return None
+    claim = session.execute(
+        select(
+            CollectionProcessingClaimRecord.id,
+            CollectionProcessingClaimRecord.state,
+            CollectionProcessingClaimRecord.expires_at,
+        )
+        .where(
+            CollectionProcessingClaimRecord.execution_id == principal_id.removeprefix("processing:")
+        )
+        .with_for_update(nowait=nowait)
+    ).one_or_none()
+    if claim is None:
+        raise NotFound("collection upload output claim is unavailable")
+    if claim.state == "active" and parse_utc_timestamp(claim.expires_at) > utc_epoch_ns_now():
+        raise Conflict("owning collection upload processing claim remains active")
     return str(claim.id)
 
 

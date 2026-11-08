@@ -42,6 +42,7 @@ default_tests=(
   tests/integration/test_immutable_archive_preparation_concurrency.py
     tests/integration/test_immutable_archive_admission_concurrency.py
   tests/integration/test_collection_deletion_concurrency.py
+  tests/integration/test_upload_terminal_claim_authority.py
   tests/integration/test_collection_upload_custody_concurrency.py
   tests/integration/test_collection_finalization_concurrency.py
   tests/integration/test_archive_artifact_custody_receipt_concurrency.py
