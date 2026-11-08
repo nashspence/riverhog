@@ -17,6 +17,7 @@ from sqlalchemy import event, select, text
 from tests.integration.test_collection_upload_custody_concurrency import (
     database_url as database_url,
 )
+from tests.unit.test_archive_authority_finalizer import _different_claim
 from tests.unit.test_archive_initial_tag_checkpoint import (
     _admit,
     _cold_receive,
@@ -24,8 +25,9 @@ from tests.unit.test_archive_initial_tag_checkpoint import (
     _received,
     _tag_source,
 )
-from tests.unit.test_archive_initial_tag_finalizer import _cold_and_live
+from tests.unit.test_archive_initial_tag_finalizer import _cold_and_live, _owner
 from tests.unit.test_archive_volume_metadata_receiving import _count
+from tests.unit.test_finalization_claim_readiness import _current_claim
 
 pytestmark = pytest.mark.integration
 
@@ -52,12 +54,17 @@ def test_postgres_retained_live_and_cold_tag_owners_converge(database_url, tmp_p
         _cold_and_live(f, monkeypatch)
 
 
-@pytest.mark.parametrize("change", ("orphan", "selection", "source"))
+@pytest.mark.parametrize("change", ("orphan", "selection", "source", "claim"))
 def test_postgres_tag_receiving_waits_for_parent_and_rechecks_original_facts(
     database_url, tmp_path, monkeypatch, change
 ):
     with _tag_source(tmp_path, monkeypatch, "node", database_url=database_url) as f:
-        admitted, response = _admit(f)
+        claim = _current_claim(f.case)
+        calls_before = {k: len(v) for k, v in f.calls.items()}
+        if change == "claim":
+            contender = _owner(f, forward_guard=claim.guard)
+        else:
+            admitted, response = _admit(f)
         engine = f.case.factory.kw["bind"]
         lane = threading.local()
         waiting = threading.Event()
@@ -75,6 +82,8 @@ def test_postgres_tag_receiving_waits_for_parent_and_rechecks_original_facts(
 
         def receive():
             lane.contender = True
+            if change == "claim":
+                return contender.advance()
             return f.owner.report(admitted, response, apply_receipt=f.source.apply_prepared_receipt)
 
         def blocked():
@@ -105,6 +114,8 @@ def test_postgres_tag_receiving_waits_for_parent_and_rechecks_original_facts(
                         upload.tag_staging_root_sha256 = None
                         upload.tag_staging_set_identity = collection_tag_set_identity(None)
                         upload.final_authority_json = None
+                    elif change == "claim":
+                        upload.archive_claim_id = _different_claim(claim)
                     else:
                         session.get(
                             Tag, (f.case.collection_id, f.source.object_id)
@@ -112,8 +123,13 @@ def test_postgres_tag_receiving_waits_for_parent_and_rechecks_original_facts(
                     session.flush()
                     future = pool.submit(receive)
                     assert waiting.wait(10) and blocked() and not future.done()
-                if change == "source":
-                    with pytest.raises(Conflict, match="original document changed"):
+                if change in {"source", "claim"}:
+                    with pytest.raises(
+                        Conflict,
+                        match="original finalization claim"
+                        if change == "claim"
+                        else "original document changed",
+                    ):
                         future.result(timeout=10)
                 else:
                     future.result(timeout=10)
@@ -124,6 +140,9 @@ def test_postgres_tag_receiving_waits_for_parent_and_rechecks_original_facts(
         finally:
             event.remove(engine, "before_cursor_execute", capture)
         assert _count(f.case) == (1 if change == "source" else 0)
+        if change == "claim":
+            assert not contender.has_pending
+            assert {k: len(v) for k, v in f.calls.items()} == calls_before
 
 
 @pytest.mark.parametrize("mode", ("direct", "http"))

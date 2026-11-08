@@ -46,7 +46,7 @@ from riverhog_core.services.archive_initial_metadata_basis import (
 from riverhog_core.services.archive_initial_metadata_basis import (
     require_initial_metadata_claim as _claim,
 )
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.collection_upload_tag_frontier import pending_initial_tag_query
 from riverhog_core.services.immutable_archive_preparation import (
     ImmutableArchivePreparation,
@@ -135,6 +135,7 @@ class ArchiveInitialTagSource:
     source_json: str = field(repr=False)
     document_bytes: bytes = field(repr=False)
     _publication: ArchiveCollectionMetadataPublication | None = field(repr=False)
+    forward_guard: Guard | None = field(default=None, repr=False, compare=False)
 
     @property
     def has_publication(self) -> bool:
@@ -171,9 +172,16 @@ class ArchiveInitialTagSource:
 
     @classmethod
     def stage_next(
-        cls, session: Session, collection_id: int, *, grants: ArchiveWriteGrants
+        cls,
+        session: Session,
+        collection_id: int,
+        *,
+        grants: ArchiveWriteGrants,
+        forward_guard: Guard | None = None,
     ) -> ArchiveInitialTagSource | None:
         _writer(session)
+        if forward_guard is not None:
+            forward_guard(session)
         upload = _upload(session, collection_id)
         ArchiveWriteAdmission.require_no_unresolved_calls(session, collection_id)
         if upload.tag_publication_receipt_json is not None:
@@ -212,14 +220,21 @@ class ArchiveInitialTagSource:
             )
             session.add(row)
             session.flush()
-        source = cls.load(session, collection_id, object_id)
+        source = cls.load(session, collection_id, object_id, forward_guard=forward_guard)
         if source.source_json != _json(original):
             raise Conflict("initial tag original selection changed")
         source.write_grants(grants)
         return source
 
     @classmethod
-    def load(cls, session: Session, collection_id: int, object_id: str) -> ArchiveInitialTagSource:
+    def load(
+        cls,
+        session: Session,
+        collection_id: int,
+        object_id: str,
+        *,
+        forward_guard: Guard | None = None,
+    ) -> ArchiveInitialTagSource:
         upload = _upload(session, collection_id)
         row = session.get(
             Tag, (collection_id, object_id), with_for_update=True, populate_existing=True
@@ -297,7 +312,15 @@ class ArchiveInitialTagSource:
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise Conflict("initial tag original source is invalid") from exc
-        return cls(collection_id, object_id, role, row.source_json, row.document_bytes, publication)
+        return cls(
+            collection_id,
+            object_id,
+            role,
+            row.source_json,
+            row.document_bytes,
+            publication,
+            forward_guard,
+        )
 
     def _source(self, session: Session) -> tuple[Upload, Tag]:
         if self.load(session, self.collection_id, self.object_id) != self:
@@ -325,6 +348,8 @@ class ArchiveInitialTagSource:
         return replace(grants, metadata_preparation_bytes=remaining)
 
     def _fresh(self, session: Session, upload: Upload) -> None:
+        if self.forward_guard is not None:
+            self.forward_guard(session)
         _claim(session, upload)
         original = json.loads(self.source_json)
         if self.source_json != _json(

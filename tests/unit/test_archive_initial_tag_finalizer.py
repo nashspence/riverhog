@@ -14,9 +14,11 @@ from riverhog_core.services import archive_initial_tag_finalizer as finalizer_mo
 from riverhog_core.services.archive_initial_tag_finalizer import (
     ArchiveInitialTagFinalizer,
 )
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_protocol import collection_tag_set_identity
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
 
+from tests.unit.test_archive_authority_finalizer import _different_claim, _replace_claim
 from tests.unit.test_archive_initial_tag_checkpoint import (
     _orphan,
     _publish,
@@ -28,14 +30,16 @@ from tests.unit.test_archive_initial_tag_checkpoint import (
 )
 from tests.unit.test_archive_provenance_journal_writer import _lose_ack
 from tests.unit.test_archive_volume_metadata_receiving import _count
+from tests.unit.test_finalization_claim_readiness import _current_claim
 
 
-def _owner(f):
+def _owner(f, *, forward_guard=None):
     return ArchiveInitialTagFinalizer(
         f.case.factory,
         collection_id=f.case.collection_id,
         config=f.prior.config,
         archive_stores=f.prior.registry,
+        forward_guard=forward_guard,
     )
 
 
@@ -67,7 +71,7 @@ def test_tag_original_actor_precedes_new_key_config_target_and_selection(
     tmp_path, monkeypatch, phase, committed
 ):
     with _tag_source(tmp_path, monkeypatch, "node") as f:
-        owner = _owner(f)
+        owner = _owner(f, forward_guard=_current_claim(f.case).guard)
         before = _snapshot(f)
         with _lose_ack(monkeypatch, phase, committed):
             with pytest.raises(OSError, match="injected journal writer"):
@@ -101,7 +105,8 @@ def test_tag_finalizer_retains_logical_progress_ack_before_fresh_inputs(
     with _tag_source(tmp_path, monkeypatch, role) as f:
         if f.source.has_publication:
             _publish(f)
-        owner = _owner(f)
+        claim = _current_claim(f.case)
+        owner = _owner(f, forward_guard=claim.guard)
         transaction = finalizer_module.session_scope
         calls = 0
 
@@ -122,8 +127,15 @@ def test_tag_finalizer_retains_logical_progress_ack_before_fresh_inputs(
                 owner.advance()
         assert owner.has_pending and owner._phase == "progress"
         owner._config = owner._archive_stores = None
+        before = _snapshot(f)
+        _replace_claim(f.case, _different_claim(claim))
         if committed:
             _orphan(f)
+        else:
+            with pytest.raises(Conflict, match="original finalization claim"):
+                owner.advance()
+            assert owner.has_pending and _snapshot(f) == before
+            _replace_claim(f.case, claim.claim_id)
         assert owner.advance() and not owner.has_pending
         with session_scope(f.case.factory) as session:
             f.source.verify_progress(session)
@@ -269,3 +281,46 @@ def test_retained_tag_finalizer_completes_entire_encrypted_tree(tmp_path, monkey
             < _recover(f, passphrase=f.prior.config.archive_passphrase_for(passphrase_id))
             <= count
         )
+
+
+@pytest.mark.parametrize("role", ("state", "expand", "node", "head"))
+def test_initial_tag_staging_requires_its_exact_original_claim(tmp_path, monkeypatch, role):
+    with _tag_source(tmp_path, monkeypatch, role) as f:
+        claim = _current_claim(f.case)
+        owner = _owner(f, forward_guard=claim.guard)
+        before = _snapshot(f)
+        calls = {k: len(v) for k, v in f.calls.items()}
+        _replace_claim(f.case, _different_claim(claim))
+        with pytest.raises(Conflict, match="original finalization claim"):
+            owner.advance()
+        assert not owner.has_pending and _snapshot(f) == before and _count(f.case) == 0
+        assert {k: len(v) for k, v in f.calls.items()} == calls
+
+
+@pytest.mark.parametrize("role", ("node", "head"))
+def test_initial_tag_preparation_rechecks_the_original_claim(tmp_path, monkeypatch, role):
+    with _tag_source(tmp_path, monkeypatch, role) as f:
+        _claim_changes_before_preparation(f, monkeypatch)
+
+
+def _claim_changes_before_preparation(f, monkeypatch):
+    claim = _current_claim(f.case)
+    owner = _owner(f, forward_guard=claim.guard)
+    calls = {k: len(v) for k, v in f.calls.items()}
+    bind = ArchiveWriteAdmission.bind_epoch
+
+    def changed(admission, *args, **kwargs):
+        epoch = bind(admission, *args, **kwargs)
+        _replace_claim(f.case, _different_claim(claim))
+        return epoch
+
+    with monkeypatch.context() as patch:
+        patch.setattr(ArchiveWriteAdmission, "bind_epoch", changed)
+        with pytest.raises(Conflict, match="original finalization claim"):
+            owner.advance()
+    actor = owner._actor
+    assert actor is not None and actor._prepared is None and owner.has_pending
+    assert _count(f.case) == 0 and {k: len(v) for k, v in f.calls.items()} == calls
+    _replace_claim(f.case, claim.claim_id)
+    assert owner.advance() and not owner.has_pending
+    assert len(f.calls["execute"]) == calls["execute"] + 1

@@ -32,7 +32,7 @@ from riverhog_core.services.archive_initial_metadata_basis import (
 from riverhog_core.services.archive_initial_metadata_basis import (
     require_initial_metadata_claim as _claim,
 )
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.immutable_archive_preparation import (
     ImmutableArchivePreparation,
     PreparedImmutableArchiveObject,
@@ -75,6 +75,7 @@ class ArchiveInitialDescriptionSource:
     source_json: str = field(repr=False)
     document_json: str | None = field(repr=False)
     _publication: ArchiveCollectionMetadataPublication | None = field(repr=False)
+    forward_guard: Guard | None = field(default=None, repr=False, compare=False)
 
     @property
     def has_publication(self) -> bool:
@@ -88,9 +89,16 @@ class ArchiveInitialDescriptionSource:
 
     @classmethod
     def stage_next(
-        cls, session: Session, collection_id: int, *, grants: ArchiveWriteGrants
+        cls,
+        session: Session,
+        collection_id: int,
+        *,
+        grants: ArchiveWriteGrants,
+        forward_guard: Guard | None = None,
     ) -> ArchiveInitialDescriptionSource | None:
         _writer(session)
+        if forward_guard is not None:
+            forward_guard(session)
         upload = _upload(session, collection_id)
         ArchiveWriteAdmission.require_no_unresolved_calls(session, collection_id)
         if (
@@ -117,14 +125,16 @@ class ArchiveInitialDescriptionSource:
             )
             session.add(row)
             session.flush()
-        source = cls.load(session, collection_id)
+        source = cls.load(session, collection_id, forward_guard=forward_guard)
         if source.source_json != _json(original):
             raise Conflict("initial description original inputs changed")
         source.write_grants(grants)
         return source
 
     @classmethod
-    def load(cls, session: Session, collection_id: int) -> ArchiveInitialDescriptionSource:
+    def load(
+        cls, session: Session, collection_id: int, *, forward_guard: Guard | None = None
+    ) -> ArchiveInitialDescriptionSource:
         upload = _upload(session, collection_id)
         row = session.get(Description, collection_id, with_for_update=True, populate_existing=True)
         if row is None:
@@ -160,7 +170,7 @@ class ArchiveInitialDescriptionSource:
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise Conflict("initial description original source is invalid") from exc
-        return cls(collection_id, row.source_json, row.document_json, publication)
+        return cls(collection_id, row.source_json, row.document_json, publication, forward_guard)
 
     def _source(self, session: Session) -> tuple[Upload, Description]:
         source = self.load(session, self.collection_id)
@@ -188,6 +198,8 @@ class ArchiveInitialDescriptionSource:
 
     def guard(self, session: Session) -> None:
         upload, row = self._source(session)
+        if self.forward_guard is not None:
+            self.forward_guard(session)
         _claim(session, upload)
         if self.source_json != _json(_context(session, upload)):
             raise Conflict("initial description original inputs changed")
@@ -337,6 +349,8 @@ class ArchiveInitialDescriptionSource:
         if row.progress_receipt_json is not None:
             self.verify_progress(session)
             return False
+        if self.forward_guard is not None:
+            self.forward_guard(session)
         _claim(session, upload)
         if self.source_json != _json(_context(session, upload)):
             raise Conflict("initial description original inputs changed")
