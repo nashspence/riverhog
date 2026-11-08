@@ -167,6 +167,7 @@ support_paths = [
   "scripts/ci_qualification.py",
   "scripts/ci_actions.py",
   "scripts/ci_execution.py",
+  "scripts/compose_exception_diagnostics.py",
 ]
 
 [[tool.mypy.overrides]]

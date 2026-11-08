@@ -100,26 +100,35 @@ ots_compose() {
   docker compose --project-name "${ots_project}" --file "${ots_compose_file}" "$@"
 }
 
+qualification_logs() {
+  local owner="$1"
+  shift
+  "$@" logs --no-color --tail 200 2>&1 |
+    tee /dev/stderr |
+    "${MISE_BIN:-mise}" x -- uv run --locked --all-packages --group dev \
+      python "${ROOT_DIR}/scripts/compose_exception_diagnostics.py" --owner "${owner}" >&2 || true
+}
+
 cleanup() {
   local status=$?
   ci_phase teardown "${status}" || true
   if [[ "${status}" -ne 0 ]]; then
     if owns_qualification witnesses; then
       minisign_compose ps >&2 || true
-      minisign_compose logs --no-color --tail 200 >&2 || true
+      qualification_logs minisign minisign_compose
       ots_compose ps >&2 || true
-      ots_compose logs --no-color --tail 200 >&2 || true
+      qualification_logs opentimestamps ots_compose
     fi
     if [[ "${adapter_started}" == "1" ]]; then
       adapter_compose ps >&2 || true
-      adapter_compose logs --no-color --tail 200 >&2 || true
+      qualification_logs ftp adapter_compose
     fi
     if (( ${#stove0_projects[@]} )); then
       stove0_compose ps >&2 || true
-      stove0_compose logs --no-color --tail 200 >&2 || true
+      qualification_logs processing stove0_compose
     fi
     compose ps >&2 || true
-    compose logs --no-color --tail 200 >&2 || true
+    qualification_logs riverhog compose
   fi
   if owns_qualification witnesses; then
     minisign_compose down --volumes --remove-orphans || true
