@@ -20,13 +20,8 @@ from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_IMPORTS_SCHEMA,
     MEMBER_HISTORY_ROOTS_SCHEMA,
-    PROVENANCE_BINDING_PAGE_BYTES_MAX,
-    PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
-    PROVENANCE_BINDINGS_FORMAT,
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
     RETAINED_HISTORY_EXTENT,
-    CollectionArchiveTerminalDocument,
-    CollectionEncryptionBinding,
     HistoryJournalAnchor,
     MemberHistoryBinding,
     MemberHistoryDocument,
@@ -34,21 +29,16 @@ from riverhog_archive_contracts import (
     MemberHistoryPrimary,
     MemberHistoryRoot,
     MemberHistoryStore,
-    ProvenanceRootDocument,
-    ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     RecordPage,
     RecordSetCommitment,
     RecordSetRef,
     SourceMemberHistoryBindingProof,
-    binding_tree_commitment,
     format_archive_sequence,
     history_record_page_object_path,
     member_history_object_path,
     provenance_structure_identity,
     provenance_structure_object_id,
-    update_provenance_commitment,
-    validate_member_history_binding_page,
     verify_member_history_sets,
     verify_record_pages,
 )
@@ -72,11 +62,8 @@ from riverhog_protocol import (
     CollectionArtifactProvenanceBindingBatchDocument,
     CollectionArtifactProvenanceBindingDocument,
     CollectionDescription,
-    CollectionDescriptionDocument,
     CollectionTag,
-    CollectionTagHeadDocument,
     CollectionTagSet,
-    CollectionTagSetRoot,
     CollectionUploadArtifactBatchDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadArtifactIn,
@@ -94,9 +81,7 @@ from riverhog_protocol import (
     PortableCollectionArtifact,
     PortableCollectionHeader,
     SortOrder,
-    collection_description_identity,
     collection_upload_raw_digest_summary,
-    decode_collection_tag_node,
     validate_collection_tag,
     validate_collection_upload_artifact_custody_receipt,
     validate_collection_upload_batch_against_registration_constraints,
@@ -190,18 +175,11 @@ from riverhog_core.app_permissions import (
     normalize_access,
     tag_resource,
 )
-from riverhog_core.archive_manifest import (
-    build_collection_archive_root_manifest,
-)
 from riverhog_core.archive_provenance import (
     ArchiveProvenancePublisher,
     SealedArchiveProvenance,
 )
-from riverhog_core.archive_recovery_descriptor import (
-    ArchiveRecoveryDescriptorPublisher,
-)
 from riverhog_core.archive_root import (
-    ArchiveRootPublisher,
     SealedArchiveVolumeMetadata,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -248,7 +226,6 @@ from riverhog_core.catalog_models import (
     CollectionProvenanceJournalSegmentRecord,
     CollectionRecord,
     CollectionTagMembershipRecord,
-    CollectionTagNodeRecord,
     CollectionTagPublicationFrontierRecord,
     CollectionTagPublicationRecord,
     CollectionTagPublishedNodeRecord,
@@ -356,7 +333,6 @@ from riverhog_core.services.archive_upload_terminal_access import (
     require_terminal_read_access,
 )
 from riverhog_core.services.archive_upload_terminal_tags import upload_terminal_tag_selector
-from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.collection_tags import (
     advance_collection_tag_set,
@@ -369,7 +345,6 @@ from riverhog_core.services.collection_upload_authority import (
     retain_upload_claim,
     retain_upload_key,
 )
-from riverhog_core.services.collection_upload_tag_frontier import pending_initial_tag_query
 from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 from riverhog_core.services.lifecycle_events import (
     SqlAlchemyLifecycleEventService,
@@ -3884,107 +3859,6 @@ class SqlAlchemyCollectionUploadService:
             if not catalog_write_contention(feedback_error):
                 raise
 
-    def _publish_final_authority(self, collection_id: int) -> bool:
-        """Publish the bounded immutable root once and persist its exact receipts."""
-
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or upload.final_authority_json is not None:
-                return False
-            if (
-                upload.archive_tree_sha256 is None
-                or upload.archive_ordered_volume_sha256 is None
-                or upload.archive_terminal_receipt_json is None
-            ):
-                raise RuntimeError("archive authority checkpoints are incomplete")
-            store_name = upload.archive_store
-            prefix = upload.archive_storage_prefix
-            encryption_format = upload.encryption_format
-            passphrase_id = upload.passphrase_id
-            sealed_provenance = _sealed_upload_provenance(upload)
-            manifest = build_collection_archive_root_manifest(
-                archive_generation=upload.archive_generation,
-                artifact_set={
-                    "count": int(upload.artifact_count),
-                    "bytes": int(upload.artifact_bytes),
-                    "sha256": upload.archive_tree_sha256,
-                },
-                ordered_volume_sha256=upload.archive_ordered_volume_sha256,
-                provenance_identity=sealed_provenance.identity,
-                provenance_objects=(sealed_provenance.root,),
-            )
-        if not prefix:
-            raise RuntimeError("collection archive storage prefix is missing")
-        self._begin_final_publication_attempt(collection_id)
-        passphrase = self._config.archive_passphrase_for(passphrase_id)
-        archive_store = self._archive_stores.require(store_name)
-        root = ArchiveRootPublisher(
-            object_store=archive_store.immutable_objects,
-            passphrase=passphrase,
-            scrypt_log_n=self._config.archive_scrypt_work_factor,
-        ).publish_root_manifest(archive_storage_prefix=prefix, manifest=manifest)
-        recovery = ArchiveRecoveryDescriptorPublisher(
-            object_store=archive_store.immutable_objects
-        ).publish(
-            archive_storage_prefix=prefix,
-            root=root,
-            encryption=CollectionEncryptionBinding(
-                format=encryption_format,
-                passphrase_id=passphrase_id,
-            ),
-        )
-        authority = {
-            "root": {
-                "object_path": root.object_path,
-                "relative_path": root.relative_path,
-                "revision": root.revision,
-                "plaintext_bytes": root.plaintext_bytes,
-                "plaintext_sha256": root.plaintext_sha256,
-                "stored_bytes": root.stored_bytes,
-                "stored_sha256": root.stored_sha256,
-                "artifact_set_sha256": root.artifact_set_sha256,
-                "artifact_count": root.artifact_count,
-                "artifact_bytes": root.artifact_bytes,
-                "completed_at": root.completed_at,
-            },
-            "recovery": {
-                "object_path": recovery.object_path,
-                "relative_path": recovery.relative_path,
-                "revision": recovery.revision,
-                "bytes": recovery.bytes,
-                "sha256": recovery.sha256,
-                "completed_at": recovery.completed_at,
-            },
-        }
-        encoded = json.dumps(authority, sort_keys=True, separators=(",", ":"))
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is not None:
-                if upload.final_authority_json not in {None, encoded}:
-                    raise RuntimeError("final archive authority receipt changed")
-                upload.final_authority_json = encoded
-        return True
-
-    def _publish_custody_receipts(self, collection_id: int) -> bool:
-        """Finalize remaining receipts through the same early custody rail."""
-        with read_snapshot(self._session_factory) as session:
-            artifact_id = session.scalar(
-                select(CollectionUploadArtifactRecord.artifact_id)
-                .where(
-                    CollectionUploadArtifactRecord.collection_id == collection_id,
-                    CollectionUploadArtifactRecord.custody_receipt_json.is_(None),
-                )
-                .order_by(CollectionUploadArtifactRecord.artifact_id)
-                .limit(1)
-            )
-        if artifact_id is None:
-            return False
-        return self._advance_artifact_custody(collection_id, str(artifact_id))
-
     def process_due_custody_receipts(self, *, limit: int = 1) -> int:
         progressed = 0
         with read_snapshot(self._session_factory) as session:
@@ -4349,215 +4223,6 @@ class SqlAlchemyCollectionUploadService:
             return False
         with session_scope(self._session_factory) as session:
             receipt_source.apply(session)
-        return True
-
-    def _publish_initial_description(self, collection_id: int) -> bool:
-        """Establish the initial description state after the root and before catalog publish."""
-
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or upload.final_authority_json is None:
-                return False
-            if upload.description_identity is not None:
-                return False
-            authority = _final_authority(upload)
-            archive_root_sha256 = str(authority["root"]["plaintext_sha256"])
-            revision = 1 if upload.description is not None else 0
-            identity = collection_description_identity(
-                archive_root_sha256=archive_root_sha256,
-                revision=revision,
-                description=upload.description,
-            )
-            if revision == 0:
-                upload.description_revision = revision
-                upload.description_identity = identity
-                return True
-            if not upload.archive_storage_prefix:
-                raise RuntimeError("collection archive storage prefix is missing")
-            document = CollectionDescriptionDocument(
-                archive_root_sha256=archive_root_sha256,
-                revision=revision,
-                description=upload.description,
-                description_identity=identity,
-            ).to_json_bytes()
-            store_name = upload.archive_store
-            prefix = upload.archive_storage_prefix
-            passphrase_id = upload.passphrase_id
-
-        receipt = self._archive_stores.require(store_name).store.publish_collection_description(
-            collection_id=collection_id,
-            archive_storage_prefix=prefix,
-            document=document,
-            passphrase_id=passphrase_id,
-        )
-        receipt_json = json.dumps(
-            {
-                "object_path": receipt.object_path,
-                "provider_revision": receipt.revision,
-                "stored_bytes": receipt.stored_bytes,
-                "stored_sha256": receipt.stored_sha256,
-                "published_at": receipt.published_at,
-            },
-            sort_keys=True,
-            separators=(",", ":"),
-        )
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None:
-                return False
-            if upload.description_identity not in {None, identity}:
-                raise RuntimeError("initial collection description identity changed")
-            upload.description_revision = revision
-            upload.description_identity = identity
-            upload.description_publication_receipt_json = receipt_json
-        return True
-
-    def _publish_initial_tags(self, collection_id: int) -> bool:
-        """Advance one bounded step of revision-one tag-authority publication."""
-
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None or upload.final_authority_json is None:
-                return False
-            if upload.tag_publication_receipt_json is not None:
-                return False
-            if upload.tag_set_identity is None:
-                expected_staging_identity = CollectionTagSetRoot.seal(
-                    upload.tag_staging_root_sha256
-                ).tag_set_identity
-                if upload.tag_staging_set_identity != expected_staging_identity:
-                    raise RuntimeError("staged collection tag identity is inconsistent")
-                authority = _final_authority(upload)
-                head = CollectionTagHeadDocument.seal(
-                    archive_root_sha256=str(authority["root"]["plaintext_sha256"]),
-                    revision=1,
-                    root_sha256=upload.tag_staging_root_sha256,
-                )
-                upload.tag_revision = head.revision
-                upload.tag_root_sha256 = head.root_sha256
-                upload.tag_set_identity = head.tag_set_identity
-                upload.tag_head_identity = head.head_identity
-                if head.root_sha256 is not None:
-                    session.add(
-                        CollectionUploadTagPublicationFrontierRecord(
-                            collection_id=collection_id,
-                            node_digest=head.root_sha256,
-                        )
-                    )
-                return True
-
-            frontier = session.scalar(pending_initial_tag_query(collection_id, work="expand"))
-            if frontier is not None:
-                node_record = session.get(CollectionTagNodeRecord, frontier.node_digest)
-                if node_record is None:
-                    raise RuntimeError("initial collection tag node is unavailable")
-                node = decode_collection_tag_node(node_record.encoded)
-                for child in node.children:
-                    existing = session.get(
-                        CollectionUploadTagPublicationFrontierRecord,
-                        (collection_id, child.digest),
-                    )
-                    if existing is None:
-                        session.add(
-                            CollectionUploadTagPublicationFrontierRecord(
-                                collection_id=collection_id,
-                                node_digest=child.digest,
-                            )
-                        )
-                frontier.expanded = True
-                return True
-
-            frontier = session.scalar(pending_initial_tag_query(collection_id, work="publish"))
-            if frontier is not None:
-                node_record = session.get(CollectionTagNodeRecord, frontier.node_digest)
-                if node_record is None:
-                    raise RuntimeError("initial collection tag node is unavailable")
-                if not upload.archive_storage_prefix:
-                    raise RuntimeError("collection archive storage prefix is missing")
-                node_digest = frontier.node_digest
-                encoded_node = node_record.encoded
-                store_name = upload.archive_store
-                prefix = upload.archive_storage_prefix
-                passphrase_id = upload.passphrase_id
-            else:
-                node_digest = None
-                encoded_node = None
-                store_name = upload.archive_store
-                prefix = upload.archive_storage_prefix
-                passphrase_id = upload.passphrase_id
-
-        store = self._archive_stores.require(store_name).store
-        if node_digest is not None and encoded_node is not None:
-            receipt = store.publish_collection_tag_node(
-                collection_id=collection_id,
-                archive_storage_prefix=prefix,
-                digest=node_digest,
-                encoded=encoded_node,
-                passphrase_id=passphrase_id,
-            )
-            with session_scope(self._session_factory) as session:
-                frontier = session.get(
-                    CollectionUploadTagPublicationFrontierRecord,
-                    (collection_id, node_digest),
-                )
-                if frontier is not None:
-                    frontier.published = True
-                    frontier.object_path = receipt.object_path
-                    frontier.provider_revision = receipt.revision
-                    frontier.stored_bytes = receipt.stored_bytes
-                    frontier.stored_sha256 = receipt.stored_sha256
-                    frontier.published_at = receipt.published_at
-            return True
-
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or upload.tag_head_identity is None:
-                return False
-            authority = _final_authority(upload)
-            head = CollectionTagHeadDocument.seal(
-                archive_root_sha256=str(authority["root"]["plaintext_sha256"]),
-                revision=upload.tag_revision or 1,
-                root_sha256=upload.tag_root_sha256,
-            )
-            if head.head_identity != upload.tag_head_identity:
-                raise RuntimeError("initial collection tag head changed")
-
-        receipt = store.publish_collection_tag_head(
-            collection_id=collection_id,
-            archive_storage_prefix=prefix,
-            document=head.to_json_bytes(),
-            passphrase_id=passphrase_id,
-        )
-        receipt_json = json.dumps(
-            {
-                "object_path": receipt.object_path,
-                "provider_revision": receipt.revision,
-                "stored_bytes": receipt.stored_bytes,
-                "stored_sha256": receipt.stored_sha256,
-                "published_at": receipt.published_at,
-            },
-            sort_keys=True,
-            separators=(",", ":"),
-        )
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None:
-                return False
-            if upload.tag_set_identity != head.tag_set_identity:
-                raise RuntimeError("initial collection tag identity changed")
-            upload.tag_publication_receipt_json = receipt_json
         return True
 
     def _advance_catalog_projection(self, collection_id: int) -> bool:
@@ -5459,223 +5124,6 @@ class SqlAlchemyCollectionUploadService:
         upload.provenance_closure_validated = True
         return True
 
-    def _publish_next_provenance_archive_object(self, collection_id: int) -> bool:
-        """Publish one bounded structural page, journal segment, terminal or root."""
-
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or not upload.provenance_closure_validated:
-                return False
-            artifact_set_sha256 = upload.archive_tree_sha256
-            if (
-                artifact_set_sha256 is None
-                or upload.provenance_archive_root_receipt_json is not None
-            ):
-                return False
-            sequence = int(upload.provenance_archive_next_sequence)
-            prefix = upload.archive_storage_prefix
-            store_name = upload.archive_store
-            archive_generation = upload.archive_generation
-            passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-            document: ProvenanceVolumeDocument | None = None
-            terminal: ProvenanceTerminalDocument | None = None
-            root: ProvenanceRootDocument | None = None
-            payload = b""
-            after_artifact_id: str | None = None
-            journal_id: str | None = None
-            next_journal_offset = 0
-            next_artifact_order = int(upload.provenance_archive_next_artifact_order)
-
-            if next_artifact_order < upload.artifact_count:
-                statement = select(CollectionUploadMemberHistoryRecord).where(
-                    CollectionUploadMemberHistoryRecord.collection_id == collection_id
-                )
-                if upload.provenance_archive_after_artifact_id is not None:
-                    statement = statement.where(
-                        CollectionUploadMemberHistoryRecord.artifact_id
-                        > upload.provenance_archive_after_artifact_id
-                    )
-                rows = list(
-                    session.scalars(
-                        statement.order_by(CollectionUploadMemberHistoryRecord.artifact_id).limit(
-                            PROVENANCE_BINDING_PAGE_MEMBERS_MAX
-                        )
-                    )
-                )
-                if not rows:
-                    raise RuntimeError("provenance binding pages do not cover the member set")
-                bindings = [
-                    provenance_volume_source.member_history_binding_row(row).to_mapping()
-                    for row in rows
-                ]
-                validate_member_history_binding_page(
-                    bindings, max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX
-                )
-                payload = canonical_json_bytes(
-                    {"format": PROVENANCE_BINDINGS_FORMAT, "bindings": bindings}
-                )
-                if len(payload) > PROVENANCE_BINDING_PAGE_BYTES_MAX:
-                    raise RuntimeError("bounded binding page exceeds its byte contract")
-                document = provenance_volume_source.provenance_volume_document(
-                    archive_generation=archive_generation,
-                    artifact_set_sha256=artifact_set_sha256,
-                    sequence=sequence,
-                    payload=payload,
-                    first_artifact_id=rows[0].artifact_id,
-                    last_artifact_id=rows[-1].artifact_id,
-                    binding_count=len(rows),
-                )
-                next_artifact_order += len(rows)
-                after_artifact_id = rows[-1].artifact_id
-            else:
-                journal = provenance_volume_source.next_provenance_publication_journal(
-                    session, upload
-                )
-                if journal is not None:
-                    offset = int(upload.provenance_archive_current_journal_offset)
-                    payload = journal_ranges.upload_journal_range_bytes(
-                        session,
-                        collection_id,
-                        journal.journal_id,
-                        offset=offset,
-                        size=min(PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX, journal.bytes - offset),
-                    )
-                    document = provenance_volume_source.provenance_volume_document(
-                        archive_generation=archive_generation,
-                        artifact_set_sha256=artifact_set_sha256,
-                        sequence=sequence,
-                        payload=payload,
-                        journal=journal,
-                        journal_offset=offset,
-                    )
-                    journal_id = journal.journal_id
-                    next_journal_offset = offset + len(payload)
-                elif upload.provenance_archive_terminal_receipt_json is None:
-                    terminal = ProvenanceTerminalDocument(
-                        archive_generation=archive_generation,
-                        artifact_set_sha256=artifact_set_sha256,
-                        sequence=sequence,
-                    )
-                else:
-                    if upload.provenance_archive_ordered_sha256 is None:
-                        raise RuntimeError("provenance terminal has no ordered commitment")
-                    journal_count = int(
-                        session.scalar(
-                            select(func.count())
-                            .select_from(CollectionUploadProvenanceJournalRecord)
-                            .where(
-                                CollectionUploadProvenanceJournalRecord.collection_id
-                                == collection_id
-                            )
-                        )
-                        or 0
-                    )
-                    root = ProvenanceRootDocument(
-                        archive_generation=archive_generation,
-                        artifact_set_sha256=artifact_set_sha256,
-                        delivery_context_id=upload.delivery_context_id,
-                        binding_count=upload.artifact_count,
-                        binding_tree_sha256=binding_tree_commitment(
-                            provenance_volume_source.member_history_binding_row(row)
-                            for row in session.scalars(
-                                select(CollectionUploadMemberHistoryRecord)
-                                .where(
-                                    CollectionUploadMemberHistoryRecord.collection_id
-                                    == collection_id
-                                )
-                                .order_by(CollectionUploadMemberHistoryRecord.artifact_id)
-                                .execution_options(yield_per=256)
-                            )
-                        ).root_sha256,
-                        journal_count=journal_count,
-                        ordered_volume_sha256=upload.provenance_archive_ordered_sha256,
-                    )
-
-        publisher = ArchiveProvenancePublisher(
-            object_store=self._archive_stores.require(store_name).immutable_objects,
-            passphrase=passphrase,
-            scrypt_log_n=self._config.archive_scrypt_work_factor,
-        )
-        if root is not None:
-            sealed_root = publisher.publish_root(archive_storage_prefix=prefix, root=root)
-            with session_scope(self._session_factory) as session:
-                upload = session.scalar(
-                    select(CollectionUploadRecord)
-                    .where(CollectionUploadRecord.collection_id == collection_id)
-                    .with_for_update()
-                )
-                if upload is None:
-                    return False
-                if upload.provenance_archive_root_receipt_json is None:
-                    upload.provenance_identity = sealed_root.identity
-                    upload.provenance_archive_root_receipt_json = _sealed_provenance_json(
-                        sealed_root
-                    )
-            return True
-        if terminal is not None:
-            sealed_terminal = publisher.publish_terminal(
-                archive_storage_prefix=prefix, terminal=terminal
-            )
-            with session_scope(self._session_factory) as session:
-                upload = session.scalar(
-                    select(CollectionUploadRecord)
-                    .where(CollectionUploadRecord.collection_id == collection_id)
-                    .with_for_update()
-                )
-                if upload is None:
-                    return False
-                if upload.provenance_archive_terminal_receipt_json is None:
-                    digest = provenance_volume_source.provenance_commitment(upload)
-                    update_provenance_commitment(digest, terminal)
-                    upload.provenance_archive_terminal_receipt_json = (
-                        _sealed_provenance_object_json(sealed_terminal)
-                    )
-                    upload.provenance_archive_ordered_sha256 = digest.hexdigest()
-                    upload.provenance_archive_hash_state = None
-            return True
-        assert document is not None
-        sealed = publisher.publish_volume(
-            archive_storage_prefix=prefix, document=document, payload=payload
-        )
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None:
-                return False
-            if upload.provenance_archive_next_sequence != sequence:
-                return True
-            digest = provenance_volume_source.provenance_commitment(upload)
-            update_provenance_commitment(digest, document)
-            session.add(
-                CollectionUploadProvenanceArchiveVolumeRecord(
-                    collection_id=collection_id,
-                    sequence=sequence,
-                    kind=document.payload.kind,
-                    document_json=document.to_json_bytes().decode("utf-8"),
-                    payload_receipt_json=_sealed_provenance_object_json(sealed.payload),
-                    metadata_receipt_json=_sealed_provenance_object_json(sealed.metadata),
-                )
-            )
-            upload.provenance_archive_next_sequence = sequence + 1
-            upload.provenance_archive_hash_state = digest.export_state()
-            upload.provenance_archive_next_artifact_order = next_artifact_order
-            if after_artifact_id is not None:
-                upload.provenance_archive_after_artifact_id = after_artifact_id
-            if journal_id is not None:
-                if upload.provenance_archive_current_journal_id not in {None, journal_id}:
-                    raise RuntimeError("provenance journal publication changed identity")
-                if document.journal_bytes == next_journal_offset:
-                    upload.provenance_archive_last_journal_id = journal_id
-                    upload.provenance_archive_current_journal_id = None
-                    upload.provenance_archive_current_journal_offset = 0
-                else:
-                    upload.provenance_archive_current_journal_id = journal_id
-                    upload.provenance_archive_current_journal_offset = next_journal_offset
-            return True
-
     def _advance_archive_tree_checkpoint(self, collection_id: int) -> bool:
         """Commit the ID-ordered artifact set in bounded catalog scans."""
 
@@ -5753,43 +5201,6 @@ class SqlAlchemyCollectionUploadService:
     def _drain_archive_immutable_report(self, collection_id: int) -> bool:
         return drain_original_immutable_report(self._session_factory, collection_id)
 
-    def _publish_next_archive_volume_metadata(self, collection_id: int) -> bool:
-        """Publish and checkpoint one bounded volume document in sequence order."""
-
-        if self._drain_archive_immutable_report(collection_id):
-            return True
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or upload.archive_tree_sha256 is None:
-                return False
-            total_volumes = _planner_checkpoint(upload).next_sequence
-            sequence = upload.archive_volume_next_sequence
-            if sequence == total_volumes and upload.archive_terminal_receipt_json is not None:
-                if upload.archive_ordered_volume_sha256 is None:
-                    raise RuntimeError("archive terminal has no ordered commitment")
-                return False
-            source = ArchiveVolumeMetadataSource.load(session, collection_id, sequence)
-            document = source.document
-            prefix = upload.archive_storage_prefix
-            store_name = upload.archive_store
-            passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-        publisher = ArchiveRootPublisher(
-            object_store=self._archive_stores.require(store_name).immutable_objects,
-            passphrase=passphrase,
-            scrypt_log_n=self._config.archive_scrypt_work_factor,
-        )
-        if isinstance(document, CollectionArchiveTerminalDocument):
-            published = publisher.publish_terminal_metadata(
-                archive_storage_prefix=prefix, document=document
-            )
-        else:
-            published = publisher.publish_volume_metadata(
-                archive_storage_prefix=prefix, document=document
-            )
-        with session_scope(self._session_factory) as session:
-            source.apply_receipt(session, published)
-        return True
-
     def _requeue_finalization_step(self, claim: _FinalizationClaim) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
@@ -5813,13 +5224,6 @@ class SqlAlchemyCollectionUploadService:
             upload.archive_phase_updated_at = now
             upload.archive_next_attempt_at = now
             upload.archive_failure = None
-
-    def _begin_final_publication_attempt(self, collection_id: int) -> None:
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None:
-                return
-            upload.archive_attempt_count += 1
 
 
 def _catalog_cursor(upload: CollectionUploadRecord) -> dict[str, object]:
