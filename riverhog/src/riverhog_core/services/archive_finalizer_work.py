@@ -106,6 +106,9 @@ class ArchiveFinalizerWork:
         create: Callable[[], RetainedArchiveFinalizer],
         advance: Callable[[RetainedArchiveFinalizer], bool],
         receive: Callable[[bool], None],
+        *,
+        resume_original: bool = True,
+        claim_guard: Guard | None = None,
     ) -> FinalizerSubmission:
         def construct() -> ArchiveFinalizerProgress:
             original = create()
@@ -128,6 +131,8 @@ class ArchiveFinalizerWork:
                     .where(CollectionUploadRecord.collection_id == collection_id)
                     .with_for_update(nowait=True)
                 )
+                if parent is not None and claim_guard is not None:
+                    claim_guard(session)
                 control = session.get(
                     ArchiveWriteControlRecord,
                     collection_id,
@@ -142,6 +147,8 @@ class ArchiveFinalizerWork:
                 )
                 target = json.loads(construction)["archive_incarnation_id"]
                 if parent is None or control.gate != "open":
+                    if not resume_original:
+                        return "closed"
                     return self._registry.resume(key, target_incarnation=target)
                 return self._registry.submit(
                     key,
@@ -149,6 +156,7 @@ class ArchiveFinalizerWork:
                     selection=selection,
                     create=construct,
                     advance=lambda owner: cast(ArchiveFinalizerProgress, owner).advance(),
+                    resume_original=resume_original,
                 )
         except OperationalError as exc:
             if catalog_write_contention(exc):

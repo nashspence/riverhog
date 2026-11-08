@@ -35,7 +35,9 @@ from riverhog_core.services.archive_upload_execution import (
     Submission,
 )
 
-FinalizerSubmission = Submission | Literal["retention-capacity", "target-retention-capacity"]
+FinalizerSubmission = (
+    Submission | Literal["retention-capacity", "target-retention-capacity", "original-pending"]
+)
 TerminalSubmission = FinalizerSubmission | Literal["untracked", "drained"]
 
 
@@ -104,7 +106,17 @@ class ArchiveFinalizerRegistry:
         selection: str,
         create: Callable[[], RetainedArchiveFinalizer],
         advance: Callable[[RetainedArchiveFinalizer], bool],
+        resume_original: bool = True,
     ) -> FinalizerSubmission:
+        """Register work, or explicitly defer a fresh turn behind an original.
+
+        A caller with a new workflow claim uses resume_original=False. No old
+        factory, callback, constructor or unreceived physical turn can then be
+        adopted as that claim's registration. Existing originals keep their
+        separate resume and terminal receiving paths.
+        """
+        if type(resume_original) is not bool:
+            raise ValueError("finalizer original resumption selection must be boolean")
         if not selection or not target_incarnation:
             raise ValueError("retained finalizer requires its exact target and selection")
         if not self._lock.acquire(blocking=False):
@@ -127,6 +139,24 @@ class ArchiveFinalizerRegistry:
                 self._contexts[key.collection_id] = context
             if context.terminal_id is not None:
                 raise Conflict("retained finalizer is fenced for its terminal request")
+            if not resume_original:
+                if self._execution.status(key) != "untracked":
+                    if fresh:
+                        self._remove(context)
+                    return "busy"
+                if not context.lock.acquire(blocking=False):
+                    if fresh:
+                        self._remove(context)
+                    return "busy"
+                try:
+                    if (
+                        context.construction_failure is not None
+                        or (context.owner is None and context.selection is not None)
+                        or (context.owner is not None and context.owner.has_pending)
+                    ):
+                        return "original-pending"
+                finally:
+                    context.lock.release()
             selected = context
             try:
                 result = self._execution.try_submit(
@@ -139,6 +169,8 @@ class ArchiveFinalizerRegistry:
             except ArchiveExecutionOccupied:
                 if fresh:
                     self._remove(selected)
+                if not resume_original:
+                    return "busy"
                 raise
             except BaseException:
                 if fresh and self._execution.status(key) == "untracked":
