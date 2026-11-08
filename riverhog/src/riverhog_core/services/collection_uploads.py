@@ -490,6 +490,9 @@ if TYPE_CHECKING:
         ArchiveCatalogFinalizer,
         CatalogFinalizationKind,
     )
+    from riverhog_core.services.archive_finalization_admission import (
+        OriginalFinalizationAdmission,
+    )
     from riverhog_core.services.archive_finalization_pipeline import (
         ArchiveFinalizationPipeline,
         ArchiveFinalizationStage,
@@ -3593,7 +3596,12 @@ class SqlAlchemyCollectionUploadService:
             lambda progressed: self._requeue_finalization_step(claim),
         )
 
-    def _finalization_owner(self, claim: _FinalizationClaim) -> ArchiveFinalizationPipeline:
+    def _finalization_owner(
+        self,
+        claim: _FinalizationClaim,
+        *,
+        admission: OriginalFinalizationAdmission | None = None,
+    ) -> ArchiveFinalizationPipeline:
         """Compose one retained workflow turn without constructing semantic children."""
         from .archive_authority_finalizer import ArchiveAuthorityFinalizer
         from .archive_finalization_pipeline import (
@@ -3609,91 +3617,112 @@ class SqlAlchemyCollectionUploadService:
         from .immutable_archive_receiving import OriginalImmutableArchiveReport
 
         fixed = ArchiveFinalizationStagePlan.fixed
+
+        def gated(
+            stages: tuple[ArchiveFinalizationStagePlan, ...],
+        ) -> tuple[ArchiveFinalizationStagePlan, ...]:
+            if admission is None:
+                return stages
+            return tuple(
+                ArchiveFinalizationStagePlan(partial(admission.select, stage.select))
+                for stage in stages
+            )
+
         return ArchiveFinalizationPipeline(
             self._session_factory,
             collection_id=claim.collection_id,
-            stages=(
-                fixed(partial(OriginalNativeArchiveSeal, self, claim.collection_id)),
-                fixed(
-                    partial(
-                        OriginalImmutableArchiveReport, self._session_factory, claim.collection_id
-                    )
-                ),
-                fixed(partial(self._catalog_finalization_owner, claim, kind="member-histories")),
-                fixed(partial(self._catalog_finalization_owner, claim, kind="provenance-closure")),
-                fixed(
-                    partial(
-                        ArchiveProvenanceStructureWriter,
-                        self._session_factory,
-                        collection_id=claim.collection_id,
-                        config=self._config,
-                        archive_stores=self._archive_stores,
-                        forward_guard=claim.guard,
-                    )
-                ),
-                fixed(partial(self._catalog_finalization_owner, claim, kind="artifact-tree")),
-                fixed(
-                    partial(
-                        ArchiveVolumeMetadataFinalizer,
-                        self._session_factory,
-                        collection_id=claim.collection_id,
-                        config=self._config,
-                        archive_stores=self._archive_stores,
-                        forward_guard=claim.guard,
-                    )
-                ),
-                fixed(
-                    partial(
-                        ArchiveProvenanceVolumeFinalizer,
-                        self._session_factory,
-                        collection_id=claim.collection_id,
-                        config=self._config,
-                        archive_stores=self._archive_stores,
-                        forward_guard=claim.guard,
-                    )
-                ),
-                fixed(
-                    partial(
-                        ArchiveProvenanceAuthorityFinalizer,
-                        self._session_factory,
-                        collection_id=claim.collection_id,
-                        config=self._config,
-                        archive_stores=self._archive_stores,
-                        forward_guard=claim.guard,
-                    )
-                ),
-                fixed(
-                    partial(
-                        ArchiveAuthorityFinalizer,
-                        self._session_factory,
-                        collection_id=claim.collection_id,
-                        config=self._config,
-                        archive_stores=self._archive_stores,
-                        forward_guard=claim.guard,
-                    )
-                ),
-                ArchiveFinalizationStagePlan(partial(self._select_finalization_custody, claim)),
-                fixed(
-                    partial(
-                        ArchiveInitialTagFinalizer,
-                        self._session_factory,
-                        collection_id=claim.collection_id,
-                        config=self._config,
-                        archive_stores=self._archive_stores,
-                        forward_guard=claim.guard,
-                    )
-                ),
-                fixed(
-                    partial(
-                        ArchiveInitialDescriptionFinalizer,
-                        self._session_factory,
-                        collection_id=claim.collection_id,
-                        config=self._config,
-                        archive_stores=self._archive_stores,
-                        forward_guard=claim.guard,
-                    )
-                ),
-                fixed(partial(self._catalog_finalization_owner, claim, kind="catalog-projection")),
+            stages=gated(
+                (
+                    fixed(partial(OriginalNativeArchiveSeal, self, claim.collection_id)),
+                    fixed(
+                        partial(
+                            OriginalImmutableArchiveReport,
+                            self._session_factory,
+                            claim.collection_id,
+                        )
+                    ),
+                    fixed(
+                        partial(self._catalog_finalization_owner, claim, kind="member-histories")
+                    ),
+                    fixed(
+                        partial(self._catalog_finalization_owner, claim, kind="provenance-closure")
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveProvenanceStructureWriter,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(partial(self._catalog_finalization_owner, claim, kind="artifact-tree")),
+                    fixed(
+                        partial(
+                            ArchiveVolumeMetadataFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveProvenanceVolumeFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveProvenanceAuthorityFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveAuthorityFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    ArchiveFinalizationStagePlan(partial(self._select_finalization_custody, claim)),
+                    fixed(
+                        partial(
+                            ArchiveInitialTagFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveInitialDescriptionFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(self._catalog_finalization_owner, claim, kind="catalog-projection")
+                    ),
+                )
             ),
         )
 

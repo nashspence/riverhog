@@ -30,10 +30,12 @@ from tests.unit.test_finalization_claim_readiness import _seal
 
 
 @contextmanager
-def _metadata_case(tmp_path, monkeypatch, *, kind="segment", mode="direct", count=2):
+def _metadata_case(
+    tmp_path, monkeypatch, *, kind="segment", mode="direct", count=2, database_url=None
+):
     # Payloads are already sealed by the ingress fixture; this exercises the real
     # metadata pipeline through explicit filesystem execution and observation.
-    with _case(tmp_path, kind, artifact_count=count) as case:
+    with _case(tmp_path, kind, artifact_count=count, database_url=database_url) as case:
         for index in range(count):
             _bind_primary(case.service, case.collection_id, format(index + 1, "064x"), case.content)
         _seal(case)
