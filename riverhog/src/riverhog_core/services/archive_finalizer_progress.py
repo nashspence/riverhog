@@ -35,21 +35,26 @@ class ArchiveFinalizerProgress:
         self._advance_original = advance
         self._receive = receive
         self._result: bool | None = None
+        self._started = False
         self._lock = Lock()
         self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
 
     @property
     def has_pending(self) -> bool:
-        return self._result is not None or self._original.has_pending
+        return self._started or self._result is not None or self._original.has_pending
 
     def advance(self) -> bool:
         with self._lock:
             self._terminal.require_forward()
             if self._result is None:
+                # A failed read-only selection still belongs to this workflow
+                # turn and claim, even before the child retains a provider call.
+                self._started = True
                 self._result = self._advance_original()
             result = self._result
             self._receive(result)
             self._result = None
+            self._started = False
             return result
 
     def drain_terminal(self, operation_id: str) -> TerminalDrainStatus:

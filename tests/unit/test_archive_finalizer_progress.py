@@ -82,3 +82,23 @@ def test_terminal_poll_does_not_wait_on_an_active_original_feedback_receiver():
     finally:
         release.set()
     assert not owner.has_pending
+
+
+def test_failed_selection_keeps_its_workflow_turn_before_a_child_has_pending_work():
+    original = Original()
+    calls, received = [], []
+
+    def advance():
+        calls.append("original")
+        if len(calls) == 1:
+            raise OSError("selected workflow read failed before child construction")
+        return False
+
+    owner = ArchiveFinalizerProgress(
+        None, collection_id=1, original=original, advance=advance, receive=received.append
+    )
+    with pytest.raises(OSError, match="workflow read"):
+        owner.advance()
+    assert owner.has_pending and not original.has_pending and received == []
+    assert owner.advance() is False and not owner.has_pending
+    assert calls == ["original", "original"] and received == [False]

@@ -8,6 +8,7 @@ import logging
 from datetime import timedelta
 from threading import Lock
 
+from riverhog_protocol.errors import Conflict
 from sqlalchemy import Select, select
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import load_only
@@ -18,6 +19,7 @@ from riverhog_core.catalog_archive_write_models import (
     ArchiveWriteControlRecord,
 )
 from riverhog_core.catalog_db import SessionFactory, catalog_write_contention, session_scope
+from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.services.archive_cache_families import ArchiveCacheFamilies
 from riverhog_core.services.archive_finalizer_registry import ArchiveFinalizerRegistry
 from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
@@ -148,6 +150,9 @@ class ArchiveUploadMaintenance:
                     if submission == "submitted":
                         progressed += 1
                         break
+            progressed += self._finalizers.process_ready(
+                limit=limit, retry_after=self._retry_after, retire=self._retire_finalizer
+            )
             return progressed
         except OperationalError as exc:
             if catalog_write_contention(exc):
@@ -155,3 +160,39 @@ class ArchiveUploadMaintenance:
             raise
         finally:
             self._lock.release()
+
+    def _retire_finalizer(self, key: ArchiveUploadExecutionKey, target: str) -> bool:
+        """Keep parent/control admission locked through the local idle release.
+
+        A lost terminal scheduling reply can leave a closed gate with an
+        unfenced local owner. Gate closure alone must not release that original
+        before terminal drainage, even if its last workflow turn was idle.
+        """
+        try:
+            with session_scope(self._factory) as session:
+                _writer(session, defer_if_busy=True)
+                session.scalar(
+                    select(CollectionUploadRecord.collection_id)
+                    .where(CollectionUploadRecord.collection_id == key.collection_id)
+                    .with_for_update(nowait=True)
+                )
+                control = session.get(
+                    ArchiveWriteControlRecord,
+                    key.collection_id,
+                    with_for_update={"nowait": True},
+                    populate_existing=True,
+                )
+                if (
+                    control is None
+                    or hashlib.sha256(control.construction_json.encode()).hexdigest()
+                    != key.construction_sha256
+                    or json.loads(control.construction_json)["archive_incarnation_id"] != target
+                ):
+                    raise Conflict("retained finalizer retirement construction changed")
+                if control.gate != "open":
+                    return False
+                return self._finalizers.retire_idle(key, target_incarnation=target)
+        except OperationalError as exc:
+            if catalog_write_contention(exc):
+                return False
+            raise

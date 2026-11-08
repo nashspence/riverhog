@@ -4,9 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections import OrderedDict
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import timedelta
+from functools import partial
 from threading import Lock
+from time import monotonic
 from typing import Literal, Protocol
 
 from riverhog_protocol.errors import Conflict
@@ -60,6 +64,7 @@ class _Context:
     terminal_id: str | None = None
     drained: bool = False
     construction_failure: BaseException | None = None
+    resume_after: float = 0
 
 
 class ArchiveFinalizerRegistry:
@@ -83,7 +88,7 @@ class ArchiveFinalizerRegistry:
         self._retention = retention
         self._lock = Lock()
         self._closed = False
-        self._contexts: dict[int, _Context] = {}
+        self._contexts: OrderedDict[int, _Context] = OrderedDict()
 
     def _existing(self, key: ArchiveUploadExecutionKey, target: str) -> _Context | None:
         value = self._contexts.get(key.collection_id)
@@ -221,6 +226,82 @@ class ArchiveFinalizerRegistry:
             ):
                 raise Conflict("original archive finalizer is unavailable")
             return ArchiveFinalizerTurn(context.selection, context.advance())
+
+    def process_ready(
+        self,
+        *,
+        limit: int,
+        retry_after: timedelta,
+        retire: Callable[[ArchiveUploadExecutionKey, str], bool],
+    ) -> int:
+        """Resume pending originals and request idle retirement in bounded fair visits.
+
+        The existing maintenance owner sets the retry cadence and interlocks
+        retirement with current catalog admission. Its callback runs outside the
+        registry lock, preserving parent-before-registry lock order. This map is
+        already charged against construction retention; it is not a task queue.
+        Actual physical receiving must precede another original continuation.
+        Fenced contexts and unknown constructors retain their separate owners.
+        """
+        interval = retry_after.total_seconds()
+        if type(limit) is not int or limit < 1 or interval <= 0:
+            raise ValueError("finalizer resumption requires positive limits and retry interval")
+        if not self._lock.acquire(blocking=False):
+            return 0
+        try:
+            budget = min(limit, len(self._contexts))
+        finally:
+            self._lock.release()
+        progressed = 0
+        now = monotonic()
+        for _ in range(budget):
+            if not self._lock.acquire(blocking=False):
+                return progressed
+            retiring: tuple[ArchiveUploadExecutionKey, str] | None = None
+            try:
+                if self._closed or not self._contexts:
+                    return progressed
+                identity, context = self._contexts.popitem(last=False)
+                self._contexts[identity] = context
+                if (
+                    context.terminal_id is not None
+                    or context.construction_failure is not None
+                    or self._execution.status(context.key) != "untracked"
+                    or not context.lock.acquire(blocking=False)
+                ):
+                    continue
+                try:
+                    pending = (
+                        context.owner is not None
+                        and context.advance is not None
+                        and context.selection is not None
+                        and context.owner.has_pending
+                    )
+                finally:
+                    context.lock.release()
+                if not pending:
+                    retiring = context.key, context.target
+                elif context.resume_after <= now:
+                    try:
+                        result = self._execution.try_submit(
+                            context.key,
+                            target_incarnation=context.target,
+                            terminal=False,
+                            work=partial(self._resume_original, context),
+                            owner=self,
+                        )
+                    except ArchiveExecutionOccupied:
+                        # A separately owned payload may have acquired the shared
+                        # slot since the status probe. Adopt no foreign work.
+                        continue
+                    if result == "submitted":
+                        context.resume_after = now + interval
+                        progressed += 1
+            finally:
+                self._lock.release()
+            if retiring is not None:
+                progressed += retire(*retiring)
+        return progressed
 
     def collect(self, *, limit: int) -> tuple[ArchiveUploadExecutionCompletion, ...]:
         return self._execution.collect(limit=limit, owner=self)
@@ -374,24 +455,27 @@ class ArchiveFinalizerRegistry:
             if self._closed:
                 return False
             context = self._existing(key, target_incarnation)
-            if context is None:
-                return False
-            if context.terminal_id is not None or self._execution.status(key) != "untracked":
-                return False
-            if not context.lock.acquire(blocking=False):
-                return False
-            try:
-                if (
-                    context.construction_failure is not None
-                    or (context.owner is None and context.selection is not None)
-                    or (context.owner is not None and context.owner.has_pending)
-                ):
-                    return False
-                return self._remove(context)
-            finally:
-                context.lock.release()
+            return context is not None and self._retire_context_if_idle(context)
         finally:
             self._lock.release()
+
+    def _retire_context_if_idle(self, context: _Context) -> bool:
+        # The caller retains the registry lock; semantic and physical receiving
+        # remain independent prerequisites for releasing this original charge.
+        if context.terminal_id is not None or self._execution.status(context.key) != "untracked":
+            return False
+        if not context.lock.acquire(blocking=False):
+            return False
+        try:
+            if (
+                context.construction_failure is not None
+                or (context.owner is None and context.selection is not None)
+                or (context.owner is not None and context.owner.has_pending)
+            ):
+                return False
+            return self._remove(context)
+        finally:
+            context.lock.release()
 
     def _remove(self, context: _Context) -> bool:
         if not self._retention.retire(context.reservation, owner=self):
