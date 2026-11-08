@@ -932,6 +932,61 @@ def test_binding_closes_errors_without_exposing_provider_exception_text() -> Non
     assert b"internal_failure" in body
 
 
+@pytest.mark.parametrize("framed", [False, True])
+def test_binding_fault_logs_only_declared_operation(
+    framed: bool, caplog: pytest.LogCaptureFixture
+) -> None:
+    private_detail = "provider-token-canary\r\nforged-log-entry"
+
+    class FailingAdapter(MemoryAdapter):
+        def begin_write(self, request: WriteStartRequest) -> WriteSession:
+            raise RuntimeError(private_detail + request.object_path)
+
+        def put_small_object(
+            self, request: SmallObjectWriteRequest, content: bytes | Iterator[bytes]
+        ) -> ImmutableObjectReceipt:
+            raise RuntimeError(private_detail + request.object_path)
+
+    binding = StorageAdapterHttpBinding(FailingAdapter())
+    if framed:
+        request = SmallObjectWriteRequest(
+            object_path="archives/private-canary/object",
+            stored_bytes=1,
+            stored_sha256=hashlib.sha256(b"x").hexdigest(),
+            content_type="application/octet-stream",
+            required_identity_assertions={"riverhog-format": "fixture/v1"},
+            placement_policy="archive_default",
+            mode="create_only",
+        )
+        chunks = tuple(framed_body(request, b"x"))
+        path = "/v1/objects/put"
+        response = binding.handle_framed("post", path, chunks, content_length=sum(map(len, chunks)))
+    else:
+        start = WriteStartRequest(
+            object_path="archives/private-canary/object",
+            expected_bytes=1,
+            content_type="application/octet-stream",
+            required_identity_assertions={"riverhog-format": "fixture/v1"},
+            placement_policy="archive_default",
+        )
+        path = "/v1/writes/begin"
+        response = binding.handle("post", path, start.model_dump_json(exclude_none=True).encode())
+
+    assert response.status == 500
+    assert isinstance(response.body, bytes)
+    assert b"private-canary" not in response.body
+    records = [record for record in caplog.records if record.name == "riverhog.storage_adapter"]
+    assert len(records) == 1
+    record = records[0]
+    assert record.getMessage() == "storage adapter capability failed"
+    assert record.__dict__["method"] == "POST"
+    assert record.__dict__["path"] == path
+    assert record.exc_info is None and record.stack_info is None
+    assert "provider-token-canary" not in caplog.text
+    assert "forged-log-entry" not in caplog.text
+    assert "private-canary" not in caplog.text
+
+
 def test_adapter_implementation_value_error_is_a_server_fault() -> None:
     class FaultingAdapter(MemoryAdapter):
         def begin_write(

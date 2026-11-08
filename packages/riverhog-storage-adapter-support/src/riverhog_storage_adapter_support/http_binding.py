@@ -279,10 +279,7 @@ class StorageAdapterHttpBinding:
                 return _error(500, "internal_failure", "storage adapter operation failed")
             return _error(status, exc.code, exc.message)
         except Exception:
-            _LOGGER.exception(
-                "storage adapter capability failed",
-                extra={"method": normalized_method, "path": path},
-            )
+            _log_capability_failure(operation)
             return _error(500, "internal_failure", "storage adapter operation failed")
 
     def handle_framed(
@@ -373,10 +370,7 @@ class StorageAdapterHttpBinding:
                 return _error(500, "internal_failure", "storage adapter operation failed")
             return _error(status, exc.code, exc.message)
         except Exception:
-            _LOGGER.exception(
-                "storage adapter capability failed",
-                extra={"method": normalized_method, "path": path},
-            )
+            _log_capability_failure(operation)
             return _error(500, "internal_failure", "storage adapter operation failed")
 
     def _parse(self, body: bytes, model: type[ModelT]) -> ModelT:
@@ -708,6 +702,18 @@ FRAMED_STORAGE_ADAPTER_HTTP_PATHS = frozenset(
     for operation in STORAGE_ADAPTER_HTTP_OPERATIONS
     if operation.request_kind == "framed"
 )
+
+
+def _log_capability_failure(operation: HttpOperationContract | None) -> None:
+    # Request input and provider exceptions can contain credentials or control
+    # characters. Log only values from the maintained operation declaration.
+    _LOGGER.error(
+        "storage adapter capability failed",
+        extra={
+            "method": None if operation is None else operation.method,
+            "path": None if operation is None else operation.path,
+        },
+    )
 
 
 def _model_response(model: BaseModel) -> StorageAdapterHttpResponse:
