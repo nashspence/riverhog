@@ -546,6 +546,14 @@ class SqlAlchemyCollectionUploadService:
             config=config,
             archive_stores=archive_stores,
         )
+        from .archive_upload_terminal_observation import ArchiveUploadTerminalObservation
+
+        self._archive_terminal_observation = ArchiveUploadTerminalObservation(
+            self._archive_finalizers,
+            self._archive_invocations,
+            self._archive_inputs,
+            self._archive_execution,
+        )
         from .archive_upload_maintenance import ArchiveUploadMaintenance
 
         self._archive_upload_maintenance = ArchiveUploadMaintenance(
