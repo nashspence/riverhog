@@ -346,3 +346,39 @@ def test_existing_selected_journal_association_requires_actual_original_proof(
         with pytest.raises(Conflict, match="association proof changed"):
             _advance(_owner(f).owner, offset=8)
         assert f.calls == {"observe": 1, "execute": 1} and _count(f.case) == 0
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (
+        ("journal_id", _OTHER),
+        ("journal_bytes", 99),
+        ("journal_sha256", "f" * 64),
+        ("offset", 1),
+        ("size", 7),
+        ("plaintext_sha256", "f" * 64),
+    ),
+)
+def test_verified_journal_range_is_checked_before_staging_or_provider_execution(
+    tmp_path, monkeypatch, field, value
+):
+    with _journal_source(tmp_path, monkeypatch) as f:
+        original = _owner(f)
+        selected = f.source.journal_range
+        changed = replace(selected, **{field: value})
+        with pytest.raises(Conflict, match="verified artifact custody journal selection changed"):
+            original.owner.advance(
+                journal_id=selected.journal_id,
+                offset=selected.offset,
+                size=selected.size,
+                expected_range=changed,
+            )
+        assert f.calls == {"observe": 0, "execute": 0}
+        assert not original.owner.has_pending and _association(f) is None
+        assert original.owner.advance(
+            journal_id=selected.journal_id,
+            offset=selected.offset,
+            size=selected.size,
+            expected_range=selected,
+        )
+        assert _association(f) is not None and f.calls == {"observe": 1, "execute": 1}

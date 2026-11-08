@@ -331,11 +331,16 @@ from riverhog_core.retrieval_cache_receipts import (
 )
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.app_keys import KeyAuthorizationFence, require_key_authorization
+from riverhog_core.services.archive_artifact_custody import (
+    ArchiveArtifactCustodyFinalizer,
+    ArtifactCustodySelection,
+)
 from riverhog_core.services.archive_artifact_custody_receipt import (
     ArchiveArtifactCustodyReceiptSource,
 )
+from riverhog_core.services.archive_provenance_journal_checkpoint import ProvenanceJournalRange
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.collection_tags import (
     advance_collection_tag_set,
     collection_tag_sha256,
@@ -412,13 +417,19 @@ class _InitialTagReceipt(TypedDict):
 
 
 @dataclass(frozen=True, slots=True)
+class _ArtifactCustodyJournal:
+    selected: ProvenanceJournalRange
+    content: bytes = field(repr=False)
+
+
+@dataclass(frozen=True, slots=True)
 class _ArtifactCustodySelection:
     """One application-verified step; selection does not execute it."""
 
     collection_id: int
     artifact_id: str
     pending_structure: str | None
-    pending_segment: tuple[str, str, int, bytes] | None = field(repr=False)
+    pending_segment: _ArtifactCustodyJournal | None = field(repr=False)
     receipt_source: ArchiveArtifactCustodyReceiptSource | None = field(repr=False)
     prefix: str
     store_name: str
@@ -3746,10 +3757,15 @@ class SqlAlchemyCollectionUploadService:
                                 (collection_id, journal.journal_id, offset, segment_sha256),
                             )
                             if sealed is None:
-                                pending_segment = (
-                                    journal.journal_id,
-                                    journal.sha256,
-                                    offset,
+                                pending_segment = _ArtifactCustodyJournal(
+                                    ProvenanceJournalRange(
+                                        journal.journal_id,
+                                        journal.bytes,
+                                        journal.sha256,
+                                        offset,
+                                        size,
+                                        segment_sha256,
+                                    ),
                                     content,
                                 )
                                 break
@@ -3824,6 +3840,33 @@ class SqlAlchemyCollectionUploadService:
             passphrase=passphrase,
         )
 
+    def _artifact_custody_owner(
+        self, collection_id: int, artifact_id: str, *, forward_guard: Guard
+    ) -> ArchiveArtifactCustodyFinalizer:
+        def select_source() -> ArtifactCustodySelection | None:
+            selected = self._select_artifact_custody(collection_id, artifact_id)
+            if selected is None:
+                return None
+            return ArtifactCustodySelection(
+                selected.collection_id,
+                selected.artifact_id,
+                structure_object_id=selected.pending_structure,
+                journal_range=None
+                if selected.pending_segment is None
+                else selected.pending_segment.selected,
+                receipt_source=selected.receipt_source,
+            )
+
+        return ArchiveArtifactCustodyFinalizer(
+            self._session_factory,
+            collection_id=collection_id,
+            artifact_id=artifact_id,
+            config=self._config,
+            archive_stores=self._archive_stores,
+            forward_guard=forward_guard,
+            select_source=select_source,
+        )
+
     def _advance_artifact_custody(self, collection_id: int, artifact_id: str) -> bool:
         """Seal one required object, or acknowledge a fully verified early primary.
 
@@ -3847,7 +3890,12 @@ class SqlAlchemyCollectionUploadService:
                 collection_id, selected_object_id=pending_structure
             )
         if pending_segment is not None:
-            journal_id, journal_sha256, offset, content = pending_segment
+            selected, content = pending_segment.selected, pending_segment.content
+            journal_id, journal_sha256, offset = (
+                selected.journal_id,
+                selected.journal_sha256,
+                selected.offset,
+            )
             publisher = ArchiveProvenancePublisher(
                 object_store=self._archive_stores.require(store_name).immutable_objects,
                 passphrase=passphrase,

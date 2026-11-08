@@ -70,7 +70,14 @@ class ArchiveProvenanceJournalWriter:
         finally:
             self._lock.release()
 
-    def advance(self, *, journal_id: str, offset: int, size: int) -> bool:
+    def advance(
+        self,
+        *,
+        journal_id: str,
+        offset: int,
+        size: int,
+        expected_range: ProvenanceJournalRange | None = None,
+    ) -> bool:
         """Receive one original fact or selected range; false means already received."""
         with self._lock:
             self._terminal.require_forward()
@@ -87,6 +94,7 @@ class ArchiveProvenanceJournalWriter:
                     size=size,
                     grants=self._config.archive_write,
                     forward_guard=self._forward_guard,
+                    expected_range=expected_range,
                 )
                 selected, _ = ProvenanceJournalRange.capture(
                     session, self._collection_id, journal_id, offset=offset, size=size

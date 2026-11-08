@@ -165,6 +165,7 @@ class ArchiveProvenanceJournalSource:
         size: int,
         grants: ArchiveWriteGrants,
         forward_guard: Guard,
+        expected_range: ProvenanceJournalRange | None = None,
     ) -> ArchiveProvenanceJournalSource:
         _writer(session)
         forward_guard(session)
@@ -179,6 +180,8 @@ class ArchiveProvenanceJournalSource:
         selected, content = ProvenanceJournalRange.capture(
             session, collection_id, journal_id, offset=offset, size=size
         )
+        if expected_range is not None and selected != expected_range:
+            raise Conflict("verified artifact custody journal selection changed")
         row = session.get(
             Publication,
             (collection_id, selected.plaintext_sha256),
