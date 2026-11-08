@@ -5,13 +5,14 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 from riverhog_core.catalog_db import session_scope
+from riverhog_core.catalog_models import CollectionRecord
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
 from riverhog_protocol.errors import Conflict
 from sqlalchemy import select
 
 from tests.unit.test_archive_finalizer_registry import _receive, _scope
-from tests.unit.test_collection_finalization_plan import _metadata_case
+from tests.unit.test_collection_finalization_plan import _metadata_case, _until
 
 
 def _terminal(case):
@@ -159,3 +160,43 @@ def test_closed_gate_resumes_only_original_unacknowledged_workflow_feedback(tmp_
         (completed,) = _receive(service._archive_finalizers, service._archive_execution)
         assert completed.result().progressed and calls == [claim, claim]
         assert context.owner is original and not original.has_pending and case.calls == []
+
+
+def test_retired_parent_can_receive_only_its_original_workflow_reply(tmp_path, monkeypatch):
+    with _metadata_case(tmp_path, monkeypatch, count=1) as (case, claim):
+        service = case.service
+        _until(case, claim, lambda upload: upload.catalog_phase == "terminal")
+        actual = service._requeue_finalization_step
+        received = []
+
+        def lost(selected):
+            received.append(selected)
+            actual(selected)
+            if len(received) == 1:
+                raise OSError("injected retired-parent workflow reply loss")
+
+        monkeypatch.setattr(service, "_requeue_finalization_step", lost)
+        assert service._submit_finalization(claim) == "submitted"
+        (failed,) = _receive(service._archive_finalizers, service._archive_execution)
+        with pytest.raises(OSError, match="retired-parent workflow reply loss"):
+            failed.result()
+        context = service._archive_finalizers._contexts[case.collection_id]
+        retained = context.owner
+        assert retained.has_pending and not retained._original.has_pending
+        with session_scope(case.factory) as session:
+            assert session.get(Upload, case.collection_id) is None
+            assert session.get(CollectionRecord, case.collection_id).is_published
+        calls = list(case.calls)
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("retired-parent receiving cannot reconstruct or republish")
+
+        monkeypatch.setattr(service, "_finalization_owner", forbidden)
+        monkeypatch.setattr(retained._original, "advance", forbidden)
+        assert service._submit_finalization(claim) == "submitted"
+        (completed,) = _receive(service._archive_finalizers, service._archive_execution)
+        assert completed.result().progressed and received == [claim, claim]
+        assert context.owner is retained and not retained.has_pending and case.calls == calls
+        assert service._archive_finalizers.retire_idle(
+            context.key, target_incarnation=context.target
+        )
