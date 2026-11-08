@@ -6,7 +6,10 @@ from concurrent.futures import ThreadPoolExecutor
 import pytest
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
-from riverhog_core.services.archive_finalization_pipeline import ArchiveFinalizationPipeline
+from riverhog_core.services.archive_finalization_pipeline import (
+    ArchiveFinalizationPipeline,
+    ArchiveFinalizationStagePlan,
+)
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_core.services.immutable_archive_receiving import OriginalImmutableArchiveReport
 from riverhog_protocol.errors import Conflict
@@ -27,7 +30,9 @@ from tests.unit.test_original_immutable_archive_report import _lose_reply
 
 def _pipeline(case, *stages):
     return ArchiveFinalizationPipeline(
-        case.factory, collection_id=case.collection_id, stages=stages
+        case.factory,
+        collection_id=case.collection_id,
+        stages=tuple(ArchiveFinalizationStagePlan.fixed(create) for create in stages),
     )
 
 
@@ -134,6 +139,7 @@ def test_unconfirmed_pipeline_constructor_stays_charged_and_is_never_replaced(
         with pytest.raises(ValueError if returned else OSError):
             owner.advance()
         assert owner.has_pending and owner._construction_failure
+        assert owner._selected_create is create
         with pytest.raises(Conflict, match="constructor remains unresolved"):
             owner.advance()
         assert calls == [catalog]
@@ -250,3 +256,115 @@ def test_registry_retries_original_pipeline_feedback_without_advancing_a_new_cla
         assert service._archive_finalizers.retire_idle(
             context.key, target_incarnation=context.target
         )
+
+
+def test_read_only_stage_selection_failure_does_not_create_an_unknown_constructor(
+    tmp_path, monkeypatch
+):
+    with _catalog_case(tmp_path, monkeypatch, "artifact-tree") as (case, claim, catalog):
+        reads, constructors = [], []
+
+        def create():
+            constructors.append(catalog)
+            return catalog
+
+        def select():
+            with session_scope(case.factory) as session:
+                claim.guard(session)
+            reads.append(claim)
+            if len(reads) == 1:
+                raise OSError("injected read-only stage selection failure")
+            return create
+
+        owner = ArchiveFinalizationPipeline(
+            case.factory,
+            collection_id=case.collection_id,
+            stages=(ArchiveFinalizationStagePlan(select),),
+        )
+        with pytest.raises(OSError, match="read-only stage selection"):
+            owner.advance()
+        assert not owner.has_pending and not owner._construction_failure
+        assert owner._selected_create is owner._original is None
+        assert constructors == [] and reads == [claim]
+        assert owner.advance() is True and not owner.has_pending
+        assert constructors == [catalog] and reads == [claim, claim]
+        cursor = _cursor(case, catalog)
+        assert owner.advance() is True and _cursor(case, catalog) == cursor
+        assert constructors == [catalog] and reads == [claim, claim]
+
+
+def test_empty_dynamic_stage_skips_construction_and_continues_the_fixed_plan(tmp_path, monkeypatch):
+    with _catalog_case(tmp_path, monkeypatch, "artifact-tree") as (case, claim, catalog):
+        selected = []
+
+        def absent():
+            selected.append("absent")
+            return None
+
+        owner = ArchiveFinalizationPipeline(
+            case.factory,
+            collection_id=case.collection_id,
+            stages=(
+                ArchiveFinalizationStagePlan(absent),
+                ArchiveFinalizationStagePlan.fixed(lambda: catalog),
+            ),
+        )
+        assert owner.advance() is True and not owner.has_pending
+        assert owner._index == 1 and owner._original is catalog and selected == ["absent"]
+        assert owner.advance() is True and selected == ["absent"]
+
+
+def test_dynamic_member_selection_and_actual_custody_constructor_survive_reply_loss(
+    tmp_path, monkeypatch
+):
+    from riverhog_core.catalog_models import CollectionUploadArtifactRecord as Artifact
+    from sqlalchemy import select
+
+    from tests.unit.test_archive_artifact_custody import _case as custody_case
+    from tests.unit.test_archive_artifact_custody import _owner as custody_owner
+    from tests.unit.test_archive_provenance_journal_writer import _lose_ack
+
+    with custody_case(tmp_path, monkeypatch) as case:
+        reads, constructed = [], []
+
+        def choose():
+            with session_scope(case.factory) as session:
+                member = session.scalar(
+                    select(Artifact.artifact_id)
+                    .where(
+                        Artifact.collection_id == 1,
+                        Artifact.custody_receipt_json.is_(None),
+                    )
+                    .order_by(Artifact.artifact_id)
+                    .limit(1)
+                )
+            reads.append(member)
+            if member is None:
+                return None
+
+            def create():
+                assert member == case.member_id
+                original = custody_owner(case)
+                constructed.append(original)
+                return original
+
+            return create
+
+        owner = ArchiveFinalizationPipeline(
+            case.factory,
+            collection_id=1,
+            stages=(ArchiveFinalizationStagePlan(choose),),
+        )
+        with _lose_ack(monkeypatch, "report", True):
+            with pytest.raises(OSError):
+                owner.advance()
+        original = owner._original
+        selected_create = owner._selected_create
+        assert owner.has_pending and original is constructed[0]
+        assert reads == [case.member_id] and len(constructed) == 1
+        assert owner.advance() is True and not owner.has_pending
+        assert owner._original is original and owner._selected_create is selected_create
+        assert reads == [case.member_id] and len(constructed) == 1
+        assert case.calls == {"observe": 1, "execute": 1}
+        assert owner.advance() is True
+        assert reads == [case.member_id] and len(constructed) == 1

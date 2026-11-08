@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import dataclass, field
 from threading import Lock
 from typing import Protocol
 
@@ -20,10 +21,21 @@ class ArchiveFinalizationStage(RetainedArchiveFinalizer, Protocol):
     def advance(self) -> bool: ...
 
 
+@dataclass(frozen=True, slots=True)
+class ArchiveFinalizationStagePlan:
+    """Select read-only source facts before declaring a child constructor started."""
+
+    select: Callable[[], Callable[[], ArchiveFinalizationStage] | None] = field(repr=False)
+
+    @classmethod
+    def fixed(cls, create: Callable[[], ArchiveFinalizationStage]) -> ArchiveFinalizationStagePlan:
+        return cls(lambda: create)
+
+
 class ArchiveFinalizationPipeline:
     """Select at most one progressing step from an application-owned fixed plan.
 
-    Constructors and continuations run in the containing registry's worker.
+    Selection, constructors and continuations run in the containing registry's worker.
     The original child survives every failure, including a constructor without
     a confirmed receiver. A returned boolean is one workflow turn's result,
     never a global completion, resource-release or terminal disposition proof.
@@ -34,13 +46,14 @@ class ArchiveFinalizationPipeline:
         factory: SessionFactory,
         *,
         collection_id: int,
-        stages: tuple[Callable[[], ArchiveFinalizationStage], ...],
+        stages: tuple[ArchiveFinalizationStagePlan, ...],
     ) -> None:
         if not stages:
             raise ValueError("archive finalization requires its fixed stage plan")
         self._stages = stages
         self._index = 0
         self._original: ArchiveFinalizationStage | None = None
+        self._selected_create: Callable[[], ArchiveFinalizationStage] | None = None
         self._construction_failure = False
         self._result: bool | None = None
         self._lock = Lock()
@@ -48,7 +61,10 @@ class ArchiveFinalizationPipeline:
 
     @property
     def has_pending(self) -> bool:
-        return self._construction_failure or (self._original is not None and self._result is None)
+        return self._construction_failure or (
+            (self._original is not None or self._selected_create is not None)
+            and self._result is None
+        )
 
     def advance(self) -> bool:
         with self._lock:
@@ -59,8 +75,14 @@ class ArchiveFinalizationPipeline:
                 raise Conflict("original finalization constructor remains unresolved")
             while self._index < len(self._stages):
                 if self._original is None:
+                    if self._selected_create is None:
+                        create = self._stages[self._index].select()
+                        if create is None:
+                            self._index += 1
+                            continue
+                        self._selected_create = create
                     self._construction_failure = True
-                    self._original = self._stages[self._index]()
+                    self._original = self._selected_create()
                     if self._original is None:
                         raise ValueError("original finalization constructor returned no receiver")
                     self._construction_failure = False
@@ -71,6 +93,7 @@ class ArchiveFinalizationPipeline:
                     self._result = True
                     return True
                 self._original = None
+                self._selected_create = None
                 self._index += 1
             self._result = False
             return False
