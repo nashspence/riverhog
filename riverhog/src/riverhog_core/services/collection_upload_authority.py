@@ -68,7 +68,7 @@ def retain_upload_claim(
 
 
 def retain_inactive_upload_claim(
-    session: Session, principal_id: str, *, nowait: bool = False
+    session: Session, principal_id: str, *, for_update: bool = True, nowait: bool = False
 ) -> str | None:
     """Retain the original output's inactive processing claim before its parent.
 
@@ -77,20 +77,21 @@ def retain_inactive_upload_claim(
     unknown, not an unclaimed output. Retaining this row interlocks renewal for
     the caller's short transaction; it neither prohibits later renewal nor
     supplies orphan selection, current deletion rights or cleanup permission.
+    A caller that already retains this exact row can recheck without reacquiring
+    the earlier claim lock class after it holds the construction parent.
     """
     if not principal_id.startswith("processing:"):
         return None
-    claim = session.execute(
-        select(
-            CollectionProcessingClaimRecord.id,
-            CollectionProcessingClaimRecord.state,
-            CollectionProcessingClaimRecord.expires_at,
-        )
-        .where(
-            CollectionProcessingClaimRecord.execution_id == principal_id.removeprefix("processing:")
-        )
-        .with_for_update(nowait=nowait)
-    ).one_or_none()
+    statement = select(
+        CollectionProcessingClaimRecord.id,
+        CollectionProcessingClaimRecord.state,
+        CollectionProcessingClaimRecord.expires_at,
+    ).where(
+        CollectionProcessingClaimRecord.execution_id == principal_id.removeprefix("processing:")
+    )
+    if for_update:
+        statement = statement.with_for_update(nowait=nowait)
+    claim = session.execute(statement).one_or_none()
     if claim is None:
         raise NotFound("collection upload output claim is unavailable")
     if claim.state == "active" and parse_utc_timestamp(claim.expires_at) > utc_epoch_ns_now():

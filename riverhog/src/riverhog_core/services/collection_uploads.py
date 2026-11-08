@@ -349,6 +349,7 @@ from riverhog_core.services.collection_tags import (
 from riverhog_core.services.collection_upload_authority import (
     require_archive_write_control,
     require_open_upload_writes,
+    retain_inactive_upload_claim,
     retain_upload_claim,
     retain_upload_key,
 )
@@ -995,6 +996,81 @@ class SqlAlchemyCollectionUploadService:
             upload = session.get(CollectionUploadRecord, normalized)
             if upload is None or not _upload_visible_to_deleter(session, upload, principal):
                 raise NotFound(f"collection upload not found: {normalized}")
+
+    def _discard_write_guard(
+        self, collection_id: int, principal: Principal
+    ) -> Callable[[Session], None]:
+        """Retain current deletion rights and the original output claim.
+
+        The caller starts the early SQLite writer and retains this short
+        transaction. Scope binds the collection identity, independently of tags.
+        Key, claim and parent locks follow that order; a nonlocking creator
+        lookup selects the bounded claim rows, then the locked parent and its
+        original construction must still agree. Inactivity is never cached.
+        This guard supplies neither orphan eligibility nor writer quiescence.
+        """
+        normalized_id = _collection_id(collection_id)
+        authorized = False
+        key: KeyAuthorizationFence | None = None
+
+        def guard(session: Session) -> None:
+            nonlocal authorized, key
+            if not principal.allows_collection(COLLECTIONS_DELETE, normalized_id):
+                raise NotFound(f"collection upload not found: {normalized_id}")
+            if authorized and key is not None:
+                require_key_authorization(session, key, nowait=True)
+            else:
+                key = retain_upload_key(session, principal, nowait=True)
+            creator = session.scalar(
+                select(CollectionUploadRecord.initiated_by_principal_id).where(
+                    CollectionUploadRecord.collection_id == normalized_id
+                )
+            )
+            if creator is None:
+                raise NotFound(f"collection upload not found: {normalized_id}")
+            executions = sorted(
+                {
+                    value.removeprefix("processing:")
+                    for value in (principal.id, creator)
+                    if value.startswith("processing:")
+                }
+            )
+            if executions:
+                # At most the caller and original output claims participate.
+                # Acquire their stable row order before checking either one.
+                session.execute(
+                    select(CollectionProcessingClaimRecord.id)
+                    .where(CollectionProcessingClaimRecord.execution_id.in_(executions))
+                    .order_by(CollectionProcessingClaimRecord.id)
+                    .with_for_update(nowait=True)
+                ).all()
+            claim_id = retain_upload_claim(
+                session, principal.id, principal.key_id, for_update=False
+            )
+            output_claim_id = retain_inactive_upload_claim(session, creator, for_update=False)
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update(nowait=True)
+                .execution_options(populate_existing=True)
+            )
+            if upload is None or upload.initiated_by_principal_id != creator:
+                raise Conflict("collection upload original creator changed")
+            require_archive_write_control(session, upload)
+            # Expiry can advance while a later lock is acquired. These rows
+            # are retained already; do not reacquire an earlier lock class.
+            if key is not None:
+                require_key_authorization(session, key, for_update=False)
+            if (
+                retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
+                != claim_id
+                or retain_inactive_upload_claim(session, creator, for_update=False)
+                != output_claim_id
+            ):
+                raise Conflict("collection upload original claim authority changed")
+            authorized = True
+
+        return guard
 
     def register_artifacts(
         self,
