@@ -19,7 +19,10 @@ from riverhog_core.services.archive_construction_retention import (
     ArchiveConstructionRetention,
 )
 from riverhog_core.services.archive_finalizer_terminal import TerminalDrainStatus
-from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
+from riverhog_core.services.archive_upload_drain import (
+    LocalTerminalStatus,
+    inspect_terminal_write_records,
+)
 from riverhog_core.services.archive_upload_execution import (
     ArchiveExecutionOccupied,
     ArchiveUploadExecutionCompletion,
@@ -221,6 +224,37 @@ class ArchiveFinalizerRegistry:
 
     def collect(self, *, limit: int) -> tuple[ArchiveUploadExecutionCompletion, ...]:
         return self._execution.collect(limit=limit, owner=self)
+
+    def local_terminal_status(
+        self,
+        key: ArchiveUploadExecutionKey,
+        *,
+        target_incarnation: str,
+        operation_id: str,
+    ) -> LocalTerminalStatus:
+        """Observe local ownership without SQL, waiting, fencing or global authority.
+
+        The composing owner validates the exact closed catalog selection
+        separately. A missing context grants no global quiescence or disposal.
+        """
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            context = self._existing(key, target_incarnation)
+            if context is None:
+                return "untracked"
+            if context.terminal_id is None:
+                return "unfenced"
+            if context.terminal_id != operation_id:
+                raise Conflict("retained finalizer has another terminal request")
+            if not context.drained or context.construction_failure is not None:
+                return "fenced"
+            execution = self._execution.status(key)
+            if execution == "busy":
+                return "busy"
+            return "drained" if execution == "untracked" else "fenced"
+        finally:
+            self._lock.release()
 
     def fence_terminal(
         self,

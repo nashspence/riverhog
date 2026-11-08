@@ -23,7 +23,10 @@ from riverhog_core.services.archive_construction_retention import (
 )
 from riverhog_core.services.archive_finalizer_terminal import TerminalDrainStatus
 from riverhog_core.services.archive_payload_input import ArchivePayloadInput
-from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
+from riverhog_core.services.archive_upload_drain import (
+    LocalTerminalStatus,
+    inspect_terminal_write_records,
+)
 from riverhog_core.services.archive_upload_execution import (
     ArchiveExecutionOccupied,
     ArchiveUploadExecutionCompletion,
@@ -498,6 +501,37 @@ class ArchiveUploadInvocationRegistry:
         if not group.requests:
             del self._constructions[group.key.collection_id]
         return True
+
+    def local_terminal_status(
+        self,
+        key: ArchiveUploadExecutionKey,
+        *,
+        target_incarnation: str,
+        operation_id: str,
+    ) -> LocalTerminalStatus:
+        """Observe local ownership without SQL, waiting, fencing or global authority.
+
+        The composing owner validates the exact closed catalog selection
+        separately. A missing group grants no global quiescence or disposal.
+        """
+        if not self._lock.acquire(blocking=False):
+            return "busy"
+        try:
+            group = self._construction(key, target_incarnation)
+            if group is None:
+                return "untracked"
+            if group.terminal_id is None:
+                return "unfenced"
+            if group.terminal_id != operation_id:
+                raise Conflict("retained upload has another terminal request")
+            if group.remaining != 0:
+                return "fenced"
+            execution = self._execution.status(key)
+            if execution == "busy":
+                return "busy"
+            return "drained" if execution == "untracked" else "fenced"
+        finally:
+            self._lock.release()
 
     def fence_terminal(
         self,

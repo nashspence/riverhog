@@ -6,6 +6,7 @@ import hashlib
 import json
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Literal
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol.errors import Conflict, NotFound
@@ -23,6 +24,9 @@ from riverhog_core.catalog_cache_write_models import (
 )
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
+
+LocalTerminalStatus = Literal["busy", "untracked", "unfenced", "fenced", "drained"]
+
 
 EffectModel = (
     type[ArchiveWriteEffectRecord]
