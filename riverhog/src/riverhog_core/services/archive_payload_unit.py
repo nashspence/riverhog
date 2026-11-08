@@ -497,8 +497,12 @@ class ArchivePayloadUnit:
                     plan=self._pack_plan, checkpoint=checkpoint
                 )
             else:
-                assert self._raw is not None and isinstance(checkpoint, RawUploadCheckpoint)
-                self._receipt = self._raw.sealed_receipt(checkpoint)
+                assert (
+                    self._raw is not None
+                    and self._raw_plan is not None
+                    and isinstance(checkpoint, RawUploadCheckpoint)
+                )
+                self._receipt = self._raw.sealed_receipt(checkpoint, plan=self._raw_plan)
         if not self._receipt_recorded:
             self._service._record_sealed_volume(self._key.collection_id, self._receipt)
             self._receipt_recorded = True

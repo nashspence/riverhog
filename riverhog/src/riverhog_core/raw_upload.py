@@ -661,8 +661,11 @@ class RawVolumeUploader:
             return (yield from self._complete(checkpoint))
         return checkpoint
 
-    def sealed_receipt(self, checkpoint: RawUploadCheckpoint) -> SealedRawVolume:
-        self._validate(_checkpoint_plan(checkpoint), checkpoint)
+    def sealed_receipt(
+        self, checkpoint: RawUploadCheckpoint, *, plan: RawVolumePlan
+    ) -> SealedRawVolume:
+        """Receive a completed checkpoint only for the independently selected plan."""
+        self._validate(plan, checkpoint)
         completed = checkpoint.completed
         if completed is None:
             raise RuntimeError("raw volume is not sealed")
@@ -879,6 +882,7 @@ class RawVolumeUploader:
     def _validate(self, plan: RawVolumePlan, checkpoint: RawUploadCheckpoint) -> None:
         if (
             checkpoint.volume_id != plan.volume_id
+            or checkpoint.volume_id != f"segment-{plan.sequence:064x}"
             or checkpoint.artifact_id != plan.artifact_id
             or checkpoint.artifact_offset != plan.artifact_offset
             or checkpoint.plaintext_bytes != plan.plaintext_bytes

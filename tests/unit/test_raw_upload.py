@@ -245,7 +245,7 @@ def test_raw_upload_resumes_on_server_defined_age_part_boundaries() -> None:
         checkpoint=resumed,
         plaintext=content[second.plaintext_start : second.plaintext_end],
     )
-    receipt = uploader.sealed_receipt(resumed)
+    receipt = uploader.sealed_receipt(resumed, plan=plan)
 
     assert resumed.completed is not None
     assert receipt.artifact_id == "a" * 64

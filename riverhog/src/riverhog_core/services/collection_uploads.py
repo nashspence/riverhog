@@ -2769,7 +2769,7 @@ class SqlAlchemyCollectionUploadService:
                     plaintext=content,
                 )
                 receipt = (
-                    raw_uploader.sealed_receipt(raw_checkpoint)
+                    raw_uploader.sealed_receipt(raw_checkpoint, plan=raw_plan)
                     if raw_checkpoint.completed
                     else None
                 )
@@ -3569,7 +3569,7 @@ class SqlAlchemyCollectionUploadService:
                         object_id=volume_id,
                     ),
                     passphrase_id=passphrase_id,
-                ).sealed_receipt(raw_checkpoint)
+                ).sealed_receipt(raw_checkpoint, plan=parse_raw_volume_plan(plan_json))
             else:
                 raise RuntimeError(f"unsupported archive volume kind: {kind}")
             self._record_sealed_volume(collection_id, receipt)
