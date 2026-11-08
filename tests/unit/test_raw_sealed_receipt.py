@@ -9,6 +9,7 @@ from riverhog_core.raw_volume import (
     parse_raw_volume_plan,
     raw_volume_plan_bytes,
 )
+from riverhog_protocol.errors import Conflict
 
 from tests.unit.test_collection_upload_preparation import _case, _unit
 from tests.unit.test_raw_upload import (
@@ -69,7 +70,7 @@ def test_cold_payload_receiving_rejects_a_different_registered_plan(tmp_path):
             volume.sealed_receipt_json = None
             changed = replace(parse_raw_volume_plan(original_plan), artifact_sha256="b" * 64)
             volume.plan_json = raw_volume_plan_bytes(changed).decode()
-        with pytest.raises(ValueError, match="does not match its plan"):
+        with pytest.raises(Conflict, match="differs from its selected source"):
             case.service._reconcile_sealed_volume_receipts(case.collection_id)
         with session_scope(case.factory) as session:
             volume = session.get(

@@ -17,6 +17,7 @@ class ArchiveWriteGrants:
     calls: int = 64
     control_bytes: int = 1024 * 1024
     preparation_bytes: int = 16 * 1024
+    native_receipt_bytes: int = 8 * 1024 * 1024
     terminal_bytes: int = 64 * 1024
     result_bytes: int = 64 * 1024
     metadata_preparation_bytes: int = 2 * max(
@@ -31,6 +32,7 @@ class ArchiveWriteGrants:
             "terminal_bytes",
             "result_bytes",
             "metadata_preparation_bytes",
+            "native_receipt_bytes",
         ):
             value = getattr(self, name)
             if type(value) is not int or value < 1:

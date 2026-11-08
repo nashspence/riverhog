@@ -2581,7 +2581,7 @@ def test_postgres_mutable_actor_terminal_fence_defers_actual_row_locks(
 def test_postgres_native_seal_receiving_uses_its_partial_index_with_generic_plans(
     isolated_database_url, tmp_path, record_property, pending
 ):
-    from riverhog_core.services.collection_uploads import _native_seal_receipts_query
+    from riverhog_core.services.archive_native_seal_receiving import native_seal_receipts_query
     from sqlalchemy.dialects import postgresql
 
     from tests.unit.test_native_seal_receipt_selection import _pending_native_seals
@@ -2590,7 +2590,7 @@ def test_postgres_native_seal_receiving_uses_its_partial_index_with_generic_plan
         case,
         expected,
     ):
-        statement = _native_seal_receipts_query(case.collection_id, limit=2)
+        statement = native_seal_receipts_query(case.collection_id, limit=2)
         compiled = statement.compile(dialect=postgresql.dialect(paramstyle="numeric_dollar"))
         assert len(compiled.positiontup) == 2
         values = tuple(compiled.params[name] for name in compiled.positiontup)

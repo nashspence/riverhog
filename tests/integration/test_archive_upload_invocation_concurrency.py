@@ -170,3 +170,16 @@ def test_postgres_original_seal_receiving_preserves_writer_lease(
     _receive_original_seal(
         tmp_path, monkeypatch, kind, "direct", lease, database_url=database_url, terminal=terminal
     )
+
+
+@pytest.mark.parametrize("kind", ("pack", "segment"))
+def test_postgres_original_native_seal_retains_receipt_through_closed_gate(
+    database_url, tmp_path, monkeypatch, kind
+):
+    from tests.unit.test_original_native_archive_seal import (
+        test_original_native_seal_survives_lost_reply_without_reselection_or_lease_renewal,
+    )
+
+    test_original_native_seal_survives_lost_reply_without_reselection_or_lease_renewal(
+        tmp_path, monkeypatch, kind, True, True, database_url=database_url
+    )

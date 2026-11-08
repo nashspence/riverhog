@@ -5,7 +5,7 @@ from contextlib import contextmanager
 import pytest
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord as Volume
-from riverhog_core.services.collection_uploads import _native_seal_receipts_query
+from riverhog_core.services.archive_native_seal_receiving import native_seal_receipts_query
 from sqlalchemy import select, update
 
 from tests.unit.test_collection_upload_preparation import _case
@@ -62,7 +62,7 @@ def test_native_seal_selection_skips_completed_and_unsealed_prefixes(
         with sqlite_work(case.service) as work:
             with session_scope(case.factory) as session:
                 rows = list(
-                    session.execute(_native_seal_receipts_query(case.collection_id, limit=2))
+                    session.execute(native_seal_receipts_query(case.collection_id, limit=2))
                 )
         assert [row.object_id for row in rows] == expected[:2]
         assert work["vm_steps"] <= 300, (prefix, pending, work)
@@ -82,7 +82,7 @@ def test_native_seal_selections_have_linear_total_query_work(tmp_path, record_pr
             with sqlite_work(case.service) as work:
                 with session_scope(case.factory) as session:
                     rows = list(
-                        session.execute(_native_seal_receipts_query(case.collection_id, limit=16))
+                        session.execute(native_seal_receipts_query(case.collection_id, limit=16))
                     )
             query_steps += work["vm_steps"]
             assert len(rows) <= 16
@@ -107,3 +107,26 @@ def test_native_seal_selections_have_linear_total_query_work(tmp_path, record_pr
         record_property("pending_receipts", pending)
         record_property("selected_rows", len(found))
         record_property("selection_sqlite_vm_steps", query_steps)
+
+
+@pytest.mark.parametrize("prefix", (0, 32, 1000))
+def test_native_source_preflight_and_capture_skip_irrelevant_prefixes(
+    tmp_path, record_property, prefix
+):
+    from riverhog_core.services.archive_native_seal_receiving import NativeArchiveSealSource
+
+    # These catalog selectors deliberately carry no valid native checkpoint or
+    # archive custody; only source selection and byte admission run here.
+    with _pending_native_seals(tmp_path, prefix, 1) as (case, expected):
+        with sqlite_work(case.service) as work:
+            source = NativeArchiveSealSource.load(
+                case.factory, case.collection_id, case.service._config.archive_write
+            )
+        assert source is not None and source.object_id == expected[0]
+        assert source.checkpoint_json == "selector"
+        assert source.reserved_bytes <= case.service._config.archive_write.native_receipt_bytes
+        assert work["vm_steps"] <= 512, (prefix, work)
+        record_property("completed_seal_prefix", prefix)
+        record_property("unsealed_prefix", prefix)
+        record_property("native_source_sqlite_vm_steps", work["vm_steps"])
+        record_property("native_source_reserved_bytes", source.reserved_bytes)

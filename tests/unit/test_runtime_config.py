@@ -434,6 +434,7 @@ def test_archive_write_operator_grants_round_trip_and_reject_invalid_capacity(
         "control_bytes": "2MiB",
         "preparation_bytes": "4KiB",
         "metadata_preparation_bytes": "3MiB",
+        "native_receipt_bytes": "5MiB",
         "terminal_bytes": "8KiB",
         "result_bytes": "16KiB",
     }
@@ -444,6 +445,7 @@ def test_archive_write_operator_grants_round_trip_and_reject_invalid_capacity(
         grant.control_bytes,
         grant.preparation_bytes,
         grant.metadata_preparation_bytes,
+        grant.native_receipt_bytes,
         grant.terminal_bytes,
         grant.result_bytes,
     ) == (
@@ -451,6 +453,7 @@ def test_archive_write_operator_grants_round_trip_and_reject_invalid_capacity(
         2 * 1024 * 1024,
         4 * 1024,
         3 * 1024 * 1024,
+        5 * 1024 * 1024,
         8 * 1024,
         16 * 1024,
     )
@@ -460,6 +463,7 @@ def test_archive_write_operator_grants_round_trip_and_reject_invalid_capacity(
         ("control_bytes", "0B"),
         ("preparation_bytes", "0B"),
         ("metadata_preparation_bytes", "0B"),
+        ("native_receipt_bytes", "0B"),
         ("terminal_bytes", "0B"),
         ("result_bytes", "0B"),
     ):

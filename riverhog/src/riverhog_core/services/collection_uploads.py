@@ -339,6 +339,10 @@ from riverhog_core.services.archive_artifact_custody import (
 from riverhog_core.services.archive_artifact_custody_receipt import (
     ArchiveArtifactCustodyReceiptSource,
 )
+from riverhog_core.services.archive_native_seal_receiving import (
+    NativeArchiveSealSource,
+    OriginalNativeArchiveSeal,
+)
 from riverhog_core.services.archive_provenance_journal_checkpoint import ProvenanceJournalRange
 from riverhog_core.services.archive_upload_drain import read_terminal_selection
 from riverhog_core.services.archive_upload_terminal_access import (
@@ -3282,24 +3286,34 @@ class SqlAlchemyCollectionUploadService:
         self,
         collection_id: int,
         receipt: SealedPackVolume | SealedRawVolume,
+        *,
+        source: NativeArchiveSealSource | None = None,
     ) -> None:
+        if source is not None:
+            source.require_receipt_identity(collection_id, receipt)
+        encoded = _sealed_volume_json(receipt)
+        if source is not None:
+            source.require_receipt_capacity(encoded)
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
             _writer(session)
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is not None:
+            upload = session.scalar(ArchiveWriteAdmission._upload_query(collection_id))
+            if source is not None:
+                if upload is None:
+                    raise Conflict("original native seal construction disappeared")
+                source.require_original(session, upload, encoded)
+            elif upload is not None:
                 require_archive_write_control(session, upload)
-            record = session.get(
-                CollectionArchiveObjectUploadRecord,
-                (collection_id, receipt.volume_id),
+            record = session.scalar(
+                select(CollectionArchiveObjectUploadRecord)
+                .where(
+                    CollectionArchiveObjectUploadRecord.collection_id == collection_id,
+                    CollectionArchiveObjectUploadRecord.object_id == receipt.volume_id,
+                )
+                .execution_options(include_unpublished_registration=source is not None)
             )
             if record is None:
                 raise RuntimeError("sealed archive volume plan disappeared")
-            encoded = _sealed_volume_json(receipt)
             if record.sealed_receipt_json not in {None, encoded}:
                 raise RuntimeError("sealed archive volume receipt changed")
             record.sealed_receipt_json = encoded
@@ -3517,46 +3531,9 @@ class SqlAlchemyCollectionUploadService:
             ).close()
 
     def _reconcile_sealed_volume_receipts(self, collection_id: int) -> None:
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None:
-                return
-            store_name = upload.archive_store
-            passphrase_id = upload.passphrase_id
-            pending = list(session.execute(_native_seal_receipts_query(collection_id, limit=64)))
-        for volume_id, kind, plan_json, checkpoint_json in pending:
-            if checkpoint_json is None:
-                raise RuntimeError(f"sealed archive volume has no checkpoint: {volume_id}")
-            if kind == "pack":
-                checkpoint = PackUploadCheckpoint.from_json(checkpoint_json)
-                if checkpoint.completed is None:
-                    raise RuntimeError(f"sealed pack volume is incomplete: {volume_id}")
-                receipt: SealedPackVolume | SealedRawVolume = self._pack_uploader(
-                    self._volume_object_store(
-                        store_name=store_name,
-                        collection_id=collection_id,
-                        object_id=volume_id,
-                    ),
-                    passphrase_id=passphrase_id,
-                ).sealed_receipt(
-                    plan=parse_pack_volume_plan(plan_json),
-                    checkpoint=checkpoint,
-                )
-            elif kind == "segment":
-                raw_checkpoint = RawUploadCheckpoint.from_json(checkpoint_json)
-                if not raw_checkpoint.completed:
-                    raise RuntimeError(f"sealed raw volume is incomplete: {volume_id}")
-                receipt = self._raw_uploader(
-                    self._volume_object_store(
-                        store_name=store_name,
-                        collection_id=collection_id,
-                        object_id=volume_id,
-                    ),
-                    passphrase_id=passphrase_id,
-                ).sealed_receipt(raw_checkpoint, plan=parse_raw_volume_plan(plan_json))
-            else:
-                raise RuntimeError(f"unsupported archive volume kind: {kind}")
-            self._record_sealed_volume(collection_id, receipt)
+        for _ in range(64):
+            if not OriginalNativeArchiveSeal(self, collection_id).advance():
+                break
 
     def _record_finalization_retry(self, claim: _FinalizationClaim, exc: Exception) -> None:
         now = utc_timestamp_now()
@@ -3636,6 +3613,7 @@ class SqlAlchemyCollectionUploadService:
             self._session_factory,
             collection_id=claim.collection_id,
             stages=(
+                fixed(partial(OriginalNativeArchiveSeal, self, claim.collection_id)),
                 fixed(
                     partial(
                         OriginalImmutableArchiveReport, self._session_factory, claim.collection_id
@@ -7762,30 +7740,6 @@ def _has_complete_payload_seal(upload: CollectionUploadRecord) -> bool:
         upload.artifact_count > 0
         and upload.payload_sealed_artifact_count == upload.artifact_count
         and upload.payload_sealed_artifact_bytes == upload.artifact_bytes
-    )
-
-
-def _native_seal_receipts_query(
-    collection_id: int, *, limit: int
-) -> Select[tuple[str, str, str, str | None]]:
-    """Select pending native seal facts without revisiting other volume history."""
-    if type(limit) is not int or limit < 1:
-        raise ValueError("native seal receiving limit must be positive")
-    return (
-        select(
-            CollectionArchiveObjectUploadRecord.object_id,
-            CollectionArchiveObjectUploadRecord.kind,
-            CollectionArchiveObjectUploadRecord.plan_json,
-            CollectionArchiveObjectUploadRecord.checkpoint_json,
-        )
-        .where(
-            CollectionArchiveObjectUploadRecord.collection_id == collection_id,
-            CollectionArchiveObjectUploadRecord.state == literal_column("'sealed'"),
-            CollectionArchiveObjectUploadRecord.sealed_receipt_json.is_(None),
-        )
-        .order_by(CollectionArchiveObjectUploadRecord.sequence)
-        .limit(limit)
-        .execution_options(include_unpublished_registration=True)
     )
 
 
