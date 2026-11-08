@@ -22,7 +22,7 @@ from riverhog_core.services.archive_finalizer_terminal import (
     ArchiveFinalizerTerminal,
     TerminalDrainStatus,
 )
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
 from riverhog_core.services.immutable_archive_writes import ImmutableArchiveWrites
 
 
@@ -36,11 +36,13 @@ class ArchiveAuthorityFinalizer:
         collection_id: int,
         config: RuntimeConfig,
         archive_stores: ArchiveStoreRegistry,
+        forward_guard: Guard | None = None,
     ) -> None:
         self._factory = factory
         self._collection_id = collection_id
         self._config = config
         self._archive_stores = archive_stores
+        self._forward_guard = forward_guard
         self._lock = threading.Lock()
         self._terminal = ArchiveFinalizerTerminal(factory, collection_id)
         self._reports = ArchiveFinalizerReports(factory, collection_id)
@@ -81,6 +83,8 @@ class ArchiveAuthorityFinalizer:
                 )
                 if upload is None:
                     return False
+                if self._forward_guard is not None:
+                    self._forward_guard(session)
                 # Positive data may already exist while its original execution
                 # is unknown. Check closure before interpreting any progress.
                 admission.require_no_unresolved_calls(session, self._collection_id)
@@ -88,9 +92,13 @@ class ArchiveAuthorityFinalizer:
                 if upload.archive_root_receipt_json is None:
                     if upload.final_authority_json is not None:
                         raise Conflict("archive authority has no original root receiving proof")
-                    source = ArchiveRootSource.load(session, self._collection_id)
+                    source = ArchiveRootSource.load(
+                        session, self._collection_id, forward_guard=self._forward_guard
+                    )
                 else:
-                    source = ArchiveRecoverySource.load(session, self._collection_id)
+                    source = ArchiveRecoverySource.load(
+                        session, self._collection_id, forward_guard=self._forward_guard
+                    )
                     if upload.final_authority_json is not None:
                         if source.received(session) is None:
                             raise Conflict("archive authority receiving proof is unavailable")

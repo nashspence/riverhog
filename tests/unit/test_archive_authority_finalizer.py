@@ -10,8 +10,10 @@ from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services import immutable_archive_admission as admission_module
 from riverhog_core.services.archive_authority_finalizer import ArchiveAuthorityFinalizer
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.immutable_archive_preparation import ImmutableArchivePreparation
 from riverhog_protocol.errors import Conflict, NotFound, ServiceUnavailable
-from sqlalchemy import delete
+from sqlalchemy import delete, event, update
 
 from tests.unit.test_archive_authority_checkpoint import _authority_source, _snapshot
 from tests.unit.test_archive_volume_metadata_finalizer import _owner as _volume_owner
@@ -19,13 +21,14 @@ from tests.unit.test_archive_volume_metadata_receiving import _count
 from tests.unit.test_finalization_claim_readiness import _current_claim, _fresh_coordinator
 
 
-def _owner(fixture):
+def _owner(fixture, *, forward_guard=None):
     original = _volume_owner(fixture)
     original.owner = ArchiveAuthorityFinalizer(
         original.case.factory,
         collection_id=original.case.collection_id,
         config=original.config,
         archive_stores=original.registry,
+        forward_guard=forward_guard,
     )
     return original
 
@@ -237,3 +240,147 @@ def test_completed_authority_requires_its_actual_original_pair_proof(tmp_path, m
         with pytest.raises(Conflict, match="receiving proof"):
             _fresh(original).advance()
         assert len(original.calls["execute"]) == 2 and _count(fixture.case) == 0
+
+
+def _different_claim(claim):
+    return ("0" if claim.claim_id[0] != "0" else "1") + claim.claim_id[1:]
+
+
+def _replace_claim(case, claim_id):
+    with session_scope(case.factory) as session:
+        upload = session.get(Upload, case.collection_id)
+        upload.archive_claim_id = claim_id
+
+
+@pytest.mark.parametrize("kind", ["root", "recovery"])
+def test_authority_selection_requires_the_exact_original_finalization_claim(
+    tmp_path, monkeypatch, kind
+):
+    with _authority_source(tmp_path, monkeypatch) as fixture:
+        claim = _current_claim(fixture.case)
+        original = _owner(fixture, forward_guard=claim.guard)
+        _prior_root(original, kind)
+        before = _snapshot(fixture)
+        calls = {name: len(values) for name, values in original.calls.items()}
+        _replace_claim(fixture.case, _different_claim(claim))
+        with pytest.raises(Conflict, match="original finalization claim"):
+            original.owner.advance()
+        assert not original.owner.has_pending and _snapshot(fixture) == before
+        assert {name: len(values) for name, values in original.calls.items()} == calls
+
+
+@pytest.mark.parametrize("kind", ["root", "recovery"])
+@pytest.mark.parametrize("boundary", ["preparation", "admission"])
+def test_changed_claim_after_selection_cannot_prepare_or_admit_authority_publication(
+    tmp_path, monkeypatch, kind, boundary
+):
+    with _authority_source(tmp_path, monkeypatch) as fixture:
+        claim = _current_claim(fixture.case)
+        original = _owner(fixture, forward_guard=claim.guard)
+        _prior_root(original, kind)
+        calls = {name: len(values) for name, values in original.calls.items()}
+        before = _snapshot(fixture)
+        owner_type, method = (
+            (ArchiveWriteAdmission, "bind_epoch")
+            if boundary == "preparation"
+            else (ImmutableArchivePreparation, "prepare")
+        )
+        advance = getattr(owner_type, method)
+
+        def changed(owner, *args, **kwargs):
+            result = advance(owner, *args, **kwargs)
+            _replace_claim(fixture.case, _different_claim(claim))
+            return result
+
+        with monkeypatch.context() as patch:
+            patch.setattr(owner_type, method, changed)
+            with pytest.raises(Conflict, match="original finalization claim"):
+                original.owner.advance()
+        actor = original.owner._actor
+        assert actor is not None and original.owner.has_pending
+        assert actor._response_json is None and _count(fixture.case) == 0
+        assert (actor._prepared is None) == (boundary == "preparation")
+        assert _snapshot(fixture) == before
+        assert {name: len(values) for name, values in original.calls.items()} == calls
+        _replace_claim(fixture.case, claim.claim_id)
+        assert original.owner.advance()
+        assert not original.owner.has_pending and _count(fixture.case) == 0
+        assert len(original.calls["execute"]) == calls["execute"] + 1
+
+
+@pytest.mark.parametrize("kind", ["root", "recovery"])
+@pytest.mark.parametrize("committed", [False, True])
+def test_original_authority_receiving_does_not_reacquire_a_replaced_claim(
+    tmp_path, monkeypatch, kind, committed
+):
+    with _authority_source(tmp_path, monkeypatch) as fixture:
+        claim = _current_claim(fixture.case)
+        original = _owner(fixture, forward_guard=claim.guard)
+        _prior_root(original, kind)
+        transaction = admission_module.session_scope
+        calls = 0
+
+        @contextmanager
+        def lost(factory):
+            nonlocal calls
+            calls += 1
+            selected = calls == 3
+            with transaction(factory) as session:
+                yield session
+                if selected and not committed:
+                    raise OSError("injected guarded authority rollback")
+            if selected and committed:
+                raise OSError("injected guarded authority reply loss")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(admission_module, "session_scope", lost)
+            with pytest.raises(OSError, match="guarded authority"):
+                original.owner.advance()
+        actor = original.owner._actor
+        assert actor is not None and actor._response_json is not None
+        executed = len(original.calls["execute"])
+        _replace_claim(fixture.case, _different_claim(claim))
+        original.owner._config = original.owner._archive_stores = None
+        assert original.owner.advance()
+        assert not original.owner.has_pending and _count(fixture.case) == 0
+        assert len(original.calls["execute"]) == executed
+        with session_scope(fixture.case.factory) as session:
+            assert session.get(Upload, fixture.case.collection_id).archive_claim_id == (
+                _different_claim(claim)
+            )
+
+
+def test_original_claim_guard_reads_only_its_bounded_workflow_fields(tmp_path, monkeypatch):
+    with _authority_source(tmp_path, monkeypatch) as fixture:
+        claim = _current_claim(fixture.case)
+        engine = fixture.case.factory.kw["bind"]
+        observed = []
+
+        def selected(connection, cursor, statement, parameters, context, executemany):
+            compiled = context.compiled
+            if compiled is not None and compiled.statement.is_select:
+                observed.append(tuple(compiled.statement.selected_columns.keys()))
+
+        event.listen(engine, "before_cursor_execute", selected)
+        try:
+            with session_scope(fixture.case.factory) as session:
+                claim.guard(session)
+        finally:
+            event.remove(engine, "before_cursor_execute", selected)
+        assert observed == [("state", "archive_phase", "archive_claim_id")]
+
+
+def test_original_claim_guard_rechecks_database_despite_cached_upload(tmp_path, monkeypatch):
+    with _authority_source(tmp_path, monkeypatch) as fixture:
+        claim = _current_claim(fixture.case)
+        with session_scope(fixture.case.factory) as session:
+            cached = session.get(Upload, fixture.case.collection_id)
+            session.execute(
+                update(Upload)
+                .where(Upload.collection_id == claim.collection_id)
+                .values(archive_claim_id=_different_claim(claim))
+                .execution_options(synchronize_session=False)
+            )
+            assert cached.archive_claim_id == claim.claim_id
+            with pytest.raises(Conflict, match="original finalization claim"):
+                claim.guard(session)

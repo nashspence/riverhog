@@ -453,6 +453,19 @@ class _FinalizationClaim:
     collection_id: int
     claim_id: str
 
+    def guard(self, session: Session) -> None:
+        current = session.execute(
+            select(
+                CollectionUploadRecord.state,
+                CollectionUploadRecord.archive_phase,
+                CollectionUploadRecord.archive_claim_id,
+            )
+            .where(CollectionUploadRecord.collection_id == self.collection_id)
+            .with_for_update(of=CollectionUploadRecord)
+        ).one_or_none()
+        if current != ("finalizing", "finalizing", self.claim_id):
+            raise Conflict("original finalization claim is unavailable")
+
 
 if TYPE_CHECKING:
     from riverhog_core.cache_write_grants import CacheWriteGrants

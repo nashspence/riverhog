@@ -25,7 +25,7 @@ from riverhog_core.collection_construction import upload_construction_fields
 from riverhog_core.domain.archive import SealedProvenanceObject
 from riverhog_core.immutable_archive_identity import require_immutable_archive_receipt
 from riverhog_core.ports.archive_objects import ImmutableObjectReceipt
-from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
 from riverhog_core.services.immutable_archive_preparation import (
     ImmutableArchivePreparation,
     PreparedImmutableArchiveObject,
@@ -124,9 +124,12 @@ class ArchiveRootSource:
     collection_id: int
     identity_json: str = field(repr=False)
     publication: ArchiveRootPublication = field(repr=False)
+    forward_guard: Guard | None = field(default=None, repr=False, compare=False)
 
     @classmethod
-    def capture(cls, upload: CollectionUploadRecord) -> ArchiveRootSource:
+    def capture(
+        cls, upload: CollectionUploadRecord, *, forward_guard: Guard | None = None
+    ) -> ArchiveRootSource:
         if (
             upload.archive_tree_sha256 is None
             or upload.archive_ordered_volume_sha256 is None
@@ -155,11 +158,14 @@ class ArchiveRootSource:
             upload.collection_id,
             _json(_identity(upload)),
             ArchiveRootPublication(upload.archive_storage_prefix, manifest),
+            forward_guard,
         )
 
     @classmethod
-    def load(cls, session: Session, collection_id: int) -> ArchiveRootSource:
-        return cls.capture(_upload(session, collection_id))
+    def load(
+        cls, session: Session, collection_id: int, *, forward_guard: Guard | None = None
+    ) -> ArchiveRootSource:
+        return cls.capture(_upload(session, collection_id), forward_guard=forward_guard)
 
     def _parent(self, session: Session) -> CollectionUploadRecord:
         upload = _upload(session, self.collection_id)
@@ -180,6 +186,8 @@ class ArchiveRootSource:
         return str(json.loads(self.identity_json)["passphrase_id"])
 
     def guard(self, session: Session) -> None:
+        if self.forward_guard is not None:
+            self.forward_guard(session)
         upload = self._parent(session)
         _claimed(session, upload)
         if upload.archive_root_receipt_json is not None:
@@ -304,8 +312,10 @@ class ArchiveRecoverySource:
         return self.root_source.collection_id
 
     @classmethod
-    def load(cls, session: Session, collection_id: int) -> ArchiveRecoverySource:
-        source = ArchiveRootSource.load(session, collection_id)
+    def load(
+        cls, session: Session, collection_id: int, *, forward_guard: Guard | None = None
+    ) -> ArchiveRecoverySource:
+        source = ArchiveRootSource.load(session, collection_id, forward_guard=forward_guard)
         root = source.received(session)
         if root is None:
             raise Conflict("archive recovery original root is not durably received")
@@ -330,6 +340,8 @@ class ArchiveRecoverySource:
         return upload
 
     def guard(self, session: Session) -> None:
+        if self.root_source.forward_guard is not None:
+            self.root_source.forward_guard(session)
         _claimed(session, self._parent(session))
 
     def validate_metadata(
