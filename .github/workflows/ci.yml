@@ -39,7 +39,16 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
+      - name: Install repository toolchain (first attempt)
+        id: toolchain
+        continue-on-error: true
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+      - name: Back off before retrying toolchain setup
+        if: steps.toolchain.outcome == 'failure'
+        shell: bash
+        run: sleep 30
       - name: Install repository toolchain
+        if: steps.toolchain.outcome == 'failure'
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
       - name: Verify required exact-attempt execution evidence
         env:
@@ -83,7 +92,16 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
+      - name: Install repository toolchain (first attempt)
+        id: toolchain
+        continue-on-error: true
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+      - name: Back off before retrying toolchain setup
+        if: steps.toolchain.outcome == 'failure'
+        shell: bash
+        run: sleep 30
       - name: Install repository toolchain
+        if: steps.toolchain.outcome == 'failure'
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
       - name: Derive complete execution matrices from maintained targets
         id: plan
@@ -104,7 +122,16 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
+      - name: Install repository toolchain (first attempt)
+        id: toolchain
+        continue-on-error: true
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+      - name: Back off before retrying toolchain setup
+        if: steps.toolchain.outcome == 'failure'
+        shell: bash
+        run: sleep 30
       - name: Install repository toolchain
+        if: steps.toolchain.outcome == 'failure'
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
       - name: Configure Docker engine
         uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1
@@ -151,7 +178,16 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
+      - name: Install repository toolchain (first attempt)
+        id: toolchain
+        continue-on-error: true
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+      - name: Back off before retrying toolchain setup
+        if: steps.toolchain.outcome == 'failure'
+        shell: bash
+        run: sleep 30
       - name: Install repository toolchain
+        if: steps.toolchain.outcome == 'failure'
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
       - name: Run exact canonical unit shard
         env:
@@ -182,7 +218,16 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
+      - name: Install repository toolchain (first attempt)
+        id: toolchain
+        continue-on-error: true
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+      - name: Back off before retrying toolchain setup
+        if: steps.toolchain.outcome == 'failure'
+        shell: bash
+        run: sleep 30
       - name: Install repository toolchain
+        if: steps.toolchain.outcome == 'failure'
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
       - name: Configure Docker engine
         uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1
@@ -258,7 +303,18 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
+      - name: Install repository toolchain (first attempt)
+        id: toolchain
+        continue-on-error: true
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        with:
+          install_args: python uv age
+      - name: Back off before retrying toolchain setup
+        if: steps.toolchain.outcome == 'failure'
+        shell: bash
+        run: sleep 30
       - name: Install repository toolchain
+        if: steps.toolchain.outcome == 'failure'
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
         with:
           install_args: python uv age
@@ -302,7 +358,16 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ inputs.ref || github.sha }}
+      - name: Install repository toolchain (first attempt)
+        id: toolchain
+        continue-on-error: true
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+      - name: Back off before retrying toolchain setup
+        if: steps.toolchain.outcome == 'failure'
+        shell: bash
+        run: sleep 30
       - name: Install repository toolchain
+        if: steps.toolchain.outcome == 'failure'
         uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
       - name: Configure Docker engine
         uses: docker/setup-docker-action@77e84dbf09b47d1e29270283c22f16145aa85ca1

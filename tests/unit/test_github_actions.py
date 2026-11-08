@@ -394,7 +394,9 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         assert retained["uses"] == UPLOAD_ARTIFACT_USE
         assert retained["with"]["retention-days"] == "7"
         assert retained["with"]["path"] == "${{ runner.temp }}/ci-timing"
-    unit_run = next(step for step in jobs["units"]["steps"] if "run" in step)
+    unit_run = next(
+        step for step in jobs["units"]["steps"] if step["name"] == "Run exact canonical unit shard"
+    )
     assert 'execute --workload "unit-$UNIT_SHARD"' in unit_run["run"]
     compose_run = next(
         step
@@ -406,7 +408,11 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
     assert client["strategy"]["matrix"] == {"os": ["ubuntu-24.04", "macos-15", "windows-2025"]}
     assert client["env"] == {"MISE_AUTO_INSTALL": "0"}
     assert client["steps"][1]["with"] == {"install_args": "python uv age"}
-    native = next(step for step in client["steps"] if "run" in step)
+    native = next(
+        step
+        for step in client["steps"]
+        if step["name"] == "Qualify native behavior and staged end-user installs"
+    )
     assert native["run"] == (
         "mise x python uv age -- uv run --locked --all-packages --group dev "
         'python scripts/ci_timing.py execute --workload "$NATIVE_WORKLOAD" '
@@ -429,6 +435,47 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
     }
 
     assert "secrets." not in text
+
+
+def test_ci_setup_retry_is_bounded_and_preserves_required_workload_failures() -> None:
+    workflow = yaml.load(CI_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    for job in workflow["jobs"].values():
+        steps = job["steps"]
+        attempts = [
+            (index, step)
+            for index, step in enumerate(steps)
+            if step.get("uses", "").startswith("jdx/mise-action@")
+        ]
+        assert len(attempts) == 2
+        (first_index, first), (retry_index, retry) = attempts
+        assert retry_index == first_index + 2
+        assert first["id"] == "toolchain" and first["continue-on-error"] == "true"
+        assert "if" not in first
+        assert retry["name"] == "Install repository toolchain"
+        assert retry["if"] == "steps.toolchain.outcome == 'failure'"
+        assert retry["uses"] == first["uses"]
+        assert retry.get("with", {}) == first.get("with", {})
+        assert "continue-on-error" not in retry
+        backoff = steps[first_index + 1]
+        assert backoff["if"] == retry["if"]
+        assert backoff["shell"] == "bash" and backoff["run"] == "sleep 30"
+        assert all(
+            "continue-on-error" not in step
+            for index, step in enumerate(steps)
+            if index != first_index
+        )
+        assert all(
+            step.get("if") != "always()"
+            for step in steps[retry_index + 1 :]
+            if step.get("name")
+            in {
+                "Run repository target",
+                "Run exact canonical unit shard",
+                "Qualify every selected final image",
+                "Qualify native behavior and staged end-user installs",
+                "Qualify the complete independent lifecycle",
+            }
+        )
 
 
 def test_ci_gate_covers_every_job_and_rejects_non_successful_dependencies() -> None:
