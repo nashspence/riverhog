@@ -340,6 +340,7 @@ from riverhog_core.services.archive_artifact_custody_receipt import (
     ArchiveArtifactCustodyReceiptSource,
 )
 from riverhog_core.services.archive_provenance_journal_checkpoint import ProvenanceJournalRange
+from riverhog_core.services.archive_upload_terminal_access import require_terminal_read_access
 from riverhog_core.services.archive_volume_metadata_checkpoint import ArchiveVolumeMetadataSource
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.collection_tags import (
@@ -962,9 +963,16 @@ class SqlAlchemyCollectionUploadService:
         """Allow the owning producer or a collection-scoped deletion operator to inspect."""
 
         normalized = _collection_id(collection_id)
-        with session_scope(self._session_factory) as session:
+        with read_snapshot(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, normalized)
             if upload is not None:
+                control = session.get(ArchiveWriteControlRecord, normalized)
+                if control is not None and control.terminal_id is not None:
+                    require_archive_write_control(session, upload)
+                    require_terminal_read_access(
+                        session, normalized, control.terminal_id, principal
+                    )
+                    return
                 if upload.initiated_by_principal_id == principal.id:
                     _require_upload_create_access(session, normalized, principal)
                     return
@@ -983,6 +991,14 @@ class SqlAlchemyCollectionUploadService:
                 COLLECTIONS_DELETE,
                 normalized,
             )
+
+    def require_terminal_read_access(
+        self, collection_id: int, operation_id: str, principal: Principal
+    ) -> None:
+        """Authorize an exact retained outcome independently of upload-row lifetime."""
+        normalized = _collection_id(collection_id)
+        with read_snapshot(self._session_factory) as session:
+            require_terminal_read_access(session, normalized, operation_id, principal)
 
     def require_discard_access(
         self,

@@ -23,7 +23,10 @@ from riverhog_core.catalog_cache_write_models import (
     CachePopulationWriteEffectRecord,
 )
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord
-from riverhog_core.services.archive_upload_terminal_tags import load_terminal_tag_selector
+from riverhog_core.services.archive_upload_terminal_tags import (
+    TerminalTagSelector,
+    load_terminal_tag_selector,
+)
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
 
 LocalTerminalStatus = Literal["busy", "untracked", "unfenced", "fenced", "drained"]
@@ -81,6 +84,46 @@ class TerminalWriteRecords:
     selected_custody_revision: str
 
 
+def _require_original_terminal_request(
+    control: ArchiveWriteControlRecord,
+    terminal: ArchiveUploadTerminalRecord,
+    collection_id: int,
+) -> None:
+    """Validate immutable original context without borrowing today's admission frontier."""
+    try:
+        value = json.loads(terminal.request_json)
+        if (
+            terminal.collection_id != collection_id
+            or terminal.id != hashlib.sha256(terminal.request_json.encode()).hexdigest()
+            or canonical_json_bytes(value).decode() != terminal.request_json
+            or set(value) != {"construction", "kind", "principal_id", "key_id", "request"}
+            or canonical_json_bytes(value["construction"]).decode() != control.construction_json
+            or value["kind"] != terminal.kind
+            or value["principal_id"] != terminal.principal_id
+            or value["key_id"] != terminal.key_id
+        ):
+            raise Conflict("upload terminal original selection changed")
+    except (KeyError, TypeError, ValueError) as exc:
+        raise Conflict("upload terminal original request is invalid") from exc
+
+
+def read_terminal_selection(
+    session: Session, collection_id: int, operation_id: str
+) -> tuple[ArchiveWriteControlRecord, ArchiveUploadTerminalRecord, TerminalTagSelector]:
+    """Borrow exact original facts from the caller's read snapshot, with no locks.
+
+    Retained historical outcomes do not require a closed current gate or the
+    same live admission frontier. This grants neither read permission nor
+    execution, cleanup or receiving authority.
+    """
+    control = session.get(ArchiveWriteControlRecord, collection_id, populate_existing=True)
+    terminal = session.get(ArchiveUploadTerminalRecord, operation_id, populate_existing=True)
+    if control is None or terminal is None:
+        raise NotFound("upload terminal original request is unavailable")
+    _require_original_terminal_request(control, terminal, collection_id)
+    return control, terminal, load_terminal_tag_selector(session, terminal.id)
+
+
 def lock_terminal_selection(
     session: Session,
     collection_id: int,
@@ -121,23 +164,9 @@ def lock_terminal_selection(
     )
     if terminal is None:
         raise NotFound("upload terminal original request is unavailable")
-    try:
-        value = json.loads(terminal.request_json)
-        if (
-            terminal.collection_id != collection_id
-            or terminal.id != hashlib.sha256(terminal.request_json.encode()).hexdigest()
-            or canonical_json_bytes(value).decode() != terminal.request_json
-            or set(value) != {"construction", "kind", "principal_id", "key_id", "request"}
-            or canonical_json_bytes(value["construction"]).decode() != control.construction_json
-            or value["kind"] != terminal.kind
-            or value["principal_id"] != terminal.principal_id
-            or value["key_id"] != terminal.key_id
-            or control.next_call != terminal.frontier
-            or control.epoch == terminal.original_epoch
-        ):
-            raise Conflict("upload terminal original selection changed")
-    except (KeyError, TypeError, ValueError) as exc:
-        raise Conflict("upload terminal original request is invalid") from exc
+    _require_original_terminal_request(control, terminal, collection_id)
+    if control.next_call != terminal.frontier or control.epoch == terminal.original_epoch:
+        raise Conflict("upload terminal original selection changed")
 
     load_terminal_tag_selector(session, terminal.id)
     return control, terminal
