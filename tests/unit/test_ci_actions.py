@@ -1093,3 +1093,42 @@ def test_actual_evidence_progress_observes_same_single_consumption(
         ("artifact-extraction", "fixture"),
         ("receipt-validation", "fixture"),
     ]
+
+
+def test_original_job_provenance_survives_small_page_execution_history():
+    from urllib.parse import parse_qs, urlsplit
+
+    original = []
+    for index in range(27):
+        job = job_record(100 + index)
+        job.update(name=f"unit fixture-{index}", run_attempt=1)
+        original.append(job)
+    failed = job_record(200)
+    failed.update(name="make compile", run_attempt=1, conclusion="failure")
+    original.append(failed)
+    shadows = [
+        {**copy.deepcopy(job), "id": job["id"] + 1000, "run_attempt": 2} for job in original[:-1]
+    ]
+    compiled = job_record(1200, start=31, finish=40)
+    compiled["name"] = "make compile"
+    history = original + shadows + [compiled]
+
+    class SmallPageRemote(Remote):
+        def api(self, endpoint):
+            self.calls.append(endpoint)
+            assert endpoint.startswith("actions/runs/23/jobs?filter=all")
+            query = parse_qs(urlsplit(endpoint).query)
+            size, page = int(query["per_page"][0]), int(query["page"][0])
+            if size > 10:
+                raise subprocess.CalledProcessError(1, ["fixture-actions-history"])
+            return {
+                "total_count": len(history),
+                "jobs": copy.deepcopy(history[(page - 1) * size : page * size]),
+            }
+
+    remote = SmallPageRemote()
+    remote.run["run_started_at"] = "2026-10-13T00:00:30Z"
+    selected = ci_actions.latest_execution_jobs(remote, remote.run)
+    assert len(selected) == 28
+    assert selected[:-1] == original[:-1] and selected[-1] == compiled
+    assert len(remote.calls) == 6

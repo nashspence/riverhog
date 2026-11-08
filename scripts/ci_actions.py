@@ -118,11 +118,15 @@ def ci_execution_work() -> dict[str, ValidationWork]:
     return cases
 
 
-def bounded_rows(remote: GitHubPublication, endpoint: str, key: str) -> list[dict[str, Any]]:
+def bounded_rows(
+    remote: GitHubPublication, endpoint: str, key: str, *, page_size: int = 100
+) -> list[dict[str, Any]]:
+    if type(page_size) is not int or not 1 <= page_size <= 100:
+        raise ValueError("Actions evidence page size is invalid")
     result: list[dict[str, Any]] = []
-    for page in range(1, MAX_ROWS // 100 + 2):
+    for page in range(1, MAX_ROWS // page_size + 2):
         separator = "&" if "?" in endpoint else "?"
-        response = remote.api(endpoint + separator + f"per_page=100&page={page}")
+        response = remote.api(endpoint + separator + f"per_page={page_size}&page={page}")
         rows = response[key]
         if (
             not isinstance(rows, list)
@@ -143,7 +147,9 @@ def _execution_jobs(
     remote: GitHubPublication, run: Mapping[str, Any]
 ) -> list[tuple[dict[str, Any], dict[str, Any]]]:
     """Pair each latest API snapshot with its proven actual execution origin."""
-    rows = bounded_rows(remote, f"actions/runs/{run['id']}/jobs?filter=all", "jobs")
+    # Job history includes complete step vectors. Small pages keep the response
+    # bounded independently of the workflow's matrix and repeated attempts.
+    rows = bounded_rows(remote, f"actions/runs/{run['id']}/jobs?filter=all", "jobs", page_size=10)
     grouped: dict[str, list[dict[str, Any]]] = {}
     seen: set[int] = set()
     for row in rows:
