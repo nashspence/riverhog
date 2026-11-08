@@ -122,7 +122,7 @@ class KeyAuthorizationFence:
 
 
 def retain_key_authorization(
-    session: Session, principal: Principal, *, for_update: bool = True
+    session: Session, principal: Principal, *, for_update: bool = True, nowait: bool = False
 ) -> KeyAuthorizationFence | None:
     """Pin a validated current view while holding the application's key fence.
 
@@ -133,7 +133,7 @@ def retain_key_authorization(
     """
     if principal.key_id is None:
         return None
-    fence = retain_key_validity(session, principal.key_id, for_update=for_update)
+    fence = retain_key_validity(session, principal.key_id, for_update=for_update, nowait=nowait)
     require_current_principal(session, principal)
     if not principal.has_artifact_scope and (
         principal.authorization_view_identity is None or fence.app != principal.id
@@ -143,7 +143,7 @@ def retain_key_authorization(
 
 
 def retain_key_validity(
-    session: Session, key_id: str, *, for_update: bool = True
+    session: Session, key_id: str, *, for_update: bool = True, nowait: bool = False
 ) -> KeyAuthorizationFence:
     """Retain a live key generation, without granting application or claim access.
 
@@ -152,7 +152,7 @@ def retain_key_validity(
     """
     statement = select(AppKeyRecord).where(AppKeyRecord.id == key_id)
     if for_update:
-        statement = statement.with_for_update()
+        statement = statement.with_for_update(nowait=nowait)
     key = session.scalar(statement.execution_options(populate_existing=True))
     if key is None or _status(key, now=format_utc_timestamp(utc_now())) != "active":
         raise NotFound("application key is no longer active")

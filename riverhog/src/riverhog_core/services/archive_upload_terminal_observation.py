@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Literal
 
@@ -56,15 +57,25 @@ class ArchiveUploadTerminalObservation:
         self._execution = execution
 
     def observe(
-        self, session: Session, collection_id: int, operation_id: str
+        self,
+        session: Session,
+        collection_id: int,
+        operation_id: str,
+        *,
+        guard: Callable[[Session], None] | None = None,
     ) -> TerminalResourceObservation:
         """Observe under the caller's locked original terminal selection.
 
+        The optional current-authority guard runs after acquiring SQLite's writer
+        and before any upload/terminal lock or local probe. It validates the
+        caller's operation-specific rights; these resource facts grant none.
         Catalog contention propagates for the transaction owner to defer after
         rollback. Local probes are nonblocking and perform no SQL, construction,
         provider work, receiving, fencing, cleanup or resource retirement.
         """
-        records = inspect_terminal_write_records(session, collection_id, operation_id, nowait=True)
+        records = inspect_terminal_write_records(
+            session, collection_id, operation_id, nowait=True, guard=guard
+        )
         control = session.get(ArchiveWriteControlRecord, collection_id)
         assert control is not None
         construction = control.construction_json

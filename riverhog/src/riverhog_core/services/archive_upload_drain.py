@@ -141,7 +141,12 @@ def lock_terminal_selection(
 
 
 def inspect_terminal_write_records(
-    session: Session, collection_id: int, operation_id: str, *, nowait: bool = False
+    session: Session,
+    collection_id: int,
+    operation_id: str,
+    *,
+    nowait: bool = False,
+    guard: Callable[[Session], None] | None = None,
 ) -> TerminalWriteRecords:
     """Observe indexed owner facts under the closed construction/terminal lock.
 
@@ -149,7 +154,9 @@ def inspect_terminal_write_records(
     optional cache effect must remain visible to terminal drainage independently
     of whether archive preservation can continue.
     """
-    control, terminal = lock_terminal_selection(session, collection_id, operation_id, nowait=nowait)
+    control, terminal = lock_terminal_selection(
+        session, collection_id, operation_id, nowait=nowait, guard=guard
+    )
 
     def retained(model: EffectModel, *, unclosed: bool) -> bool:
         return session.scalar(_record_query(model, collection_id, unclosed=unclosed)) is not None

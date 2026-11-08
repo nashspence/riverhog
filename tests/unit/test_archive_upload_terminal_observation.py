@@ -137,3 +137,116 @@ def test_local_contention_is_reported_without_nested_catalog_work_or_fencing(tmp
         assert observed.finalizers == "busy"
         assert observed.records.operation_id == operation
         assert observed.invocations == observed.inputs == observed.execution == "untracked"
+
+
+def _current_key(case, *, processing=False):
+    from dataclasses import replace
+
+    from riverhog_core.app_permissions import COLLECTIONS_CREATE, ApplicationAccess
+    from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
+
+    from tests.unit.test_app_keys import create_key
+
+    keys = SqlAlchemyAppKeyService(case.config, session_factory=case.factory)
+    created = create_key(
+        keys, app="terminal-observer", access=(ApplicationAccess(COLLECTIONS_CREATE),)
+    )
+    principal = keys.authenticate(str(created["token"]))
+    assert principal is not None
+    if processing:
+        principal = replace(principal, id="processing:" + "a" * 64)
+    return keys, principal
+
+
+def _key_guard(principal):
+    from riverhog_core.catalog_models import CollectionUploadRecord
+    from riverhog_core.services.collection_upload_authority import retain_upload_key
+
+    def guard(session):
+        assert not any(
+            isinstance(row, CollectionUploadRecord) for row in session.identity_map.values()
+        )
+        assert retain_upload_key(session, principal, nowait=True) is not None
+
+    return guard
+
+
+def _guarded_observation(case, operation, principal):
+    with session_scope(case.factory) as session:
+        return case.service._archive_terminal_observation.observe(
+            session, case.collection_id, operation, guard=_key_guard(principal)
+        )
+
+
+@pytest.mark.parametrize("processing", (False, True))
+@pytest.mark.parametrize("disposition", ("revoke", "expire", "delete"))
+def test_current_key_failure_precedes_parent_locks_and_local_probes(
+    tmp_path, monkeypatch, processing, disposition
+):
+    from riverhog_core.catalog_models import AppKeyRecord
+    from riverhog_protocol.errors import NotFound
+    from sqlalchemy import event
+
+    with _case(tmp_path) as case:
+        operation = _selected(case)
+        keys, principal = _current_key(case, processing=processing)
+        if disposition == "revoke":
+            keys.revoke(app="terminal-observer", key_id=principal.key_id)
+        else:
+            with session_scope(case.factory) as session:
+                key = session.get(AppKeyRecord, principal.key_id)
+                if disposition == "expire":
+                    key.expires_at = "2000-01-01T00:00:00.000000000Z"
+                else:
+                    session.delete(key)
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("revoked current authority reached a local resource owner")
+
+        def capture(connection, cursor, statement, parameters, context, executemany):
+            assert "FROM collection_uploads" not in statement
+            assert "FROM archive_upload_terminals" not in statement
+
+        engine = case.factory.kw["bind"]
+        monkeypatch.setattr(case.service._archive_finalizers, "local_terminal_status", forbidden)
+        event.listen(engine, "before_cursor_execute", capture)
+        try:
+            with pytest.raises(NotFound, match="no longer active"):
+                _guarded_observation(case, operation, principal)
+        finally:
+            event.remove(engine, "before_cursor_execute", capture)
+
+
+def test_stale_current_permission_view_cannot_reach_terminal_resources(tmp_path, monkeypatch):
+    from riverhog_core.app_permissions import CATALOG_READ, ApplicationAccess
+    from riverhog_protocol.errors import NotFound
+
+    from tests.unit.test_app_keys import BOOTSTRAP
+
+    with _case(tmp_path) as case:
+        operation = _selected(case)
+        keys, principal = _current_key(case)
+        keys.replace_access(
+            app=principal.id,
+            key_id=principal.key_id,
+            access=(ApplicationAccess(CATALOG_READ),),
+            grantor=BOOTSTRAP,
+        )
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("stale permission view reached a local resource owner")
+
+        monkeypatch.setattr(case.service._archive_finalizers, "local_terminal_status", forbidden)
+        with pytest.raises(NotFound, match="authorization"):
+            _guarded_observation(case, operation, principal)
+
+
+@pytest.mark.parametrize("processing", (False, True))
+def test_current_key_guard_is_composed_before_original_terminal_observation(tmp_path, processing):
+    with _case(tmp_path) as case:
+        operation = _selected(case)
+        _, principal = _current_key(case, processing=processing)
+        observed = _guarded_observation(case, operation, principal)
+        assert observed.records.operation_id == operation
+        assert observed.execution == observed.inputs == "untracked"
+        assert observed.finalizers == observed.invocations == "untracked"

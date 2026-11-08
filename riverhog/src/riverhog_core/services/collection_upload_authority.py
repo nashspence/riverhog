@@ -26,13 +26,13 @@ from riverhog_core.services.app_keys import (
 
 
 def retain_upload_key(
-    session: Session, principal: Principal, *, for_update: bool = True
+    session: Session, principal: Principal, *, for_update: bool = True, nowait: bool = False
 ) -> KeyAuthorizationFence | None:
     if principal.id.startswith("processing:"):
         if principal.key_id is None:
             raise NotFound("collection upload execution key is unavailable")
-        return retain_key_validity(session, principal.key_id, for_update=for_update)
-    return retain_key_authorization(session, principal, for_update=for_update)
+        return retain_key_validity(session, principal.key_id, for_update=for_update, nowait=nowait)
+    return retain_key_authorization(session, principal, for_update=for_update, nowait=nowait)
 
 
 def retain_upload_claim(
