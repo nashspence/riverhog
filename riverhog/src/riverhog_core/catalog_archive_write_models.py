@@ -31,8 +31,32 @@ class ArchiveWriteControlRecord(Base):
     custody_revision: Mapped[str] = mapped_column(Text, default="0", server_default=text("'0'"))
     terminal_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
+    custody_primary_count: Mapped[int] = mapped_column(
+        BigInteger, default=0, server_default=text("0")
+    )
+    custody_history_count: Mapped[int] = mapped_column(
+        BigInteger, default=0, server_default=text("0")
+    )
+    custody_due_count: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
+    custody_requires_history: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default=text("false")
+    )
+    custody_after_artifact_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
     __table_args__ = (
         CheckConstraint("gate IN ('open','closed')", name="ck_archive_write_controls_gate"),
+        CheckConstraint(
+            "custody_primary_count >= 0 AND custody_history_count >= 0 AND "
+            "custody_history_count <= custody_primary_count AND "
+            "custody_due_count >= 0 AND custody_due_count <= custody_primary_count",
+            name="ck_archive_write_controls_custody_schedule",
+        ),
+        Index(
+            "ix_archive_write_controls_custody_due",
+            "collection_id",
+            sqlite_where=text("gate = 'open' AND custody_due_count > 0"),
+            postgresql_where=text("((gate) = 'open') AND (custody_due_count > 0)"),
+        ),
         CheckConstraint(
             "terminal_id IS NULL OR gate = 'closed'",
             name="ck_archive_write_controls_terminal",

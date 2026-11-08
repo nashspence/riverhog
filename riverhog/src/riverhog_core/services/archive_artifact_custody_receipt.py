@@ -19,6 +19,7 @@ from riverhog_core.catalog_models import CollectionArtifactRecord, CollectionRec
 from riverhog_core.catalog_models import CollectionUploadArtifactProvenanceBindingRecord as Binding
 from riverhog_core.catalog_models import CollectionUploadArtifactRecord as Artifact
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
+from riverhog_core.services.archive_custody_due import refresh_custody_member
 from riverhog_core.services.archive_finalizer_terminal import (
     ArchiveFinalizerTerminal,
     TerminalDrainStatus,
@@ -214,6 +215,7 @@ class ArchiveArtifactCustodyReceiptSource:
         }:
             raise Conflict("original artifact custody admission changed")
         artifact.custody_receipt_json = self.receipt_json
+        refresh_custody_member(session, upload, self.artifact_id)
         binding.completion_output_id = self.completion_output_id
         upload.safe_release_artifact_count += 1
         upload.safe_release_artifact_bytes += artifact.bytes

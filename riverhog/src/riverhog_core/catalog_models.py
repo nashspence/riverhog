@@ -3053,10 +3053,30 @@ class CollectionUploadArtifactRecord(Base):
     raw_part_commitment_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     payload_sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
     custody_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    custody_schedule_stage: Mapped[int] = mapped_column(
+        Integer, default=0, server_default=text("0")
+    )
 
     registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     __table_args__ = (
+        CheckConstraint(
+            "custody_schedule_stage IN (0,1,2)", name="ck_upload_members_custody_schedule"
+        ),
+        Index(
+            "ix_upload_members_custody_primary",
+            "collection_id",
+            "artifact_id",
+            sqlite_where=text("custody_schedule_stage >= 1"),
+            postgresql_where=text("custody_schedule_stage >= 1"),
+        ),
+        Index(
+            "ix_upload_members_custody_history",
+            "collection_id",
+            "artifact_id",
+            sqlite_where=text("custody_schedule_stage = 2"),
+            postgresql_where=text("custody_schedule_stage = 2"),
+        ),
         Index(
             "ix_upload_members_registration", "collection_id", "registration_id", "artifact_order"
         ),

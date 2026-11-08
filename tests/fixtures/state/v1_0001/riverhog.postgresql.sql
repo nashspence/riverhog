@@ -1680,8 +1680,11 @@ CREATE TABLE collection_upload_artifacts (
 	raw_part_commitment_sha256 VARCHAR(64),
 	payload_sealed_at VARCHAR,
 	custody_receipt_json TEXT,
+	custody_schedule_stage INTEGER DEFAULT 0 NOT NULL,
 	registration_id VARCHAR(64),
 	PRIMARY KEY (collection_id, artifact_id),
+	CONSTRAINT ck_upload_members_custody_schedule CHECK (custody_schedule_stage IN (0,1,2)),
+	CONSTRAINT ck_upload_members_registration CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_collection_upload_artifacts_order CHECK (artifact_order >= 0),
 	CONSTRAINT ck_collection_upload_artifacts_bytes CHECK (bytes >= 0 AND bytes < 9223372036854775808),
@@ -1692,8 +1695,7 @@ CREATE TABLE collection_upload_artifacts (
 	CONSTRAINT ck_collection_upload_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_collection_upload_artifacts_raw_part_ordered_sha256_hex CHECK (raw_part_ordered_sha256 IS NULL OR length(raw_part_ordered_sha256) = 64 AND lower(raw_part_ordered_sha256) = raw_part_ordered_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_ordered_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_ca35dbfa303620e0 CHECK (raw_part_commitment_sha256 IS NULL OR length(raw_part_commitment_sha256) = 64 AND lower(raw_part_commitment_sha256) = raw_part_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_upload_artifacts_registration_id_hex CHECK (registration_id IS NULL OR length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_upload_members_registration CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)
+	CONSTRAINT ck_collection_upload_artifacts_registration_id_hex CHECK (registration_id IS NULL OR length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_upload_members_registration ON collection_upload_artifacts (collection_id, registration_id, artifact_order);
@@ -2521,6 +2523,10 @@ CREATE INDEX ix_retrieval_cache_populations_reap ON retrieval_cache_populations 
 
 CREATE INDEX ix_retrieval_cache_populations_source_reap ON retrieval_cache_populations (begin_call_id, source_store, collection_id, object_id);
 
+CREATE INDEX ix_upload_members_custody_history ON collection_upload_artifacts (collection_id, artifact_id) WHERE custody_schedule_stage = 2;
+
+CREATE INDEX ix_upload_members_custody_primary ON collection_upload_artifacts (collection_id, artifact_id) WHERE custody_schedule_stage >= 1;
+
 CREATE INDEX ix_collection_processing_capability_scope_owner ON collection_processing_capabilities (artifact_scope_capability_id, id);
 
 CREATE TABLE collection_upload_provenance_capture_segments (
@@ -2875,6 +2881,7 @@ CREATE TABLE collection_registration_volumes (
 	CONSTRAINT ck_collection_registration_volumes_registration_id_hex CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
+
 CREATE TABLE archive_write_controls (
 	collection_id BIGINT NOT NULL,
 	construction_json TEXT NOT NULL,
@@ -2883,12 +2890,20 @@ CREATE TABLE archive_write_controls (
 	next_call TEXT NOT NULL,
 	custody_revision TEXT DEFAULT '0' NOT NULL,
 	terminal_id VARCHAR(64),
+	custody_primary_count BIGINT DEFAULT 0 NOT NULL,
+	custody_history_count BIGINT DEFAULT 0 NOT NULL,
+	custody_due_count BIGINT DEFAULT 0 NOT NULL,
+	custody_requires_history BOOLEAN DEFAULT false NOT NULL,
+	custody_after_artifact_id VARCHAR(64),
 	PRIMARY KEY (collection_id),
 	CONSTRAINT ck_archive_write_controls_gate CHECK (gate IN ('open','closed')),
+	CONSTRAINT ck_archive_write_controls_custody_schedule CHECK (custody_primary_count >= 0 AND custody_history_count >= 0 AND custody_history_count <= custody_primary_count AND custody_due_count >= 0 AND custody_due_count <= custody_primary_count),
 	CONSTRAINT ck_archive_write_controls_terminal CHECK (terminal_id IS NULL OR gate = 'closed'),
 	CONSTRAINT ck_archive_write_controls_epoch_hex CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_archive_write_controls_terminal_id_hex CHECK (terminal_id IS NULL OR length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
-);
+	CONSTRAINT ck_archive_write_controls_terminal_id_hex CHECK (terminal_id IS NULL OR length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_write_controls_custody_after_artifact_id_hex CHECK (custody_after_artifact_id IS NULL OR length(custody_after_artifact_id) = 64 AND lower(custody_after_artifact_id) = custody_after_artifact_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(custody_after_artifact_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    ;
 
 CREATE TABLE archive_write_preparations (
 	collection_id BIGINT NOT NULL,
@@ -2961,6 +2976,8 @@ CREATE TABLE archive_upload_terminals (
 );
 
 CREATE INDEX ix_archive_upload_terminals_collection ON archive_upload_terminals (collection_id, id);
+
+CREATE INDEX ix_archive_write_controls_custody_due ON archive_write_controls (collection_id) WHERE ((gate) = 'open') AND (custody_due_count > 0);
 
 CREATE TABLE collection_archive_object_upload_units (
 	collection_id BIGINT NOT NULL,

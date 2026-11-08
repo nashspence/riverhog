@@ -322,6 +322,10 @@ from riverhog_core.services.archive_artifact_custody import (
 from riverhog_core.services.archive_artifact_custody_receipt import (
     ArchiveArtifactCustodyReceiptSource,
 )
+from riverhog_core.services.archive_custody_due import (
+    refresh_custody_member,
+    refresh_custody_parent,
+)
 from riverhog_core.services.archive_native_seal_receiving import (
     NativeArchiveSealSource,
     OriginalNativeArchiveSeal,
@@ -748,6 +752,7 @@ class SqlAlchemyCollectionUploadService:
                 if upload.state == "orphaned":
                     checkpoint = _planner_checkpoint(upload)
                     upload.state = "closing" if checkpoint.closed else "open"
+                    refresh_custody_parent(session, upload)
                     upload.orphaned_at = None
                     resumed_at = utc_timestamp_now()
                     _touch_upload(upload, config=self._config, now=resumed_at)
@@ -1423,6 +1428,7 @@ class SqlAlchemyCollectionUploadService:
                 ):
                     raise Conflict("completion declaration differs from the accepted claim plan")
             upload.completion_requirement_json = encoded
+            refresh_custody_parent(session, upload)
             _touch_upload(upload, config=self._config)
         return requirement
 
@@ -1586,7 +1592,7 @@ class SqlAlchemyCollectionUploadService:
                 values = {
                     "journal_id": binding.journal.journal_id,
                     "through_entry_id": binding.journal.through.entry_id,
-                    "through_sequence": binding.journal.through.sequence,
+                    "through_sequence": int(binding.journal.through.sequence),
                     "through_json_sha256": binding.journal.through.json_sha256,
                     "prefix_sha256": binding.journal.prefix_sha256,
                     "prefix_bytes": binding.journal.prefix_bytes,
@@ -1606,6 +1612,7 @@ class SqlAlchemyCollectionUploadService:
                     )
                 elif any(getattr(existing, name) != value for name, value in values.items()):
                     raise Conflict("artifact provenance binding retry differs from accepted anchor")
+                refresh_custody_member(session, upload, artifact_id)
             _touch_upload(upload, config=self._config)
         return {
             "bindings": [binding.model_dump(mode="json") for binding in batch.bindings],
@@ -1712,6 +1719,7 @@ class SqlAlchemyCollectionUploadService:
                                     "input-history selection is outside the sealed claim"
                                 )
             binding.history_imports_ref_json = encoded
+            refresh_custody_member(session, upload, str(artifact_id))
             _touch_upload(upload, config=self._config)
         return authority
 
@@ -2877,6 +2885,7 @@ class SqlAlchemyCollectionUploadService:
             )
             for upload in uploads:
                 upload.state = "orphaned"
+                refresh_custody_parent(session, upload)
                 upload.orphaned_at = now
                 upload.lease_expires_at = None
                 upload.last_activity_at = now
@@ -3103,6 +3112,7 @@ class SqlAlchemyCollectionUploadService:
             }
             now = utc_timestamp_now()
             upload.state = "discarding"
+            refresh_custody_parent(session, upload)
             upload.archive_phase = "discarding"
             upload.archive_phase_updated_at = now
             upload.last_activity_at = now
@@ -3139,6 +3149,7 @@ class SqlAlchemyCollectionUploadService:
                 if upload is not None and upload.state == "discarding":
                     now = utc_timestamp_now()
                     upload.state = "orphaned"
+                    refresh_custody_parent(session, upload)
                     upload.orphaned_at = now
                     upload.archive_phase = "orphaned"
                     upload.archive_phase_updated_at = now
@@ -3376,6 +3387,7 @@ class SqlAlchemyCollectionUploadService:
             )
             for upload in uploads:
                 upload.state = "orphaned"
+                refresh_custody_parent(session, upload)
                 upload.orphaned_at = now
                 upload.archive_phase = "orphaned"
                 upload.archive_phase_updated_at = now
@@ -8740,6 +8752,7 @@ def _record_payload_custody_progress(
         )
         changed = result.rowcount
         if changed == 1:
+            refresh_custody_member(session, upload, artifact_id)
             newly_sealed_artifacts += 1
             newly_sealed_bytes += artifact.bytes
         elif changed != 0:
