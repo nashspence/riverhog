@@ -42,6 +42,7 @@ from riverhog_protocol.errors import NotFound
 from riverhog_protocol.manifest import artifact_set_identity_ordered
 from sqlalchemy import func, select
 
+from tests.support.finalization import drive_custody_turn
 from tests.support.upload_api import UploadServiceApi
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
@@ -445,7 +446,7 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
             # The production worker advances one durable custody milestone at
             # a time. Drive it separately from the actual HTTP request path.
             for _ in range(4):
-                if api.service.process_due_custody_receipts(limit=4) == 0:
+                if drive_custody_turn(api.service, limit=4) == 0:
                     break
             else:
                 raise AssertionError("the bounded pack custody window did not drain")

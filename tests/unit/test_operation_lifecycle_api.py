@@ -90,7 +90,7 @@ from sqlalchemy import select
 
 from tests.operation_observer import OperationObserver, TimeoutNeutralTestClient
 from tests.provenance_observer import native_provenance_provider
-from tests.support.finalization import drive_finalization_turn
+from tests.support.finalization import drive_custody_turn, drive_finalization_turn
 from tests.support.immutable_archive import MemoryImmutableArchiveStore
 from tests.support.qualification.live_archive_recovery import qualify_offline_history_recovery
 from tests.support.uploaded_archive import UploadedArchiveStore
@@ -243,7 +243,7 @@ class _LocalApi(ApiClient):
 
     def get_collection_upload_session(self, collection_id):
         if self.workers is not None:
-            self.workers.collection_uploads.process_due_custody_receipts()
+            drive_custody_turn(self.workers.collection_uploads)
             drive_finalization_turn(self.workers.collection_uploads)
         return super().get_collection_upload_session(collection_id)
 
@@ -1167,7 +1167,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
             history_extent=BOUND_HISTORY_EXTENT,
         )
         for _ in range(64):
-            container.collection_uploads.process_due_custody_receipts()
+            drive_custody_turn(container.collection_uploads)
             receipts = early.producer.reconcile_custody()
             if receipts:
                 break

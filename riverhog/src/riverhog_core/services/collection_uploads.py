@@ -323,8 +323,10 @@ from riverhog_core.services.archive_artifact_custody_receipt import (
     ArchiveArtifactCustodyReceiptSource,
 )
 from riverhog_core.services.archive_custody_due import (
+    ArchiveCustodyDue,
     refresh_custody_member,
     refresh_custody_parent,
+    rotate_custody_member,
 )
 from riverhog_core.services.archive_native_seal_receiving import (
     NativeArchiveSealSource,
@@ -468,6 +470,17 @@ class _FinalizationClaim:
             raise Conflict("original finalization claim is unavailable")
 
 
+def _early_custody_guard(session: Session, *, collection_id: int) -> None:
+    """Retain current workflow state before the semantic child's admission locks."""
+    state = session.scalar(
+        select(CollectionUploadRecord.state)
+        .where(CollectionUploadRecord.collection_id == collection_id)
+        .with_for_update(nowait=True)
+    )
+    if state not in {"open", "closing", "uploading", "finalizing"}:
+        raise Conflict("early artifact custody construction is unavailable")
+
+
 if TYPE_CHECKING:
     from riverhog_core.cache_write_grants import CacheWriteGrants
     from riverhog_core.services.archive_cache_families import (
@@ -527,6 +540,7 @@ class SqlAlchemyCollectionUploadService:
         from .archive_finalization_due import ArchiveFinalizationDue
 
         self._finalization_due = ArchiveFinalizationDue(self._session_factory)
+        self._custody_due = ArchiveCustodyDue(self._session_factory)
         from .archive_construction_retention import ArchiveConstructionRetention
         from .archive_finalizer_registry import ArchiveFinalizerRegistry
 
@@ -3872,66 +3886,40 @@ class SqlAlchemyCollectionUploadService:
                 raise
 
     def process_due_custody_receipts(self, *, limit: int = 1) -> int:
-        progressed = 0
-        with read_snapshot(self._session_factory) as session:
-            candidates = list(
-                session.execute(
-                    select(
-                        CollectionUploadArtifactRecord.collection_id,
-                        CollectionUploadArtifactRecord.artifact_id,
-                    )
-                    .join(
-                        CollectionUploadRecord,
-                        CollectionUploadRecord.collection_id
-                        == CollectionUploadArtifactRecord.collection_id,
-                    )
-                    .join(
-                        CollectionUploadArtifactProvenanceBindingRecord,
-                        (
-                            CollectionUploadArtifactProvenanceBindingRecord.collection_id
-                            == CollectionUploadArtifactRecord.collection_id
-                        )
-                        & (
-                            CollectionUploadArtifactProvenanceBindingRecord.artifact_id
-                            == CollectionUploadArtifactRecord.artifact_id
-                        ),
-                    )
-                    .where(
-                        CollectionUploadArtifactRecord.payload_sealed_at.is_not(None),
-                        CollectionUploadArtifactRecord.custody_receipt_json.is_(None),
-                        or_(
-                            ~CollectionUploadRecord.initiated_by_principal_id.startswith(
-                                "processing:"
-                            ),
-                            CollectionUploadRecord.completion_requirement_json.is_not(None),
-                        ),
-                        or_(
-                            CollectionUploadRecord.completion_requirement_json.is_(None),
-                            CollectionUploadArtifactProvenanceBindingRecord.history_imports_ref_json.is_not(
-                                None
-                            ),
-                        ),
-                        CollectionUploadRecord.state.in_(
-                            ("open", "closing", "uploading", "finalizing")
-                        ),
-                    )
-                    .order_by(
-                        CollectionUploadArtifactRecord.collection_id,
-                        CollectionUploadArtifactRecord.artifact_id,
-                    )
-                    .limit(max(0, limit))
-                )
-            )
-        for collection_id, artifact_id in candidates:
+        if limit < 1:
+            return 0
+        # Receive original physical results before selecting another member.
+        progressed = self.process_due_archive_uploads(limit=limit)
+        for collection_id, artifact_id in self._custody_due.select(limit=limit):
+            guard = partial(_early_custody_guard, collection_id=collection_id)
             try:
-                progressed += int(
-                    self._advance_artifact_custody(int(collection_id), str(artifact_id))
+                result = self._archive_finalizer_work._submit(
+                    collection_id,
+                    "artifact-custody:" + artifact_id,
+                    partial(
+                        self._artifact_custody_owner,
+                        collection_id,
+                        artifact_id,
+                        forward_guard=guard,
+                    ),
+                    lambda owner: cast(ArchiveArtifactCustodyFinalizer, owner).advance(),
+                    lambda _progressed: None,
+                    resume_original=False,
+                    claim_guard=guard,
+                    register_claim=partial(
+                        rotate_custody_member,
+                        collection_id=collection_id,
+                        artifact_id=artifact_id,
+                    ),
                 )
-            except Exception:
-                _LOG.exception(
-                    "early artifact custody remains pending: collection_id=%s artifact_id=%s",
+                progressed += int(result == "submitted")
+            except Exception as exc:
+                _LOG.warning(
+                    "early artifact custody remains pending: "
+                    "collection_id=%s artifact_id=%s error_type=%s",
                     collection_id,
                     artifact_id,
+                    type(exc).__name__,
                 )
         return progressed
 
@@ -4170,72 +4158,6 @@ class SqlAlchemyCollectionUploadService:
             forward_guard=forward_guard,
             select_source=select_source,
         )
-
-    def _advance_artifact_custody(self, collection_id: int, artifact_id: str) -> bool:
-        """Seal one required object, or acknowledge a fully verified early primary.
-
-        Store writes precede durable receipt publication. Each step rechecks the
-        immutable construction; retries reuse content addresses and never claim
-        completion, discoverable publication or source-retirement permission.
-        """
-        selection = self._select_artifact_custody(collection_id, artifact_id)
-        if selection is None:
-            return False
-        pending_structure = selection.pending_structure
-        pending_segment = selection.pending_segment
-        receipt_source = selection.receipt_source
-        prefix, store_name, passphrase = (
-            selection.prefix,
-            selection.store_name,
-            selection.passphrase,
-        )
-        if pending_structure is not None:
-            return self._publish_next_provenance_structure(
-                collection_id, selected_object_id=pending_structure
-            )
-        if pending_segment is not None:
-            selected, content = pending_segment.selected, pending_segment.content
-            journal_id, journal_sha256, offset = (
-                selected.journal_id,
-                selected.journal_sha256,
-                selected.offset,
-            )
-            publisher = ArchiveProvenancePublisher(
-                object_store=self._archive_stores.require(store_name).immutable_objects,
-                passphrase=passphrase,
-                scrypt_log_n=self._config.archive_scrypt_work_factor,
-            )
-            sealed_segment = publisher.publish_journal_segment(
-                archive_storage_prefix=prefix, content=content
-            )
-            with session_scope(self._session_factory) as session:
-                journal = session.get(
-                    CollectionUploadProvenanceJournalRecord, (collection_id, journal_id)
-                )
-                if journal is None or journal.sha256 != journal_sha256:
-                    raise Conflict("canonical custody journal changed during durable publication")
-                old = session.get(
-                    CollectionUploadProvenanceCustodyObjectRecord,
-                    (collection_id, journal_id, offset, sealed_segment.plaintext_sha256),
-                )
-                if old is None:
-                    session.add(
-                        CollectionUploadProvenanceCustodyObjectRecord(
-                            collection_id=collection_id,
-                            journal_id=journal_id,
-                            byte_offset=offset,
-                            plaintext_bytes=len(content),
-                            plaintext_sha256=sealed_segment.plaintext_sha256,
-                            relative_path=sealed_segment.relative_path,
-                            receipt_json=_sealed_provenance_object_json(sealed_segment),
-                        )
-                    )
-            return True
-        if receipt_source is None:
-            return False
-        with session_scope(self._session_factory) as session:
-            receipt_source.apply(session)
-        return True
 
     def _advance_catalog_projection(self, collection_id: int) -> bool:
         """Advance one bounded durable catalog-projection transaction."""

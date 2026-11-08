@@ -24,11 +24,27 @@ def _control(session: Session, upload: Upload) -> Control:
     return control
 
 
-def _refresh(upload: Upload, control: Control) -> None:
-    control.custody_requires_history = upload.completion_requirement_json is not None
-    enabled = upload.state in {"open", "closing", "uploading", "finalizing"} and (
-        not upload.initiated_by_principal_id.startswith("processing:")
-        or control.custody_requires_history
+def _parent_facts(session: Session, collection_id: int) -> tuple[str, bool, bool]:
+    # Mutation callers may retain a narrow raiseload parent. Read eligibility
+    # expressions by key without loading a completion document or other bodies.
+    session.flush()
+    row = session.execute(
+        select(
+            Upload.state,
+            Upload.initiated_by_principal_id.startswith("processing:").label("processing"),
+            Upload.completion_requirement_json.is_not(None).label("requires_history"),
+        ).where(Upload.collection_id == collection_id)
+    ).one_or_none()
+    if row is None:
+        raise Conflict("artifact custody scheduling construction is unavailable")
+    return row.state, row.processing, row.requires_history
+
+
+def _refresh(control: Control, facts: tuple[str, bool, bool]) -> None:
+    state, processing, requires_history = facts
+    control.custody_requires_history = requires_history
+    enabled = state in {"open", "closing", "uploading", "finalizing"} and (
+        not processing or requires_history
     )
     control.custody_due_count = (
         (
@@ -43,7 +59,8 @@ def _refresh(upload: Upload, control: Control) -> None:
 
 def refresh_custody_parent(session: Session, upload: Upload) -> None:
     """Change parent eligibility without traversing its member population."""
-    _refresh(upload, _control(session, upload))
+    control = _control(session, upload)
+    _refresh(control, _parent_facts(session, upload.collection_id))
 
 
 def refresh_custody_member(session: Session, upload: Upload, artifact_id: str) -> bool:
@@ -54,7 +71,7 @@ def refresh_custody_member(session: Session, upload: Upload, artifact_id: str) -
     receipt acknowledgements apply no second delta.
     """
     control = _control(session, upload)
-    session.flush()
+    facts = _parent_facts(session, upload.collection_id)
     artifact = session.get(Artifact, (upload.collection_id, artifact_id), populate_existing=True)
     if artifact is None:
         return False
@@ -71,7 +88,7 @@ def refresh_custody_member(session: Session, upload: Upload, artifact_id: str) -
         artifact.custody_schedule_stage = stage
         control.custody_primary_count += int(stage > 0) - int(previous > 0)
         control.custody_history_count += int(stage == 2) - int(previous == 2)
-    _refresh(upload, control)
+    _refresh(control, facts)
     return previous != stage
 
 

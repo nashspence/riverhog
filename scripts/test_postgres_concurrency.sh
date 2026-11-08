@@ -53,6 +53,7 @@ default_tests=(
   tests/integration/test_finalization_due_selection.py
   tests/integration/test_custody_due_selection.py
   tests/integration/test_maintained_finalization_workers.py
+  tests/integration/test_maintained_custody_workers.py
   tests/integration/test_archive_artifact_custody_receipt_concurrency.py
   tests/integration/test_archive_volume_metadata_checkpoint_concurrency.py \
   tests/integration/test_archive_volume_metadata_receiving_concurrency.py

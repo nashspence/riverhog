@@ -7,6 +7,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from threading import Lock
 
+from riverhog_core.ports.archive_objects import (
+    ImmutableObjectReceipt as ArchiveImmutableObjectReceipt,
+)
 from riverhog_core.stores.storage_adapter_archive_objects import (
     StorageAdapterImmutableArchiveObjectStore,
 )
@@ -17,6 +20,7 @@ from riverhog_storage_adapter_protocol import (
     ObjectHeadRequest,
     ObjectMetadataReceipt,
     SmallObjectWriteRequest,
+    StorageAdapterRejection,
     WriteInvocation,
     execute_write_invocation,
 )
@@ -28,6 +32,7 @@ from tests.unit.archive_object_fixtures import MemoryArchiveStore
 class StoredImmutableObject:
     content: bytes
     identity: dict[str, str]
+    receipt: ArchiveImmutableObjectReceipt
 
 
 class _StoredObjects(Mapping[str, StoredImmutableObject]):
@@ -35,7 +40,12 @@ class _StoredObjects(Mapping[str, StoredImmutableObject]):
         self.store = store
 
     def __getitem__(self, path):
-        return StoredImmutableObject(self.store.objects[path], self.store.object_metadata[path])
+        content = self.store.objects[path]
+        return StoredImmutableObject(
+            content,
+            self.store.object_metadata[path],
+            self.store._immutable_receipt(path, content),
+        )
 
     def __contains__(self, path):
         return path in self.store.objects
@@ -77,6 +87,17 @@ class _MemorySmallObjects:
         ):
             raise ValueError("test immutable content differs from its exact request")
         with self.lock:
+            existing = self.store.objects.get(request.object_path)
+            if existing is not None and (
+                len(existing) != request.stored_bytes
+                or hashlib.sha256(existing).hexdigest() != request.stored_sha256
+                or self.store.object_content_types[request.object_path] != request.content_type
+                or self.store.object_metadata[request.object_path]
+                != request.required_identity_assertions
+            ):
+                raise StorageAdapterRejection(
+                    "identity_conflict", "existing immutable object differs from its exact request"
+                )
             receipt = self.store.put_immutable_object(
                 object_path=request.object_path,
                 content=data,

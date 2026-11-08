@@ -16,6 +16,7 @@ from riverhog_archive_contracts import (
 )
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
 from riverhog_core.archive_provenance import ArchiveProvenancePublisher
+from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_base import Base
 from riverhog_core.catalog_db import make_session_factory, session_scope
 from riverhog_core.catalog_models import (
@@ -55,8 +56,9 @@ from riverhog_protocol.errors import Conflict
 from riverhog_provenance import BoundedSourceObserver, BytesSource, validate_journal
 from sqlalchemy import select
 
+from tests.support.finalization import drive_custody_turn
+from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
-from tests.unit.test_archive_root import MemoryImmutableStore
 
 
 def _construction(
@@ -236,10 +238,12 @@ def _construction(
                     object_id=f"segment-{'0' * 63}{sequence}",
                 )
             )
-    store = MemoryImmutableStore()
+    backing = MemoryArchiveStore()
+    binding = archive_store_binding(backing, incarnation_id=incarnation_id)
+    store = binding.immutable_objects
     service = SqlAlchemyCollectionUploadService(
         config,
-        SimpleNamespace(require=lambda _name: SimpleNamespace(immutable_objects=store)),
+        ArchiveStoreRegistry({"archive": binding}),
         session_factory=factory,
     )
     return SimpleNamespace(
@@ -247,6 +251,8 @@ def _construction(
         factory=factory,
         config=config,
         store=store,
+        backing=backing,
+        binding=binding,
         primary=primary,
         member_id=member_id,
     )
@@ -276,9 +282,9 @@ def test_source_custody_precedes_final_roots_and_reuses_encrypted_primary(tmp_pa
         assert _artifact_payload(artifact)["custody_receipt"] is None
         assert _artifact_payload(artifact)["payload_sealed"] is True
         assert _custody_stats(session, 1) == (0, 0)
-    assert service.process_due_custody_receipts() == 1  # encrypted primary bytes
-    assert service.process_due_custody_receipts() == 1  # early receipt
-    assert service.process_due_custody_receipts() == 0
+    assert drive_custody_turn(service) == 1  # encrypted primary bytes
+    assert drive_custody_turn(service) == 1  # early receipt
+    assert drive_custody_turn(service) == 0
     with session_scope(factory) as session:
         row = session.scalar(select(CollectionUploadArtifactRecord))
         upload = session.get(CollectionUploadRecord, 1)
@@ -343,13 +349,13 @@ def test_execution_early_custody_requires_input_selection_and_keeps_completion_p
     )
     f = _construction(tmp_path, requirement)
     _seal_payload(f)
-    assert not f.service._advance_artifact_custody(1, f.member_id)
+    assert not drive_custody_turn(f.service)
     inputs = RecordSetCommitment(MEMBER_HISTORY_IMPORTS_SCHEMA).ref()
     f.service.stage_history_structure(1, RecordPage(inputs, 0, (), True).to_json_bytes())
     f.service.set_member_history_inputs(1, ArtifactId(f.member_id), inputs)
-    assert f.service._advance_artifact_custody(1, f.member_id)
-    assert f.service._advance_artifact_custody(1, f.member_id)
-    assert f.service._advance_artifact_custody(1, f.member_id)
+    assert drive_custody_turn(f.service)
+    assert drive_custody_turn(f.service)
+    assert drive_custody_turn(f.service)
     with session_scope(f.factory) as session:
         row = session.get(CollectionUploadArtifactRecord, (1, f.member_id))
         assert row is not None and row.custody_receipt_json is not None
@@ -362,32 +368,69 @@ def test_execution_early_custody_requires_input_selection_and_keeps_completion_p
         f.service._stage_next_member_histories(1)
 
 
-def test_lost_custody_store_response_reuses_durable_bytes(tmp_path: Path) -> None:
+@pytest.mark.parametrize("committed", (False, True))
+def test_lost_closed_custody_report_ack_reuses_durable_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, committed: bool
+) -> None:
+    from tests.unit.test_archive_provenance_journal_writer import _lose_ack
+
     f = _construction(tmp_path)
-    _seal_payload(f)
+    try:
+        _seal_payload(f)
+        with _lose_ack(monkeypatch, "report", committed):
+            with pytest.raises(OSError, match="injected journal writer"):
+                drive_custody_turn(f.service)
+        original = f.service._archive_finalizers._contexts[1].owner
+        ciphertexts = {path: value.content for path, value in f.store.objects.items()}
+        assert ciphertexts and original.has_pending
+        assert drive_custody_turn(f.service)
+        assert drive_custody_turn(f.service)
+        assert {path: value.content for path, value in f.store.objects.items()} == ciphertexts
+        with session_scope(f.factory) as session:
+            assert _custody_stats(session, 1) == (1, 3)
+    finally:
+        f.service._archive_execution.close()
+        f.factory.kw["bind"].dispose()
 
-    class LostResponseStore(MemoryImmutableStore):
-        lost = False
 
-        def put_immutable_object(self, **kwargs):
-            receipt = super().put_immutable_object(**kwargs)
-            if not self.lost:
-                self.lost = True
-                raise OSError("lost durable-store response")
-            return receipt
+def test_unknown_custody_execution_retains_bytes_without_releasing_or_reissuing(
+    tmp_path: Path,
+) -> None:
+    f = _construction(tmp_path)
+    try:
+        _seal_payload(f)
 
-    store = LostResponseStore()
-    f.service._archive_stores = SimpleNamespace(
-        require=lambda _name: SimpleNamespace(immutable_objects=store)
-    )
-    with pytest.raises(OSError, match="lost durable-store"):
-        f.service._advance_artifact_custody(1, f.member_id)
-    ciphertexts = {path: value.content for path, value in store.objects.items()}
-    assert f.service._advance_artifact_custody(1, f.member_id)
-    assert f.service._advance_artifact_custody(1, f.member_id)
-    assert {path: value.content for path, value in store.objects.items()} == ciphertexts
-    with session_scope(f.factory) as session:
-        assert _custody_stats(session, 1) == (1, 3)
+        class LostResponseStore(MemoryArchiveStore):
+            calls = 0
+
+            def put_immutable_object(self, **kwargs):
+                self.calls += 1
+                receipt = super().put_immutable_object(**kwargs)
+                if self.calls == 1:
+                    raise OSError("lost durable-store response")
+                return receipt
+
+        backing = LostResponseStore()
+        binding = archive_store_binding(backing, incarnation_id=f.binding.incarnation_id)
+        store = binding.immutable_objects
+        f.service._archive_stores = ArchiveStoreRegistry({"archive": binding})
+        with pytest.raises(Conflict, match="original archive metadata execution remains unknown"):
+            drive_custody_turn(f.service)
+        context = f.service._archive_finalizers._contexts[1]
+        original = context.owner
+        ciphertexts = {path: value.content for path, value in store.objects.items()}
+        assert ciphertexts and backing.calls == 1 and original.has_pending
+        with pytest.raises(Conflict, match="original archive metadata execution remains unknown"):
+            drive_custody_turn(f.service)
+        assert context.owner is original and original.has_pending and backing.calls == 1
+        assert {path: value.content for path, value in store.objects.items()} == ciphertexts
+        with session_scope(f.factory) as session:
+            assert _custody_stats(session, 1) == (0, 0)
+            row = session.get(CollectionUploadArtifactRecord, (1, f.member_id))
+            assert row.custody_receipt_json is None
+    finally:
+        f.service._archive_execution.close()
+        f.factory.kw["bind"].dispose()
 
 
 @pytest.mark.parametrize("processing", [False, True])
@@ -426,7 +469,7 @@ def test_verified_custody_selection_performs_no_provider_or_receipt_execution(
             row = session.get(CollectionUploadArtifactRecord, (1, f.member_id))
             assert row is not None and row.custody_receipt_json is None
             assert _custody_stats(session, 1) == (0, 0)
-        assert f.service._advance_artifact_custody(1, f.member_id)
+        assert drive_custody_turn(f.service)
     assert f.service._select_artifact_custody(1, f.member_id) is None
     with session_scope(f.factory) as session:
         assert _custody_stats(session, 1) == (1, 3)

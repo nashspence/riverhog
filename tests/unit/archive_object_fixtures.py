@@ -1386,11 +1386,12 @@ class MemoryArchiveStore:
 
 
 def archive_store_binding(
-    store: MemoryArchiveStore, *, name: str = "archive"
+    store: MemoryArchiveStore, *, name: str = "archive", incarnation_id: str | None = None
 ) -> ArchiveStoreBinding:
     from tests.support.immutable_archive import MemoryImmutableArchiveStore
 
-    incarnation_id = fixture_storage_incarnation_id("archive", name)
+    if incarnation_id is None:
+        incarnation_id = fixture_storage_incarnation_id("archive", name)
     immutable = MemoryImmutableArchiveStore(incarnation_id, backing=store)
     return ArchiveStoreBinding(
         incarnation_id=incarnation_id,

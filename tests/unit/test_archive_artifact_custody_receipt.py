@@ -23,6 +23,7 @@ from riverhog_core.services.archive_artifact_custody_receipt import (
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_protocol.errors import Conflict
 
+from tests.support.finalization import drive_custody_turn
 from tests.unit.test_archive_finalizer_registry import _receive
 from tests.unit.test_canonical_upload_custody import _construction, _seal_payload
 
@@ -31,18 +32,10 @@ from tests.unit.test_canonical_upload_custody import _construction, _seal_payloa
 def _original(tmp_path, monkeypatch, *, database_url=None):
     case = _construction(tmp_path, database_url=database_url)
     _seal_payload(case)
-    assert case.service.process_due_custody_receipts() == 1
-    sources = []
-
-    def hold(source, session):
-        sources.append(source)
-        raise OSError("synthetic custody acknowledgement not started")
-
-    with monkeypatch.context() as patch:
-        patch.setattr(Source, "apply", hold)
-        with pytest.raises(OSError, match="not started"):
-            case.service._advance_artifact_custody(1, case.member_id)
-    (source,) = sources
+    assert drive_custody_turn(case.service) == 1
+    selected = case.service._select_artifact_custody(1, case.member_id)
+    assert selected is not None and selected.receipt_source is not None
+    source = selected.receipt_source
     selections = []
 
     def select():

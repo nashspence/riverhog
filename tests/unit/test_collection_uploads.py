@@ -91,7 +91,7 @@ from riverhog_provenance import (
 )
 from sqlalchemy import select
 
-from tests.support.finalization import drive_finalization_turn
+from tests.support.finalization import drive_custody_turn, drive_finalization_turn
 from tests.support.immutable_archive import MemoryImmutableArchiveStore
 from tests.support.uploaded_archive import UploadedArchiveStore
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
@@ -212,7 +212,7 @@ def _custody_until(service, collection_id, artifact_id) -> dict[str, object]:
         member = next(item for item in members if item["artifact_id"] == artifact_id)
         if member["custody_receipt"] is not None:
             return member["custody_receipt"]
-        assert service.process_due_custody_receipts() == 1
+        assert drive_custody_turn(service) == 1
     raise AssertionError("bounded primary custody did not produce a receipt")
 
 

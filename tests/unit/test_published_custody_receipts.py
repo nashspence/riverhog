@@ -21,14 +21,15 @@ from riverhog_protocol import (
 from riverhog_protocol.errors import Conflict, NotFound
 from sqlalchemy import select
 
+from tests.support.finalization import drive_custody_turn
 from tests.unit.test_canonical_upload_custody import _construction, _seal_payload
 
 
 def _projection(tmp_path: Path):
     f = _construction(tmp_path)
     _seal_payload(f)
-    assert f.service.process_due_custody_receipts() == 1
-    assert f.service.process_due_custody_receipts() == 1
+    assert drive_custody_turn(f.service) == 1
+    assert drive_custody_turn(f.service) == 1
     with session_scope(f.factory) as session:
         session.add(
             CollectionRecord(

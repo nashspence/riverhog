@@ -17,7 +17,9 @@ from riverhog_core.services.archive_custody_due import (
 )
 from riverhog_protocol import CollectionArtifactProvenanceBindingBatchDocument
 from sqlalchemy import insert, select
+from sqlalchemy.orm import load_only
 
+from tests.support.finalization import drive_custody_turn
 from tests.unit.test_canonical_upload_custody import _construction, _seal_payload
 from tests.unit.test_collection_upload_raw_readiness_work import sqlite_work
 
@@ -253,7 +255,7 @@ def test_actual_binding_retries_and_verified_receipt_maintain_due_hints(tmp_path
                 control.custody_due_count,
             ) == (1, 0, 1)
         for _ in range(3):
-            case.service.process_due_custody_receipts(limit=1)
+            drive_custody_turn(case.service, limit=1)
         with session_scope(case.factory) as session:
             artifact = session.get(Artifact, (1, case.member_id))
             control = session.get(Control, 1)
@@ -265,6 +267,37 @@ def test_actual_binding_retries_and_verified_receipt_maintain_due_hints(tmp_path
                 control.custody_due_count,
             ) == (0, 0, 0)
         assert owner.select(limit=1) == ()
-        assert case.service.process_due_custody_receipts(limit=1) == 0
+        assert drive_custody_turn(case.service, limit=1) == 0
     finally:
+        case.factory.kw["bind"].dispose()
+
+
+def test_readiness_refresh_keeps_large_parent_fields_deferred(tmp_path):
+    case = _construction(tmp_path)
+    try:
+        _seal_payload(case)
+        with session_scope(case.factory) as session:
+            upload = session.scalar(
+                select(Upload)
+                .where(Upload.collection_id == 1)
+                .options(load_only(Upload.collection_id, raiseload=True))
+                .with_for_update()
+            )
+            assert upload is not None
+            refresh_custody_parent(session, upload)
+            assert not refresh_custody_member(session, upload, case.member_id)
+            control = session.get(Control, 1)
+            assert control.custody_due_count == 1
+            assert "completion_requirement_json" not in upload.__dict__
+            assert "initiated_by_principal_id" not in upload.__dict__
+            assert "state" not in upload.__dict__
+            upload.state = "orphaned"
+            refresh_custody_parent(session, upload)
+            assert control.custody_due_count == 0
+            assert "completion_requirement_json" not in upload.__dict__
+            upload.state = "open"
+            refresh_custody_parent(session, upload)
+            assert control.custody_due_count == 1
+    finally:
+        case.service._archive_execution.close()
         case.factory.kw["bind"].dispose()
