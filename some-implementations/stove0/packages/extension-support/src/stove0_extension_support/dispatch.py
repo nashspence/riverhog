@@ -9,7 +9,7 @@ import threading
 import time
 from collections.abc import Callable
 from concurrent.futures import Future, ThreadPoolExecutor
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from stove0_extension_support import (
     ExclusiveStateOwner,
@@ -31,10 +31,15 @@ class ExecutionDispatch:
     and cancellation, persists the start boundary, and returns the payload. It
     must never execute payload or wait for resources. No job store or wire result
     is defined here; terminal evidence stays with its owning component.
+
+    The component binds refresh_id to every transient input captured by these
+    callbacks. Identical polling retains the in-flight authorization; changed
+    inputs replace it and must pass their own live authorization.
     """
 
     invocation_id: str
     attempt: int
+    refresh_id: str = field(repr=False)
     authorize: Callable[[float], None]
     prepare: Callable[[threading.Event, ExecutionPermit], Callable[[], object] | None]
     deferred: Callable[[], None]
@@ -107,6 +112,9 @@ class BoundedExecutionDispatcher:
                 or existing.attempt != dispatch.attempt
             ):
                 raise ValueError("pending extension invocation changed")
+            if existing is not None and existing.refresh_id == dispatch.refresh_id:
+                self._wake.set()
+                return
             self._pending[key] = dispatch
             self._wake.set()
 

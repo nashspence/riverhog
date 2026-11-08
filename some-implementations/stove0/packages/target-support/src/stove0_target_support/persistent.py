@@ -19,6 +19,7 @@ from typing import Any, Final
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import PrimaryStateBusy, PrimaryStatePolicy, PrimaryStore
 from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 from riverhog_protocol import DownloadAllowanceExceeded, RiverhogError, ServiceUnavailable
@@ -594,6 +595,9 @@ class PersistentTargetService:
             ExecutionDispatch(
                 invocation_id=request.request_sha256,
                 attempt=attempt,
+                refresh_id=hashlib.sha256(
+                    canonical_json_bytes(request.model_dump(mode="json"))
+                ).hexdigest(),
                 authorize=lambda deadline: self._validate_live_authority(
                     request, deadline=deadline
                 ),

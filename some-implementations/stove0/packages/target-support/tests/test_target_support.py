@@ -3586,3 +3586,101 @@ def test_target_publication_policy_requires_explicit_scope_and_rejects_unknown_f
                 )
             },
         )
+
+
+def test_identical_queued_polls_do_not_displace_inflight_admission(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    operation, target, request = _request()
+    executed = threading.Event()
+    authorizations = []
+    refreshing = threading.Event()
+    refreshing.set()
+
+    def execute(_request, _attempt, _cancellation, _session):
+        executed.set()
+        raise TargetExecutionInapplicable("fixture-inapplicable", "fixture input")
+
+    service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path / "state",
+        execute=execute,
+        admission_retry_seconds=0.01,
+    )
+
+    def authorize(original, *, deadline):
+        assert original == request
+        assert time.monotonic() < deadline
+        authorizations.append(True)
+        # The same transient authority arriving during the live read cannot
+        # invalidate that read or force payload admission to start over.
+        if refreshing.is_set():
+            service.put_job(request.model_copy(deep=True))
+
+    monkeypatch.setattr(service, "_validate_live_authority", authorize)
+    try:
+        service.put_job(request)
+        assert executed.wait(timeout=5), "identical queued polls starved payload admission"
+        assert len(authorizations) >= 2
+    finally:
+        refreshing.clear()
+        service.close()
+
+
+@pytest.mark.parametrize("replace_on_authorization", [1, 2])
+@pytest.mark.parametrize("changed_authority", ["capability", "callback"])
+def test_changed_queued_authority_replaces_original_before_payload_admission(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    replace_on_authorization: int,
+    changed_authority: str,
+) -> None:
+    operation, target, request = _request()
+    replacement = TargetJobRequest.seal(
+        request.declaration,
+        (
+            request.runtime.model_copy(update={"capability_token": "fixture-refreshed-capability"})
+            if changed_authority == "capability"
+            else request.runtime
+        ),
+        (
+            request.callback_access.model_copy(update={"token": "fixture-refreshed-callback"})
+            if changed_authority == "callback"
+            else request.callback_access
+        ),
+    )
+    assert replacement.request_sha256 == request.request_sha256
+    executed = threading.Event()
+    authorizations = []
+
+    def execute(original, _attempt, _cancellation, _session):
+        assert original == replacement
+        executed.set()
+        raise TargetExecutionInapplicable("fixture-inapplicable", "fixture input")
+
+    service = PersistentTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
+        descriptor=target,
+        operations={operation.id: operation},
+        state_root=tmp_path / "state",
+        execute=execute,
+        admission_retry_seconds=0.01,
+    )
+
+    def authorize(original, *, deadline):
+        assert time.monotonic() < deadline
+        authorizations.append(original == replacement)
+        if len(authorizations) == replace_on_authorization:
+            service.put_job(replacement)
+
+    monkeypatch.setattr(service, "_validate_live_authority", authorize)
+    try:
+        service.put_job(request)
+        assert executed.wait(timeout=5)
+        assert not authorizations[0]
+        assert authorizations[-1]
+        assert authorizations.count(True) >= 1
+    finally:
+        service.close()
