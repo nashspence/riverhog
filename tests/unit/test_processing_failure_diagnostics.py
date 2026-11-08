@@ -217,3 +217,114 @@ scope["main"]()
         assert result.returncode == 0, result.stderr
         assert result.stdout.strip() == "preflight-only: zero accepted target jobs"
         assert result.stderr == ""
+
+
+def _failed_preview(state="failed", *, code="private.code/v1", retryable=True):
+    from stove0_protocol import (
+        CollectionRootIdentityRef,
+        PreviewOutcome,
+        RecipeIdentityRef,
+        WorkflowPreview,
+        WorkflowPreviewPayload,
+        WorkIdentity,
+        WorkPayload,
+    )
+
+    work = WorkIdentity.seal(
+        WorkPayload(
+            recipe=RecipeIdentityRef(id="private.recipe/v1", revision="1", sha256="a" * 64),
+            inputs=(
+                CollectionRootIdentityRef(
+                    collection_id="1",
+                    archive_root_sha256="b" * 64,
+                    artifact_set_identity="c" * 64,
+                ),
+            ),
+            effective_intent={"private": "private fixture input"},
+        )
+    )
+    return WorkflowPreview.seal(
+        WorkflowPreviewPayload(
+            preview_id="d" * 64,
+            state=state,
+            work=work,
+            outcome=PreviewOutcome(
+                code=code, message="private fixture exception message", retryable=retryable
+            ),
+            warnings=("private fixture warning",),
+        )
+    )
+
+
+def _preview_annotation(output):
+    prefix = "::error title=Processing preview qualification::"
+    rows = [
+        json.loads(line.removeprefix(prefix))
+        for line in output.splitlines()
+        if line.startswith(prefix)
+    ]
+    assert len(rows) == 1
+    return rows[0]
+
+
+@pytest.mark.parametrize("state", ("failed", "inapplicable", "canceled"))
+@pytest.mark.parametrize("retryable", (None, False, True))
+def test_failed_preview_reports_only_contract_state_counts_and_retryability(
+    capsys, state, retryable
+):
+    preview = _failed_preview(state, retryable=retryable)
+    with pytest.raises(AssertionError) as error:
+        processing.require_ready_preview(preview)
+    expected = {
+        "state": preview.state,
+        "outcome": preview.outcome.model_dump(mode="json", exclude_none=True),
+    }
+    assert json.loads(str(error.value)) == expected
+    observed = _preview_annotation(capsys.readouterr().err)
+    assert observed == {
+        "format": "riverhog-processing-preview-diagnostic/v1",
+        "state": state,
+        "outcome_present": True,
+        "generic_planning_failure": False,
+        "retryable": retryable,
+        "observations": 0,
+        "selections": 0,
+        "target_plans": 0,
+        "branch_sets": 0,
+        "root_branch_plan_present": False,
+    }
+    assert "private" not in json.dumps(observed)
+    assert preview.preview_id not in json.dumps(observed)
+    assert preview.work.work_id not in json.dumps(observed)
+
+
+def test_generic_preview_failure_is_classified_without_copying_its_message(capsys):
+    preview = _failed_preview(code="workflow-preview-failed")
+    with pytest.raises(AssertionError):
+        processing.require_ready_preview(preview)
+    observed = _preview_annotation(capsys.readouterr().err)
+    assert observed["generic_planning_failure"] is True
+    assert "private" not in json.dumps(observed)
+
+
+def test_preview_reporting_failure_preserves_the_original_qualification_failure(monkeypatch):
+    preview = _failed_preview()
+
+    def unavailable(_preview):
+        raise OSError("private reporting stream failure")
+
+    monkeypatch.setattr(processing, "preview_failure_annotation", unavailable)
+    with pytest.raises(AssertionError) as error:
+        processing.require_ready_preview(preview)
+    assert json.loads(str(error.value))["state"] == "failed"
+    assert json.loads(str(error.value))["outcome"]["message"] == preview.outcome.message
+
+
+def test_ready_preview_does_not_read_or_report_failure_details(monkeypatch):
+    from types import SimpleNamespace
+
+    def forbidden(_preview):
+        pytest.fail("ready preview cannot report a failure")
+
+    monkeypatch.setattr(processing, "preview_failure_annotation", forbidden)
+    processing.require_ready_preview(SimpleNamespace(state="ready"))

@@ -20,7 +20,7 @@ from types import FunctionType
 from typing import Any, Literal, get_args
 
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
-from stove0_protocol import CollectionRootIdentityRef, PlanningJobStatus
+from stove0_protocol import CollectionRootIdentityRef, PlanningJobStatus, WorkflowPreview
 from stove0_target_protocol import AcceptedTargetJob, TargetJobState, TargetJobStatus, TransformPlan
 
 
@@ -455,6 +455,48 @@ def processing_phase_cost(phase: str) -> Iterator[None]:
         )
 
 
+def preview_failure_annotation(preview: WorkflowPreview) -> None:
+    """Report finite preview state and counts, never identities or outcome text."""
+    outcome = preview.outcome
+    generic_failure = outcome is not None and outcome.code == "workflow-preview-failed"
+    diagnostic = {
+        "format": "riverhog-processing-preview-diagnostic/v1",
+        "state": preview.state,
+        "outcome_present": outcome is not None,
+        "generic_planning_failure": generic_failure,
+        "retryable": None if outcome is None else outcome.retryable,
+        "observations": len(preview.observations),
+        "selections": len(preview.selections),
+        "target_plans": len(preview.target_plans),
+        "branch_sets": len(preview.branch_sets),
+        "root_branch_plan_present": preview.branch_set_plan is not None,
+    }
+    print(
+        "::error title=Processing preview qualification::"
+        + json.dumps(diagnostic, sort_keys=True, separators=(",", ":")),
+        file=sys.stderr,
+        flush=True,
+    )
+
+
+def require_ready_preview(preview: WorkflowPreview) -> None:
+    if preview.state == "ready":
+        return
+    try:
+        preview_failure_annotation(preview)
+    except Exception:
+        # Unavailable reporting cannot replace the original qualification failure.
+        pass
+    assert preview.state == "ready", canonical_json_bytes(
+        {
+            "state": preview.state,
+            "outcome": preview.outcome.model_dump(mode="json", exclude_none=True)
+            if preview.outcome is not None
+            else None,
+        }
+    ).decode()
+
+
 def invoke() -> None:
     from stove0_operator_contracts import (
         OperatorWorkflowPreviewRequest,
@@ -497,14 +539,7 @@ def invoke() -> None:
             await_planning("/v1/workflow-previews/" + preview_status.job_id)
         ).result
     assert preview is not None
-    assert preview.state == "ready", canonical_json_bytes(
-        {
-            "state": preview.state,
-            "outcome": preview.outcome.model_dump(mode="json", exclude_none=True)
-            if preview.outcome is not None
-            else None,
-        }
-    ).decode()
+    require_ready_preview(preview)
     assert preview.work.recipe.id == recipe.definition.id
     assert preview.work.recipe.revision == recipe.definition.revision
     assert preview.work.recipe.sha256 == recipe.sha256
