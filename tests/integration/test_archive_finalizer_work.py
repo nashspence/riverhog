@@ -64,21 +64,10 @@ def test_postgres_original_feedback_cannot_requeue_another_claim(
 
 @contextmanager
 def _registration_case(tmp_path, monkeypatch, database_url):
-    from riverhog_core.runtime_config import RuntimeConfig
-
     from tests.unit.test_archive_catalog_finalizer import _original
 
-    configured = RuntimeConfig.for_testing
-
-    def config(**values):
-        return configured(journal_validation_workspace=tmp_path / "journal-validation", **values)
-
-    with monkeypatch.context() as patch:
-        patch.setattr(RuntimeConfig, "for_testing", staticmethod(config))
-        with _original(
-            tmp_path, monkeypatch, "artifact-tree", database_url=database_url
-        ) as original:
-            yield original
+    with _original(tmp_path, monkeypatch, "artifact-tree", database_url=database_url) as original:
+        yield original
 
 
 def test_postgres_contended_parent_defers_finalizer_registration(

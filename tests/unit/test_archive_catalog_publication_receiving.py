@@ -6,7 +6,6 @@ import pytest
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionRecord
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
-from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_protocol.errors import Conflict
 from riverhog_protocol.paths import text_search_key
 
@@ -18,39 +17,27 @@ from tests.unit.test_finalization_claim_readiness import _seal
 
 @contextmanager
 def _publication_case(tmp_path, monkeypatch, phase="terminal", *, database_url=None):
-    # PostgreSQL has no adjacent database file from which to derive a workspace.
-    original_config = RuntimeConfig.for_testing
-
-    def config_for_case(**values):
-        return original_config(
-            journal_validation_workspace=tmp_path / "journal-validation", **values
-        )
-
-    with monkeypatch.context() as patch:
-        patch.setattr(RuntimeConfig, "for_testing", staticmethod(config_for_case))
-        with _case(tmp_path, "segment", artifact_count=1, database_url=database_url) as case:
-            _bind_primary(case.service, case.collection_id, format(1, "064x"), case.content)
-            _seal(case)
-            for _ in range(256):
-                with session_scope(case.factory) as session:
-                    upload = session.get(Upload, case.collection_id)
-                    assert upload is not None
-                    ready = (
-                        upload.final_authority_json is not None
-                        and upload.description_revision is not None
-                        and upload.tag_head_identity is not None
-                        and upload.catalog_phase == phase
-                    )
-                if ready:
-                    claim = case.service._claim_due_finalization()
-                    assert claim is not None
-                    owner = case.service._catalog_finalization_owner(
-                        claim, kind="catalog-projection"
-                    )
-                    yield case, claim, owner
-                    return
-                assert case.service.process_due_finalizations() == 1
-            pytest.fail("maintained finalization did not reach the selected catalog phase")
+    with _case(tmp_path, "segment", artifact_count=1, database_url=database_url) as case:
+        _bind_primary(case.service, case.collection_id, format(1, "064x"), case.content)
+        _seal(case)
+        for _ in range(256):
+            with session_scope(case.factory) as session:
+                upload = session.get(Upload, case.collection_id)
+                assert upload is not None
+                ready = (
+                    upload.final_authority_json is not None
+                    and upload.description_revision is not None
+                    and upload.tag_head_identity is not None
+                    and upload.catalog_phase == phase
+                )
+            if ready:
+                claim = case.service._claim_due_finalization()
+                assert claim is not None
+                owner = case.service._catalog_finalization_owner(claim, kind="catalog-projection")
+                yield case, claim, owner
+                return
+            assert case.service.process_due_finalizations() == 1
+        pytest.fail("maintained finalization did not reach the selected catalog phase")
 
 
 @pytest.mark.parametrize("phase", ("artifact-set-identity", "artifacts", "terminal"))
