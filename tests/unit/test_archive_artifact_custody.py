@@ -112,9 +112,9 @@ def _owner(case):
 
 
 def _kind(selection):
-    if selection.pending_structure is not None:
+    if selection.structure_object_id is not None:
         return "structure"
-    return "journal" if selection.pending_segment is not None else "receipt"
+    return "journal" if selection.journal_range is not None else "receipt"
 
 
 def _prime(case, kind):
@@ -203,7 +203,7 @@ def test_verified_journal_selection_cannot_be_replaced_before_child_execution(
         def select(*args):
             selected = original(*args)
             selections.append(selected)
-            journal = verified.pending_segment.selected
+            journal = verified.journal_range
             with session_scope(case.factory) as session:
                 if change == "sha256":
                     session.get(Journal, (1, journal.journal_id)).sha256 = "f" * 64

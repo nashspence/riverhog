@@ -8,7 +8,7 @@ import secrets
 import uuid
 from collections import OrderedDict
 from collections.abc import Callable, Generator, Iterator, Mapping, Sequence
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from datetime import timedelta
 from functools import partial
 from itertools import islice
@@ -413,36 +413,6 @@ class _InitialTagReceipt(TypedDict):
     published_at: str
     stored_bytes: int
     stored_sha256: str
-
-
-@dataclass(frozen=True, slots=True)
-class _ArtifactCustodyJournal:
-    selected: ProvenanceJournalRange
-    content: bytes = field(repr=False)
-
-
-@dataclass(frozen=True, slots=True)
-class _ArtifactCustodySelection:
-    """One application-verified step; selection does not execute it."""
-
-    collection_id: int
-    artifact_id: str
-    pending_structure: str | None
-    pending_segment: _ArtifactCustodyJournal | None = field(repr=False)
-    receipt_source: ArchiveArtifactCustodyReceiptSource | None = field(repr=False)
-    prefix: str
-    store_name: str
-    passphrase: str = field(repr=False)
-
-    def __post_init__(self) -> None:
-        if (
-            sum(
-                value is not None
-                for value in (self.pending_structure, self.pending_segment, self.receipt_source)
-            )
-            != 1
-        ):
-            raise ValueError("artifact custody selection requires exactly one verified step")
 
 
 class _FinalizationNotDue(Exception):
@@ -3925,7 +3895,7 @@ class SqlAlchemyCollectionUploadService:
 
     def _select_artifact_custody(
         self, collection_id: int, artifact_id: str
-    ) -> _ArtifactCustodySelection | None:
+    ) -> ArtifactCustodySelection | None:
         """Verify one member's next dependency or complete receipt without provider IO."""
         pending_segment = None
         pending_structure = None
@@ -3961,8 +3931,6 @@ class SqlAlchemyCollectionUploadService:
                 _provenance_binding_row(binding_row)
             )
             anchor = HistoryJournalAnchor.from_mapping(primary.journal.model_dump(mode="json"))
-            prefix, store_name = upload.archive_storage_prefix, upload.archive_store
-            passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
             with (
                 _staged_history_closure(session, collection_id) as closure,
                 ProvenanceCustodySet() as objects,
@@ -4049,16 +4017,13 @@ class SqlAlchemyCollectionUploadService:
                                 (collection_id, journal.journal_id, offset, segment_sha256),
                             )
                             if sealed is None:
-                                pending_segment = _ArtifactCustodyJournal(
-                                    ProvenanceJournalRange(
-                                        journal.journal_id,
-                                        journal.bytes,
-                                        journal.sha256,
-                                        offset,
-                                        size,
-                                        segment_sha256,
-                                    ),
-                                    content,
+                                pending_segment = ProvenanceJournalRange(
+                                    journal.journal_id,
+                                    journal.bytes,
+                                    journal.sha256,
+                                    offset,
+                                    size,
+                                    segment_sha256,
                                 )
                                 break
                             objects.add(_provenance_custody_object(sealed.receipt_json))
@@ -4121,34 +4086,17 @@ class SqlAlchemyCollectionUploadService:
                     )
         if pending_structure is None and pending_segment is None and receipt_source is None:
             return None
-        return _ArtifactCustodySelection(
+        return ArtifactCustodySelection(
             collection_id=collection_id,
             artifact_id=artifact_id,
-            pending_structure=pending_structure,
-            pending_segment=pending_segment,
+            structure_object_id=pending_structure,
+            journal_range=pending_segment,
             receipt_source=receipt_source,
-            prefix=prefix,
-            store_name=store_name,
-            passphrase=passphrase,
         )
 
     def _artifact_custody_owner(
         self, collection_id: int, artifact_id: str, *, forward_guard: Guard
     ) -> ArchiveArtifactCustodyFinalizer:
-        def select_source() -> ArtifactCustodySelection | None:
-            selected = self._select_artifact_custody(collection_id, artifact_id)
-            if selected is None:
-                return None
-            return ArtifactCustodySelection(
-                selected.collection_id,
-                selected.artifact_id,
-                structure_object_id=selected.pending_structure,
-                journal_range=None
-                if selected.pending_segment is None
-                else selected.pending_segment.selected,
-                receipt_source=selected.receipt_source,
-            )
-
         return ArchiveArtifactCustodyFinalizer(
             self._session_factory,
             collection_id=collection_id,
@@ -4156,7 +4104,7 @@ class SqlAlchemyCollectionUploadService:
             config=self._config,
             archive_stores=self._archive_stores,
             forward_guard=forward_guard,
-            select_source=select_source,
+            select_source=partial(self._select_artifact_custody, collection_id, artifact_id),
         )
 
     def _advance_catalog_projection(self, collection_id: int) -> bool:

@@ -461,8 +461,8 @@ def test_verified_custody_selection_performs_no_provider_or_receipt_execution(
         selection = f.service._select_artifact_custody(1, f.member_id)
         assert selection is not None
         assert selection.collection_id == 1 and selection.artifact_id == f.member_id
-        assert (selection.pending_structure is not None) == (kind == "structure")
-        assert (selection.pending_segment is not None) == (kind == "journal")
+        assert (selection.structure_object_id is not None) == (kind == "structure")
+        assert (selection.journal_range is not None) == (kind == "journal")
         assert (selection.receipt_source is not None) == (kind == "receipt")
         assert f.store.objects == stored
         with session_scope(f.factory) as session:
