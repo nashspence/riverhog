@@ -23,6 +23,7 @@ from riverhog_core.catalog_cache_write_models import (
     CachePopulationWriteEffectRecord,
 )
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord
+from riverhog_core.services.archive_upload_terminal_tags import load_terminal_tag_selector
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, _writer
 
 LocalTerminalStatus = Literal["busy", "untracked", "unfenced", "fenced", "drained"]
@@ -137,6 +138,7 @@ def lock_terminal_selection(
     except (KeyError, TypeError, ValueError) as exc:
         raise Conflict("upload terminal original request is invalid") from exc
 
+    load_terminal_tag_selector(session, terminal.id)
     return control, terminal
 
 

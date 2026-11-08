@@ -3127,4 +3127,18 @@ CREATE INDEX ix_archive_cleanup_attempts_terminal ON archive_cleanup_attempts (t
 
 CREATE INDEX ix_collection_archive_object_uploads_sealed ON collection_archive_object_uploads (collection_id, object_id) WHERE state = 'sealed';
 
+CREATE TABLE archive_upload_terminal_tags (
+	terminal_id VARCHAR(64) NOT NULL,
+	root_sha256 VARCHAR(64),
+	tag_set_identity VARCHAR(64) NOT NULL,
+	PRIMARY KEY (terminal_id),
+	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id),
+	FOREIGN KEY(root_sha256) REFERENCES collection_tag_nodes (digest) ON DELETE RESTRICT,
+	CONSTRAINT ck_archive_upload_terminal_tags_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_upload_terminal_tags_root_sha256_hex CHECK (root_sha256 IS NULL OR length(root_sha256) = 64 AND lower(root_sha256) = root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_archive_upload_terminal_tags_tag_set_identity_hex CHECK (length(tag_set_identity) = 64 AND lower(tag_set_identity) = tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_archive_upload_terminal_tags_root ON archive_upload_terminal_tags (root_sha256, terminal_id);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

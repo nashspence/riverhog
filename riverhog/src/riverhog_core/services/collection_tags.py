@@ -106,6 +106,11 @@ def build_collection_tag_set(
     return result, store.put_digests
 
 
+def read_collection_tag_set(session: Session, *, root_sha256: str | None) -> CollectionTagSet:
+    """Borrow an immutable catalog tree without materializing or owning its tags."""
+    return CollectionTagSet(_DatabaseTagNodeStore(session), CollectionTagSetRoot.seal(root_sha256))
+
+
 def advance_collection_tag_set(
     session: Session,
     *,
@@ -1649,6 +1654,7 @@ __all__ = [
     "SqlAlchemyCollectionTagService",
     "advance_collection_tag_set",
     "build_collection_tag_set",
+    "read_collection_tag_set",
     "collection_tag_sha256",
     "ensure_tag_publication_for_copy",
 ]

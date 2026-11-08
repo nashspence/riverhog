@@ -18,7 +18,7 @@ from riverhog_canonical_json import format_scalar, parse_scalar
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from sqlalchemy import Select, select
-from sqlalchemy.orm import Session, load_only
+from sqlalchemy.orm import Session, load_only, undefer
 from state_schema import read_snapshot
 from time_formats import utc_timestamp_now
 
@@ -38,6 +38,11 @@ from riverhog_core.provider_write_dispatch import (
     ProviderWriteAdmissionRefused,
     ProviderWriteReport,
     WithdrawnProviderWrite,
+)
+from riverhog_core.services.archive_upload_terminal_tags import (
+    load_terminal_tag_selector,
+    retain_terminal_tag_selector,
+    upload_terminal_tag_selector,
 )
 from riverhog_core.services.collection_registration_cleanup import freeze_registration_execution
 from riverhog_core.services.collection_upload_authority import require_archive_write_control
@@ -702,7 +707,12 @@ class ArchiveWriteAdmission:
         with session_scope(self._factory) as session:
             _writer(session)
             guard(session)
-            upload = session.scalar(self._upload_query(collection_id))
+            upload = session.scalar(
+                self._upload_query(collection_id).options(
+                    undefer(CollectionUploadRecord.tag_staging_root_sha256),
+                    undefer(CollectionUploadRecord.tag_staging_set_identity),
+                )
+            )
             control = session.get(ArchiveWriteControlRecord, collection_id)
             if upload is not None:
                 control = self._control(session, upload)
@@ -716,19 +726,24 @@ class ArchiveWriteAdmission:
                     "request": request,
                 }
             )
-            if len(encoded.encode()) > grants.terminal_bytes:
-                raise Conflict("archive upload terminal request exceeds its byte grant")
             operation_id = _sha(encoded)
             prior = session.get(ArchiveUploadTerminalRecord, operation_id)
             if prior is not None:
                 if prior.request_json != encoded:
                     raise Conflict("archive upload terminal request preimage changed")
+                load_terminal_tag_selector(session, prior.id)
                 return prior.id
             if upload is None:
                 raise NotFound("archive upload terminal outcome is unavailable")
             if control.gate != "open" or control.terminal_id is not None:
                 raise Conflict("a different archive upload terminal request was selected")
             validate_selection(session, upload)
+            selected_tags = upload_terminal_tag_selector(upload)
+            if (
+                len(encoded.encode()) + len(_json(selected_tags.payload()).encode())
+                > grants.terminal_bytes
+            ):
+                raise Conflict("archive upload terminal request exceeds its byte grant")
             freeze_registration_execution(
                 session, upload, construction_json=control.construction_json
             )
@@ -746,6 +761,8 @@ class ArchiveWriteAdmission:
                     drain_next_attempt_at=utc_timestamp_now(),
                 )
             )
+            session.flush()
+            retain_terminal_tag_selector(session, upload, operation_id, selected_tags)
             control.gate = "closed"
             control.epoch = secrets.token_hex(32)
             control.terminal_id = operation_id

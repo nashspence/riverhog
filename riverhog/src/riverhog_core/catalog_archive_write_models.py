@@ -157,6 +157,22 @@ class ArchiveUploadTerminalRecord(Base):
     )
 
 
+class ArchiveUploadTerminalTagRecord(Base):
+    """Retain the original staged tag selector independently of upload teardown."""
+
+    __tablename__ = "archive_upload_terminal_tags"
+
+    terminal_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    root_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    tag_set_identity: Mapped[str] = mapped_column(String(64))
+
+    __table_args__ = (
+        ForeignKeyConstraint(["terminal_id"], ["archive_upload_terminals.id"]),
+        ForeignKeyConstraint(["root_sha256"], ["collection_tag_nodes.digest"], ondelete="RESTRICT"),
+        Index("ix_archive_upload_terminal_tags_root", "root_sha256", "terminal_id"),
+    )
+
+
 class ArchiveCleanupPageRecord(Base):
     """One current exact selection; completed page history is not accumulated."""
 
