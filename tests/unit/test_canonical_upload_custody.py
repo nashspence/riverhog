@@ -388,3 +388,45 @@ def test_lost_custody_store_response_reuses_durable_bytes(tmp_path: Path) -> Non
     assert {path: value.content for path, value in store.objects.items()} == ciphertexts
     with session_scope(f.factory) as session:
         assert _custody_stats(session, 1) == (1, 3)
+
+
+@pytest.mark.parametrize("processing", [False, True])
+def test_verified_custody_selection_performs_no_provider_or_receipt_execution(
+    tmp_path: Path, processing: bool
+) -> None:
+    requirement = (
+        CollectionCompletionRequirementDocument(
+            execution_id="a" * 64,
+            execution_envelope_sha256="b" * 64,
+            controller_evidence_sha256="c" * 64,
+            record_kinds=COMPLETION_REQUIRED_RECORD_KINDS,
+        )
+        if processing
+        else None
+    )
+    f = _construction(tmp_path, requirement)
+    assert f.service._select_artifact_custody(1, f.member_id) is None
+    _seal_payload(f)
+    if processing:
+        assert f.service._select_artifact_custody(1, f.member_id) is None
+        inputs = RecordSetCommitment(MEMBER_HISTORY_IMPORTS_SCHEMA).ref()
+        f.service.stage_history_structure(1, RecordPage(inputs, 0, (), True).to_json_bytes())
+        f.service.set_member_history_inputs(1, ArtifactId(f.member_id), inputs)
+    expected = ["structure", "journal", "receipt"] if processing else ["journal", "receipt"]
+    for kind in expected:
+        stored = dict(f.store.objects)
+        selection = f.service._select_artifact_custody(1, f.member_id)
+        assert selection is not None
+        assert selection.collection_id == 1 and selection.artifact_id == f.member_id
+        assert (selection.pending_structure is not None) == (kind == "structure")
+        assert (selection.pending_segment is not None) == (kind == "journal")
+        assert (selection.receipt_source is not None) == (kind == "receipt")
+        assert f.store.objects == stored
+        with session_scope(f.factory) as session:
+            row = session.get(CollectionUploadArtifactRecord, (1, f.member_id))
+            assert row is not None and row.custody_receipt_json is None
+            assert _custody_stats(session, 1) == (0, 0)
+        assert f.service._advance_artifact_custody(1, f.member_id)
+    assert f.service._select_artifact_custody(1, f.member_id) is None
+    with session_scope(f.factory) as session:
+        assert _custody_stats(session, 1) == (1, 3)

@@ -8,7 +8,7 @@ import secrets
 import uuid
 from collections import OrderedDict
 from collections.abc import Callable, Generator, Iterator, Mapping, Sequence
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from datetime import timedelta
 from itertools import islice
 from typing import TYPE_CHECKING, Any, TypedDict, cast
@@ -409,6 +409,30 @@ class _InitialTagReceipt(TypedDict):
     published_at: str
     stored_bytes: int
     stored_sha256: str
+
+
+@dataclass(frozen=True, slots=True)
+class _ArtifactCustodySelection:
+    """One application-verified step; selection does not execute it."""
+
+    collection_id: int
+    artifact_id: str
+    pending_structure: str | None
+    pending_segment: tuple[str, str, int, bytes] | None = field(repr=False)
+    receipt_source: ArchiveArtifactCustodyReceiptSource | None = field(repr=False)
+    prefix: str
+    store_name: str
+    passphrase: str = field(repr=False)
+
+    def __post_init__(self) -> None:
+        if (
+            sum(
+                value is not None
+                for value in (self.pending_structure, self.pending_segment, self.receipt_source)
+            )
+            != 1
+        ):
+            raise ValueError("artifact custody selection requires exactly one verified step")
 
 
 @dataclass(frozen=True)
@@ -3596,13 +3620,10 @@ class SqlAlchemyCollectionUploadService:
                 )
         return progressed
 
-    def _advance_artifact_custody(self, collection_id: int, artifact_id: str) -> bool:
-        """Seal one required object, or acknowledge a fully verified early primary.
-
-        Store writes precede durable receipt publication. Each step rechecks the
-        immutable construction; retries reuse content addresses and never claim
-        completion, discoverable publication or source-retirement permission.
-        """
+    def _select_artifact_custody(
+        self, collection_id: int, artifact_id: str
+    ) -> _ArtifactCustodySelection | None:
+        """Verify one member's next dependency or complete receipt without provider IO."""
         pending_segment = None
         pending_structure = None
         receipt = None
@@ -3621,7 +3642,7 @@ class SqlAlchemyCollectionUploadService:
                 or artifact.payload_sealed_at is None
                 or artifact.custody_receipt_json is not None
             ):
-                return False
+                return None
             requirement = (
                 None
                 if upload.completion_requirement_json is None
@@ -3630,9 +3651,9 @@ class SqlAlchemyCollectionUploadService:
                 )
             )
             if upload.initiated_by_principal_id.startswith("processing:") and requirement is None:
-                return False
+                return None
             if requirement is not None and binding_row.history_imports_ref_json is None:
-                return False
+                return None
             primary = CollectionArtifactProvenanceBindingDocument.model_validate(
                 _provenance_binding_row(binding_row)
             )
@@ -3790,6 +3811,37 @@ class SqlAlchemyCollectionUploadService:
                         completion_output_id=output_id,
                         grants=self._config.archive_write,
                     )
+        if pending_structure is None and pending_segment is None and receipt_source is None:
+            return None
+        return _ArtifactCustodySelection(
+            collection_id=collection_id,
+            artifact_id=artifact_id,
+            pending_structure=pending_structure,
+            pending_segment=pending_segment,
+            receipt_source=receipt_source,
+            prefix=prefix,
+            store_name=store_name,
+            passphrase=passphrase,
+        )
+
+    def _advance_artifact_custody(self, collection_id: int, artifact_id: str) -> bool:
+        """Seal one required object, or acknowledge a fully verified early primary.
+
+        Store writes precede durable receipt publication. Each step rechecks the
+        immutable construction; retries reuse content addresses and never claim
+        completion, discoverable publication or source-retirement permission.
+        """
+        selection = self._select_artifact_custody(collection_id, artifact_id)
+        if selection is None:
+            return False
+        pending_structure = selection.pending_structure
+        pending_segment = selection.pending_segment
+        receipt_source = selection.receipt_source
+        prefix, store_name, passphrase = (
+            selection.prefix,
+            selection.store_name,
+            selection.passphrase,
+        )
         if pending_structure is not None:
             return self._publish_next_provenance_structure(
                 collection_id, selected_object_id=pending_structure
