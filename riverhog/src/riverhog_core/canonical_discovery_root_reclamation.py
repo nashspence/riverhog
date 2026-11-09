@@ -54,6 +54,10 @@ def _receive_namespace(metadata: RetiredDiscoveryMetadata) -> bool:
         root = metadata._child_root
         _private_directory(root)
         try:
+            fcntl.flock(root, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return False
+        try:
             metadata._root_coordinator = os.open(
                 ".coordinator", os.O_RDWR | os.O_NOFOLLOW, dir_fd=root
             )

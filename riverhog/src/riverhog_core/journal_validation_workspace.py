@@ -113,10 +113,10 @@ def _lease_declaration() -> Declaration:
                 "flock_calls",
                 COUNT,
                 "upper",
-                count(3),
+                count(5),
                 (
-                    "Nonblocking coordinator and selected lease acquisitions, "
-                    "plus coordinator unlock."
+                    "Nonblocking root-inode, coordinator and selected lease "
+                    "acquisitions, plus both root coordination unlocks."
                 ),
             ),
             Bound(
@@ -201,7 +201,7 @@ def _lease_declaration() -> Declaration:
                 "never silently replaced or repaired."
             ),
             (
-                "Creation requires the current owner under root coordination;"
+                "Creation requires the current owner under root-inode and marker coordination;"
                 " stale selection cannot recreate a retired identity."
             ),
             (
@@ -289,6 +289,83 @@ class ValidationWorkspaceCustody:
             return False
 
 
+def _select_workspace(
+    root_fd: int,
+    resources: ExitStack,
+    *,
+    workspace_id: str,
+    create: bool,
+    shared: bool,
+    creation_current: Callable[[], bool] | None,
+) -> tuple[int, int] | None:
+    """Select under actual root-inode custody before any control can exist."""
+    import fcntl
+
+    coordinator = os.open(
+        ".coordinator",
+        os.O_RDWR | (os.O_CREAT if create else 0) | os.O_NOFOLLOW,
+        0o600,
+        dir_fd=root_fd,
+    )
+    resources.callback(os.close, coordinator)
+    _private_file(coordinator)
+    os.fsync(coordinator)
+    try:
+        fcntl.flock(coordinator, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        return None
+    try:
+        if create and creation_current is not None and creation_current() is not True:
+            raise _StaleWorkspaceCreation
+        created = False
+        if create:
+            try:
+                os.mkdir(workspace_id, mode=0o700, dir_fd=root_fd)
+            except FileExistsError:
+                pass
+            else:
+                created = True
+        owner = os.open(workspace_id, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=root_fd)
+        resources.callback(os.close, owner)
+        _private_directory(owner)
+        try:
+            lease = os.open(".lease", os.O_RDWR | os.O_NOFOLLOW, dir_fd=owner)
+        except FileNotFoundError:
+            if not create:
+                raise
+            # Only interrupted initial creation can lack a lease.
+            # Any retained Core or Native database establishes existing owned state.
+            for state_name in ("snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3"):
+                try:
+                    os.stat(state_name, dir_fd=owner, follow_symlinks=False)
+                except FileNotFoundError:
+                    continue
+                raise LostJournalValidationWorkspace("retained validation lease was lost") from None
+            lease = os.open(
+                ".lease",
+                os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                0o600,
+                dir_fd=owner,
+            )
+            resources.callback(os.close, lease)
+        else:
+            resources.callback(os.close, lease)
+        _private_file(lease)
+        busy = False
+        try:
+            fcntl.flock(lease, (fcntl.LOCK_SH if shared else fcntl.LOCK_EX) | fcntl.LOCK_NB)
+        except BlockingIOError:
+            busy = True
+        else:
+            os.fsync(lease)
+            os.fsync(owner)
+            if created:
+                os.fsync(root_fd)
+    finally:
+        fcntl.flock(coordinator, fcntl.LOCK_UN)
+    return None if busy else (owner, lease)
+
+
 @contextmanager
 def lease_journal_validation_workspace(
     root: Path,
@@ -305,7 +382,8 @@ def lease_journal_validation_workspace(
     attempt selection, worker epochs, terminal disposition and bounded cleanup.
     A busy lease returns None without waiting; unrelated job leases remain free.
     Existing directories, databases or leases are never replaced or repaired.
-    The owner creation check runs under root coordination before directory creation;
+    Root-inode custody covers the prefix before a coordinator exists. The owner
+    creation check runs under both root locks before directory creation;
     a stale selection returns None so a retired identity cannot reappear.
     Shared leases admit only existing owner-confirmed frozen readers; all
     writers and reclamation require an exclusive lease until every reader closes.
@@ -340,78 +418,28 @@ def lease_journal_validation_workspace(
                     os.fsync(parent)
                 finally:
                     os.close(parent)
-            coordinator = os.open(
-                ".coordinator",
-                os.O_RDWR | (os.O_CREAT if create else 0) | os.O_NOFOLLOW,
-                0o600,
-                dir_fd=root_fd,
-            )
-            resources.callback(os.close, coordinator)
-            _private_file(coordinator)
-            os.fsync(coordinator)
             try:
-                fcntl.flock(coordinator, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                fcntl.flock(root_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
             except BlockingIOError:
                 exposed = True
                 yield None
                 return
             try:
-                if create and creation_current is not None and creation_current() is not True:
-                    raise _StaleWorkspaceCreation
-                created = False
-                if create:
-                    try:
-                        os.mkdir(workspace_id, mode=0o700, dir_fd=root_fd)
-                    except FileExistsError:
-                        pass
-                    else:
-                        created = True
-                owner = os.open(
-                    workspace_id, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=root_fd
+                selected = _select_workspace(
+                    root_fd,
+                    resources,
+                    workspace_id=workspace_id,
+                    create=create,
+                    shared=shared,
+                    creation_current=creation_current,
                 )
-                resources.callback(os.close, owner)
-                _private_directory(owner)
-                try:
-                    lease = os.open(".lease", os.O_RDWR | os.O_NOFOLLOW, dir_fd=owner)
-                except FileNotFoundError:
-                    if not create:
-                        raise
-                    # Only interrupted initial creation can lack a lease.
-                    # Any retained Core or Native database establishes existing owned state.
-                    for state_name in ("snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3"):
-                        try:
-                            os.stat(state_name, dir_fd=owner, follow_symlinks=False)
-                        except FileNotFoundError:
-                            continue
-                        raise LostJournalValidationWorkspace(
-                            "retained validation lease was lost"
-                        ) from None
-                    lease = os.open(
-                        ".lease",
-                        os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
-                        0o600,
-                        dir_fd=owner,
-                    )
-                    resources.callback(os.close, lease)
-                else:
-                    resources.callback(os.close, lease)
-                _private_file(lease)
-                busy = False
-                try:
-                    fcntl.flock(lease, (fcntl.LOCK_SH if shared else fcntl.LOCK_EX) | fcntl.LOCK_NB)
-                except BlockingIOError:
-                    busy = True
-                else:
-                    os.fsync(lease)
-                    os.fsync(owner)
-                    if created:
-                        os.fsync(root_fd)
             finally:
-                fcntl.flock(coordinator, fcntl.LOCK_UN)
+                fcntl.flock(root_fd, fcntl.LOCK_UN)
             exposed = True
-            if busy:
+            if selected is None:
                 yield None
                 return
+            owner, lease = selected
             custody = ValidationWorkspaceCustody(root / workspace_id, root_fd, owner, lease)
             resources.callback(setattr, custody, "_held", False)
             if on_custody is not None:

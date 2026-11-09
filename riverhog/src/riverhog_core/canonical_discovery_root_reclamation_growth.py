@@ -68,7 +68,7 @@ def declare_root_reclamation_growth(operation: Callable[..., Any]) -> None:
         "stat_calls": fences * 8 + 20,
         "uid_calls": fences * 4 + 5,
         "fsync_calls": 2,
-        "flock_calls": 1,
+        "flock_calls": 2,
         "unlink_calls": 1,
         "rmdir_calls": 1,
         "mkdir_calls": 0,

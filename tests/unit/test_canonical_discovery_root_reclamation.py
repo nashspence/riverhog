@@ -368,3 +368,19 @@ with lease_retiring_journal_workspace(Path(sys.argv[2]),job.workspace_id) as par
     assert current_job(case, job.workspace_id) == job
     assert step(case, job).job.reclamation_phase == "metadata"
     assert not (path / "journals").exists()
+
+
+def test_busy_actual_journals_root_inode_preserves_marker_core_and_catalog(case):
+    job, path = prepare_root(case)
+    descriptor = os.open(path / "journals", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with retired(case, job) as metadata:
+            metadata.open()
+            result = owner.reclaim_discovery_journals_root(metadata)
+            assert not result.advanced and not result.metadata_closed and metadata.verify_current()
+        assert (path / "journals" / ".coordinator").is_file()
+        assert current_job(case, job.workspace_id) == job
+    finally:
+        os.close(descriptor)
+    assert step(case, job).job.reclamation_phase == "metadata"
