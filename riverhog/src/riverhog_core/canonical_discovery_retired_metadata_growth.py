@@ -52,7 +52,7 @@ def _declaration(operation: str) -> Declaration:
         "catalog_changed_rows": 0,
         "uuid_values": 0,
         "open_calls": int(opening or retiring),
-        "close_calls": 2 if closing else int(retiring),
+        "close_calls": 3 if closing else int(retiring),
         "stat_calls": fences * 8 + (4 if opening else 3 if retiring else 0),
         "uid_calls": fences * 4 + (2 if opening else int(retiring)),
         "fsync_calls": int(retiring),

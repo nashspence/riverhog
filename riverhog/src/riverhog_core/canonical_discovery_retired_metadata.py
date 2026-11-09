@@ -64,6 +64,7 @@ class RetiredDiscoveryMetadata:
         self._db: sqlite3.Connection | None = None
         self._descriptor: int | None = None
         self._child_root: int | None = None
+        self._root_coordinator: int | None = None
         self._initialized = False
         self._closing = False
         self._closed = False
@@ -317,12 +318,22 @@ class RetiredDiscoveryMetadata:
         self._require_current()
         return True
 
+    def _close_namespace_handles(self) -> None:
+        """Retain uncertain namespace handles until actual close is received."""
+        for name in ("_root_coordinator", "_child_root"):
+            descriptor = getattr(self, name)
+            if descriptor is not None:
+                try:
+                    os.close(descriptor)
+                except BaseException:
+                    self._closing = True
+                    raise
+                setattr(self, name, None)
+
     def close(self) -> None:
         """Confirm actual Core closure before the caller ends exclusive custody."""
         self._closing = True
-        if self._child_root is not None:
-            os.close(self._child_root)
-            self._child_root = None
+        self._close_namespace_handles()
         if self._db is not None:
             self._db.close()
             self._db = None
