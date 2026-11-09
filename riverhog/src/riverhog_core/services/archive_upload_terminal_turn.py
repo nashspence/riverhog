@@ -27,6 +27,9 @@ from riverhog_core.services.archive_upload_terminal_adjudication import (
     ArchiveUploadTerminalAdjudication,
     PendingReason,
 )
+from riverhog_core.services.archive_upload_terminal_confirmation import (
+    ArchiveUploadTerminalConfirmation,
+)
 from riverhog_core.services.archive_upload_terminal_retirement import (
     ArchiveUploadTerminalRetirement,
 )
@@ -96,6 +99,8 @@ class ArchiveUploadTerminalTurn:
         checkpoint_cleanup: ArchiveUploadCheckpointCleanup | None = None,
         copy_intent_cleanup: ArchiveUploadCopyIntentCleanup | None = None,
         projection_cleanup: ArchiveUploadProjectionCleanup | None = None,
+        confirmation: ArchiveUploadTerminalConfirmation | None = None,
+        result_read_guard: Callable[[Session], None] | None = None,
     ) -> None:
         if not callable(guard):
             raise ValueError("terminal execution requires current authority")
@@ -113,6 +118,12 @@ class ArchiveUploadTerminalTurn:
             raise ValueError("terminal copy-intent cleanup requires original checkpoint execution")
         if projection_cleanup is not None and copy_intent_cleanup is None:
             raise ValueError("terminal projection cleanup requires original copy-intent execution")
+        if (confirmation is None) != (result_read_guard is None):
+            raise ValueError("terminal confirmation requires its current result read guard")
+        if result_read_guard is not None and not callable(result_read_guard):
+            raise ValueError("terminal result read guard must be callable")
+        if confirmation is not None and projection_cleanup is None:
+            raise ValueError("terminal confirmation requires original projection execution")
         key = PhysicalExecutionKey(collection_id, operation_id)
         with read_snapshot(factory) as session:
             control, _, _ = read_terminal_selection(session, collection_id, operation_id)
@@ -124,6 +135,8 @@ class ArchiveUploadTerminalTurn:
         self._guard = guard
         self._adjudication = adjudication
         self._retirement = retirement
+        self._confirmation = confirmation
+        self._result_read_guard = result_read_guard
         self._projection_cleanup = projection_cleanup
         self._copy_intent_cleanup = copy_intent_cleanup
         self._checkpoint_cleanup = checkpoint_cleanup
@@ -152,6 +165,10 @@ class ArchiveUploadTerminalTurn:
             return TerminalTurnProgress(None, "actor-busy")
         try:
             key = self._key
+            if self._confirmation is not None and self._confirmation.receive_completion(
+                key.collection_id, key.scope_sha256, target_incarnation=self._target
+            ):
+                return TerminalTurnProgress("done", execution_stopped=True)
             decision = self._adjudication.adjudicate(
                 key.collection_id, key.scope_sha256, guard=self._guard
             )
@@ -247,7 +264,7 @@ class ArchiveUploadTerminalTurn:
             projection = self._projection_cleanup.advance(
                 key.collection_id, key.scope_sha256, guard=self._guard, limits=limits
             )
-            return replace(
+            progress = replace(
                 progress,
                 pending_reason=(
                     None
@@ -256,5 +273,16 @@ class ArchiveUploadTerminalTurn:
                 ),
                 projection_exhausted=projection.exhausted,
             )
+            if not projection.exhausted or self._confirmation is None:
+                return progress
+            assert self._result_read_guard is not None
+            self._confirmation.confirm(
+                key.collection_id,
+                key.scope_sha256,
+                guard=self._guard,
+                replay_guard=self._result_read_guard,
+                limits=limits,
+            )
+            return replace(progress, phase="done", pending_reason=None, execution_stopped=True)
         finally:
             self._lock.release()

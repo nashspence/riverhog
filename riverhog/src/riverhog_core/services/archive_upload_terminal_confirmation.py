@@ -95,6 +95,29 @@ class ArchiveUploadTerminalConfirmation:
         self._cleanup = cleanup
         self._observation = observation
 
+    def receive_completion(
+        self, collection_id: int, operation_id: str, *, target_incarnation: str
+    ) -> bool:
+        """Reconcile only this original receiver's already confirmed closure.
+
+        No result data or new disposal permission is returned. Original local
+        receiving may outlive the selecting key, just as independent cleanup
+        receiving does. The registry still requires exact original identity and
+        actual joined receiving before releasing its physical/resource charge.
+        """
+        if not isinstance(target_incarnation, str) or not target_incarnation:
+            raise ValueError("completion receiving requires the original physical target")
+        with session_scope(self._factory) as session:
+            control, terminal = lock_terminal_selection(
+                session, collection_id, operation_id, require_upload=False, nowait=True
+            )
+            if (
+                json.loads(control.construction_json)["archive_incarnation_id"]
+                != target_incarnation
+            ):
+                raise Conflict("completion receiving has another original target")
+            return _confirmed(session, terminal, collection_id) is not None
+
     def confirmed(self, collection_id: int, operation_id: str, *, guard: Guard) -> str | None:
         if not callable(guard):
             raise ValueError("confirmed terminal readback requires current authority")

@@ -53,6 +53,7 @@ default_tests=(
   tests/integration/test_archive_upload_terminal_turn.py tests/integration/test_archive_upload_terminal_registry.py tests/integration/test_archive_upload_terminal_due.py tests/integration/test_archive_upload_cleanup_turn.py tests/integration/test_archive_upload_registration_cleanup.py tests/integration/test_archive_upload_catalog_cleanup.py tests/integration/test_archive_upload_checkpoint_cleanup.py tests/integration/test_archive_upload_copy_intent_cleanup.py
   tests/integration/test_archive_upload_projection_cleanup.py
   tests/integration/test_archive_upload_terminal_confirmation.py
+  tests/integration/test_archive_upload_terminal_completion.py
   tests/integration/test_upload_terminal_read_authority.py
   tests/integration/test_upload_cancel_authority.py
   tests/integration/test_collection_upload_custody_concurrency.py
