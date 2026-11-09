@@ -296,7 +296,18 @@ class ArchiveUploadInvocationRegistry:
                     else:
                         context.succeeded = True
                 if context.payload is not None:
-                    context.payload.receive_joined(context.input_token, context.owner)
+                    if (
+                        outcome.terminal
+                        and context.drained
+                        and context.owner is None
+                        and context.construction_failure is None
+                    ):
+                        # The original constructor never entered. Its positive
+                        # terminal drain and actual worker receiving withdraw
+                        # this unused input without inventing an actor receipt.
+                        context.payload.retire_unstarted(context.input_token)
+                    else:
+                        context.payload.receive_joined(context.input_token, context.owner)
                 received.append(ArchiveUploadInvocationCompletion(context.request_sha256, outcome))
             return tuple(received)
         finally:
@@ -436,6 +447,60 @@ class ArchiveUploadInvocationRegistry:
         finally:
             context.lock.release()
 
+    def _retire_terminal_originals(
+        self,
+        key: PhysicalExecutionKey,
+        *,
+        target_incarnation: str,
+        operation_id: str,
+        limit: int,
+    ) -> int:
+        """Visit exact drained originals under the composing catalog owner.
+
+        A failed forward turn can retire after positive terminal drainage. Its
+        independent family pin, unknown constructor, input and actual physical
+        receiving remain prerequisites; this never disposes durable records.
+        """
+        if type(limit) is not int or limit < 1:
+            raise ValueError("terminal original retirement limit must be positive")
+        if not self._lock.acquire(blocking=False):
+            return 0
+        try:
+            group = self._construction(key, target_incarnation)
+            if group is None or self._closed:
+                return 0
+            if group.terminal_id != operation_id:
+                raise Conflict("upload retirement differs from its original terminal")
+            if group.remaining or self._execution.status(key) != "untracked":
+                return 0
+            retired = 0
+            for _ in range(min(limit, len(group.requests))):
+                request = group.requests.popleft()
+                context = self._invocations[request]
+                if (
+                    not context.drained
+                    or context.family_pin is not None
+                    or not context.lock.acquire(blocking=False)
+                ):
+                    group.requests.append(request)
+                    continue
+                removed = False
+                try:
+                    if not (
+                        context.construction_failure is not None
+                        or context.payload is not None
+                        and not context.payload.released
+                    ):
+                        removed = self._remove(context, request_popped=True)
+                        retired += removed
+                finally:
+                    context.lock.release()
+                    if not removed:
+                        group.requests.append(request)
+            return retired
+        finally:
+            self._lock.release()
+
     def terminal_turn(
         self,
         key: PhysicalExecutionKey,
@@ -486,7 +551,7 @@ class ArchiveUploadInvocationRegistry:
         finally:
             self._lock.release()
 
-    def _remove(self, context: _Invocation) -> bool:
+    def _remove(self, context: _Invocation, *, request_popped: bool = False) -> bool:
         if context.family_pin is not None:
             return False
         if not self._retention.retire(context.reservation, owner=self):
@@ -496,7 +561,8 @@ class ArchiveUploadInvocationRegistry:
             context.payload.retire_unstarted(context.input_token)
         del self._invocations[context.request_sha256]
         group = context.construction
-        group.requests.remove(context.request_sha256)
+        if not request_popped:
+            group.requests.remove(context.request_sha256)
         group.remaining -= not context.drained
         if not group.requests:
             del self._constructions[group.key.collection_id]

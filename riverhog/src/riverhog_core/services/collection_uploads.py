@@ -566,6 +566,14 @@ class SqlAlchemyCollectionUploadService:
         self._archive_terminal_adjudication = ArchiveUploadTerminalAdjudication(
             self._session_factory, self._archive_terminal_observation
         )
+        from .archive_upload_terminal_retirement import ArchiveUploadTerminalRetirement
+
+        self._archive_terminal_retirement = ArchiveUploadTerminalRetirement(
+            self._session_factory,
+            self._archive_terminal_observation,
+            self._archive_finalizers,
+            self._archive_invocations,
+        )
         from .archive_upload_maintenance import ArchiveUploadMaintenance
 
         self._archive_upload_maintenance = ArchiveUploadMaintenance(

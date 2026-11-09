@@ -258,6 +258,7 @@ def _service_family_units(
     maintained=False,
     terminal_after_first=False,
     lose_abandonment=False,
+    terminal_retirement=False,
 ):
     from riverhog_age import CHUNK_SIZE, ResumableAgeScryptSession
     from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -475,6 +476,35 @@ def _service_family_units(
                 assert len(service._archive_cache_families._families) == 1
                 pin = next(iter(service._archive_cache_families._families.values())).pin
                 assert pin.active
+                if terminal_retirement:
+                    from riverhog_core.services.archive_upload_terminal_result import (
+                        ArchiveUploadTerminalResults,
+                    )
+
+                    guard = service._cancel_write_guard(case.collection_id, _CREATOR)
+                    ArchiveUploadTerminalResults(case.factory).prepare(
+                        case.collection_id,
+                        operation,
+                        {"state": "canceled", "collection_id": str(case.collection_id)},
+                        guard=guard,
+                    )
+                    decision = service._archive_terminal_adjudication.adjudicate(
+                        case.collection_id,
+                        operation,
+                        guard=guard,
+                    )
+                    assert decision.phase == ("draining" if unknown else "cleanup-ready")
+                    retirement = service._archive_terminal_retirement.retire(
+                        case.collection_id,
+                        operation,
+                        guard=guard,
+                        limit=1,
+                    )
+                    assert retirement.retired == 0
+                    assert retirement.pending_reason == (
+                        "global-decision" if unknown else "retained-originals"
+                    )
+                    assert pin.active and len(service._archive_retention._reservations) == 1
                 assert service._archive_cache_families.retire(payload) is not unknown
                 if unknown:
                     assert pin.active and owner.has_pending
@@ -504,6 +534,24 @@ def _service_family_units(
                     )
                 assert (actor.seen, cache_calls) == before
                 assert service._archive_inputs._bytes == 0
+                if terminal_retirement:
+                    retirement = service._archive_terminal_retirement.retire(
+                        case.collection_id,
+                        operation,
+                        guard=guard,
+                        limit=1,
+                    )
+                    assert retirement.retired == int(not unknown)
+                    assert len(service._archive_retention._reservations) == int(unknown)
+                    assert (actor.seen, cache_calls) == before
+                    if not unknown:
+                        with session_scope(case.factory) as session:
+                            population = session.get(
+                                RetrievalCachePopulationRecord,
+                                (receipt.source_store, case.collection_id, case.object_id),
+                            )
+                            assert population.state == "abandoning"
+                            assert population.abandonment_receipt_json == receipt.receipt_json
                 return
 
         assert sum(call.operation.kind == "begin" for call in cache_calls) == 1
@@ -736,4 +784,19 @@ def test_partial_cache_family_retries_original_abandonment_ack_without_provider_
         False,
         terminal_after_first=True,
         lose_abandonment=True,
+    )
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("unknown", (False, True))
+def test_global_terminal_retirement_preserves_independent_cache_transfer_and_family_pin(
+    tmp_path, monkeypatch, mode, unknown
+):
+    _service_family_units(
+        tmp_path,
+        monkeypatch,
+        mode,
+        unknown,
+        terminal_after_first=True,
+        terminal_retirement=True,
     )

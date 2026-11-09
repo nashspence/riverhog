@@ -473,6 +473,44 @@ class ArchiveFinalizerRegistry:
                 context.drained = result == "closed"
             return result
 
+    def _retire_terminal_original(
+        self,
+        key: PhysicalExecutionKey,
+        *,
+        target_incarnation: str,
+        operation_id: str,
+    ) -> bool:
+        """Called under the composing owner's locked, adjudicated selection.
+
+        Positive original drainage replaces forward-idle success here. Unused
+        staging may still make has_pending true; removing this local owner
+        changes no durable preparation or independently owned resource.
+        """
+        if not self._lock.acquire(blocking=False):
+            return False
+        try:
+            context = self._existing(key, target_incarnation)
+            if context is None or self._closed:
+                return False
+            if context.terminal_id != operation_id:
+                raise Conflict("finalizer retirement differs from its original terminal")
+            if (
+                not context.drained
+                or self._execution.status(key) != "untracked"
+                or not context.lock.acquire(blocking=False)
+            ):
+                return False
+            try:
+                if context.construction_failure is not None or (
+                    context.owner is None and context.selection is not None
+                ):
+                    return False
+                return self._remove(context)
+            finally:
+                context.lock.release()
+        finally:
+            self._lock.release()
+
     def retire_idle(self, key: PhysicalExecutionKey, *, target_incarnation: str) -> bool:
         """Release only an idle local owner after physical outcome receiving.
 
