@@ -105,6 +105,7 @@ default_tests=(
   tests/integration/test_canonical_discovery_child_reclamation_postgres.py
   tests/integration/test_canonical_discovery_corpus_reclamation_postgres.py
   tests/integration/test_canonical_discovery_root_reclamation_postgres.py
+  tests/integration/test_canonical_discovery_metadata_reclamation_postgres.py
   tests/integration/test_download_allowance_concurrency.py
   tests/integration/test_lifecycle_event_concurrency.py
   tests/integration/test_provider_qualification_checkpoint_postgres.py
