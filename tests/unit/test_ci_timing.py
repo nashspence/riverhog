@@ -419,3 +419,81 @@ def test_first_failure_annotation_precedes_other_worker_completion(tmp_path, pha
         process.stdout.close()
     assert process.returncode == 1
     assert sum(line.startswith("::error title=Pytest qualification,") for line in output) == 1
+    sites = [
+        json.loads(line.split("::", 2)[2])
+        for line in output
+        if line.startswith("::error title=Pytest failure site,")
+    ]
+    assert sites == [
+        {
+            "format": "riverhog-pytest-failure-site/v1",
+            "source_sha": sha,
+            "run_id": "123-1",
+            "lane": "unit-unit-3",
+            "test_file": "test_failed.py",
+            "file": "test_failed.py",
+            "line": next(
+                number
+                for number, text in enumerate(
+                    (source / "test_failed.py").read_text().splitlines(), 1
+                )
+                if "exception-text-must-not-be-annotated" in text
+            ),
+            "phase": phase,
+        }
+    ]
+    assert all(
+        "exception-text-must-not-be-annotated" not in line
+        for line in output
+        if line.startswith("::error")
+    )
+
+
+@pytest.mark.parametrize(
+    "location",
+    (
+        "outside",
+        "untracked.py",
+        "../outside.py",
+        "private file.py",
+        "nested/../test_failed.py",
+        "file.txt",
+    ),
+)
+def test_failure_site_rejects_unowned_paths_without_reading_exception_details(
+    tmp_path, monkeypatch, capsys, location
+):
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "test_failed.py").write_text("def test_failed():\n    assert False\n")
+    _git(source, "init", "-q")
+    _git(source, "add", ".")
+    _git(source, "commit", "-qm", "fixture")
+    for name, value in (
+        ("GITHUB_ACTIONS", "true"),
+        ("RIVERHOG_CI_LANE", "unit-unit-1"),
+        ("RIVERHOG_CI_RUN_ID", "123-1"),
+    ):
+        monkeypatch.setenv(name, value)
+    raw_path = str(tmp_path / "outside.py") if location == "outside" else location
+
+    class PrivateCrash:
+        path = raw_path
+        lineno = 1
+
+        @property
+        def message(self):
+            pytest.fail("exception text must remain unread")
+
+    report = SimpleNamespace(
+        nodeid="test_failed.py::test_failed",
+        location=("test_failed.py", 0, "test_failed"),
+        when="call",
+        failed=True,
+        longrepr=SimpleNamespace(reprcrash=PrivateCrash()),
+    )
+    timing = ci_timing.PytestTiming(SimpleNamespace(rootpath=source))
+    timing._report_first_failure(report)
+    lines = capsys.readouterr().out.splitlines()
+    assert sum(line.startswith("::error title=Pytest qualification,") for line in lines) == 1
+    assert not any(line.startswith("::error title=Pytest failure site,") for line in lines)

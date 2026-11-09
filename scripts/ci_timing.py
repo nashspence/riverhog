@@ -167,6 +167,56 @@ class PytestTiming:
             f"\n::error title=Pytest qualification,file={module},line={line + 1}::{diagnostic}",
             flush=True,
         )
+        self._report_failure_site(report, test_file=module)
+
+    def _report_failure_site(self, report: pytest.TestReport, *, test_file: str) -> None:
+        """Expose only a tracked source location, excluding messages and locals."""
+        crash = getattr(report.longrepr, "reprcrash", None)
+        raw_path = getattr(crash, "path", None)
+        line = getattr(crash, "lineno", None)
+        if not isinstance(raw_path, str) or type(line) is not int or line < 1:
+            return
+        path = Path(raw_path)
+        if path.is_absolute():
+            try:
+                path = path.relative_to(self.root)
+            except ValueError:
+                return
+        module = path.as_posix()
+        if (
+            re.fullmatch(r"[A-Za-z0-9_./-]{1,240}", module) is None
+            or ".." in path.parts
+            or path.suffix != ".py"
+        ):
+            return
+        try:
+            tracked = subprocess.run(
+                ["git", "cat-file", "-e", f"{self.source['source_sha']}:{module}"],
+                cwd=self.root,
+                capture_output=True,
+                check=False,
+                timeout=5,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return
+        if tracked.returncode:
+            return
+        diagnostic = canonical_json_bytes(
+            {
+                "format": "riverhog-pytest-failure-site/v1",
+                "source_sha": self.source["source_sha"],
+                "run_id": self.run_id,
+                "lane": self.lane,
+                "test_file": test_file,
+                "file": module,
+                "line": line,
+                "phase": report.when,
+            }
+        ).decode()
+        print(
+            f"::error title=Pytest failure site,file={module},line={line}::{diagnostic}",
+            flush=True,
+        )
 
     def pytest_sessionfinish(self, session: pytest.Session, exitstatus: int) -> None:
         write_record(
