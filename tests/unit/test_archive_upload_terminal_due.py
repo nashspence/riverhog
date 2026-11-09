@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import threading
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import replace
 from datetime import timedelta
 
@@ -255,6 +255,34 @@ def test_due_uses_current_actor_even_when_durable_retry_time_is_in_the_future(
         assert _record(case)[2] is None
 
 
+@contextmanager
+def _published_due(case, due, monkeypatch, *, execution_busy=False):
+    actual = physical._run
+    start, published, release = threading.Event(), threading.Event(), threading.Event()
+
+    def held(work, future):
+        assert start.wait(10)
+        with case.service._archive_execution._lock if execution_busy else nullcontext():
+            actual(work, future)
+        published.set()
+        assert release.wait(15)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(physical, "_run", held)
+        try:
+            assert due.submit_due(limit=1, retry_after=timedelta(seconds=1)) == 1
+            # Semantic observation may conservatively defer while submission owns
+            # the shared physical lock. Select the intended interleaving explicitly.
+            start.set()
+            assert published.wait(10)
+            (slot,) = case.service._archive_execution._slots.values()
+            assert slot.worker.is_alive() and slot.future.done()
+            yield slot.future
+        finally:
+            release.set()
+            _join(case.service)
+
+
 def test_stopped_semantic_receipt_cannot_retire_a_published_but_live_worker(tmp_path, monkeypatch):
     with _turn_case(tmp_path) as case:
         _drained(case)
@@ -262,24 +290,41 @@ def test_stopped_semantic_receipt_cannot_retire_a_published_but_live_worker(tmp_
             session.get(Control, case.collection_id).custody_revision = "1"
         due = _enable(case)
         now, advance = _clock(monkeypatch)
-        actual = physical._run
-        published, release = threading.Event(), threading.Event()
-
-        def held(work, future):
-            actual(work, future)
-            published.set()
-            assert release.wait(15)
-
-        monkeypatch.setattr(physical, "_run", held)
-        try:
-            assert due.submit_due(limit=1, retry_after=timedelta(seconds=1)) == 1
-            assert published.wait(10)
+        with _published_due(case, due, monkeypatch) as future:
+            assert future.result().execution_stopped
             assert _record(case)[1] is None
             assert due.collect(limit=1) == 0
             assert case.service._archive_retention._counts == {False: 0, True: 1}
-        finally:
-            release.set()
-            _join(case.service)
+        assert due.collect(limit=1) == 2
+        assert not case.service._archive_retention._reservations
+        assert _record(case) == ("needs-reconfirmation", None, None)
+
+
+def test_busy_physical_observation_preserves_same_original_until_stopped_receiving(
+    tmp_path, monkeypatch
+):
+    with _turn_case(tmp_path) as case:
+        _drained(case)
+        with session_scope(case.factory) as session:
+            session.get(Control, case.collection_id).custody_revision = "1"
+        due = _enable(case)
+        now, advance = _clock(monkeypatch)
+        with _published_due(case, due, monkeypatch, execution_busy=True) as future:
+            progress = future.result()
+            assert progress.pending_reason == "local-writers" and not progress.execution_stopped
+            assert _record(case)[0] == "draining" and _record(case)[1] is not None
+            assert due.collect(limit=1) == 0
+            assert case.service._archive_retention._counts == {False: 1, True: 1}
+        assert due.collect(limit=1) == 1
+        context = next(iter(case.service._archive_terminals._contexts.values()))
+        actor = context.actor
+        assert context.progress is progress and context.received
+        assert case.service._archive_retention._counts == {False: 1, True: 1}
+        advance()
+        with _published_due(case, due, monkeypatch) as future:
+            assert future.result().execution_stopped and context.actor is actor
+            assert due.collect(limit=1) == 0
+            assert case.service._archive_retention._counts == {False: 0, True: 1}
         assert due.collect(limit=1) == 2
         assert not case.service._archive_retention._reservations
         assert _record(case) == ("needs-reconfirmation", None, None)
