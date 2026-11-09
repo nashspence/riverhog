@@ -212,3 +212,70 @@ def test_even_closed_but_unreceived_original_effect_blocks_preparation_retiremen
     with _prepared(tmp_path, monkeypatch) as ready:
         _complete_registration(ready)
         _retained_effect(ready)
+
+
+def _composed_checkpoints(ready, monkeypatch, *, revoked=False):
+    import threading
+
+    from tests.unit.test_archive_upload_catalog_cleanup import _composed_children
+
+    _seed(ready)
+    original = ArchiveUploadCheckpointCleanup.advance
+    workers = []
+
+    def advance(owner, *args, **kwargs):
+        assert kwargs["guard"] is ready.guard and kwargs["limits"] is CLEANUP
+        workers.append(threading.current_thread().name)
+        return original(owner, *args, **kwargs)
+
+    monkeypatch.setattr(ArchiveUploadCheckpointCleanup, "advance", advance)
+    quantum, created = _composed_children(ready, monkeypatch, checkpoints=True)
+    before = _rows(ready)
+    assert len(before) == 16 and workers == ["physical-execution"]
+    calls = len(ready.ready.target.calls)
+    if revoked:
+        case = ready.case
+        case.keys.replace_access(
+            app=case.principal.id,
+            key_id=case.principal.key_id,
+            access=(ApplicationAccess(COLLECTIONS_DELETE),),
+            grantor=BOOTSTRAP,
+        )
+        for _ in range(2):
+            quantum()
+        assert _rows(ready) == before and len(workers) == 1
+        case.keys.replace_access(
+            app=case.principal.id,
+            key_id=case.principal.key_id,
+            access=(ApplicationAccess(COLLECTIONS_CREATE),),
+            grantor=BOOTSTRAP,
+        )
+    for _ in range(100):
+        progress = quantum()
+        current = _rows(ready)
+        assert 0 <= len(before) - len(current) <= CLEANUP.input_transitions
+        assert progress.archive_inventory_exhausted and progress.registration_disposed
+        assert progress.upload_children_exhausted
+        if progress.checkpoints_exhausted:
+            break
+        assert progress.pending_reason == "checkpoint-cleanup"
+        before = current
+    else:
+        pytest.fail("original terminal did not compose bounded checkpoint retirement")
+    assert current == [] and progress.pending_reason is None
+    assert not progress.execution_stopped and created == [True]
+    assert set(workers) == {"physical-execution"}
+    assert len(ready.ready.target.calls) == calls
+    assert ready.case.service._archive_retention._counts == {False: 0, True: 1}
+    with session_scope(ready.case.factory) as session:
+        terminal = session.get(Terminal, ready.case.operation)
+        assert terminal.original_result_json == ready.original and terminal.result_json is None
+        assert session.get(Upload, ready.case.collection_id) is not None
+
+
+@pytest.mark.parametrize("revoked", (False, True))
+def test_original_terminal_worker_composes_checkpoints_only_after_catalog_exhaustion(
+    tmp_path, monkeypatch, revoked
+):
+    with _prepared(tmp_path, monkeypatch, provider_ready=False) as ready:
+        _composed_checkpoints(ready, monkeypatch, revoked=revoked)

@@ -218,12 +218,15 @@ def test_failed_registration_cleanup_reply_preserves_the_same_bounded_cursor(
         _lost(ready, monkeypatch, committed)
 
 
-def _composed_registration(ready, monkeypatch, *, revoked=False, catalog=False):
+def _composed_registration(ready, monkeypatch, *, revoked=False, catalog=False, checkpoints=False):
     import threading
     from datetime import timedelta
 
     from riverhog_core.services import archive_upload_terminal_registry as registry_module
     from riverhog_core.services.archive_upload_catalog_cleanup import ArchiveUploadCatalogCleanup
+    from riverhog_core.services.archive_upload_checkpoint_cleanup import (
+        ArchiveUploadCheckpointCleanup,
+    )
     from riverhog_core.services.archive_upload_terminal_turn import ArchiveUploadTerminalTurn
     from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
@@ -256,6 +259,9 @@ def _composed_registration(ready, monkeypatch, *, revoked=False, catalog=False):
             registration_limits=CLEANUP,
             catalog_cleanup=ArchiveUploadCatalogCleanup(case.factory, ready.ready.owner)
             if catalog
+            else None,
+            checkpoint_cleanup=ArchiveUploadCheckpointCleanup(case.factory, ready.ready.owner)
+            if checkpoints
             else None,
         )
 

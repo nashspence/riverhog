@@ -337,8 +337,10 @@ def test_actual_first_live_catalog_windows_have_linear_indexed_query_work(
         record_property("catalog_sql_statements", len(statements))
 
 
-def _composed_children(ready, monkeypatch):
-    quantum, created = _composed_registration(ready, monkeypatch, catalog=True)
+def _composed_children(ready, monkeypatch, *, checkpoints=False):
+    quantum, created = _composed_registration(
+        ready, monkeypatch, catalog=True, checkpoints=checkpoints
+    )
     before = _counts(ready)
     assert sum(before.values()) > 0
     receipts = _receipts(ready)
@@ -354,7 +356,11 @@ def _composed_children(ready, monkeypatch):
         before = current
     else:
         pytest.fail("original terminal did not compose bounded catalog cleanup")
-    assert set(current.values()) == {0} and progress.pending_reason is None
+    assert set(current.values()) == {0}
+    if checkpoints:
+        assert progress.pending_reason in {None, "checkpoint-cleanup"}
+    else:
+        assert progress.pending_reason is None
     assert not progress.execution_stopped
     assert created == [True] and len(ready.ready.target.calls) == calls
     assert _receipts(ready) == receipts
@@ -363,6 +369,7 @@ def _composed_children(ready, monkeypatch):
         terminal = session.get(Terminal, ready.case.operation)
         assert terminal.original_result_json == ready.original and terminal.result_json is None
         assert session.get(Upload, ready.case.collection_id) is not None
+    return quantum, created
 
 
 def test_original_terminal_worker_composes_catalog_only_after_archive_and_registration(

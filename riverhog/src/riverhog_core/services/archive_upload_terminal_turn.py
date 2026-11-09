@@ -15,6 +15,7 @@ from state_schema import read_snapshot
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.incremental_emission import VolumeEmissionLimits
 from riverhog_core.services.archive_upload_catalog_cleanup import ArchiveUploadCatalogCleanup
+from riverhog_core.services.archive_upload_checkpoint_cleanup import ArchiveUploadCheckpointCleanup
 from riverhog_core.services.archive_upload_cleanup_turn import ArchiveUploadCleanupTurn
 from riverhog_core.services.archive_upload_drain import read_terminal_selection
 from riverhog_core.services.archive_upload_registration_cleanup import (
@@ -44,6 +45,7 @@ class TerminalTurnProgress:
             "archive-cleanup",
             "registration-cleanup",
             "catalog-cleanup",
+            "checkpoint-cleanup",
         ]
         | None
     ) = None
@@ -53,6 +55,7 @@ class TerminalTurnProgress:
     archive_inventory_exhausted: bool = False
     registration_disposed: bool = False
     upload_children_exhausted: bool = False
+    checkpoints_exhausted: bool = False
 
 
 class ArchiveUploadTerminalTurn:
@@ -83,6 +86,7 @@ class ArchiveUploadTerminalTurn:
         registration_cleanup: ArchiveUploadRegistrationCleanup | None = None,
         registration_limits: VolumeEmissionLimits | None = None,
         catalog_cleanup: ArchiveUploadCatalogCleanup | None = None,
+        checkpoint_cleanup: ArchiveUploadCheckpointCleanup | None = None,
     ) -> None:
         if not callable(guard):
             raise ValueError("terminal execution requires current authority")
@@ -94,6 +98,8 @@ class ArchiveUploadTerminalTurn:
             raise ValueError("terminal registration requires original archive cleanup")
         if catalog_cleanup is not None and registration_cleanup is None:
             raise ValueError("terminal catalog cleanup requires completed registration execution")
+        if checkpoint_cleanup is not None and catalog_cleanup is None:
+            raise ValueError("terminal checkpoint cleanup requires original catalog execution")
         key = PhysicalExecutionKey(collection_id, operation_id)
         with read_snapshot(factory) as session:
             control, _, _ = read_terminal_selection(session, collection_id, operation_id)
@@ -105,6 +111,7 @@ class ArchiveUploadTerminalTurn:
         self._guard = guard
         self._adjudication = adjudication
         self._retirement = retirement
+        self._checkpoint_cleanup = checkpoint_cleanup
         self._catalog_cleanup = catalog_cleanup
         self._registration_cleanup = registration_cleanup
         self._registration_limits = registration_limits
@@ -195,10 +202,20 @@ class ArchiveUploadTerminalTurn:
             catalog = self._catalog_cleanup.advance(
                 key.collection_id, key.scope_sha256, guard=self._guard, limits=limits
             )
-            return replace(
+            progress = replace(
                 progress,
                 pending_reason=None if catalog.upload_children_exhausted else "catalog-cleanup",
                 upload_children_exhausted=catalog.upload_children_exhausted,
+            )
+            if not catalog.upload_children_exhausted or self._checkpoint_cleanup is None:
+                return progress
+            checkpoints = self._checkpoint_cleanup.advance(
+                key.collection_id, key.scope_sha256, guard=self._guard, limits=limits
+            )
+            return replace(
+                progress,
+                pending_reason=None if checkpoints.exhausted else "checkpoint-cleanup",
+                checkpoints_exhausted=checkpoints.exhausted,
             )
         finally:
             self._lock.release()

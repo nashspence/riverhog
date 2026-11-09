@@ -6,6 +6,7 @@ from tests.integration.test_collection_upload_custody_concurrency import (
     database_url as database_url,
 )
 from tests.unit.test_archive_upload_checkpoint_cleanup import (
+    _composed_checkpoints,
     _finish,
     _lost,
     _retained_effect,
@@ -54,3 +55,11 @@ def test_postgres_closed_but_unreceived_original_effect_keeps_preparation(
     with _prepared(tmp_path, monkeypatch, database_url=database_url) as ready:
         _complete_registration(ready)
         _retained_effect(ready)
+
+
+@pytest.mark.parametrize("revoked", (False, True))
+def test_postgres_original_terminal_worker_composes_current_authorized_checkpoints(
+    database_url, tmp_path, monkeypatch, revoked
+):
+    with _prepared(tmp_path, monkeypatch, database_url=database_url, provider_ready=False) as ready:
+        _composed_checkpoints(ready, monkeypatch, revoked=revoked)
