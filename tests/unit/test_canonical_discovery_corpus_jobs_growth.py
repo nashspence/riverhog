@@ -159,11 +159,11 @@ def cases(tmp_path_factory, fixed_inputs):
 
 
 def reset(case, mode, variant):
-    job = replace(case.job, worker_epoch=1, state="seeding")
+    job = replace(case.job, worker_epoch=1, state="seeding", storage_state="confirmed")
     if mode == "select_discovery_job":
         job = case.job
     if mode == "confirm_discovery_storage" and variant != "retry":
-        job = replace(job, state="preparing")
+        job = replace(job, state="preparing", storage_state="unconfirmed")
     if mode == "activate_discovery_corpus" or (
         mode == "pin_discovery_corpus" and variant in {"retry", "post-open-retry"}
     ):
@@ -174,6 +174,21 @@ def reset(case, mode, variant):
             source_count=str(case.frozen.sources.source_count),
             selection_manifest_sha256=case.frozen.selection_sha256,
             selection_count=str(case.frozen.selection_count),
+        )
+    if mode == "retire_discovery_job" and variant == "retry":
+        job = replace(
+            job,
+            build_id=None,
+            state="retiring",
+            reclamation_phase="metadata",
+            storage_state="unconfirmed",
+        )
+    if mode == "advance_discovery_reclamation":
+        job = replace(
+            job,
+            build_id=None,
+            state="retiring",
+            reclamation_phase="children",
         )
     with case.factory() as session, session.begin():
         session.execute(delete(Job).where(Job.build_id == case.build_id))
@@ -202,16 +217,21 @@ def measure(case, mode, variant, cold):
     if variant == "post-open-retry":
         assert owner.activate_discovery_corpus(case.factory, job) is not None
     control = "failure" * case.metadata_width
+    proposal = (
+        (control, "child_directory", "e" * 32)
+        if mode == "advance_discovery_reclamation"
+        else control
+    )
     before = snapshot(case.engine)
     width = max(
         octets(tuple(asdict(job).values())),
-        octets(control),
+        octets(proposal),
         *(octets(row) for rows in before.values() for row in rows),
     )
     dimensions = {
         "retained_rows": sum(map(len, before.values())),
         "metadata_row_octets": width,
-        "control_octets": octets((tuple(asdict(job).values()), control)),
+        "control_octets": octets((tuple(asdict(job).values()), proposal)),
     }
     expected_error = None
     changed = int(
@@ -248,11 +268,26 @@ def measure(case, mode, variant, cold):
     elif mode == "activate_discovery_corpus":
         selected = replace(job, version="e" * 64) if variant == "stale" else job
         action = partial(owner.activate_discovery_corpus, case.factory, selected)
+    elif mode == "advance_discovery_reclamation":
+        selected = replace(job, version="e" * 64) if variant == "stale" else job
+
+        def action():
+            with case.factory() as session, session.begin():
+                return owner.advance_discovery_reclamation(
+                    session,
+                    selected,
+                    "child_directory",
+                    journal_id=control,
+                    directory_id="e" * 32,
+                )
+
     elif mode == "lose_discovery_corpus":
         selected = replace(job, version="e" * 64) if variant == "stale" else job
         action = partial(owner.lose_discovery_corpus, case.factory, selected, failure=control)
     else:
         selected = replace(job, version="e" * 64) if variant == "stale" else job
+
+        changed = int(variant != "retry")
 
         def action():
             with case.factory() as session, session.begin():
@@ -327,7 +362,8 @@ def exercise(mode, cases, record_property):
         ),
         "activate_discovery_corpus": ("fresh", "stale", "superseded", "terminal"),
         "lose_discovery_corpus": ("fresh", "stale"),
-        "retire_discovery_job": ("fresh", "stale"),
+        "retire_discovery_job": ("fresh", "stale", "retry"),
+        "advance_discovery_reclamation": ("fresh", "stale"),
     }[mode]
     samples = []
     for case in cases:
@@ -425,3 +461,12 @@ def test_measured_discovery_job_confirm_storage(cases, record_property):
 )
 def test_measured_discovery_job_snapshot(cases, record_property):
     exercise("discovery_worker_snapshot", cases, record_property)
+
+
+@pytest.mark.growth_witness(
+    "discovery-job-reclamation-phase-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_corpus_jobs.advance_discovery_reclamation",
+)
+def test_measured_discovery_reclamation_phase(cases, record_property):
+    exercise("advance_discovery_reclamation", cases, record_property)

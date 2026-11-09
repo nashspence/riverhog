@@ -22,6 +22,7 @@ from sqlalchemy.orm import sessionmaker
 from tests.integration.test_canonical_discovery_rebuild_postgres import database_url as database_url
 from tests.unit.test_canonical_discovery_corpus_jobs import (
     _closed_projection,
+    _reclamation_stages,
     _retirement_rollback,
     _retirement_stale,
 )
@@ -193,4 +194,38 @@ def test_postgresql_original_storage_constraint_preserves_the_live_build_binding
 
     factory, engine, job, _ = prepared
     _original_storage_constraint(factory, job)
+    assert engine.pool.checkedout() == 0
+
+
+@pytest.mark.parametrize(
+    "confirmed,lost", [(False, False), (False, True), (True, False), (True, True)]
+)
+def test_postgresql_discovery_reclamation_retains_exact_phases_after_rollback_and_lost_reply(
+    prepared,
+    tmp_path,
+    confirmed,
+    lost,
+):
+    factory, engine, job, _ = prepared
+    current = job
+    if confirmed:
+        current = owner.claim_discovery_worker(factory, current)
+        assert current is not None
+        current = owner.confirm_discovery_storage(factory, current)
+        assert current is not None
+    if lost:
+        current = owner.lose_discovery_corpus(
+            factory,
+            current,
+            failure="original storage open unavailable",
+        )
+        assert current is not None
+    with lease_journal_validation_workspace(
+        tmp_path / "owned",
+        current.workspace_id,
+        create=True,
+        creation_current=lambda: True,
+    ) as path:
+        assert path is not None
+        _reclamation_stages(factory, current)
     assert engine.pool.checkedout() == 0

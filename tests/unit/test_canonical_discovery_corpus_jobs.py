@@ -24,6 +24,7 @@ from riverhog_core.catalog_provenance_index_models import (
 from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import delete, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 from tests.support.canonical_discovery_work import write
@@ -532,3 +533,149 @@ def _original_storage_constraint(factory, job):
 
 def test_live_catalog_binding_preserves_its_original_storage_identity(case):
     _original_storage_constraint(case.factory, case.job)
+
+
+def _reclamation_stages(factory, job):
+    storage = job.storage_state
+    with factory() as session, session.begin():
+        retired = owner.retire_discovery_job(session, job)
+    assert retired is not None and retired.build_id is None
+    assert retired.storage_state == storage
+    assert retired.reclamation_phase == ("children" if storage == "confirmed" else "metadata")
+    assert retired.original_build_id == job.original_build_id
+
+    def read():
+        with factory() as session:
+            return owner.DiscoveryJob.read(session.get(Job, job.workspace_id))
+
+    def advance(selected, phase, **keys):
+        with factory() as session, session.begin():
+            return owner.advance_discovery_reclamation(session, selected, phase, **keys)
+
+    if storage == "confirmed":
+        with factory() as session, session.begin():
+            assert (
+                owner.retire_discovery_job(
+                    session,
+                    replace(retired, storage_state="unconfirmed"),
+                )
+                is None
+            )
+        child = advance(
+            retired,
+            "child_directory",
+            journal_id="registered original journal",
+            directory_id="d" * 32,
+        )
+        assert child is not None
+        assert (child.reclamation_journal_id, child.reclamation_directory_id) == (
+            "registered original journal",
+            "d" * 32,
+        )
+        with factory() as session, session.begin():
+            assert owner.retire_discovery_job(session, child) == child
+        assert read() == child
+
+        with pytest.raises(OSError, match="phase rollback"):
+            with factory() as session, session.begin():
+                assert owner.advance_discovery_reclamation(session, child, "children") is not None
+                raise OSError("phase rollback")
+        assert read() == child
+
+        with pytest.raises(OSError, match="phase acknowledgement"):
+            with factory() as session, session.begin():
+                received = owner.advance_discovery_reclamation(session, child, "children")
+                assert received is not None
+            raise OSError("phase acknowledgement")
+        current = read()
+        assert current == received and current.reclamation_journal_id is None
+        assert advance(child, "children") is None
+        assert current.storage_state == "confirmed"
+        with pytest.raises(ValueError, match="next irreversible"):
+            advance(current, "metadata")
+        for phase in ("corpus", "journals_root", "metadata", "directory"):
+            selected = advance(current, phase)
+            assert selected is not None and selected.storage_state == storage
+            current = selected
+    else:
+        with factory() as session, session.begin():
+            assert (
+                owner.retire_discovery_job(
+                    session,
+                    replace(retired, storage_state="confirmed"),
+                )
+                is None
+            )
+        with pytest.raises(ValueError, match="next irreversible"):
+            advance(retired, "children")
+        current = advance(retired, "directory")
+        assert current is not None
+
+    assert current.state == current.reclamation_phase == "directory"
+    assert current.reclamation_directory_id is current.reclamation_journal_id is None
+    with factory() as session, session.begin():
+        assert owner.retire_discovery_job(session, current) == current
+        assert owner.retire_discovery_job(session, job) is None
+    assert advance(current, "children") is None
+    assert not owner.discovery_worker_current(factory, current)
+    assert read() == current
+    assert factory.kw["bind"].pool.checkedout() == 0
+
+
+@pytest.mark.parametrize(
+    "confirmed,lost", [(False, False), (False, True), (True, False), (True, True)]
+)
+def test_original_storage_and_irreversible_reclamation_stages_survive_restart_and_receiving(
+    case,
+    confirmed,
+    lost,
+):
+    current = claimed(case) if confirmed else case.job
+    if lost:
+        current = owner.lose_discovery_corpus(
+            case.factory,
+            current,
+            failure="original storage open unavailable",
+        )
+        assert current is not None
+    with lease_journal_validation_workspace(
+        case.root,
+        current.workspace_id,
+        create=True,
+        creation_current=lambda: True,
+    ) as path:
+        assert path is not None
+        marker = path / "unclassified"
+        marker.write_bytes(b"not catalog disposal authority")
+        _reclamation_stages(case.factory, current)
+        assert marker.read_bytes() == b"not catalog disposal authority"
+
+
+@pytest.mark.parametrize(
+    "values",
+    [
+        {"reclamation_phase": "metadata"},
+        {"state": "retiring", "build_id": None},
+        {"state": "retiring", "build_id": None, "reclamation_phase": "children"},
+        {
+            "state": "retiring",
+            "build_id": None,
+            "reclamation_phase": "child_directory",
+            "storage_state": "confirmed",
+        },
+        {
+            "state": "directory",
+            "build_id": None,
+            "reclamation_phase": "children",
+            "storage_state": "confirmed",
+        },
+    ],
+)
+def test_catalog_cannot_admit_live_or_unconfirmed_discovery_reclamation_authority(case, values):
+    with pytest.raises(IntegrityError):
+        with case.factory() as session, session.begin():
+            session.execute(
+                update(Job).where(Job.workspace_id == case.job.workspace_id).values(**values)
+            )
+    with case.factory() as session:
+        assert owner.DiscoveryJob.read(session.get(Job, case.job.workspace_id)) == case.job

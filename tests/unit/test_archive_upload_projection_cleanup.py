@@ -547,6 +547,7 @@ def _seed_linked_discovery(case, build_id, root, resources):
             worker_epoch=1,
             version="f" * 64,
             state="seeding",
+            storage_state="confirmed",
         )
         session.add(record)
         session.flush()

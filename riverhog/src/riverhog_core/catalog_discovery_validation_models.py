@@ -32,6 +32,10 @@ class DiscoveryValidationJobRecord(Base):
     selection_manifest_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     selection_count: Mapped[str | None] = mapped_column(Text, nullable=True)
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
+    reclamation_phase: Mapped[str | None] = mapped_column(String, nullable=True)
+    storage_state: Mapped[str] = mapped_column(String, nullable=False, default="unconfirmed")
+    reclamation_journal_id: Mapped[str | None] = mapped_column(Text, nullable=True)
+    reclamation_directory_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -50,6 +54,75 @@ class DiscoveryValidationJobRecord(Base):
         CheckConstraint(
             "state NOT IN ('retiring','directory') OR build_id IS NULL",
             name="ck_discovery_validation_retired",
+        ),
+        CheckConstraint(
+            "state IN ('retiring','directory') OR reclamation_phase IS NULL",
+            name="ck_discovery_validation_reclamation_live_phase",
+        ),
+        CheckConstraint(
+            "state NOT IN ('retiring','directory') OR reclamation_phase IS NOT NULL",
+            name="ck_discovery_validation_reclamation_retired_phase",
+        ),
+        CheckConstraint(
+            "reclamation_phase IS NULL OR reclamation_phase IN "
+            "('children','child_directory','corpus','journals_root','metadata','directory')",
+            name="ck_discovery_validation_reclamation_phase",
+        ),
+        CheckConstraint(
+            "state != 'directory' OR reclamation_phase = 'directory'",
+            name="ck_discovery_validation_reclamation_directory",
+        ),
+        CheckConstraint(
+            "state != 'retiring' OR reclamation_phase != 'directory'",
+            name="ck_discovery_validation_reclamation_files",
+        ),
+        CheckConstraint(
+            "reclamation_phase IS NULL OR storage_state = 'confirmed' OR reclamation_phase "
+            "IN ('metadata','directory')",
+            name="ck_discovery_validation_reclamation_confirmed",
+        ),
+        CheckConstraint(
+            "state IN ('retiring','directory') OR reclamation_journal_id IS NULL",
+            name="ck_discovery_validation_reclamation_live_journal",
+        ),
+        CheckConstraint(
+            "state IN ('retiring','directory') OR reclamation_directory_id IS NULL",
+            name="ck_discovery_validation_reclamation_live_child",
+        ),
+        CheckConstraint(
+            "reclamation_phase IS NULL OR reclamation_phase != 'child_directory' OR "
+            "reclamation_journal_id IS NOT NULL",
+            name="ck_discovery_validation_reclamation_child_journal",
+        ),
+        CheckConstraint(
+            "reclamation_phase IS NULL OR reclamation_phase != 'child_directory' OR "
+            "reclamation_directory_id IS NOT NULL",
+            name="ck_discovery_validation_reclamation_child_identity",
+        ),
+        CheckConstraint(
+            "reclamation_phase IS NULL OR reclamation_phase != 'child_directory' OR "
+            "length(reclamation_journal_id) > 0",
+            name="ck_discovery_validation_reclamation_child_nonempty",
+        ),
+        CheckConstraint(
+            "reclamation_phase = 'child_directory' OR reclamation_journal_id IS NULL",
+            name="ck_discovery_validation_reclamation_unselected_journal",
+        ),
+        CheckConstraint(
+            "reclamation_phase = 'child_directory' OR reclamation_directory_id IS NULL",
+            name="ck_discovery_validation_reclamation_unselected_child",
+        ),
+        CheckConstraint(
+            "storage_state IN ('unconfirmed','confirmed')",
+            name="ck_discovery_validation_storage",
+        ),
+        CheckConstraint(
+            "state != 'preparing' OR storage_state = 'unconfirmed'",
+            name="ck_discovery_validation_storage_preparing",
+        ),
+        CheckConstraint(
+            "state NOT IN ('seeding','ready','active') OR storage_state = 'confirmed'",
+            name="ck_discovery_validation_storage_confirmed",
         ),
         CheckConstraint(
             "source_manifest_sha256 IS NULL AND source_count IS NULL AND "
@@ -76,7 +149,7 @@ class DiscoveryValidationJobRecord(Base):
                 + ") = 0",
                 name="ck_discovery_validation_" + column,
             )
-            for column in ("workspace_id", "attempt_id")
+            for column in ("workspace_id", "attempt_id", "reclamation_directory_id")
         ),
         Index(
             "uq_discovery_validation_build",

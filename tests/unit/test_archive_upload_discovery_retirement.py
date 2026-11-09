@@ -53,7 +53,12 @@ def _retire(ready):
     assert progress.pending_reason is None and progress.metadata_bytes > 0
     retired = _job(ready)
     expected = asdict(held.original)
-    expected.update(build_id=None, state="retiring", version=retired.version)
+    expected.update(
+        build_id=None,
+        state="retiring",
+        version=retired.version,
+        reclamation_phase="children" if expected["storage_state"] == "confirmed" else "metadata",
+    )
     assert asdict(retired) == expected and retired.version != held.original.version
     assert held.marker.read_bytes() == b"original independently leased bytes"
     # Catalog detachment does not claim independent file reclamation.
@@ -263,7 +268,12 @@ def _composed(ready, monkeypatch, *, committed=None):
     assert _confirmed(ready) == ready.original
     retired = _job(ready)
     expected = asdict(ready.discovery.original)
-    expected.update(build_id=None, state="retiring", version=retired.version)
+    expected.update(
+        build_id=None,
+        state="retiring",
+        version=retired.version,
+        reclamation_phase="children" if expected["storage_state"] == "confirmed" else "metadata",
+    )
     assert asdict(retired) == expected
     assert ready.discovery.marker.read_bytes() == b"original independently leased bytes"
     with lease_journal_validation_workspace(

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 from dataclasses import dataclass, fields, replace
 from typing import Any
 from uuid import uuid4
@@ -66,6 +67,10 @@ class DiscoveryJob:
     selection_manifest_sha256: str | None
     selection_count: str | None
     failure: str | None
+    reclamation_phase: str | None = None
+    storage_state: str = "unconfirmed"
+    reclamation_journal_id: str | None = None
+    reclamation_directory_id: str | None = None
 
     @classmethod
     def read(cls, row: Job) -> DiscoveryJob:
@@ -152,7 +157,7 @@ def _identity(job: DiscoveryJob) -> tuple[Any, ...]:
     return tuple(
         getattr(Job, field.name) == getattr(job, field.name)
         for field in fields(job)
-        if field.name not in {"version", "state", "failure"}
+        if field.name not in {"version", "state", "failure", "storage_state"}
     )
 
 
@@ -167,6 +172,7 @@ def _declaration(mode: str) -> Declaration:
         "activate_discovery_corpus": 2,
         "lose_discovery_corpus": 1,
         "retire_discovery_job": 1,
+        "advance_discovery_reclamation": 1,
     }[mode]
     mutates = int(mode not in {"discovery_worker_current", "discovery_worker_snapshot"})
     versions = mutates
@@ -475,7 +481,7 @@ def confirm_discovery_storage(factory: SessionFactory, job: DiscoveryJob) -> Dis
         row = session.execute(
             update(Job)
             .where(*_identity(job), Job.version == job.version, Job.state == "preparing")
-            .values(state="seeding", version=_version())
+            .values(state="seeding", storage_state="confirmed", version=_version())
             .returning(Job)
         ).scalar_one_or_none()
         return None if row is None else DiscoveryJob.read(row)
@@ -571,14 +577,91 @@ def lose_discovery_corpus(
 def retire_discovery_job(session: Session, job: DiscoveryJob) -> DiscoveryJob | None:
     """Detach the exact catalog fence in the composing owner's transaction.
 
-    This transition never closes or reclaims Native workspace storage. Its
-    independent owner retains physical handles, leases and retirement work.
-    A stale version or original identity cannot detach another job.
+    Preserve whether the original Core storage was confirmed before retirement.
+    A preparing prefix cannot acquire child/corpus disposal authority from this
+    transition. Retired stages are absorbing: a retry cannot reset a partially
+    reclaimed metadata file or a child whose lease was already unlinked.
+    No file is closed, interpreted or removed by this catalog disposition.
     """
+    fence = (
+        *_identity(job),
+        Job.version == job.version,
+        Job.state == job.state,
+        Job.storage_state == job.storage_state,
+    )
+    if job.state in {"retiring", "directory"}:
+        row = session.execute(select(Job).where(*fence)).scalar_one_or_none()
+    else:
+        confirmed = job.storage_state == "confirmed"
+        row = session.execute(
+            update(Job)
+            .where(*fence)
+            .values(
+                build_id=None,
+                state="retiring",
+                version=_version(),
+                reclamation_phase="children" if confirmed else "metadata",
+            )
+            .returning(Job)
+        ).scalar_one_or_none()
+    return None if row is None else DiscoveryJob.read(row)
+
+
+@declare_growth(_declaration("advance_discovery_reclamation"))
+def advance_discovery_reclamation(
+    session: Session,
+    job: DiscoveryJob,
+    phase: str,
+    *,
+    journal_id: str | None = None,
+    directory_id: str | None = None,
+) -> DiscoveryJob | None:
+    """Commit one exact irreversible phase after its owning physical proof.
+
+    The composing caller holds the original exclusive parent custody and supplies
+    the actual completed child/extent/root proof. This CAS neither establishes
+    that proof nor touches files. The selected child's exact registered identity
+    survives process exit between lease unlink, rmdir and routing retirement.
+    Core routing stays intact until every registered child and its root complete.
+    """
+    if job.build_id is not None or job.state != "retiring":
+        return None
+    permitted = {
+        "children": {"child_directory", "corpus"},
+        "child_directory": {"children"},
+        "corpus": {"journals_root"},
+        "journals_root": {"metadata"},
+        "metadata": {"directory"},
+    }
+    if phase not in permitted.get(job.reclamation_phase or "", set()):
+        raise ValueError("discovery reclamation requires its next irreversible phase")
+    if phase == "child_directory":
+        if (
+            job.storage_state != "confirmed"
+            or not isinstance(journal_id, str)
+            or not journal_id
+            or not isinstance(directory_id, str)
+            or re.fullmatch(r"[0-9a-f]{32}", directory_id) is None
+        ):
+            raise ValueError("child directory retirement requires its exact registered identity")
+    elif journal_id is not None or directory_id is not None:
+        raise ValueError("only child directory retirement retains a selected child")
     row = session.execute(
         update(Job)
-        .where(*_identity(job), Job.version == job.version)
-        .values(build_id=None, state="retiring", version=_version())
+        .where(
+            *_identity(job),
+            Job.version == job.version,
+            Job.state == "retiring",
+            Job.storage_state == job.storage_state,
+            Job.build_id.is_(None),
+        )
+        .values(
+            reclamation_phase=phase,
+            reclamation_journal_id=journal_id,
+            reclamation_directory_id=directory_id,
+            state="directory" if phase == "directory" else "retiring",
+            version=_version(),
+        )
         .returning(Job)
     ).scalar_one_or_none()
     return None if row is None else DiscoveryJob.read(row)
