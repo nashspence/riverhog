@@ -2598,6 +2598,12 @@ class CollectionUploadCopyIntentRecord(Base):
         ),
         CheckConstraint("attempts >= 0", name="ck_collection_upload_copy_intents_attempts"),
         Index("ix_collection_upload_copy_intents_due", "state", "next_attempt_at"),
+        Index(
+            "ix_collection_upload_copy_intents_terminal_cleanup",
+            "collection_id",
+            "state",
+            "destination_store",
+        ),
     )
 
 

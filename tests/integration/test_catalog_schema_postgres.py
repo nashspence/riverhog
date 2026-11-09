@@ -2632,3 +2632,62 @@ def test_postgres_native_seal_receiving_uses_its_partial_index_with_generic_plan
         record_property("unsealed_prefix", 1000)
         record_property("pending_receipts", pending)
         record_property("native_index_rows", native[0]["Actual Rows"])
+
+
+def test_postgres_terminal_metadata_retirement_uses_generic_index_seeks(
+    isolated_database_url: str,
+) -> None:
+    initialize_db(isolated_database_url)
+    engine = create_catalog_engine(isolated_database_url)
+    cases = (
+        (
+            "terminal_copy_intents",
+            "(bigint, varchar)",
+            "(1, 'accepted')",
+            "SELECT destination_store FROM collection_upload_copy_intents "
+            "WHERE collection_id=$1 AND state=$2 ORDER BY destination_store LIMIT 2",
+            "ix_collection_upload_copy_intents_terminal_cleanup",
+        ),
+        (
+            "terminal_other_copy_states",
+            "(bigint)",
+            "(1)",
+            "SELECT destination_store FROM collection_upload_copy_intents "
+            "WHERE collection_id=$1 AND state IN ('pending','handed_off','failed') LIMIT 1",
+            "ix_collection_upload_copy_intents_terminal_cleanup",
+        ),
+        (
+            "terminal_projection_generations",
+            "(bigint)",
+            "(1)",
+            "SELECT build_id FROM collection_provenance_index_generations "
+            "WHERE collection_id=$1 ORDER BY build_id LIMIT 2",
+            "ix_provenance_index_generations_retirement",
+        ),
+        (
+            "terminal_processing_outputs",
+            "(bigint)",
+            "(1)",
+            "SELECT id FROM collection_processing_claims "
+            "WHERE output_collection_id=$1 ORDER BY id LIMIT 2",
+            "ix_collection_processing_claims_output",
+        ),
+    )
+    try:
+        with engine.begin() as connection:
+            connection.exec_driver_sql("SET LOCAL plan_cache_mode = force_generic_plan")
+            for name, types, arguments, query, index in cases:
+                connection.exec_driver_sql(f"PREPARE {name} {types} AS {query}")
+                plan = connection.exec_driver_sql(
+                    f"EXPLAIN (FORMAT JSON) EXECUTE {name} {arguments}"
+                ).scalar_one()[0]["Plan"]
+                pending, nodes = [plan], []
+                while pending:
+                    node = pending.pop()
+                    nodes.append(node)
+                    pending.extend(node.get("Plans", ()))
+                assert any(node.get("Index Name") == index for node in nodes)
+                assert not any(node["Node Type"] in {"Seq Scan", "Sort"} for node in nodes)
+                connection.exec_driver_sql(f"DEALLOCATE {name}")
+    finally:
+        engine.dispose()

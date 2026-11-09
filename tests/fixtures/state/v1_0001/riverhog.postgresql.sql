@@ -3214,4 +3214,10 @@ CREATE INDEX ix_retrieval_cache_populations_native_cleanup_due ON retrieval_cach
 
 CREATE INDEX ix_archive_upload_terminals_execution_due ON archive_upload_terminals (execution_next_attempt_at, id) WHERE execution_next_attempt_at IS NOT NULL AND phase <> 'done';
 
+CREATE INDEX ix_collection_upload_copy_intents_terminal_cleanup ON collection_upload_copy_intents (collection_id, state, destination_store);
+
+CREATE INDEX ix_provenance_index_generations_retirement ON collection_provenance_index_generations (collection_id, build_id);
+
+CREATE INDEX ix_collection_processing_claims_output ON collection_processing_claims (output_collection_id, id);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

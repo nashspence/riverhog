@@ -6638,3 +6638,12 @@ _TERMINAL_EXECUTION_DUE_INDEX = (
 )
 SQLITE_DDL += _TERMINAL_EXECUTION_DUE_INDEX
 POSTGRESQL_DDL += _TERMINAL_EXECUTION_DUE_INDEX
+
+
+_TERMINAL_METADATA_RETIREMENT_INDEXES = (
+    "CREATE INDEX ix_collection_upload_copy_intents_terminal_cleanup ON collection_upload_copy_intents (collection_id, state, destination_store)",
+    "CREATE INDEX ix_provenance_index_generations_retirement ON collection_provenance_index_generations (collection_id, build_id)",
+    "CREATE INDEX ix_collection_processing_claims_output ON collection_processing_claims (output_collection_id, id)",
+)
+SQLITE_DDL += _TERMINAL_METADATA_RETIREMENT_INDEXES
+POSTGRESQL_DDL += _TERMINAL_METADATA_RETIREMENT_INDEXES
