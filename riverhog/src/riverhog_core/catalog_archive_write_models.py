@@ -157,6 +157,12 @@ class ArchiveUploadTerminalRecord(Base):
         default="1970-01-01T00:00:00.000000000Z",
         server_default=text("'1970-01-01T00:00:00.000000000Z'"),
     )
+    execution_next_attempt_at: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True,
+        default="1970-01-01T00:00:00.000000000Z",
+        server_default=text("'1970-01-01T00:00:00.000000000Z'"),
+    )
     control_capacity_bytes: Mapped[int] = mapped_column(BigInteger)
     original_result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -175,6 +181,18 @@ class ArchiveUploadTerminalRecord(Base):
         CheckConstraint(
             "phase <> 'done' OR result_json IS NOT NULL AND original_result_json IS NULL",
             name="ck_archive_upload_terminals_result",
+        ),
+        CheckConstraint(
+            "execution_next_attempt_at IS NOT NULL OR "
+            "phase IN ('refused-sealed','needs-reconfirmation','done')",
+            name="ck_archive_upload_terminals_execution_due",
+        ),
+        Index(
+            "ix_archive_upload_terminals_execution_due",
+            "execution_next_attempt_at",
+            "id",
+            sqlite_where=text("execution_next_attempt_at IS NOT NULL AND phase <> 'done'"),
+            postgresql_where=text("execution_next_attempt_at IS NOT NULL AND ((phase) <> 'done')"),
         ),
         Index("ix_archive_upload_terminals_collection", "collection_id", "id"),
         Index(

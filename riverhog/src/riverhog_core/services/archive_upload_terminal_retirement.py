@@ -30,6 +30,7 @@ class TerminalOriginalRetirement:
     phase: str | None
     retired: int = 0
     pending_reason: PendingReason | Literal["global-decision", "retained-originals"] | None = None
+    execution_stopped: bool = False
 
 
 class ArchiveUploadTerminalRetirement:
@@ -116,8 +117,14 @@ class ArchiveUploadTerminalRetirement:
                     != "untracked"
                     for owner in (self._finalizers, self._invocations)
                 )
+                stopped = not pending and terminal.phase in {
+                    "refused-sealed",
+                    "needs-reconfirmation",
+                }
+                if stopped:
+                    terminal.execution_next_attempt_at = None
                 return TerminalOriginalRetirement(
-                    terminal.phase, retired, "retained-originals" if pending else None
+                    terminal.phase, retired, "retained-originals" if pending else None, stopped
                 )
         except OperationalError as exc:
             if catalog_write_contention(exc):

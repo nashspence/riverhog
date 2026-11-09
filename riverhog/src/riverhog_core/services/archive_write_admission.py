@@ -757,6 +757,7 @@ class ArchiveWriteAdmission:
                 original_epoch=control.epoch,
                 custody_revision=control.custody_revision,
                 drain_next_attempt_at=utc_timestamp_now(),
+                execution_next_attempt_at=utc_timestamp_now(),
                 control_capacity_bytes=grants.terminal_bytes,
                 original_result_json=None,
                 result_json=None,

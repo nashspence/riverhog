@@ -2969,9 +2969,11 @@ CREATE TABLE archive_upload_terminals (
 	original_epoch VARCHAR(64) NOT NULL,
 	custody_revision TEXT DEFAULT '0' NOT NULL,
 	drain_next_attempt_at VARCHAR DEFAULT '1970-01-01T00:00:00.000000000Z' NOT NULL,
+	execution_next_attempt_at VARCHAR DEFAULT '1970-01-01T00:00:00.000000000Z',
 	control_capacity_bytes BIGINT NOT NULL,
 	original_result_json TEXT,
 	result_json TEXT,
+	CONSTRAINT ck_archive_upload_terminals_execution_due CHECK (execution_next_attempt_at IS NOT NULL OR phase IN ('refused-sealed','needs-reconfirmation','done')),
 	PRIMARY KEY (id),
 	FOREIGN KEY(collection_id) REFERENCES archive_write_controls (collection_id),
 	CONSTRAINT ck_archive_upload_terminals_control_capacity CHECK (control_capacity_bytes > 0),
@@ -3211,3 +3213,5 @@ CREATE INDEX ix_cache_population_dispositions_terminal ON cache_population_dispo
 CREATE INDEX ix_retrieval_cache_populations_native_cleanup_due ON retrieval_cache_populations (updated_at, source_store, collection_id, object_id) WHERE ((state) = 'abandoning') AND abandonment_receipt_json IS NOT NULL;
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
+
+CREATE INDEX ix_archive_upload_terminals_execution_due ON archive_upload_terminals (execution_next_attempt_at, id) WHERE execution_next_attempt_at IS NOT NULL AND phase <> 'done';

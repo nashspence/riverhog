@@ -50,8 +50,9 @@ class ArchiveUploadTerminalRegistry:
     This receiver owns neither a scheduler nor a physical pool. The upload
     maintenance owner owns bounded scheduling opportunities. Terminal
     reservations precede construction, independently of the original forward
-    work's reservations. Intermediate progress never releases an entered actor
-    or supplies a confirmed public outcome.
+    work's reservations. Intermediate progress never supplies a confirmed public outcome. An
+    entered actor retires only after its semantic owner positively stops the
+    original operation and the actual worker is joined and received.
     """
 
     def __init__(
@@ -109,9 +110,12 @@ class ArchiveUploadTerminalRegistry:
             for _ in range(min(limit, len(self._contexts))):
                 key, context = self._contexts.popitem(last=False)
                 self._contexts[key] = context
-                # Positive non-entry, not a missing actor or successful phase,
-                # permits withdrawal of an unused local reservation.
-                if context.received and not context.entered:
+                # Only positive non-entry or the semantic owner's stopped receipt
+                # after actual joined receiving permits local withdrawal.
+                if context.received and (
+                    not context.entered
+                    or (context.progress is not None and context.progress.execution_stopped)
+                ):
                     if self._retention.retire(context.reservation, owner=self):
                         del self._contexts[key]
                         progressed += 1
@@ -186,6 +190,7 @@ class ArchiveUploadTerminalRegistry:
                     not context.received
                     or context.resume_after > clock
                     or (context.entered and context.actor is None)
+                    or (context.progress is not None and context.progress.execution_stopped)
                 ):
                     return 0
             return self._submit(
@@ -212,6 +217,7 @@ class ArchiveUploadTerminalRegistry:
                     not context.received
                     or context.resume_after > clock
                     or (context.entered and context.actor is None)
+                    or (context.progress is not None and context.progress.execution_stopped)
                 ):
                     continue
                 submitted += self._submit(

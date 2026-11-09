@@ -32,6 +32,7 @@ def terminal_control_bytes(
     row["control_capacity_bytes"] = format_scalar("nonnegative", terminal.control_capacity_bytes)
     row["phase"] = "needs-reconfirmation"
     row["drain_next_attempt_at"] = "9999-12-31T23:59:59.999999999Z"
+    row["execution_next_attempt_at"] = "9999-12-31T23:59:59.999999999Z"
     return len(
         canonical_json_bytes(
             {

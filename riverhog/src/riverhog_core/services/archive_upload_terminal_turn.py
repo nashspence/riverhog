@@ -34,6 +34,7 @@ class TerminalTurnProgress:
     ) = None
     retired_originals: int = 0
     originals_retired: bool = False
+    execution_stopped: bool = False
 
 
 class ArchiveUploadTerminalTurn:
@@ -112,6 +113,7 @@ class ArchiveUploadTerminalTurn:
                 retired.pending_reason,
                 retired.retired,
                 retired.pending_reason is None,
+                retired.execution_stopped,
             )
         finally:
             self._lock.release()
