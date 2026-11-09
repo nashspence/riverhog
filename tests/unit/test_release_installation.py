@@ -8,6 +8,7 @@ import tomllib
 from pathlib import Path
 from types import ModuleType
 from typing import Any
+from urllib.parse import urlsplit
 
 import pytest
 
@@ -137,9 +138,16 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
         lock = tomllib.loads((tmp_path / component["lock"]["path"]).read_text(encoding="utf-8"))
         locked_names = {item["name"] for item in lock["packages"]}
         assert locked_names == {item["name"] for item in component["resolved_packages"]}
-        assert not any(
-            "workspace" in str(item) or "file://" in str(item) for item in lock["packages"]
-        )
+        for package in lock["packages"]:
+            assert not {"directory", "vcs", "archive"} & package.keys()
+            assert package["wheels"]
+            if "index" in package:
+                index = urlsplit(package["index"])
+                assert index.scheme == "https" and index.netloc
+            for wheel in package["wheels"]:
+                assert "path" not in wheel
+                location = urlsplit(wheel["url"])
+                assert location.scheme == "https" and location.netloc
         for platform in installation.SUPPORTED_PLATFORMS:
             closure = {item["name"] for item in component["first_party_closure"][platform]}
             requirements = {
