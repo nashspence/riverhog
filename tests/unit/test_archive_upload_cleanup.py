@@ -9,12 +9,6 @@ import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
 from riverhog_core.catalog_archive_write_models import (
-    ArchiveCleanupAttemptRecord as Attempt,
-)
-from riverhog_core.catalog_archive_write_models import (
-    ArchiveCleanupPageRecord as Page,
-)
-from riverhog_core.catalog_archive_write_models import (
     ArchiveUploadTerminalRecord as Terminal,
 )
 from riverhog_core.catalog_archive_write_models import (
@@ -23,6 +17,12 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_archive_write_models import TerminalCleanupCapacityRecord as Capacity
 from riverhog_core.catalog_db import session_scope, validate_db
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
+from riverhog_core.catalog_object_cleanup_models import (
+    ObjectCleanupAttemptRecord as Attempt,
+)
+from riverhog_core.catalog_object_cleanup_models import (
+    ObjectCleanupPageRecord as Page,
+)
 from riverhog_core.services.archive_upload_cleanup import (
     ArchiveUploadCleanup,
 )
@@ -522,6 +522,7 @@ def test_cleanup_reservation_seek_ignores_other_terminal_history(tmp_path, recor
                         {
                             "id": identity,
                             "terminal_id": identity,
+                            "scope_id": identity,
                             "page_sha256": "a" * 64,
                             "dispatch_sha256": "b" * 64,
                             "invocation_json": "{}",
@@ -585,7 +586,7 @@ def test_cold_page_scope_is_rechecked_before_any_new_dispatch(tmp_path, change):
             request = request.model_copy(update={"inventory": inventory})
             record.request_json = request.model_dump_json()
             record.request_sha256 = cleanup_step_sha256(request)
-        with pytest.raises(Conflict, match="original archive scope"):
+        with pytest.raises(Conflict, match="original target scope"):
             _cleanup_arm(ready)
 
 
@@ -749,3 +750,31 @@ def test_cleanup_capacity_rejects_release_underflow_without_changing_any_dimensi
             capacity = session.get(Capacity, ready.operation)
             assert capacity.calls == capacity.provider_requests == capacity.in_flight == "1"
             assert capacity.control_bytes == "100"
+
+
+@pytest.mark.parametrize("phase", ("execute", "record", "acknowledge"))
+def test_original_cleanup_call_cannot_borrow_another_retained_scope(tmp_path, phase):
+    with _case(tmp_path) as case:
+        ready = _ready(case)
+        ticket = _inventory_arm(ready)
+        _, request = _request(ready)
+        response = cleanup_inventory_execution_result(
+            ticket.invocation, request.inventory, provider_requests=1, execution="closed"
+        )
+        with session_scope(case.factory) as session:
+            session.get(Attempt, ticket.invocation.call.call_id).scope_id = "f" * 64
+
+        class Target:
+            def execute_cleanup(self, invocation):
+                pytest.fail("a mismatched cleanup scope cannot dispatch provider work")
+
+        with pytest.raises((Conflict, NotFound), match="capability changed|attempt is unavailable"):
+            if phase == "execute":
+                ready.owner.execute(ticket, Target())
+            elif phase == "record":
+                _receive(ready, response)
+            else:
+                _ack(ready, response)
+        with session_scope(case.factory) as session:
+            assert session.get(Attempt, ticket.invocation.call.call_id).unresolved
+            assert session.get(Capacity, ready.operation).calls == "1"

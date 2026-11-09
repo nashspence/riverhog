@@ -3113,41 +3113,45 @@ CREATE TABLE collection_upload_initial_tag_publications (
 
 CREATE INDEX ix_archive_upload_terminals_draining_due ON archive_upload_terminals (drain_next_attempt_at, id) WHERE phase = 'draining';
 
-CREATE TABLE archive_cleanup_pages (
-	terminal_id VARCHAR(64) NOT NULL, 
-	request_sha256 VARCHAR(64) NOT NULL, 
-	inventory_call_id VARCHAR(64) NOT NULL, 
-	inventory_request_json TEXT NOT NULL, 
-	request_json TEXT NOT NULL, 
-	disposed_json TEXT NOT NULL, 
-	PRIMARY KEY (terminal_id), 
-	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id), 
-	CONSTRAINT ck_archive_cleanup_pages_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
-	CONSTRAINT ck_archive_cleanup_pages_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
-	CONSTRAINT ck_archive_cleanup_pages_inventory_call_id_hex CHECK (length(inventory_call_id) = 64 AND lower(inventory_call_id) = inventory_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(inventory_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+CREATE TABLE object_cleanup_pages (
+	scope_id VARCHAR(64) NOT NULL,
+	terminal_id VARCHAR(64) NOT NULL,
+	request_sha256 VARCHAR(64) NOT NULL,
+	inventory_call_id VARCHAR(64) NOT NULL,
+	inventory_request_json TEXT NOT NULL,
+	request_json TEXT NOT NULL,
+	disposed_json TEXT NOT NULL,
+	PRIMARY KEY (scope_id),
+	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id),
+	CONSTRAINT ck_object_cleanup_pages_scope_id_hex CHECK (length(scope_id) = 64 AND lower(scope_id) = scope_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(scope_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_object_cleanup_pages_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_object_cleanup_pages_request_sha256_hex CHECK (length(request_sha256) = 64 AND lower(request_sha256) = request_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(request_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_object_cleanup_pages_inventory_call_id_hex CHECK (length(inventory_call_id) = 64 AND lower(inventory_call_id) = inventory_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(inventory_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE TABLE archive_cleanup_attempts (
-	id VARCHAR(64) NOT NULL, 
-	terminal_id VARCHAR(64) NOT NULL, 
-	page_sha256 VARCHAR(64), 
-	dispatch_sha256 VARCHAR(64) NOT NULL, 
-	invocation_json TEXT NOT NULL, 
-	unresolved BOOLEAN NOT NULL, 
-	control_bytes TEXT NOT NULL, 
-	provider_requests TEXT NOT NULL, 
-	in_flight TEXT NOT NULL, 
-	response_json TEXT, 
-	PRIMARY KEY (id), 
-	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id), 
-	CONSTRAINT ck_archive_cleanup_attempts_closed CHECK (unresolved IS true OR response_json IS NOT NULL), 
-	CONSTRAINT ck_archive_cleanup_attempts_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
-	CONSTRAINT ck_archive_cleanup_attempts_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
-	CONSTRAINT ck_archive_cleanup_attempts_page_sha256_hex CHECK (page_sha256 IS NULL OR length(page_sha256) = 64 AND lower(page_sha256) = page_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(page_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''), 
-	CONSTRAINT ck_archive_cleanup_attempts_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+CREATE TABLE object_cleanup_attempts (
+	id VARCHAR(64) NOT NULL,
+	terminal_id VARCHAR(64) NOT NULL,
+	scope_id VARCHAR(64) NOT NULL,
+	page_sha256 VARCHAR(64),
+	dispatch_sha256 VARCHAR(64) NOT NULL,
+	invocation_json TEXT NOT NULL,
+	unresolved BOOLEAN NOT NULL,
+	control_bytes TEXT NOT NULL,
+	provider_requests TEXT NOT NULL,
+	in_flight TEXT NOT NULL,
+	response_json TEXT,
+	PRIMARY KEY (id),
+	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id),
+	CONSTRAINT ck_object_cleanup_attempts_closed CHECK (unresolved IS true OR response_json IS NOT NULL),
+	CONSTRAINT ck_object_cleanup_attempts_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_object_cleanup_attempts_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_object_cleanup_attempts_scope_id_hex CHECK (length(scope_id) = 64 AND lower(scope_id) = scope_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(scope_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_object_cleanup_attempts_page_sha256_hex CHECK (page_sha256 IS NULL OR length(page_sha256) = 64 AND lower(page_sha256) = page_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(page_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_object_cleanup_attempts_dispatch_sha256_hex CHECK (length(dispatch_sha256) = 64 AND lower(dispatch_sha256) = dispatch_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(dispatch_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_archive_cleanup_attempts_terminal ON archive_cleanup_attempts (terminal_id, id);
+CREATE INDEX ix_object_cleanup_attempts_terminal ON object_cleanup_attempts (terminal_id, id);
 
 CREATE INDEX ix_collection_archive_object_uploads_sealed ON collection_archive_object_uploads (collection_id, object_id) WHERE state = 'sealed';
 
@@ -3177,5 +3181,9 @@ CREATE TABLE terminal_cleanup_capacity (
 	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id),
 	CONSTRAINT ck_terminal_cleanup_capacity_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
+
+CREATE INDEX ix_object_cleanup_attempts_scope ON object_cleanup_attempts (scope_id, id);
+
+CREATE INDEX ix_object_cleanup_pages_terminal ON object_cleanup_pages (terminal_id, scope_id);
 
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

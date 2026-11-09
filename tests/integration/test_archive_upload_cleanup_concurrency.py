@@ -5,8 +5,8 @@ from dataclasses import replace
 from threading import Barrier
 
 import pytest
-from riverhog_core.catalog_archive_write_models import ArchiveCleanupAttemptRecord as Attempt
 from riverhog_core.catalog_db import session_scope
+from riverhog_core.catalog_object_cleanup_models import ObjectCleanupAttemptRecord as Attempt
 from riverhog_protocol.errors import Conflict
 from sqlalchemy import func, select, text
 

@@ -60,7 +60,9 @@ class RetainedCleanupAttempt:
         return response
 
 
-def cleanup_attempt_bytes(invocation: CleanupInvocation, operation_id: str) -> int:
+def cleanup_attempt_bytes(
+    invocation: CleanupInvocation, operation_id: str, *, scope_id: str
+) -> int:
     request = invocation.request
     # Persist invocation/response JSON with the same omission policy as
     # their protocol grant; optional nulls must not escape byte accounting.
@@ -69,6 +71,7 @@ def cleanup_attempt_bytes(invocation: CleanupInvocation, operation_id: str) -> i
         header = {
             "id": invocation.call.call_id,
             "terminal_id": operation_id,
+            "scope_id": scope_id,
             "page_sha256": "0" * 64,
             "dispatch_sha256": "0" * 64,
             "unresolved": False,
