@@ -14,6 +14,9 @@ from state_schema import read_snapshot
 
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.incremental_emission import VolumeEmissionLimits
+from riverhog_core.services.archive_upload_cancel_result_projection import (
+    ArchiveUploadCancelResultProjection,
+)
 from riverhog_core.services.archive_upload_catalog_cleanup import ArchiveUploadCatalogCleanup
 from riverhog_core.services.archive_upload_checkpoint_cleanup import ArchiveUploadCheckpointCleanup
 from riverhog_core.services.archive_upload_cleanup_turn import ArchiveUploadCleanupTurn
@@ -102,7 +105,9 @@ class ArchiveUploadTerminalTurn:
         checkpoint_cleanup: ArchiveUploadCheckpointCleanup | None = None,
         copy_intent_cleanup: ArchiveUploadCopyIntentCleanup | None = None,
         projection_cleanup: ArchiveUploadProjectionCleanup | None = None,
-        result_projection: ArchiveUploadDiscardResultProjection | None = None,
+        result_projection: ArchiveUploadDiscardResultProjection
+        | ArchiveUploadCancelResultProjection
+        | None = None,
         result_projection_limits: VolumeEmissionLimits | None = None,
         confirmation: ArchiveUploadTerminalConfirmation | None = None,
         result_read_guard: Callable[[Session], None] | None = None,

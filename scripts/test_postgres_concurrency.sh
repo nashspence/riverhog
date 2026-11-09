@@ -57,6 +57,7 @@ default_tests=(
   tests/integration/test_archive_upload_discovery_retirement.py
   tests/integration/test_archive_upload_discard_result_projection.py
   tests/integration/test_archive_upload_cancel_result_projection.py
+  tests/integration/test_archive_upload_cancel_projection_composition.py
   tests/integration/test_archive_upload_discard_projection_composition.py
   tests/integration/test_upload_terminal_read_authority.py
   tests/integration/test_upload_cancel_authority.py
