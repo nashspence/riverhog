@@ -31,6 +31,7 @@ from sqlalchemy import Column, ForeignKey, Integer, Table, event, func, select
 from tests.unit.test_app_keys import BOOTSTRAP
 from tests.unit.test_archive_upload_registration_cleanup import (
     _complete_registration,
+    _composed_registration,
     _prepared,
 )
 from tests.unit.test_collection_registration_cleanup import CLEANUP
@@ -333,3 +334,38 @@ def test_actual_first_live_catalog_windows_have_linear_indexed_query_work(
         record_property("catalog_rows", removed)
         record_property("catalog_turns", turns)
         record_property("catalog_sql_statements", len(statements))
+
+
+def _composed_children(ready, monkeypatch):
+    quantum, created = _composed_registration(ready, monkeypatch, catalog=True)
+    before = _counts(ready)
+    assert sum(before.values()) > 0
+    receipts = _receipts(ready)
+    calls = len(ready.ready.target.calls)
+    for _ in range(100):
+        progress = quantum()
+        current = _counts(ready)
+        assert progress.archive_inventory_exhausted and progress.registration_disposed
+        assert 0 <= sum(before.values()) - sum(current.values()) <= CLEANUP.input_transitions
+        if progress.upload_children_exhausted:
+            break
+        assert progress.pending_reason == "catalog-cleanup"
+        before = current
+    else:
+        pytest.fail("original terminal did not compose bounded catalog cleanup")
+    assert set(current.values()) == {0} and progress.pending_reason is None
+    assert not progress.execution_stopped
+    assert created == [True] and len(ready.ready.target.calls) == calls
+    assert _receipts(ready) == receipts
+    assert ready.case.service._archive_retention._counts == {False: 0, True: 1}
+    with session_scope(ready.case.factory) as session:
+        terminal = session.get(Terminal, ready.case.operation)
+        assert terminal.original_result_json == ready.original and terminal.result_json is None
+        assert session.get(Upload, ready.case.collection_id) is not None
+
+
+def test_original_terminal_worker_composes_catalog_only_after_archive_and_registration(
+    tmp_path, monkeypatch
+):
+    with _prepared(tmp_path, monkeypatch, provider_ready=False) as ready:
+        _composed_children(ready, monkeypatch)

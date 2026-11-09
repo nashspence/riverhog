@@ -218,11 +218,12 @@ def test_failed_registration_cleanup_reply_preserves_the_same_bounded_cursor(
         _lost(ready, monkeypatch, committed)
 
 
-def _composed_registration(ready, monkeypatch, *, revoked=False):
+def _composed_registration(ready, monkeypatch, *, revoked=False, catalog=False):
     import threading
     from datetime import timedelta
 
     from riverhog_core.services import archive_upload_terminal_registry as registry_module
+    from riverhog_core.services.archive_upload_catalog_cleanup import ArchiveUploadCatalogCleanup
     from riverhog_core.services.archive_upload_terminal_turn import ArchiveUploadTerminalTurn
     from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
@@ -253,6 +254,9 @@ def _composed_registration(ready, monkeypatch, *, revoked=False):
             cleanup_create=lambda: ready.ready.turn,
             registration_cleanup=ready.owner,
             registration_limits=CLEANUP,
+            catalog_cleanup=ArchiveUploadCatalogCleanup(case.factory, ready.ready.owner)
+            if catalog
+            else None,
         )
 
     monkeypatch.setattr(registry, "_create", create)
@@ -315,7 +319,10 @@ def _composed_registration(ready, monkeypatch, *, revoked=False):
     else:
         pytest.fail("original terminal did not compose bounded registration cleanup")
     assert progress.archive_inventory_exhausted and not progress.execution_stopped
-    assert progress.pending_reason is None
+    if catalog:
+        assert progress.pending_reason in {None, "catalog-cleanup"}
+    else:
+        assert progress.pending_reason is None
     assert current["active"] is None and set(current["counts"].values()) == {0}
     assert created == [True] and set(workers) == {"physical-execution"}
     assert len(ready.ready.target.calls) == 1
@@ -327,6 +334,7 @@ def _composed_registration(ready, monkeypatch, *, revoked=False):
         assert session.get(Upload, case.collection_id) is not None
         assert session.get(Registration, ready.registration).due_at is None
     assert CollectionRegistrationOwner(case.service).process_due() == 0
+    return quantum, created
 
 
 @pytest.mark.parametrize("revoked", (False, True))

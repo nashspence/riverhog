@@ -11,6 +11,7 @@ from tests.integration.test_collection_upload_custody_concurrency import (
 )
 from tests.unit.test_archive_upload_catalog_cleanup import (
     _advance,
+    _composed_children,
     _counts,
     _finish_children,
     _lost_children,
@@ -82,3 +83,10 @@ def test_postgres_busy_independent_validation_fence_defers_catalog_destruction(
         with session_scope(ready.case.factory) as session:
             job = session.get(Job, values["workspace_id"])
             assert job is not None and job.state == "retiring" and job.collection_id is None
+
+
+def test_postgres_original_terminal_worker_composes_bounded_catalog_children(
+    database_url, tmp_path, monkeypatch
+):
+    with _prepared(tmp_path, monkeypatch, database_url=database_url, provider_ready=False) as ready:
+        _composed_children(ready, monkeypatch)
