@@ -8,6 +8,8 @@ from typing import Any
 
 from riverhog_storage_adapter_protocol import (
     BinaryContent,
+    CleanupExecutionResult,
+    CleanupInvocation,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
     ObjectLocator,
@@ -135,6 +137,10 @@ class StorageAdapterRetrievalCache:
     ) -> WriteExecutionResult:
         """Preserve the selected adapter's exact call correlation and closure evidence."""
         return self._adapter.execute_write(invocation, content=content)
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        """Forward only the selected cache adapter's admitted cleanup operation."""
+        return self._adapter.execute_cleanup(invocation)
 
     def write_constraints(self) -> ResumableWriteConstraints:
         return ResumableWriteConstraints(

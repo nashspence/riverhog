@@ -6,10 +6,6 @@ from typing import Protocol
 
 from riverhog_storage_adapter_protocol import (
     BinaryContent,
-    CleanupExecutionResult,
-    CleanupInventoryPage,
-    CleanupInventoryRequest,
-    CleanupInvocation,
     ObjectPlacementPolicy,
     SmallObjectWriteRequest,
     WriteExecutionResult,
@@ -85,14 +81,6 @@ class ArchiveObjectWriteExecutor(Protocol):
     def execute_write(
         self, invocation: WriteInvocation, *, content: BinaryContent = b""
     ) -> WriteExecutionResult: ...
-
-
-class ArchiveObjectCleanupPort(Protocol):
-    """One independently selected target; archive and cache disposal do not share authority."""
-
-    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage: ...
-
-    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult: ...
 
 
 class ArchiveWriteOperationExecutor(Protocol):

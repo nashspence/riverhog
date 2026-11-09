@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from riverhog_protocol.errors import ServiceUnavailable
 
 from riverhog_core.ports.archive_objects import (
-    ArchiveObjectCleanupPort,
     ArchiveObjectRangeStore,
     ArchiveObjectWriteExecutor,
     ArchiveResumableObjectStore,
@@ -14,6 +13,7 @@ from riverhog_core.ports.archive_objects import (
     ImmutableArchiveWritePort,
 )
 from riverhog_core.ports.archive_store import ArchiveStore
+from riverhog_core.ports.object_cleanup import ObjectCleanupPort
 
 
 @dataclass(frozen=True, slots=True)
@@ -27,7 +27,7 @@ class ArchiveStoreBinding:
     object_ranges: ArchiveObjectRangeStore
     immutable_writes: ImmutableArchiveWritePort | None = None
     resumable_writes: ArchiveObjectWriteExecutor | None = None
-    object_cleanup: ArchiveObjectCleanupPort | None = None
+    object_cleanup: ObjectCleanupPort | None = None
 
     def require_immutable_writes(self) -> ImmutableArchiveWritePort:
         if self.immutable_writes is None:
@@ -39,7 +39,7 @@ class ArchiveStoreBinding:
             raise ServiceUnavailable("archive store has no resumable execution port")
         return self.resumable_writes
 
-    def require_object_cleanup(self) -> ArchiveObjectCleanupPort:
+    def require_object_cleanup(self) -> ObjectCleanupPort:
         if self.object_cleanup is None:
             raise ServiceUnavailable("archive store has no bounded cleanup port")
         return self.object_cleanup

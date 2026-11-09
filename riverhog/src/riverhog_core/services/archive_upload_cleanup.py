@@ -12,7 +12,6 @@ from __future__ import annotations
 import hashlib
 import json
 import secrets
-import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
@@ -29,7 +28,6 @@ from riverhog_storage_adapter_protocol import (
     CleanupStepRequest,
     WriteCallIdentity,
     cleanup_step_sha256,
-    unknown_cleanup_execution,
     validate_cleanup_execution,
     validate_cleanup_inventory_response,
 )
@@ -49,8 +47,12 @@ from riverhog_core.catalog_cache_write_models import (
     CachePopulationWriteEffectRecord,
 )
 from riverhog_core.catalog_db import SessionFactory, session_scope
-from riverhog_core.ports.archive_objects import ArchiveObjectCleanupPort
+from riverhog_core.ports.object_cleanup import ObjectCleanupPort
 from riverhog_core.services.archive_upload_drain import lock_terminal_selection
+from riverhog_core.services.cleanup_attempts import (
+    RetainedCleanupAttempt,
+    cleanup_attempt_bytes,
+)
 from riverhog_core.services.terminal_cleanup_capacity import (
     CleanupCharge,
     change_cleanup_capacity,
@@ -81,46 +83,6 @@ class RetainedCleanupPage:
     @property
     def complete(self) -> bool:
         return len(self.disposed) == len(self.request.inventory.candidates)
-
-
-class RetainedCleanupAttempt:
-    """The original live one-use right; cold catalog rows cannot recreate it."""
-
-    def __init__(
-        self,
-        collection_id: int,
-        operation_id: str,
-        invocation: CleanupInvocation,
-        nonce: str,
-    ) -> None:
-        self.collection_id = collection_id
-        self.operation_id = operation_id
-        self.invocation = invocation
-        self._nonce = nonce
-        self._lock = threading.Lock()
-        self._started = False
-        self._response: CleanupExecutionResult | None = None
-
-    def _dispatch(self, target: ArchiveObjectCleanupPort) -> CleanupExecutionResult:
-        with self._lock:
-            if self._response is not None:
-                return CleanupExecutionResult.model_validate_json(
-                    self._response.model_dump_json(exclude_none=True)
-                )
-            if self._started:
-                raise Conflict("original cleanup attempt is still running or unaccounted")
-            self._started = True
-        try:
-            response = target.execute_cleanup(self.invocation)
-            response = CleanupExecutionResult.model_validate_json(
-                response.model_dump_json(exclude_none=True)
-            )
-            validate_cleanup_execution(self.invocation, response)
-        except Exception:
-            response = unknown_cleanup_execution(self.invocation)
-        with self._lock:
-            self._response = response
-        return response
 
 
 class ArchiveUploadCleanup:
@@ -196,30 +158,6 @@ class ArchiveUploadCleanup:
         )
 
     @staticmethod
-    def _attempt_bytes(invocation: CleanupInvocation, operation_id: str) -> int:
-        request = invocation.request
-        # Persist invocation/response JSON with the same omission policy as
-        # their protocol grant; optional nulls must not escape byte accounting.
-        reservation = request.maximum_control_bytes
-        while True:
-            header = {
-                "id": invocation.call.call_id,
-                "terminal_id": operation_id,
-                "page_sha256": "0" * 64,
-                "dispatch_sha256": "0" * 64,
-                "unresolved": False,
-                "control_bytes": format_scalar("nonnegative", reservation),
-                "provider_requests": format_scalar(
-                    "nonnegative", request.maximum_provider_requests
-                ),
-                "in_flight": format_scalar("nonnegative", request.maximum_in_flight),
-            }
-            total = request.maximum_control_bytes + len(_json(header).encode())
-            if total == reservation:
-                return total
-            reservation = total
-
-    @staticmethod
     def _page(
         record: ArchiveCleanupPageRecord, operation_id: str, control: ArchiveWriteControlRecord
     ) -> RetainedCleanupPage:
@@ -264,7 +202,9 @@ class ArchiveUploadCleanup:
             added=CleanupCharge(
                 calls=int(invocation is not None),
                 control_bytes=page_bytes
-                + (self._attempt_bytes(invocation, operation_id) if invocation is not None else 0),
+                + (
+                    cleanup_attempt_bytes(invocation, operation_id) if invocation is not None else 0
+                ),
                 provider_requests=(
                     invocation.request.maximum_provider_requests if invocation is not None else 0
                 ),
@@ -341,7 +281,7 @@ class ArchiveUploadCleanup:
                     invocation_json=invocation.model_dump_json(exclude_none=True),
                     unresolved=True,
                     control_bytes=format_scalar(
-                        "nonnegative", self._attempt_bytes(invocation, operation_id)
+                        "nonnegative", cleanup_attempt_bytes(invocation, operation_id)
                     ),
                     provider_requests=format_scalar(
                         "nonnegative", request.maximum_provider_requests
@@ -500,7 +440,7 @@ class ArchiveUploadCleanup:
                     invocation_json=invocation.model_dump_json(exclude_none=True),
                     unresolved=True,
                     control_bytes=format_scalar(
-                        "nonnegative", self._attempt_bytes(invocation, operation_id)
+                        "nonnegative", cleanup_attempt_bytes(invocation, operation_id)
                     ),
                     provider_requests=format_scalar(
                         "nonnegative", request.maximum_provider_requests
@@ -513,7 +453,7 @@ class ArchiveUploadCleanup:
         return RetainedCleanupAttempt(collection_id, operation_id, invocation, nonce)
 
     def execute(
-        self, ticket: RetainedCleanupAttempt, target: ArchiveObjectCleanupPort
+        self, ticket: RetainedCleanupAttempt, target: ObjectCleanupPort
     ) -> CleanupExecutionResult:
         """Check the original capability, then execute outside the catalog writer."""
         with session_scope(self._factory) as session:
