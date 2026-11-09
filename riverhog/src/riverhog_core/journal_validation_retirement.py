@@ -7,7 +7,7 @@ import os
 import re
 from collections.abc import Iterator
 from contextlib import ExitStack, contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from riverhog_growth_contracts import (
@@ -23,6 +23,7 @@ from riverhog_provenance import JournalValidationCapacity
 
 from .journal_validation_workspace import (
     LostJournalValidationWorkspace,
+    ValidationWorkspaceCustody,
     _private_directory,
     _private_file,
 )
@@ -213,7 +214,15 @@ _DATA_FILES = tuple("snapshot.sqlite3" + suffix for suffix in ("-journal", "-wal
 
 @dataclass(frozen=True, slots=True)
 class RetiringJournalWorkspace:
+    """Original exclusive lease descriptors, valid only inside its held context.
+
+    Missing-directory reconciliation has no metadata-reading custody. A present
+    directory retains its original descriptor checks through actual lease exit;
+    the path alone supplies no authority to read retired routing.
+    """
+
     directory: Path | None
+    custody: ValidationWorkspaceCustody | None = field(default=None, repr=False, compare=False)
 
 
 def _identity(root: Path, workspace_id: str) -> None:
@@ -270,7 +279,11 @@ def lease_retiring_journal_workspace(
                     except BlockingIOError:
                         pass
                     else:
-                        selected = RetiringJournalWorkspace(root / workspace_id)
+                        custody = ValidationWorkspaceCustody(
+                            root / workspace_id, parent, directory, lease
+                        )
+                        resources.callback(setattr, custody, "_held", False)
+                        selected = RetiringJournalWorkspace(root / workspace_id, custody)
             finally:
                 fcntl.flock(coordinator, fcntl.LOCK_UN)
             exposed = True

@@ -10,6 +10,7 @@ from contextlib import ExitStack
 import pytest
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
 from riverhog_core.journal_validation_retirement import (
+    lease_retiring_journal_workspace,
     remove_retired_journal_workspace_directory,
 )
 from riverhog_core.journal_validation_workspace import (
@@ -330,3 +331,70 @@ def test_orphan_selection_uses_its_partial_index_without_a_pending_job_census(tm
                     plan = " ".join(row[3] for row in rows)
             assert "SEARCH" in plan and "ix_journal_validation_orphan_workspace" in plan
             assert "SCAN" not in plan and "USE TEMP" not in plan
+
+
+def test_retired_metadata_custody_retains_exact_exclusive_descriptors_until_lease_exit(tmp_path):
+    root = tmp_path / "native"
+    with lease_journal_validation_workspace(root, ONE, create=True):
+        pass
+    with lease_retiring_journal_workspace(root, ONE) as selected:
+        assert selected is not None and selected.directory == root / ONE
+        custody = selected.custody
+        assert custody is not None and custody.verify_current()
+        with lease_journal_validation_workspace(root, ONE, shared=True) as reader:
+            assert reader is None
+        with lease_retiring_journal_workspace(root, ONE) as second:
+            assert second is None
+        with lease_journal_validation_workspace(root, TWO, create=True) as unrelated:
+            assert unrelated == root / TWO
+        assert custody.verify_current()
+    assert not custody.verify_current()
+    with pytest.raises(OSError):
+        os.fstat(custody._lease)
+    with lease_journal_validation_workspace(root, ONE, shared=True) as reader:
+        assert reader == root / ONE
+
+
+@pytest.mark.parametrize("changed", ("root", "directory", "lease"))
+def test_retired_metadata_custody_rejects_replaced_original_storage(tmp_path, changed):
+    root = tmp_path / "native"
+    with lease_journal_validation_workspace(root, ONE, create=True):
+        pass
+    with lease_retiring_journal_workspace(root, ONE) as selected:
+        custody = selected.custody
+        assert custody.verify_current()
+        if changed == "root":
+            root.rename(tmp_path / "retained-root")
+            root.mkdir(mode=0o700)
+        elif changed == "directory":
+            (root / ONE).rename(root / TWO)
+            (root / ONE).mkdir(mode=0o700)
+        else:
+            (root / ONE / ".lease").rename(root / ONE / "retained-lease")
+            (root / ONE / ".lease").touch(mode=0o600)
+        assert not custody.verify_current()
+        assert os.fstat(custody._lease).st_nlink == 1
+    assert not custody.verify_current()
+
+
+def test_missing_retired_directory_reconciliation_has_no_metadata_custody(tmp_path):
+    root = tmp_path / "native"
+    with lease_journal_validation_workspace(root, TWO, create=True):
+        pass
+    with lease_retiring_journal_workspace(root, ONE) as selected:
+        assert selected is not None and selected.directory is None and selected.custody is None
+    assert not (root / ONE).exists()
+
+
+def test_retired_metadata_custody_is_invalidated_after_body_failure(tmp_path):
+    root = tmp_path / "native"
+    with lease_journal_validation_workspace(root, ONE, create=True):
+        pass
+    with pytest.raises(RuntimeError, match="retired metadata close failed"):
+        with lease_retiring_journal_workspace(root, ONE) as selected:
+            custody = selected.custody
+            assert custody.verify_current()
+            raise RuntimeError("retired metadata close failed")
+    assert not custody.verify_current()
+    with lease_retiring_journal_workspace(root, ONE) as replacement:
+        assert replacement.custody.verify_current()
