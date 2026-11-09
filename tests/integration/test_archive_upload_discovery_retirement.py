@@ -29,3 +29,13 @@ def test_postgres_discovery_detachment_retains_lease_through_commit_or_rollback(
 def test_postgres_discovery_detachment_requires_current_terminal_rights(database_url, tmp_path):
     with _projection(tmp_path, database_url=database_url, indexed=True, linked=True) as ready:
         _revoked(ready)
+
+
+@pytest.mark.parametrize("committed", (None, False, True))
+def test_postgres_same_original_actor_receives_completion_after_exact_discovery_detachment(
+    database_url, tmp_path, monkeypatch, committed
+):
+    from tests.unit.test_archive_upload_discovery_retirement import _composed
+
+    with _projection(tmp_path, database_url=database_url, indexed=True, linked=True) as ready:
+        _composed(ready, monkeypatch, committed=committed)

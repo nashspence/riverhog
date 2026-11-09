@@ -218,3 +218,63 @@ def _revoked(ready):
 def test_discovery_detachment_rechecks_current_terminal_rights_after_physical_release(tmp_path):
     with _projection(tmp_path, indexed=True, linked=True) as ready:
         _revoked(ready)
+
+
+def _composed(ready, monkeypatch, *, committed=None):
+    from tests.unit.test_archive_upload_terminal_completion import _actor, _drive, _quantum
+    from tests.unit.test_archive_upload_terminal_confirmation import _confirmed
+
+    actor = _actor(ready, monkeypatch, discovery_root=ready.discovery.root)
+    for _ in range(32):
+        progress = _quantum(actor)
+        assert not progress.execution_stopped
+        if progress.pending_reason == "discovery-custody":
+            break
+    else:
+        pytest.fail("original actor did not reach exact busy discovery custody")
+    assert _job(ready) == ready.discovery.original
+    assert _count(ready) > 0 and _confirmed(ready) is None
+    assert ready.case.service._archive_retention._counts == {False: 0, True: 1}
+    context = actor.original_context
+    ready.discovery.custody.close()
+    if committed is not None:
+        actual = module.session_scope
+
+        @contextmanager
+        def lose(factory):
+            with actual(factory) as session:
+                yield session
+                _busy(ready)
+                if not committed:
+                    raise OSError("original discovery detachment rollback")
+            _busy(ready)
+            raise OSError("original discovery detachment commit reply lost")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(module, "session_scope", lose)
+            with pytest.raises(OSError, match="original discovery detachment"):
+                for _ in range(32):
+                    progress = _quantum(actor)
+                    assert not progress.execution_stopped
+        assert (_job(ready).build_id is None) is committed
+        assert ready.case.service._archive_retention._counts == {False: 0, True: 1}
+    _drive(actor)
+    assert actor.original_context is context and actor.created == ["physical-execution"]
+    assert _confirmed(ready) == ready.original
+    retired = _job(ready)
+    expected = asdict(ready.discovery.original)
+    expected.update(build_id=None, state="retiring", version=retired.version)
+    assert asdict(retired) == expected
+    assert ready.discovery.marker.read_bytes() == b"original independently leased bytes"
+    with lease_journal_validation_workspace(
+        ready.discovery.root, retired.workspace_id, create=False
+    ) as directory:
+        assert directory == ready.discovery.marker.parent
+
+
+@pytest.mark.parametrize("committed", (None, False, True))
+def test_same_original_actor_receives_completion_after_exact_discovery_detachment(
+    tmp_path, monkeypatch, committed
+):
+    with _projection(tmp_path, indexed=True, linked=True) as ready:
+        _composed(ready, monkeypatch, committed=committed)

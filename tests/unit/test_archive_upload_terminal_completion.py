@@ -30,7 +30,7 @@ from tests.unit.test_archive_upload_terminal_confirmation import (
 )
 
 
-def _actor(ready, monkeypatch):
+def _actor(ready, monkeypatch, *, discovery_root=None):
     case = ready.case
     registry = case.service._archive_terminals
     confirmation = _owner(ready)
@@ -51,7 +51,9 @@ def _actor(ready, monkeypatch):
             catalog_cleanup=ArchiveUploadCatalogCleanup(case.factory, ready.ready.owner),
             checkpoint_cleanup=ArchiveUploadCheckpointCleanup(case.factory, ready.ready.owner),
             copy_intent_cleanup=ArchiveUploadCopyIntentCleanup(case.factory, ready.ready.owner),
-            projection_cleanup=ArchiveUploadProjectionCleanup(case.factory, ready.ready.owner),
+            projection_cleanup=ArchiveUploadProjectionCleanup(
+                case.factory, ready.ready.owner, discovery_root=discovery_root
+            ),
             confirmation=confirmation,
             result_read_guard=ready.guard.read,
         )
