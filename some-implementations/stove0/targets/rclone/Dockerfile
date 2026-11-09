@@ -46,6 +46,7 @@ COPY packages/sha256-continuation packages/sha256-continuation
 COPY some-implementations/riverhog/provenance/contracts/direct-relations some-implementations/riverhog/provenance/contracts/direct-relations
 COPY packages/riverhog-materialization packages/riverhog-materialization
 COPY packages/riverhog-provenance packages/riverhog-provenance
+COPY packages/workspace-reclamation packages/workspace-reclamation
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY some-implementations/stove0/packages/extension-support some-implementations/stove0/packages/extension-support
 COPY some-implementations/stove0/packages/protocol some-implementations/stove0/packages/protocol

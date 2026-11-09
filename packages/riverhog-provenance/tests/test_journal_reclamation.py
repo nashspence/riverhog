@@ -1,20 +1,22 @@
 from __future__ import annotations
 
-import builtins
 import errno
-import hashlib
-import io
 import os
-import sqlite3
 import subprocess
 import sys
 
 import pytest
-from riverhog_canonical_json import canonical_json_bytes
+import riverhog_provenance.journal_reclamation as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import reclaim_retired_journal_workspace as reclaim
 from riverhog_provenance.errors import JournalValidationCapacity
 from riverhog_provenance.journal_store import InvalidJournalWorkspace
+
+from tests.support.workspace_reclamation import (
+    execution_sample,
+    observe_file_delegate,
+    observe_reclamation,
+)
 
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX retained owner backend")
 
@@ -145,29 +147,12 @@ def test_capacity_failure_after_tail_removal_is_reconciled_without_reconstructio
 def test_native_reclamation_records_actual_file_work(tmp_path, monkeypatch, record_property):
     binding = growth_binding(reclaim)
     projection = project_bindings((binding,))
-    digest = hashlib.sha256(
-        canonical_json_bytes(projection["declarations"][binding.declaration.id])
-    ).hexdigest()
     names = (
         "snapshot.sqlite3-journal",
         "snapshot.sqlite3-wal",
         "snapshot.sqlite3-shm",
         "snapshot.sqlite3",
     )
-    originals = {
-        name: getattr(os, name)
-        for name in (
-            "stat",
-            "fstat",
-            "getuid",
-            "open",
-            "close",
-            "ftruncate",
-            "unlink",
-            "fsync",
-            "read",
-        )
-    }
     samples = []
     for files in (0, 1, 4):
         for extent in (0, 17, 65537, 1048577):
@@ -176,71 +161,30 @@ def test_native_reclamation_records_actual_file_work(tmp_path, monkeypatch, reco
                 path.mkdir(mode=0o700)
                 for name in names[:files]:
                     file(path, name, extent)
-                metrics = {bound.metric: 0 for bound in binding.declaration.bounds}
-
-                def counted(name, metric, metrics=metrics):
-                    original = originals[name]
-
-                    def observed(*args, **kwargs):
-                        metrics[metric] += 1
-                        if name == "ftruncate":
-                            size = originals["fstat"](args[0]).st_size
-                            result = original(*args, **kwargs)
-                            metrics["reclaimed_extent_octets"] += (
-                                size - originals["fstat"](args[0]).st_size
-                            )
-                            return result
-                        if name == "unlink":
-                            size = originals["stat"](
-                                args[0], follow_symlinks=False, **kwargs
-                            ).st_size
-                            result = original(*args, **kwargs)
-                            metrics["reclaimed_extent_octets"] += size
-                            return result
-                        return original(*args, **kwargs)
-
-                    return observed
-
-                def forbidden(*_args, **_kwargs):
-                    pytest.fail(
-                        "reclamation loaded payloads, opened SQLite or enumerated a directory"
-                    )
-
-                with monkeypatch.context() as patch:
-                    for name, metric in (
-                        ("stat", "metadata_calls"),
-                        ("fstat", "metadata_calls"),
-                        ("getuid", "owner_identity_calls"),
-                        ("open", "open_calls"),
-                        ("close", "close_calls"),
-                        ("ftruncate", "truncate_calls"),
-                        ("unlink", "unlink_calls"),
-                        ("fsync", "sync_calls"),
-                    ):
-                        patch.setattr(os, name, counted(name, metric))
-                    for module, name in (
-                        (builtins, "open"),
-                        (io, "open"),
-                        (os, "read"),
-                        (os, "listdir"),
-                        (os, "scandir"),
-                        (sqlite3, "connect"),
-                    ):
-                        patch.setattr(module, name, forbidden)
-                    progress = reclaim(path, octet_budget=budget)
+                dimensions = {
+                    "retained_octets": files * extent,
+                    "retained_files": files,
+                    "octet_budget": budget,
+                }
+                with observe_reclamation(monkeypatch, reclaim) as metrics:
+                    with observe_file_delegate(
+                        monkeypatch,
+                        owner,
+                        projection,
+                        dimensions,
+                        metrics,
+                    ) as children:
+                        progress = reclaim(path, octet_budget=budget)
                 assert progress.removed_octets == metrics["reclaimed_extent_octets"]
                 assert progress.remaining_octets == files * extent - progress.removed_octets
-                sample = {
-                    "declaration": binding.declaration.id,
-                    "declaration_sha256": digest,
-                    "dimensions": {
-                        "retained_octets": files * extent,
-                        "retained_files": files,
-                        "octet_budget": budget,
-                    },
-                    "metrics": metrics,
-                    "delegates": {},
-                }
+                assert len(children) == 1
+                sample = execution_sample(
+                    binding,
+                    projection,
+                    dimensions,
+                    metrics,
+                    {"files": children},
+                )
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
     record_property("growth_samples", samples)

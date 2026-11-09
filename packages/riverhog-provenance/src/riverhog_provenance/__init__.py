@@ -22,6 +22,10 @@ from .corpus import (
     SelectedDeliverySupport,
     validate_canonical_corpus,
 )
+from .corpus_reclamation import (
+    CorpusReclamationProgress,
+    reclaim_retired_corpus_workspace,
+)
 from .corpus_workspace import (
     CorpusReplayBinding,
     CorpusValidationSource,
@@ -145,6 +149,8 @@ __all__ = [
     "IncompleteSourceError",
     "InvalidJournalWorkspace",
     "JournalValidationCapacity",
+    "CorpusReclamationProgress",
+    "reclaim_retired_corpus_workspace",
     "JournalReclamationProgress",
     "reclaim_retired_journal_workspace",
     "JournalValidationBudget",

@@ -255,3 +255,21 @@ def test_execution_reader_retains_the_complete_single_root_node_budget(children)
             validate_execution_samples(projection, binding.declaration.id, [root])
     else:
         validate_execution_samples(projection, binding.declaration.id, [root])
+
+
+@pytest.mark.parametrize("operands", [131071, 131072])
+def test_projection_reader_preserves_a_bounded_complete_metadata_capacity(operands):
+    from riverhog_growth_contracts import validate_projection
+
+    binding = growth_binding(attach(declaration(Expression("dimension", name="bytes"))))
+    projection = project_bindings((binding,))
+    bound = projection["declarations"][binding.declaration.id]["bounds"]["processed_bytes"]
+    bound["expression"] = {
+        "op": "sum",
+        "terms": [{"op": "dimension", "name": "bytes"}] * operands,
+    }
+    if operands == 131072:
+        with pytest.raises(ValueError, match="bounded metadata parsing budget"):
+            validate_projection(projection)
+    else:
+        validate_projection(projection)

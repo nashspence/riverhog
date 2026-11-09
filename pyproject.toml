@@ -33,6 +33,7 @@ members = [
 ]
 
 [tool.uv.sources]
+workspace-reclamation = { workspace = true }
 release-documentation-lib = { workspace = true }
 gogurt-core = { workspace = true }
 gogurt-listener-runtime = { workspace = true }

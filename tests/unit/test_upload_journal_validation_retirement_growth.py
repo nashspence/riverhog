@@ -12,6 +12,8 @@ from contextlib import ExitStack, contextmanager
 from dataclasses import asdict, replace
 
 import pytest
+import riverhog_provenance.journal_reclamation as native_reclamation
+import workspace_reclamation
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
 from riverhog_core.services import upload_journal_validation_retirement as owner
@@ -95,6 +97,7 @@ class FilesystemRecorder:
     @contextmanager
     def observe(self):
         actual_flock, actual_fstat, actual_stat = fcntl.flock, os.fstat, os.stat
+        actual_fsencode, actual_compare = os.fsencode, workspace_reclamation._compare_names
         with pytest.MonkeyPatch.context() as patch:
             for name, metric in self.GROUPS.items():
                 actual = getattr(os, name)
@@ -105,7 +108,7 @@ class FilesystemRecorder:
                         self.metrics[_metric] += 1
                         self.invocations[self.scope, _name] += 1
                         if _name in {"open", "stat", "mkdir", "unlink", "rmdir"}:
-                            self.metrics["path_octets"] += len(os.fsencode(args[0]))
+                            self.metrics["path_octets"] += len(actual_fsencode(args[0]))
                         if _name == "open":
                             assert not args[1] & (os.O_CREAT | os.O_TRUNC | os.O_APPEND)
                             assert args[1] & os.O_NOFOLLOW
@@ -143,6 +146,20 @@ class FilesystemRecorder:
                     assert flags == fcntl.LOCK_UN or flags & fcntl.LOCK_NB
                 return actual_flock(descriptor, flags)
 
+            def fsencode(name):
+                result = actual_fsencode(name)
+                if self.active and self.scope == "reclaim":
+                    self.metrics["encoded_name_octets"] += len(result)
+                return result
+
+            def compare(left, right, **kwargs):
+                if self.active:
+                    self.metrics["name_order_comparisons"] += 1
+                    self.metrics["name_comparison_octets"] += len(left) + len(right)
+                return actual_compare(left, right, **kwargs)
+
+            patch.setattr(os, "fsencode", fsencode)
+            patch.setattr(workspace_reclamation, "_compare_names", compare)
             patch.setattr(fcntl, "flock", flock)
             for module, name, metric in (
                 *(
@@ -197,13 +214,13 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
     sql, fs = CatalogRecorder(), FilesystemRecorder(fault)
     children = {tag: [] for tag in CHILDREN}
 
-    def record(tag, inputs, metrics):
+    def record(tag, inputs, metrics, delegates=None):
         if tag == "reclaim":
             metrics = {
                 bound.metric: metrics.get(ALIASES.get(bound.metric, bound.metric), 0)
                 for bound in growth_binding(CHILDREN[tag]).declaration.bounds
             }
-        children[tag].append(sample(CHILDREN[tag], inputs, metrics))
+        children[tag].append(sample(CHILDREN[tag], inputs, metrics, delegates))
 
     def transition(selected, target, state):
         arguments = tuple(asdict(target).values())
@@ -274,11 +291,42 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
         }
         previous, fs.scope = fs.scope, "reclaim"
         beginning = dict(fs.metrics)
+        files_operation = native_reclamation.reclaim_retired_files
+        file_children = []
+
+        def files(directory, *, names, octet_budget):
+            with fs.paused():
+                encoded = tuple(os.fsencode(name) for name in names)
+            child_inputs = {
+                "candidate_files": len(names),
+                "name_octets": sum(map(len, encoded)),
+                "maximum_name_octets": max(map(len, encoded), default=0),
+                **inputs,
+                "octet_budget": octet_budget,
+            }
+            child_beginning = dict(fs.metrics)
+            try:
+                return files_operation(directory, names=names, octet_budget=octet_budget)
+            finally:
+                actual = differences(fs.metrics, child_beginning)
+                child_metrics = {
+                    bound.metric: actual.get(ALIASES.get(bound.metric, bound.metric), 0)
+                    for bound in growth_binding(files_operation).declaration.bounds
+                }
+                file_children.append(sample(files_operation, child_inputs, child_metrics))
+
         try:
-            return CHILDREN["reclaim"](path, octet_budget=octet_budget)
+            with pytest.MonkeyPatch.context() as patch:
+                patch.setattr(native_reclamation, "reclaim_retired_files", files)
+                return CHILDREN["reclaim"](path, octet_budget=octet_budget)
         finally:
             fs.scope = previous
-            record("reclaim", inputs, differences(fs.metrics, beginning))
+            record(
+                "reclaim",
+                inputs,
+                differences(fs.metrics, beginning),
+                {"files": file_children},
+            )
 
     caught, result = None, None
     with fs.observe(), pytest.MonkeyPatch.context() as patch:

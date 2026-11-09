@@ -117,6 +117,7 @@ COPY packages/riverhog-protocol packages/riverhog-protocol
 COPY packages/sha256-continuation packages/sha256-continuation
 COPY some-implementations/riverhog/provenance/contracts/direct-relations some-implementations/riverhog/provenance/contracts/direct-relations
 COPY packages/riverhog-provenance packages/riverhog-provenance
+COPY packages/workspace-reclamation packages/workspace-reclamation
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY some-implementations/stove0/targets/media-archive/contracts some-implementations/stove0/targets/media-archive/contracts
 COPY some-implementations/stove0/targets/media-archive/support some-implementations/stove0/targets/media-archive/support

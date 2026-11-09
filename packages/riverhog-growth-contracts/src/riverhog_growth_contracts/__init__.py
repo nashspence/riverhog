@@ -459,7 +459,7 @@ def _projection_contexts(projection: object) -> dict[str, _Context]:
         raise ValueError("growth declaration data exceeds the internal metadata budget")
     contexts: dict[str, _Context] = {}
     links: dict[str, dict[str, str]] = {}
-    budget = [65536]
+    budget = [131072]
     for identity, value in rows.items():
         row = _fields(
             value,

@@ -37,6 +37,7 @@ COPY packages/riverhog-protocol packages/riverhog-protocol
 COPY packages/sha256-continuation packages/sha256-continuation
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/riverhog-provenance packages/riverhog-provenance
+COPY packages/workspace-reclamation packages/workspace-reclamation
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY some-implementations/riverhog/provenance/contracts/linux some-implementations/riverhog/provenance/contracts/linux
 COPY some-implementations/riverhog/provenance/observers/linux some-implementations/riverhog/provenance/observers/linux

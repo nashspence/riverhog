@@ -464,6 +464,7 @@ reusable_library = [
   "some-implementations/stove0/packages/target-support",
   "packages/sha256-continuation",
   "packages/sqlite-admission",
+  "packages/workspace-reclamation",
   "packages/time-formats",
 ]
 internal_build_unit = [
