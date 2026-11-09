@@ -7,11 +7,12 @@ before admission. Shared storage and grants convey no cross-scope authority.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import secrets
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from riverhog_canonical_json import canonical_json_bytes, format_scalar, parse_scalar
 from riverhog_protocol.errors import Conflict, NotFound
@@ -83,10 +84,28 @@ class RetainedCleanupPage:
         return len(self.disposed) == len(self.request.inventory.candidates)
 
 
+@dataclass(frozen=True, slots=True)
+class ReceivedCleanupResponse:
+    """Live evidence of exact committed receiving, never a dispatch capability.
+
+    Its authenticator is private to one receiver instance and binds the complete
+    original invocation and response. A cold owner must receive the original
+    response against retained state; serialized fields cannot recreate evidence.
+    """
+
+    collection_id: int
+    operation_id: str
+    scope_id: str
+    invocation_json: str = field(repr=False)
+    response_json: str = field(repr=False)
+    _signature: bytes = field(repr=False)
+
+
 class ObjectCleanupReceiving(ABC):
     def __init__(self, factory: SessionFactory, *, grants: ArchiveCleanupGrants) -> None:
         self._factory = factory
         self._grants = grants
+        self._receiving_key = secrets.token_bytes(32)
 
     @abstractmethod
     def _scope_id(self, operation_id: str) -> str: ...
@@ -485,10 +504,25 @@ class ObjectCleanupReceiving(ABC):
         validate_cleanup_execution(invocation, response)
         return record, invocation
 
+    def _receiving_signature(self, received: ReceivedCleanupResponse) -> bytes:
+        return hmac.digest(
+            self._receiving_key,
+            canonical_json_bytes(
+                {
+                    "collection_id": received.collection_id,
+                    "operation_id": received.operation_id,
+                    "scope_id": received.scope_id,
+                    "invocation_json": received.invocation_json,
+                    "response_json": received.response_json,
+                }
+            ),
+            "sha256",
+        )
+
     def record_response(
         self, collection_id: int, operation_id: str, response: CleanupExecutionResult
-    ) -> None:
-        """Receive the trusted original response after fencing, without redispatch."""
+    ) -> ReceivedCleanupResponse:
+        """Commit the exact trusted response before issuing live receiving evidence."""
         response = CleanupExecutionResult.model_validate_json(
             response.model_dump_json(exclude_none=True)
         )
@@ -533,19 +567,44 @@ class ObjectCleanupReceiving(ABC):
             record.response_json = encoded
             record.unresolved = response.execution != "closed"
 
-    def acknowledge_response(
-        self, collection_id: int, operation_id: str, response: CleanupExecutionResult
-    ) -> None:
-        """Retire only the exact closed response received by its independent owner."""
-        response = CleanupExecutionResult.model_validate_json(
-            response.model_dump_json(exclude_none=True)
+        # Construct the receipt only after the receiving transaction committed.
+        received = ReceivedCleanupResponse(
+            collection_id,
+            operation_id,
+            self._scope_id(operation_id),
+            invocation.model_dump_json(exclude_none=True),
+            encoded,
+            b"",
         )
+        return replace(received, _signature=self._receiving_signature(received))
+
+    def acknowledge_response(self, received: ReceivedCleanupResponse) -> None:
+        """Retire only positively received original closure, including lost replies."""
+        if not isinstance(received, ReceivedCleanupResponse) or not hmac.compare_digest(
+            received._signature, self._receiving_signature(received)
+        ):
+            raise Conflict("cleanup response has no original live receiving evidence")
+        collection_id, operation_id = received.collection_id, received.operation_id
+        response = CleanupExecutionResult.model_validate_json(received.response_json)
+        original = CleanupInvocation.model_validate_json(received.invocation_json)
+        validate_cleanup_execution(original, response)
+        if response.execution != "closed":
+            raise Conflict("cleanup attempt has no acknowledged exact closed response")
         with session_scope(self._factory) as session:
             scope = self._context(session, collection_id, operation_id)
+            if received.scope_id != scope.scope_id:
+                raise Conflict("cleanup receiving evidence has another original scope")
+            self._require_scope(original.request, scope, operation_id)
+            record = session.get(ObjectCleanupAttemptRecord, response.call.call_id)
+            if record is None:
+                # This live receipt already proves exact closed receiving. Absence
+                # alone supplies neither that fact nor authority to release a charge.
+                return
             record, invocation = self._attempt(session, operation_id, response)
-            self._require_scope(invocation.request, scope, operation_id)
-            if record.unresolved or record.response_json != response.model_dump_json(
-                exclude_none=True
+            if (
+                invocation != original
+                or record.unresolved
+                or record.response_json != received.response_json
             ):
                 raise Conflict("cleanup attempt has no acknowledged exact closed response")
             change_cleanup_capacity(

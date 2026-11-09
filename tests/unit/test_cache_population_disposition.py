@@ -167,7 +167,9 @@ def test_completed_but_nonexhausted_cache_page_cannot_release_data(tmp_path):
             after=None,
             guard=_guard,
         )
-        ready.owner.acknowledge_response(ready.case.collection_id, ready.operation, observed)
+        ready.owner.acknowledge_response(
+            ready.owner.record_response(ready.case.collection_id, ready.operation, observed)
+        )
         ticket = _arm_dispose(ready, page)
         _receive(ready, ready.owner.execute(ticket, ready.target))
         assert ready.owner.current(ready.case.collection_id, ready.operation).complete

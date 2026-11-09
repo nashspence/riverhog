@@ -151,7 +151,9 @@ def _select(ready, *, inventory_request=None, request=None, after=None, guard=_g
         guard=guard,
     )
     if response is not None:
-        ready.owner.acknowledge_response(ready.case.collection_id, ready.operation, response)
+        ready.owner.acknowledge_response(
+            ready.owner.record_response(ready.case.collection_id, ready.operation, response)
+        )
     return page
 
 
@@ -192,7 +194,9 @@ def _receive(ready, response):
 
 
 def _ack(ready, response):
-    ready.owner.acknowledge_response(ready.case.collection_id, ready.operation, response)
+    ready.owner.acknowledge_response(
+        ready.owner.record_response(ready.case.collection_id, ready.operation, response)
+    )
 
 
 def _partial_retry(ready):

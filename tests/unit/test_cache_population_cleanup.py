@@ -132,7 +132,9 @@ def _inventory_arm(ready, *, guard=_guard, request=None):
 def _receive(ready, response, *, acknowledge=True):
     ready.owner.record_response(ready.case.collection_id, ready.operation, response)
     if acknowledge:
-        ready.owner.acknowledge_response(ready.case.collection_id, ready.operation, response)
+        ready.owner.acknowledge_response(
+            ready.owner.record_response(ready.case.collection_id, ready.operation, response)
+        )
 
 
 def _observe(ready):
@@ -161,7 +163,9 @@ def _select(ready):
         guard=_guard,
     )
     assert page.request.inventory.exhausted and page.request.inventory.candidates
-    ready.owner.acknowledge_response(ready.case.collection_id, ready.operation, response)
+    ready.owner.acknowledge_response(
+        ready.owner.record_response(ready.case.collection_id, ready.operation, response)
+    )
     return page
 
 
@@ -380,7 +384,9 @@ def test_cache_cleanup_never_disposes_a_prefix_neighbor(tmp_path):
                 after=None,
                 guard=_guard,
             )
-        ready.owner.acknowledge_response(ready.case.collection_id, ready.operation, response)
+        ready.owner.acknowledge_response(
+            ready.owner.record_response(ready.case.collection_id, ready.operation, response)
+        )
         assert (
             len(
                 ready.case.adapter.list_cleanup_candidates(
