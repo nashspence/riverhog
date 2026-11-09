@@ -575,6 +575,11 @@ class SqlAlchemyCollectionUploadService:
             self._archive_finalizers,
             self._archive_invocations,
         )
+        from .archive_upload_terminal_registry import ArchiveUploadTerminalRegistry
+
+        self._archive_terminals = ArchiveUploadTerminalRegistry(
+            self._archive_execution, self._archive_retention, self._terminal_turn
+        )
         from .archive_upload_maintenance import ArchiveUploadMaintenance
 
         self._archive_upload_maintenance = ArchiveUploadMaintenance(
@@ -616,6 +621,7 @@ class SqlAlchemyCollectionUploadService:
         }
 
     def close(self) -> None:
+        self._archive_terminals.close()
         if self._cache_cleanup is not None:
             self._cache_cleanup.close()
         self._archive_invocations.close()
