@@ -3212,6 +3212,6 @@ CREATE INDEX ix_cache_population_dispositions_terminal ON cache_population_dispo
 
 CREATE INDEX ix_retrieval_cache_populations_native_cleanup_due ON retrieval_cache_populations (updated_at, source_store, collection_id, object_id) WHERE ((state) = 'abandoning') AND abandonment_receipt_json IS NOT NULL;
 
-INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
-
 CREATE INDEX ix_archive_upload_terminals_execution_due ON archive_upload_terminals (execution_next_attempt_at, id) WHERE execution_next_attempt_at IS NOT NULL AND phase <> 'done';
+
+INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
