@@ -2768,6 +2768,7 @@ CREATE UNIQUE INDEX uq_journal_validation_source ON journal_validation_jobs (col
 CREATE TABLE discovery_validation_jobs (
 	workspace_id VARCHAR(32) NOT NULL,
 	build_id VARCHAR(36),
+	original_build_id VARCHAR(36) NOT NULL,
 	attempt_id VARCHAR(32) NOT NULL,
 	admission_sha256 VARCHAR(64) NOT NULL,
 	archive_generation VARCHAR(64) NOT NULL,
@@ -2788,6 +2789,7 @@ CREATE TABLE discovery_validation_jobs (
 	failure TEXT,
 	PRIMARY KEY (workspace_id),
 	FOREIGN KEY(build_id) REFERENCES collection_provenance_index_generations (build_id) ON DELETE SET NULL,
+	CONSTRAINT ck_discovery_validation_original_build CHECK (build_id IS NULL OR build_id = original_build_id),
 	CONSTRAINT ck_discovery_validation_build_epoch CHECK (build_epoch >= 1),
 	CONSTRAINT ck_discovery_validation_worker_epoch CHECK (worker_epoch >= 0),
 	CONSTRAINT ck_discovery_validation_state CHECK (state IN ('preparing','seeding','ready','active','lost','retiring','directory')),

@@ -47,6 +47,7 @@ _CORE_CONTRACT_SHA256 = core_contract().contract_sha256
 class DiscoveryJob:
     workspace_id: str
     build_id: str | None
+    original_build_id: str
     attempt_id: str
     admission_sha256: str
     archive_generation: str
@@ -75,6 +76,11 @@ class DiscoveryJob:
         if self.build_id is None:
             raise StaleArchiveTask("retired discovery job has no current build")
         return ArchiveTaskKey(self.build_id, self.admission_sha256, self.attempt_id)
+
+    @property
+    def storage_key(self) -> ArchiveTaskKey:
+        """Original owned storage labels, without current source or disposal authority."""
+        return ArchiveTaskKey(self.original_build_id, self.admission_sha256, self.attempt_id)
 
     @property
     def binding(self) -> CorpusReplayBinding:
@@ -367,6 +373,7 @@ def select_discovery_job(
             row = Job(
                 workspace_id=uuid4().hex,
                 build_id=build_id,
+                original_build_id=build_id,
                 attempt_id=uuid4().hex,
                 admission_sha256=admission.identity,
                 archive_generation=admission.root.archive_generation,

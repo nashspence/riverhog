@@ -126,6 +126,7 @@ def cases(tmp_path_factory, fixed_inputs):
                             workspace_id=f"{index + 1:032x}",
                             attempt_id=f"{index + 10001:032x}",
                             build_id=other_build,
+                            original_build_id=other_build,
                             state="lost",
                             failure="x" * metadata_width,
                         )

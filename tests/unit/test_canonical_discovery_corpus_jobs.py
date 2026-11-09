@@ -455,3 +455,80 @@ def _closed_projection(tmp_path, monkeypatch, *, database_url=None):
 
 def test_native_catalog_projection_keeps_the_original_upload_write_interlock(tmp_path, monkeypatch):
     _closed_projection(tmp_path, monkeypatch)
+
+
+def _original_storage_retirement(factory, job, root, *, detach):
+    from pathlib import Path
+
+    from riverhog_core.canonical_discovery_archive_work import StaleArchiveTask
+
+    with lease_journal_validation_workspace(
+        root,
+        job.workspace_id,
+        create=True,
+        creation_current=lambda: owner.discovery_worker_current(factory, job),
+    ) as directory:
+        assert directory is not None
+        marker = Path(directory) / "independent-owner-marker"
+        marker.write_bytes(b"retained original storage")
+        first = owner.claim_discovery_worker(factory, job)
+        assert first is not None
+        assert first.storage_key == first.key
+        assert first.original_build_id == job.build_id
+        if detach:
+            with factory() as session, session.begin():
+                session.execute(delete(Generation).where(Generation.build_id == job.build_id))
+            with factory() as session:
+                original = owner.DiscoveryJob.read(session.get(Job, job.workspace_id))
+            assert original.build_id is None and original.original_build_id == job.build_id
+        else:
+            original = first
+        with factory() as session, session.begin():
+            retired = owner.retire_discovery_job(session, original)
+        assert retired is not None and retired.build_id is None and retired.state == "retiring"
+        assert retired.original_build_id == job.build_id
+        assert retired.storage_key == first.key
+        with pytest.raises(StaleArchiveTask, match="no current build"):
+            _ = retired.key
+        assert not owner.discovery_worker_current(factory, first)
+        assert not owner.discovery_worker_current(factory, retired)
+        assert owner.discovery_worker_snapshot(factory, retired) is None
+        with factory() as session:
+            assert owner.DiscoveryJob.read(session.get(Job, job.workspace_id)) == retired
+        assert marker.read_bytes() == b"retained original storage"
+    return retired
+
+
+@pytest.mark.parametrize("detach", (False, True))
+def test_original_storage_build_survives_exact_retirement_and_generation_detachment(case, detach):
+    _original_storage_retirement(case.factory, case.job, case.root, detach=detach)
+
+
+def _original_storage_fence(factory, job):
+    changed = replace(job, original_build_id="ffffffff-ffff-ffff-ffff-ffffffffffff")
+    assert owner.claim_discovery_worker(factory, changed) is None
+    with factory() as session, session.begin():
+        assert owner.retire_discovery_job(session, changed) is None
+        assert owner.DiscoveryJob.read(session.get(Job, job.workspace_id)) == job
+
+
+def test_original_storage_identity_participates_in_the_exact_worker_and_retirement_cas(case):
+    _original_storage_fence(case.factory, case.job)
+
+
+def _original_storage_constraint(factory, job):
+    from sqlalchemy.exc import IntegrityError
+
+    with pytest.raises(IntegrityError, match="ck_discovery_validation_original_build"):
+        with factory() as session, session.begin():
+            session.execute(
+                update(Job)
+                .where(Job.workspace_id == job.workspace_id)
+                .values(original_build_id="ffffffff-ffff-ffff-ffff-ffffffffffff")
+            )
+    with factory() as session:
+        assert owner.DiscoveryJob.read(session.get(Job, job.workspace_id)) == job
+
+
+def test_live_catalog_binding_preserves_its_original_storage_identity(case):
+    _original_storage_constraint(case.factory, case.job)

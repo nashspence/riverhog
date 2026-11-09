@@ -66,6 +66,8 @@ class DiscoveryMetadata:
     ) -> None:
         if (
             job.worker_epoch < 1
+            or job.build_id is None
+            or job.build_id != job.original_build_id
             or job.workspace_id != custody.directory.name
             or job.admission_sha256 != admission.identity
             or job.archive_generation != admission.root.archive_generation
@@ -100,7 +102,7 @@ class DiscoveryMetadata:
         return (
             _FORMAT,
             self.job.workspace_id,
-            self.job.build_id or "",
+            self.job.original_build_id,
             self.job.admission_sha256,
             self.job.attempt_id,
             self.job.policy_sha256,

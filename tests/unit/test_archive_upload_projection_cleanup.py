@@ -533,6 +533,7 @@ def _seed_linked_discovery(case, build_id, root, resources):
         record = Job(
             workspace_id="a" * 32,
             build_id=build_id,
+            original_build_id=build_id,
             attempt_id="b" * 32,
             admission_sha256="c" * 64,
             archive_generation=upload.archive_generation,

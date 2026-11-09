@@ -326,3 +326,39 @@ def test_reopen_rejects_incompatible_owned_metadata_without_recreation(case, dam
         with pytest.raises(LostJournalValidationWorkspace, match="missing or changed"):
             metadata.open()
     assert file.read_bytes() == before
+
+
+def test_retired_original_storage_binding_preserves_header_without_live_source_authority(case):
+    from riverhog_core.catalog_discovery_validation_models import (
+        DiscoveryValidationJobRecord as Job,
+    )
+
+    with owned(case) as (metadata, path):
+        metadata.open()
+        first = metadata.job
+        with metadata.read() as (db, key):
+            assert key == first.storage_key
+            assert db.execute(
+                "SELECT workspace_id,build_id,admission_sha256,attempt_id,"
+                "policy_sha256,catalog_sha256 "
+                "FROM discovery_workspace WHERE singleton=1"
+            ).fetchone() == (
+                first.workspace_id,
+                first.original_build_id,
+                first.admission_sha256,
+                first.attempt_id,
+                first.policy_sha256,
+                first.catalog_sha256,
+            )
+        before = (path / "discovery.sqlite3").read_bytes()
+        with case.factory() as session, session.begin():
+            retired = jobs.retire_discovery_job(session, first)
+        assert retired is not None and retired.storage_key == key and retired.build_id is None
+        assert not metadata.verify_current()
+        with pytest.raises(StaleArchiveTask, match="claimed archive"):
+            DiscoveryMetadata(case.factory, retired, case.admission, metadata.custody)
+        with pytest.raises(StaleArchiveTask, match="no current build"):
+            _ = retired.key
+        with case.factory() as session:
+            assert jobs.DiscoveryJob.read(session.get(Job, first.workspace_id)) == retired
+        assert (path / "discovery.sqlite3").read_bytes() == before

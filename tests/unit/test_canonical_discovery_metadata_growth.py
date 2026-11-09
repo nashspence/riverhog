@@ -291,6 +291,7 @@ def case_for(root, admission, retained, width, *, template=None, catalog=None):
                                 workspace_id=f"{index + 1:032x}",
                                 attempt_id=f"{index + 2000:032x}",
                                 build_id="retained-" + str(index),
+                                original_build_id="retained-" + str(index),
                                 state="lost",
                                 failure="x" * (width if index == 0 else 1),
                             )

@@ -13,6 +13,7 @@ class DiscoveryValidationJobRecord(Base):
 
     workspace_id: Mapped[str] = mapped_column(String(32), primary_key=True)
     build_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    original_build_id: Mapped[str] = mapped_column(String(36), nullable=False)
     attempt_id: Mapped[str] = mapped_column(String(32), nullable=False)
     admission_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     archive_generation: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -35,6 +36,10 @@ class DiscoveryValidationJobRecord(Base):
     __table_args__ = (
         ForeignKeyConstraint(
             ["build_id"], ["collection_provenance_index_generations.build_id"], ondelete="SET NULL"
+        ),
+        CheckConstraint(
+            "build_id IS NULL OR build_id = original_build_id",
+            name="ck_discovery_validation_original_build",
         ),
         CheckConstraint("build_epoch >= 1", name="ck_discovery_validation_build_epoch"),
         CheckConstraint("worker_epoch >= 0", name="ck_discovery_validation_worker_epoch"),

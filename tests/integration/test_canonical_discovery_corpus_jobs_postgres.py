@@ -165,3 +165,32 @@ def test_postgresql_native_catalog_projection_keeps_the_original_write_interlock
     database_url, tmp_path, monkeypatch
 ):
     _closed_projection(tmp_path, monkeypatch, database_url=database_url)
+
+
+@pytest.mark.parametrize("detach", (False, True))
+def test_postgresql_original_storage_identity_survives_detachment_and_retirement(
+    prepared,
+    tmp_path,
+    detach,
+):
+    from tests.unit.test_canonical_discovery_corpus_jobs import _original_storage_retirement
+
+    factory, engine, job, _ = prepared
+    _original_storage_retirement(factory, job, tmp_path / "owned", detach=detach)
+    assert engine.pool.checkedout() == 0
+
+
+def test_postgresql_original_storage_identity_fences_worker_and_retirement(prepared):
+    from tests.unit.test_canonical_discovery_corpus_jobs import _original_storage_fence
+
+    factory, engine, job, _ = prepared
+    _original_storage_fence(factory, job)
+    assert engine.pool.checkedout() == 0
+
+
+def test_postgresql_original_storage_constraint_preserves_the_live_build_binding(prepared):
+    from tests.unit.test_canonical_discovery_corpus_jobs import _original_storage_constraint
+
+    factory, engine, job, _ = prepared
+    _original_storage_constraint(factory, job)
+    assert engine.pool.checkedout() == 0
