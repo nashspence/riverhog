@@ -436,7 +436,7 @@ def _independent_unit(f, kind):
         )
         == "submitted"
     )
-    worker = f.execution._slots[collection_id].worker
+    worker = f.execution._slots[key].worker
     worker.join(timeout=10)
     assert not worker.is_alive()
     (received,) = f.registry.collect(limit=2)

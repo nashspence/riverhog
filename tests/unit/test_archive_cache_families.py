@@ -190,9 +190,7 @@ def test_pin_requires_exact_original_scope_and_owner(owned, change):
         epoch=request.epoch,
         volume_id=request.volume_id,
     )
-    values[change] = (
-        replace(request.key, construction_sha256="c" * 64) if change == "key" else "another"
-    )
+    values[change] = replace(request.key, scope_sha256="c" * 64) if change == "key" else "another"
     with pytest.raises(Conflict, match="scope"):
         f.registry.pin_family(payload.request_sha256, owner=object(), **values)
     with pytest.raises(Conflict, match="owner"):

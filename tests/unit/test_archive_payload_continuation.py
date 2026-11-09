@@ -12,6 +12,10 @@ from riverhog_core.catalog_cache_write_models import (
     CachePopulationWriteEffectRecord,
 )
 from riverhog_core.catalog_db import session_scope
+from riverhog_core.catalog_models import (
+    RetrievalCachePopulationRecord,
+    RetrievalCacheStoreAccountingRecord,
+)
 from riverhog_core.provider_write_dispatch import ProviderWriteAdmissionRefused
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
 from riverhog_core.services.cache_population_publication import CachePopulationPublication
@@ -229,13 +233,42 @@ def _two_units(
                 guard=case.service._payload_write_guard(case.collection_id, _CREATOR),
                 validate_selection=lambda session, upload: None,
             )
+            cache_seen = list(cache_calls)
             for _ in range(2):
                 assert (
                     registry.submit_terminal(key, target_incarnation=target, operation_id=operation)
                     == "submitted"
                 )
                 (drained,) = _receive(registry, pool)
-                assert drained.result() == "pending"
+                assert drained.result() == "closed"
+            # Positive execution closure does not transfer the original cache population.
+            assert joint.mirror.has_pending and not joint.mirror.has_unclosed_execution
+            assert joint.writer.has_pending and continuation.has_pending
+            assert not registry.retire_idle(received_first)
+            assert not registry.retire_idle(received_second)
+            assert cache_calls == cache_seen
+            with session_scope(case.factory) as session:
+                begin = session.get(CachePopulationBeginRecord, begin_id)
+                assert begin is not None and not begin.unresolved
+                population = session.get(
+                    RetrievalCachePopulationRecord,
+                    (begin.source_store, case.collection_id, case.object_id),
+                )
+                assert population.begin_call_id == begin_id
+                assert (
+                    session.get(
+                        RetrievalCacheStoreAccountingRecord, joint.candidate.name
+                    ).reserved_bytes
+                    == population.expected_bytes
+                )
+                assert (
+                    session.scalar(
+                        select(CachePopulationWriteEffectRecord.id).where(
+                            CachePopulationWriteEffectRecord.unresolved.is_(True)
+                        )
+                    )
+                    is None
+                )
             assert not archive.has_pending
             assert actor.seen == seen
             assert len(attempted) >= 2 and all(value == attempted[0] for value in attempted)

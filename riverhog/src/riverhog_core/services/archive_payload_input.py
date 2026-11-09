@@ -13,7 +13,7 @@ from riverhog_protocol.errors import BadRequest, Conflict
 
 from riverhog_core.app_permissions import Principal
 from riverhog_core.archive_input_grants import ArchiveInputGrants
-from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
+from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
 InputRefusal = Literal["busy", "input-capacity", "target-input-capacity"]
 
@@ -25,7 +25,7 @@ class _PayloadHash(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class ArchivePayloadRequest:
-    key: ArchiveUploadExecutionKey
+    key: PhysicalExecutionKey
     target_incarnation: str
     epoch: str
     volume_id: str
@@ -50,7 +50,7 @@ class ArchivePayloadRequest:
             canonical_json_bytes(
                 {
                     "collection_id": self.key.collection_id,
-                    "construction_sha256": self.key.construction_sha256,
+                    "construction_sha256": self.key.scope_sha256,
                     "target_incarnation": self.target_incarnation,
                     "epoch": self.epoch,
                     "volume_id": self.volume_id,
@@ -86,7 +86,7 @@ class ArchivePayloadInputs:
         self._lock = Lock()
         self._inputs: dict[int, ArchivePayloadInput] = {}
         self._bytes = 0
-        self._constructions: dict[ArchiveUploadExecutionKey, int] = {}
+        self._constructions: dict[PhysicalExecutionKey, int] = {}
         self._targets: dict[str, tuple[int, int]] = {}
 
     def reserve(self, request: ArchivePayloadRequest) -> ArchivePayloadInput | InputRefusal:
@@ -112,7 +112,7 @@ class ArchivePayloadInputs:
         finally:
             self._lock.release()
 
-    def status(self, key: ArchiveUploadExecutionKey) -> Literal["busy", "untracked", "retained"]:
+    def status(self, key: PhysicalExecutionKey) -> Literal["busy", "untracked", "retained"]:
         """Observe exact local input retention; absence grants no global closure."""
         if not self._lock.acquire(blocking=False):
             return "busy"
@@ -236,7 +236,7 @@ class ArchivePayloadInput:
     def require_submission(
         self,
         registry: object,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         target: str,
         request_sha256: str,
     ) -> None:

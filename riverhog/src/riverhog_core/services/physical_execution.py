@@ -1,4 +1,4 @@
-"""Retain bounded upload execution through actual worker joins and receiving."""
+"""Retain bounded physical execution through actual worker joins and receiving."""
 
 from __future__ import annotations
 
@@ -18,31 +18,31 @@ from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 Submission = Literal["submitted", "retained", "capacity", "target-capacity", "busy", "closed"]
 
 
-class ArchiveExecutionOccupied(Conflict):
-    """An original turn belongs to a different construction, lane or local owner."""
+class PhysicalExecutionOccupied(Conflict):
+    """An original turn belongs to a different scope, lane or local owner."""
 
 
 @dataclass(frozen=True, slots=True)
-class ArchiveUploadExecutionKey:
+class PhysicalExecutionKey:
     collection_id: int
-    construction_sha256: str
+    scope_sha256: str
 
     def __post_init__(self) -> None:
         if type(self.collection_id) is not int or self.collection_id < 1:
-            raise ValueError("upload execution collection identity must be positive")
-        if re.fullmatch(r"[a-f0-9]{64}", self.construction_sha256) is None:
-            raise ValueError("upload execution requires the original construction digest")
+            raise ValueError("physical execution collection identity must be positive")
+        if re.fullmatch(r"[a-f0-9]{64}", self.scope_sha256) is None:
+            raise ValueError("physical execution requires the original scope digest")
 
 
 @dataclass(frozen=True, slots=True)
-class ArchiveUploadExecutionCompletion:
+class PhysicalExecutionCompletion:
     """The exact local outcome after the original physical worker has joined.
 
     Receiving this result grants no provider closure, preparation disposal or
     global quiescence. Those facts remain with the original semantic owners.
     """
 
-    key: ArchiveUploadExecutionKey
+    key: PhysicalExecutionKey
     target_incarnation: str
     terminal: bool
     owner: object | None = field(repr=False, compare=False)
@@ -72,7 +72,7 @@ class ArchiveUploadExecutionCompletion:
 
 @dataclass(slots=True)
 class _Slot:
-    key: ArchiveUploadExecutionKey
+    key: PhysicalExecutionKey
     target_incarnation: str
     terminal: bool
     owner: object | None
@@ -90,11 +90,11 @@ def _run(work: Callable[[], object], future: Future[object]) -> None:
         future.set_result(result)
 
 
-class ArchiveUploadExecutionOwner:
+class PhysicalExecutionOwner:
     """Service-owned physical execution; it never admits a provider effect.
 
     Reserve before invoking a constructor or a work callback. There is no queued
-    work beyond the configured slots, and one construction has at most one local
+    work beyond the configured slots, and one scope has at most one local
     turn. Polling never waits for a provider, worker, callback or another poll.
     Shutdown joins outside the registry lock before shared dependencies close.
     """
@@ -103,8 +103,8 @@ class ArchiveUploadExecutionOwner:
         self._tuning = tuning
         self._lock = Lock()
         self._closed = False
-        self._slots: dict[int, _Slot] = {}
-        self._poll: dict[int, OrderedDict[int, None]] = {}
+        self._slots: dict[PhysicalExecutionKey, _Slot] = {}
+        self._poll: dict[int, OrderedDict[PhysicalExecutionKey, None]] = {}
         self._counts = {False: 0, True: 0}
         self._targets: dict[tuple[bool, str], int] = {}
 
@@ -124,7 +124,7 @@ class ArchiveUploadExecutionOwner:
 
     def try_submit(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         terminal: bool,
@@ -133,13 +133,13 @@ class ArchiveUploadExecutionOwner:
         identity: object | None = None,
     ) -> Submission:
         if type(terminal) is not bool or not target_incarnation:
-            raise ValueError("upload execution requires an exact target and work lane")
+            raise ValueError("physical execution requires an exact target and work lane")
         if not self._lock.acquire(blocking=False):
             return "busy"
         try:
             if self._closed:
                 return "closed"
-            prior = self._slots.get(key.collection_id)
+            prior = self._slots.get(key)
             if prior is not None:
                 if (
                     prior.key != key
@@ -148,8 +148,8 @@ class ArchiveUploadExecutionOwner:
                     or prior.owner is not owner
                     or prior.identity is not identity
                 ):
-                    raise ArchiveExecutionOccupied(
-                        "upload execution already retains another original turn"
+                    raise PhysicalExecutionOccupied(
+                        "physical execution already retains another original turn"
                     )
                 return "retained"
             capacity = self._tuning.terminal_workers if terminal else self._tuning.forward_workers
@@ -165,11 +165,11 @@ class ArchiveUploadExecutionOwner:
                 return "target-capacity"
             future: Future[object] = Future()
             worker = Thread(
-                target=_run, args=(work, future), name="archive-upload-execution", daemon=False
+                target=_run, args=(work, future), name="physical-execution", daemon=False
             )
             slot = _Slot(key, target_incarnation, terminal, owner, identity, future, worker)
-            self._slots[key.collection_id] = slot
-            self._poll.setdefault(id(owner), OrderedDict())[key.collection_id] = None
+            self._slots[key] = slot
+            self._poll.setdefault(id(owner), OrderedDict())[key] = None
             self._counts[terminal] += 1
             self._targets[target] = self._targets.get(target, 0) + 1
             try:
@@ -185,17 +185,17 @@ class ArchiveUploadExecutionOwner:
             self._lock.release()
 
     def status(
-        self, key: ArchiveUploadExecutionKey
+        self, key: PhysicalExecutionKey
     ) -> Literal["busy", "untracked", "running", "awaiting-join", "outcome-missing"]:
         """Point observation of this registry, never a global closure proof."""
         if not self._lock.acquire(blocking=False):
             return "busy"
         try:
-            slot = self._slots.get(key.collection_id)
+            slot = self._slots.get(key)
             if slot is None:
                 return "untracked"
             if slot.key != key:
-                raise Conflict("upload execution retains another original construction")
+                raise Conflict("physical execution retains another original scope")
             if slot.worker.is_alive():
                 return "running"
             return "awaiting-join" if slot.future.done() else "outcome-missing"
@@ -204,7 +204,7 @@ class ArchiveUploadExecutionOwner:
 
     def collect(
         self, *, limit: int, owner: object | None
-    ) -> tuple[ArchiveUploadExecutionCompletion, ...]:
+    ) -> tuple[PhysicalExecutionCompletion, ...]:
         """Inspect at most limit slots for the exact local receiving owner.
 
         Each receiver rotates only its own charged slots. Interleaved polls by
@@ -222,9 +222,9 @@ class ArchiveUploadExecutionOwner:
             if poll is None:
                 return ()
             for _ in range(min(limit, len(poll))):
-                collection_id, _ = poll.popitem(last=False)
-                poll[collection_id] = None
-                slot = self._slots[collection_id]
+                key, _ = poll.popitem(last=False)
+                poll[key] = None
+                slot = self._slots[key]
                 assert slot.owner is owner
                 if slot.worker.is_alive():
                     continue
@@ -236,7 +236,7 @@ class ArchiveUploadExecutionOwner:
                     # thread cannot supply an invented successful outcome.
                     continue
                 completed.append(
-                    ArchiveUploadExecutionCompletion(
+                    PhysicalExecutionCompletion(
                         slot.key,
                         slot.target_incarnation,
                         slot.terminal,
@@ -253,10 +253,10 @@ class ArchiveUploadExecutionOwner:
     def _remove(self, slot: _Slot) -> None:
         receiver = id(slot.owner)
         poll = self._poll[receiver]
-        del poll[slot.key.collection_id]
+        del poll[slot.key]
         if not poll:
             del self._poll[receiver]
-        del self._slots[slot.key.collection_id]
+        del self._slots[slot.key]
         self._counts[slot.terminal] -= 1
         target = (slot.terminal, slot.target_incarnation)
         remaining = self._targets[target] - 1

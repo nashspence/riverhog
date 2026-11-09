@@ -103,7 +103,7 @@ class ArchivePayloadCache:
             or control.epoch != request.epoch
             or control.gate != "open"
             or hashlib.sha256(control.construction_json.encode()).hexdigest()
-            != request.key.construction_sha256
+            != request.key.scope_sha256
             or volume is None
             or volume.plan_sha256 != request.plan_sha256
         ):

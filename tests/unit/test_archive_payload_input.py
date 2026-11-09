@@ -14,7 +14,7 @@ from riverhog_core.services.archive_payload_input import (
     ArchivePayloadInputs,
     ArchivePayloadRequest,
 )
-from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
+from riverhog_core.services.physical_execution import PhysicalExecutionKey
 from riverhog_protocol.errors import BadRequest, Conflict
 
 from tests.unit.test_archive_upload_invocations import _receive
@@ -25,7 +25,7 @@ from tests.unit.test_collection_uploads import _CREATOR
 def _request(**values):
     return replace(
         ArchivePayloadRequest(
-            ArchiveUploadExecutionKey(1, "a" * 64),
+            PhysicalExecutionKey(1, "a" * 64),
             "target-a",
             "epoch-a",
             "volume-a",
@@ -144,8 +144,8 @@ def test_stream_hashes_each_input_byte_once_and_keeps_only_scalar_identity_after
 @pytest.mark.parametrize(
     "change",
     (
-        {"key": ArchiveUploadExecutionKey(2, "a" * 64)},
-        {"key": ArchiveUploadExecutionKey(1, "c" * 64)},
+        {"key": PhysicalExecutionKey(2, "a" * 64)},
+        {"key": PhysicalExecutionKey(1, "c" * 64)},
         {"target_incarnation": "target-b"},
         {"epoch": "epoch-b"},
         {"volume_id": "volume-b"},
@@ -184,7 +184,7 @@ def test_empty_bodies_still_spend_input_slots_and_partial_invalid_bodies_release
 
 
 def test_input_release_requires_actual_original_worker_join(owned, monkeypatch):
-    import riverhog_core.services.archive_upload_execution as source
+    import riverhog_core.services.physical_execution as source
 
     registry, execution, retention = owned.make()
     entered, release = threading.Event(), owned.event()
@@ -253,7 +253,7 @@ def test_retry_discards_only_new_unused_body_and_keeps_original_callback_and_inp
 def test_worker_start_acknowledgement_preserves_exact_input_or_positive_nonstart_withdrawal(
     owned, monkeypatch, started
 ):
-    import riverhog_core.services.archive_upload_execution as source
+    import riverhog_core.services.physical_execution as source
 
     registry, execution, retention = owned.make()
     payload = _body()
@@ -298,7 +298,7 @@ def test_unknown_constructor_keeps_input_but_joined_receiving_retires_exception_
             raise error from cause
 
     assert _submit(registry, payload, create=create, advance=lambda owner: None) == "submitted"
-    worker = execution._slots[payload.request.key.collection_id].worker
+    worker = execution._slots[payload.request.key].worker
     worker.join(timeout=10)
     assert not worker.is_alive() and refs[0]() is not None
     (received,) = registry.collect(limit=1)
@@ -322,7 +322,7 @@ def test_invalid_submission_and_capacity_refusal_withdraw_only_the_new_input(own
 
     assert (
         registry.submit(
-            ArchiveUploadExecutionKey(2, "a" * 64),
+            PhysicalExecutionKey(2, "a" * 64),
             target_incarnation="target-b",
             request_sha256="b" * 64,
             create=lambda: SimpleNamespace(has_pending=False),

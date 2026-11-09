@@ -27,11 +27,11 @@ from riverhog_core.services.archive_upload_drain import (
     LocalTerminalStatus,
     inspect_terminal_write_records,
 )
-from riverhog_core.services.archive_upload_execution import (
-    ArchiveExecutionOccupied,
-    ArchiveUploadExecutionCompletion,
-    ArchiveUploadExecutionKey,
-    ArchiveUploadExecutionOwner,
+from riverhog_core.services.physical_execution import (
+    PhysicalExecutionCompletion,
+    PhysicalExecutionKey,
+    PhysicalExecutionOccupied,
+    PhysicalExecutionOwner,
     Submission,
 )
 
@@ -49,7 +49,7 @@ class RetainedArchiveUploadInvocation(Protocol):
 @dataclass(frozen=True, slots=True)
 class ArchiveUploadInvocationCompletion:
     request_sha256: str
-    execution: ArchiveUploadExecutionCompletion = field(repr=False, compare=False)
+    execution: PhysicalExecutionCompletion = field(repr=False, compare=False)
 
     def result(self) -> object:
         return self.execution.result()
@@ -65,7 +65,7 @@ class _PinLifetime:
 class ArchiveUploadInvocationPin:
     """Retain one original invocation; this grants no provider or closure right."""
 
-    key: ArchiveUploadExecutionKey
+    key: PhysicalExecutionKey
     target_incarnation: str
     epoch: str
     volume_id: str
@@ -85,7 +85,7 @@ class ArchiveUploadInvocationPin:
 
 @dataclass(slots=True)
 class _Construction:
-    key: ArchiveUploadExecutionKey
+    key: PhysicalExecutionKey
     target: str
     requests: deque[str] = field(default_factory=deque)
     terminal_id: str | None = None
@@ -105,8 +105,8 @@ class _Invocation:
     lock: Lock = field(default_factory=Lock)
     owner: RetainedArchiveUploadInvocation | None = None
     construction_failure: BaseException | None = None
-    received: ArchiveUploadExecutionCompletion | None = None
-    terminal_received: ArchiveUploadExecutionCompletion | None = None
+    received: PhysicalExecutionCompletion | None = None
+    terminal_received: PhysicalExecutionCompletion | None = None
     succeeded: bool = False
     drained: bool = False
     family_pin: ArchiveUploadInvocationPin | None = None
@@ -125,7 +125,7 @@ class ArchiveUploadInvocationRegistry:
     def __init__(
         self,
         factory: SessionFactory,
-        execution: ArchiveUploadExecutionOwner,
+        execution: PhysicalExecutionOwner,
         retention: ArchiveConstructionRetention,
     ) -> None:
         self._input_owner = object()
@@ -137,7 +137,7 @@ class ArchiveUploadInvocationRegistry:
         self._constructions: dict[int, _Construction] = {}
         self._invocations: OrderedDict[str, _Invocation] = OrderedDict()
 
-    def _construction(self, key: ArchiveUploadExecutionKey, target: str) -> _Construction | None:
+    def _construction(self, key: PhysicalExecutionKey, target: str) -> _Construction | None:
         prior = self._constructions.get(key.collection_id)
         if prior is not None and (prior.key != key or prior.target != target):
             raise Conflict("retained upload has another original construction or target")
@@ -145,7 +145,7 @@ class ArchiveUploadInvocationRegistry:
 
     def submit(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         request_sha256: str,
@@ -173,7 +173,7 @@ class ArchiveUploadInvocationRegistry:
 
     def _submit(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         request_sha256: str,
@@ -228,7 +228,7 @@ class ArchiveUploadInvocationRegistry:
                     owner=self,
                     identity=selected,
                 )
-            except ArchiveExecutionOccupied:
+            except PhysicalExecutionOccupied:
                 if fresh:
                     self._remove(selected)
                 raise
@@ -320,7 +320,7 @@ class ArchiveUploadInvocationRegistry:
         self,
         request_sha256: str,
         *,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         target_incarnation: str,
         epoch: str,
         volume_id: str,
@@ -438,7 +438,7 @@ class ArchiveUploadInvocationRegistry:
 
     def terminal_turn(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         operation_id: str,
@@ -504,7 +504,7 @@ class ArchiveUploadInvocationRegistry:
 
     def local_terminal_status(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         operation_id: str,
@@ -535,7 +535,7 @@ class ArchiveUploadInvocationRegistry:
 
     def fence_terminal(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         operation_id: str,
@@ -550,7 +550,7 @@ class ArchiveUploadInvocationRegistry:
                 assert control is not None
                 if (
                     hashlib.sha256(control.construction_json.encode()).hexdigest()
-                    != key.construction_sha256
+                    != key.scope_sha256
                     or json.loads(control.construction_json)["archive_incarnation_id"]
                     != target_incarnation
                 ):
@@ -576,7 +576,7 @@ class ArchiveUploadInvocationRegistry:
 
     def submit_terminal(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         operation_id: str,

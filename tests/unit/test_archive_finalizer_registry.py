@@ -9,15 +9,15 @@ import pytest
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
 from riverhog_core.catalog_db import session_scope
-from riverhog_core.services import archive_upload_execution as execution_module
+from riverhog_core.services import physical_execution as execution_module
 from riverhog_core.services.archive_construction_retention import ArchiveConstructionRetention
 from riverhog_core.services.archive_finalizer_registry import ArchiveFinalizerRegistry
-from riverhog_core.services.archive_upload_execution import (
-    ArchiveExecutionOccupied,
-    ArchiveUploadExecutionKey,
-    ArchiveUploadExecutionOwner,
-)
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.physical_execution import (
+    PhysicalExecutionKey,
+    PhysicalExecutionOccupied,
+    PhysicalExecutionOwner,
+)
 from riverhog_protocol.errors import Conflict
 
 from tests.unit.test_archive_write_admission import _case, _selected
@@ -43,7 +43,7 @@ class Finalizer:
 
 
 def _key(number=1):
-    return ArchiveUploadExecutionKey(number, "a" * 64)
+    return PhysicalExecutionKey(number, "a" * 64)
 
 
 def _operation(case):
@@ -57,7 +57,7 @@ def _scope(case):
         control = session.get(ArchiveWriteControlRecord, case.collection_id)
         value = json.loads(control.construction_json)
         return (
-            ArchiveUploadExecutionKey(
+            PhysicalExecutionKey(
                 case.collection_id, hashlib.sha256(control.construction_json.encode()).hexdigest()
             ),
             value["archive_incarnation_id"],
@@ -70,7 +70,7 @@ def owned():
 
     def make(factory=None, *, retention=None, execution=None, **values):
         tuning = ArchiveExecutionTuning(**values)
-        pool = execution or ArchiveUploadExecutionOwner(tuning)
+        pool = execution or PhysicalExecutionOwner(tuning)
         registry = ArchiveFinalizerRegistry(
             factory, pool, retention or ArchiveConstructionRetention(tuning)
         )
@@ -177,7 +177,7 @@ def test_idle_owner_cannot_retire_between_future_publication_and_actual_join(own
     registry, pool = owned.make(retained_constructions=1)
     assert _submit(registry) == "submitted"
     assert returned.wait(5)
-    assert pool._slots[1].future.done()
+    assert pool._slots[_key(1)].future.done()
     assert not registry.retire_idle(_key(), target_incarnation="target-a")
     assert registry.collect(limit=1) == ()
     assert _submit(registry, _key(2)) == "retention-capacity"
@@ -202,8 +202,8 @@ def test_constructor_is_tracked_before_execution_without_stalling_an_independent
     assert entered.wait(5)
     assert registry._contexts[1].owner is None
     assert _submit(registry, _key(2), target="target-b") == "submitted"
-    pool._slots[2].worker.join(timeout=5)
-    assert not pool._slots[2].worker.is_alive()
+    pool._slots[_key(2)].worker.join(timeout=5)
+    assert not pool._slots[_key(2)].worker.is_alive()
     (result,) = registry.collect(limit=2)
     assert result.key == _key(2) and result.result().progressed
     release.set()
@@ -225,7 +225,7 @@ def test_a_racing_foreign_execution_cannot_be_adopted_as_this_registry_work(owne
         return actual(key, **arguments)
 
     monkeypatch.setattr(pool, "try_submit", submit)
-    with pytest.raises(ArchiveExecutionOccupied):
+    with pytest.raises(PhysicalExecutionOccupied):
         _submit(registry, create=lambda: pytest.fail("must not run foreign constructor"))
     assert registry._contexts == {}
     assert _receive(registry, pool) == ()
@@ -472,7 +472,7 @@ def test_independent_registries_share_global_and_target_retention_without_releas
         retained_constructions_per_target=1,
     )
     retention = ArchiveConstructionRetention(tuning)
-    execution = ArchiveUploadExecutionOwner(tuning)
+    execution = PhysicalExecutionOwner(tuning)
     first, _ = owned.make(retention=retention, execution=execution)
     second, _ = owned.make(retention=retention, execution=execution)
     original = Finalizer()
@@ -506,7 +506,7 @@ def test_independent_registries_share_global_and_target_retention_without_releas
 def test_same_construction_in_another_registry_does_not_retire_an_earlier_original(owned):
     tuning = ArchiveExecutionTuning(retained_constructions=2)
     retention = ArchiveConstructionRetention(tuning)
-    execution = ArchiveUploadExecutionOwner(tuning)
+    execution = PhysicalExecutionOwner(tuning)
     first, _ = owned.make(retention=retention, execution=execution)
     second, _ = owned.make(retention=retention, execution=execution)
     original = Finalizer()

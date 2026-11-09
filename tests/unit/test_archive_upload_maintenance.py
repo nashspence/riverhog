@@ -74,7 +74,7 @@ def _actual_maintenance(tmp_path, monkeypatch, mode, *, database_url=None):
             now = _clock(monkeypatch)
             key, target = _scope(original.case)
             context = service._archive_finalizers._contexts[original.case.collection_id]
-            slot = service._archive_execution._slots[original.case.collection_id]
+            slot = service._archive_execution._slots[key]
 
             def forbidden(*args, **kwargs):
                 pytest.fail("coordination cannot join a live original worker")
@@ -276,7 +276,7 @@ def test_terminal_backoff_and_capacity_leave_an_independent_construction_progres
                 )
                 == "submitted"
             )
-            other_slot = service._archive_execution._slots[other_key.collection_id]
+            other_slot = service._archive_execution._slots[other_key]
             other_slot.worker.join(timeout=10)
             assert not other_slot.worker.is_alive()
             _selected(other_case)
@@ -482,7 +482,7 @@ def _actual_payload_maintenance(
                 assert entered.wait(5)
                 operation = _select_terminal(f)
                 now = _clock(monkeypatch)
-                slot = f.execution._slots[f.key.collection_id]
+                slot = f.execution._slots[f.key]
                 with monkeypatch.context() as patch:
                     patch.setattr(
                         slot.worker,
@@ -592,7 +592,7 @@ def _fair_terminal_maintenance(tmp_path, monkeypatch, *, database_url=None):
             service._archive_invocations.collect(limit=1)[0].result()
             operation = _selected(current)
             owners.append((metadata, payload, operation))
-        from riverhog_core.services import archive_upload_execution as execution_module
+        from riverhog_core.services import physical_execution as execution_module
 
         release = threading.Event()
         thread = execution_module.Thread
@@ -635,7 +635,7 @@ def test_terminal_drain_fence_requires_original_worker_receiving(tmp_path, monke
 
 
 def _terminal_drain_receiving(tmp_path, monkeypatch, kind, *, database_url=None):
-    from riverhog_core.services import archive_upload_execution as execution_module
+    from riverhog_core.services import physical_execution as execution_module
 
     with _case(tmp_path, database_url=database_url) as case:
         service = case.service
@@ -671,7 +671,7 @@ def _terminal_drain_receiving(tmp_path, monkeypatch, kind, *, database_url=None)
         try:
             assert service.process_due_archive_uploads() == 1
             assert returned.wait(5)
-            slot = service._archive_execution._slots[case.collection_id]
+            slot = service._archive_execution._slots[key]
             assert slot.future.done() and slot.worker.is_alive()
             assert slot.future.result() == "closed"
             # The original actor has closed, but the physical worker still owns

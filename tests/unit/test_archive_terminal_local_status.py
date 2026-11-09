@@ -6,15 +6,15 @@ from types import SimpleNamespace
 import pytest
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.catalog_db import session_scope
-from riverhog_core.services import archive_upload_execution as execution_module
+from riverhog_core.services import physical_execution as execution_module
 from riverhog_core.services.archive_construction_retention import ArchiveConstructionRetention
 from riverhog_core.services.archive_finalizer_registry import (
     ArchiveFinalizerRegistry,
     ArchiveFinalizerTurn,
 )
-from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionOwner
 from riverhog_core.services.archive_upload_invocations import ArchiveUploadInvocationRegistry
 from riverhog_core.services.archive_write_admission import _writer
+from riverhog_core.services.physical_execution import PhysicalExecutionOwner
 from riverhog_protocol.errors import Conflict
 from sqlalchemy import event
 
@@ -27,7 +27,7 @@ from tests.unit.test_archive_write_admission import _case
 def retained(tmp_path, request):
     with _case(tmp_path) as case:
         tuning = ArchiveExecutionTuning()
-        pool = ArchiveUploadExecutionOwner(tuning)
+        pool = PhysicalExecutionOwner(tuning)
         budget = ArchiveConstructionRetention(tuning)
         registry = (
             ArchiveFinalizerRegistry(case.factory, pool, budget)

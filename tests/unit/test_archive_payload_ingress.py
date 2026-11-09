@@ -7,7 +7,7 @@ from dataclasses import replace
 import pytest
 from riverhog_core.services import collection_uploads as service_module
 from riverhog_core.services.archive_payload_input import ArchivePayloadInput, ArchivePayloadInputs
-from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
+from riverhog_core.services.physical_execution import PhysicalExecutionKey
 from riverhog_protocol.errors import Conflict, NotFound
 
 from tests.unit.test_archive_payload_unit import _service_actor
@@ -328,7 +328,7 @@ def test_input_status_is_nonblocking_and_scoped_to_exact_construction(tmp_path, 
     with _service_actor(tmp_path, monkeypatch, "segment", "direct") as f:
         pool = f.service._archive_inputs
         original = f.payload
-        other = ArchiveUploadExecutionKey(f.key.collection_id, "0" * 64)
+        other = PhysicalExecutionKey(f.key.collection_id, "0" * 64)
         assert pool.status(f.key) == "retained" and pool.status(other) == "untracked"
         second = _reserve(f)
         assert isinstance(second, ArchivePayloadInput)

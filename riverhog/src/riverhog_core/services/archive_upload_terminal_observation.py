@@ -18,11 +18,11 @@ from riverhog_core.services.archive_upload_drain import (
     TerminalWriteRecords,
     inspect_terminal_write_records,
 )
-from riverhog_core.services.archive_upload_execution import (
-    ArchiveUploadExecutionKey,
-    ArchiveUploadExecutionOwner,
-)
 from riverhog_core.services.archive_upload_invocations import ArchiveUploadInvocationRegistry
+from riverhog_core.services.physical_execution import (
+    PhysicalExecutionKey,
+    PhysicalExecutionOwner,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -49,7 +49,7 @@ class ArchiveUploadTerminalObservation:
         finalizers: ArchiveFinalizerRegistry,
         invocations: ArchiveUploadInvocationRegistry,
         inputs: ArchivePayloadInputs,
-        execution: ArchiveUploadExecutionOwner,
+        execution: PhysicalExecutionOwner,
     ) -> None:
         self._finalizers = finalizers
         self._invocations = invocations
@@ -79,9 +79,7 @@ class ArchiveUploadTerminalObservation:
         control = session.get(ArchiveWriteControlRecord, collection_id)
         assert control is not None
         construction = control.construction_json
-        key = ArchiveUploadExecutionKey(
-            collection_id, hashlib.sha256(construction.encode()).hexdigest()
-        )
+        key = PhysicalExecutionKey(collection_id, hashlib.sha256(construction.encode()).hexdigest())
         target = json.loads(construction)["archive_incarnation_id"]
         return TerminalResourceObservation(
             records=records,

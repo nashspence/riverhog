@@ -9,15 +9,15 @@ import pytest
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.catalog_archive_write_models import ArchiveUploadTerminalRecord
 from riverhog_core.catalog_db import session_scope
-from riverhog_core.services import archive_upload_execution as execution_module
+from riverhog_core.services import physical_execution as execution_module
 from riverhog_core.services.archive_construction_retention import ArchiveConstructionRetention
 from riverhog_core.services.archive_finalizer_registry import ArchiveFinalizerRegistry
-from riverhog_core.services.archive_upload_execution import (
-    ArchiveUploadExecutionKey,
-    ArchiveUploadExecutionOwner,
-)
 from riverhog_core.services.archive_upload_invocations import ArchiveUploadInvocationRegistry
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.physical_execution import (
+    PhysicalExecutionKey,
+    PhysicalExecutionOwner,
+)
 from riverhog_protocol.errors import Conflict
 from riverhog_storage_adapter_protocol import CleanupInventoryRequest
 
@@ -44,7 +44,7 @@ class Original:
 
 
 def _key(number=1):
-    return ArchiveUploadExecutionKey(number, "a" * 64)
+    return PhysicalExecutionKey(number, "a" * 64)
 
 
 def _request(number=1):
@@ -57,7 +57,7 @@ def owned():
 
     def make(factory=None, *, execution=None, retention=None, **values):
         tuning = ArchiveExecutionTuning(**values)
-        pool = execution or ArchiveUploadExecutionOwner(tuning)
+        pool = execution or PhysicalExecutionOwner(tuning)
         budget = retention or ArchiveConstructionRetention(tuning)
         registry = ArchiveUploadInvocationRegistry(factory, pool, budget)
         registries.append(registry)
@@ -333,7 +333,7 @@ def _actual_begin_receiving(tmp_path, monkeypatch, kind, mode, *, database_url=N
                 )
                 == "fenced"
             )
-            slot = pool._slots[case.collection_id]
+            slot = pool._slots[key]
 
             def forbidden(timeout=None):
                 pytest.fail("point coordination cannot join the live original")
@@ -410,7 +410,7 @@ def test_rejected_terminal_identity_does_not_fence_the_original_upload(tmp_path,
         if change == "operation":
             arguments["operation_id"] = "f" * 64
         elif change == "construction":
-            supplied_key = ArchiveUploadExecutionKey(key.collection_id, "f" * 64)
+            supplied_key = PhysicalExecutionKey(key.collection_id, "f" * 64)
         else:
             arguments["target_incarnation"] = "another-target"
         with pytest.raises(Conflict):
@@ -439,7 +439,7 @@ def test_original_payload_reply_waits_for_the_actual_worker_exit(owned, monkeypa
     monkeypatch.setattr(execution_module, "Thread", HeldExit)
     assert _submit(registry) == "submitted"
     assert returned.wait(5)
-    assert pool._slots[1].future.done()
+    assert pool._slots[_key(1)].future.done()
     assert registry.completed(_request()) is None
     assert registry.collect(limit=1) == ()
     assert _submit(registry, 2, key=_key(2), target="target-b") == "retention-capacity"

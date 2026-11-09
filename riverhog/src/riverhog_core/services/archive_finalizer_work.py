@@ -38,9 +38,9 @@ from riverhog_core.services.archive_provenance_structure_writer import (
 from riverhog_core.services.archive_provenance_volume_finalizer import (
     ArchiveProvenanceVolumeFinalizer,
 )
-from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
 from riverhog_core.services.archive_volume_metadata_finalizer import ArchiveVolumeMetadataFinalizer
 from riverhog_core.services.archive_write_admission import Guard, _writer
+from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
 MetadataFinalizerKind = Literal[
     "archive-volumes",
@@ -146,7 +146,7 @@ class ArchiveFinalizerWork:
                 if control is None:
                     raise NotFound("archive finalizer construction is unavailable")
                 construction = control.construction_json
-                key = ArchiveUploadExecutionKey(
+                key = PhysicalExecutionKey(
                     collection_id, hashlib.sha256(construction.encode()).hexdigest()
                 )
                 target = json.loads(construction)["archive_incarnation_id"]

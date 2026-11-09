@@ -22,9 +22,9 @@ from riverhog_core.catalog_db import SessionFactory, catalog_write_contention, s
 from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.services.archive_cache_families import ArchiveCacheFamilies
 from riverhog_core.services.archive_finalizer_registry import ArchiveFinalizerRegistry
-from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
 from riverhog_core.services.archive_upload_invocations import ArchiveUploadInvocationRegistry
 from riverhog_core.services.archive_write_admission import _writer
+from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
 _LOG = logging.getLogger("riverhog_core.archive_upload_maintenance")
 
@@ -116,7 +116,7 @@ class ArchiveUploadMaintenance:
                     if control is None:
                         raise RuntimeError("selected terminal construction is unavailable")
                     construction = control.construction_json
-                key = ArchiveUploadExecutionKey(
+                key = PhysicalExecutionKey(
                     collection_id, hashlib.sha256(construction.encode()).hexdigest()
                 )
                 target = json.loads(construction)["archive_incarnation_id"]
@@ -161,7 +161,7 @@ class ArchiveUploadMaintenance:
         finally:
             self._lock.release()
 
-    def _retire_finalizer(self, key: ArchiveUploadExecutionKey, target: str) -> bool:
+    def _retire_finalizer(self, key: PhysicalExecutionKey, target: str) -> bool:
         """Keep parent/control admission locked through the local idle release.
 
         A lost terminal scheduling reply can leave a closed gate with an
@@ -185,7 +185,7 @@ class ArchiveUploadMaintenance:
                 if (
                     control is None
                     or hashlib.sha256(control.construction_json.encode()).hexdigest()
-                    != key.construction_sha256
+                    != key.scope_sha256
                     or json.loads(control.construction_json)["archive_incarnation_id"] != target
                 ):
                     raise Conflict("retained finalizer retirement construction changed")

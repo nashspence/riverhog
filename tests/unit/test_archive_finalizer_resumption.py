@@ -8,7 +8,7 @@ import pytest
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services import archive_finalizer_registry as registry_module
-from riverhog_core.services import archive_upload_execution as execution_module
+from riverhog_core.services import physical_execution as execution_module
 from riverhog_core.services.archive_finalization_pipeline import (
     ArchiveFinalizationPipeline,
     ArchiveFinalizationStagePlan,
@@ -111,8 +111,8 @@ def test_published_future_cannot_release_physical_capacity_for_an_original_retry
     monkeypatch.setattr(execution_module, "Thread", HeldExit)
     registry, pool = owned.make()
     original = _failed_original(registry, pool)
-    assert returned.wait(5) and pool._slots[1].future.done()
-    slot = pool._slots[1]
+    assert returned.wait(5) and pool._slots[_key(1)].future.done()
+    slot = pool._slots[_key(1)]
 
     def forbidden(*args, **kwargs):
         pytest.fail("resumption cannot wait for an original worker")
@@ -258,7 +258,7 @@ def test_maintenance_cannot_retire_a_healthy_result_before_actual_worker_exit(ow
     monkeypatch.setattr(execution_module, "Thread", HeldExit)
     registry, pool = owned.make(retained_constructions=1, retained_constructions_per_target=1)
     assert _submit(registry, _key(1)) == "submitted"
-    assert returned.wait(5) and pool._slots[1].future.done()
+    assert returned.wait(5) and pool._slots[_key(1)].future.done()
     assert _maintain(registry, limit=1, retry_after=_RETRY) == 0
     assert registry.collect(limit=1) == ()
     assert _submit(registry, _key(2)) == "retention-capacity"
@@ -270,7 +270,7 @@ def test_maintenance_cannot_retire_a_healthy_result_before_actual_worker_exit(ow
 
 
 def test_racing_foreign_physical_work_keeps_the_original_pending_owner(owned, monkeypatch):
-    from riverhog_core.services.archive_upload_execution import ArchiveExecutionOccupied
+    from riverhog_core.services.physical_execution import PhysicalExecutionOccupied
 
     registry, pool = owned.make()
     original = _failed_original(registry, pool)
@@ -291,9 +291,9 @@ def test_racing_foreign_physical_work_keeps_the_original_pending_owner(owned, mo
                 )
                 == "submitted"
             )
-        with pytest.raises(ArchiveExecutionOccupied):
+        with pytest.raises(PhysicalExecutionOccupied):
             actual(key, **arguments)
-        raise ArchiveExecutionOccupied("another local owner acquired the slot")
+        raise PhysicalExecutionOccupied("another local owner acquired the slot")
 
     monkeypatch.setattr(pool, "try_submit", submit)
     assert _maintain(registry, limit=1, retry_after=_RETRY) == 0

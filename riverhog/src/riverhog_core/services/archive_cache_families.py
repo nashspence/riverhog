@@ -119,7 +119,7 @@ class ArchiveCacheFamilies:
         request = payload.request
         scope = (
             request.key.collection_id,
-            request.key.construction_sha256,
+            request.key.scope_sha256,
             request.target_incarnation,
             request.epoch,
             request.volume_id,
@@ -185,7 +185,7 @@ class ArchiveCacheFamilies:
         request = payload.request
         scope = (
             request.key.collection_id,
-            request.key.construction_sha256,
+            request.key.scope_sha256,
             request.target_incarnation,
             request.epoch,
             request.volume_id,

@@ -475,8 +475,8 @@ if TYPE_CHECKING:
     from riverhog_core.services.archive_payload_unit import (
         ArchivePayloadUnit,
     )
-    from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
     from riverhog_core.services.archive_upload_invocations import InvocationSubmission
+    from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
 
 class SqlAlchemyCollectionUploadService:
@@ -507,9 +507,9 @@ class SqlAlchemyCollectionUploadService:
             config.journal_validation_workspace,
             concurrency=config.journal_validation_concurrency,
         )
-        from .archive_upload_execution import ArchiveUploadExecutionOwner
+        from .physical_execution import PhysicalExecutionOwner
 
-        self._archive_execution = ArchiveUploadExecutionOwner(config.archive_execution)
+        self._archive_execution = PhysicalExecutionOwner(config.archive_execution)
         from .archive_finalization_due import ArchiveFinalizationDue
 
         self._finalization_due = ArchiveFinalizationDue(self._session_factory)
@@ -2503,7 +2503,7 @@ class SqlAlchemyCollectionUploadService:
     ) -> ArchivePayloadInput | InputRefusal:
         """Select current upload authority and reserve before assembling a body."""
         from .archive_payload_input import ArchivePayloadInput, ArchivePayloadRequest
-        from .archive_upload_execution import ArchiveUploadExecutionKey
+        from .physical_execution import PhysicalExecutionKey
 
         normalized_id = _collection_id(collection_id)
         guard = self._payload_write_guard(normalized_id, principal)
@@ -2530,7 +2530,7 @@ class SqlAlchemyCollectionUploadService:
                     raise Conflict("archive upload unit plan identity changed")
                 work = _unit_work_payload(volume, unit, committed=False)
                 request = ArchivePayloadRequest(
-                    key=ArchiveUploadExecutionKey(
+                    key=PhysicalExecutionKey(
                         normalized_id,
                         hashlib.sha256(control.construction_json.encode()).hexdigest(),
                     ),
@@ -2582,7 +2582,7 @@ class SqlAlchemyCollectionUploadService:
     def _payload_unit_invocation(
         self,
         *,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         target_incarnation: str,
         volume_id: str,
         unit: int,

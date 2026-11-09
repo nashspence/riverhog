@@ -10,12 +10,12 @@ from riverhog_core.services.archive_construction_retention import (
     ArchiveConstructionReservation,
     ArchiveConstructionRetention,
 )
-from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
+from riverhog_core.services.physical_execution import PhysicalExecutionKey
 from riverhog_protocol.errors import Conflict
 
 
 def _key(number=1):
-    return ArchiveUploadExecutionKey(number, "a" * 64)
+    return PhysicalExecutionKey(number, "a" * 64)
 
 
 def test_reconstructed_foreign_and_stale_reservations_cannot_retire_an_original():

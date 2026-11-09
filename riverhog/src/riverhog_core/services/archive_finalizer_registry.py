@@ -27,11 +27,11 @@ from riverhog_core.services.archive_upload_drain import (
     LocalTerminalStatus,
     inspect_terminal_write_records,
 )
-from riverhog_core.services.archive_upload_execution import (
-    ArchiveExecutionOccupied,
-    ArchiveUploadExecutionCompletion,
-    ArchiveUploadExecutionKey,
-    ArchiveUploadExecutionOwner,
+from riverhog_core.services.physical_execution import (
+    PhysicalExecutionCompletion,
+    PhysicalExecutionKey,
+    PhysicalExecutionOccupied,
+    PhysicalExecutionOwner,
     Submission,
 )
 
@@ -56,7 +56,7 @@ class ArchiveFinalizerTurn:
 
 @dataclass(slots=True)
 class _Context:
-    key: ArchiveUploadExecutionKey
+    key: PhysicalExecutionKey
     target: str
     reservation: ArchiveConstructionReservation
     lock: Lock = field(default_factory=Lock)
@@ -82,7 +82,7 @@ class ArchiveFinalizerRegistry:
     def __init__(
         self,
         factory: SessionFactory,
-        execution: ArchiveUploadExecutionOwner,
+        execution: PhysicalExecutionOwner,
         retention: ArchiveConstructionRetention,
     ) -> None:
         self._factory = factory
@@ -92,7 +92,7 @@ class ArchiveFinalizerRegistry:
         self._closed = False
         self._contexts: OrderedDict[int, _Context] = OrderedDict()
 
-    def _existing(self, key: ArchiveUploadExecutionKey, target: str) -> _Context | None:
+    def _existing(self, key: PhysicalExecutionKey, target: str) -> _Context | None:
         value = self._contexts.get(key.collection_id)
         if value is not None and (value.key != key or value.target != target):
             raise Conflict("retained finalizer has another original construction or target")
@@ -100,7 +100,7 @@ class ArchiveFinalizerRegistry:
 
     def submit(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         selection: str,
@@ -166,7 +166,7 @@ class ArchiveFinalizerRegistry:
                     work=lambda: self._advance(selected, selection, create, advance),
                     owner=self,
                 )
-            except ArchiveExecutionOccupied:
+            except PhysicalExecutionOccupied:
                 if fresh:
                     self._remove(selected)
                 if not resume_original:
@@ -219,9 +219,7 @@ class ArchiveFinalizerRegistry:
             # selected continuation runs before another source is considered.
             return ArchiveFinalizerTurn(context.selection, context.advance())
 
-    def resume(
-        self, key: ArchiveUploadExecutionKey, *, target_incarnation: str
-    ) -> FinalizerSubmission:
+    def resume(self, key: PhysicalExecutionKey, *, target_incarnation: str) -> FinalizerSubmission:
         """Submit only the retained original; this path cannot install a constructor."""
         if not self._lock.acquire(blocking=False):
             return "busy"
@@ -264,7 +262,7 @@ class ArchiveFinalizerRegistry:
         *,
         limit: int,
         retry_after: timedelta,
-        retire: Callable[[ArchiveUploadExecutionKey, str], bool],
+        retire: Callable[[PhysicalExecutionKey, str], bool],
     ) -> int:
         """Resume pending originals and request idle retirement in bounded fair visits.
 
@@ -289,7 +287,7 @@ class ArchiveFinalizerRegistry:
         for _ in range(budget):
             if not self._lock.acquire(blocking=False):
                 return progressed
-            retiring: tuple[ArchiveUploadExecutionKey, str] | None = None
+            retiring: tuple[PhysicalExecutionKey, str] | None = None
             try:
                 if self._closed or not self._contexts:
                     return progressed
@@ -322,7 +320,7 @@ class ArchiveFinalizerRegistry:
                             work=partial(self._resume_original, context),
                             owner=self,
                         )
-                    except ArchiveExecutionOccupied:
+                    except PhysicalExecutionOccupied:
                         # A separately owned payload may have acquired the shared
                         # slot since the status probe. Adopt no foreign work.
                         continue
@@ -335,12 +333,12 @@ class ArchiveFinalizerRegistry:
                 progressed += retire(*retiring)
         return progressed
 
-    def collect(self, *, limit: int) -> tuple[ArchiveUploadExecutionCompletion, ...]:
+    def collect(self, *, limit: int) -> tuple[PhysicalExecutionCompletion, ...]:
         return self._execution.collect(limit=limit, owner=self)
 
     def local_terminal_status(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         operation_id: str,
@@ -371,7 +369,7 @@ class ArchiveFinalizerRegistry:
 
     def fence_terminal(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         operation_id: str,
@@ -404,7 +402,7 @@ class ArchiveFinalizerRegistry:
                 assert control is not None
                 if (
                     hashlib.sha256(control.construction_json.encode()).hexdigest()
-                    != key.construction_sha256
+                    != key.scope_sha256
                     or json.loads(control.construction_json)["archive_incarnation_id"]
                     != target_incarnation
                 ):
@@ -428,7 +426,7 @@ class ArchiveFinalizerRegistry:
 
     def submit_terminal(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         operation_id: str,
@@ -475,7 +473,7 @@ class ArchiveFinalizerRegistry:
                 context.drained = result == "closed"
             return result
 
-    def retire_idle(self, key: ArchiveUploadExecutionKey, *, target_incarnation: str) -> bool:
+    def retire_idle(self, key: PhysicalExecutionKey, *, target_incarnation: str) -> bool:
         """Release only an idle local owner after physical outcome receiving.
 
         Fenced or pending originals retain all source/crypto/input ownership.

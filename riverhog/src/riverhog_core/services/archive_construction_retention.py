@@ -9,7 +9,7 @@ from typing import Literal
 from riverhog_protocol.errors import Conflict
 
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
-from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
+from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
 RetentionRefusal = Literal["busy", "retention-capacity", "target-retention-capacity"]
 
@@ -18,7 +18,7 @@ RetentionRefusal = Literal["busy", "retention-capacity", "target-retention-capac
 class ArchiveConstructionReservation:
     """An original local resource reservation, never semantic execution authority."""
 
-    key: ArchiveUploadExecutionKey
+    key: PhysicalExecutionKey
     target_incarnation: str
     owner: object = field(repr=False)
 
@@ -42,7 +42,7 @@ class ArchiveConstructionRetention:
 
     def try_retain(
         self,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         *,
         target_incarnation: str,
         owner: object,

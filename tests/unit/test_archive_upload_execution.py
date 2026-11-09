@@ -9,18 +9,18 @@ import pytest
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.runtime_config import RuntimeConfig
-from riverhog_core.services import archive_upload_execution as source
-from riverhog_core.services.archive_upload_execution import (
-    ArchiveExecutionOccupied,
-    ArchiveUploadExecutionKey,
-    ArchiveUploadExecutionOwner,
-)
+from riverhog_core.services import physical_execution as source
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
+from riverhog_core.services.physical_execution import (
+    PhysicalExecutionKey,
+    PhysicalExecutionOccupied,
+    PhysicalExecutionOwner,
+)
 from riverhog_protocol.errors import Conflict
 
 
 def _key(number=1, digest="a" * 64):
-    return ArchiveUploadExecutionKey(number, digest)
+    return PhysicalExecutionKey(number, digest)
 
 
 @pytest.fixture
@@ -29,7 +29,7 @@ def owned():
     releases = []
 
     def make(**values):
-        owner = ArchiveUploadExecutionOwner(ArchiveExecutionTuning(**values))
+        owner = PhysicalExecutionOwner(ArchiveExecutionTuning(**values))
         owners.append(owner)
         return owner
 
@@ -143,8 +143,14 @@ def test_retained_turn_cannot_be_reinterpreted_as_another_construction_or_lane(o
         arguments["target_incarnation"] = "target-b"
     else:
         arguments["terminal"] = True
-    with pytest.raises(Conflict, match="another original turn"):
-        owner.try_submit(**arguments)
+    if changed == "construction":
+        original = owner._slots[_key()]
+        assert owner.try_submit(**arguments) == "submitted"
+        assert owner._slots[_key()] is original
+        assert owner._slots[arguments["key"]].key == arguments["key"]
+    else:
+        with pytest.raises(Conflict, match="another original turn"):
+            owner.try_submit(**arguments)
 
 
 def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, monkeypatch):
@@ -166,7 +172,7 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
     original = object()
     assert _submit(owner, 1, lambda: original) == "submitted"
     assert returned.wait(5)
-    slot = owner._slots[1]
+    slot = owner._slots[_key(1)]
     assert slot.future.done() and slot.future.result() is original
     assert slot.worker.is_alive() and owner.has_unreceived_work()
     assert owner.collect(owner=None, limit=1) == ()
@@ -212,8 +218,8 @@ def test_collect_has_bounded_fair_progress_past_a_stuck_worker(owned):
     assert _submit(owner, 1, lambda: _blocked(entered, release)) == "submitted"
     assert entered.wait(5)
     assert _submit(owner, 2, lambda: "independent") == "submitted"
-    owner._slots[2].worker.join(timeout=5)
-    assert not owner._slots[2].worker.is_alive()
+    owner._slots[_key(2)].worker.join(timeout=5)
+    assert not owner._slots[_key(2)].worker.is_alive()
     assert owner.collect(owner=None, limit=1) == ()
     (completion,) = owner.collect(owner=None, limit=1)
     assert completion.key.collection_id == 2 and completion.result() == "independent"
@@ -284,7 +290,7 @@ def test_shutdown_joins_without_dropping_original_result_or_disposing_its_owner(
         pending = executor.submit(shutdown)
         assert closed.wait(5)
         assert not pending.done()
-        assert owner._slots[1].worker.is_alive()
+        assert owner._slots[_key(1)].worker.is_alive()
         release.set()
         pending.result(timeout=5)
     assert _submit(owner, 2, lambda: pytest.fail("closed owner")) == "closed"
@@ -320,7 +326,7 @@ def test_one_service_owns_configured_capacity_and_joins_before_dependency_shutdo
             pending = executor.submit(shutdown)
             assert closing.wait(5)
             assert not disposed.is_set()
-            assert owner._slots[1].worker.is_alive()
+            assert owner._slots[_key(1)].worker.is_alive()
             release.set()
             pending.result(timeout=5)
         assert disposed.is_set()
@@ -364,9 +370,9 @@ def test_point_status_tracks_local_execution_without_claiming_global_closure(own
     assert _submit(owner, 1, lambda: _blocked(entered, release, "original")) == "submitted"
     assert entered.wait(5)
     assert owner.status(_key()) == "running"
-    assert owner._slots[1].worker.daemon is False
-    with pytest.raises(Conflict, match="original construction"):
-        owner.status(_key(digest="b" * 64))
+    assert owner._slots[_key(1)].worker.daemon is False
+    assert owner.status(_key(digest="b" * 64)) == "untracked"
+    assert owner.status(_key()) == "running"
     with owner._lock:
         assert owner.status(_key()) == "busy"
     release.set()
@@ -407,7 +413,7 @@ def test_execution_identity_requires_the_original_collection(collection_id):
 
 @pytest.mark.parametrize("digest", ["a" * 63, "g" * 64, "A" * 64, ""])
 def test_execution_identity_requires_the_exact_original_digest(digest):
-    with pytest.raises(ValueError, match="original construction digest"):
+    with pytest.raises(ValueError, match="original scope digest"):
         _key(digest=digest)
 
 
@@ -440,7 +446,7 @@ def test_receiver_identity_keeps_foreign_results_and_capacity_charged(owned, mon
         == "submitted"
     )
     _joined(pool)
-    foreign = pool._slots[1]
+    foreign = pool._slots[_key(1)]
 
     def forbidden_join(timeout=None):
         pytest.fail("another receiver cannot join or retire this original")
@@ -538,10 +544,10 @@ def test_each_receiving_quantum_is_bounded_across_foreign_and_stuck_work(owned):
         )
         == "submitted"
     )
-    pool._slots[3].worker.join(timeout=5)
-    assert not pool._slots[3].worker.is_alive()
-    pool._slots[1].worker.join(timeout=5)
-    assert not pool._slots[1].worker.is_alive()
+    pool._slots[_key(3)].worker.join(timeout=5)
+    assert not pool._slots[_key(3)].worker.is_alive()
+    pool._slots[_key(1)].worker.join(timeout=5)
+    assert not pool._slots[_key(1)].worker.is_alive()
     assert pool.collect(limit=1, owner=current) == ()
     (completion,) = pool.collect(limit=1, owner=current)
     assert completion.key == _key(3) and completion.result() == "independent"
@@ -564,7 +570,7 @@ def test_same_receiver_cannot_adopt_another_original_invocation(owned):
         )
         == "submitted"
     )
-    with pytest.raises(ArchiveExecutionOccupied):
+    with pytest.raises(PhysicalExecutionOccupied):
         pool.try_submit(
             _key(),
             target_incarnation="target-a",
@@ -636,8 +642,8 @@ def test_receivers_make_independent_progress_with_interleaved_bounded_polls(owne
             )
             == "submitted"
         )
-        pool._slots[number].worker.join(timeout=5)
-        assert not pool._slots[number].worker.is_alive()
+        pool._slots[_key(number)].worker.join(timeout=5)
+        assert not pool._slots[_key(number)].worker.is_alive()
     for offset, foreign in enumerate(foreign_receivers, start=ready_count + 2):
         assert (
             pool.try_submit(
@@ -649,8 +655,8 @@ def test_receivers_make_independent_progress_with_interleaved_bounded_polls(owne
             )
             == "submitted"
         )
-        pool._slots[offset].worker.join(timeout=5)
-        assert not pool._slots[offset].worker.is_alive()
+        pool._slots[_key(offset)].worker.join(timeout=5)
+        assert not pool._slots[_key(offset)].worker.is_alive()
     received = []
     for _ in range(ready_count + 1):
         received.extend(pool.collect(limit=1, owner=receiver))
@@ -661,3 +667,94 @@ def test_receivers_make_independent_progress_with_interleaved_bounded_polls(owne
     assert [completion.result() for completion in received] == list(range(2, ready_count + 2))
     assert pool.status(_key(1)) == "running"
     assert pool._counts[False] == 1
+
+
+def test_independent_scopes_in_one_collection_share_physical_capacity_and_receiving(owned):
+    pool = owned.make(terminal_workers=2, terminal_workers_per_target=1)
+    archive, cache, other = _key(digest="a" * 64), _key(digest="b" * 64), _key(digest="c" * 64)
+    first, second = object(), object()
+    release, entered = owned.event(), threading.Event()
+    assert (
+        pool.try_submit(
+            archive,
+            target_incarnation="archive-target",
+            terminal=True,
+            owner=first,
+            work=lambda: _blocked(entered, release, "archive-original"),
+        )
+        == "submitted"
+    )
+    assert entered.wait(5)
+    assert (
+        pool.try_submit(
+            cache,
+            target_incarnation="cache-target",
+            terminal=True,
+            owner=second,
+            work=lambda: "cache-original",
+        )
+        == "submitted"
+    )
+    pool._slots[cache].worker.join(timeout=5)
+    assert not pool._slots[cache].worker.is_alive()
+    assert (
+        pool.try_submit(
+            other,
+            target_incarnation="other-target",
+            terminal=True,
+            owner=second,
+            work=lambda: pytest.fail("all scopes share the original global capacity"),
+        )
+        == "capacity"
+    )
+    assert pool.collect(limit=1, owner=first) == ()
+    (received,) = pool.collect(limit=1, owner=second)
+    assert received.key == cache and received.owner is second
+    assert received.result() == "cache-original"
+    assert pool.status(archive) == "running" and pool.status(cache) == "untracked"
+    assert pool._counts[True] == 1
+    release.set()
+    _joined(pool)
+    (received,) = pool.collect(limit=1, owner=first)
+    assert received.key == archive and received.result() == "archive-original"
+
+
+def test_same_collection_scopes_cannot_escape_original_target_capacity(owned):
+    pool = owned.make(terminal_workers=2, terminal_workers_per_target=1)
+    first, second = _key(digest="a" * 64), _key(digest="b" * 64)
+    original = object()
+    assert (
+        pool.try_submit(
+            first,
+            target_incarnation="cache-target",
+            terminal=True,
+            owner=original,
+            work=lambda: "original",
+        )
+        == "submitted"
+    )
+    _joined(pool)
+    assert (
+        pool.try_submit(
+            second,
+            target_incarnation="cache-target",
+            terminal=True,
+            owner=original,
+            work=lambda: pytest.fail("unreceived work retains original target capacity"),
+        )
+        == "target-capacity"
+    )
+    assert pool.collect(limit=1, owner=object()) == ()
+    assert pool._counts[True] == 1
+    (received,) = pool.collect(limit=1, owner=original)
+    assert received.key == first and received.result() == "original"
+    assert (
+        pool.try_submit(
+            second,
+            target_incarnation="cache-target",
+            terminal=True,
+            owner=original,
+            work=lambda: "next-scope",
+        )
+        == "submitted"
+    )

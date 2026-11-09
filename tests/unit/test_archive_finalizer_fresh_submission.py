@@ -3,7 +3,7 @@ from __future__ import annotations
 import threading
 
 import pytest
-from riverhog_core.services import archive_upload_execution as execution_module
+from riverhog_core.services import physical_execution as execution_module
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_protocol.errors import Conflict
 
@@ -105,7 +105,7 @@ def test_fresh_turn_waits_for_actual_join_even_after_the_result_is_published(own
     registry, pool = owned.make()
     assert _fresh(registry) == "submitted"
     assert published.wait(5)
-    assert pool._slots[1].future.done()
+    assert pool._slots[_key(1)].future.done()
     assert _fresh(registry, create=_forbidden) == "busy"
     assert registry.collect(limit=1) == ()
     release.set()
@@ -128,8 +128,8 @@ def test_fresh_turn_cannot_replace_a_running_constructor(owned):
     assert registry._contexts[1].owner is None
     assert _fresh(registry, create=_forbidden) == "busy"
     assert _fresh(registry, _key(2), target="target-b") == "submitted"
-    pool._slots[2].worker.join(5)
-    assert not pool._slots[2].worker.is_alive()
+    pool._slots[_key(2)].worker.join(5)
+    assert not pool._slots[_key(2)].worker.is_alive()
     # Each poll inspects one slot and rotates the still-running original.
     assert registry.collect(limit=1) == ()
     (completed,) = registry.collect(limit=1)

@@ -642,7 +642,9 @@ def _assert_terminal_cache_actor(tmp_path, monkeypatch, kind, mode, phase, *, da
         assert before[:2] == ("settled", False)
         assert joint.mirror.has_pending
         for _ in range(2):
-            assert joint.writer.drain_terminal(selected) == "pending"
+            expected = "pending" if phase == "complete" else "closed"
+            assert joint.writer.drain_terminal(selected) == expected
+            assert joint.mirror.has_pending and not joint.mirror.has_unclosed_execution
             assert _cache_state(joint) == before and calls == physical
             assert _stored(joint.actor) == checkpoint
         assert joint.actor.case.service._retrieval_cache.release(owner="joint-cache") == 0
@@ -683,7 +685,8 @@ def _assert_terminal_checkpoint_retry(tmp_path, monkeypatch, committed, *, datab
             _merge(joint, original[-1] + " ")
         selected = _terminal(joint)
         physical = list(joint.actor.seen)
-        assert joint.writer.drain_terminal(selected) == "pending"
+        assert joint.writer.drain_terminal(selected) == "closed"
+        assert joint.mirror.has_pending and not joint.mirror.has_unclosed_execution
         assert joint.writer._checkpoint_input is None and not joint.writer._checkpoint_pending
         assert _effects(joint) == [] and _stored(joint.actor) == (original[-1], [])
         assert joint.actor.seen == physical

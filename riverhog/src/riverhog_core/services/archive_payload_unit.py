@@ -43,11 +43,11 @@ from riverhog_core.services.archive_cache_families import (
 )
 from riverhog_core.services.archive_payload_input import ArchivePayloadInput
 from riverhog_core.services.archive_upload_drain import inspect_terminal_write_records
-from riverhog_core.services.archive_upload_execution import ArchiveUploadExecutionKey
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard
 from riverhog_core.services.cache_population_publication import CachePopulationPublication
 from riverhog_core.services.mirrored_archive_upload_writes import MirroredArchiveUploadWrites
+from riverhog_core.services.physical_execution import PhysicalExecutionKey
 from riverhog_core.stores.executing_archive_objects import ExecutingArchiveResumableObjectStore
 from riverhog_core.stores.sqlalchemy_archive_upload_checkpoints import (
     SqlAlchemyArchiveUploadCheckpointStore,
@@ -157,7 +157,7 @@ class ArchivePayloadUnit:
         self,
         service: ArchivePayloadService,
         *,
-        key: ArchiveUploadExecutionKey,
+        key: PhysicalExecutionKey,
         target_incarnation: str,
         volume_id: str,
         unit: int,
@@ -272,7 +272,7 @@ class ArchivePayloadUnit:
             control = session.get(ArchiveWriteControlRecord, self._key.collection_id)
             if control is None or (
                 hashlib.sha256(control.construction_json.encode()).hexdigest()
-                != self._key.construction_sha256
+                != self._key.scope_sha256
                 or json.loads(control.construction_json)["archive_incarnation_id"] != self._target
             ):
                 raise Conflict("original payload construction or target changed")
