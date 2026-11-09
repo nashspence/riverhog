@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, Protocol, Self, cast
 
 from riverhog_archive_contracts import HistoryJournalAnchor
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import canonical_json_bytes, format_scalar
 from riverhog_growth_contracts import declare_growth, growth_binding
 from riverhog_provenance_contracts import ContractCatalog
 
@@ -86,7 +86,10 @@ class CorpusReplayBinding:
 
     def to_bytes(self) -> bytes:
         value = asdict(self)
-        value.update(source_count=str(self.source_count), selection_count=str(self.selection_count))
+        value.update(
+            source_count=format_scalar("nonnegative", self.source_count),
+            selection_count=format_scalar("nonnegative", self.selection_count),
+        )
         return canonical_json_bytes({"format": _FORMAT, **value})
 
 
@@ -481,8 +484,8 @@ class RetainedCorpusValidator:
             len(checkpoint)
             + len(str(version))
             + len(str(self._epoch))
-            + len(str(self._binding.source_count))
-            + len(str(self._binding.selection_count))
+            + len(format_scalar("nonnegative", self._binding.source_count))
+            + len(format_scalar("nonnegative", self._binding.selection_count))
         )
         if output_size > self._metadata_budget:
             raise JournalValidationCapacity("next corpus checkpoint exceeds metadata budget")
@@ -604,7 +607,10 @@ class RetainedCorpusValidator:
             row = _one(
                 self._db, "SELECT sources,selections FROM corpus_workspace WHERE singleton=1"
             )
-            if row != (str(self._binding.source_count), str(self._binding.selection_count)):
+            if row != (
+                format_scalar("nonnegative", self._binding.source_count),
+                format_scalar("nonnegative", self._binding.selection_count),
+            ):
                 raise IncompleteSourceError("corpus fixed input manifests are incomplete")
             return self._corpus.advance_semantics(row_budget=row_budget, byte_budget=byte_budget)
 

@@ -8,6 +8,7 @@ from dataclasses import dataclass, fields, replace
 from typing import Any
 from uuid import uuid4
 
+from riverhog_canonical_json import format_scalar, parse_scalar
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -91,14 +92,13 @@ class DiscoveryJob:
     def binding(self) -> CorpusReplayBinding:
         if self.source_manifest_sha256 is None or self.selection_manifest_sha256 is None:
             raise StaleArchiveTask("discovery job has no fixed original Native inputs")
-        counts = []
-        for raw in (self.source_count, self.selection_count):
-            if not isinstance(raw, str) or not raw or not raw.isascii() or not raw.isdecimal():
-                raise StaleArchiveTask("discovery job has invalid original input counts")
-            count = int(raw)
-            if str(count) != raw:
-                raise StaleArchiveTask("discovery job has noncanonical original input counts")
-            counts.append(count)
+        try:
+            counts = [
+                parse_scalar("nonnegative", raw)
+                for raw in (self.source_count, self.selection_count)
+            ]
+        except ValueError:
+            raise StaleArchiveTask("discovery job has invalid original input counts") from None
         return CorpusReplayBinding(
             self.attempt_id,
             self.workspace_id,
@@ -495,15 +495,15 @@ def pin_discovery_corpus(
     if (
         job.worker_epoch < 1
         or manifest.sources.admission_sha256 != job.admission_sha256
-        or str(manifest.sources.source_count) != job.journal_count
+        or format_scalar("nonnegative", manifest.sources.source_count) != job.journal_count
     ):
         raise StaleArchiveTask("original corpus inputs have another claimed archive attempt")
     proposed = replace(
         job,
         source_manifest_sha256=manifest.sources.manifest_sha256,
-        source_count=str(manifest.sources.source_count),
+        source_count=format_scalar("nonnegative", manifest.sources.source_count),
         selection_manifest_sha256=manifest.selection_sha256,
-        selection_count=str(manifest.selection_count),
+        selection_count=format_scalar("nonnegative", manifest.selection_count),
     )
     _ = proposed.binding
     with factory() as session, session.begin():

@@ -679,3 +679,25 @@ def test_catalog_cannot_admit_live_or_unconfirmed_discovery_reclamation_authorit
             )
     with case.factory() as session:
         assert owner.DiscoveryJob.read(session.get(Job, case.job.workspace_id)) == case.job
+
+
+def test_original_native_binding_preserves_counts_beyond_default_python_digit_limit(case):
+    import sys
+
+    from riverhog_canonical_json import format_scalar
+
+    raw = "9" * (sys.int_info.default_max_str_digits + 1)
+    pinned = replace(
+        case.job,
+        source_manifest_sha256="a" * 64,
+        selection_manifest_sha256="b" * 64,
+        source_count=raw,
+        selection_count=raw,
+        journal_count=raw,
+    )
+    binding = pinned.binding
+    assert format_scalar("nonnegative", binding.source_count) == raw
+    assert format_scalar("nonnegative", binding.selection_count) == raw
+    assert raw.encode() in binding.to_bytes()
+    assert binding.attempt_id == pinned.attempt_id
+    assert binding.directory_id == pinned.workspace_id

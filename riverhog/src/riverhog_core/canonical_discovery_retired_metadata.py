@@ -41,7 +41,8 @@ class RetiredDiscoveryMetadata:
             job.build_id is not None
             or job.state != "retiring"
             or job.storage_state != "confirmed"
-            or job.reclamation_phase not in {"children", "child_directory"}
+            or job.reclamation_phase
+            not in {"children", "child_directory", "corpus", "journals_root"}
             or retirement.directory is None
             or retirement.directory.name != job.workspace_id
             or retirement.custody is None

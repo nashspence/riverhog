@@ -315,3 +315,39 @@ def test_metadata_capacity_rejects_before_checkpoint_payload(
                     workspace.advance_source(summary)
             workspace._metadata_budget = 4096
             assert workspace.advance_source(summary).complete
+
+
+def test_wide_original_counts_use_metadata_admission_without_implicit_python_limit(
+    tmp_path, journal, catalog
+):
+    from riverhog_canonical_json import parse_scalar, require_canonical_json
+
+    raw_count = "9" * (sys.int_info.default_max_str_digits + 1)
+    expected = parse_scalar("nonnegative", raw_count)
+    path = directory(tmp_path)
+    with validate_journal(history(journal, 1, catalog), catalog=catalog) as summary:
+        source = OwnedCorpusSource(summary, catalog)
+        source.binding = replace(source.binding, source_count=expected, selection_count=expected)
+        encoded = source.binding.to_bytes()
+        decoded = require_canonical_json(encoded)
+        assert decoded["source_count"] == decoded["selection_count"] == raw_count
+        with pytest.raises(JournalValidationCapacity, match="binding exceeds"):
+            open_workspace(
+                path,
+                source,
+                create=True,
+                catalog=catalog,
+                metadata_byte_budget=len(encoded) - 1,
+            )
+        assert not (path / "corpus.sqlite3").exists()
+        with open_workspace(
+            path,
+            source,
+            create=True,
+            catalog=catalog,
+            metadata_byte_budget=len(encoded) + 65536,
+        ) as workspace:
+            assert workspace.advance_source(summary, frame_budget=1).accepted_frames == 1
+            with pytest.raises(IncompleteSourceError, match="manifests are incomplete"):
+                workspace.advance_semantics()
+        assert (path / "corpus.sqlite3").is_file()
