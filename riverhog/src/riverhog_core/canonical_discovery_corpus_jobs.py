@@ -20,7 +20,7 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance import CorpusReplayBinding
 from riverhog_provenance_contracts import ContractCatalog, core_contract
-from sqlalchemy import Select, exists, select, update
+from sqlalchemy import Select, delete, exists, select, update
 from sqlalchemy.orm import Session
 
 from riverhog_core.canonical_discovery_archive_work import (
@@ -173,9 +173,10 @@ def _declaration(mode: str) -> Declaration:
         "lose_discovery_corpus": 1,
         "retire_discovery_job": 1,
         "advance_discovery_reclamation": 1,
+        "delete_retired_discovery_job": 2,
     }[mode]
     mutates = int(mode not in {"discovery_worker_current", "discovery_worker_snapshot"})
-    versions = mutates
+    versions = int(mutates and mode != "delete_retired_discovery_job")
 
     def count(value: int) -> Expression:
         return Expression("constant", value=value, unit=COUNT)
@@ -665,3 +666,36 @@ def advance_discovery_reclamation(
         .returning(Job)
     ).scalar_one_or_none()
     return None if row is None else DiscoveryJob.read(row)
+
+
+@declare_growth(_declaration("delete_retired_discovery_job"))
+def delete_retired_discovery_job(session: Session, job: DiscoveryJob) -> bool:
+    """Receive only the exact original directory-phase catalog disposition.
+
+    The composing owner must positively receive the actual original parent
+    namespace and every descriptor first. This mutation performs no physical
+    receiving and supplies no terminal authority. A missing row is only a
+    catalog outcome; a present stale row is never mistaken for absence.
+    """
+    if job.build_id is not None or job.state != "directory" or job.reclamation_phase != "directory":
+        return False
+    removed = session.execute(
+        delete(Job)
+        .where(
+            *_identity(job),
+            Job.version == job.version,
+            Job.state == "directory",
+            Job.storage_state == job.storage_state,
+            Job.failure == job.failure,
+        )
+        .returning(Job.workspace_id)
+        .execution_options(synchronize_session=False)
+    ).scalar_one_or_none()
+    if removed is not None:
+        return True
+    return (
+        session.execute(
+            select(Job.workspace_id).where(Job.workspace_id == job.workspace_id)
+        ).scalar_one_or_none()
+        is None
+    )

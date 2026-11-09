@@ -25,16 +25,16 @@ from tests.unit.test_canonical_discovery_root_reclamation_growth import sample
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX original parent receiving")
 
 
-@pytest.mark.growth_witness(
-    "canonical-discovery-parent-reclamation/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.canonical_discovery_parent_reclamation.DiscoveryParentRetirement.reclaim",
-)
-def test_measured_original_parent_receiving(
-    tmp_path, fixed_inputs, catalog_templates, record_property
+def measure_parent_receiving(
+    tmp_path, fixed_inputs, catalog_templates, record_property, *, finalize=False
 ):
     admission, _ = fixed_inputs
-    binding = growth_binding(owner.DiscoveryParentRetirement.reclaim)
+    operation = (
+        owner.DiscoveryParentRetirement.finish
+        if finalize
+        else owner.DiscoveryParentRetirement.reclaim
+    )
+    binding = growth_binding(operation)
     projection = project_bindings((binding,))
     samples = []
     variants = (
@@ -52,6 +52,8 @@ def test_measured_original_parent_receiving(
         "catalog-stale",
         "sync-refusal",
         "phase-rollback",
+        "catalog-missing",
+        "catalog-missing-present",
     )
     for retained, width in basis.SPECIFICATIONS:
         for cold in (False, True):
@@ -83,6 +85,17 @@ def test_measured_original_parent_receiving(
                 root.chmod(0o700)
                 namespace = case.path.parent
                 path = case.path
+                if variant == "catalog-missing":
+                    job = (
+                        owner.DiscoveryParentRetirement(case.factory, job, namespace).reclaim().job
+                    )
+                    with case.factory() as session, session.begin():
+                        assert jobs.delete_retired_discovery_job(session, job)
+                elif variant == "catalog-missing-present":
+                    with case.factory() as session, session.begin():
+                        job = jobs.advance_discovery_reclamation(session, job, "directory")
+                        assert job is not None
+                        assert jobs.delete_retired_discovery_job(session, job)
                 if variant in {"absent-selected", "absent-root", "absent-control"}:
                     (path / ".lease").unlink()
                     path.rmdir()
@@ -148,22 +161,25 @@ def test_measured_original_parent_receiving(
 
                             patch.setattr(os, name, mutation)
                         with recorder.observe(case, cold=cold), direct_primitives(recorder):
-                            if variant == "catalog-stale":
+                            if variant in {"catalog-stale", "catalog-missing-present"}:
                                 with pytest.raises(owner.StaleArchiveTask):
-                                    receiver.reclaim()
+                                    operation(receiver)
                             elif variant in {"unknown", "known-data"}:
                                 with pytest.raises(owner.LostJournalValidationWorkspace):
-                                    receiver.reclaim()
+                                    operation(receiver)
                             elif variant == "sync-refusal":
                                 with pytest.raises(owner.JournalValidationCapacity):
-                                    receiver.reclaim()
+                                    operation(receiver)
                             elif variant == "phase-rollback":
                                 with pytest.raises(OSError, match="phase rollback"):
-                                    receiver.reclaim()
+                                    operation(receiver)
                             else:
-                                result = receiver.reclaim()
+                                result = operation(receiver)
                                 assert result.namespace_received is (
                                     not variant.startswith("busy-")
+                                )
+                                assert result.catalog_received is (
+                                    finalize and not variant.startswith("busy-")
                                 )
                     assert receiver._closed and not recorder.live
                     assert not recorder.statements
@@ -187,4 +203,28 @@ def test_measured_original_parent_receiving(
         "three nonblocking kernel locks, exact thirteen-name probes and synchronized "
         "unlink/rmdir. Independent retained rows and actual selected failure widths1/17/1025, "
         "cold/warm, missing prefixes, busy custody, unknown/data, stale, capacity and rollback.",
+    )
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-parent-reclamation/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_parent_reclamation.DiscoveryParentRetirement.reclaim",
+)
+def test_measured_original_parent_receiving(
+    tmp_path, fixed_inputs, catalog_templates, record_property
+):
+    measure_parent_receiving(tmp_path, fixed_inputs, catalog_templates, record_property)
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-retirement-finalization/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_parent_reclamation.DiscoveryParentRetirement.finish",
+)
+def test_measured_original_catalog_finalization(
+    tmp_path, fixed_inputs, catalog_templates, record_property
+):
+    measure_parent_receiving(
+        tmp_path, fixed_inputs, catalog_templates, record_property, finalize=True
     )

@@ -14,7 +14,9 @@ from riverhog_growth_contracts import (
 )
 
 
-def declare_parent_reclamation_growth(operation: Callable[..., Any]) -> None:
+def declare_parent_reclamation_growth(
+    operation: Callable[..., Any], *, catalog: bool = False
+) -> None:
     def count(value: int) -> Expression:
         return Expression("constant", value=value, unit=COUNT)
 
@@ -30,10 +32,10 @@ def declare_parent_reclamation_growth(operation: Callable[..., Any]) -> None:
         "core_changed_rows": 0,
         "core_opened_connections": 0,
         "core_closed_connections": 0,
-        "catalog_sql_statements": 7,
-        "catalog_driver_statements": 134,
-        "catalog_returned_rows": 64,
-        "catalog_changed_rows": 1,
+        "catalog_sql_statements": 9 if catalog else 7,
+        "catalog_driver_statements": 168 if catalog else 134,
+        "catalog_returned_rows": 80 if catalog else 64,
+        "catalog_changed_rows": 2 if catalog else 1,
         "uuid_values": 1,
         "open_calls": 5,
         "close_calls": 5,
@@ -50,13 +52,25 @@ def declare_parent_reclamation_growth(operation: Callable[..., Any]) -> None:
         "json_encodes": 0,
     }
     declaration = Declaration(
-        id="riverhog-server.discovery-parent-reclamation.growth/v1",
+        id=(
+            "riverhog-server.discovery-retirement-finalization.growth/v1"
+            if catalog
+            else "riverhog-server.discovery-parent-reclamation.growth/v1"
+        ),
         authority="riverhog-server",
         subjects=(
             "riverhog_core.canonical_discovery_parent_reclamation."
-            "DiscoveryParentRetirement.reclaim",
+            + (
+                "DiscoveryParentRetirement.finish"
+                if catalog
+                else "DiscoveryParentRetirement.reclaim"
+            ),
         ),
-        scope="one original parent receiving attempt including actual descriptor closure",
+        scope=(
+            "one original parent, descriptor and exact catalog receiving attempt"
+            if catalog
+            else "one original parent receiving attempt including actual descriptor closure"
+        ),
         starts_at="receive a fresh retained owner with exact original retired job and root",
         ends_at="return synchronized namespace absence or busy, or propagate a retained failure",
         dimensions=(
@@ -71,7 +85,7 @@ def declare_parent_reclamation_growth(operation: Callable[..., Any]) -> None:
                     COUNT,
                     "upper" if value else "equal",
                     count(value),
-                    "Three retired point fences, at most one phase CAS and fixed exact "
+                    "Three point fences, optional phase/deletion and exact "
                     "namespace primitives; no Core or payload access.",
                 )
                 for metric, value in limits.items()
@@ -90,11 +104,11 @@ def declare_parent_reclamation_growth(operation: Callable[..., Any]) -> None:
                 Expression(
                     "sum",
                     terms=(
-                        count(131072),
+                        count(163840 if catalog else 131072),
                         Expression(
                             "product",
                             terms=(
-                                count(8192),
+                                count(10240 if catalog else 8192),
                                 Expression(
                                     "log2_ceil",
                                     terms=(
@@ -114,8 +128,16 @@ def declare_parent_reclamation_growth(operation: Callable[..., Any]) -> None:
                 for metric, multiplier, meaning in (
                     ("core_returned_octets", 0, "No Core rows."),
                     ("core_parameter_octets", 0, "No Core predicates."),
-                    ("catalog_returned_octets", 64, "Complete selected retired rows."),
-                    ("catalog_parameter_octets", 272, "Complete old and proposed controls."),
+                    (
+                        "catalog_returned_octets",
+                        80 if catalog else 64,
+                        "Complete selected retired rows.",
+                    ),
+                    (
+                        "catalog_parameter_octets",
+                        340 if catalog else 272,
+                        "Complete old and proposed controls.",
+                    ),
                     ("json_decoded_octets", 0, "No JSON decoding."),
                     ("json_encoded_octets", 0, "No JSON encoding."),
                 )
@@ -163,7 +185,7 @@ def declare_parent_reclamation_growth(operation: Callable[..., Any]) -> None:
             "and blocks completion until actual close receiving.",
         ),
         invariants=(
-            "Missing catalog rows never prove physical receiving.",
+            "Missing catalog rows require actual absence and never grant disposal.",
             "No root, marker, lease, database or payload is created, repaired or interpreted.",
             "Unknown entries remain and prevent exact directory completion.",
             "Shared global root and coordinator remain intact.",

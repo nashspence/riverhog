@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from riverhog_provenance import JournalValidationCapacity
+from sqlalchemy import select
 from state_schema import read_snapshot
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
@@ -19,6 +20,7 @@ from riverhog_core.canonical_discovery_parent_reclamation_growth import (
     declare_parent_reclamation_growth,
 )
 from riverhog_core.catalog_db import SessionFactory
+from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     _private_directory,
@@ -39,6 +41,7 @@ _DATA_NAMES = (
 class DiscoveryParentReceivingProgress:
     job: jobs.DiscoveryJob
     namespace_received: bool
+    catalog_received: bool = False
 
 
 class DiscoveryParentRetirement:
@@ -56,7 +59,8 @@ class DiscoveryParentRetirement:
     No root, coordinator, lease or payload is created or repaired. Exact rmdir
     receives emptiness without enumerating or removing unknown entries. The
     shared root and coordinator remain. A successful result follows actual
-    descriptor closure and synchronized selected absence; the catalog row stays.
+    descriptor closure and synchronized selected absence. Reclaim preserves the
+    catalog row; finish subsequently receives its exact original disposition.
 
     A failed close retains its descriptor and the remaining custody. The caller
     must retain this object until close is positively received. After any
@@ -81,6 +85,7 @@ class DiscoveryParentRetirement:
         self._lease: int | None = None
         self._attempted = False
         self._closed = False
+        self._catalog_absent = False
 
     def close(self) -> None:
         for slot in ("_lease", "_directory", "_coordinator", "_root", "_anchor"):
@@ -102,8 +107,15 @@ class DiscoveryParentRetirement:
         ):
             raise StaleArchiveTask("parent receiving requires its original irreversible phase")
         with read_snapshot(self.factory) as session:
-            if jobs.retire_discovery_job(session, job) != job:
+            row = session.execute(
+                select(Row).where(Row.workspace_id == job.workspace_id)
+            ).scalar_one_or_none()
+            if row is None and job.state == "directory":
+                self._catalog_absent = True
+                return
+            if row is None or jobs.DiscoveryJob.read(row) != job:
                 raise StaleArchiveTask("parent receiving lost its exact original catalog fence")
+            self._catalog_absent = False
 
     @staticmethod
     def _same_entry(name: str | Path, parent: int | None, descriptor: int) -> None:
@@ -196,6 +208,8 @@ class DiscoveryParentRetirement:
             os.fsync(self._root)
             self._advance()
             return True
+        if self._catalog_absent:
+            raise StaleArchiveTask("missing discovery catalog cannot dispose a surviving parent")
         _private_directory(self._directory)
         if self._coordinator is None:
             raise LostJournalValidationWorkspace("selected parent has lost its root coordinator")
@@ -268,8 +282,31 @@ class DiscoveryParentRetirement:
             self.close()
         return DiscoveryParentReceivingProgress(self.job, received)
 
+    def _delete_catalog(self) -> None:
+        with self.factory() as session, session.begin():
+            if not jobs.delete_retired_discovery_job(session, self.job):
+                raise StaleArchiveTask("final discovery catalog receiving lost its original fence")
+
+    def finish(self) -> DiscoveryParentReceivingProgress:
+        """Receive the actual original namespace, closure and exact catalog row.
+
+        Retain this owner before calling. Busy custody leaves the catalog intact.
+        A close or commit exception never reports completion. A fresh cold
+        retry keeps the original directory-phase job and positively receives
+        actual absence again; a missing catalog row never authorizes removing
+        a surviving namespace. Application terminal authority remains separate.
+        """
+        result = self.reclaim()
+        if not result.namespace_received:
+            return result
+        self._delete_catalog()
+        return DiscoveryParentReceivingProgress(self.job, True, catalog_received=True)
+
 
 declare_parent_reclamation_growth(DiscoveryParentRetirement.reclaim)
 
 
 declare_parent_close_growth(DiscoveryParentRetirement.close)
+
+
+declare_parent_reclamation_growth(DiscoveryParentRetirement.finish, catalog=True)
