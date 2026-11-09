@@ -1022,6 +1022,25 @@ class SqlAlchemyCollectionUploadService:
             if upload is None or not _upload_visible_to_deleter(session, upload, principal):
                 raise NotFound(f"collection upload not found: {normalized}")
 
+    def _terminal_write_guard(
+        self, collection_id: int, operation_id: str
+    ) -> Callable[[Session], None]:
+        """Reconstruct current scope for one exact terminal execution owner."""
+        from .archive_upload_terminal_authority import ArchiveUploadTerminalAuthority
+
+        normalized = _collection_id(collection_id)
+
+        def guard_factory(kind: str, principal: Principal) -> Callable[[Session], None]:
+            return (
+                self._cancel_write_guard(normalized, principal)
+                if kind == "cancel"
+                else self._discard_write_guard(normalized, principal)
+            )
+
+        return ArchiveUploadTerminalAuthority(
+            self._session_factory, normalized, operation_id, guard_factory
+        )
+
     def _cancel_write_guard(
         self, collection_id: int, principal: Principal
     ) -> Callable[[Session], None]:

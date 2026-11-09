@@ -181,6 +181,28 @@ def require_key_authorization(
         raise NotFound("application key authorization changed")
 
 
+def load_retained_key_principal(session: Session, fence: KeyAuthorizationFence) -> Principal:
+    """Load current grants while the caller retains this exact live key row.
+
+    This is an internal continuation reference, never token authentication or
+    permission granted by an earlier operation. The caller starts SQLite's writer
+    and retains the key before later claim/construction locks. Key mutations use
+    that same row fence. The returned view still needs operation-specific scope.
+    """
+    require_key_authorization(session, fence, for_update=False)
+    access = _record_access(session, fence.key_id)
+    principal = Principal(
+        id=fence.app,
+        key_id=fence.key_id,
+        access=frozenset(access),
+        authorization_view_identity=_authorization_view_identity(
+            session, app=fence.app, key_id=fence.key_id, access=access
+        ),
+    )
+    require_key_authorization(session, fence, for_update=False)
+    return principal
+
+
 def _begin_key_mutation(session: Session) -> None:
     # FOR UPDATE is a key-row fence on PostgreSQL; SQLite needs the writer before
     # the read so a stale read/modify/write cannot overwrite a newer grant set.

@@ -13,7 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 from time_formats import parse_utc_timestamp, utc_epoch_ns_now, utc_timestamp_now
 
-from riverhog_core.app_permissions import Principal
+from riverhog_core.app_permissions import COLLECTIONS_CREATE, ApplicationAccess, Principal
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
 from riverhog_core.catalog_models import CollectionUploadRecord
 from riverhog_core.catalog_workflow_models import CollectionProcessingClaimRecord
@@ -65,6 +65,33 @@ def retain_upload_claim(
     ):
         raise NotFound("collection upload execution authority is no longer active")
     return str(claim.id)
+
+
+def retain_processing_upload_principal(
+    session: Session, principal_id: str, key: KeyAuthorizationFence, *, nowait: bool = False
+) -> Principal:
+    """Reload only creator scope for an already selected processing-output cancel.
+
+    The caller retains the live original key before this claim. No capability,
+    input-read authority, deletion scope or bearer is reconstructed. The selected
+    upload and terminal guards must still bind this execution and original key.
+    """
+    claim_id = retain_upload_claim(session, principal_id, key.key_id, nowait=nowait)
+    if claim_id is None:
+        raise NotFound("collection upload execution authority is unavailable")
+    claim = session.get(CollectionProcessingClaimRecord, claim_id, populate_existing=True)
+    if (
+        claim is None
+        or claim.consumer_app != key.app
+        or claim.result_kind != "collection"
+        or claim.execution_id != principal_id.removeprefix("processing:")
+    ):
+        raise NotFound("collection upload execution authority changed")
+    return Principal(
+        id=principal_id,
+        key_id=key.key_id,
+        access=frozenset({ApplicationAccess(COLLECTIONS_CREATE)}),
+    )
 
 
 def retain_inactive_upload_claim(
