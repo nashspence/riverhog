@@ -88,6 +88,7 @@ class MirroredArchiveBegin:
         self._cache_ticket: ArmedProviderWrite | None = None
         self._cache_response: WriteExecutionResult | None = None
         self._cache_reported = False
+        self._cache_withdrawn_settled = False
         self._withdrawal: WithdrawnProviderWrite | None = None
         self._archive_response: WriteExecutionResult | None = None
 
@@ -98,7 +99,23 @@ class MirroredArchiveBegin:
             self._running
             or self._cache_admission_pending
             or self._cache_ticket is not None
+            and not self._cache_withdrawn_settled
             and self._transfer_receipt is None
+        )
+
+    @property
+    def has_unclosed_execution(self) -> bool:
+        """Closed forward calls can still retain an owned cache population."""
+        return (
+            self._running
+            or self._cache_admission_pending
+            or self._cache_ticket is not None
+            and not self._cache_withdrawn_settled
+            and (
+                self._cache_response is None
+                or self._cache_response.execution != "closed"
+                or not self._cache_reported
+            )
         )
 
     def drain_terminal(self, operation_id: str) -> Literal["busy", "pending", "closed"]:
@@ -120,6 +137,7 @@ class MirroredArchiveBegin:
                 self._cache_ticket is not None
                 and self._cache_response is None
                 and self._withdrawal is None
+                and not self._cache_withdrawn_settled
                 and self._transfer_receipt is None
             ):
                 try:
@@ -128,7 +146,7 @@ class MirroredArchiveBegin:
                     # A started or uncertain call has no unused-capability proof.
                     return "pending"
             self.flush_cache_report()
-            return "pending" if self.has_pending or archive == "pending" else "closed"
+            return "pending" if self.has_unclosed_execution or archive == "pending" else "closed"
         finally:
             self._lock.release()
 
@@ -315,6 +333,7 @@ class MirroredArchiveBegin:
         with self._lock:
             if self._withdrawal is not None:
                 self._cache.settle_withdrawn(self._withdrawal)
+                self._cache_withdrawn_settled = True
                 self._withdrawal = None
             if self._cache_response is not None and not self._cache_reported:
                 assert self._cache_ticket is not None

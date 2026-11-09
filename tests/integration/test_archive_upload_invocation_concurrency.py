@@ -183,3 +183,17 @@ def test_postgres_original_native_seal_retains_receipt_through_closed_gate(
     test_original_native_seal_survives_lost_reply_without_reselection_or_lease_renewal(
         tmp_path, monkeypatch, kind, True, True, database_url=database_url
     )
+
+
+@pytest.mark.parametrize("unknown", (False, True))
+def test_postgres_partial_cache_family_retains_resources_after_execution_drain(
+    database_url, tmp_path, monkeypatch, unknown
+):
+    _service_family_units(
+        tmp_path,
+        monkeypatch,
+        "direct",
+        unknown,
+        database_url=database_url,
+        terminal_after_first=True,
+    )

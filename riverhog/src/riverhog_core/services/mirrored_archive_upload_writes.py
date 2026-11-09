@@ -186,7 +186,7 @@ class MirroredArchiveUploadWrites:
         )
 
     def drain_terminal(self, operation_id: str) -> Literal["busy", "pending", "closed"]:
-        """Receive original work including the independently retained begin."""
+        """Close forward execution while retaining population ownership."""
         return self._drain_terminal(operation_id, include_begin=True)
 
     def drain_invocation(self, operation_id: str) -> Literal["busy", "pending", "closed"]:
@@ -225,7 +225,7 @@ class MirroredArchiveUploadWrites:
                     checkpoint_json=checkpoint,
                 )
             self.flush_cache_reports()
-            pending = self.has_pending if include_begin else self.has_pending_invocation
+            pending = self.has_pending_invocation
             return "pending" if pending or status == "pending" else "closed"
         finally:
             self._lock.release()

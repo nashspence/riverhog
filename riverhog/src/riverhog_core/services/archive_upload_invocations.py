@@ -631,8 +631,8 @@ class ArchiveUploadInvocationRegistry:
             if type(result) is not str or result not in {"busy", "pending", "closed"}:
                 raise ValueError("original upload actor returned invalid drainage evidence")
             with self._lock:
-                if result == "closed" and context.family_pin is not None:
-                    result = "pending"
+                # A family pin retains resource ownership independently of
+                # the original actor's positive forward-execution closure.
                 if result == "closed" and not context.drained:
                     context.drained = True
                     context.construction.remaining -= 1

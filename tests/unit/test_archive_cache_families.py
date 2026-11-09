@@ -258,6 +258,7 @@ def _service_family_units(
     refuse_parent=False,
     terminal_unknown=False,
     maintained=False,
+    terminal_after_first=False,
 ):
     from riverhog_age import CHUNK_SIZE, ResumableAgeScryptSession
     from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -412,6 +413,58 @@ def _service_family_units(
             if number == 0:
                 assert owner.has_pending and not registry.retire_idle(received)
                 assert not service._archive_cache_families.retire(payload)
+            if terminal_after_first:
+                assert number == 0
+                operation = actor.admission.select_terminal(
+                    case.collection_id,
+                    kind="cancel",
+                    request={"fixture": "partial cache family"},
+                    principal_id=_CREATOR.id,
+                    key_id=_CREATOR.key_id,
+                    grants=service._config.archive_write,
+                    guard=service._payload_write_guard(case.collection_id, _CREATOR),
+                    validate_selection=lambda session, upload: None,
+                )
+                before = list(actor.seen), list(cache_calls)
+                assert (
+                    registry.submit_terminal(key, target_incarnation=target, operation_id=operation)
+                    == "submitted"
+                )
+                (terminal,) = _receive(registry, execution)
+                assert terminal.result() == ("pending" if unknown else "closed")
+                assert (actor.seen, cache_calls) == before
+                with session_scope(case.factory) as session:
+                    observation = service._archive_terminal_observation.observe(
+                        session, case.collection_id, operation
+                    )
+                    assert not observation.records.archive_unclosed
+                    assert not observation.records.cache_begin_unclosed
+                    assert observation.records.cache_write_unclosed is unknown
+                    assert observation.records.cache_begin_retained
+                    assert not observation.records.payload_sealed
+                    assert session.get(CollectionUploadRecord, case.collection_id) is not None
+                    assert (
+                        session.scalar(select(func.count()).select_from(CachePopulationBeginRecord))
+                        == 1
+                    )
+                assert observation.invocations == ("fenced" if unknown else "drained")
+                assert observation.inputs == observation.execution == "untracked"
+                assert owner.has_pending and payload.released
+                assert not service._archive_cache_families.retire(payload)
+                assert len(service._archive_retention._reservations) == 1
+                assert len(service._archive_cache_families._families) == 1
+                assert next(iter(service._archive_cache_families._families.values())).pin.active
+                with pytest.raises(Conflict):
+                    service._reserve_payload_input(
+                        case.collection_id,
+                        case.object_id,
+                        1,
+                        plan_sha256=case.plan_sha256,
+                        principal=_CREATOR,
+                    )
+                assert (actor.seen, cache_calls) == before
+                assert service._archive_inputs._bytes == 0
+                return
 
         assert sum(call.operation.kind == "begin" for call in cache_calls) == 1
         assert originals[0]._writes._begin is originals[1]._writes._begin
@@ -622,3 +675,11 @@ def test_service_maintenance_retires_closed_families_but_preserves_unknown_cache
     tmp_path, monkeypatch, mode, unknown
 ):
     _service_family_units(tmp_path, monkeypatch, mode, unknown, maintained=True)
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("unknown", (False, True))
+def test_partial_cache_family_closes_only_confirmed_forward_execution_and_retains_ownership(
+    tmp_path, monkeypatch, mode, unknown
+):
+    _service_family_units(tmp_path, monkeypatch, mode, unknown, terminal_after_first=True)
