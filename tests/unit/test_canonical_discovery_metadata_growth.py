@@ -213,7 +213,7 @@ class Recorder:
             finally:
                 self.active = False
 
-    def sample(self, operation, dimensions):
+    def sample(self, operation, dimensions, *, implementation=owner.DiscoveryMetadata):
         metrics = dict(self.metrics)
         mapping = {
             "sql_statements": "catalog_sql_statements",
@@ -230,7 +230,7 @@ class Recorder:
         metrics["hashed_octets"] = (
             metrics.get("hashed_octets", 0) + self.catalog.metrics["hashed_octets"]
         )
-        binding = growth_binding(getattr(owner.DiscoveryMetadata, operation))
+        binding = growth_binding(getattr(implementation, operation))
         projection = project_bindings((binding,))
         sample = {
             "declaration": binding.declaration.id,
