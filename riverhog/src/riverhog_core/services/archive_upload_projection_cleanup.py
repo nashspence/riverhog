@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from dataclasses import dataclass
+from contextlib import ExitStack
+from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any, Literal
 
 from riverhog_protocol.errors import Conflict
@@ -12,6 +14,7 @@ from sqlalchemy import Table, select
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 
+from riverhog_core.canonical_discovery_corpus_jobs import DiscoveryJob, retire_discovery_job
 from riverhog_core.catalog_base import Base
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Job
@@ -20,6 +23,10 @@ from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexGenerationRecord as Generation,
 )
 from riverhog_core.incremental_emission import VolumeEmissionCapacity, VolumeEmissionLimits
+from riverhog_core.journal_validation_workspace import (
+    ValidationWorkspaceCustody,
+    lease_journal_validation_workspace,
+)
 from riverhog_core.services.archive_upload_cleanup import ArchiveUploadCleanup
 from riverhog_core.services.catalog_retirement import (
     CatalogRetirementRow,
@@ -150,6 +157,7 @@ class ProjectionCleanupProgress:
     metadata_bytes: int = 0
     exhausted: bool = False
     pending_reason: Literal["discovery-custody"] | None = None
+    discovery_retired: bool = False
 
 
 def _original_projection(session: Session, upload: Upload) -> dict[str, Any] | None:
@@ -225,10 +233,19 @@ class ArchiveUploadProjectionCleanup:
     replacement for that proof.
     """
 
-    def __init__(self, factory: SessionFactory, cleanup: ArchiveUploadCleanup) -> None:
+    def __init__(
+        self,
+        factory: SessionFactory,
+        cleanup: ArchiveUploadCleanup,
+        *,
+        discovery_root: Path | None = None,
+    ) -> None:
         validate_projection_cleanup_routes()
+        if discovery_root is not None and not discovery_root.is_absolute():
+            raise ValueError("discovery retirement requires its absolute original workspace root")
         self._factory = factory
         self._cleanup = cleanup
+        self._discovery_root = discovery_root
 
     def advance(
         self,
@@ -238,7 +255,8 @@ class ArchiveUploadProjectionCleanup:
         guard: Callable[[Session], None],
         limits: VolumeEmissionLimits,
     ) -> ProjectionCleanupProgress:
-        with session_scope(self._factory) as session:
+        # Exact filesystem custody outlives both catalog commit and rollback.
+        with ExitStack() as resources, session_scope(self._factory) as session:
             self._cleanup.require_exhausted(session, collection_id, operation_id, guard=guard)
             upload = session.get(Upload, collection_id)
             assert upload is not None
@@ -298,6 +316,8 @@ class ArchiveUploadProjectionCleanup:
                         Generation.archive_generation,
                         Generation.archive_root_sha256,
                         Generation.provenance_identity,
+                        Generation.expected_epoch,
+                        Generation.extraction_contract_sha256,
                     )
                     .where(Generation.collection_id == collection_id)
                     .order_by(Generation.build_id)
@@ -319,17 +339,48 @@ class ArchiveUploadProjectionCleanup:
                         dimension="metadata_bytes", required=used, admitted=limits.metadata_bytes
                     )
                 build_id = generation["build_id"]
-                workspace = session.scalar(
-                    select(Job.workspace_id).where(Job.build_id == build_id).limit(1)
+                record = session.scalar(
+                    select(Job).where(Job.build_id == build_id).limit(1).with_for_update()
                 )
-                if workspace is not None:
-                    used += metadata_row_bytes({"workspace_id": workspace})
+                if record is not None:
+                    job = DiscoveryJob.read(record)
+                    used += metadata_row_bytes(asdict(job))
                     if used > limits.metadata_bytes:
                         raise VolumeEmissionCapacity(
                             dimension="metadata_bytes",
                             required=used,
                             admitted=limits.metadata_bytes,
                         )
+                    if (
+                        job.archive_generation != original["archive_generation"]
+                        or job.archive_root_sha256 != original["archive_root_sha256"]
+                        or job.provenance_identity != original["provenance_identity"]
+                        or job.artifact_set_identity != original["artifact_set_identity"]
+                        or job.build_epoch != generation["expected_epoch"]
+                        or job.policy_sha256 != generation["extraction_contract_sha256"]
+                    ):
+                        raise Conflict("discovery workspace differs from its original projection")
+                    if self._discovery_root is not None:
+                        captured: list[ValidationWorkspaceCustody] = []
+                        directory = resources.enter_context(
+                            lease_journal_validation_workspace(
+                                self._discovery_root,
+                                job.workspace_id,
+                                create=False,
+                                on_custody=captured.append,
+                            )
+                        )
+                        if directory is not None:
+                            if not captured[0].verify_current():
+                                raise Conflict("discovery retirement lost its original custody")
+                            retired = retire_discovery_job(session, job)
+                            if retired is None:
+                                raise Conflict("discovery retirement lost its exact catalog fence")
+                            return ProjectionCleanupProgress(
+                                "discovery_validation_jobs",
+                                metadata_bytes=used,
+                                discovery_retired=True,
+                            )
                     return ProjectionCleanupProgress(
                         "discovery_validation_jobs",
                         metadata_bytes=used,

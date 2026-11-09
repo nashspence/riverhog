@@ -551,7 +551,8 @@ def _seed_linked_discovery(case, build_id, root, resources):
         session.flush()
         original = DiscoveryJob.read(record)
     assert discovery_worker_current(case.factory, original)
-    path = resources.enter_context(
+    custody = resources.enter_context(ExitStack())
+    path = custody.enter_context(
         lease_journal_validation_workspace(
             root,
             original.workspace_id,
@@ -562,7 +563,7 @@ def _seed_linked_discovery(case, build_id, root, resources):
     assert path is not None
     marker = path / "retained-native-owner"
     marker.write_bytes(b"original independently leased bytes")
-    return SimpleNamespace(root=root, marker=marker, original=original)
+    return SimpleNamespace(root=root, marker=marker, original=original, custody=custody)
 
 
 def _linked_discovery(ready, tmp_path):
