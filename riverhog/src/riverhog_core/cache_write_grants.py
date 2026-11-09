@@ -7,10 +7,10 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True, slots=True)
 class CacheWriteGrants:
-    calls: int
-    control_bytes: int
-    result_bytes: int
-    cleanup_bytes: int
+    calls: int = 64
+    control_bytes: int = 8 * 1024 * 1024
+    result_bytes: int = 64 * 1024
+    cleanup_bytes: int = 64 * 1024
 
     def __post_init__(self) -> None:
         for value in (self.calls, self.control_bytes, self.result_bytes, self.cleanup_bytes):

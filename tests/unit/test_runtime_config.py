@@ -538,3 +538,38 @@ def test_archive_input_grants_are_separate_operator_owned_plaintext_capacity(tmp
             _write(path, {**document, "archive_input": {**document["archive_input"], name: value}})
             with pytest.raises(ValueError):
                 load_runtime_config()
+
+
+def test_cache_write_operator_grants_are_independent_and_round_trip(tmp_path, monkeypatch):
+    from riverhog_core.cache_write_grants import CacheWriteGrants
+
+    path, document = _document(tmp_path, monkeypatch)
+    assert load_runtime_config().cache_write == CacheWriteGrants()
+    document["cache_write"] = {
+        "calls": 2,
+        "control_bytes": "3MiB",
+        "result_bytes": "12KiB",
+        "cleanup_bytes": "6KiB",
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.cache_write == CacheWriteGrants(
+        calls=2,
+        control_bytes=3 * 1024**2,
+        result_bytes=12 * 1024,
+        cleanup_bytes=6 * 1024,
+    )
+    assert config.archive_write.calls == 64
+    assert config.cache_write.control_bytes != config.archive_write.control_bytes
+
+    for name, value in (
+        ("calls", 0),
+        ("calls", True),
+        ("control_bytes", "0B"),
+        ("result_bytes", "0B"),
+        ("cleanup_bytes", "0B"),
+        ("unknown", "1B"),
+    ):
+        _write(path, {**document, "cache_write": {**document["cache_write"], name: value}})
+        with pytest.raises(ValueError):
+            load_runtime_config()

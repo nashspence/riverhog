@@ -16,6 +16,7 @@ from time_formats import parse_duration
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.archive_input_grants import ArchiveInputGrants
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
+from riverhog_core.cache_write_grants import CacheWriteGrants
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
 from riverhog_core.registration_tuning import RegistrationTuning
@@ -36,6 +37,7 @@ _THROUGHPUT = ArchiveThroughputTuning()
 _RANGE = PackRangeRetrievalPolicy()
 _REGISTRATION = RegistrationTuning()
 _ARCHIVE_WRITE = ArchiveWriteGrants()
+_CACHE_WRITE = CacheWriteGrants()
 _ARCHIVE_EXECUTION = ArchiveExecutionTuning()
 _ARCHIVE_INPUT = ArchiveInputGrants()
 
@@ -170,6 +172,35 @@ class ArchiveWriteDocument(_Document):
             ),
             terminal_bytes=_bytes(self.terminal_bytes, "archive_write.terminal_bytes", 1),
             result_bytes=_bytes(self.result_bytes, "archive_write.result_bytes", 1),
+        )
+
+
+class CacheWriteDocument(_Document):
+    calls: int = Field(
+        default=_CACHE_WRITE.calls,
+        ge=1,
+        strict=True,
+        description="Retained cache begin/child effects per upload construction.",
+    )
+    control_bytes: str = Field(
+        default=str(_CACHE_WRITE.control_bytes),
+        description="Retained cache requests, reports and original population continuations.",
+    )
+    result_bytes: str = Field(
+        default=str(_CACHE_WRITE.result_bytes),
+        description="Reserved original cache outcome bytes per admitted provider call.",
+    )
+    cleanup_bytes: str = Field(
+        default=str(_CACHE_WRITE.cleanup_bytes),
+        description="Retained cleanup identity bytes per original cache population.",
+    )
+
+    def grants(self) -> CacheWriteGrants:
+        return CacheWriteGrants(
+            calls=self.calls,
+            control_bytes=_bytes(self.control_bytes, "cache_write.control_bytes", 1),
+            result_bytes=_bytes(self.result_bytes, "cache_write.result_bytes", 1),
+            cleanup_bytes=_bytes(self.cleanup_bytes, "cache_write.cleanup_bytes", 1),
         )
 
 
@@ -328,6 +359,7 @@ class RiverhogDocument(_Document):
     archive_input: ArchiveInputDocument = Field(default_factory=ArchiveInputDocument)
     archive_execution: ArchiveExecutionDocument = Field(default_factory=ArchiveExecutionDocument)
     archive_write: ArchiveWriteDocument = Field(default_factory=ArchiveWriteDocument)
+    cache_write: CacheWriteDocument = Field(default_factory=CacheWriteDocument)
     registration: RegistrationDocument = Field(default_factory=RegistrationDocument)
     volume_policy: VolumePolicyDocument = Field(default_factory=VolumePolicyDocument)
     throughput: ThroughputDocument = Field(default_factory=ThroughputDocument)
@@ -448,6 +480,7 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         archive_input=document.archive_input.grants(),
         archive_execution=document.archive_execution.tuning(),
         archive_write=document.archive_write.grants(),
+        cache_write=document.cache_write.grants(),
         registration=document.registration.tuning(),
         volume_policy=document.volume_policy.policy(),
         throughput_tuning=document.throughput.tuning(),
