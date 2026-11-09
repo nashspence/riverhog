@@ -470,6 +470,7 @@ if TYPE_CHECKING:
         ArchiveFinalizationStage,
     )
     from riverhog_core.services.archive_finalizer_registry import FinalizerSubmission
+    from riverhog_core.services.archive_payload_cache import CacheUploadCandidates
     from riverhog_core.services.archive_payload_input import ArchivePayloadInput, InputRefusal
     from riverhog_core.services.archive_payload_unit import (
         ArchivePayloadUnit,
@@ -487,6 +488,7 @@ class SqlAlchemyCollectionUploadService:
         archive_stores: ArchiveStoreRegistry,
         *,
         retrieval_cache: RetrievalCache | None = None,
+        cache_upload_candidates: CacheUploadCandidates | None = None,
         policy: CollectionVolumePolicy | None = None,
         session_factory: SessionFactory | None = None,
         throughput_tuning: ArchiveThroughputTuning | None = None,
@@ -495,6 +497,7 @@ class SqlAlchemyCollectionUploadService:
         self._config = config
         self._archive_stores = archive_stores
         self._retrieval_cache = retrieval_cache
+        self._cache_upload_candidates = cache_upload_candidates
         self._policy = policy or config.volume_policy
         self._session_factory = session_factory or make_session_factory(config.database_url)
         from .upload_journal_validation_owner import UploadJournalValidationOwner
@@ -2465,6 +2468,28 @@ class SqlAlchemyCollectionUploadService:
         payload.require_pool(self._archive_inputs)
         return self._archive_cache_families.factory(
             payload, create=create, grants=grants, validate_population=validate_population
+        )
+
+    def _configured_payload_cache_family(
+        self, payload: ArchivePayloadInput, *, source_store: str
+    ) -> ArchivePayloadMirrorFactory:
+        from .archive_cache_families import CacheFamilyNotAdmitted
+        from .archive_payload_cache import ArchivePayloadCache
+
+        if self._cache_upload_candidates is None:
+            raise CacheFamilyNotAdmitted("configured cache population binding is unavailable")
+        builder = ArchivePayloadCache(
+            payload.request,
+            source_store=source_store,
+            candidates=self._cache_upload_candidates,
+            grants=self._config.cache_write,
+            session_factory=self._session_factory,
+        )
+        return self._payload_cache_family(
+            payload,
+            create=builder.create,
+            grants=self._config.cache_write,
+            validate_population=builder.validate_population,
         )
 
     def _reserve_payload_input(

@@ -81,6 +81,7 @@ def _joint(
                 {name: pair[1] for name, pair in configured.items()},
                 session_factory=service._session_factory,
             )
+            service._cache_upload_candidates = service._retrieval_cache.population_candidates
 
         with _actor(
             tmp_path,

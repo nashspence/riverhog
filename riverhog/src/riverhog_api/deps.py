@@ -395,6 +395,9 @@ def _build_default_container(
             config,
             archive_stores,
             retrieval_cache=retrieval_cache,
+            cache_upload_candidates=(
+                retrieval_cache.population_candidates if retrieval_cache is not None else None
+            ),
             session_factory=session_factory,
             throughput_tuning=throughput_tuning,
             policy=config.volume_policy,

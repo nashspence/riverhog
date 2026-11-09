@@ -4,7 +4,7 @@ import hashlib
 import json
 import threading
 import uuid
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import replace
 from types import SimpleNamespace
 
@@ -544,99 +544,154 @@ def test_actual_service_unit_remains_owned_through_fence_original_reply_and_rece
 def test_actual_service_unit_keeps_the_selected_original_cache_receiver(
     tmp_path, monkeypatch, kind, mode, unknown
 ):
+    _configured_cache_unit(tmp_path, monkeypatch, kind, mode, unknown, "first")
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+@pytest.mark.parametrize("selection", ("second", "disabled", "unavailable"))
+def test_actual_service_unit_uses_configured_optional_cache_priority(
+    tmp_path, monkeypatch, mode, selection
+):
+    _configured_cache_unit(tmp_path, monkeypatch, "segment", mode, False, selection)
+
+
+def _configured_cache_unit(tmp_path, monkeypatch, kind, mode, unknown, selection):
     from riverhog_storage_adapter_protocol import unknown_write_execution
 
+    from tests.unit.test_mirrored_archive_begin import _secondary_cache
     from tests.unit.test_mirrored_archive_upload_writes import _writing
 
-    with _writing(tmp_path, monkeypatch, kind, mode=mode) as joint:
-        actor = joint.actor
-        service = actor.case.service
-        with session_scope(actor.case.factory) as session:
-            upload = session.get(CollectionUploadRecord, actor.case.collection_id)
-            name = upload.archive_store
-        binding = service._archive_stores.require(name)
-        service._archive_stores = ArchiveStoreRegistry(
-            {
-                name: replace(
-                    binding, resumable_objects=actor.provider, resumable_writes=actor.executor
-                )
-            }
-        )
-        cache_calls = []
-        execute = joint.candidate.execute_write
+    with (
+        _secondary_cache(tmp_path, mode) if selection == "second" else nullcontext(None)
+    ) as secondary:
 
-        def cache(invocation, **kwargs):
-            response = execute(invocation, **kwargs)
-            cache_calls.append(invocation)
-            if unknown and invocation.operation.kind == "part":
-                return unknown_write_execution(invocation)
-            return response
+        def candidates(first, registration):
+            if selection == "second":
+                return ((first, replace(registration, admission_budget_bytes=1)), secondary)
+            return ((first, registration),)
 
-        monkeypatch.setattr(joint.candidate, "execute_write", cache)
-        key, target = _scope(actor.case)
-        built = []
+        with _writing(tmp_path, monkeypatch, kind, mode=mode, cache_candidates=candidates) as joint:
+            actor = joint.actor
+            service = actor.case.service
+            with session_scope(actor.case.factory) as session:
+                upload = session.get(CollectionUploadRecord, actor.case.collection_id)
+                name = upload.archive_store
+            binding = service._archive_stores.require(name)
+            service._archive_stores = ArchiveStoreRegistry(
+                {
+                    name: replace(
+                        binding, resumable_objects=actor.provider, resumable_writes=actor.executor
+                    )
+                }
+            )
+            cache_calls = []
+            selected = secondary[0] if secondary is not None else joint.candidate
+            execute = selected.execute_write
 
-        def mirror(archive, guard):
-            writer = _service_cache_writer(joint, archive, guard)
-            built.append(writer)
-            return writer
+            def cache(invocation, **kwargs):
+                response = execute(invocation, **kwargs)
+                cache_calls.append(invocation)
+                if unknown and invocation.operation.kind == "part":
+                    return unknown_write_execution(invocation)
+                return response
 
-        payload = _payload(
-            service, key, target, actor.case.object_id, actor.case.plan_sha256, actor.case.content
-        )
-        owner = service._payload_unit_invocation(
-            key=key,
-            target_incarnation=target,
-            volume_id=actor.case.object_id,
-            unit=0,
-            plan_sha256=actor.case.plan_sha256,
-            payload=payload,
-            principal=_CREATOR,
-            mirror=service._payload_cache_family(
-                payload,
-                create=mirror,
-                grants=joint.writer._grants,
-                validate_population=joint.writer._validate_population,
-            ),
-        )
-        registry, execution = service._archive_invocations, service._archive_execution
-        request = payload.request_sha256
-        assert (
-            registry.submit(
+            monkeypatch.setattr(selected, "execute_write", cache)
+            key, target = _scope(actor.case)
+            snapshots = []
+            configured = service._cache_upload_candidates
+
+            def snapshot():
+                result = configured()
+                snapshots.append(result)
+                return result
+
+            service._cache_upload_candidates = snapshot
+            if selection == "unavailable":
+                service._retrieval_cache._stores = {}
+            if selection == "disabled":
+                service._retrieval_cache._registrations = {
+                    name: replace(registration, admission_enabled=False)
+                    for name, registration in service._retrieval_cache._registrations.items()
+                }
+
+            payload = _payload(
+                service,
                 key,
+                target,
+                actor.case.object_id,
+                actor.case.plan_sha256,
+                actor.case.content,
+            )
+            owner = service._payload_unit_invocation(
+                key=key,
                 target_incarnation=target,
-                request_sha256=request,
+                volume_id=actor.case.object_id,
+                unit=0,
+                plan_sha256=actor.case.plan_sha256,
                 payload=payload,
-                create=lambda: owner,
-                advance=lambda original: original.advance(),
+                principal=_CREATOR,
             )
-            == "submitted"
-        )
-        (received,) = _receive(registry, execution)
-        assert received.result()["state"] == "committed"
-        assert len(built) == 1
-        begin = built[0]._begin.cache_begin_call_id
-        assert begin is not None
-        assert payload.released and service._archive_inputs._bytes == 0
-        assert owner.has_pending and not registry.retire_idle(received)
-        before = list(actor.seen), list(cache_calls)
-        assert (
-            registry.submit(
-                key,
-                target_incarnation=target,
-                request_sha256=request,
-                create=lambda: pytest.fail("reconstructed optional cache owner"),
-                advance=lambda original: pytest.fail("restarted completed payload unit"),
+            registry, execution = service._archive_invocations, service._archive_execution
+            request = payload.request_sha256
+            assert (
+                registry.submit(
+                    key,
+                    target_incarnation=target,
+                    request_sha256=request,
+                    payload=payload,
+                    create=lambda: owner,
+                    advance=lambda original: original.advance(),
+                )
+                == "submitted"
             )
-            == "retained"
-        )
-        assert (actor.seen, cache_calls) == before
-        assert built[0]._begin.cache_begin_call_id == begin
-        if unknown:
-            assert not service._archive_cache_families.retire(payload)
-        else:
-            assert service._archive_cache_families.retire(payload)
-            assert not owner.has_pending and registry.retire_idle(received)
+            (received,) = _receive(registry, execution)
+            assert received.result()["state"] == "committed"
+            assert len(snapshots) == 1
+            writer = owner._writes
+            begin = writer._begin.cache_begin_call_id
+            if selection in {"disabled", "unavailable"}:
+                assert begin is None and writer._begin.candidate is None
+                assert not cache_calls
+            else:
+                assert begin is not None and writer._begin.candidate is selected
+                assert [call.operation.kind for call in cache_calls][0] == "begin"
+                assert writer._grants is service._config.cache_write
+                with session_scope(actor.case.factory) as session:
+                    from riverhog_core.catalog_cache_write_models import CachePopulationBeginRecord
+
+                    if unknown:
+                        assert (
+                            session.get(CachePopulationBeginRecord, begin).cache_store
+                            == selected.name
+                        )
+                    else:
+                        volume = session.get(
+                            CollectionArchiveObjectUploadRecord,
+                            (actor.case.collection_id, actor.case.object_id),
+                        )
+                        assert json.loads(volume.cache_receipt_json)["cache_store"] == selected.name
+            if selection == "second":
+                assert not list((tmp_path / "cache" / "writes").iterdir())
+            assert payload.released and service._archive_inputs._bytes == 0
+            assert owner.has_pending and not registry.retire_idle(received)
+            before = list(actor.seen), list(cache_calls)
+            assert (
+                registry.submit(
+                    key,
+                    target_incarnation=target,
+                    request_sha256=request,
+                    create=lambda: pytest.fail("reconstructed optional cache owner"),
+                    advance=lambda original: pytest.fail("restarted completed payload unit"),
+                )
+                == "retained"
+            )
+            assert (actor.seen, cache_calls) == before
+            assert writer._begin.cache_begin_call_id == begin
+            if unknown:
+                assert not service._archive_cache_families.retire(payload)
+            else:
+                assert service._archive_cache_families.retire(payload)
+                assert not owner.has_pending and registry.retire_idle(received)
 
 
 @pytest.mark.parametrize("kind", ("pack", "segment"))
@@ -744,45 +799,3 @@ def test_uncertain_cache_constructor_keeps_original_archive_and_retention_charge
         assert received.result() == "pending"
         assert owner.has_pending and registry._invocations[request].owner is owner
         assert not actor.seen
-
-
-def _service_cache_writer(joint, archive, guard):
-    from riverhog_core.services.mirrored_archive_begin import MirroredArchiveBegin
-    from riverhog_core.services.mirrored_archive_upload_writes import MirroredArchiveUploadWrites
-
-    actor, original = joint.actor, joint.mirror
-    with session_scope(actor.case.factory) as session:
-        name = session.get(CollectionUploadRecord, actor.case.collection_id).archive_store
-    begin = MirroredArchiveBegin(
-        actor.case.factory,
-        archive=archive,
-        cache=original._cache,
-        candidates=original._candidates,
-        owner=original._owner,
-        principal=_CREATOR,
-        grants=original._grants,
-        guard=guard,
-        validate_population=original._validate_population,
-    )
-
-    def validate(session, upload, object_id, expected_bytes):
-        volume = session.get(
-            CollectionArchiveObjectUploadRecord,
-            (actor.case.collection_id, object_id),
-            with_for_update=True,
-        )
-        assert volume is not None and upload.collection_id == actor.case.collection_id
-        assert begin.cache_session is not None
-        assert expected_bytes == begin.cache_session.expected_bytes
-
-    return MirroredArchiveUploadWrites(
-        archive=archive,
-        begin=begin,
-        cache=joint.writes,
-        source_store=name,
-        owner=original._owner,
-        principal=_CREATOR,
-        grants=joint.writer._grants,
-        guard=guard,
-        validate_population=validate,
-    )

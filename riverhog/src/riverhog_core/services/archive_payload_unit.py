@@ -68,6 +68,10 @@ class ArchivePayloadService(Protocol):
 
     def _payload_write_guard(self, collection_id: int, principal: Principal) -> Guard: ...
 
+    def _configured_payload_cache_family(
+        self, payload: ArchivePayloadInput, *, source_store: str
+    ) -> ArchivePayloadMirrorFactory: ...
+
     def _pack_uploader(
         self,
         object_store: ArchiveResumableObjectStore,
@@ -308,7 +312,9 @@ class ArchivePayloadUnit:
         if self._writes is None:
             if volume.use_cache:
                 if self._mirror is None:
-                    raise Conflict("accepted retrieval cache requires its original write factory")
+                    self._mirror = self._service._configured_payload_cache_family(
+                        self._input, source_store=volume.store
+                    )
                 self._mirror_unresolved = True
                 try:
                     self._mirror_original = self._mirror(self._archive, self._guard)

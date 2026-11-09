@@ -116,6 +116,24 @@ def _coordinator(
     )
 
 
+def test_population_candidates_snapshot_preserves_enabled_configured_priority(tmp_path):
+    first, second, disabled = (_Candidate(name) for name in ("first", "second", "disabled"))
+    registrations = (
+        _registration("second"),
+        _registration("missing"),
+        _registration("disabled", enabled=False),
+        _registration("first"),
+    )
+    coordinator, _ = _coordinator(tmp_path, (first, second, disabled), registrations)
+    coordinator.set_recovery(lambda: pytest.fail("candidate selection ran recovery"))
+    snapshot = coordinator.population_candidates()
+    assert snapshot == ((second, registrations[0]), (first, registrations[3]))
+    coordinator._stores = {"first": first}
+    assert coordinator.population_candidates() == ((first, registrations[3]),)
+    assert snapshot == ((second, registrations[0]), (first, registrations[3]))
+    assert not any(candidate.begin_calls for candidate in (first, second, disabled))
+
+
 def _seed_ready_object(
     factory: object,
     *,

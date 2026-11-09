@@ -81,6 +81,17 @@ class SqlAlchemyRetrievalCache:
     def store_names(self) -> tuple[str, ...]:
         return tuple(self._registrations)
 
+    def population_candidates(
+        self,
+    ) -> tuple[tuple[StorageAdapterRetrievalCache, RetrievalCacheStoreRegistration], ...]:
+        """Snapshot current configured priority without recovery or provider work."""
+        stores, registrations = self._stores, self._registrations
+        return tuple(
+            (stores[name], registration)
+            for name, registration in registrations.items()
+            if registration.admission_enabled and name in stores
+        )
+
     def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool:
         store = self._stores.get(cache_store)
         return store is not None and store.is_current_incarnation(incarnation_id)

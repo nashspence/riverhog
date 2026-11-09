@@ -270,13 +270,13 @@ def _service_family_units(
         CollectionArchiveObjectUploadRecord,
         CollectionUploadRecord,
     )
+    from riverhog_core.services.archive_payload_cache import ArchivePayloadCache
     from riverhog_core.services.archive_payload_input import ArchivePayloadRequest
     from riverhog_core.services.cache_population_closure import CachePopulationClosure
     from riverhog_storage_adapter_protocol import unknown_write_execution
     from sqlalchemy import func, select
 
     from tests.unit.test_archive_finalizer_registry import _scope
-    from tests.unit.test_archive_payload_unit import _service_cache_writer
     from tests.unit.test_collection_uploads import _CREATOR
     from tests.unit.test_mirrored_archive_upload_writes import _writing
 
@@ -320,13 +320,14 @@ def _service_family_units(
 
         monkeypatch.setattr(joint.candidate, "execute_write", cache)
 
-        def create(archive, guard):
-            value = _service_cache_writer(joint, archive, guard)
+        original_create = ArchivePayloadCache.create
+
+        def create(builder, archive, guard):
+            value = original_create(builder, archive, guard)
             built.append(value)
             return value
 
-        def validate(*args):
-            return built[0]._validate_population(*args)
+        monkeypatch.setattr(ArchivePayloadCache, "create", create)
 
         ack, acknowledgements = CachePopulationClosure.acknowledge, []
 
@@ -370,12 +371,6 @@ def _service_family_units(
                 plan_sha256=case.plan_sha256,
                 payload=payload,
                 principal=_CREATOR,
-                mirror=service._payload_cache_family(
-                    payload,
-                    create=create,
-                    grants=joint.writer._grants,
-                    validate_population=validate,
-                ),
             )
             originals.append(owner)
 
