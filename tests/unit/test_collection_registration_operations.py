@@ -3,10 +3,11 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter
+from dataclasses import replace
 
 import pytest
 from riverhog_core import incremental_emission
-from riverhog_core.app_permissions import COLLECTIONS_CREATE, ApplicationAccess
+from riverhog_core.app_permissions import ARCHIVES_MANAGE, COLLECTIONS_CREATE, ApplicationAccess
 from riverhog_core.catalog_db import dispose_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectUploadRecord,
@@ -61,17 +62,35 @@ def _member(identity="2", volumes=17):
     }
 
 
-def _open(tmp_path, *, custody_mode="producer-retained"):
+def _open(tmp_path, *, custody_mode="producer-retained", copy_to=()):
     policy = CollectionVolumePolicy(
         pack_member_bytes=8,
         raw_volume_plaintext_bytes=PART,
         raw_part_plaintext_bytes=PART,
     )
     service, config, resumable, roots = _service_with_archive_objects(tmp_path, policy=policy)
+    if copy_to:
+        from tests.unit.storage_incarnation_fixtures import (
+            fixture_storage_incarnation_id,
+            seed_storage_incarnation,
+        )
+
+        binding = service._archive_stores.require("archive")
+        with session_scope(service._session_factory) as session:
+            for name in copy_to:
+                seed_storage_incarnation(session, "archive", name)
+                service._archive_stores.admit(
+                    name,
+                    replace(
+                        binding, incarnation_id=fixture_storage_incarnation_id("archive", name)
+                    ),
+                    probe=lambda: None,
+                )
     keys = SqlAlchemyAppKeyService(config)
     created = keys.create(
         app="registration-writer",
-        access=(ApplicationAccess(COLLECTIONS_CREATE),),
+        access=(ApplicationAccess(COLLECTIONS_CREATE),)
+        + ((ApplicationAccess(ARCHIVES_MANAGE),) if copy_to else ()),
         grantor=BOOTSTRAP,
     )
     principal = keys.authenticate(str(created["token"]))
@@ -83,6 +102,7 @@ def _open(tmp_path, *, custody_mode="producer-retained"):
         initiator=principal,
         event_context=None,
         custody_mode=custody_mode,
+        copy_to=copy_to,
     )
     return service, keys, principal, created, int(opened["collection_id"])
 

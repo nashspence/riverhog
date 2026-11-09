@@ -77,8 +77,8 @@ def _fence(service, collection_id, *, identity="e" * 64, kind="orphan-discard"):
         return operation.execution_epoch
 
 
-def _staged(tmp_path, *, prior_pack=False):
-    service, keys, principal, created, collection_id = _open(tmp_path)
+def _staged(tmp_path, *, prior_pack=False, copy_to=()):
+    service, keys, principal, created, collection_id = _open(tmp_path, copy_to=copy_to)
     prior = (
         {"artifact_id": "1" * 64, "bytes": "0", "sha256": hashlib.sha256(b"").hexdigest()}
         if prior_pack

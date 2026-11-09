@@ -214,7 +214,7 @@ def test_even_closed_but_unreceived_original_effect_blocks_preparation_retiremen
         _retained_effect(ready)
 
 
-def _composed_checkpoints(ready, monkeypatch, *, revoked=False):
+def _composed_checkpoints(ready, monkeypatch, *, revoked=False, copy_intents=False):
     import threading
 
     from tests.unit.test_archive_upload_catalog_cleanup import _composed_children
@@ -229,7 +229,9 @@ def _composed_checkpoints(ready, monkeypatch, *, revoked=False):
         return original(owner, *args, **kwargs)
 
     monkeypatch.setattr(ArchiveUploadCheckpointCleanup, "advance", advance)
-    quantum, created = _composed_children(ready, monkeypatch, checkpoints=True)
+    quantum, created = _composed_children(
+        ready, monkeypatch, checkpoints=True, copy_intents=copy_intents
+    )
     before = _rows(ready)
     assert len(before) == 16 and workers == ["physical-execution"]
     calls = len(ready.ready.target.calls)
@@ -262,7 +264,8 @@ def _composed_checkpoints(ready, monkeypatch, *, revoked=False):
         before = current
     else:
         pytest.fail("original terminal did not compose bounded checkpoint retirement")
-    assert current == [] and progress.pending_reason is None
+    assert current == []
+    assert progress.pending_reason in ({None, "copy-intent-cleanup"} if copy_intents else {None})
     assert not progress.execution_stopped and created == [True]
     assert set(workers) == {"physical-execution"}
     assert len(ready.ready.target.calls) == calls
@@ -271,6 +274,7 @@ def _composed_checkpoints(ready, monkeypatch, *, revoked=False):
         terminal = session.get(Terminal, ready.case.operation)
         assert terminal.original_result_json == ready.original and terminal.result_json is None
         assert session.get(Upload, ready.case.collection_id) is not None
+    return quantum, created
 
 
 @pytest.mark.parametrize("revoked", (False, True))

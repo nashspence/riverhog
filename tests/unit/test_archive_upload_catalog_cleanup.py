@@ -337,9 +337,9 @@ def test_actual_first_live_catalog_windows_have_linear_indexed_query_work(
         record_property("catalog_sql_statements", len(statements))
 
 
-def _composed_children(ready, monkeypatch, *, checkpoints=False):
+def _composed_children(ready, monkeypatch, *, checkpoints=False, copy_intents=False):
     quantum, created = _composed_registration(
-        ready, monkeypatch, catalog=True, checkpoints=checkpoints
+        ready, monkeypatch, catalog=True, checkpoints=checkpoints, copy_intents=copy_intents
     )
     before = _counts(ready)
     assert sum(before.values()) > 0

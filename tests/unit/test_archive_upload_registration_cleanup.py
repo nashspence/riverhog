@@ -28,14 +28,14 @@ from tests.unit.test_upload_cancel_authority import _select
 
 
 @contextmanager
-def _prepared(tmp_path, monkeypatch, *, database_url=None, provider_ready=True):
+def _prepared(tmp_path, monkeypatch, *, database_url=None, provider_ready=True, copy_to=()):
     if database_url is not None:
         monkeypatch.setattr(
             witness,
             "_service_with_archive_objects",
             partial(witness._service_with_archive_objects, database_url=database_url),
         )
-    service, keys, principal, created, cid, registration, prior = _staged(tmp_path)
+    service, keys, principal, created, cid, registration, prior = _staged(tmp_path, copy_to=copy_to)
     try:
         case = SimpleNamespace(
             service=service,
@@ -218,7 +218,9 @@ def test_failed_registration_cleanup_reply_preserves_the_same_bounded_cursor(
         _lost(ready, monkeypatch, committed)
 
 
-def _composed_registration(ready, monkeypatch, *, revoked=False, catalog=False, checkpoints=False):
+def _composed_registration(
+    ready, monkeypatch, *, revoked=False, catalog=False, checkpoints=False, copy_intents=False
+):
     import threading
     from datetime import timedelta
 
@@ -226,6 +228,9 @@ def _composed_registration(ready, monkeypatch, *, revoked=False, catalog=False, 
     from riverhog_core.services.archive_upload_catalog_cleanup import ArchiveUploadCatalogCleanup
     from riverhog_core.services.archive_upload_checkpoint_cleanup import (
         ArchiveUploadCheckpointCleanup,
+    )
+    from riverhog_core.services.archive_upload_copy_intent_cleanup import (
+        ArchiveUploadCopyIntentCleanup,
     )
     from riverhog_core.services.archive_upload_terminal_turn import ArchiveUploadTerminalTurn
     from riverhog_core.services.physical_execution import PhysicalExecutionKey
@@ -262,6 +267,9 @@ def _composed_registration(ready, monkeypatch, *, revoked=False, catalog=False, 
             else None,
             checkpoint_cleanup=ArchiveUploadCheckpointCleanup(case.factory, ready.ready.owner)
             if checkpoints
+            else None,
+            copy_intent_cleanup=ArchiveUploadCopyIntentCleanup(case.factory, ready.ready.owner)
+            if copy_intents
             else None,
         )
 
