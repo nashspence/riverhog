@@ -37,7 +37,7 @@ from riverhog_core.services.archive_upload_catalog_cleanup import (
 )
 from riverhog_core.services.archive_upload_cleanup import ArchiveUploadCleanup
 from riverhog_core.services.archive_upload_drain import lock_terminal_selection
-from riverhog_core.services.archive_upload_terminal_adjudication import _pending
+from riverhog_core.services.archive_upload_terminal_adjudication import terminal_pending_reason
 from riverhog_core.services.archive_upload_terminal_control import (
     require_prepared_terminal_result,
     require_terminal_control_capacity,
@@ -55,7 +55,11 @@ Guard = Callable[[Session], None]
 def _confirmed(session: Session, terminal: Terminal, collection_id: int) -> str | None:
     if terminal.phase != "done":
         return None
-    if terminal.original_result_json is not None or terminal.result_json is None:
+    if (
+        terminal.original_result_json is not None
+        or terminal.result_json is None
+        or terminal.result_preparation_json is not None
+    ):
         raise Conflict("confirmed upload terminal has inconsistent original receiving")
     if (
         session.scalar(
@@ -160,7 +164,7 @@ class ArchiveUploadTerminalConfirmation:
                 return replayed
             _confirmed(session, terminal, collection_id)
             observed = self._observation.observe(session, collection_id, operation_id, guard=guard)
-            reason = _pending(observed)
+            reason = terminal_pending_reason(observed)
             if (
                 reason is not None
                 or observed.finalizers != "untracked"

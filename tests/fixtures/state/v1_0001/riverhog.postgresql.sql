@@ -2971,6 +2971,7 @@ CREATE TABLE archive_upload_terminals (
 	drain_next_attempt_at VARCHAR DEFAULT '1970-01-01T00:00:00.000000000Z' NOT NULL,
 	execution_next_attempt_at VARCHAR DEFAULT '1970-01-01T00:00:00.000000000Z',
 	control_capacity_bytes BIGINT NOT NULL,
+	result_preparation_json TEXT,
 	original_result_json TEXT,
 	result_json TEXT,
 	CONSTRAINT ck_archive_upload_terminals_execution_due CHECK (execution_next_attempt_at IS NOT NULL OR phase IN ('refused-sealed','needs-reconfirmation','done')),

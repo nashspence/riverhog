@@ -60,7 +60,11 @@ def require_prepared_terminal_result(
 ) -> str:
     """Validate retained original receiving space; this grants no cleanup rights."""
     value = terminal.original_result_json
-    if value is None or terminal.result_json is not None:
+    if (
+        value is None
+        or terminal.result_json is not None
+        or terminal.result_preparation_json is not None
+    ):
         raise Conflict("upload terminal has no retained original result reservation")
     try:
         parsed = json.loads(value)

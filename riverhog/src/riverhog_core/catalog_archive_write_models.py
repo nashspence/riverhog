@@ -164,6 +164,7 @@ class ArchiveUploadTerminalRecord(Base):
         server_default=text("'1970-01-01T00:00:00.000000000Z'"),
     )
     control_capacity_bytes: Mapped[int] = mapped_column(BigInteger)
+    result_preparation_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     original_result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 

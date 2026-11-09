@@ -18,7 +18,10 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_db import SessionFactory, catalog_write_contention, session_scope
 from riverhog_core.services.archive_finalizer_registry import ArchiveFinalizerRegistry
 from riverhog_core.services.archive_upload_invocations import ArchiveUploadInvocationRegistry
-from riverhog_core.services.archive_upload_terminal_adjudication import PendingReason, _pending
+from riverhog_core.services.archive_upload_terminal_adjudication import (
+    PendingReason,
+    terminal_pending_reason,
+)
 from riverhog_core.services.archive_upload_terminal_observation import (
     ArchiveUploadTerminalObservation,
 )
@@ -88,7 +91,7 @@ class ArchiveUploadTerminalRetirement:
                     return TerminalOriginalRetirement(
                         terminal.phase, pending_reason="global-decision"
                     )
-                reason = _pending(observed)
+                reason = terminal_pending_reason(observed)
                 if reason is not None:
                     return TerminalOriginalRetirement(terminal.phase, pending_reason=reason)
                 control = session.get(ArchiveWriteControlRecord, collection_id)

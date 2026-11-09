@@ -43,6 +43,8 @@ class ArchiveUploadTerminalResults:
             )
             if terminal.phase not in {"draining", "cleanup-ready", "cleaning"}:
                 raise Conflict("upload terminal result cannot be prepared in this phase")
+            if terminal.result_preparation_json is not None:
+                raise Conflict("upload terminal original result projection is in progress")
             if terminal.original_result_json is None:
                 if terminal.phase != "draining" or terminal.result_json is not None:
                     raise Conflict("upload terminal original result must precede cleanup")

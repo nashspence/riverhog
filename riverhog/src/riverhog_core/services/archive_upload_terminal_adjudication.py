@@ -39,7 +39,7 @@ class TerminalAdjudication:
     pending_reason: PendingReason | None = None
 
 
-def _pending(observed: TerminalResourceObservation) -> PendingReason | None:
+def terminal_pending_reason(observed: TerminalResourceObservation) -> PendingReason | None:
     records = observed.records
     if records.archive_unclosed or records.cache_begin_unclosed or records.cache_write_unclosed:
         return "forward-effects"
@@ -97,7 +97,7 @@ class ArchiveUploadTerminalAdjudication:
                 assert terminal is not None
                 if terminal.phase != "draining":
                     return TerminalAdjudication(terminal.phase)
-                reason = _pending(observed)
+                reason = terminal_pending_reason(observed)
                 if reason is not None:
                     return TerminalAdjudication(terminal.phase, reason)
                 if terminal.kind == "cancel" and observed.records.payload_sealed:

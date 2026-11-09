@@ -364,6 +364,7 @@ from riverhog_core.services.operation_plans import (
 )
 from riverhog_core.services.retrieval_cache import register_cache_ready
 from riverhog_core.services.upload_custody_growth import custody_readback_declaration
+from riverhog_core.services.upload_custody_projection import upload_custody_payload
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
@@ -8378,32 +8379,6 @@ def _custody_stats(session: Session, collection_id: int) -> tuple[int, int]:
     return int(upload.safe_release_artifact_count), int(upload.safe_release_artifact_bytes)
 
 
-def _custody_payload(
-    *,
-    files: int,
-    byte_count: int,
-    custodied_files: int,
-    custodied_bytes: int,
-) -> dict[str, object]:
-    """Project exact completion separately from non-authoritative progress counters."""
-
-    if (
-        custodied_files < 0
-        or custodied_bytes < 0
-        or custodied_files > files
-        or custodied_bytes > byte_count
-        or (custodied_files == 0 and custodied_bytes != 0)
-    ):
-        raise RuntimeError("collection upload custody projection is inconsistent")
-    if (custodied_files, custodied_bytes) == (files, byte_count):
-        return {"state": "complete"}
-    return {
-        "state": "pending",
-        "files": custodied_files,
-        "bytes": custodied_bytes,
-    }
-
-
 def _validate_upload_list(*, page_size: int, sort: str, order: str) -> None:
     validate_page_size(page_size)
     if sort not in _UPLOAD_SORT_FIELDS:
@@ -8506,7 +8481,7 @@ def _upload_list_payload(
         "custody_mode": upload.custody_mode,
         "files": files,
         "bytes": byte_count,
-        "custody": _custody_payload(
+        "custody": upload_custody_payload(
             files=files,
             byte_count=byte_count,
             custodied_files=custodied_files,
@@ -8588,7 +8563,7 @@ def _orphan_discard_plan(
         "state": upload.state,
         "files": int(files),
         "bytes": int(byte_count),
-        "custody": _custody_payload(
+        "custody": upload_custody_payload(
             files=int(files),
             byte_count=int(byte_count),
             custodied_files=custodied_files,
@@ -8800,7 +8775,7 @@ def _upload_payload(
         "files_total": int(files_total),
         "bytes_total": int(bytes_total),
         "upload_state_expires_at": None if state == "canceled" else upload.lease_expires_at,
-        "custody": _custody_payload(
+        "custody": upload_custody_payload(
             files=int(files_total),
             byte_count=int(bytes_total),
             custodied_files=custodied_files,
