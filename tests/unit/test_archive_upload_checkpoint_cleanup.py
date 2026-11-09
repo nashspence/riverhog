@@ -214,7 +214,9 @@ def test_even_closed_but_unreceived_original_effect_blocks_preparation_retiremen
         _retained_effect(ready)
 
 
-def _composed_checkpoints(ready, monkeypatch, *, revoked=False, copy_intents=False):
+def _composed_checkpoints(
+    ready, monkeypatch, *, revoked=False, copy_intents=False, startup_contention=False
+):
     import threading
 
     from tests.unit.test_archive_upload_catalog_cleanup import _composed_children
@@ -252,6 +254,35 @@ def _composed_checkpoints(ready, monkeypatch, *, revoked=False, copy_intents=Fal
             access=(ApplicationAccess(COLLECTIONS_CREATE),),
             grantor=BOOTSTRAP,
         )
+    forced = []
+    if startup_contention:
+        from riverhog_core.services import physical_execution as physical
+
+        finished = threading.Event()
+        original_run = physical._run
+        original_start = threading.Thread.start
+        forcing = [False]
+
+        def run(work, future):
+            try:
+                return original_run(work, future)
+            finally:
+                if forcing[0]:
+                    finished.set()
+
+        def start(worker):
+            if worker.name == "physical-execution" and not forced:
+                forced.append(True)
+                forcing[0] = True
+                original_start(worker)
+                assert finished.wait(10), "started worker did not conservatively defer"
+                forcing[0] = False
+                return None
+            return original_start(worker)
+
+        monkeypatch.setattr(physical, "_run", run)
+        monkeypatch.setattr(threading.Thread, "start", start)
+
     for _ in range(100):
         progress = quantum()
         current = _rows(ready)
@@ -268,6 +299,7 @@ def _composed_checkpoints(ready, monkeypatch, *, revoked=False, copy_intents=Fal
     assert progress.pending_reason in ({None, "copy-intent-cleanup"} if copy_intents else {None})
     assert not progress.execution_stopped and created == [True]
     assert set(workers) == {"physical-execution"}
+    assert forced == ([True] if startup_contention else [])
     assert len(ready.ready.target.calls) == calls
     assert ready.case.service._archive_retention._counts == {False: 0, True: 1}
     with session_scope(ready.case.factory) as session:
@@ -283,3 +315,10 @@ def test_original_terminal_worker_composes_checkpoints_only_after_catalog_exhaus
 ):
     with _prepared(tmp_path, monkeypatch, provider_ready=False) as ready:
         _composed_checkpoints(ready, monkeypatch, revoked=revoked)
+
+
+def test_original_checkpoint_resume_preserves_custody_during_actual_startup_lock_contention(
+    tmp_path, monkeypatch
+):
+    with _prepared(tmp_path, monkeypatch, provider_ready=False) as ready:
+        _composed_checkpoints(ready, monkeypatch, revoked=True, startup_contention=True)

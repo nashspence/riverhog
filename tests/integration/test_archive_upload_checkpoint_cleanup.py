@@ -63,3 +63,10 @@ def test_postgres_original_terminal_worker_composes_current_authorized_checkpoin
 ):
     with _prepared(tmp_path, monkeypatch, database_url=database_url, provider_ready=False) as ready:
         _composed_checkpoints(ready, monkeypatch, revoked=revoked)
+
+
+def test_postgres_original_checkpoint_resume_defers_actual_physical_startup_contention(
+    database_url, tmp_path, monkeypatch
+):
+    with _prepared(tmp_path, monkeypatch, database_url=database_url, provider_ready=False) as ready:
+        _composed_checkpoints(ready, monkeypatch, revoked=True, startup_contention=True)

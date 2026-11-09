@@ -18,6 +18,7 @@ from riverhog_core.services.archive_upload_terminal_result import ArchiveUploadT
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
 from riverhog_core.services.collection_registration import CollectionRegistrationOwner
 from riverhog_protocol.errors import Conflict, NotFound
+from sqlalchemy import event
 
 from tests.unit import test_collection_registration_operations as witness
 from tests.unit.test_app_keys import BOOTSTRAP
@@ -280,19 +281,58 @@ def _composed_registration(
     before = _state(ready)
 
     def quantum():
-        assert (
-            registry.submit(
-                key,
-                target_incarnation=case.incarnation,
-                work_limit=1,
-                retry_after=timedelta(seconds=1),
-            )
-            == 1
-        )
-        _join(case.service)
-        assert registry.collect(limit=1) == 1
-        clock[0] += 2
-        return registry._contexts[key].progress
+        # A started worker may observe its physical owner's short submission
+        # lock as busy. Drive only those explicit, non-mutating deferrals here;
+        # one returned quantum still performs at most one cleanup window.
+        for _ in range(16):
+            mutations = []
+            provider_calls = len(ready.ready.target.calls)
+
+            def observed(
+                connection,
+                cursor,
+                statement,
+                parameters,
+                context,
+                executemany,
+                *,
+                mutations=mutations,
+            ):
+                if context.isinsert or context.isupdate or context.isdelete:
+                    mutations.append(statement)
+
+            engine = case.factory.kw["bind"]
+            event.listen(engine, "before_cursor_execute", observed)
+            try:
+                assert (
+                    registry.submit(
+                        key,
+                        target_incarnation=case.incarnation,
+                        work_limit=1,
+                        retry_after=timedelta(seconds=1),
+                    )
+                    == 1
+                )
+                slot = case.service._archive_execution._slots[key]
+                _join(case.service)
+                error = slot.future.exception()
+                assert registry.collect(limit=1) == 1
+            finally:
+                event.remove(engine, "before_cursor_execute", observed)
+            clock[0] += 2
+            progress = registry._contexts[key].progress
+            if error is not None:
+                if not isinstance(error, NotFound):
+                    raise error
+                return progress
+            assert progress is slot.future.result()
+            if progress.pending_reason not in {"local-execution", "catalog-busy"}:
+                return progress
+            assert mutations == []
+            assert len(ready.ready.target.calls) == provider_calls
+            assert progress.retired_originals == 0 and not progress.execution_stopped
+            assert case.service._archive_retention._counts == {False: 0, True: 1}
+        pytest.fail("original terminal remained deferred after bounded joined turns")
 
     first = quantum()
     assert first is not None and not first.archive_inventory_exhausted
