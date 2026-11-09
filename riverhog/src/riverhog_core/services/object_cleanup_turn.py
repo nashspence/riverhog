@@ -59,6 +59,7 @@ class ObjectCleanupTurn:
         object_prefix: str,
         guard: Callable[[Session], None],
         tuning: CleanupExecutionTuning,
+        before_admission: Callable[[], None] | None = None,
     ) -> None:
         if not callable(guard):
             raise ValueError("cleanup execution requires a current disposal guard")
@@ -70,6 +71,7 @@ class ObjectCleanupTurn:
         self._target = target
         self._guard = guard
         self._tuning = tuning
+        self._before_admission = before_admission
         self._dispatch_owner = secrets.token_hex(32)
         self._pending: _Pending | None = None
         self._lock = Lock()
@@ -91,6 +93,10 @@ class ObjectCleanupTurn:
                 page = None
             if page is not None and page.complete and page.request.inventory.exhausted:
                 return "inventory-exhausted"
+            # Configuration admission may probe the target. It runs outside SQL
+            # writers and never obstructs an already captured original reply.
+            if self._before_admission is not None:
+                self._before_admission()
             tuning = self._tuning
             if page is None or page.complete:
                 after = page.request_sha256 if page is not None else None

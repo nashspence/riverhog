@@ -7,6 +7,7 @@ from tests.integration.test_collection_upload_custody_concurrency import (
 )
 from tests.unit.test_archive_upload_cleanup_turn import (
     _assert_complete,
+    _binding_during_receiving,
     _composed,
     _failed_receiving,
     _filesystem,
@@ -59,3 +60,11 @@ def test_postgres_actual_filesystem_cleanup_retains_independent_scope(
 ):
     with _ready(tmp_path, database_url=database_url) as ready:
         _filesystem(ready, tmp_path, monkeypatch)
+
+
+@pytest.mark.parametrize("stage", ("inventory", "dispose"))
+def test_postgres_current_binding_cannot_redirect_original_captured_receiving(
+    database_url, tmp_path, monkeypatch, stage
+):
+    with _ready(tmp_path, database_url=database_url) as ready:
+        _binding_during_receiving(ready, monkeypatch, stage, True)

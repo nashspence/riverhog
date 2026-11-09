@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from uuid import UUID
 
 import pytest
+from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_archive_write_models import ArchiveUploadTerminalRecord as Terminal
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord as Control
 from riverhog_core.catalog_db import session_scope
@@ -22,7 +23,7 @@ from riverhog_core.services.archive_upload_drain import lock_terminal_selection
 from riverhog_core.services.archive_upload_terminal_turn import ArchiveUploadTerminalTurn
 from riverhog_core.services.physical_execution import PhysicalExecutionKey
 from riverhog_core.stores.storage_adapter_archive_objects import StorageAdapterArchiveObjectCleanup
-from riverhog_protocol.errors import Conflict
+from riverhog_protocol.errors import Conflict, ServiceUnavailable
 from riverhog_storage_adapter_protocol import (
     CleanupCandidate,
     CleanupInventoryPage,
@@ -94,21 +95,30 @@ def _bind(case, *, items=1, target=None):
     guard = case.service._terminal_write_guard(case.collection_id, case.operation)
     owner = ArchiveUploadCleanup(case.factory, grants=GRANTS)
     with session_scope(case.factory) as session:
-        prefix = json.loads(session.get(Control, case.collection_id).construction_json)[
-            "archive_storage_prefix"
-        ]
+        construction = json.loads(session.get(Control, case.collection_id).construction_json)
+        prefix, store = construction["archive_storage_prefix"], construction["archive_store"]
     target = target or _Target(case, prefix, guard)
+    binding = replace(case.service._archive_stores.require(store), object_cleanup=target)
+    stores = ArchiveStoreRegistry({store: binding})
     turn = ArchiveUploadCleanupTurn(
         case.factory,
         case.collection_id,
         case.operation,
         owner=owner,
-        target=target,
+        archive_stores=stores,
         guard=guard,
         tuning=replace(CleanupExecutionTuning(), inventory_items=items),
     )
     return SimpleNamespace(
-        case=case, owner=owner, target=target, guard=guard, turn=turn, prefix=prefix
+        case=case,
+        owner=owner,
+        target=target,
+        guard=guard,
+        turn=turn,
+        prefix=prefix,
+        store=store,
+        stores=stores,
+        binding=binding,
     )
 
 
@@ -248,7 +258,7 @@ def _composed(case, monkeypatch, *, failed=False):
             case.collection_id,
             case.operation,
             owner=ready.owner,
-            target=ready.target,
+            archive_stores=ready.stores,
             guard=ready.guard,
             tuning=replace(CleanupExecutionTuning(), inventory_items=1),
         )
@@ -420,3 +430,103 @@ def test_current_permission_revocation_pauses_archive_disposal_and_keeps_origina
             assert ready.turn.advance() == "pending"
             assert len(ready.target.calls) == before
         _assert_complete(ready)
+
+
+def _current_binding(ready, *, usable=True, binding=None):
+    probes = []
+
+    def probe():
+        # Taking the early writer proves registry probes run outside the turn's
+        # SQL writer, including after the previous original reply was captured.
+        with session_scope(ready.case.factory) as session:
+            lock_terminal_selection(
+                session,
+                ready.case.collection_id,
+                ready.case.operation,
+                nowait=True,
+                guard=ready.guard,
+            )
+        probes.append(True)
+        if not usable:
+            raise OSError("target unavailable")
+
+    ready.stores.admit(ready.store, binding or ready.binding, probe=probe)
+    return probes
+
+
+def test_archive_binding_failure_before_admission_remains_resumable_without_a_ticket(tmp_path):
+    with _ready(tmp_path) as ready:
+        probes = _current_binding(ready, usable=False)
+        with pytest.raises(ServiceUnavailable, match="unavailable"):
+            ready.turn.advance()
+        assert probes == [True] and ready.target.calls == []
+        with session_scope(ready.case.factory) as session:
+            assert session.scalars(select(Attempt)).all() == []
+            assert session.get(Page, ready.case.operation) is None
+        _current_binding(ready)
+        _assert_complete(ready)
+
+
+def _binding_during_receiving(ready, monkeypatch, stage, committed):
+    if stage == "dispose":
+        assert ready.turn.advance() == "pending"
+    original = ready.owner.record_response
+
+    def lose(*args, **kwargs):
+        if committed:
+            original(*args, **kwargs)
+        raise OSError("captured original response")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(ready.owner, "record_response", lose)
+        with pytest.raises(OSError, match="captured original"):
+            ready.turn.advance()
+    count = len(ready.target.calls)
+    replacement_calls = []
+
+    def replacement(invocation):
+        replacement_calls.append(invocation)
+        raise AssertionError("original cleanup redirected to replacement target")
+
+    changed = replace(
+        ready.binding,
+        incarnation_id="replacement-incarnation",
+        object_cleanup=SimpleNamespace(execute_cleanup=replacement),
+    )
+    probes = _current_binding(ready, binding=changed)
+    assert ready.turn.advance() == "pending"
+    assert probes == [] and len(ready.target.calls) == count
+    with pytest.raises(ServiceUnavailable, match="incarnation changed"):
+        ready.turn.advance()
+    assert probes == [True] and len(ready.target.calls) == count
+    assert replacement_calls == []
+    _current_binding(ready)
+    _assert_complete(ready)
+
+
+@pytest.mark.parametrize("stage", ("inventory", "dispose"))
+@pytest.mark.parametrize("committed", (False, True))
+def test_current_binding_change_never_obstructs_captured_original_receiving(
+    tmp_path, monkeypatch, stage, committed
+):
+    with _ready(tmp_path) as ready:
+        _binding_during_receiving(ready, monkeypatch, stage, committed)
+
+
+def test_archive_binding_keeps_original_port_and_needs_no_probe_after_exhaustion(tmp_path):
+    with _ready(tmp_path) as ready:
+        probes = _current_binding(ready)
+        assert ready.turn.advance() == "pending"
+        assert probes == [True]
+
+        def replacement(invocation):
+            raise AssertionError("admitted original target was replaced")
+
+        current = replace(
+            ready.binding, object_cleanup=SimpleNamespace(execute_cleanup=replacement)
+        )
+        _current_binding(ready, binding=current)
+        _assert_complete(ready)
+        probes = _current_binding(ready, usable=False)
+        assert ready.turn.advance() == "inventory-exhausted"
+        assert probes == []
