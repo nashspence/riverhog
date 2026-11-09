@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from threading import Lock
 from typing import Literal
 
@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from state_schema import read_snapshot
 
 from riverhog_core.catalog_db import SessionFactory
+from riverhog_core.services.archive_upload_cleanup_turn import ArchiveUploadCleanupTurn
 from riverhog_core.services.archive_upload_drain import read_terminal_selection
 from riverhog_core.services.archive_upload_terminal_adjudication import (
     ArchiveUploadTerminalAdjudication,
@@ -30,11 +31,14 @@ class TerminalTurnProgress:
 
     phase: str | None
     pending_reason: (
-        PendingReason | Literal["actor-busy", "global-decision", "retained-originals"] | None
+        PendingReason
+        | Literal["actor-busy", "global-decision", "retained-originals", "archive-cleanup"]
+        | None
     ) = None
     retired_originals: int = 0
     originals_retired: bool = False
     execution_stopped: bool = False
+    archive_inventory_exhausted: bool = False
 
 
 class ArchiveUploadTerminalTurn:
@@ -61,9 +65,12 @@ class ArchiveUploadTerminalTurn:
         guard: Callable[[Session], None],
         adjudication: ArchiveUploadTerminalAdjudication,
         retirement: ArchiveUploadTerminalRetirement,
+        cleanup_create: Callable[[], ArchiveUploadCleanupTurn] | None = None,
     ) -> None:
         if not callable(guard):
             raise ValueError("terminal execution requires current authority")
+        if cleanup_create is not None and not callable(cleanup_create):
+            raise ValueError("terminal cleanup requires an original factory")
         key = PhysicalExecutionKey(collection_id, operation_id)
         with read_snapshot(factory) as session:
             control, _, _ = read_terminal_selection(session, collection_id, operation_id)
@@ -75,6 +82,10 @@ class ArchiveUploadTerminalTurn:
         self._guard = guard
         self._adjudication = adjudication
         self._retirement = retirement
+        self._cleanup_create = cleanup_create
+        self._cleanup_entered = False
+        self._cleanup_original: object | None = None
+        self._cleanup: ArchiveUploadCleanupTurn | None = None
         self._lock = Lock()
 
     @property
@@ -86,7 +97,7 @@ class ArchiveUploadTerminalTurn:
         return self._target
 
     def advance(self, *, limit: int) -> TerminalTurnProgress:
-        """Execute bounded semantic work; no joins, provider IO or new scheduler."""
+        """Execute one bounded semantic/provider quantum in the existing worker."""
         if type(limit) is not int or limit < 1:
             raise ValueError("terminal execution retirement limit must be positive")
         if not self._lock.acquire(blocking=False):
@@ -108,12 +119,37 @@ class ArchiveUploadTerminalTurn:
             retired = self._retirement.retire(
                 key.collection_id, key.scope_sha256, guard=self._guard, limit=limit
             )
-            return TerminalTurnProgress(
+            progress = TerminalTurnProgress(
                 retired.phase,
                 retired.pending_reason,
                 retired.retired,
                 retired.pending_reason is None,
                 retired.execution_stopped,
+            )
+            if (
+                retired.pending_reason is not None
+                or retired.phase not in {"cleanup-ready", "cleaning"}
+                or self._cleanup_create is None
+            ):
+                return progress
+            if self._cleanup is None:
+                if self._cleanup_entered:
+                    raise Conflict("original archive cleanup constructor is unresolved")
+                self._cleanup_entered = True
+                self._cleanup_original = self._cleanup_create()
+                cleanup = self._cleanup_original
+                if (
+                    not isinstance(cleanup, ArchiveUploadCleanupTurn)
+                    or cleanup.key != self._key
+                    or cleanup.target_incarnation != self._target
+                ):
+                    raise Conflict("archive cleanup constructor returned another original scope")
+                self._cleanup = cleanup
+            result = self._cleanup.advance()
+            return replace(
+                progress,
+                pending_reason=None if result == "inventory-exhausted" else "archive-cleanup",
+                archive_inventory_exhausted=result == "inventory-exhausted",
             )
         finally:
             self._lock.release()

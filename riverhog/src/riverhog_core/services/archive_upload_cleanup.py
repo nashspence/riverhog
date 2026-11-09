@@ -17,10 +17,18 @@ from riverhog_core.catalog_cache_write_models import (
     CachePopulationBeginRecord,
     CachePopulationWriteEffectRecord,
 )
+from riverhog_core.catalog_object_cleanup_models import (
+    ObjectCleanupAttemptRecord,
+    ObjectCleanupPageRecord,
+)
 from riverhog_core.services.archive_upload_drain import lock_terminal_selection
 from riverhog_core.services.archive_upload_terminal_control import require_prepared_terminal_result
 from riverhog_core.services.archive_upload_terminal_tags import load_terminal_tag_selector
-from riverhog_core.services.object_cleanup_receiving import CleanupScope, ObjectCleanupReceiving
+from riverhog_core.services.object_cleanup_receiving import (
+    CleanupScope,
+    ObjectCleanupReceiving,
+    RetainedCleanupPage,
+)
 
 
 class ArchiveUploadCleanup(ObjectCleanupReceiving):
@@ -74,3 +82,35 @@ class ArchiveUploadCleanup(ObjectCleanupReceiving):
         if terminal is None:
             raise Conflict("original archive cleanup terminal is unavailable")
         terminal.phase = "cleaning"
+
+    def require_exhausted(
+        self,
+        session: Session,
+        collection_id: int,
+        operation_id: str,
+        *,
+        guard: Callable[[Session], None],
+    ) -> RetainedCleanupPage:
+        """Require exact current cleanup proof; retain it for catalog teardown.
+
+        An empty listing or an exhausted page cannot close unknown original
+        attempts. This validates only this archive scope, leaving independent
+        cache cleanup, registration and the confirmed terminal result untouched.
+        """
+        scope = self._context(session, collection_id, operation_id, admit=True, guard=guard)
+        record = session.get(ObjectCleanupPageRecord, scope.scope_id)
+        if record is None:
+            raise Conflict("archive cleanup has no retained inventory proof")
+        page = self._page(record, operation_id, scope)
+        if not page.complete or not page.request.inventory.exhausted:
+            raise Conflict("archive cleanup inventory proof is incomplete")
+        if (
+            session.scalar(
+                select(ObjectCleanupAttemptRecord.id)
+                .where(ObjectCleanupAttemptRecord.scope_id == scope.scope_id)
+                .limit(1)
+            )
+            is not None
+        ):
+            raise Conflict("archive cleanup still has original cleanup receiving")
+        return page
