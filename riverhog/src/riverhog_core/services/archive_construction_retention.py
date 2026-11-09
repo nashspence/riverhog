@@ -21,12 +21,16 @@ class ArchiveConstructionReservation:
     key: PhysicalExecutionKey
     target_incarnation: str
     owner: object = field(repr=False)
+    terminal: bool = False
 
 
 class ArchiveConstructionRetention:
-    """Count all retained originals against one service-owned configured budget.
+    """Count retained originals against the service-owned configured allowances.
 
-    Allocation precedes construction. Independent registries share this owner;
+    Allocation precedes construction. Independent registries share this owner.
+    The reserved terminal allowance belongs only to global terminal adjudication;
+    construction drains and independent cache cleanup use the ordinary budget.
+    Neither allowance lends unused reservations to the other. The
     separate physical workers and durable effect reservations retain their own
     accounting. Only the original reservation and local recipient can retire it.
     Its semantic owner must establish that original receiving and joins permit
@@ -34,11 +38,15 @@ class ArchiveConstructionRetention:
     """
 
     def __init__(self, tuning: ArchiveExecutionTuning) -> None:
-        self._capacity = tuning.retained_constructions
-        self._per_target = tuning.retained_constructions_per_target
+        self._capacity = {False: tuning.retained_constructions, True: tuning.retained_terminals}
+        self._per_target = {
+            False: tuning.retained_constructions_per_target,
+            True: tuning.retained_terminals_per_target,
+        }
         self._lock = Lock()
         self._reservations: dict[int, ArchiveConstructionReservation] = {}
-        self._targets: dict[str, int] = {}
+        self._targets: dict[tuple[bool, str], int] = {}
+        self._counts = {False: 0, True: 0}
 
     def try_retain(
         self,
@@ -46,19 +54,24 @@ class ArchiveConstructionRetention:
         *,
         target_incarnation: str,
         owner: object,
+        terminal: bool = False,
     ) -> ArchiveConstructionReservation | RetentionRefusal:
+        if type(terminal) is not bool:
+            raise ValueError("archive retention lane must be explicit")
         if not target_incarnation:
             raise ValueError("archive construction retention requires an exact target")
         if not self._lock.acquire(blocking=False):
             return "busy"
         try:
-            if len(self._reservations) >= self._capacity:
+            if self._counts[terminal] >= self._capacity[terminal]:
                 return "retention-capacity"
-            if self._targets.get(target_incarnation, 0) >= self._per_target:
+            target = (terminal, target_incarnation)
+            if self._targets.get(target, 0) >= self._per_target[terminal]:
                 return "target-retention-capacity"
-            original = ArchiveConstructionReservation(key, target_incarnation, owner)
+            original = ArchiveConstructionReservation(key, target_incarnation, owner, terminal)
             self._reservations[id(original)] = original
-            self._targets[target_incarnation] = self._targets.get(target_incarnation, 0) + 1
+            self._targets[target] = self._targets.get(target, 0) + 1
+            self._counts[terminal] += 1
             return original
         finally:
             self._lock.release()
@@ -71,11 +84,13 @@ class ArchiveConstructionRetention:
             if self._reservations.get(id(original)) is not original or original.owner is not owner:
                 raise Conflict("archive construction reservation is not this original owner")
             del self._reservations[id(original)]
-            count = self._targets[original.target_incarnation] - 1
+            target = (original.terminal, original.target_incarnation)
+            self._counts[original.terminal] -= 1
+            count = self._targets[target] - 1
             if count:
-                self._targets[original.target_incarnation] = count
+                self._targets[target] = count
             else:
-                del self._targets[original.target_incarnation]
+                del self._targets[target]
             return True
         finally:
             self._lock.release()

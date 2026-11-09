@@ -654,3 +654,93 @@ def test_original_only_resume_retains_unknown_constructor_without_reconstruction
         resumed.result()
     assert context.construction_failure is failure and calls == ["constructor"]
     assert not registry.retire_idle(_key(), target_incarnation="target-a")
+
+
+def test_fully_retained_drained_parent_leaves_capacity_for_its_terminal_decision(owned, tmp_path):
+    from riverhog_core.services.archive_construction_retention import ArchiveConstructionReservation
+    from riverhog_core.services.archive_upload_terminal_observation import (
+        ArchiveUploadTerminalObservation,
+    )
+
+    with _case(tmp_path) as case:
+        registry, pool = owned.make(
+            case.factory,
+            retained_constructions=1,
+            retained_constructions_per_target=1,
+            retained_terminals=1,
+            retained_terminals_per_target=1,
+        )
+        key, target = _scope(case)
+        assert _submit(registry, key, target=target) == "submitted"
+        (forward,) = _receive(registry, pool)
+        assert forward.result().progressed is True
+        assert forward.result().selection == "original"
+        operation = _operation(case)
+        assert (
+            registry.submit_terminal(key, target_incarnation=target, operation_id=operation)
+            == "submitted"
+        )
+        (drain,) = _receive(registry, pool)
+        assert drain.result() == "closed"
+        assert (
+            registry.local_terminal_status(key, target_incarnation=target, operation_id=operation)
+            == "drained"
+        )
+        assert not registry.retire_idle(key, target_incarnation=target)
+        retention = registry._retention
+        owner = object()
+        assert (
+            retention.try_retain(
+                _key(case.collection_id + 1), target_incarnation=target, owner=owner
+            )
+            == "retention-capacity"
+        )
+        terminal_key = PhysicalExecutionKey(case.collection_id, operation)
+        reserved = retention.try_retain(
+            terminal_key, target_incarnation=target, owner=owner, terminal=True
+        )
+        assert isinstance(reserved, ArchiveConstructionReservation)
+        observer = ArchiveUploadTerminalObservation(
+            registry, case.service._archive_invocations, case.service._archive_inputs, pool
+        )
+
+        admitted = threading.Event()
+
+        def decide():
+            assert admitted.wait(5)
+            assert pool.status(terminal_key) == "running"
+            with session_scope(case.factory) as session:
+                return observer.observe(session, case.collection_id, operation)
+
+        assert (
+            pool.try_submit(
+                terminal_key,
+                target_incarnation=target,
+                terminal=True,
+                work=decide,
+                owner=owner,
+                identity=reserved,
+            )
+            == "submitted"
+        )
+        admitted.set()
+        for slot in tuple(pool._slots.values()):
+            slot.worker.join(timeout=10)
+            assert not slot.worker.is_alive()
+        assert pool.status(terminal_key) == "awaiting-join"
+        assert (
+            retention.try_retain(
+                _key(case.collection_id + 1), target_incarnation=target, owner=owner, terminal=True
+            )
+            == "retention-capacity"
+        )
+        (completed,) = pool.collect(owner=owner, limit=1)
+        observed = completed.result()
+        assert observed.finalizers == "drained"
+        assert observed.invocations == observed.inputs == observed.execution == "untracked"
+        assert not observed.records.archive_unclosed and not observed.records.archive_retained
+        # Physical receiving supplies no semantic retirement of either actor.
+        assert len(retention._reservations) == 2
+        assert retention.retire(reserved, owner=owner)
+        assert len(retention._reservations) == 1
+        assert not registry.retire_idle(key, target_incarnation=target)

@@ -298,6 +298,13 @@ class ArchiveExecutionDocument(_Document):
         default=_ARCHIVE_EXECUTION.retained_constructions_per_target, ge=1, strict=True
     )
 
+    retained_terminals: int = Field(
+        default=_ARCHIVE_EXECUTION.retained_terminals, ge=1, strict=True
+    )
+    retained_terminals_per_target: int = Field(
+        default=_ARCHIVE_EXECUTION.retained_terminals_per_target, ge=1, strict=True
+    )
+
     receive_poll_interval_ms: int = Field(
         default=_ARCHIVE_EXECUTION.receive_poll_interval_ms, ge=1, strict=True
     )
@@ -310,6 +317,8 @@ class ArchiveExecutionDocument(_Document):
             terminal_workers_per_target=self.terminal_workers_per_target,
             retained_constructions=self.retained_constructions,
             retained_constructions_per_target=self.retained_constructions_per_target,
+            retained_terminals=self.retained_terminals,
+            retained_terminals_per_target=self.retained_terminals_per_target,
             receive_poll_interval_ms=self.receive_poll_interval_ms,
         )
 

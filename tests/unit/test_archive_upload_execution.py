@@ -347,6 +347,8 @@ def test_one_service_owns_configured_capacity_and_joins_before_dependency_shutdo
         "terminal_workers_per_target",
         "retained_constructions",
         "retained_constructions_per_target",
+        "retained_terminals",
+        "retained_terminals_per_target",
         "receive_poll_interval_ms",
     ],
 )

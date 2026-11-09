@@ -484,6 +484,8 @@ def test_archive_execution_configuration_reserves_physical_terminal_headroom(tmp
         "terminal_workers_per_target": 1,
         "retained_constructions": 9,
         "retained_constructions_per_target": 3,
+        "retained_terminals": 5,
+        "retained_terminals_per_target": 2,
         "receive_poll_interval_ms": 25,
     }
     _write(path, document)
@@ -495,6 +497,8 @@ def test_archive_execution_configuration_reserves_physical_terminal_headroom(tmp
         terminal_workers_per_target=1,
         retained_constructions=9,
         retained_constructions_per_target=3,
+        retained_terminals=5,
+        retained_terminals_per_target=2,
         receive_poll_interval_ms=25,
     )
     for field in tuple(document["archive_execution"]):
