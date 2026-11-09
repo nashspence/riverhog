@@ -198,6 +198,20 @@ class ArchiveUploadTerminalTagRecord(Base):
     )
 
 
+class TerminalCleanupCapacityRecord(Base):
+    """Shared resource usage; scope owners retain their own disposal authority."""
+
+    __tablename__ = "terminal_cleanup_capacity"
+
+    terminal_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    calls: Mapped[str] = mapped_column(Text)
+    control_bytes: Mapped[str] = mapped_column(Text)
+    provider_requests: Mapped[str] = mapped_column(Text)
+    in_flight: Mapped[str] = mapped_column(Text)
+
+    __table_args__ = (ForeignKeyConstraint(["terminal_id"], ["archive_upload_terminals.id"]),)
+
+
 class ArchiveCleanupPageRecord(Base):
     """One current exact selection; completed page history is not accumulated."""
 

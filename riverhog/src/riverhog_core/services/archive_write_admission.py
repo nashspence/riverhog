@@ -28,6 +28,7 @@ from riverhog_core.catalog_archive_write_models import (
     ArchiveWriteControlRecord,
     ArchiveWriteEffectRecord,
     ArchiveWritePreparationRecord,
+    TerminalCleanupCapacityRecord,
 )
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
@@ -767,6 +768,15 @@ class ArchiveWriteAdmission:
                 )
             )
             session.flush()
+            session.add(
+                TerminalCleanupCapacityRecord(
+                    terminal_id=operation_id,
+                    calls="0",
+                    control_bytes="0",
+                    provider_requests="0",
+                    in_flight="0",
+                )
+            )
             retain_terminal_tag_selector(session, upload, operation_id, selected_tags)
             control.gate = "closed"
             control.epoch = secrets.token_hex(32)

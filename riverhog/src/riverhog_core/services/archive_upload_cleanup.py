@@ -51,6 +51,10 @@ from riverhog_core.catalog_cache_write_models import (
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.ports.archive_objects import ArchiveObjectCleanupPort
 from riverhog_core.services.archive_upload_drain import lock_terminal_selection
+from riverhog_core.services.terminal_cleanup_capacity import (
+    CleanupCharge,
+    change_cleanup_capacity,
+)
 
 
 def _json(value: object) -> str:
@@ -242,34 +246,31 @@ class ArchiveUploadCleanup:
         page_bytes: int,
         invocation: CleanupInvocation | None = None,
     ) -> None:
-        # The parent terminal lock serializes reservations. This indexed query
-        # reads only bounded outstanding charges, never completed retry history.
-        rows = session.execute(
-            select(
-                ArchiveCleanupAttemptRecord.control_bytes,
-                ArchiveCleanupAttemptRecord.provider_requests,
-                ArchiveCleanupAttemptRecord.in_flight,
+        page = session.get(ArchiveCleanupPageRecord, operation_id)
+        previous_bytes = (
+            self._page_bytes(
+                operation_id,
+                CleanupStepRequest.model_validate_json(page.request_json),
+                page.inventory_request_json,
             )
-            .where(ArchiveCleanupAttemptRecord.terminal_id == operation_id)
-            .order_by(ArchiveCleanupAttemptRecord.id)
-            .limit(self._grants.calls + 1)
-        ).all()
-        controls = page_bytes + sum(_charge(row[0]) for row in rows)
-        requests = sum(_charge(row[1]) for row in rows)
-        in_flight = sum(_charge(row[2]) for row in rows)
-        calls = len(rows)
-        if invocation is not None:
-            calls += 1
-            controls += self._attempt_bytes(invocation, operation_id)
-            requests += invocation.request.maximum_provider_requests
-            in_flight += invocation.request.maximum_in_flight
-        if (
-            calls > self._grants.calls
-            or controls > self._grants.control_bytes
-            or requests > self._grants.provider_requests
-            or in_flight > self._grants.in_flight
-        ):
-            raise Conflict("cleanup outstanding reservations exhaust the retention grant")
+            if page is not None
+            else 0
+        )
+        change_cleanup_capacity(
+            session,
+            operation_id,
+            grants=self._grants,
+            removed=CleanupCharge(control_bytes=previous_bytes),
+            added=CleanupCharge(
+                calls=int(invocation is not None),
+                control_bytes=page_bytes
+                + (self._attempt_bytes(invocation, operation_id) if invocation is not None else 0),
+                provider_requests=(
+                    invocation.request.maximum_provider_requests if invocation is not None else 0
+                ),
+                in_flight=invocation.request.maximum_in_flight if invocation is not None else 0,
+            ),
+        )
 
     @staticmethod
     def _predecessor(
@@ -607,4 +608,15 @@ class ArchiveUploadCleanup:
                 exclude_none=True
             ):
                 raise Conflict("cleanup attempt has no acknowledged exact closed response")
+            change_cleanup_capacity(
+                session,
+                operation_id,
+                grants=self._grants,
+                removed=CleanupCharge(
+                    calls=1,
+                    control_bytes=_charge(record.control_bytes),
+                    provider_requests=_charge(record.provider_requests),
+                    in_flight=_charge(record.in_flight),
+                ),
+            )
             session.delete(record)

@@ -22,6 +22,7 @@ from tests.unit.test_archive_upload_cleanup import (
     _ready,
     _receiving_after_retirement,
     _select,
+    _shared_scope_capacity,
 )
 from tests.unit.test_archive_write_admission import _case, _guard
 
@@ -88,3 +89,67 @@ def test_postgres_original_inventory_receiving_and_independent_charges(
         {"lost": _lost_inventory_reply, "retirement": _inventory_receiving_after_retirement}[flow](
             ready
         )
+
+
+@pytest.mark.parametrize(
+    "resource,value",
+    (("calls", 1), ("control_bytes", 18000), ("provider_requests", 3), ("in_flight", 1)),
+)
+def test_postgres_terminal_cleanup_grants_include_independent_scope_owners(
+    database_url, tmp_path, resource, value
+):
+    with _case(tmp_path, database_url=database_url) as case:
+        _shared_scope_capacity(_ready(case), resource, value)
+
+
+def test_postgres_independent_cleanup_scopes_compete_for_one_terminal_capacity(
+    database_url, tmp_path
+):
+    from riverhog_core.catalog_archive_write_models import TerminalCleanupCapacityRecord
+    from riverhog_core.services.archive_upload_drain import lock_terminal_selection
+    from riverhog_core.services.terminal_cleanup_capacity import (
+        CleanupCharge,
+        change_cleanup_capacity,
+    )
+
+    with _case(tmp_path, database_url=database_url) as case:
+        ready = _ready(case, grants=replace(GRANTS, calls=1))
+        _select(ready)
+        simultaneous = Barrier(2)
+        pids = []
+
+        def guard(session):
+            _guard(session)
+            pids.append(session.scalar(text("SELECT pg_backend_pid()")))
+            simultaneous.wait(timeout=10)
+
+        def reserve(archive):
+            try:
+                if archive:
+                    _cleanup_arm(ready, guard=guard)
+                else:
+                    with session_scope(case.factory) as session:
+                        lock_terminal_selection(
+                            session, case.collection_id, ready.operation, guard=guard
+                        )
+                        change_cleanup_capacity(
+                            session,
+                            ready.operation,
+                            grants=replace(GRANTS, calls=1),
+                            added=CleanupCharge(
+                                calls=1, control_bytes=100, provider_requests=1, in_flight=1
+                            ),
+                        )
+                return True
+            except Conflict:
+                return False
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = [pool.submit(reserve, archive) for archive in (True, False)]
+            results = [future.result(timeout=20) for future in futures]
+        assert len(set(pids)) == 2
+        assert sum(results) == 1
+        with session_scope(case.factory) as session:
+            capacity = session.get(TerminalCleanupCapacityRecord, ready.operation)
+            assert capacity.calls == "1"
+            assert session.scalar(select(func.count()).select_from(Attempt)) == int(results[0])

@@ -20,12 +20,15 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_archive_write_models import (
     ArchiveWriteControlRecord as Control,
 )
+from riverhog_core.catalog_archive_write_models import TerminalCleanupCapacityRecord as Capacity
 from riverhog_core.catalog_db import session_scope, validate_db
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services.archive_upload_cleanup import (
     ArchiveUploadCleanup,
 )
+from riverhog_core.services.archive_upload_drain import lock_terminal_selection
 from riverhog_core.services.archive_write_admission import _writer
+from riverhog_core.services.terminal_cleanup_capacity import CleanupCharge, change_cleanup_capacity
 from riverhog_core.stores.storage_adapter_archive_objects import StorageAdapterArchiveObjectCleanup
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_storage_adapter_protocol import (
@@ -542,7 +545,13 @@ def test_cleanup_reservation_seek_ignores_other_terminal_history(tmp_path, recor
 
                 connection.set_progress_handler(step, 1)
                 try:
-                    ready.owner._reserve(session, ready.operation, page_bytes=1)
+                    page_record = session.get(Page, ready.operation)
+                    page_bytes = ready.owner._page_bytes(
+                        ready.operation,
+                        CleanupStepRequest.model_validate_json(page_record.request_json),
+                        page_record.inventory_request_json,
+                    )
+                    ready.owner._reserve(session, ready.operation, page_bytes=page_bytes)
                 finally:
                     connection.set_progress_handler(None, 0)
                 observations.append(instructions)
@@ -638,3 +647,105 @@ def test_cleanup_admission_cannot_omit_its_runtime_disposal_guard(tmp_path, acti
             assert session.scalar(select(func.count()).select_from(Attempt)) == 0
             if action == "select":
                 assert session.get(Page, ready.operation) is None
+
+
+def _other_scope_charge(ready, charge, *, release=False):
+    with session_scope(ready.case.factory) as session:
+        lock_terminal_selection(
+            session, ready.case.collection_id, ready.operation, require_upload=False
+        )
+        change_cleanup_capacity(
+            session,
+            ready.operation,
+            grants=GRANTS,
+            **{"removed" if release else "added": charge},
+        )
+
+
+def _shared_scope_capacity(ready, resource, value):
+    page = _select(ready)
+    other = CleanupCharge(calls=1, control_bytes=9000, provider_requests=2, in_flight=1)
+    _other_scope_charge(ready, other)
+    ready.owner = ArchiveUploadCleanup(
+        ready.case.factory, grants=replace(GRANTS, **{resource: value})
+    )
+    with pytest.raises(Conflict, match="retention grant"):
+        _cleanup_arm(ready, page)
+    with session_scope(ready.case.factory) as session:
+        assert session.scalar(select(func.count()).select_from(Attempt)) == 0
+        capacity = session.get(Capacity, ready.operation)
+        assert capacity.calls == "1"
+        assert capacity.provider_requests == "2" and capacity.in_flight == "1"
+        assert int(capacity.control_bytes) > other.control_bytes
+    _other_scope_charge(ready, other, release=True)
+    ticket = _cleanup_arm(ready, page)
+    response = _response(ticket, ("disposed", "disposed"))
+    _receive(ready, response)
+    _ack(ready, response)
+    with session_scope(ready.case.factory) as session:
+        capacity = session.get(Capacity, ready.operation)
+        assert capacity.calls == capacity.provider_requests == capacity.in_flight == "0"
+        assert int(capacity.control_bytes) > 0  # Current exact page remains retained.
+
+
+@pytest.mark.parametrize(
+    "resource,value",
+    (("calls", 1), ("control_bytes", 18000), ("provider_requests", 3), ("in_flight", 1)),
+)
+def test_terminal_cleanup_budget_is_shared_with_independent_scope_owners(tmp_path, resource, value):
+    with _case(tmp_path) as case:
+        _shared_scope_capacity(_ready(case), resource, value)
+
+
+def test_missing_cleanup_accounting_cannot_be_rebuilt_from_an_empty_attempt_set(tmp_path):
+    with _case(tmp_path) as case:
+        ready = _ready(case)
+        with session_scope(case.factory) as session:
+            session.delete(session.get(Capacity, ready.operation))
+        with pytest.raises(Conflict, match="accounting is unavailable"):
+            _inventory_arm(ready)
+        with session_scope(case.factory) as session:
+            assert session.get(Capacity, ready.operation) is None
+            assert session.scalar(select(func.count()).select_from(Attempt)) == 0
+
+
+def test_cleanup_receiving_releases_exact_charges_after_operator_reduces_grants(tmp_path):
+    with _case(tmp_path) as case:
+        ready = _ready(case)
+        page = _select(ready)
+        first, second = _cleanup_arm(ready, page), _cleanup_arm(ready, page)
+        first_response = _response(first, ("disposed", "disposed"))
+        _receive(ready, first_response)
+        ready.owner = ArchiveUploadCleanup(case.factory, grants=ArchiveCleanupGrants(1, 1, 1, 1))
+        _ack(ready, first_response)
+        with session_scope(case.factory) as session:
+            capacity = session.get(Capacity, ready.operation)
+            assert capacity.calls == "1"
+            assert session.get(Attempt, second.invocation.call.call_id).unresolved
+        second_response = _response(second, ("disposed", "disposed"))
+        _receive(ready, second_response)
+        _ack(ready, second_response)
+        with session_scope(case.factory) as session:
+            capacity = session.get(Capacity, ready.operation)
+            assert capacity.calls == capacity.provider_requests == capacity.in_flight == "0"
+
+
+def test_shared_accounting_alone_never_creates_scope_disposal_authority(tmp_path):
+    with _case(tmp_path) as case:
+        ready = _ready(case, ready=False)
+        _other_scope_charge(ready, CleanupCharge(calls=1, control_bytes=1))
+        with pytest.raises(Conflict, match="cleanup-ready"):
+            _inventory_arm(ready)
+
+
+def test_cleanup_capacity_rejects_release_underflow_without_changing_any_dimension(tmp_path):
+    with _case(tmp_path) as case:
+        ready = _ready(case)
+        charge = CleanupCharge(calls=1, control_bytes=100, provider_requests=1, in_flight=1)
+        _other_scope_charge(ready, charge)
+        with pytest.raises(Conflict, match="release exceeds"):
+            _other_scope_charge(ready, replace(charge, control_bytes=101), release=True)
+        with session_scope(case.factory) as session:
+            capacity = session.get(Capacity, ready.operation)
+            assert capacity.calls == capacity.provider_requests == capacity.in_flight == "1"
+            assert capacity.control_bytes == "100"

@@ -6308,3 +6308,13 @@ SQLITE_DDL += (
 POSTGRESQL_DDL += (
     "CREATE INDEX ix_collection_archive_object_uploads_receiving ON collection_archive_object_uploads (collection_id, sequence) WHERE ((state) = 'sealed') AND sealed_receipt_json IS NULL",
 )
+
+
+SQLITE_DDL += (
+    "CREATE TABLE terminal_cleanup_capacity (\n\tterminal_id VARCHAR(64) NOT NULL,\n\tcalls TEXT NOT NULL,\n\tcontrol_bytes TEXT NOT NULL,\n\tprovider_requests TEXT NOT NULL,\n\tin_flight TEXT NOT NULL,\n\tPRIMARY KEY (terminal_id),\n\tFOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id),\n\tCONSTRAINT ck_terminal_cleanup_capacity_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')\n)",
+)
+
+
+POSTGRESQL_DDL += (
+    "CREATE TABLE terminal_cleanup_capacity (\n\tterminal_id VARCHAR(64) NOT NULL,\n\tcalls TEXT NOT NULL,\n\tcontrol_bytes TEXT NOT NULL,\n\tprovider_requests TEXT NOT NULL,\n\tin_flight TEXT NOT NULL,\n\tPRIMARY KEY (terminal_id),\n\tFOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id),\n\tCONSTRAINT ck_terminal_cleanup_capacity_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')\n)",
+)

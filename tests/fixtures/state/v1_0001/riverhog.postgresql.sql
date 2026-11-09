@@ -3163,4 +3163,15 @@ CREATE INDEX ix_archive_upload_terminal_tags_root ON archive_upload_terminal_tag
 
 CREATE INDEX ix_collection_archive_object_uploads_receiving ON collection_archive_object_uploads (collection_id, sequence) WHERE ((state) = 'sealed') AND sealed_receipt_json IS NULL;
 
+CREATE TABLE terminal_cleanup_capacity (
+	terminal_id VARCHAR(64) NOT NULL,
+	calls TEXT NOT NULL,
+	control_bytes TEXT NOT NULL,
+	provider_requests TEXT NOT NULL,
+	in_flight TEXT NOT NULL,
+	PRIMARY KEY (terminal_id),
+	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id),
+	CONSTRAINT ck_terminal_cleanup_capacity_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');
