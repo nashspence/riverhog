@@ -1,4 +1,4 @@
-"""Read original Core child routing under exclusive, irreversible retirement."""
+"""Receive original Core child routing under exclusive, irreversible retirement."""
 
 from __future__ import annotations
 
@@ -20,7 +20,10 @@ from riverhog_core.canonical_discovery_retired_metadata_growth import (
 )
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.journal_validation_retirement import RetiringJournalWorkspace
-from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
+from riverhog_core.journal_validation_workspace import (
+    LostJournalValidationWorkspace,
+    _private_directory,
+)
 
 
 class RetiredDiscoveryMetadata:
@@ -59,6 +62,7 @@ class RetiredDiscoveryMetadata:
         )
         self._db: sqlite3.Connection | None = None
         self._descriptor: int | None = None
+        self._child_root: int | None = None
         self._initialized = False
         self._closing = False
         self._closed = False
@@ -217,9 +221,107 @@ class RetiredDiscoveryMetadata:
         self._require_current()
         return result
 
+    def _receive_child_namespace(self) -> None:
+        """Synchronize exact absence without creating or removing any namespace."""
+        assert self.job.reclamation_directory_id is not None
+        if self._child_root is not None:
+            raise LostJournalValidationWorkspace("retired child root closure remains unconfirmed")
+        try:
+            self._child_root = os.open(
+                "journals",
+                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                dir_fd=self._custody._owner,
+            )
+        except FileNotFoundError:
+            os.fsync(self._custody._owner)
+            return
+        try:
+            identity = _private_directory(self._child_root)
+            try:
+                os.stat(
+                    self.job.reclamation_directory_id,
+                    dir_fd=self._child_root,
+                    follow_symlinks=False,
+                )
+            except FileNotFoundError:
+                pass
+            else:
+                raise LostJournalValidationWorkspace("selected child namespace still exists")
+            os.fsync(self._child_root)
+            entry = os.stat("journals", dir_fd=self._custody._owner, follow_symlinks=False)
+            if (identity.st_dev, identity.st_ino, identity.st_mode) != (
+                entry.st_dev,
+                entry.st_ino,
+                entry.st_mode,
+            ):
+                raise LostJournalValidationWorkspace("retired child root was replaced")
+        finally:
+            try:
+                os.close(self._child_root)
+            except BaseException:
+                self._closing = True
+                raise
+            self._child_root = None
+
+    def retire_child(self) -> bool:
+        """Retire only selected routing after actual namespace absence is received.
+
+        The durable child-directory phase records earlier byte completion and
+        keeps the selected identity through lease unlink, rmdir and lost replies.
+        This method independently synchronizes exact namespace absence before
+        deleting its full original registration. A missing routing row grants no
+        namespace proof, and this never advances the separate catalog phase.
+        """
+        db = self._require_current()
+        if self.job.reclamation_phase != "child_directory":
+            raise StaleArchiveTask("child routing retirement requires its durable directory phase")
+        self._receive_child_namespace()
+        with closing(db.execute("BEGIN IMMEDIATE")):
+            pass
+        try:
+            selected = self.child()
+            if selected is not None:
+                binding = selected.binding
+                key = self.job.storage_key
+                with closing(
+                    db.execute(
+                        "DELETE FROM discovery_journal_children WHERE build_id=? "
+                        "AND admission_sha256=? AND journal_id=? AND worker_id=? "
+                        "AND directory_id=? AND binding_json=? AND confirmed=?",
+                        (
+                            key.build_id,
+                            key.admission_sha256,
+                            binding.journal_id,
+                            key.worker_id,
+                            binding.directory_id,
+                            binding.to_json(),
+                            int(selected.confirmed),
+                        ),
+                    )
+                ) as rows:
+                    if rows.rowcount != 1:
+                        raise StaleArchiveTask("selected original child routing changed")
+            self._require_current()
+            with closing(db.execute("COMMIT")):
+                pass
+        except BaseException:
+            if db.in_transaction:
+                try:
+                    with closing(db.execute("ROLLBACK")):
+                        pass
+                except BaseException:
+                    self._closing = True
+                    raise
+            raise
+        self._require_current()
+        return True
+
     def close(self) -> None:
         """Confirm actual Core closure before the caller ends exclusive custody."""
         self._closing = True
+        if self._child_root is not None:
+            os.close(self._child_root)
+            self._child_root = None
         if self._db is not None:
             self._db.close()
             self._db = None

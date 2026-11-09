@@ -15,9 +15,12 @@ from riverhog_growth_contracts import (
 
 def _declaration(operation: str) -> Declaration:
     opening, closing = operation == "open", operation == "close"
-    fences = 0 if closing else 2 if operation in {"open", "child"} else 1
-    statements = 16 if opening else 0 if closing else 7 if operation == "child" else 3
-    rows = 8 if opening else 0 if closing else 7 if operation == "child" else 3
+    retiring = operation == "retire_child"
+    fences = 5 if retiring else 0 if closing else 2 if operation in {"open", "child"} else 1
+    statements = (
+        20 if retiring else 16 if opening else 0 if closing else 7 if operation == "child" else 3
+    )
+    rows = 16 if retiring else 8 if opening else 0 if closing else 7 if operation == "child" else 3
 
     def count(value: int) -> Expression:
         return Expression("constant", value=value, unit=COUNT)
@@ -40,7 +43,7 @@ def _declaration(operation: str) -> Declaration:
     limits = {
         "core_sql_statements": statements,
         "core_returned_rows": rows,
-        "core_changed_rows": 0,
+        "core_changed_rows": int(retiring),
         "core_opened_connections": int(opening),
         "core_closed_connections": int(closing),
         "catalog_sql_statements": fences * 2,
@@ -48,14 +51,14 @@ def _declaration(operation: str) -> Declaration:
         "catalog_returned_rows": fences * 16,
         "catalog_changed_rows": 0,
         "uuid_values": 0,
-        "open_calls": int(opening),
-        "close_calls": int(closing),
-        "stat_calls": fences * 8 + (4 if opening else 0),
-        "uid_calls": fences * 4 + (2 if opening else 0),
-        "fsync_calls": 0,
+        "open_calls": int(opening or retiring),
+        "close_calls": 2 if closing else int(retiring),
+        "stat_calls": fences * 8 + (4 if opening else 3 if retiring else 0),
+        "uid_calls": fences * 4 + (2 if opening else int(retiring)),
+        "fsync_calls": int(retiring),
         "directory_enumerations": 0,
-        "json_decodes": int(operation == "child"),
-        "json_encodes": int(operation == "child"),
+        "json_decodes": int(operation in {"child", "retire_child"}),
+        "json_encodes": 2 if retiring else int(operation == "child"),
     }
     return Declaration(
         id="riverhog-server.discovery-retired-metadata-" + operation + ".growth/v1",
@@ -64,7 +67,7 @@ def _declaration(operation: str) -> Declaration:
             "riverhog_core.canonical_discovery_retired_metadata.RetiredDiscoveryMetadata."
             + operation,
         ),
-        scope="one exact original retired Core handle or indexed registered-child lookup",
+        scope="one exact original retired Core handle, child lookup or received routing retirement",
         starts_at=(
             "receive the confirmed detached job/version and actual exclusive "
             "original parent custody"
@@ -137,8 +140,8 @@ def _declaration(operation: str) -> Declaration:
                 "core_parameter_octets",
                 OCTETS,
                 "upper",
-                width(fences * 4),
-                "Exact original point keys only.",
+                width(fences * 4 + int(retiring)),
+                "Exact original point keys and complete selected registration mutation.",
             ),
             Bound(
                 "catalog_returned_octets",
@@ -158,15 +161,15 @@ def _declaration(operation: str) -> Declaration:
                 "json_decoded_octets",
                 OCTETS,
                 "upper",
-                width(int(operation == "child")),
+                width(int(operation in {"child", "retire_child"})),
                 "Decode only the one selected complete Native binding.",
             ),
             Bound(
                 "json_encoded_octets",
                 OCTETS,
                 "upper",
-                width(int(operation == "child")),
-                "Native canonical binding verification encodes that selected binding once.",
+                width(2 if retiring else int(operation == "child")),
+                "Native canonical verification and an exact deletion retain full binding widths.",
             ),
             Bound(
                 "hashed_octets",
@@ -187,7 +190,8 @@ def _declaration(operation: str) -> Declaration:
                 OCTETS,
                 "upper",
                 scale(
-                    fences * 5 + (2 if opening else 0), Expression("dimension", name="path_octets")
+                    fences * 5 + (2 if opening else 1 if retiring else 0),
+                    Expression("dimension", name="path_octets"),
                 ),
                 "Exact owned root/directory/lease/file paths only.",
             ),
@@ -217,6 +221,8 @@ def _declaration(operation: str) -> Declaration:
             "complete Native replay binding.",
             "An empty lookup supplies no byte-disposal, namespace-completion or "
             "terminal-confirmation proof.",
+            "Routing deletion requires durable selected-child state and synchronized exact "
+            "namespace absence; no other registration or catalog phase changes.",
             "Uncertain close keeps the original partial handle and rejects further work while "
             "its caller retains custody.",
         ),
@@ -228,5 +234,5 @@ def _declaration(operation: str) -> Declaration:
 
 
 def declare_retired_metadata_growth(owner: type) -> None:
-    for operation in ("open", "verify_current", "child", "close"):
+    for operation in ("open", "verify_current", "child", "retire_child", "close"):
         declare_growth(_declaration(operation))(getattr(owner, operation))

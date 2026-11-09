@@ -245,3 +245,106 @@ def test_measured_retired_metadata_close(
     tmp_path, fixed_inputs, catalog_templates, record_property
 ):
     exercise(tmp_path, fixed_inputs, catalog_templates, "close", record_property)
+
+
+@pytest.mark.growth_witness(
+    "canonical-discovery-retired-child-routing/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.canonical_discovery_retired_metadata.RetiredDiscoveryMetadata.retire_child",
+)
+def test_measured_retired_child_routing(tmp_path, fixed_inputs, catalog_templates, record_property):
+    admission, _ = fixed_inputs
+    samples = []
+    variants = (
+        "missing-root",
+        "existing-root",
+        "absent-row",
+        "present-child",
+        "stale",
+        "wrong-phase",
+    )
+    for retained, width in basis.SPECIFICATIONS:
+        for cold in (False, True):
+            for variant in variants:
+                root = tmp_path / f"routing-{retained}-{width}-{cold}-{variant}"
+                selected = "current" if variant == "wrong-phase" else "selected"
+                with selected_case(
+                    root, admission, catalog_templates[(retained, width)], retained, width, selected
+                ) as (case, metadata, bindings):
+                    recorder = basis.Recorder()
+                    with recorder.connect_only():
+                        metadata.open()
+                    if variant in {"existing-root", "present-child"}:
+                        (case.path / "journals").mkdir(mode=0o700)
+                    if variant == "present-child":
+                        (case.path / "journals" / bindings[0].directory_id).mkdir(mode=0o700)
+                    if variant == "absent-row":
+                        metadata._db.execute(
+                            "DELETE FROM discovery_journal_children WHERE journal_id=?",
+                            (bindings[0].journal_id,),
+                        ).close()
+                    if variant == "stale":
+                        metadata._custody._held = False
+                    dimensions = {
+                        "retained_core_rows": retained * 2 + 3,
+                        "retained_catalog_rows": retained * 3 + 3,
+                        "control_octets": octets(
+                            (
+                                tuple(asdict(metadata.job).values()),
+                                metadata._expected,
+                                bindings[0].to_json(),
+                            )
+                        ),
+                        "path_octets": len(os.fsencode(case.path / "discovery.sqlite3")),
+                    }
+                    try:
+                        with observe_binding_codec(recorder), recorder.observe(case, cold=cold):
+                            if variant == "present-child":
+                                with pytest.raises(owner.LostJournalValidationWorkspace):
+                                    metadata.retire_child()
+                            elif variant in {"stale", "wrong-phase"}:
+                                with pytest.raises(owner.StaleArchiveTask):
+                                    metadata.retire_child()
+                            else:
+                                assert metadata.retire_child()
+                    finally:
+                        if variant == "stale":
+                            metadata._custody._held = True
+                    assert not recorder.live
+                    for statement, parameters in recorder.statements:
+                        if statement.lstrip().upper().startswith(("SELECT", "DELETE")):
+                            with basis._REAL_CONNECT(case.path / "discovery.sqlite3") as db:
+                                plan = " ".join(
+                                    str(row[3]).upper()
+                                    for row in db.execute(
+                                        "EXPLAIN QUERY PLAN " + statement, parameters
+                                    )
+                                )
+                            assert "SCAN " not in plan and "TEMP B-TREE" not in plan, plan
+                    try:
+                        sample = recorder.sample(
+                            "retire_child",
+                            dimensions,
+                            implementation=owner.RetiredDiscoveryMetadata,
+                        )
+                    except ValueError:
+                        record_property(
+                            "failed_retired_routing_metrics",
+                            {
+                                "variant": variant,
+                                "dimensions": dimensions,
+                                "core": dict(recorder.metrics),
+                                "catalog": dict(recorder.catalog.metrics),
+                            },
+                        )
+                        raise
+                    samples.append(sample)
+    record_property("growth_samples", samples)
+    record_property(
+        "retired_child_routing_conditions",
+        "Actual Core/catalog SQL, driver/VM, full original binding/parameter widths, descriptor "
+        "checks and namespace sync. Independent retained rows and scalar widths 1/17/1025, "
+        "cold/warm, missing/present roots, already-retired row, existing child refusal, "
+        "stale owner and wrong phase. No Native payload reads, enumeration, byte disposal, "
+        "catalog phase advancement or terminal completion.",
+    )

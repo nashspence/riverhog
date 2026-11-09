@@ -101,3 +101,26 @@ def test_postgresql_retired_core_routing_receives_rollback_or_lost_phase_reply(c
         else:
             assert metadata.child().binding == bindings[0]
     assert case.engine.pool.checkedout() == 0
+
+
+@pytest.mark.parametrize("confirmed", (False, True))
+def test_postgresql_child_routing_waits_for_namespace_and_retains_selected_catalog(case, confirmed):
+    from tests.unit.test_canonical_discovery_retired_child_routing import selected_child
+
+    job, path, bindings = selected_child(case, confirmed=confirmed)
+    with retired(case, job) as metadata:
+        metadata.open()
+        assert metadata.retire_child()
+        assert metadata.retire_child() and metadata.child() is None
+        with case.factory() as session:
+            assert jobs.retire_discovery_job(session, job) == job
+            successor = jobs.advance_discovery_reclamation(session, job, "children")
+            assert successor is not None
+            session.rollback()
+        assert (
+            metadata.verify_current() and job.reclamation_directory_id == bindings[0].directory_id
+        )
+    with retired(case, job) as metadata:
+        metadata.open()
+        assert metadata.child() is None
+    assert path.is_dir() and case.engine.pool.checkedout() == 0
