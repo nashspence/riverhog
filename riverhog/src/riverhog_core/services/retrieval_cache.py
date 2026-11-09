@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session, load_only
 from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, utc_now
 
+from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
 from riverhog_core.catalog_cache_write_models import (
     CachePopulationBeginRecord,
     CachePopulationWriteEffectRecord,
@@ -27,7 +28,7 @@ from riverhog_core.catalog_models import (
     RetrievalCachePopulationRecord,
     RetrievalCacheStoreAccountingRecord,
 )
-from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
+from riverhog_core.domain.retrieval_cache import AbandonedCachePopulation, RetrievalCacheReceipt
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     ResumableWriteConstraints,
@@ -36,6 +37,7 @@ from riverhog_core.ports.archive_objects import (
 from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
 from riverhog_core.services.cache_population_abandonment import CachePopulationAbandonment
+from riverhog_core.services.cache_population_cleanup import CachePopulationCleanup
 from riverhog_core.services.cache_write_capacity import retains_cache_write
 from riverhog_core.services.retrieval_cache_accounting import (
     adjust_cache_committed_bytes,
@@ -93,6 +95,19 @@ class SqlAlchemyRetrievalCache:
             for name, registration in registrations.items()
             if registration.admission_enabled and name in stores
         )
+
+    def native_population_cleanup(
+        self,
+        receipt: AbandonedCachePopulation,
+        *,
+        grants: ArchiveCleanupGrants,
+    ) -> tuple[CachePopulationCleanup, StorageAdapterRetrievalCache]:
+        """Bind one original receiving owner to its currently configured target."""
+        value = self.abandonment._value(receipt)
+        target = self._require_store(value["cache_store"])
+        if target.incarnation_id != value["cache_incarnation_id"]:
+            raise Conflict("cache cleanup configured target incarnation changed")
+        return CachePopulationCleanup(self._session_factory, receipt, grants=grants), target
 
     def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool:
         store = self._stores.get(cache_store)
