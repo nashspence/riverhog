@@ -17,6 +17,7 @@ from riverhog_archive_contracts import (
 from riverhog_protocol import CATALOG_SYNC_PAGE_SIZE_MAX
 from sqlalchemy.engine import make_url
 
+from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.archive_input_grants import ArchiveInputGrants
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
@@ -145,6 +146,7 @@ class RuntimeConfig:
     archive_input: ArchiveInputGrants = field(default_factory=ArchiveInputGrants)
     archive_execution: ArchiveExecutionTuning = field(default_factory=ArchiveExecutionTuning)
     archive_write: ArchiveWriteGrants = field(default_factory=ArchiveWriteGrants)
+    archive_cleanup: ArchiveCleanupGrants = field(default_factory=ArchiveCleanupGrants)
     cache_write: CacheWriteGrants = field(default_factory=CacheWriteGrants)
     registration: RegistrationTuning = field(default_factory=RegistrationTuning)
     volume_policy: CollectionVolumePolicy = field(default_factory=CollectionVolumePolicy)

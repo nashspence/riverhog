@@ -13,6 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
 from time_formats import parse_duration
 
+from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.archive_input_grants import ArchiveInputGrants
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
@@ -38,6 +39,7 @@ _RANGE = PackRangeRetrievalPolicy()
 _REGISTRATION = RegistrationTuning()
 _ARCHIVE_WRITE = ArchiveWriteGrants()
 _CACHE_WRITE = CacheWriteGrants()
+_ARCHIVE_CLEANUP = ArchiveCleanupGrants()
 _ARCHIVE_EXECUTION = ArchiveExecutionTuning()
 _ARCHIVE_INPUT = ArchiveInputGrants()
 
@@ -172,6 +174,39 @@ class ArchiveWriteDocument(_Document):
             ),
             terminal_bytes=_bytes(self.terminal_bytes, "archive_write.terminal_bytes", 1),
             result_bytes=_bytes(self.result_bytes, "archive_write.result_bytes", 1),
+        )
+
+
+class ArchiveCleanupDocument(_Document):
+    calls: int = Field(
+        default=_ARCHIVE_CLEANUP.calls,
+        ge=1,
+        strict=True,
+        description="Outstanding cleanup attempts per selected terminal.",
+    )
+    control_bytes: str = Field(
+        default=str(_ARCHIVE_CLEANUP.control_bytes),
+        description="Retained selected pages and complete outstanding cleanup attempt charges.",
+    )
+    provider_requests: int = Field(
+        default=_ARCHIVE_CLEANUP.provider_requests,
+        ge=1,
+        strict=True,
+        description="Reserved provider requests across outstanding cleanup attempts.",
+    )
+    in_flight: int = Field(
+        default=_ARCHIVE_CLEANUP.in_flight,
+        ge=1,
+        strict=True,
+        description="Reserved in-flight provider work across outstanding cleanup attempts.",
+    )
+
+    def grants(self) -> ArchiveCleanupGrants:
+        return ArchiveCleanupGrants(
+            calls=self.calls,
+            control_bytes=_bytes(self.control_bytes, "archive_cleanup.control_bytes", 1),
+            provider_requests=self.provider_requests,
+            in_flight=self.in_flight,
         )
 
 
@@ -359,6 +394,7 @@ class RiverhogDocument(_Document):
     archive_input: ArchiveInputDocument = Field(default_factory=ArchiveInputDocument)
     archive_execution: ArchiveExecutionDocument = Field(default_factory=ArchiveExecutionDocument)
     archive_write: ArchiveWriteDocument = Field(default_factory=ArchiveWriteDocument)
+    archive_cleanup: ArchiveCleanupDocument = Field(default_factory=ArchiveCleanupDocument)
     cache_write: CacheWriteDocument = Field(default_factory=CacheWriteDocument)
     registration: RegistrationDocument = Field(default_factory=RegistrationDocument)
     volume_policy: VolumePolicyDocument = Field(default_factory=VolumePolicyDocument)
@@ -480,6 +516,7 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         archive_input=document.archive_input.grants(),
         archive_execution=document.archive_execution.tuning(),
         archive_write=document.archive_write.grants(),
+        archive_cleanup=document.archive_cleanup.grants(),
         cache_write=document.cache_write.grants(),
         registration=document.registration.tuning(),
         volume_policy=document.volume_policy.policy(),

@@ -573,3 +573,36 @@ def test_cache_write_operator_grants_are_independent_and_round_trip(tmp_path, mo
         _write(path, {**document, "cache_write": {**document["cache_write"], name: value}})
         with pytest.raises(ValueError):
             load_runtime_config()
+
+
+def test_terminal_cleanup_operator_grants_preserve_independent_outstanding_budgets(
+    tmp_path, monkeypatch
+):
+    from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
+
+    path, document = _document(tmp_path, monkeypatch)
+    assert load_runtime_config().archive_cleanup == ArchiveCleanupGrants(4, 65536, 16, 8)
+    document["archive_cleanup"] = {
+        "calls": 2,
+        "control_bytes": "192KiB",
+        "provider_requests": 3,
+        "in_flight": 1,
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.archive_cleanup == ArchiveCleanupGrants(2, 192 * 1024, 3, 1)
+    assert config.archive_write.calls == config.cache_write.calls == 64
+
+    for name, value in (
+        ("calls", 0),
+        ("calls", True),
+        ("control_bytes", "0B"),
+        ("provider_requests", 0),
+        ("provider_requests", True),
+        ("in_flight", 0),
+        ("in_flight", True),
+        ("unknown", "1B"),
+    ):
+        _write(path, {**document, "archive_cleanup": {**document["archive_cleanup"], name: value}})
+        with pytest.raises(ValueError):
+            load_runtime_config()

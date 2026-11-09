@@ -7,6 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
 from riverhog_core.catalog_archive_write_models import (
     ArchiveCleanupAttemptRecord as Attempt,
 )
@@ -22,7 +23,6 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_db import session_scope, validate_db
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services.archive_upload_cleanup import (
-    ArchiveCleanupGrants,
     ArchiveUploadCleanup,
 )
 from riverhog_core.services.archive_write_admission import _writer

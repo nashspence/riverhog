@@ -36,6 +36,7 @@ from riverhog_storage_adapter_protocol import (
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
 from riverhog_core.catalog_archive_write_models import (
     ArchiveCleanupAttemptRecord,
     ArchiveCleanupPageRecord,
@@ -65,21 +66,6 @@ def _charge(value: str) -> int:
     if result < 1:
         raise Conflict("retained cleanup reservation is invalid")
     return result
-
-
-@dataclass(frozen=True, slots=True)
-class ArchiveCleanupGrants:
-    """Outstanding reservations per selected terminal, never total archive limits."""
-
-    calls: int
-    control_bytes: int
-    provider_requests: int
-    in_flight: int
-
-    def __post_init__(self) -> None:
-        for value in (self.calls, self.control_bytes, self.provider_requests, self.in_flight):
-            if type(value) is not int or value < 1:
-                raise ValueError("cleanup retention grants must be positive integers")
 
 
 @dataclass(frozen=True, slots=True)
