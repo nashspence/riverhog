@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 from riverhog_protocol.errors import Conflict
 from sqlalchemy import Table, select
@@ -149,7 +149,7 @@ class ProjectionCleanupProgress:
     removed: int = 0
     metadata_bytes: int = 0
     exhausted: bool = False
-    pending_reason: str | None = None
+    pending_reason: Literal["discovery-custody"] | None = None
 
 
 def _original_projection(session: Session, upload: Upload) -> dict[str, Any] | None:

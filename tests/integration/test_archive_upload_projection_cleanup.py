@@ -6,6 +6,7 @@ from tests.integration.test_collection_upload_custody_concurrency import (
     database_url as database_url,
 )
 from tests.unit.test_archive_upload_projection_cleanup import (
+    _composed_projection,
     _finish,
     _independent,
     _linked_discovery,
@@ -49,3 +50,18 @@ def test_postgres_unpublished_projection_preserves_independent_receiving(
 def test_postgres_linked_discovery_retains_exact_files_and_exclusive_lease(database_url, tmp_path):
     with _projection(tmp_path, database_url=database_url, indexed=True, linked=True) as ready:
         _linked_discovery(ready, tmp_path)
+
+
+@pytest.mark.parametrize("revoked", (False, True))
+def test_postgres_same_original_terminal_composes_exact_projection_retirement(
+    database_url, tmp_path, monkeypatch, revoked
+):
+    with _projection(tmp_path, database_url=database_url, indexed=True) as ready:
+        _composed_projection(ready, monkeypatch, revoked=revoked)
+
+
+def test_postgres_same_original_terminal_preserves_linked_discovery_custody(
+    database_url, tmp_path, monkeypatch
+):
+    with _projection(tmp_path, database_url=database_url, indexed=True, linked=True) as ready:
+        _composed_projection(ready, monkeypatch, linked=True)

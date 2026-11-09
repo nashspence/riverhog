@@ -653,3 +653,209 @@ def test_complete_binary_index_value_is_charged_before_its_retirement_window(tmp
         assert progress.table == "collection_provenance_index_values"
         assert 1 <= progress.removed <= LIMITS.input_transitions
         _finish(ready)
+
+
+def _composed_projection(ready, monkeypatch, *, revoked=False, linked=False):
+    import threading
+    from datetime import timedelta
+
+    from riverhog_core.app_permissions import (
+        COLLECTIONS_CREATE,
+        COLLECTIONS_DELETE,
+        ApplicationAccess,
+    )
+    from riverhog_core.services import archive_upload_terminal_registry as registry_module
+    from riverhog_core.services.archive_upload_catalog_cleanup import ArchiveUploadCatalogCleanup
+    from riverhog_core.services.archive_upload_checkpoint_cleanup import (
+        ArchiveUploadCheckpointCleanup,
+    )
+    from riverhog_core.services.archive_upload_copy_intent_cleanup import (
+        ArchiveUploadCopyIntentCleanup,
+    )
+    from riverhog_core.services.archive_upload_registration_cleanup import (
+        ArchiveUploadRegistrationCleanup,
+    )
+    from riverhog_core.services.archive_upload_terminal_turn import ArchiveUploadTerminalTurn
+    from riverhog_core.services.physical_execution import PhysicalExecutionKey
+    from riverhog_protocol.errors import NotFound
+    from sqlalchemy import event
+
+    from tests.unit.test_app_keys import BOOTSTRAP
+    from tests.unit.test_archive_upload_maintenance import _join
+
+    case = ready.case
+    registry = case.service._archive_terminals
+    owner = ArchiveUploadProjectionCleanup(case.factory, ready.ready.owner)
+    original = owner.advance
+    workers, created, windows = [], [], []
+
+    def advance(*args, **kwargs):
+        assert kwargs["guard"] is ready.guard and kwargs["limits"] is LIMITS
+        workers.append(threading.current_thread().name)
+        result = original(*args, **kwargs)
+        windows.append(result)
+        return result
+
+    monkeypatch.setattr(owner, "advance", advance)
+
+    def create(collection_id, operation_id):
+        created.append(True)
+        return ArchiveUploadTerminalTurn(
+            case.factory,
+            collection_id,
+            operation_id,
+            guard=ready.guard,
+            adjudication=case.service._archive_terminal_adjudication,
+            retirement=case.service._archive_terminal_retirement,
+            cleanup_create=lambda: ready.ready.turn,
+            registration_cleanup=ArchiveUploadRegistrationCleanup(case.factory, ready.ready.owner),
+            registration_limits=LIMITS,
+            catalog_cleanup=ArchiveUploadCatalogCleanup(case.factory, ready.ready.owner),
+            checkpoint_cleanup=ArchiveUploadCheckpointCleanup(case.factory, ready.ready.owner),
+            copy_intent_cleanup=ArchiveUploadCopyIntentCleanup(case.factory, ready.ready.owner),
+            projection_cleanup=owner,
+        )
+
+    monkeypatch.setattr(registry, "_create", create)
+    clock = [100.0]
+    monkeypatch.setattr(registry_module, "monotonic", lambda: clock[0])
+    key = PhysicalExecutionKey(case.collection_id, case.operation)
+    calls = len(ready.ready.target.calls)
+
+    def quantum(*, expect_revoked=False):
+        for _ in range(16):
+            mutations = []
+
+            def observed(
+                connection,
+                cursor,
+                statement,
+                parameters,
+                context,
+                executemany,
+                *,
+                mutations=mutations,
+            ):
+                if context.isinsert or context.isupdate or context.isdelete:
+                    mutations.append(statement)
+
+            engine = case.factory.kw["bind"]
+            event.listen(engine, "before_cursor_execute", observed)
+            try:
+                assert (
+                    registry.submit(
+                        key,
+                        target_incarnation=case.incarnation,
+                        work_limit=1,
+                        retry_after=timedelta(seconds=1),
+                    )
+                    == 1
+                )
+                slot = case.service._archive_execution._slots[key]
+                _join(case.service)
+                error = slot.future.exception()
+                assert registry.collect(limit=1) == 1
+            finally:
+                event.remove(engine, "before_cursor_execute", observed)
+            clock[0] += 2
+            progress = registry._contexts[key].progress
+            if error is not None:
+                if expect_revoked and isinstance(error, NotFound):
+                    assert mutations == []
+                    return progress
+                raise error
+            assert progress is slot.future.result() and not expect_revoked
+            if progress.pending_reason not in {"local-execution", "catalog-busy"}:
+                return progress
+            assert mutations == [] and progress.retired_originals == 0
+            assert len(ready.ready.target.calls) == calls
+            assert case.service._archive_retention._counts == {False: 0, True: 1}
+        pytest.fail("original terminal stayed deferred after bounded joined turns")
+
+    previous = _count(ready)
+    restored = False
+    for _ in range(previous + 100):
+        observed = len(windows)
+        progress = quantum()
+        current = _count(ready)
+        assert 0 <= previous - current <= LIMITS.input_transitions
+        if len(windows) > observed:
+            assert len(windows) == observed + 1
+            assert progress.archive_inventory_exhausted and progress.registration_disposed
+            assert progress.upload_children_exhausted and progress.checkpoints_exhausted
+            assert progress.copy_intents_exhausted
+            assert previous - current == windows[-1].removed
+            assert windows[-1].metadata_bytes <= LIMITS.metadata_bytes
+            if revoked and not restored:
+                before = _count(ready)
+                count = len(windows)
+                case.keys.replace_access(
+                    app=case.principal.id,
+                    key_id=case.principal.key_id,
+                    access=(ApplicationAccess(COLLECTIONS_CREATE),),
+                    grantor=BOOTSTRAP,
+                )
+                for _ in range(2):
+                    quantum(expect_revoked=True)
+                assert _count(ready) == before and len(windows) == count
+                case.keys.replace_access(
+                    app=case.principal.id,
+                    key_id=case.principal.key_id,
+                    access=(ApplicationAccess(COLLECTIONS_DELETE),),
+                    grantor=BOOTSTRAP,
+                )
+                restored = True
+        if linked and progress.pending_reason == "discovery-custody":
+            assert not progress.projection_exhausted
+            assert (
+                current == previous
+                and ready.discovery.marker.read_bytes() == b"original independently leased bytes"
+            )
+            break
+        if progress.projection_exhausted:
+            assert not linked and current == 0 and progress.pending_reason is None
+            break
+        previous = current
+    else:
+        pytest.fail("same original terminal did not compose bounded projection retirement")
+    assert created == [True] and set(workers) == {"physical-execution"}
+    assert not progress.execution_stopped and progress.phase == "cleaning"
+    assert restored is revoked
+    assert len(ready.ready.target.calls) == calls
+    assert case.service._archive_retention._counts == {False: 0, True: 1}
+    with session_scope(case.factory) as session:
+        terminal = session.get(Terminal, case.operation)
+        assert terminal.original_result_json == ready.original and terminal.result_json is None
+        assert session.get(Upload, case.collection_id) is not None
+
+
+@pytest.mark.parametrize("revoked", (False, True))
+def test_same_original_terminal_worker_composes_projection_after_all_current_cleanup_proofs(
+    tmp_path, monkeypatch, revoked
+):
+    with _projection(tmp_path, indexed=True) as ready:
+        _composed_projection(ready, monkeypatch, revoked=revoked)
+
+
+def test_same_original_terminal_keeps_linked_discovery_custody_pending_without_confirmation(
+    tmp_path, monkeypatch
+):
+    with _projection(tmp_path, indexed=True, linked=True) as ready:
+        _composed_projection(ready, monkeypatch, linked=True)
+
+
+def test_projection_composition_requires_the_original_copy_intent_owner(tmp_path):
+    from riverhog_core.services.archive_upload_terminal_turn import ArchiveUploadTerminalTurn
+
+    with _projection(tmp_path) as ready:
+        case = ready.case
+        with pytest.raises(ValueError, match="projection.*copy-intent"):
+            ArchiveUploadTerminalTurn(
+                case.factory,
+                case.collection_id,
+                case.operation,
+                guard=ready.guard,
+                adjudication=case.service._archive_terminal_adjudication,
+                retirement=case.service._archive_terminal_retirement,
+                projection_cleanup=ArchiveUploadProjectionCleanup(case.factory, ready.ready.owner),
+            )

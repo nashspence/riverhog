@@ -19,6 +19,7 @@ from riverhog_core.services.archive_upload_checkpoint_cleanup import ArchiveUplo
 from riverhog_core.services.archive_upload_cleanup_turn import ArchiveUploadCleanupTurn
 from riverhog_core.services.archive_upload_copy_intent_cleanup import ArchiveUploadCopyIntentCleanup
 from riverhog_core.services.archive_upload_drain import read_terminal_selection
+from riverhog_core.services.archive_upload_projection_cleanup import ArchiveUploadProjectionCleanup
 from riverhog_core.services.archive_upload_registration_cleanup import (
     ArchiveUploadRegistrationCleanup,
 )
@@ -48,6 +49,8 @@ class TerminalTurnProgress:
             "catalog-cleanup",
             "checkpoint-cleanup",
             "copy-intent-cleanup",
+            "projection-cleanup",
+            "discovery-custody",
         ]
         | None
     ) = None
@@ -59,6 +62,7 @@ class TerminalTurnProgress:
     upload_children_exhausted: bool = False
     checkpoints_exhausted: bool = False
     copy_intents_exhausted: bool = False
+    projection_exhausted: bool = False
 
 
 class ArchiveUploadTerminalTurn:
@@ -91,6 +95,7 @@ class ArchiveUploadTerminalTurn:
         catalog_cleanup: ArchiveUploadCatalogCleanup | None = None,
         checkpoint_cleanup: ArchiveUploadCheckpointCleanup | None = None,
         copy_intent_cleanup: ArchiveUploadCopyIntentCleanup | None = None,
+        projection_cleanup: ArchiveUploadProjectionCleanup | None = None,
     ) -> None:
         if not callable(guard):
             raise ValueError("terminal execution requires current authority")
@@ -106,6 +111,8 @@ class ArchiveUploadTerminalTurn:
             raise ValueError("terminal checkpoint cleanup requires original catalog execution")
         if copy_intent_cleanup is not None and checkpoint_cleanup is None:
             raise ValueError("terminal copy-intent cleanup requires original checkpoint execution")
+        if projection_cleanup is not None and copy_intent_cleanup is None:
+            raise ValueError("terminal projection cleanup requires original copy-intent execution")
         key = PhysicalExecutionKey(collection_id, operation_id)
         with read_snapshot(factory) as session:
             control, _, _ = read_terminal_selection(session, collection_id, operation_id)
@@ -117,6 +124,7 @@ class ArchiveUploadTerminalTurn:
         self._guard = guard
         self._adjudication = adjudication
         self._retirement = retirement
+        self._projection_cleanup = projection_cleanup
         self._copy_intent_cleanup = copy_intent_cleanup
         self._checkpoint_cleanup = checkpoint_cleanup
         self._catalog_cleanup = catalog_cleanup
@@ -229,10 +237,24 @@ class ArchiveUploadTerminalTurn:
             intents = self._copy_intent_cleanup.advance(
                 key.collection_id, key.scope_sha256, guard=self._guard, limits=limits
             )
-            return replace(
+            progress = replace(
                 progress,
                 pending_reason=None if intents.exhausted else "copy-intent-cleanup",
                 copy_intents_exhausted=intents.exhausted,
+            )
+            if not intents.exhausted or self._projection_cleanup is None:
+                return progress
+            projection = self._projection_cleanup.advance(
+                key.collection_id, key.scope_sha256, guard=self._guard, limits=limits
+            )
+            return replace(
+                progress,
+                pending_reason=(
+                    None
+                    if projection.exhausted
+                    else projection.pending_reason or "projection-cleanup"
+                ),
+                projection_exhausted=projection.exhausted,
             )
         finally:
             self._lock.release()
