@@ -28,6 +28,7 @@ from riverhog_core.catalog_models import (
     RetrievalCachePopulationRecord,
     RetrievalCacheStoreAccountingRecord,
 )
+from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
 from riverhog_core.domain.retrieval_cache import AbandonedCachePopulation, RetrievalCacheReceipt
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
@@ -38,6 +39,10 @@ from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
 from riverhog_core.services.cache_population_abandonment import CachePopulationAbandonment
 from riverhog_core.services.cache_population_cleanup import CachePopulationCleanup
+from riverhog_core.services.cache_population_cleanup_turn import (
+    CacheCleanupNotAdmitted,
+    CachePopulationCleanupTurn,
+)
 from riverhog_core.services.cache_write_capacity import retains_cache_write
 from riverhog_core.services.retrieval_cache_accounting import (
     adjust_cache_committed_bytes,
@@ -108,6 +113,29 @@ class SqlAlchemyRetrievalCache:
         if target.incarnation_id != value["cache_incarnation_id"]:
             raise Conflict("cache cleanup configured target incarnation changed")
         return CachePopulationCleanup(self._session_factory, receipt, grants=grants), target
+
+    def native_population_cleanup_turn(
+        self,
+        receipt: AbandonedCachePopulation,
+        *,
+        grants: ArchiveCleanupGrants,
+        tuning: CleanupExecutionTuning,
+    ) -> CachePopulationCleanupTurn:
+        """Bind locally without provider work; new admission has its own SQL guard."""
+        try:
+            owner, target = self.native_population_cleanup(receipt, grants=grants)
+        except (Conflict, RuntimeError) as error:
+            raise CacheCleanupNotAdmitted("cache cleanup current target is unavailable") from error
+        value = self.abandonment._value(receipt)
+
+        def guard(session: Session) -> None:
+            # Current configuration and exact SQL population ownership jointly
+            # authorize disposal. Disabling fresh admission does not revoke it.
+            current = self._require_store(value["cache_store"])
+            if current.incarnation_id != value["cache_incarnation_id"]:
+                raise Conflict("cache cleanup current configured target changed")
+
+        return CachePopulationCleanupTurn(owner, target, guard=guard, tuning=tuning)
 
     def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool:
         store = self._stores.get(cache_store)

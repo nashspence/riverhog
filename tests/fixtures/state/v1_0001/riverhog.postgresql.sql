@@ -3205,4 +3205,6 @@ CREATE TABLE cache_population_dispositions (
 
 CREATE INDEX ix_cache_population_dispositions_terminal ON cache_population_dispositions (terminal_id, id);
 
+CREATE INDEX ix_retrieval_cache_populations_native_cleanup_due ON retrieval_cache_populations (updated_at, source_store, collection_id, object_id) WHERE ((state) = 'abandoning') AND abandonment_receipt_json IS NOT NULL;
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

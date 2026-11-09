@@ -6622,3 +6622,13 @@ CREATE TABLE cache_population_dispositions (
     """.strip(),
     "CREATE INDEX ix_cache_population_dispositions_terminal ON cache_population_dispositions (terminal_id, id)",
 )
+
+
+SQLITE_DDL += (
+    "CREATE INDEX ix_retrieval_cache_populations_native_cleanup_due ON retrieval_cache_populations (updated_at, source_store, collection_id, object_id) WHERE state = 'abandoning' AND abandonment_receipt_json IS NOT NULL",
+)
+
+
+POSTGRESQL_DDL += (
+    "CREATE INDEX ix_retrieval_cache_populations_native_cleanup_due ON retrieval_cache_populations (updated_at, source_store, collection_id, object_id) WHERE ((state) = 'abandoning') AND abandonment_receipt_json IS NOT NULL",
+)

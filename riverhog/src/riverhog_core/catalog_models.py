@@ -2382,6 +2382,17 @@ class RetrievalCachePopulationRecord(Base):
             name="ck_retrieval_cache_populations_expected_bytes",
         ),
         Index(
+            "ix_retrieval_cache_populations_native_cleanup_due",
+            "updated_at",
+            "source_store",
+            "collection_id",
+            "object_id",
+            sqlite_where=text("state = 'abandoning' AND abandonment_receipt_json IS NOT NULL"),
+            postgresql_where=text(
+                "((state) = 'abandoning') AND abandonment_receipt_json IS NOT NULL"
+            ),
+        ),
+        Index(
             "ix_retrieval_cache_populations_reap",
             "begin_call_id",
             "updated_at",

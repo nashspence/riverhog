@@ -8,7 +8,7 @@ import logging
 from datetime import timedelta
 from threading import Lock
 
-from riverhog_protocol.errors import Conflict
+from riverhog_protocol.errors import Conflict, NotFound
 from sqlalchemy import Select, select
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import load_only
@@ -24,6 +24,7 @@ from riverhog_core.services.archive_cache_families import ArchiveCacheFamilies
 from riverhog_core.services.archive_finalizer_registry import ArchiveFinalizerRegistry
 from riverhog_core.services.archive_upload_invocations import ArchiveUploadInvocationRegistry
 from riverhog_core.services.archive_write_admission import _writer
+from riverhog_core.services.cache_population_cleanup_registry import CachePopulationCleanupRegistry
 from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
 _LOG = logging.getLogger("riverhog_core.archive_upload_maintenance")
@@ -53,7 +54,7 @@ def _due_query(now: str, limit: int) -> Select[tuple[ArchiveUploadTerminalRecord
 
 
 class ArchiveUploadMaintenance:
-    """Receive original payload/metadata work and submit bounded terminal drains.
+    """Receive originals and submit bounded terminal drains and cache cleanup.
 
     This owner never adjudicates a terminal, disposes a preparation or reports
     global quiescence. A due time only controls scheduling; it cannot close an
@@ -69,6 +70,7 @@ class ArchiveUploadMaintenance:
         cache_families: ArchiveCacheFamilies,
         *,
         retry_after: timedelta,
+        cache_cleanup: CachePopulationCleanupRegistry | None = None,
     ) -> None:
         if retry_after.total_seconds() <= 0:
             raise ValueError("archive upload retry interval must be positive")
@@ -77,6 +79,8 @@ class ArchiveUploadMaintenance:
         self._invocations = invocations
         self._cache_families = cache_families
         self._retry_after = retry_after
+        self._cache_cleanup = cache_cleanup
+        self._cache_turn = False
         self._lock = Lock()
 
     def process_due(self, *, limit: int) -> int:
@@ -102,6 +106,16 @@ class ArchiveUploadMaintenance:
                     )
             progressed += self._cache_families.retire_ready(limit=limit)
             progressed += self._invocations.retire_ready(limit=limit)
+            cache_first = self._cache_turn
+            if self._cache_cleanup is not None:
+                progressed += self._cache_cleanup.collect(limit=limit)
+                if cache_first:
+                    accepted = self._cache_cleanup.submit_due(
+                        limit=limit, retry_after=self._retry_after
+                    )
+                    progressed += accepted
+                    if accepted:
+                        self._cache_turn = False
             now = utc_now()
             next_attempt = format_utc_timestamp(now + self._retry_after)
             with session_scope(self._factory) as session:
@@ -112,6 +126,18 @@ class ArchiveUploadMaintenance:
                     row.drain_next_attempt_at = next_attempt
             for collection_id, operation_id in selected:
                 with session_scope(self._factory) as session:
+                    if (
+                        session.scalar(
+                            select(CollectionUploadRecord.collection_id).where(
+                                CollectionUploadRecord.collection_id == collection_id
+                            )
+                        )
+                        is None
+                    ):
+                        # A retained terminal can outlive its upload. This grants
+                        # no archive drainage authority; independent receiving
+                        # still progresses and no original owner is released.
+                        continue
                     control = session.get(ArchiveWriteControlRecord, collection_id)
                     if control is None:
                         raise RuntimeError("selected terminal construction is unavailable")
@@ -120,12 +146,23 @@ class ArchiveUploadMaintenance:
                     collection_id, hashlib.sha256(construction.encode()).hexdigest()
                 )
                 target = json.loads(construction)["archive_incarnation_id"]
-                finalizers = self._finalizers.fence_terminal(
-                    key, target_incarnation=target, operation_id=operation_id, defer_if_busy=True
-                )
-                invocations = self._invocations.fence_terminal(
-                    key, target_incarnation=target, operation_id=operation_id, defer_if_busy=True
-                )
+                try:
+                    finalizers = self._finalizers.fence_terminal(
+                        key,
+                        target_incarnation=target,
+                        operation_id=operation_id,
+                        defer_if_busy=True,
+                    )
+                    invocations = self._invocations.fence_terminal(
+                        key,
+                        target_incarnation=target,
+                        operation_id=operation_id,
+                        defer_if_busy=True,
+                    )
+                except NotFound:
+                    # Teardown may race the point observation above. Absence
+                    # supplies no global closure or local retirement authority.
+                    continue
                 if "busy" in (finalizers, invocations):
                     continue
                 owners: tuple[ArchiveFinalizerRegistry | ArchiveUploadInvocationRegistry, ...] = (
@@ -149,10 +186,20 @@ class ArchiveUploadMaintenance:
                     )
                     if submission == "submitted":
                         progressed += 1
+                        # Only actual admission spends a scheduling turn. Busy
+                        # polls cannot consume the other owner's next free slot.
+                        self._cache_turn = True
                         break
             progressed += self._finalizers.process_ready(
                 limit=limit, retry_after=self._retry_after, retire=self._retire_finalizer
             )
+            if self._cache_cleanup is not None and not cache_first:
+                accepted = self._cache_cleanup.submit_due(
+                    limit=limit, retry_after=self._retry_after
+                )
+                progressed += accepted
+                if accepted:
+                    self._cache_turn = False
             return progressed
         except OperationalError as exc:
             if catalog_write_contention(exc):

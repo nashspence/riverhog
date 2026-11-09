@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from threading import Lock
 from typing import Literal
 
-from riverhog_protocol.errors import NotFound
+from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_storage_adapter_protocol import (
     CleanupExecutionResult,
     CleanupInventoryProgress,
@@ -27,6 +27,10 @@ from riverhog_core.services.cache_population_cleanup import CachePopulationClean
 from riverhog_core.services.cleanup_attempts import RetainedCleanupAttempt
 from riverhog_core.services.object_cleanup_receiving import ReceivedCleanupResponse
 from riverhog_core.services.physical_execution import PhysicalExecutionKey
+
+
+class CacheCleanupNotAdmitted(Conflict):
+    """The pure local binding refused before entering any cleanup actor."""
 
 
 @dataclass(slots=True)
@@ -165,15 +169,26 @@ class CachePopulationCleanupTurn:
                 )
             request = pending.ticket.invocation.request
             assert isinstance(request, CleanupInventoryStepRequest)
-            self._owner.select_page(
-                self.key.collection_id,
-                self._operation,
-                inventory_call_id=pending.ticket.invocation.call.call_id,
-                inventory_request=request.inventory,
-                request=pending.selection,
-                after=pending.after,
-                guard=self._guard,
-            )
+            try:
+                self._owner.select_page(
+                    self.key.collection_id,
+                    self._operation,
+                    inventory_call_id=pending.ticket.invocation.call.call_id,
+                    inventory_request=request.inventory,
+                    request=pending.selection,
+                    after=pending.after,
+                    guard=self._guard,
+                )
+            except Conflict as error:
+                try:
+                    current = self._owner.current(self.key.collection_id, self._operation)
+                except NotFound:
+                    raise error from None
+                if current.request_sha256 == pending.after:
+                    raise
+                # Another original inventory already selected a positive retained
+                # page in this exact scope. Receive this read independently, then
+                # follow that page through fresh current admission next quantum.
             pending.selected = True
         if pending.response.execution == "closed":
             self._owner.acknowledge_response(pending.received)

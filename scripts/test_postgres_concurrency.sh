@@ -93,6 +93,12 @@ default_tests=(
   tests/integration/test_provider_qualification_checkpoint_postgres.py
   tests/integration/test_public_selector_plans_postgres.py
   tests/integration/test_retrieval_cache_admission_concurrency.py
+  tests/integration/test_cache_population_abandonment_concurrency.py
+  tests/integration/test_cache_population_cleanup_concurrency.py
+  tests/integration/test_cache_population_disposition_concurrency.py
+  tests/integration/test_cleanup_receiving_acknowledgment_concurrency.py
+  tests/integration/test_cache_population_cleanup_turn_concurrency.py
+  tests/integration/test_cache_population_cleanup_maintenance_concurrency.py
   tests/integration/test_retrieval_selection_concurrency.py
   tests/integration/test_archive_copy_retirement_cache_concurrency.py
   tests/integration/test_stove0_postgres_concurrency.py

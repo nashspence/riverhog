@@ -398,6 +398,15 @@ def _build_default_container(
             cache_upload_candidates=(
                 retrieval_cache.population_candidates if retrieval_cache is not None else None
             ),
+            cache_cleanup_create=(
+                partial(
+                    retrieval_cache.native_population_cleanup_turn,
+                    grants=config.archive_cleanup,
+                    tuning=config.cleanup_execution,
+                )
+                if retrieval_cache is not None
+                else None
+            ),
             session_factory=session_factory,
             throughput_tuning=throughput_tuning,
             policy=config.volume_policy,

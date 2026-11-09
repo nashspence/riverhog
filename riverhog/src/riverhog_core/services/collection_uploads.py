@@ -476,6 +476,7 @@ if TYPE_CHECKING:
         ArchivePayloadUnit,
     )
     from riverhog_core.services.archive_upload_invocations import InvocationSubmission
+    from riverhog_core.services.cache_population_cleanup_registry import CacheCleanupCreate
     from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
 
@@ -489,6 +490,7 @@ class SqlAlchemyCollectionUploadService:
         *,
         retrieval_cache: RetrievalCache | None = None,
         cache_upload_candidates: CacheUploadCandidates | None = None,
+        cache_cleanup_create: CacheCleanupCreate | None = None,
         policy: CollectionVolumePolicy | None = None,
         session_factory: SessionFactory | None = None,
         throughput_tuning: ArchiveThroughputTuning | None = None,
@@ -530,7 +532,19 @@ class SqlAlchemyCollectionUploadService:
         self._archive_invocations = ArchiveUploadInvocationRegistry(
             self._session_factory, self._archive_execution, self._archive_retention
         )
+        from .cache_population_cleanup_registry import CachePopulationCleanupRegistry
+
         self._archive_cache_families = ArchiveCacheFamilies(self._archive_invocations)
+        self._cache_cleanup = (
+            CachePopulationCleanupRegistry(
+                self._session_factory,
+                self._archive_execution,
+                self._archive_retention,
+                cache_cleanup_create,
+            )
+            if cache_cleanup_create is not None
+            else None
+        )
         from .archive_finalizer_work import ArchiveFinalizerWork
 
         self._archive_finalizer_work = ArchiveFinalizerWork(
@@ -555,6 +569,7 @@ class SqlAlchemyCollectionUploadService:
             self._archive_invocations,
             self._archive_cache_families,
             retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
+            cache_cleanup=self._cache_cleanup,
         )
         self._journal_validation_after: tuple[int, str] | None = None
         # Volatile seek hints retain no permission, work or completion authority.
@@ -587,6 +602,8 @@ class SqlAlchemyCollectionUploadService:
         }
 
     def close(self) -> None:
+        if self._cache_cleanup is not None:
+            self._cache_cleanup.close()
         self._archive_invocations.close()
         self._archive_finalizers.close()
         self._journal_validation_owner.close()
