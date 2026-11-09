@@ -13,8 +13,12 @@ from sqlalchemy.orm import Session
 from state_schema import read_snapshot
 
 from riverhog_core.catalog_db import SessionFactory
+from riverhog_core.incremental_emission import VolumeEmissionLimits
 from riverhog_core.services.archive_upload_cleanup_turn import ArchiveUploadCleanupTurn
 from riverhog_core.services.archive_upload_drain import read_terminal_selection
+from riverhog_core.services.archive_upload_registration_cleanup import (
+    ArchiveUploadRegistrationCleanup,
+)
 from riverhog_core.services.archive_upload_terminal_adjudication import (
     ArchiveUploadTerminalAdjudication,
     PendingReason,
@@ -32,13 +36,20 @@ class TerminalTurnProgress:
     phase: str | None
     pending_reason: (
         PendingReason
-        | Literal["actor-busy", "global-decision", "retained-originals", "archive-cleanup"]
+        | Literal[
+            "actor-busy",
+            "global-decision",
+            "retained-originals",
+            "archive-cleanup",
+            "registration-cleanup",
+        ]
         | None
     ) = None
     retired_originals: int = 0
     originals_retired: bool = False
     execution_stopped: bool = False
     archive_inventory_exhausted: bool = False
+    registration_disposed: bool = False
 
 
 class ArchiveUploadTerminalTurn:
@@ -66,11 +77,17 @@ class ArchiveUploadTerminalTurn:
         adjudication: ArchiveUploadTerminalAdjudication,
         retirement: ArchiveUploadTerminalRetirement,
         cleanup_create: Callable[[], ArchiveUploadCleanupTurn] | None = None,
+        registration_cleanup: ArchiveUploadRegistrationCleanup | None = None,
+        registration_limits: VolumeEmissionLimits | None = None,
     ) -> None:
         if not callable(guard):
             raise ValueError("terminal execution requires current authority")
         if cleanup_create is not None and not callable(cleanup_create):
             raise ValueError("terminal cleanup requires an original factory")
+        if (registration_cleanup is None) != (registration_limits is None):
+            raise ValueError("terminal registration requires its owner and bounded limits")
+        if registration_cleanup is not None and cleanup_create is None:
+            raise ValueError("terminal registration requires original archive cleanup")
         key = PhysicalExecutionKey(collection_id, operation_id)
         with read_snapshot(factory) as session:
             control, _, _ = read_terminal_selection(session, collection_id, operation_id)
@@ -82,6 +99,8 @@ class ArchiveUploadTerminalTurn:
         self._guard = guard
         self._adjudication = adjudication
         self._retirement = retirement
+        self._registration_cleanup = registration_cleanup
+        self._registration_limits = registration_limits
         self._cleanup_create = cleanup_create
         self._cleanup_entered = False
         self._cleanup_original: object | None = None
@@ -146,10 +165,23 @@ class ArchiveUploadTerminalTurn:
                     raise Conflict("archive cleanup constructor returned another original scope")
                 self._cleanup = cleanup
             result = self._cleanup.advance()
-            return replace(
+            progress = replace(
                 progress,
                 pending_reason=None if result == "inventory-exhausted" else "archive-cleanup",
                 archive_inventory_exhausted=result == "inventory-exhausted",
+            )
+            if result != "inventory-exhausted" or self._registration_cleanup is None:
+                return progress
+            limits = self._registration_limits
+            assert limits is not None
+            registration = self._registration_cleanup.advance(
+                key.collection_id, key.scope_sha256, guard=self._guard, limits=limits
+            )
+            disposed = registration.registration_id is None or registration.phase == "disposed"
+            return replace(
+                progress,
+                pending_reason=None if disposed else "registration-cleanup",
+                registration_disposed=disposed,
             )
         finally:
             self._lock.release()

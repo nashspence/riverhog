@@ -216,3 +216,122 @@ def test_failed_registration_cleanup_reply_preserves_the_same_bounded_cursor(
 ):
     with _prepared(tmp_path, monkeypatch) as ready:
         _lost(ready, monkeypatch, committed)
+
+
+def _composed_registration(ready, monkeypatch, *, revoked=False):
+    import threading
+    from datetime import timedelta
+
+    from riverhog_core.services import archive_upload_terminal_registry as registry_module
+    from riverhog_core.services.archive_upload_terminal_turn import ArchiveUploadTerminalTurn
+    from riverhog_core.services.physical_execution import PhysicalExecutionKey
+
+    from tests.unit.test_archive_upload_maintenance import _join
+
+    case = ready.case
+    registry = case.service._archive_terminals
+    original_owner = ready.owner.advance
+    calls, created, workers = [], [], []
+
+    def advance(*args, **kwargs):
+        workers.append(threading.current_thread().name)
+        assert kwargs["guard"] is ready.guard and kwargs["limits"] is CLEANUP
+        calls.append(True)
+        return original_owner(*args, **kwargs)
+
+    monkeypatch.setattr(ready.owner, "advance", advance)
+
+    def create(collection_id, operation_id):
+        created.append(True)
+        return ArchiveUploadTerminalTurn(
+            case.factory,
+            collection_id,
+            operation_id,
+            guard=ready.guard,
+            adjudication=case.service._archive_terminal_adjudication,
+            retirement=case.service._archive_terminal_retirement,
+            cleanup_create=lambda: ready.ready.turn,
+            registration_cleanup=ready.owner,
+            registration_limits=CLEANUP,
+        )
+
+    monkeypatch.setattr(registry, "_create", create)
+    clock = [100.0]
+    monkeypatch.setattr(registry_module, "monotonic", lambda: clock[0])
+    key = PhysicalExecutionKey(case.collection_id, case.operation)
+    before = _state(ready)
+
+    def quantum():
+        assert (
+            registry.submit(
+                key,
+                target_incarnation=case.incarnation,
+                work_limit=1,
+                retry_after=timedelta(seconds=1),
+            )
+            == 1
+        )
+        _join(case.service)
+        assert registry.collect(limit=1) == 1
+        clock[0] += 2
+        return registry._contexts[key].progress
+
+    first = quantum()
+    assert first is not None and not first.archive_inventory_exhausted
+    assert not first.registration_disposed and calls == [] and _state(ready) == before
+    assert len(ready.ready.target.calls) == 1
+    second = quantum()
+    assert second.archive_inventory_exhausted and not second.registration_disposed
+    assert second.pending_reason == "registration-cleanup" and len(calls) == 1
+    if revoked:
+        paused = _state(ready)
+        case.keys.replace_access(
+            app=case.principal.id,
+            key_id=case.principal.key_id,
+            access=(ApplicationAccess(COLLECTIONS_DELETE),),
+            grantor=BOOTSTRAP,
+        )
+        for _ in range(2):
+            quantum()
+        assert _state(ready) == paused and len(calls) == 1
+        case.keys.replace_access(
+            app=case.principal.id,
+            key_id=case.principal.key_id,
+            access=(ApplicationAccess(COLLECTIONS_CREATE),),
+            grantor=BOOTSTRAP,
+        )
+    previous = _state(ready)
+    for _ in range(40):
+        progress = quantum()
+        current = _state(ready)
+        assert current["checkpoint"] == before["checkpoint"]
+        assert current["accepted_members"] == before["accepted_members"]
+        assert current["accepted_sequence"] == before["accepted_sequence"]
+        for name, count in current["counts"].items():
+            assert 0 <= previous["counts"][name] - count <= 2
+        if progress.registration_disposed:
+            break
+        previous = current
+    else:
+        pytest.fail("original terminal did not compose bounded registration cleanup")
+    assert progress.archive_inventory_exhausted and not progress.execution_stopped
+    assert progress.pending_reason is None
+    assert current["active"] is None and set(current["counts"].values()) == {0}
+    assert created == [True] and set(workers) == {"physical-execution"}
+    assert len(ready.ready.target.calls) == 1
+    assert case.service._archive_retention._counts == {False: 0, True: 1}
+    with session_scope(case.factory) as session:
+        terminal = session.get(Terminal, case.operation)
+        assert terminal.original_result_json == ready.original
+        assert terminal.result_json is None and terminal.phase == "cleaning"
+        assert session.get(Upload, case.collection_id) is not None
+        assert session.get(Registration, ready.registration).due_at is None
+    assert CollectionRegistrationOwner(case.service).process_due() == 0
+
+
+@pytest.mark.parametrize("revoked", (False, True))
+def test_original_terminal_worker_composes_current_authorized_registration_after_archive_proof(
+    tmp_path, monkeypatch, revoked
+):
+    with _prepared(tmp_path, monkeypatch, provider_ready=False) as ready:
+        _composed_registration(ready, monkeypatch, revoked=revoked)
