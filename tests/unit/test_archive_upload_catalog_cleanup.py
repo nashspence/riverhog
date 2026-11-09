@@ -25,6 +25,7 @@ from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.incremental_emission import VolumeEmissionCapacity
 from riverhog_core.services import archive_upload_catalog_cleanup as module
 from riverhog_core.services.archive_upload_catalog_cleanup import ArchiveUploadCatalogCleanup
+from riverhog_core.services.catalog_retirement import metadata_row_bytes
 from riverhog_protocol.errors import Conflict, NotFound
 from sqlalchemy import Column, ForeignKey, Integer, Table, event, func, select
 
@@ -244,7 +245,7 @@ def test_full_opaque_metadata_bytes_refuse_capacity_without_deleting_the_row(tmp
         _finish_with_larger = replace(LIMITS, metadata_bytes=20000)
         assert _advance(ready, limits=_finish_with_larger).removed == 1
         _finish_children(ready)
-    assert module._row_bytes({"collection_id": 2**60, "sequence": 2**256 - 1}) > 90
+    assert metadata_row_bytes({"collection_id": 2**60, "sequence": 2**256 - 1}) > 90
 
 
 def _seed_validation(ready):

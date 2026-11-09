@@ -4,20 +4,19 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import Any
 
-from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol.errors import Conflict
-from sqlalchemy import Table, bindparam, delete, select
-from sqlalchemy.engine import CursorResult
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from riverhog_core.catalog_base import Base
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
 from riverhog_core.catalog_models import CollectionUploadRecord
-from riverhog_core.incremental_emission import VolumeEmissionCapacity, VolumeEmissionLimits
+from riverhog_core.incremental_emission import VolumeEmissionLimits
 from riverhog_core.services.archive_upload_cleanup import ArchiveUploadCleanup
+from riverhog_core.services.catalog_retirement import delete_catalog_window, read_catalog_window
 from riverhog_core.services.upload_journal_validation_jobs import retire_source
 
 # Every ordinary FK child is deliberately routed in child-before-parent order.
@@ -85,21 +84,6 @@ def validate_upload_cleanup_routes() -> None:
                 raise RuntimeError("upload catalog cleanup requires child-before-parent routes")
 
 
-def _row_bytes(row: Mapping[str, Any]) -> int:
-    payload: dict[str, Any] = {}
-    binary_bytes = 0
-    for name, value in row.items():
-        if type(value) is int:
-            # SQL integers and archive sequence codecs are not JSON numbers.
-            payload[name] = str(value)
-        elif isinstance(value, bytes):
-            binary_bytes += len(value)
-            payload[name] = {"octets": str(len(value))}
-        else:
-            payload[name] = value
-    return len(canonical_json_bytes(payload)) + binary_bytes
-
-
 @dataclass(frozen=True, slots=True)
 class UploadCatalogProgress:
     """Internal child progress; no parent retirement or confirmed outcome."""
@@ -140,63 +124,39 @@ class ArchiveUploadCatalogCleanup:
             assert upload is not None
             if upload.active_registration_id is not None:
                 raise Conflict("upload catalog cleanup requires completed hidden registration")
+
+            def related(row: Mapping[str, Any]) -> Mapping[str, Any] | None:
+                job = session.execute(
+                    select(Job.workspace_id, Job.attempt_id)
+                    .where(
+                        Job.collection_id == collection_id,
+                        Job.journal_id == row["journal_id"],
+                    )
+                    .with_for_update(nowait=True)
+                ).one_or_none()
+                return dict(job._mapping) if job is not None else None
+
             for name in UPLOAD_CHILD_TABLES:
                 table = Base.metadata.tables[name]
-                selected, used = self._window(session, table, collection_id, limits)
+
+                selected, used = read_catalog_window(
+                    session,
+                    table,
+                    (table.c.collection_id == collection_id,),
+                    count=limits.input_transitions,
+                    metadata_bytes=limits.metadata_bytes,
+                    related=related if name == "collection_upload_provenance_journals" else None,
+                )
                 if not selected:
                     continue
-                for row, job in selected:
-                    if job is not None:
-                        retire_source(session, collection_id, row["journal_id"], job.attempt_id)
-                keys = tuple(table.primary_key.columns)
-                statement = delete(table).where(
-                    *(column == bindparam("target_" + column.name) for column in keys)
-                )
-                result = session.execute(
-                    statement,
-                    [
-                        {"target_" + column.name: row[column.name] for column in keys}
-                        for row, _ in selected
-                    ],
-                )
-                if cast(CursorResult[Any], result).rowcount != len(selected):
-                    raise RuntimeError("upload catalog cleanup selection changed")
+                for row in selected:
+                    if row.related is not None:
+                        retire_source(
+                            session,
+                            collection_id,
+                            row.values["journal_id"],
+                            row.related["attempt_id"],
+                        )
+                delete_catalog_window(session, table, selected)
                 return UploadCatalogProgress(name, len(selected), used)
             return UploadCatalogProgress(None, upload_children_exhausted=True)
-
-    @staticmethod
-    def _window(
-        session: Session, table: Table, collection_id: int, limits: VolumeEmissionLimits
-    ) -> tuple[list[tuple[Mapping[str, Any], Any]], int]:
-        statement = (
-            select(table)
-            .where(table.c.collection_id == collection_id)
-            .order_by(*table.primary_key.columns)
-            .limit(min(limits.input_transitions, max(1, limits.metadata_bytes // 8)))
-            .execution_options(stream_results=True, yield_per=1)
-        )
-        selected: list[tuple[Mapping[str, Any], Any]] = []
-        used = 0
-        with session.execute(statement).mappings() as rows:
-            for row in rows:
-                job = None
-                charge = _row_bytes(dict(row))
-                if table.name == "collection_upload_provenance_journals":
-                    job = session.execute(
-                        select(Job.workspace_id, Job.attempt_id)
-                        .where(
-                            Job.collection_id == collection_id, Job.journal_id == row["journal_id"]
-                        )
-                        .with_for_update(nowait=True)
-                    ).one_or_none()
-                    if job is not None:
-                        charge += _row_bytes(dict(job._mapping))
-                if charge > limits.metadata_bytes and not selected:
-                    raise VolumeEmissionCapacity(
-                        dimension="metadata_bytes", required=charge, admitted=limits.metadata_bytes
-                    )
-                if used + charge > limits.metadata_bytes:
-                    break
-                selected.append((dict(row), job))
-                used += charge
-        return selected, used
