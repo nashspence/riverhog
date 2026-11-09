@@ -40,6 +40,7 @@ from riverhog_core.provider_write_dispatch import (
     ProviderWriteReport,
     WithdrawnProviderWrite,
 )
+from riverhog_core.services.archive_upload_terminal_control import require_terminal_control_capacity
 from riverhog_core.services.archive_upload_terminal_tags import (
     load_terminal_tag_selector,
     retain_terminal_tag_selector,
@@ -744,29 +745,27 @@ class ArchiveWriteAdmission:
                 raise Conflict("a different archive upload terminal request was selected")
             validate_selection(session, upload)
             selected_tags = upload_terminal_tag_selector(upload)
-            if (
-                len(encoded.encode()) + len(_json(selected_tags.payload()).encode())
-                > grants.terminal_bytes
-            ):
-                raise Conflict("archive upload terminal request exceeds its byte grant")
+            terminal = ArchiveUploadTerminalRecord(
+                id=operation_id,
+                collection_id=collection_id,
+                request_json=encoded,
+                principal_id=principal_id,
+                key_id=key_id,
+                kind=kind,
+                phase="draining",
+                frontier=control.next_call,
+                original_epoch=control.epoch,
+                custody_revision=control.custody_revision,
+                drain_next_attempt_at=utc_timestamp_now(),
+                control_capacity_bytes=grants.terminal_bytes,
+                original_result_json=None,
+                result_json=None,
+            )
+            require_terminal_control_capacity(terminal, selected_tags)
             freeze_registration_execution(
                 session, upload, construction_json=control.construction_json
             )
-            session.add(
-                ArchiveUploadTerminalRecord(
-                    id=operation_id,
-                    collection_id=collection_id,
-                    request_json=encoded,
-                    principal_id=principal_id,
-                    key_id=key_id,
-                    kind=kind,
-                    phase="draining",
-                    frontier=control.next_call,
-                    original_epoch=control.epoch,
-                    custody_revision=control.custody_revision,
-                    drain_next_attempt_at=utc_timestamp_now(),
-                )
-            )
+            session.add(terminal)
             session.flush()
             session.add(
                 TerminalCleanupCapacityRecord(

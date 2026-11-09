@@ -27,6 +27,7 @@ from riverhog_core.services.archive_upload_cleanup import (
     ArchiveUploadCleanup,
 )
 from riverhog_core.services.archive_upload_drain import lock_terminal_selection
+from riverhog_core.services.archive_upload_terminal_result import ArchiveUploadTerminalResults
 from riverhog_core.services.archive_write_admission import _writer
 from riverhog_core.services.terminal_cleanup_capacity import CleanupCharge, change_cleanup_capacity
 from riverhog_core.stores.storage_adapter_archive_objects import StorageAdapterArchiveObjectCleanup
@@ -54,6 +55,13 @@ GRANTS = ArchiveCleanupGrants(4, 65536, 16, 8)
 
 def _ready(case, *, grants=GRANTS, ready=True):
     operation = _selected(case)
+    if ready:
+        ArchiveUploadTerminalResults(case.factory).prepare(
+            case.collection_id,
+            operation,
+            {"state": "canceled", "collection_id": str(case.collection_id)},
+            guard=_guard,
+        )
     with session_scope(case.factory) as session:
         terminal = session.get(Terminal, operation)
         if ready:

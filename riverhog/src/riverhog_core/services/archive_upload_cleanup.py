@@ -18,6 +18,8 @@ from riverhog_core.catalog_cache_write_models import (
     CachePopulationWriteEffectRecord,
 )
 from riverhog_core.services.archive_upload_drain import lock_terminal_selection
+from riverhog_core.services.archive_upload_terminal_control import require_prepared_terminal_result
+from riverhog_core.services.archive_upload_terminal_tags import load_terminal_tag_selector
 from riverhog_core.services.object_cleanup_receiving import CleanupScope, ObjectCleanupReceiving
 
 
@@ -42,6 +44,9 @@ class ArchiveUploadCleanup(ObjectCleanupReceiving):
         if admit:
             if terminal.phase not in {"cleanup-ready", "cleaning"}:
                 raise Conflict("upload terminal has no retained cleanup-ready decision")
+            require_prepared_terminal_result(
+                terminal, load_terminal_tag_selector(session, operation_id)
+            )
             for model in (
                 ArchiveWriteEffectRecord,
                 CachePopulationBeginRecord,

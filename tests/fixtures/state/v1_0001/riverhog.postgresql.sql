@@ -2969,12 +2969,15 @@ CREATE TABLE archive_upload_terminals (
 	original_epoch VARCHAR(64) NOT NULL,
 	custody_revision TEXT DEFAULT '0' NOT NULL,
 	drain_next_attempt_at VARCHAR DEFAULT '1970-01-01T00:00:00.000000000Z' NOT NULL,
+	control_capacity_bytes BIGINT NOT NULL,
+	original_result_json TEXT,
 	result_json TEXT,
 	PRIMARY KEY (id),
 	FOREIGN KEY(collection_id) REFERENCES archive_write_controls (collection_id),
+	CONSTRAINT ck_archive_upload_terminals_control_capacity CHECK (control_capacity_bytes > 0),
 	CONSTRAINT ck_archive_upload_terminals_kind CHECK (kind IN ('cancel','discard')),
 	CONSTRAINT ck_archive_upload_terminals_phase CHECK (phase IN ('draining','refused-sealed','needs-reconfirmation','cleanup-ready','cleaning','done')),
-	CONSTRAINT ck_archive_upload_terminals_result CHECK (phase <> 'done' OR result_json IS NOT NULL),
+	CONSTRAINT ck_archive_upload_terminals_result CHECK (phase <> 'done' OR result_json IS NOT NULL AND original_result_json IS NULL),
 	CONSTRAINT ck_archive_upload_terminals_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_archive_upload_terminals_original_epoch_hex CHECK (length(original_epoch) = 64 AND lower(original_epoch) = original_epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(original_epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );

@@ -403,6 +403,14 @@ def test_cache_cleanup_never_disposes_a_prefix_neighbor(tmp_path):
 
 
 def _archive_scope(ready, grants=GRANTS):
+    from riverhog_core.services.archive_upload_terminal_result import ArchiveUploadTerminalResults
+
+    ArchiveUploadTerminalResults(ready.case.factory).prepare(
+        ready.case.collection_id,
+        ready.operation,
+        {"state": "canceled", "collection_id": str(ready.case.collection_id)},
+        guard=_guard,
+    )
     with session_scope(ready.case.factory) as session:
         # Fixture-owned archive adjudication; cache scope never selects this decision.
         session.get(Terminal, ready.operation).phase = "cleanup-ready"

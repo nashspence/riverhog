@@ -157,10 +157,15 @@ class ArchiveUploadTerminalRecord(Base):
         default="1970-01-01T00:00:00.000000000Z",
         server_default=text("'1970-01-01T00:00:00.000000000Z'"),
     )
+    control_capacity_bytes: Mapped[int] = mapped_column(BigInteger)
+    original_result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(["collection_id"], ["archive_write_controls.collection_id"]),
+        CheckConstraint(
+            "control_capacity_bytes > 0", name="ck_archive_upload_terminals_control_capacity"
+        ),
         CheckConstraint("kind IN ('cancel','discard')", name="ck_archive_upload_terminals_kind"),
         CheckConstraint(
             "phase IN ('draining','refused-sealed','needs-reconfirmation',"
@@ -168,7 +173,7 @@ class ArchiveUploadTerminalRecord(Base):
             name="ck_archive_upload_terminals_phase",
         ),
         CheckConstraint(
-            "phase <> 'done' OR result_json IS NOT NULL",
+            "phase <> 'done' OR result_json IS NOT NULL AND original_result_json IS NULL",
             name="ck_archive_upload_terminals_result",
         ),
         Index("ix_archive_upload_terminals_collection", "collection_id", "id"),
