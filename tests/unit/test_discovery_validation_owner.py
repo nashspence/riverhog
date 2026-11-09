@@ -396,3 +396,50 @@ def test_stale_work_attempts_cleanup_once_and_keeps_each_unconfirmed_reply(
         available(case)
     finally:
         owner.close()
+
+
+@pytest.mark.parametrize("storage", ("none", "native", "core"))
+def test_closed_native_source_keeps_busy_and_uncertain_handles_under_the_original_lease(
+    case, qualified, storage
+):
+    from tests.unit.test_canonical_discovery_corpus_jobs import _source_gate
+
+    owner = DiscoveryValidationOwner(case.factory, case.root)
+    metadata = None
+    expected = StaleArchiveTask if storage == "none" else OSError
+    try:
+        with pytest.raises(expected):
+            with unit(owner, case) as work:
+                assert work is not None
+                metadata = work.metadata
+                selection, _ = seed(metadata, qualified)
+                native = work.corpus(selection)
+                if storage != "none":
+                    target = native._corpus if storage == "native" else metadata
+                    target._db = UncertainClose(target._db, lost_reply=False)
+                marker = case.root / metadata.job.workspace_id / "original-custody"
+                marker.write_bytes(b"retained original workspace")
+                _source_gate(case.factory)
+                assert not jobs.discovery_worker_current(case.factory, metadata.job)
+                # Maintenance cannot acquire the busy quantum's mutex or release
+                # its independently owned lease before its handles actually close.
+                owner.release_stale()
+                assert owner.active_build_ids() == (case.build_id,)
+                busy(case)
+        assert metadata is not None and marker.read_bytes() == b"retained original workspace"
+        if storage != "none":
+            assert owner.active_build_ids() == (case.build_id,)
+            busy(case)
+            owner.release_stale()
+        assert owner.active_build_ids() == ()
+        available(case)
+        with case.factory() as session:
+            from riverhog_core.catalog_discovery_validation_models import (
+                DiscoveryValidationJobRecord,
+            )
+
+            job = session.get(DiscoveryValidationJobRecord, metadata.job.workspace_id)
+            assert job is not None and job.build_id == case.build_id
+        assert marker.read_bytes() == b"retained original workspace"
+    finally:
+        owner.close()

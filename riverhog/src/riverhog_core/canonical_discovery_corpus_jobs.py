@@ -28,6 +28,7 @@ from riverhog_core.canonical_discovery_archive_work import (
 )
 from riverhog_core.canonical_discovery_index import EXTRACTION_CONTRACT_SHA256
 from riverhog_core.canonical_discovery_selection import FrozenCorpusSelection
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord as UploadControl
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Job
 from riverhog_core.catalog_models import CollectionDeletionRecord as Deletion
@@ -124,6 +125,11 @@ def _build_query(job: DiscoveryJob) -> Select[tuple[str]]:
             State.pending_build_id == Generation.build_id,
             State.epoch == job.build_epoch,
             ~exists(select(Deletion.collection_id).where(Deletion.collection_id == Collection.id)),
+            ~exists(
+                select(UploadControl.collection_id).where(
+                    UploadControl.collection_id == Collection.id, UploadControl.gate != "open"
+                )
+            ),
         )
     )
 
@@ -344,6 +350,11 @@ def select_discovery_job(
                 State.epoch == Generation.expected_epoch,
                 ~exists(
                     select(Deletion.collection_id).where(Deletion.collection_id == Collection.id)
+                ),
+                ~exists(
+                    select(UploadControl.collection_id).where(
+                        UploadControl.collection_id == Collection.id, UploadControl.gate != "open"
+                    )
                 ),
             )
             .with_for_update(of=(Collection, State), skip_locked=True)

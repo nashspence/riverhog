@@ -10,6 +10,7 @@ from riverhog_core import canonical_discovery_corpus_jobs as owner
 from riverhog_core import canonical_discovery_selection as selection
 from riverhog_core.canonical_discovery_history_work import ArchiveHistoryWork
 from riverhog_core.canonical_discovery_index import begin_index_build
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord as UploadControl
 from riverhog_core.catalog_db import Base, create_catalog_engine
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Job
 from riverhog_core.catalog_models import CollectionDeletionRecord as Deletion
@@ -361,3 +362,96 @@ def _retirement_stale(factory, job):
 
 def test_discovery_job_retirement_keeps_the_complete_original_and_version_fence(case):
     _retirement_stale(case.factory, claimed(case))
+
+
+def _source_gate(factory, *, gate="closed", collection_id=1):
+    with factory() as session, session.begin():
+        session.add(
+            UploadControl(
+                collection_id=collection_id,
+                construction_json="{}",
+                epoch="a" * 64,
+                gate=gate,
+                next_call="0",
+            )
+        )
+
+
+def _closed_source(factory, job, admission, catalog, frozen):
+    first = owner.claim_discovery_worker(factory, job)
+    assert first is not None
+    confirmed = owner.confirm_discovery_storage(factory, first)
+    assert confirmed is not None
+    pinned = owner.pin_discovery_corpus(factory, confirmed, frozen)
+    assert pinned is not None
+    _source_gate(factory)
+    assert not owner.discovery_worker_current(factory, pinned)
+    assert owner.discovery_worker_snapshot(factory, pinned) is None
+    assert owner.claim_discovery_worker(factory, pinned) is None
+    assert owner.confirm_discovery_storage(factory, pinned) is None
+    assert owner.pin_discovery_corpus(factory, pinned, frozen) is None
+    assert owner.activate_discovery_corpus(factory, pinned) is None
+    assert (
+        owner.select_discovery_job(
+            factory, build_id=pinned.build_id, admission=admission, catalog=catalog
+        )
+        is None
+    )
+    with factory() as session:
+        assert owner.DiscoveryJob.read(session.get(Job, pinned.workspace_id)) == pinned
+    return pinned
+
+
+def test_closed_native_upload_invalidates_discovery_source_without_erasing_its_job(case):
+    _closed_source(case.factory, case.job, case.admission, case.catalog, case.frozen)
+    assert case.engine.pool.checkedout() == 0
+
+
+@pytest.mark.parametrize("gate", ("open", "unrelated"))
+def test_open_or_unrelated_native_gate_preserves_exact_discovery_source(case, gate):
+    _source_gate(
+        case.factory,
+        gate="open" if gate == "open" else "closed",
+        collection_id=1 if gate == "open" else 2,
+    )
+    assert owner.discovery_worker_current(case.factory, case.job)
+    assert (
+        owner.select_discovery_job(
+            case.factory, build_id=case.build_id, admission=case.admission, catalog=case.catalog
+        )
+        == case.job
+    )
+
+
+def test_closed_native_gate_cannot_construct_a_new_discovery_job(case):
+    with case.factory() as session, session.begin():
+        session.execute(delete(Job).where(Job.workspace_id == case.job.workspace_id))
+    _source_gate(case.factory)
+    assert (
+        owner.select_discovery_job(
+            case.factory, build_id=case.build_id, admission=case.admission, catalog=case.catalog
+        )
+        is None
+    )
+    with case.factory() as session:
+        assert session.get(Job, case.job.workspace_id) is None
+
+
+def _closed_projection(tmp_path, monkeypatch, *, database_url=None):
+    from riverhog_protocol.errors import Conflict
+
+    from tests.unit.test_archive_write_admission import _case, _selected
+
+    with _case(tmp_path, database_url=database_url) as native:
+        _selected(native)
+
+        def forbidden(*args, **kwargs):
+            pytest.fail("closed native upload reentered catalog projection")
+
+        monkeypatch.setattr(native.service, "_commit_catalog_projection", forbidden)
+        with pytest.raises(Conflict, match="admission is closed"):
+            native.service._advance_catalog_projection(native.collection_id)
+
+
+def test_native_catalog_projection_keeps_the_original_upload_write_interlock(tmp_path, monkeypatch):
+    _closed_projection(tmp_path, monkeypatch)

@@ -10,6 +10,7 @@ from uuid import UUID
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core import canonical_discovery_corpus_jobs as owner
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord as UploadControl
 from riverhog_core.catalog_db import Base, create_catalog_engine
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Job
 from riverhog_core.catalog_models import CollectionDeletionRecord as Deletion
@@ -38,7 +39,7 @@ from tests.unit.test_canonical_discovery_corpus_jobs import (
 )
 from tests.unit.test_canonical_discovery_index import _collection
 
-TABLES = (Collection, Generation, State, Deletion, Job)
+TABLES = (Collection, Generation, State, Deletion, UploadControl, Job)
 MODES = (
     "select_discovery_job",
     "claim_discovery_worker",
@@ -98,8 +99,26 @@ def cases(tmp_path_factory, fixed_inputs):
                         column.key: getattr(build, column.key)
                         for column in Generation.__table__.columns
                     }
+                    session.add(
+                        UploadControl(
+                            collection_id=1,
+                            construction_json="x" * metadata_width,
+                            epoch="a" * 64,
+                            gate="open",
+                            next_call="0",
+                        )
+                    )
                     controls = []
                     for index in range(retained):
+                        session.add(
+                            UploadControl(
+                                collection_id=index + 2,
+                                construction_json="x" * metadata_width,
+                                epoch="b" * 64,
+                                gate="closed",
+                                next_call="0",
+                            )
+                        )
                         other_build = str(UUID(int=index + 1))
                         session.add(Generation(**dict(original_build, build_id=other_build)))
                         values = dict(
@@ -165,6 +184,11 @@ def reset(case, mode, variant):
             .values(archive_root_sha256=case.admission.archive_sha256)
         )
         session.execute(update(State).where(State.collection_id == 1).values(epoch=1))
+        session.execute(
+            update(UploadControl)
+            .where(UploadControl.collection_id == 1)
+            .values(gate="closed" if variant == "terminal" else "open")
+        )
         if not (mode == "select_discovery_job" and variant == "new"):
             session.add(Job(**asdict(job)))
         if variant == "superseded":
@@ -233,7 +257,7 @@ def measure(case, mode, variant, cold):
             with case.factory() as session, session.begin():
                 return owner.retire_discovery_job(session, selected)
 
-    if variant in {"superseded", "stale", "wrong-count"}:
+    if variant in {"superseded", "stale", "wrong-count", "terminal"}:
         changed = 0
     recorder = CatalogRecorder(owner)
     with ExitStack() as lease:
@@ -259,7 +283,7 @@ def measure(case, mode, variant, cold):
         assert after[table.__tablename__] == before[table.__tablename__]
     if not changed:
         assert after == before
-    if variant in {"superseded", "stale"}:
+    if variant in {"superseded", "stale", "terminal"}:
         assert result in (None, False)
     elif expected_error is None:
         assert result is not None and result is not False
@@ -287,13 +311,20 @@ def measure(case, mode, variant, cold):
 
 def exercise(mode, cases, record_property):
     variants = {
-        "select_discovery_job": ("new", "existing", "superseded"),
-        "claim_discovery_worker": ("fresh", "stale", "superseded"),
-        "confirm_discovery_storage": ("fresh", "retry", "stale", "superseded"),
-        "discovery_worker_current": ("current", "superseded"),
-        "discovery_worker_snapshot": ("current", "superseded"),
-        "pin_discovery_corpus": ("fresh", "retry", "post-open-retry", "wrong-count", "superseded"),
-        "activate_discovery_corpus": ("fresh", "stale", "superseded"),
+        "select_discovery_job": ("new", "existing", "superseded", "terminal"),
+        "claim_discovery_worker": ("fresh", "stale", "superseded", "terminal"),
+        "confirm_discovery_storage": ("fresh", "retry", "stale", "superseded", "terminal"),
+        "discovery_worker_current": ("current", "superseded", "terminal"),
+        "discovery_worker_snapshot": ("current", "superseded", "terminal"),
+        "pin_discovery_corpus": (
+            "fresh",
+            "retry",
+            "post-open-retry",
+            "wrong-count",
+            "superseded",
+            "terminal",
+        ),
+        "activate_discovery_corpus": ("fresh", "stale", "superseded", "terminal"),
         "lose_discovery_corpus": ("fresh", "stale"),
         "retire_discovery_job": ("fresh", "stale"),
     }[mode]
@@ -307,7 +338,8 @@ def exercise(mode, cases, record_property):
         "catalog_conditions",
         "Actual private catalog statements and complete native row/parameter widths; "
         "cold/warm connections; independent retained-row and metadata widths 1/17/1025; "
-        "original frozen-input fixture and source-only unrelated retained metadata controls. "
+        "original frozen-input fixture, open/closed exact native upload gate and unrelated closed "
+        "native controls with independently varied complete metadata widths. "
         "This is job-catalog evidence, not Native lifecycle, member-State or pu"
         "blication acceptance.",
     )

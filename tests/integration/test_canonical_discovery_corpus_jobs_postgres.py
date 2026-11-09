@@ -20,7 +20,11 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import sessionmaker
 
 from tests.integration.test_canonical_discovery_rebuild_postgres import database_url as database_url
-from tests.unit.test_canonical_discovery_corpus_jobs import _retirement_rollback, _retirement_stale
+from tests.unit.test_canonical_discovery_corpus_jobs import (
+    _closed_projection,
+    _retirement_rollback,
+    _retirement_stale,
+)
 from tests.unit.test_canonical_discovery_corpus_jobs import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_corpus_jobs import original as original
 from tests.unit.test_canonical_discovery_corpus_jobs import qualified as qualified
@@ -139,3 +143,25 @@ def test_postgresql_discovery_retirement_preserves_the_exact_original_version_fe
     factory, engine, job, _ = prepared
     _retirement_stale(factory, job)
     assert engine.pool.checkedout() == 0
+
+
+def test_postgresql_closed_native_upload_retires_discovery_source_authority_only(prepared):
+    factory, engine, job, frozen = prepared
+    from tests.unit.test_canonical_discovery_corpus_jobs import _source_gate
+
+    current = owner.claim_discovery_worker(factory, job)
+    assert current is not None
+    _source_gate(factory)
+    assert not owner.discovery_worker_current(factory, current)
+    assert owner.discovery_worker_snapshot(factory, current) is None
+    assert owner.claim_discovery_worker(factory, current) is None
+    assert owner.confirm_discovery_storage(factory, current) is None
+    with factory() as session:
+        assert owner.DiscoveryJob.read(session.get(Job, current.workspace_id)) == current
+    assert engine.pool.checkedout() == 0
+
+
+def test_postgresql_native_catalog_projection_keeps_the_original_write_interlock(
+    database_url, tmp_path, monkeypatch
+):
+    _closed_projection(tmp_path, monkeypatch, database_url=database_url)
