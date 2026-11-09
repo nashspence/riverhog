@@ -80,3 +80,27 @@ class ArchiveUploadTerminalAuthority:
         _, terminal, _ = read_terminal_selection(session, self._collection_id, self._operation_id)
         if terminal.request_json != self._request:
             raise Conflict("upload terminal original authorization context changed")
+
+    def read(self, session: Session) -> None:
+        """Authorize current original-result readback independently of upload lifetime."""
+        from riverhog_core.services.archive_upload_terminal_access import (
+            require_terminal_read_access,
+        )
+
+        if self._key_id is None:
+            raise NotFound("upload terminal current key authority is unavailable")
+        key = retain_key_validity(session, self._key_id, nowait=True)
+        if self._principal_id.startswith("processing:"):
+            if self._kind != "cancel":
+                raise NotFound("upload terminal delegated deletion authority is unavailable")
+            principal = retain_processing_upload_principal(
+                session, self._principal_id, key, nowait=True
+            )
+        else:
+            if key.app != self._principal_id:
+                raise NotFound("upload terminal selecting application changed")
+            principal = load_retained_key_principal(session, key)
+        require_terminal_read_access(session, self._collection_id, self._operation_id, principal)
+        _, terminal, _ = read_terminal_selection(session, self._collection_id, self._operation_id)
+        if terminal.request_json != self._request:
+            raise Conflict("upload terminal original authorization context changed")

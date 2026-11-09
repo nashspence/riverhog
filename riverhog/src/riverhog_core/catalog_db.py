@@ -111,6 +111,7 @@ def create_catalog_engine(database_url: str) -> Engine:
             defer_if_busy = connection.get_execution_options().get("sqlite_defer_if_busy", False)
             if type(defer_if_busy) is not bool:
                 raise ValueError("SQLite writer deferral must be boolean")
+            connection.info["riverhog_sqlite_early_writer"] = False
             if immediate and defer_if_busy:
                 cursor = connection.connection.cursor()
                 try:
@@ -124,6 +125,7 @@ def create_catalog_engine(database_url: str) -> Engine:
                     cursor.close()
             elif immediate:
                 connection.exec_driver_sql("BEGIN IMMEDIATE")
+            connection.info["riverhog_sqlite_early_writer"] = immediate
 
     return engine
 

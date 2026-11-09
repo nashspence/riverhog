@@ -65,12 +65,18 @@ def _sha(value: str) -> str:
 
 def _writer(session: Session, *, defer_if_busy: bool = False) -> None:
     if session.get_bind().dialect.name == "sqlite":
-        session.connection(
+        transaction = session.get_transaction()
+        if transaction is not None and session.info.get("archive_immediate_writer") is transaction:
+            return
+        connection = session.connection(
             execution_options={
                 "sqlite_immediate_writer": True,
                 "sqlite_defer_if_busy": defer_if_busy,
             }
         )
+        if connection.info.get("riverhog_sqlite_early_writer") is not True:
+            raise Conflict("archive writer admission must precede catalog reads")
+        session.info["archive_immediate_writer"] = session.get_transaction()
 
 
 def _positive(value: int) -> None:
