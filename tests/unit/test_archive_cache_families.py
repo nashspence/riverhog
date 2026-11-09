@@ -56,7 +56,6 @@ def _families(owned):
             archive=archive,
             begin=begin,
             cache=None,
-            candidate=None,
             source_store="source",
             owner="owner",
             principal=_request().principal,

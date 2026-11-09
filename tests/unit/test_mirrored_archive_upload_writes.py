@@ -26,7 +26,7 @@ from sqlalchemy import select
 
 from tests.unit.test_archive_upload_writes import _open, _stored, _unit
 from tests.unit.test_collection_uploads import _CREATOR
-from tests.unit.test_mirrored_archive_begin import _cache_state, _joint, _terminal
+from tests.unit.test_mirrored_archive_begin import _cache_state, _joint, _secondary_cache, _terminal
 
 
 @contextmanager
@@ -69,7 +69,6 @@ def _writing(
             archive=actor.journal,
             begin=joint.mirror,
             cache=joint.writes,
-            candidate=joint.candidate,
             source_store=source_store,
             owner="joint-cache",
             principal=_CREATOR,
@@ -746,3 +745,48 @@ def test_joint_terminal_can_close_local_actor_when_cache_reservation_was_refused
         assert joint.writer.drain_terminal(selected) == "closed"
         assert _stored(joint.actor) == (checkpoint.to_json(), [])
         assert joint.actor.seen == physical
+
+
+@pytest.mark.parametrize(("kind", "mode"), (("pack", "owned-http"), ("segment", "direct")))
+def test_later_cache_candidate_owns_every_original_part_and_completion(
+    tmp_path, monkeypatch, kind, mode
+):
+    with (
+        _secondary_cache(tmp_path, mode) as secondary,
+        _writing(
+            tmp_path,
+            monkeypatch,
+            kind,
+            mode=mode,
+            budget=1,
+            cache_candidates=lambda first, registration: ((first, registration), secondary),
+        ) as joint,
+    ):
+        calls = []
+        execute = secondary[0].execute_write
+
+        def tracked(invocation, **kwargs):
+            calls.append(invocation)
+            return execute(invocation, **kwargs)
+
+        monkeypatch.setattr(secondary[0], "execute_write", tracked)
+        opened = _open(joint.actor)
+        completed = _unit(joint.actor, opened)
+        assert completed.completed is not None
+        assert joint.mirror.candidate is secondary[0]
+        assert joint.writer._candidate is secondary[0]
+        assert [call.operation.kind for call in calls] == ["begin", "part", "complete"]
+        assert all(call.call.target_incarnation == secondary[0].incarnation_id for call in calls)
+        assert calls[1].operation.request.session == joint.mirror.cache_session
+        assert calls[2].operation.request.session == joint.mirror.cache_session
+        assert _stored(joint.actor) == (completed.to_json(), [])
+        assert not list((tmp_path / "cache" / "writes").iterdir())
+        with session_scope(joint.actor.case.factory) as session:
+            effects = list(session.scalars(select(CachePopulationWriteEffectRecord)))
+            assert effects and all(effect.cache_store == secondary[0].name for effect in effects)
+            assert (
+                session.get(
+                    RetrievalCacheStoreAccountingRecord, joint.candidate.name
+                ).reserved_bytes
+                == 0
+            )

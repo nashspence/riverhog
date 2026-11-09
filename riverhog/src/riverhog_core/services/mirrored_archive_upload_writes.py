@@ -78,7 +78,6 @@ class MirroredArchiveUploadWrites:
         archive: ArchiveUploadWrites,
         begin: MirroredArchiveBegin,
         cache: CachePopulationWriteAdmission,
-        candidate: StorageAdapterRetrievalCache,
         source_store: str,
         owner: str,
         principal: Principal,
@@ -89,7 +88,6 @@ class MirroredArchiveUploadWrites:
         self._archive = archive
         self._begin = begin
         self._cache = cache
-        self._candidate = candidate
         self._source_store = source_store
         self._owner = owner
         self._principal = principal
@@ -141,7 +139,6 @@ class MirroredArchiveUploadWrites:
                 archive=archive,
                 begin=self._begin,
                 cache=self._cache,
-                candidate=self._candidate,
                 source_store=self._source_store,
                 owner=self._owner,
                 principal=principal,
@@ -151,6 +148,13 @@ class MirroredArchiveUploadWrites:
             )
             continuation._cache_forward = self._cache_forward
             return continuation
+
+    @property
+    def _candidate(self) -> StorageAdapterRetrievalCache:
+        candidate = self._begin.candidate
+        if candidate is None:
+            raise Conflict("joint cache write has no original admitted target")
+        return candidate
 
     def _stop_cache_forward(self) -> None:
         with self._cache_forward.lock:

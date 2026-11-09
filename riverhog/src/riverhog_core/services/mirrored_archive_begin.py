@@ -44,7 +44,9 @@ from riverhog_core.stores.storage_adapter_retrieval_cache import StorageAdapterR
 class MirroredArchiveBegin:
     """Retain the original archive result independently of optional cache progress.
 
-    One live actor attempts one joint begin. The archive workflow owns its result
+    One live actor attempts one joint begin. Configured cache candidates are tried
+    in order only after confirmed data-capacity refusal; uncertain admission or
+    execution never selects another target. The archive workflow owns its result
     and checkpoint. The cache retains its own result, reservation and report;
     this coordinator neither publishes a ready placement nor releases ownership.
     """
@@ -55,8 +57,9 @@ class MirroredArchiveBegin:
         *,
         archive: ArchiveUploadWrites,
         cache: CachePopulationBeginAdmission,
-        candidate: StorageAdapterRetrievalCache,
-        registration: RetrievalCacheStoreRegistration,
+        candidates: tuple[
+            tuple[StorageAdapterRetrievalCache, RetrievalCacheStoreRegistration], ...
+        ],
         owner: str,
         principal: Principal,
         grants: CacheWriteGrants,
@@ -66,8 +69,10 @@ class MirroredArchiveBegin:
         self._factory = factory
         self._archive = archive
         self._cache = cache
-        self._candidate = candidate
-        self._registration = registration
+        self._candidates = tuple(candidates)
+        if len({candidate.name for candidate, _ in self._candidates}) != len(self._candidates):
+            raise ValueError("joint cache candidates require unique configured names")
+        self._candidate: StorageAdapterRetrievalCache | None = None
         self._owner = owner
         self._principal = principal
         self._grants = grants
@@ -183,6 +188,11 @@ class MirroredArchiveBegin:
             self._transfer_receipt = receipt
 
     @property
+    def candidate(self) -> StorageAdapterRetrievalCache | None:
+        """The original admitted cache target, without selection or provider I/O."""
+        return self._candidate
+
+    @property
     def archive_response(self) -> WriteExecutionResult | None:
         return self._archive_response
 
@@ -218,33 +228,50 @@ class MirroredArchiveBegin:
             entered_here = True
             admitted = self._archive.arm_write_operation(operation)
             collection_id, object_id, epoch = self._archive.scope
-            self._cache_admission_pending = True
             try:
-                self._cache_ticket = self._cache.arm(
-                    collection_id,
-                    object_id,
-                    owner=self._owner,
-                    principal=self._principal,
-                    expected_bytes=operation.request.expected_bytes,
-                    epoch=epoch,
-                    executor_id=self._executor_id,
-                    candidate=self._candidate,
-                    registration=self._registration,
-                    grants=self._grants,
-                    guard=self._guard,
-                    validate_population=self._validate_population,
-                )
-                self._cache_admission_pending = False
-            except CacheDataReservationUnavailable:
-                self._cache_admission_pending = False
-                # The owner has checked current authority after its accounting wait.
-                self._archive_response = self._archive.execute_admitted_write(admitted)
-                return self._archive_response
+                for candidate, registration in self._candidates:
+                    self._cache_admission_pending = True
+                    try:
+                        ticket = self._cache.arm(
+                            collection_id,
+                            object_id,
+                            owner=self._owner,
+                            principal=self._principal,
+                            expected_bytes=operation.request.expected_bytes,
+                            epoch=epoch,
+                            executor_id=self._executor_id,
+                            candidate=candidate,
+                            registration=registration,
+                            grants=self._grants,
+                            guard=self._guard,
+                            validate_population=self._validate_population,
+                        )
+                        if not isinstance(ticket, ArmedProviderWrite) or (
+                            ticket.collection_id != collection_id
+                            or ticket.object_id != object_id
+                            or ticket.executor_id != self._executor_id
+                            or ticket.target_incarnation != candidate.incarnation_id
+                        ):
+                            raise Conflict(
+                                "original cache admission returned no exact dispatch capability"
+                            )
+                        self._cache_ticket = ticket
+                    except CacheDataReservationUnavailable:
+                        # Confirmed refusal committed no cache effect or reservation.
+                        # Only this known absence permits trying the next preference.
+                        self._cache_admission_pending = False
+                        continue
+                    self._candidate = candidate
+                    self._cache_admission_pending = False
+                    break
             except BaseException as error:
                 if isinstance(error, ProviderWriteAdmissionRefused):
                     self._cache_admission_pending = False
                 self._archive.withdraw_admitted_write(admitted)
                 raise
+            if self._cache_ticket is None:
+                self._archive_response = self._archive.execute_admitted_write(admitted)
+                return self._archive_response
             try:
                 self._archive_response = self._archive.execute_admitted_write(admitted)
             except BaseException:
@@ -252,6 +279,7 @@ class MirroredArchiveBegin:
                 self._flush_preserving_failure()
                 raise
             try:
+                assert self._cache_ticket is not None and self._candidate is not None
                 self._cache_response = self._cache.execute(
                     self._cache_ticket, candidate=self._candidate
                 )

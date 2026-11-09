@@ -49,6 +49,7 @@ def _joint(
     cache_adapter=None,
     grants=None,
     segment_bytes=64 * 1024,
+    cache_candidates=None,
 ):
     with (
         (
@@ -60,16 +61,24 @@ def _joint(
     ):
         candidate = _candidate(transport)
         registration = replace(_registration(candidate.name), admission_budget_bytes=budget)
+        candidates = (
+            ((candidate, registration),)
+            if cache_candidates is None
+            else tuple(cache_candidates(candidate, registration))
+        )
+        configured = {candidate.name: (candidate, registration)}
+        configured.update({store.name: (store, config) for store, config in candidates})
 
         def configure(service):
             with session_scope(service._session_factory) as session:
-                seed_storage_incarnation(session, "cache", candidate.name)
-                session.get(
-                    StorageIncarnationRecord, ("cache", candidate.name)
-                ).id = candidate.incarnation_id
+                for store, _ in configured.values():
+                    seed_storage_incarnation(session, "cache", store.name)
+                    session.get(
+                        StorageIncarnationRecord, ("cache", store.name)
+                    ).id = store.incarnation_id
             service._retrieval_cache = SqlAlchemyRetrievalCache(
-                {candidate.name: candidate},
-                {candidate.name: registration},
+                {name: pair[0] for name, pair in configured.items()},
+                {name: pair[1] for name, pair in configured.items()},
                 session_factory=service._session_factory,
             )
 
@@ -122,8 +131,7 @@ def _joint(
                 actor.case.factory,
                 archive=actor.journal,
                 cache=cache,
-                candidate=candidate,
-                registration=registration,
+                candidates=candidates,
                 owner="joint-cache",
                 principal=_CREATOR,
                 grants=grants
@@ -512,3 +520,122 @@ def test_cache_failure_after_physical_dispatch_keeps_original_archive_and_interr
     interrupted,
 ):
     _assert_cache_failure_after_dispatch(tmp_path, monkeypatch, interrupted)
+
+
+@contextmanager
+def _secondary_cache(tmp_path, mode):
+    with (
+        _filesystem(tmp_path / "secondary-cache") as adapter,
+        _executor(adapter, mode) as transport,
+    ):
+        candidate = _candidate(transport)
+        candidate.name = "secondary-cache"
+        yield candidate, _registration(candidate.name)
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+def test_confirmed_data_refusal_tries_the_next_original_cache_candidate(
+    tmp_path, monkeypatch, mode, database_url=None
+):
+    with (
+        _secondary_cache(tmp_path, mode) as secondary,
+        _joint(
+            tmp_path,
+            monkeypatch,
+            mode=mode,
+            database_url=database_url,
+            budget=1,
+            cache_candidates=lambda first, registration: ((first, registration), secondary),
+        ) as joint,
+    ):
+        attempted = []
+        arm = joint.cache.arm
+
+        def tracked(*args, **kwargs):
+            attempted.append(kwargs["candidate"].name)
+            return arm(*args, **kwargs)
+
+        monkeypatch.setattr(joint.cache, "arm", tracked)
+        opened = _open(joint.actor)
+        assert attempted == [joint.candidate.name, secondary[0].name]
+        assert joint.mirror.archive_response.result.write_token == opened.write_token
+        assert joint.mirror.candidate is secondary[0]
+        assert joint.mirror.cache_session is not None
+        assert not list((tmp_path / "cache" / "writes").iterdir())
+        assert len(list((tmp_path / "secondary-cache" / "writes").iterdir())) == 1
+        with session_scope(joint.actor.case.factory) as session:
+            effects = list(session.scalars(select(CachePopulationBeginRecord)))
+            assert len(effects) == 1 and effects[0].cache_store == secondary[0].name
+            assert effects[0].cache_incarnation_id == secondary[0].incarnation_id
+            first = session.get(RetrievalCacheStoreAccountingRecord, joint.candidate.name)
+            second = session.get(RetrievalCacheStoreAccountingRecord, secondary[0].name)
+            assert first.reserved_bytes == 0
+            assert second.reserved_bytes == joint.mirror.archive_response.result.expected_bytes
+
+
+def test_no_configured_cache_candidate_performs_only_the_original_archive_begin(
+    tmp_path, monkeypatch
+):
+    with _joint(tmp_path, monkeypatch, cache_candidates=lambda *args: ()) as joint:
+        opened = _open(joint.actor)
+        assert opened.write_token == joint.mirror.archive_response.result.write_token
+        assert joint.mirror.candidate is None and joint.mirror.cache_session is None
+        assert joint.mirror.cache_begin_call_id is None
+        with session_scope(joint.actor.case.factory) as session:
+            assert session.scalar(select(CachePopulationBeginRecord.id)) is None
+            assert (
+                session.get(
+                    RetrievalCacheStoreAccountingRecord, joint.candidate.name
+                ).reserved_bytes
+                == 0
+            )
+        assert not list((tmp_path / "cache" / "writes").iterdir())
+
+
+@pytest.mark.parametrize("committed", (False, True))
+@pytest.mark.parametrize("returned", (False, True))
+def test_uncertain_cache_admission_never_tries_another_candidate(
+    tmp_path, monkeypatch, committed, returned, database_url=None
+):
+    with (
+        _secondary_cache(tmp_path, "direct") as secondary,
+        _joint(
+            tmp_path,
+            monkeypatch,
+            database_url=database_url,
+            cache_candidates=lambda first, registration: ((first, registration), secondary),
+        ) as joint,
+    ):
+        attempted = []
+        arm = joint.cache.arm
+
+        def lost(*args, **kwargs):
+            attempted.append(kwargs["candidate"].name)
+            if committed:
+                arm(*args, **kwargs)
+            if returned:
+                return None
+            raise OSError("synthetic cache admission acknowledgement lost")
+
+        monkeypatch.setattr(joint.cache, "arm", lost)
+        with pytest.raises(
+            Conflict if returned else OSError,
+            match="dispatch capability" if returned else "admission acknowledgement",
+        ):
+            _open(joint.actor)
+        assert attempted == [joint.candidate.name]
+        assert joint.mirror.has_pending
+        assert joint.mirror.archive_response is None
+        assert joint.mirror.candidate is None
+        assert not list((tmp_path / "provider" / "writes").iterdir())
+        assert not list((tmp_path / "cache" / "writes").iterdir())
+        assert not list((tmp_path / "secondary-cache" / "writes").iterdir())
+        with session_scope(joint.actor.case.factory) as session:
+            effects = list(session.scalars(select(CachePopulationBeginRecord)))
+            assert len(effects) == int(committed)
+            if effects:
+                assert effects[0].unresolved and effects[0].cache_store == joint.candidate.name
+            assert (
+                session.get(RetrievalCacheStoreAccountingRecord, secondary[0].name).reserved_bytes
+                == 0
+            )
