@@ -204,7 +204,7 @@ class CachePopulationBeginAdmission:
                 # source/receiver copies of the closed receipt and publication acknowledgement.
                 # The completion marker has one fixed-size original call identity.
                 charged = (
-                    len(encoded.encode()) + 7 * grants.result_bytes + grants.cleanup_bytes + 64
+                    len(encoded.encode()) + 7 * grants.result_bytes + 2 * grants.cleanup_bytes + 64
                 )
                 require_cache_write_capacity(session, collection_id, charged=charged, grants=grants)
                 accounting = locked_cache_accounting(session, candidate.name)

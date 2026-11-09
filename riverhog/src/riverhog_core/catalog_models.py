@@ -2342,6 +2342,7 @@ class RetrievalCachePopulationRecord(Base):
     generation: Mapped[str] = mapped_column(String(64), default=lambda: secrets.token_hex(32))
     begin_call_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     closed_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    abandonment_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     publication_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     source_store: Mapped[str] = mapped_column(String, primary_key=True)
@@ -2417,6 +2418,12 @@ class RetrievalCachePopulationRecord(Base):
         CheckConstraint(
             "publication_json IS NULL OR state = 'published' AND closed_receipt_json IS NOT NULL",
             name="ck_retrieval_cache_populations_publication",
+        ),
+        CheckConstraint(
+            "abandonment_receipt_json IS NULL OR state = 'abandoning' AND "
+            "begin_call_id IS NOT NULL AND closed_receipt_json IS NULL "
+            "AND publication_json IS NULL",
+            name="ck_retrieval_cache_populations_abandonment",
         ),
     )
 
@@ -4027,6 +4034,7 @@ class CollectionArchiveObjectUploadRecord(Base):
     sealed_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     metadata_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     cache_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    cache_abandonment_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     cache_publication_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
     uploaded_bytes: Mapped[int] = mapped_column(BigInteger, default=0)
@@ -4039,6 +4047,10 @@ class CollectionArchiveObjectUploadRecord(Base):
     registration_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     __table_args__ = (
+        CheckConstraint(
+            "cache_abandonment_json IS NULL OR cache_receipt_json IS NULL",
+            name="ck_archive_object_uploads_cache_abandonment",
+        ),
         Index("ix_upload_plans_registration", "collection_id", "registration_id", "sequence"),
         CheckConstraint(
             _fixed_lowercase_integer_check("registration_id", 64),

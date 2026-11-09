@@ -35,6 +35,7 @@ from riverhog_core.ports.archive_objects import (
 )
 from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
+from riverhog_core.services.cache_population_abandonment import CachePopulationAbandonment
 from riverhog_core.services.cache_write_capacity import retains_cache_write
 from riverhog_core.services.retrieval_cache_accounting import (
     adjust_cache_committed_bytes,
@@ -61,6 +62,7 @@ class SqlAlchemyRetrievalCache:
         self._stores = dict(stores)
         self._registrations = dict(registrations)
         self._session_factory = session_factory
+        self.abandonment = CachePopulationAbandonment(session_factory)
         self._recover = recover
         self._ensure_accounting_rows()
 

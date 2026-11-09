@@ -929,6 +929,7 @@ CREATE TABLE retrieval_cache_populations (
 	generation VARCHAR(64) NOT NULL,
 	begin_call_id VARCHAR(64),
 	closed_receipt_json TEXT,
+	abandonment_receipt_json TEXT,
 	publication_json TEXT,
 	source_store VARCHAR NOT NULL,
 	source_incarnation_id VARCHAR(36) NOT NULL,
@@ -951,6 +952,7 @@ CREATE TABLE retrieval_cache_populations (
 	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing','sealed','published') OR state = 'abandoning')),
 	CONSTRAINT ck_retrieval_cache_populations_closed_receipt CHECK (state NOT IN ('sealed','published') OR begin_call_id IS NOT NULL AND closed_receipt_json IS NOT NULL),
 	CONSTRAINT ck_retrieval_cache_populations_publication CHECK (publication_json IS NULL OR state = 'published' AND closed_receipt_json IS NOT NULL),
+	CONSTRAINT ck_retrieval_cache_populations_abandonment CHECK (abandonment_receipt_json IS NULL OR state = 'abandoning' AND begin_call_id IS NOT NULL AND closed_receipt_json IS NULL AND publication_json IS NULL),
 	CONSTRAINT ck_retrieval_cache_populations_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_retrieval_cache_populations_begin_call_id_hex CHECK (begin_call_id IS NULL OR length(begin_call_id) = 64 AND lower(begin_call_id) = begin_call_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(begin_call_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
@@ -1080,6 +1082,7 @@ CREATE TABLE collection_archive_object_uploads (
 	sealed_receipt_json TEXT,
 	metadata_receipt_json TEXT,
 	cache_receipt_json TEXT,
+	cache_abandonment_json TEXT,
 	cache_publication_json TEXT,
 	failure TEXT,
 	uploaded_bytes BIGINT NOT NULL,
@@ -1090,6 +1093,7 @@ CREATE TABLE collection_archive_object_uploads (
 	sealed_at VARCHAR,
 	registration_id VARCHAR(64),
 	PRIMARY KEY (collection_id, object_id),
+	CONSTRAINT ck_archive_object_uploads_cache_abandonment CHECK (cache_abandonment_json IS NULL OR cache_receipt_json IS NULL),
 	CONSTRAINT ck_upload_plans_registration CHECK (length(registration_id) = 64 AND lower(registration_id) = registration_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(registration_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE,
 	CONSTRAINT ck_archive_object_uploads_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),

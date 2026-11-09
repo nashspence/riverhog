@@ -21,3 +21,13 @@ class ClosedCachePopulation:
     object_id: str
     generation: str
     receipt_json: str
+
+
+@dataclass(frozen=True, slots=True)
+class AbandonedCachePopulation:
+    source_store: str
+    collection_id: int
+    object_id: str
+    generation: str
+    operation_id: str
+    receipt_json: str
