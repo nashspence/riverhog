@@ -443,9 +443,10 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
             receipts = producer.append_inputs(
                 (ProducerFile(source, artifact_id, allow_missing_materialization_hint=True),)
             )
-            # The production worker advances one durable custody milestone at
-            # a time. Drive it separately from the actual HTTP request path.
-            for _ in range(4):
+            # Each coordinator turn selects one member of this construction.
+            # Allow this four-member pack its dependency milestones and one
+            # no-progress probe, separately from the actual HTTP request path.
+            for _ in range(4 * 4 + 1):
                 if drive_custody_turn(api.service, limit=4) == 0:
                     break
             else:
