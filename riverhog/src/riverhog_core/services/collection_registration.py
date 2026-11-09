@@ -758,6 +758,16 @@ class CollectionRegistrationOwner:
         retained: _RetainedExecution | None,
     ) -> None:
         if operation.phase == "cleaning":
+            from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
+
+            control = session.get(
+                ArchiveWriteControlRecord,
+                upload.collection_id,
+                with_for_update={"nowait": True},
+                populate_existing=True,
+            )
+            if control is not None and control.gate == "closed":
+                raise Conflict("registration cleanup belongs to the current upload terminal")
             from riverhog_core.services.collection_registration_cleanup import (
                 advance_registration_cleanup,
             )
