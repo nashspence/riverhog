@@ -38,7 +38,7 @@ def _guard(session):
 
 
 @contextmanager
-def _case(tmp_path, *, database_url=None):
+def _case(tmp_path, *, database_url=None, copy_to=()):
     policy = CollectionVolumePolicy(
         pack_member_bytes=8, raw_volume_plaintext_bytes=PART, raw_part_plaintext_bytes=PART
     )
@@ -46,12 +46,46 @@ def _case(tmp_path, *, database_url=None):
         tmp_path, policy=policy, database_url=database_url
     )
     try:
+        principal = _CREATOR
+        if copy_to:
+            from riverhog_core.app_permissions import ARCHIVES_MANAGE, ApplicationAccess
+
+            from tests.unit.storage_incarnation_fixtures import (
+                fixture_storage_incarnation_id,
+                seed_storage_incarnation,
+            )
+
+            binding = service._archive_stores.require("archive")
+            with session_scope(service._session_factory) as session:
+                for name in copy_to:
+                    seed_storage_incarnation(session, "archive", name)
+                    service._archive_stores.admit(
+                        name,
+                        replace(
+                            binding, incarnation_id=fixture_storage_incarnation_id("archive", name)
+                        ),
+                        probe=lambda: None,
+                    )
+            from riverhog_core.app_permissions import COLLECTIONS_CREATE
+            from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
+
+            from tests.unit.test_app_keys import create_key
+
+            keys = SqlAlchemyAppKeyService(config, session_factory=service._session_factory)
+            created = create_key(
+                keys,
+                app=_CREATOR.id,
+                access=(ApplicationAccess(COLLECTIONS_CREATE), ApplicationAccess(ARCHIVES_MANAGE)),
+            )
+            principal = keys.authenticate(str(created["token"]))
+            assert principal is not None
         opened = service.create_or_resume(
             idempotency_key="write-admission",
             ingest_source="fixture",
             archive_store=None,
-            initiator=_CREATOR,
+            initiator=principal,
             event_context=None,
+            copy_to=copy_to,
         )
         collection_id = int(opened["collection_id"])
         service.register_artifacts(collection_id, [_member("1", 2)])

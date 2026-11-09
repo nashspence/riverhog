@@ -365,6 +365,7 @@ from riverhog_core.services.operation_plans import (
 from riverhog_core.services.retrieval_cache import register_cache_ready
 from riverhog_core.services.upload_custody_growth import custody_readback_declaration
 from riverhog_core.services.upload_custody_projection import upload_custody_payload
+from riverhog_core.services.upload_session_projection import upload_session_payload
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
@@ -8721,8 +8722,6 @@ def _upload_payload(
     state: str | None = None,
     resumed: bool | None = None,
 ) -> dict[str, object]:
-    files_total = upload.artifact_count
-    bytes_total = upload.artifact_bytes
     custodied_files, custodied_bytes = _custody_stats(session, upload.collection_id)
     tag_count = _upload_tag_count(session, upload.collection_id)
     archive_progress = session.execute(
@@ -8732,70 +8731,21 @@ def _upload_payload(
             func.coalesce(func.sum(CollectionArchiveObjectUploadRecord.total_units), 0),
         ).where(CollectionArchiveObjectUploadRecord.collection_id == upload.collection_id)
     ).one()
-    payload: dict[str, object] = {
-        "collection_id": format_scalar("sequence63", upload.collection_id),
-        "created_at": upload.opened_at,
-        "ingest_source": upload.ingest_source,
-        "description": upload.description,
-        "description_revision": upload.description_revision,
-        "description_identity": upload.description_identity,
-        "description_publication": (
-            "pending"
-            if upload.description_identity is None
-            else "not_required"
-            if upload.description_revision == 0
-            else "current"
-        ),
-        "tag_revision": upload.tag_revision,
-        "tag_set_identity": upload.tag_set_identity,
-        "tag_publication": (
-            "current" if upload.tag_publication_receipt_json is not None else "pending"
-        ),
-        "tag_count": tag_count,
-        "provenance_identity": None,
-        "delivery_context_id": upload.delivery_context_id,
-        "construction_identity_sha256": upload.creation_identity_sha256,
-        "completion_journal_id": upload.completion_journal_id,
-        "completion_receipt": None
-        if upload.completion_receipt_json is None
-        else json.loads(upload.completion_receipt_json),
-        "archive_store": upload.archive_store,
-        "use_cache": upload.use_cache,
-        "copy_to": json.loads(upload.copy_to_json),
-        "copy_intents": _copy_intent_payloads(
+    return upload_session_payload(
+        upload,
+        tag_count=tag_count,
+        custodied_files=custodied_files,
+        custodied_bytes=custodied_bytes,
+        uploaded_bytes=int(archive_progress[0]),
+        uploaded_units=int(archive_progress[1]),
+        total_units=int(archive_progress[2]),
+        copy_intents=_copy_intent_payloads(
             session, upload.collection_id, canceled=state == "canceled"
         ),
-        "encryption_format": upload.encryption_format,
-        "passphrase_id": upload.passphrase_id,
-        "state": state or upload.state,
-        "custody_mode": upload.custody_mode,
-        "registration_constraints": _registration_constraints_payload(
-            _planner_checkpoint(upload).policy
-        ),
-        "files_total": int(files_total),
-        "bytes_total": int(bytes_total),
-        "upload_state_expires_at": None if state == "canceled" else upload.lease_expires_at,
-        "custody": upload_custody_payload(
-            files=int(files_total),
-            byte_count=int(bytes_total),
-            custodied_files=custodied_files,
-            custodied_bytes=custodied_bytes,
-        ),
-        "orphaned_at": None if state == "canceled" else upload.orphaned_at,
-        "latest_failure": upload.archive_failure,
-        "archive_phase": upload.archive_phase,
-        "archive_phase_updated_at": upload.archive_phase_updated_at,
-        "archive_next_attempt_at": upload.archive_next_attempt_at,
-        "archive_storage_prefix": upload.archive_storage_prefix,
-        "archive_uploaded_bytes": int(archive_progress[0]),
-        "archive_total_bytes": None,
-        "archive_uploaded_units": int(archive_progress[1]),
-        "archive_total_units": int(archive_progress[2]),
-        "collection": None,
-    }
-    if resumed is not None:
-        payload["resumed"] = resumed
-    return payload
+        policy=_planner_checkpoint(upload).policy,
+        state=state,
+        resumed=resumed,
+    )
 
 
 def _finalized_payload(

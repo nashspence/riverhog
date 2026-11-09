@@ -34,8 +34,8 @@ from tests.unit.test_collection_uploads import _CREATOR
 
 
 @contextmanager
-def _tagged(tmp_path, *, count=8, database_url=None):
-    with _case(tmp_path, database_url=database_url) as case:
+def _tagged(tmp_path, *, count=8, database_url=None, copy_to=()):
+    with _case(tmp_path, database_url=database_url, copy_to=copy_to) as case:
         principal = replace(
             _CREATOR,
             access=_CREATOR.access | {ApplicationAccess(COLLECTION_TAGS_MANAGE)},
