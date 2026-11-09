@@ -550,13 +550,17 @@ def lose_discovery_corpus(
 
 
 @declare_growth(_declaration("retire_discovery_job"))
-def retire_discovery_job(factory: SessionFactory, job: DiscoveryJob) -> DiscoveryJob | None:
-    """Detach catalog ownership under exclusive custody; storage reclamation remains separate."""
-    with factory() as session, session.begin():
-        row = session.execute(
-            update(Job)
-            .where(*_identity(job), Job.version == job.version)
-            .values(build_id=None, state="retiring", version=_version())
-            .returning(Job)
-        ).scalar_one_or_none()
-        return None if row is None else DiscoveryJob.read(row)
+def retire_discovery_job(session: Session, job: DiscoveryJob) -> DiscoveryJob | None:
+    """Detach the exact catalog fence in the composing owner's transaction.
+
+    This transition never closes or reclaims Native workspace storage. Its
+    independent owner retains physical handles, leases and retirement work.
+    A stale version or original identity cannot detach another job.
+    """
+    row = session.execute(
+        update(Job)
+        .where(*_identity(job), Job.version == job.version)
+        .values(build_id=None, state="retiring", version=_version())
+        .returning(Job)
+    ).scalar_one_or_none()
+    return None if row is None else DiscoveryJob.read(row)

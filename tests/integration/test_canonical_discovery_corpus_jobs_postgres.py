@@ -20,6 +20,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import sessionmaker
 
 from tests.integration.test_canonical_discovery_rebuild_postgres import database_url as database_url
+from tests.unit.test_canonical_discovery_corpus_jobs import _retirement_rollback, _retirement_stale
 from tests.unit.test_canonical_discovery_corpus_jobs import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_corpus_jobs import original as original
 from tests.unit.test_canonical_discovery_corpus_jobs import qualified as qualified
@@ -122,6 +123,19 @@ def test_postgresql_discovery_claim_cas_and_pinned_job_survive_generation_deleti
         with factory() as session:
             orphan = owner.DiscoveryJob.read(session.get(Job, job.workspace_id))
         assert orphan.build_id is None and orphan.binding == current.binding
-        retired = owner.retire_discovery_job(factory, orphan)
+        with factory() as session, session.begin():
+            retired = owner.retire_discovery_job(session, orphan)
         assert retired is not None and retired.state == "retiring"
+    assert engine.pool.checkedout() == 0
+
+
+def test_postgresql_discovery_retirement_rolls_back_with_composing_catalog_transaction(prepared):
+    factory, engine, job, _ = prepared
+    _retirement_rollback(factory, job)
+    assert engine.pool.checkedout() == 0
+
+
+def test_postgresql_discovery_retirement_preserves_the_exact_original_version_fence(prepared):
+    factory, engine, job, _ = prepared
+    _retirement_stale(factory, job)
     assert engine.pool.checkedout() == 0

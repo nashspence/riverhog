@@ -241,7 +241,8 @@ def test_missing_workspace_disposition_cannot_recreate_or_reclaim_storage(case):
     assert not owner.discovery_worker_current(case.factory, first)
     assert owner.claim_discovery_worker(case.factory, lost) is None
     assert marker.read_bytes() == b"retained"
-    retired = owner.retire_discovery_job(case.factory, lost)
+    with case.factory() as session, session.begin():
+        retired = owner.retire_discovery_job(session, lost)
     assert retired is not None and retired.build_id is None and retired.state == "retiring"
     assert marker.read_bytes() == b"retained"
     with pytest.raises(owner.StaleArchiveTask, match="retired"):
@@ -257,7 +258,8 @@ def test_job_survives_deleted_generation_without_retaining_current_authority(cas
         row = session.get(Job, first.workspace_id)
         assert row is not None and row.build_id is None
         orphan = owner.DiscoveryJob.read(row)
-    assert owner.retire_discovery_job(case.factory, orphan).state == "retiring"
+    with case.factory() as session, session.begin():
+        assert owner.retire_discovery_job(session, orphan).state == "retiring"
 
 
 @pytest.mark.parametrize("raw", ["", "00", "-1", "١", " 1", "1.0"])
@@ -312,3 +314,50 @@ def test_storage_confirmation_rejects_superseded_and_stale_initialization(case):
     with case.factory() as session, session.begin():
         session.execute(update(State).values(epoch=2))
     assert owner.confirm_discovery_storage(case.factory, first) is None
+
+
+def _retirement_rollback(factory, job):
+    with factory() as session:
+        before = owner.DiscoveryJob.read(session.get(Job, job.workspace_id))
+        epoch = session.get(Generation, job.build_id).expected_epoch
+    with pytest.raises(OSError, match="composing owner rollback"):
+        with factory() as session, session.begin():
+            retired = owner.retire_discovery_job(session, job)
+            assert retired is not None and retired.build_id is None
+            # A preceding catalog mutation belongs to this same transaction.
+            session.execute(
+                update(Generation)
+                .where(Generation.build_id == job.build_id)
+                .values(expected_epoch=Generation.expected_epoch + 1)
+            )
+            raise OSError("composing owner rollback")
+    with factory() as session:
+        assert owner.DiscoveryJob.read(session.get(Job, job.workspace_id)) == before
+        assert session.get(Generation, job.build_id).expected_epoch == epoch
+    with factory() as session, session.begin():
+        retired = owner.retire_discovery_job(session, job)
+        assert retired is not None and retired.build_id is None and retired.state == "retiring"
+    return retired
+
+
+def test_discovery_job_retirement_rolls_back_with_the_composing_catalog_transaction(case):
+    first = claimed(case)
+    marker = case.root / "independently-retained"
+    marker.parent.mkdir()
+    marker.write_bytes(b"original workspace")
+    retired = _retirement_rollback(case.factory, first)
+    assert retired.attempt_id == first.attempt_id and marker.read_bytes() == b"original workspace"
+
+
+def _retirement_stale(factory, job):
+    current = owner.lose_discovery_corpus(factory, job, failure="retained workspace unavailable")
+    assert current is not None and current.version != job.version
+    with factory() as session, session.begin():
+        assert owner.retire_discovery_job(session, job) is None
+        assert owner.DiscoveryJob.read(session.get(Job, job.workspace_id)) == current
+        retired = owner.retire_discovery_job(session, current)
+    assert retired is not None and retired.build_id is None and retired.state == "retiring"
+
+
+def test_discovery_job_retirement_keeps_the_complete_original_and_version_fence(case):
+    _retirement_stale(case.factory, claimed(case))

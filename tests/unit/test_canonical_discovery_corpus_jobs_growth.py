@@ -228,7 +228,11 @@ def measure(case, mode, variant, cold):
         action = partial(owner.lose_discovery_corpus, case.factory, selected, failure=control)
     else:
         selected = replace(job, version="e" * 64) if variant == "stale" else job
-        action = partial(owner.retire_discovery_job, case.factory, selected)
+
+        def action():
+            with case.factory() as session, session.begin():
+                return owner.retire_discovery_job(session, selected)
+
     if variant in {"superseded", "stale", "wrong-count"}:
         changed = 0
     recorder = CatalogRecorder(owner)
