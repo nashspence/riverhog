@@ -52,7 +52,7 @@ def _declaration(operation: str) -> Declaration:
         "catalog_changed_rows": 0,
         "uuid_values": 0,
         "open_calls": int(opening or retiring),
-        "close_calls": 3 if closing else int(retiring),
+        "close_calls": 7 if closing else int(retiring),
         "stat_calls": fences * 8 + (4 if opening else 3 if retiring else 0),
         "uid_calls": fences * 4 + (2 if opening else int(retiring)),
         "fsync_calls": int(retiring),
@@ -223,7 +223,8 @@ def _declaration(operation: str) -> Declaration:
             "terminal-confirmation proof.",
             "Routing deletion requires durable selected-child state and synchronized exact "
             "namespace absence; no other registration or catalog phase changes.",
-            "Uncertain close keeps the original partial handle and rejects further work while "
+            "Uncertain child close retains at most four callbacks before the three original "
+            "namespace/file descriptors; uncertain close rejects further work while "
             "its caller retains custody.",
         ),
         limitations=(

@@ -27,6 +27,7 @@ from .journal_validation_workspace import (
     _private_directory,
     _private_file,
 )
+from .retained_workspace_handles import RetainedWorkspaceHandles, _close_descriptor
 
 
 def _retirement_custody_declaration(mode: str) -> Declaration:
@@ -232,7 +233,7 @@ def _identity(root: Path, workspace_id: str) -> None:
 
 @contextmanager
 def lease_retiring_journal_workspace(
-    root: Path, workspace_id: str
+    root: Path, workspace_id: str, *, handles: RetainedWorkspaceHandles | None = None
 ) -> Iterator[RetiringJournalWorkspace | None]:
     """Exclude writers and borrowed readers after durable irreversible retirement.
 
@@ -246,12 +247,12 @@ def lease_retiring_journal_workspace(
     _identity(root, workspace_id)
     exposed = False
     try:
-        with ExitStack() as resources:
+        with handles if handles is not None else ExitStack() as resources:
             parent = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-            resources.callback(os.close, parent)
+            resources.callback(_close_descriptor, parent)
             _private_directory(parent)
             coordinator = os.open(".coordinator", os.O_RDWR | os.O_NOFOLLOW, dir_fd=parent)
-            resources.callback(os.close, coordinator)
+            resources.callback(_close_descriptor, coordinator)
             _private_file(coordinator)
             try:
                 fcntl.flock(coordinator, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -269,10 +270,17 @@ def lease_retiring_journal_workspace(
                     os.fsync(parent)
                     selected = RetiringJournalWorkspace(None)
                 else:
-                    resources.callback(os.close, directory)
+                    resources.callback(_close_descriptor, directory)
                     _private_directory(directory)
                     lease = os.open(".lease", os.O_RDWR | os.O_NOFOLLOW, dir_fd=directory)
-                    resources.callback(os.close, lease)
+                    custody = None
+
+                    def close_lease() -> None:
+                        os.close(lease)
+                        if custody is not None:
+                            custody._held = False
+
+                    resources.callback(close_lease)
                     _private_file(lease)
                     try:
                         fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -282,7 +290,6 @@ def lease_retiring_journal_workspace(
                         custody = ValidationWorkspaceCustody(
                             root / workspace_id, parent, directory, lease
                         )
-                        resources.callback(setattr, custody, "_held", False)
                         selected = RetiringJournalWorkspace(root / workspace_id, custody)
             finally:
                 fcntl.flock(coordinator, fcntl.LOCK_UN)
@@ -300,7 +307,9 @@ def lease_retiring_journal_workspace(
         raise
 
 
-def remove_retired_journal_workspace_directory(root: Path, workspace_id: str) -> bool:
+def remove_retired_journal_workspace_directory(
+    root: Path, workspace_id: str, *, handles: RetainedWorkspaceHandles | None = None
+) -> bool:
     """Finish only a catalog-confirmed directory phase, retaining its root marker.
 
     The application has already confirmed that all four data files were reclaimed
@@ -313,12 +322,12 @@ def remove_retired_journal_workspace_directory(root: Path, workspace_id: str) ->
 
     _identity(root, workspace_id)
     try:
-        with ExitStack() as resources:
+        with handles if handles is not None else ExitStack() as resources:
             parent = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-            resources.callback(os.close, parent)
+            resources.callback(_close_descriptor, parent)
             _private_directory(parent)
             coordinator = os.open(".coordinator", os.O_RDWR | os.O_NOFOLLOW, dir_fd=parent)
-            resources.callback(os.close, coordinator)
+            resources.callback(_close_descriptor, coordinator)
             _private_file(coordinator)
             try:
                 fcntl.flock(coordinator, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -332,7 +341,7 @@ def remove_retired_journal_workspace_directory(root: Path, workspace_id: str) ->
                 except FileNotFoundError:
                     os.fsync(parent)
                     return True
-                resources.callback(os.close, directory)
+                resources.callback(_close_descriptor, directory)
                 _private_directory(directory)
                 try:
                     lease = os.open(".lease", os.O_RDWR | os.O_NOFOLLOW, dir_fd=directory)
@@ -340,7 +349,14 @@ def remove_retired_journal_workspace_directory(root: Path, workspace_id: str) ->
                     lease = None
                 else:
                     assert lease is not None
-                    resources.callback(os.close, lease)
+                    custody = None
+
+                    def close_lease() -> None:
+                        os.close(lease)
+                        if custody is not None:
+                            custody._held = False
+
+                    resources.callback(close_lease)
                     _private_file(lease)
                     try:
                         fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)

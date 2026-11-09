@@ -24,6 +24,7 @@ from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     _private_directory,
 )
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceHandles
 
 
 class RetiredDiscoveryMetadata:
@@ -61,6 +62,7 @@ class RetiredDiscoveryMetadata:
             job.policy_sha256,
             job.catalog_sha256,
         )
+        self._child_handles = RetainedWorkspaceHandles()
         self._db: sqlite3.Connection | None = None
         self._descriptor: int | None = None
         self._child_root: int | None = None
@@ -72,6 +74,7 @@ class RetiredDiscoveryMetadata:
     def _owner_current(self) -> bool:
         if (
             self._closing
+            or self._child_handles.uncertain
             or self._closed
             or self.job != self._original
             or self.retirement.custody is not self._custody
@@ -333,6 +336,7 @@ class RetiredDiscoveryMetadata:
     def close(self) -> None:
         """Confirm actual Core closure before the caller ends exclusive custody."""
         self._closing = True
+        self._child_handles.close()
         self._close_namespace_handles()
         if self._db is not None:
             self._db.close()

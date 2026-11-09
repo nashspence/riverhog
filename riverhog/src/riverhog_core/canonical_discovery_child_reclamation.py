@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import os
-from contextlib import ExitStack
 from dataclasses import dataclass
 
 from riverhog_provenance import JournalReclamationProgress, reclaim_retired_journal_workspace
@@ -25,6 +24,7 @@ from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     _private_directory,
 )
+from riverhog_core.retained_workspace_handles import _close_descriptor
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,7 +51,7 @@ def _creation_prefix(
 ) -> str:
     """Receive exact absence or an unopened private prefix; never repair controls."""
     parent = metadata._custody._owner
-    with ExitStack() as resources:
+    with metadata._child_handles as resources:
         try:
             root_fd = os.open(
                 "journals", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent
@@ -59,7 +59,7 @@ def _creation_prefix(
         except FileNotFoundError:
             os.fsync(parent)
             return "absent"
-        resources.callback(os.close, root_fd)
+        resources.callback(_close_descriptor, root_fd)
         _private_directory(root_fd)
         try:
             child = os.open(
@@ -71,7 +71,7 @@ def _creation_prefix(
             os.fsync(root_fd)
             _same_entry("journals", parent, root_fd)
             return "absent"
-        resources.callback(os.close, child)
+        resources.callback(_close_descriptor, child)
         _private_directory(child)
         try:
             os.stat(".lease", dir_fd=child, follow_symlinks=False)
@@ -100,12 +100,12 @@ def _creation_prefix(
 
 def _directory_missing(metadata: RetiredDiscoveryMetadata) -> bool:
     parent = metadata._custody._owner
-    with ExitStack() as resources:
+    with metadata._child_handles as resources:
         try:
             root = os.open("journals", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
         except FileNotFoundError:
             return True
-        resources.callback(os.close, root)
+        resources.callback(_close_descriptor, root)
         _private_directory(root)
         assert metadata.job.reclamation_directory_id is not None
         try:
@@ -185,7 +185,9 @@ def reclaim_discovery_child(
                 raise StaleArchiveTask("directory unit has another registered child")
         assert job.reclamation_directory_id is not None
         if not _directory_missing(metadata):
-            if not remove_retired_journal_workspace_directory(root, job.reclamation_directory_id):
+            if not remove_retired_journal_workspace_directory(
+                root, job.reclamation_directory_id, handles=metadata._child_handles
+            ):
                 return DiscoveryChildReclamationProgress(job, False)
         metadata.retire_child()
         return DiscoveryChildReclamationProgress(_advance(metadata, "children"), True)
@@ -200,7 +202,9 @@ def reclaim_discovery_child(
         return DiscoveryChildReclamationProgress(
             _advance(metadata, "child_directory", selected), True
         )
-    with lease_retiring_journal_workspace(root, selected.binding.directory_id) as child:
+    with lease_retiring_journal_workspace(
+        root, selected.binding.directory_id, handles=metadata._child_handles
+    ) as child:
         if child is None:
             return DiscoveryChildReclamationProgress(job, False)
         if child.directory is None:
