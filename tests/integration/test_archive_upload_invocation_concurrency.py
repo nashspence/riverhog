@@ -197,3 +197,17 @@ def test_postgres_partial_cache_family_retains_resources_after_execution_drain(
         database_url=database_url,
         terminal_after_first=True,
     )
+
+
+def test_postgres_partial_cache_family_retries_durable_abandonment_ack(
+    database_url, tmp_path, monkeypatch
+):
+    _service_family_units(
+        tmp_path,
+        monkeypatch,
+        "direct",
+        False,
+        database_url=database_url,
+        terminal_after_first=True,
+        lose_abandonment=True,
+    )

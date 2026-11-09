@@ -230,6 +230,13 @@ class MirroredArchiveUploadWrites:
         finally:
             self._lock.release()
 
+    def transfer_abandoned(self, operation_id: str) -> None:
+        """Transfer the population only after this child has received its work."""
+        with self._lock:
+            if self._terminal_operation_id != operation_id or self.has_pending_invocation:
+                raise Conflict("cache abandonment still has original child receiving")
+            self._begin.transfer_abandoned(operation_id)
+
     def receive_terminal_parts(self, operation_id: str) -> None:
         self._archive.receive_terminal_parts(operation_id)
 

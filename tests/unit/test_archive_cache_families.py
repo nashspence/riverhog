@@ -259,6 +259,7 @@ def _service_family_units(
     terminal_unknown=False,
     maintained=False,
     terminal_after_first=False,
+    lose_abandonment=False,
 ):
     from riverhog_age import CHUNK_SIZE, ResumableAgeScryptSession
     from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -273,6 +274,7 @@ def _service_family_units(
     )
     from riverhog_core.services.archive_payload_cache import ArchivePayloadCache
     from riverhog_core.services.archive_payload_input import ArchivePayloadRequest
+    from riverhog_core.services.cache_population_abandonment import CachePopulationAbandonment
     from riverhog_core.services.cache_population_closure import CachePopulationClosure
     from riverhog_storage_adapter_protocol import unknown_write_execution
     from sqlalchemy import func, select
@@ -339,6 +341,16 @@ def _service_family_units(
                 raise OSError("injected original closed-cache acknowledgement loss")
 
         monkeypatch.setattr(CachePopulationClosure, "acknowledge", acknowledge)
+        abandonment_ack = CachePopulationAbandonment.acknowledge
+        abandonment_receipts = []
+
+        def acknowledge_abandonment(owner, receipt):
+            abandonment_ack(owner, receipt)
+            abandonment_receipts.append(receipt)
+            if lose_abandonment and len(abandonment_receipts) == 1:
+                raise OSError("injected abandonment acknowledgement loss")
+
+        monkeypatch.setattr(CachePopulationAbandonment, "acknowledge", acknowledge_abandonment)
         pin, pin_attempts = registry.pin_family, []
 
         def pin_family(*args, **kwargs):
@@ -431,6 +443,18 @@ def _service_family_units(
                     == "submitted"
                 )
                 (terminal,) = _receive(registry, execution)
+                if lose_abandonment:
+                    with pytest.raises(OSError, match="abandonment acknowledgement loss"):
+                        terminal.result()
+                    assert owner.has_pending and not service._archive_cache_families.retire(payload)
+                    assert (
+                        registry.submit_terminal(
+                            key, target_incarnation=target, operation_id=operation
+                        )
+                        == "submitted"
+                    )
+                    (terminal,) = _receive(registry, execution)
+                    assert abandonment_receipts[0] is abandonment_receipts[1]
                 assert terminal.result() == ("pending" if unknown else "closed")
                 assert (actor.seen, cache_calls) == before
                 with session_scope(case.factory) as session:
@@ -440,20 +464,38 @@ def _service_family_units(
                     assert not observation.records.archive_unclosed
                     assert not observation.records.cache_begin_unclosed
                     assert observation.records.cache_write_unclosed is unknown
-                    assert observation.records.cache_begin_retained
+                    assert observation.records.cache_begin_retained is unknown
                     assert not observation.records.payload_sealed
                     assert session.get(CollectionUploadRecord, case.collection_id) is not None
-                    assert (
-                        session.scalar(select(func.count()).select_from(CachePopulationBeginRecord))
-                        == 1
-                    )
+                    assert session.scalar(
+                        select(func.count()).select_from(CachePopulationBeginRecord)
+                    ) == int(unknown)
                 assert observation.invocations == ("fenced" if unknown else "drained")
                 assert observation.inputs == observation.execution == "untracked"
                 assert owner.has_pending and payload.released
-                assert not service._archive_cache_families.retire(payload)
                 assert len(service._archive_retention._reservations) == 1
                 assert len(service._archive_cache_families._families) == 1
-                assert next(iter(service._archive_cache_families._families.values())).pin.active
+                pin = next(iter(service._archive_cache_families._families.values())).pin
+                assert pin.active
+                assert service._archive_cache_families.retire(payload) is not unknown
+                if unknown:
+                    assert pin.active and owner.has_pending
+                else:
+                    assert not pin.active and not owner.has_pending
+                    assert not service._archive_cache_families._families
+                    receipt = abandonment_receipts[-1]
+                    from riverhog_core.catalog_models import RetrievalCachePopulationRecord
+
+                    with session_scope(case.factory) as session:
+                        population = session.get(
+                            RetrievalCachePopulationRecord,
+                            (receipt.source_store, case.collection_id, case.object_id),
+                        )
+                        assert population.state == "abandoning"
+                        assert population.abandonment_receipt_json == receipt.receipt_json
+                        assert population.begin_call_id is not None
+                    # Global terminal ownership still retains the construction charge.
+                    assert len(service._archive_retention._reservations) == 1
                 with pytest.raises(Conflict):
                     service._reserve_payload_input(
                         case.collection_id,
@@ -683,3 +725,17 @@ def test_partial_cache_family_closes_only_confirmed_forward_execution_and_retain
     tmp_path, monkeypatch, mode, unknown
 ):
     _service_family_units(tmp_path, monkeypatch, mode, unknown, terminal_after_first=True)
+
+
+@pytest.mark.parametrize("mode", ("direct", "owned-http"))
+def test_partial_cache_family_retries_original_abandonment_ack_without_provider_redispatch(
+    tmp_path, monkeypatch, mode
+):
+    _service_family_units(
+        tmp_path,
+        monkeypatch,
+        mode,
+        False,
+        terminal_after_first=True,
+        lose_abandonment=True,
+    )

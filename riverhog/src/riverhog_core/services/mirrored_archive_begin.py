@@ -25,7 +25,7 @@ from riverhog_core.catalog_models import (
     CollectionUploadRecord,
     RetrievalCachePopulationRecord,
 )
-from riverhog_core.domain.retrieval_cache import ClosedCachePopulation
+from riverhog_core.domain.retrieval_cache import AbandonedCachePopulation, ClosedCachePopulation
 from riverhog_core.provider_write_dispatch import (
     ArmedProviderWrite,
     ProviderWriteAdmissionRefused,
@@ -34,6 +34,7 @@ from riverhog_core.provider_write_dispatch import (
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
 from riverhog_core.services.archive_upload_writes import ArchiveUploadWrites
 from riverhog_core.services.archive_write_admission import Guard
+from riverhog_core.services.cache_population_abandonment import CachePopulationAbandonment
 from riverhog_core.services.cache_population_begin import (
     CacheDataReservationUnavailable,
     CachePopulationBeginAdmission,
@@ -89,6 +90,8 @@ class MirroredArchiveBegin:
         self._cache_response: WriteExecutionResult | None = None
         self._cache_reported = False
         self._cache_withdrawn_settled = False
+        self._abandonment_receipt: AbandonedCachePopulation | None = None
+        self._abandonment_acknowledged = False
         self._withdrawal: WithdrawnProviderWrite | None = None
         self._archive_response: WriteExecutionResult | None = None
 
@@ -99,8 +102,8 @@ class MirroredArchiveBegin:
             self._running
             or self._cache_admission_pending
             or self._cache_ticket is not None
-            and not self._cache_withdrawn_settled
             and self._transfer_receipt is None
+            and not self._abandonment_acknowledged
         )
 
     @property
@@ -149,6 +152,50 @@ class MirroredArchiveBegin:
             return "pending" if self.has_unclosed_execution or archive == "pending" else "closed"
         finally:
             self._lock.release()
+
+    def transfer_abandoned(self, operation_id: str) -> AbandonedCachePopulation | None:
+        """Receive durable cache ownership before retiring the original family."""
+        with self._lock:
+            if self._terminal_operation_id != operation_id:
+                raise Conflict("cache abandonment has no exact drained terminal")
+            if self._cache_ticket is None or self._transfer_receipt is not None:
+                return None
+            if self._abandonment_acknowledged:
+                return self._abandonment_receipt
+            if self.has_unclosed_execution:
+                raise Conflict("cache abandonment still has unclosed original execution")
+            collection_id, object_id, _ = self._archive.scope
+            owner = CachePopulationAbandonment(self._factory)
+            ticket = self._cache_ticket
+            if self._abandonment_receipt is None:
+                self._abandonment_receipt = owner.accept_report(
+                    collection_id,
+                    object_id,
+                    ticket.call_id,
+                    operation_id=operation_id,
+                    guard=self._guard,
+                )
+            receipt = self._abandonment_receipt
+            value = owner._value(receipt)
+            if (
+                value["begin_call_id"] != ticket.call_id
+                or value["begin_request_sha256"] != ticket.request_sha256
+                or value["cache_incarnation_id"] != ticket.target_incarnation
+                or value["owner"] != self._owner
+                or (receipt.collection_id, receipt.object_id) != (collection_id, object_id)
+                or receipt.operation_id != operation_id
+                or owner.load(
+                    receipt.source_store,
+                    collection_id,
+                    object_id,
+                    operation_id=operation_id,
+                )
+                != receipt
+            ):
+                raise Conflict("cache abandonment differs from the original family")
+            owner.acknowledge(receipt)
+            self._abandonment_acknowledged = True
+            return receipt
 
     def acknowledge_transfer(self, receipt: ClosedCachePopulation) -> None:
         """Receive an exact existing durable handoff, never a new provider right."""

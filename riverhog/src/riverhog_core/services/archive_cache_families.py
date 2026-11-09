@@ -76,11 +76,18 @@ class ArchivePayloadMirror:
             family.terminal = True
         finally:
             family.lock.release()
-        return (
+        status = (
             self.writes.drain_terminal(operation_id)
             if self._first
             else self.writes.drain_invocation(operation_id)
         )
+        if self._first and status == "closed":
+            try:
+                self.writes.transfer_abandoned(operation_id)
+            except Conflict:
+                # Other children can still own receiving. No pin is released.
+                return "pending"
+        return status
 
 
 type ArchivePayloadMirrorFactory = Callable[[ArchiveUploadWrites, Guard], ArchivePayloadMirror]
