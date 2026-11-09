@@ -42,6 +42,7 @@ version = "0.12"
 backend = "aqua:jedisct1/minisign"
 
 [tools.minisign."platforms.linux-x64"]
+checksum = "sha256:9a599b48ba6eb7b1e80f12f36b94ceca7c00b7a5173c95c3efc88d9822957e73"
 url = "https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz"
 url_api = "https://api.github.com/repos/jedisct1/minisign/releases/assets/220886623"
 provenance = "minisign"
