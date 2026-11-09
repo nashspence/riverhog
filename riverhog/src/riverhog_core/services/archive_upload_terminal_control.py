@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import canonical_json_bytes, format_scalar
 from riverhog_protocol.errors import Conflict
 
 from riverhog_core.catalog_archive_write_models import ArchiveUploadTerminalRecord
@@ -25,6 +25,11 @@ def terminal_control_bytes(
         column.name: getattr(terminal, column.name)
         for column in ArchiveUploadTerminalRecord.__table__.columns
     }
+    # SQL integer storage does not give these controls a JSON-number range.
+    # Their current string codecs preserve every valid catalog identity and
+    # byte reservation while retaining the complete encoded-row charge.
+    row["collection_id"] = format_scalar("sequence63", terminal.collection_id)
+    row["control_capacity_bytes"] = format_scalar("nonnegative", terminal.control_capacity_bytes)
     row["phase"] = "needs-reconfirmation"
     row["drain_next_attempt_at"] = "9999-12-31T23:59:59.999999999Z"
     return len(

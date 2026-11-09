@@ -227,3 +227,37 @@ def test_refusal_cannot_receive_a_proposed_success_as_confirmation(tmp_path, pha
         with pytest.raises(Conflict, match="this phase"):
             _prepare(case, operation, {"state": "canceled"})
         assert _state(case, operation) == (phase, 4096, None, None)
+
+
+def _large_scalar_result(case, collection_id, capacity):
+    from types import SimpleNamespace
+
+    from tests.unit.test_finalization_readiness_growth import clone_upload
+
+    clone_upload(case.factory, collection_id)
+    selected = SimpleNamespace(**{**vars(case), "collection_id": collection_id})
+    operation = _select(selected, capacity)
+    result = {"state": "canceled", "collection_id": str(collection_id), "files": 1}
+    encoded = _prepare(selected, operation, result)
+    assert _state(selected, operation) == ("draining", capacity, encoded, None)
+    assert _prepare(selected, operation, result) == encoded
+    with session_scope(case.factory) as session:
+        terminal = session.get(Terminal, operation)
+        assert terminal.collection_id == collection_id
+        assert terminal.control_capacity_bytes == capacity
+        assert (
+            require_prepared_terminal_result(
+                terminal, load_terminal_tag_selector(session, operation)
+            )
+            == encoded
+        )
+    return operation
+
+
+@pytest.mark.parametrize("collection_id", (2**53 - 1, 2**53, 2**53 + 1, 2**60, 2**63 - 1))
+@pytest.mark.parametrize("capacity", (4096, 2**60))
+def test_full_terminal_reservation_preserves_large_exact_catalog_scalars(
+    tmp_path, collection_id, capacity
+):
+    with _case(tmp_path) as case:
+        _large_scalar_result(case, collection_id, capacity)

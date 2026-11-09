@@ -47,3 +47,13 @@ def test_postgres_competing_original_results_cannot_replace_the_winner(database_
         received = [value for value in results if value is not None]
         assert len(received) == 1
         assert _state(case, operation) == ("draining", 4096, received[0], None)
+
+
+@pytest.mark.parametrize("collection_id", (2**53 + 1, 2**63 - 1))
+def test_postgres_terminal_control_preserves_large_exact_identity_and_reservation(
+    database_url, tmp_path, collection_id
+):
+    from tests.unit.test_archive_upload_terminal_result import _large_scalar_result
+
+    with _case(tmp_path, database_url=database_url) as case:
+        _large_scalar_result(case, collection_id, 2**60)
