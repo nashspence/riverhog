@@ -158,3 +158,29 @@ with lease_journal_validation_workspace(
     assert not (root / ("a" * 32)).exists()
     descriptor = lock_root(root)
     os.close(descriptor)
+
+
+@pytest.mark.parametrize("database", ("snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3"))
+@pytest.mark.parametrize("suffix", ("-journal", "-wal", "-shm", ""))
+def test_known_database_or_sidecar_with_missing_lease_never_repairs_custody(
+    tmp_path, database, suffix
+):
+    from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
+
+    root = tmp_path / "owned"
+    identity = "a" * 32
+    with lease_journal_validation_workspace(
+        root, identity, create=True, creation_current=lambda: True
+    ) as selected:
+        assert selected is not None
+    (selected / ".lease").unlink()
+    data = selected / (database + suffix)
+    data.write_bytes(b"retained-data")
+    data.chmod(0o600)
+    with pytest.raises(LostJournalValidationWorkspace, match="lease was lost"):
+        with lease_journal_validation_workspace(
+            root, identity, create=True, creation_current=lambda: True
+        ):
+            pytest.fail("known retained data acquired a repaired lease")
+    assert not (selected / ".lease").exists()
+    assert data.read_bytes() == b"retained-data"

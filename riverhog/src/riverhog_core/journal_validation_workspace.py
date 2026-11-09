@@ -76,10 +76,10 @@ def _lease_declaration() -> Declaration:
                 "stat_calls",
                 COUNT,
                 "upper",
-                count(7),
+                count(16),
                 (
-                    "Four exact descriptor checks and at most three "
-                    "Core/Native database-existence checks; no payload read."
+                    "Four exact descriptor checks and twelve known Core/Native "
+                    "database and sidecar probes; no payload read."
                 ),
             ),
             Bound(
@@ -128,7 +128,7 @@ def _lease_declaration() -> Declaration:
                     terms=(
                         scale(3, dimension("root_path_octets")),
                         scale(2, dimension("workspace_identity_octets")),
-                        Expression("constant", value=80, unit=OCTETS),
+                        Expression("constant", value=272, unit=OCTETS),
                     ),
                 ),
                 (
@@ -223,6 +223,13 @@ def _lease_declaration() -> Declaration:
             ),
         ),
     )
+
+
+_RETAINED_STATE_NAMES = tuple(
+    database + suffix
+    for database in ("snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3")
+    for suffix in ("-journal", "-wal", "-shm", "")
+)
 
 
 class _StaleWorkspaceCreation(Exception):
@@ -334,8 +341,8 @@ def _select_workspace(
             if not create:
                 raise
             # Only interrupted initial creation can lack a lease.
-            # Any retained Core or Native database establishes existing owned state.
-            for state_name in ("snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3"):
+            # Every known Core/Native database or sidecar establishes existing owned state.
+            for state_name in _RETAINED_STATE_NAMES:
                 try:
                     os.stat(state_name, dir_fd=owner, follow_symlinks=False)
                 except FileNotFoundError:
