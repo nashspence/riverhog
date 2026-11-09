@@ -18,6 +18,9 @@ from riverhog_core.services.archive_upload_catalog_cleanup import ArchiveUploadC
 from riverhog_core.services.archive_upload_checkpoint_cleanup import ArchiveUploadCheckpointCleanup
 from riverhog_core.services.archive_upload_cleanup_turn import ArchiveUploadCleanupTurn
 from riverhog_core.services.archive_upload_copy_intent_cleanup import ArchiveUploadCopyIntentCleanup
+from riverhog_core.services.archive_upload_discard_result_projection import (
+    ArchiveUploadDiscardResultProjection,
+)
 from riverhog_core.services.archive_upload_drain import read_terminal_selection
 from riverhog_core.services.archive_upload_projection_cleanup import ArchiveUploadProjectionCleanup
 from riverhog_core.services.archive_upload_registration_cleanup import (
@@ -99,6 +102,8 @@ class ArchiveUploadTerminalTurn:
         checkpoint_cleanup: ArchiveUploadCheckpointCleanup | None = None,
         copy_intent_cleanup: ArchiveUploadCopyIntentCleanup | None = None,
         projection_cleanup: ArchiveUploadProjectionCleanup | None = None,
+        result_projection: ArchiveUploadDiscardResultProjection | None = None,
+        result_projection_limits: VolumeEmissionLimits | None = None,
         confirmation: ArchiveUploadTerminalConfirmation | None = None,
         result_read_guard: Callable[[Session], None] | None = None,
     ) -> None:
@@ -124,6 +129,8 @@ class ArchiveUploadTerminalTurn:
             raise ValueError("terminal result read guard must be callable")
         if confirmation is not None and projection_cleanup is None:
             raise ValueError("terminal confirmation requires original projection execution")
+        if (result_projection is None) != (result_projection_limits is None):
+            raise ValueError("terminal result projection requires its owner and bounded limits")
         key = PhysicalExecutionKey(collection_id, operation_id)
         with read_snapshot(factory) as session:
             control, _, _ = read_terminal_selection(session, collection_id, operation_id)
@@ -137,6 +144,8 @@ class ArchiveUploadTerminalTurn:
         self._retirement = retirement
         self._confirmation = confirmation
         self._result_read_guard = result_read_guard
+        self._result_projection = result_projection
+        self._result_projection_limits = result_projection_limits
         self._projection_cleanup = projection_cleanup
         self._copy_intent_cleanup = copy_intent_cleanup
         self._checkpoint_cleanup = checkpoint_cleanup
@@ -172,6 +181,19 @@ class ArchiveUploadTerminalTurn:
             decision = self._adjudication.adjudicate(
                 key.collection_id, key.scope_sha256, guard=self._guard
             )
+            if decision.pending_reason == "original-result" and self._result_projection is not None:
+                assert self._result_projection_limits is not None
+                prepared = self._result_projection.advance(
+                    key.collection_id,
+                    key.scope_sha256,
+                    guard=self._guard,
+                    limits=self._result_projection_limits,
+                )
+                return TerminalTurnProgress(
+                    prepared.phase,
+                    prepared.pending_reason
+                    or ("original-result" if not prepared.prepared else None),
+                )
             if decision.pending_reason is not None or decision.phase not in {
                 "cleanup-ready",
                 "cleaning",
