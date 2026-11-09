@@ -2,7 +2,16 @@
 
 from __future__ import annotations
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, Index, String, Text, UniqueConstraint
+from sqlalchemy import (
+    BigInteger,
+    Boolean,
+    CheckConstraint,
+    ForeignKeyConstraint,
+    Index,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from riverhog_core.catalog_base import Base
@@ -95,4 +104,31 @@ class CachePopulationWriteEffectRecord(Base):
         Index("ix_cache_write_effects_capacity", "collection_id", "id"),
         Index("ix_cache_write_effects_object", "source_store", "collection_id", "object_id"),
         Index("ix_cache_write_effects_session", "begin_call_id", "unresolved", "resource", "id"),
+    )
+
+
+class CachePopulationDispositionRecord(Base):
+    """One original outcome independent of source and active population lifetime."""
+
+    __tablename__ = "cache_population_dispositions"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    terminal_id: Mapped[str] = mapped_column(String(64))
+    source_store: Mapped[str] = mapped_column(String)
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE)
+    object_id: Mapped[str] = mapped_column(String)
+    population_generation: Mapped[str] = mapped_column(String(64))
+    receipt_json: Mapped[str] = mapped_column(Text)
+    outcome_json: Mapped[str] = mapped_column(Text)
+
+    __table_args__ = (
+        ForeignKeyConstraint(["terminal_id"], ["archive_upload_terminals.id"]),
+        UniqueConstraint(
+            "source_store",
+            "collection_id",
+            "object_id",
+            "terminal_id",
+            name="uq_cache_population_dispositions_original",
+        ),
+        Index("ix_cache_population_dispositions_terminal", "terminal_id", "id"),
     )

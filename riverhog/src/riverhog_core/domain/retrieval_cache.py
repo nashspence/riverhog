@@ -31,3 +31,9 @@ class AbandonedCachePopulation:
     generation: str
     operation_id: str
     receipt_json: str
+
+
+@dataclass(frozen=True, slots=True)
+class DisposedCachePopulation:
+    abandoned: AbandonedCachePopulation
+    outcome_json: str

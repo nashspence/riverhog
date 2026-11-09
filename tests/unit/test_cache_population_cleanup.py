@@ -50,9 +50,17 @@ def _guard(session):
 
 
 @contextmanager
-def _abandoned(tmp_path, *, mode="direct", database_url=None, acknowledged=True, grants=GRANTS):
+def _abandoned(
+    tmp_path,
+    *,
+    mode="direct",
+    database_url=None,
+    acknowledged=True,
+    grants=GRANTS,
+    handoff_grants=HANDOFF_GRANTS,
+):
     with _case(tmp_path, mode=mode, database_url=database_url) as case:
-        begin = _begun(case)
+        begin = _begun(case, grants=handoff_grants)
         with session_scope(case.factory) as session:
             population = _population(case, session)
             cache_session = WriteSession(
@@ -71,7 +79,7 @@ def _abandoned(tmp_path, *, mode="direct", database_url=None, acknowledged=True,
             epoch=case.epoch,
             executor_id="d" * 64,
             candidate=case.candidate,
-            grants=HANDOFF_GRANTS,
+            grants=handoff_grants,
             guard=case.guard,
             validate_population=case.validate_population,
         )

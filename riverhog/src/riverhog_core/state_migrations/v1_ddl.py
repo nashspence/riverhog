@@ -6576,3 +6576,49 @@ POSTGRESQL_DDL += (
     "CREATE INDEX ix_object_cleanup_attempts_scope ON object_cleanup_attempts (scope_id, id)",
     "CREATE INDEX ix_object_cleanup_pages_terminal ON object_cleanup_pages (terminal_id, scope_id)",
 )
+
+
+SQLITE_DDL += (
+    """
+CREATE TABLE cache_population_dispositions (
+	id VARCHAR(64) NOT NULL,
+	terminal_id VARCHAR(64) NOT NULL,
+	source_store VARCHAR NOT NULL,
+	collection_id INTEGER NOT NULL,
+	object_id VARCHAR NOT NULL,
+	population_generation VARCHAR(64) NOT NULL,
+	receipt_json TEXT NOT NULL,
+	outcome_json TEXT NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id),
+	CONSTRAINT uq_cache_population_dispositions_original UNIQUE (source_store, collection_id, object_id, terminal_id),
+	CONSTRAINT ck_cache_population_dispositions_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_dispositions_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_dispositions_population_generation_hex CHECK (length(population_generation) = 64 AND lower(population_generation) = population_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(population_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    """.strip(),
+    "CREATE INDEX ix_cache_population_dispositions_terminal ON cache_population_dispositions (terminal_id, id)",
+)
+
+
+POSTGRESQL_DDL += (
+    """
+CREATE TABLE cache_population_dispositions (
+	id VARCHAR(64) NOT NULL,
+	terminal_id VARCHAR(64) NOT NULL,
+	source_store VARCHAR NOT NULL,
+	collection_id BIGINT NOT NULL,
+	object_id VARCHAR NOT NULL,
+	population_generation VARCHAR(64) NOT NULL,
+	receipt_json TEXT NOT NULL,
+	outcome_json TEXT NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY(terminal_id) REFERENCES archive_upload_terminals (id),
+	CONSTRAINT uq_cache_population_dispositions_original UNIQUE (source_store, collection_id, object_id, terminal_id),
+	CONSTRAINT ck_cache_population_dispositions_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_dispositions_terminal_id_hex CHECK (length(terminal_id) = 64 AND lower(terminal_id) = terminal_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(terminal_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_cache_population_dispositions_population_generation_hex CHECK (length(population_generation) = 64 AND lower(population_generation) = population_generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(population_generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    """.strip(),
+    "CREATE INDEX ix_cache_population_dispositions_terminal ON cache_population_dispositions (terminal_id, id)",
+)

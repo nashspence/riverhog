@@ -24,6 +24,7 @@ from time_formats import format_utc_timestamp, utc_now
 
 from riverhog_core.catalog_cache_write_models import (
     CachePopulationBeginRecord,
+    CachePopulationDispositionRecord,
     CachePopulationWriteEffectRecord,
 )
 from riverhog_core.catalog_db import SessionFactory, session_scope
@@ -67,6 +68,22 @@ class CachePopulationAbandonment:
         return value
 
     @staticmethod
+    def _disposition(
+        session: Session, receipt: AbandonedCachePopulation
+    ) -> CachePopulationDispositionRecord | None:
+        record = session.get(CachePopulationDispositionRecord, _sha(receipt.receipt_json))
+        if record is not None and (
+            record.receipt_json != receipt.receipt_json
+            or record.terminal_id != receipt.operation_id
+            or record.source_store != receipt.source_store
+            or record.collection_id != receipt.collection_id
+            or record.object_id != receipt.object_id
+            or record.population_generation != receipt.generation
+        ):
+            raise Conflict("cache disposition original receiving identity changed")
+        return record
+
+    @staticmethod
     def _retained(
         session: Session, receipt: AbandonedCachePopulation
     ) -> tuple[
@@ -97,7 +114,8 @@ class CachePopulationAbandonment:
             and population.state == "abandoning"
             and population.begin_call_id == value["begin_call_id"]
         )
-        if not source_matches and not receiver_matches:
+        disposition = CachePopulationAbandonment._disposition(session, receipt)
+        if not source_matches and not receiver_matches and disposition is None:
             raise NotFound("cache abandonment original acceptance is unavailable")
         if (
             population is not None
@@ -211,8 +229,18 @@ class CachePopulationAbandonment:
             population = session.get(
                 RetrievalCachePopulationRecord, (source_store, collection_id, object_id)
             )
+            disposed = session.scalar(
+                select(CachePopulationDispositionRecord).where(
+                    CachePopulationDispositionRecord.source_store == source_store,
+                    CachePopulationDispositionRecord.collection_id == collection_id,
+                    CachePopulationDispositionRecord.object_id == object_id,
+                    CachePopulationDispositionRecord.terminal_id == operation_id,
+                )
+            )
             encoded = (
-                source.cache_abandonment_json
+                disposed.receipt_json
+                if disposed is not None
+                else source.cache_abandonment_json
                 if source is not None and source.cache_abandonment_json
                 else population.abandonment_receipt_json
                 if population is not None
