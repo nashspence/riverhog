@@ -11,6 +11,7 @@ from typing import Literal
 from config_validation import load_validated_yaml_config, read_secret_file
 from pydantic import BaseModel, ConfigDict, Field
 from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
+from riverhog_storage_adapter_protocol import MAX_CLEANUP_INVENTORY_PAGE_ITEMS
 from time_formats import parse_duration
 
 from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
@@ -18,6 +19,7 @@ from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.archive_input_grants import ArchiveInputGrants
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.cache_write_grants import CacheWriteGrants
+from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
 from riverhog_core.registration_tuning import RegistrationTuning
@@ -40,6 +42,7 @@ _REGISTRATION = RegistrationTuning()
 _ARCHIVE_WRITE = ArchiveWriteGrants()
 _CACHE_WRITE = CacheWriteGrants()
 _ARCHIVE_CLEANUP = ArchiveCleanupGrants()
+_CLEANUP_EXECUTION = CleanupExecutionTuning()
 _ARCHIVE_EXECUTION = ArchiveExecutionTuning()
 _ARCHIVE_INPUT = ArchiveInputGrants()
 
@@ -206,6 +209,28 @@ class ArchiveCleanupDocument(_Document):
             calls=self.calls,
             control_bytes=_bytes(self.control_bytes, "archive_cleanup.control_bytes", 1),
             provider_requests=self.provider_requests,
+            in_flight=self.in_flight,
+        )
+
+
+class CleanupExecutionDocument(_Document):
+    inventory_items: int = Field(
+        default=_CLEANUP_EXECUTION.inventory_items,
+        ge=1,
+        le=MAX_CLEANUP_INVENTORY_PAGE_ITEMS,
+        strict=True,
+    )
+    inventory_bytes: str = str(_CLEANUP_EXECUTION.inventory_bytes)
+    provider_requests: int = Field(default=_CLEANUP_EXECUTION.provider_requests, ge=1, strict=True)
+    control_bytes: str = str(_CLEANUP_EXECUTION.control_bytes)
+    in_flight: int = Field(default=_CLEANUP_EXECUTION.in_flight, ge=1, strict=True)
+
+    def tuning(self) -> CleanupExecutionTuning:
+        return CleanupExecutionTuning(
+            inventory_items=self.inventory_items,
+            inventory_bytes=_bytes(self.inventory_bytes, "cleanup_execution.inventory_bytes", 1),
+            provider_requests=self.provider_requests,
+            control_bytes=_bytes(self.control_bytes, "cleanup_execution.control_bytes", 1),
             in_flight=self.in_flight,
         )
 
@@ -395,6 +420,7 @@ class RiverhogDocument(_Document):
     archive_execution: ArchiveExecutionDocument = Field(default_factory=ArchiveExecutionDocument)
     archive_write: ArchiveWriteDocument = Field(default_factory=ArchiveWriteDocument)
     archive_cleanup: ArchiveCleanupDocument = Field(default_factory=ArchiveCleanupDocument)
+    cleanup_execution: CleanupExecutionDocument = Field(default_factory=CleanupExecutionDocument)
     cache_write: CacheWriteDocument = Field(default_factory=CacheWriteDocument)
     registration: RegistrationDocument = Field(default_factory=RegistrationDocument)
     volume_policy: VolumePolicyDocument = Field(default_factory=VolumePolicyDocument)
@@ -517,6 +543,7 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         archive_execution=document.archive_execution.tuning(),
         archive_write=document.archive_write.grants(),
         archive_cleanup=document.archive_cleanup.grants(),
+        cleanup_execution=document.cleanup_execution.tuning(),
         cache_write=document.cache_write.grants(),
         registration=document.registration.tuning(),
         volume_policy=document.volume_policy.policy(),

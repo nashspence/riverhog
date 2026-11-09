@@ -606,3 +606,41 @@ def test_terminal_cleanup_operator_grants_preserve_independent_outstanding_budge
         _write(path, {**document, "archive_cleanup": {**document["archive_cleanup"], name: value}})
         with pytest.raises(ValueError):
             load_runtime_config()
+
+
+def test_cleanup_execution_operator_bounds_are_separate_from_outstanding_retention(
+    tmp_path, monkeypatch
+):
+    from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
+
+    path, document = _document(tmp_path, monkeypatch)
+    assert load_runtime_config().cleanup_execution == CleanupExecutionTuning()
+    document["cleanup_execution"] = {
+        "inventory_items": 3,
+        "inventory_bytes": "8KiB",
+        "provider_requests": 5,
+        "control_bytes": "32KiB",
+        "in_flight": 2,
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.cleanup_execution == CleanupExecutionTuning(3, 8192, 5, 32768, 2)
+    assert config.archive_cleanup.control_bytes == 65536
+
+    for name, value in (
+        ("inventory_items", 0),
+        ("inventory_items", 129),
+        ("inventory_items", True),
+        ("inventory_bytes", "0B"),
+        ("control_bytes", "0B"),
+        ("provider_requests", 0),
+        ("provider_requests", True),
+        ("in_flight", 0),
+        ("in_flight", True),
+        ("unknown", "1B"),
+    ):
+        _write(
+            path, {**document, "cleanup_execution": {**document["cleanup_execution"], name: value}}
+        )
+        with pytest.raises(ValueError):
+            load_runtime_config()

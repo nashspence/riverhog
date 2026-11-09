@@ -58,6 +58,10 @@ class CachePopulationCleanup(ObjectCleanupReceiving):
         CachePopulationAbandonment._value(receipt)
         self._receipt = receipt
 
+    @property
+    def receipt(self) -> AbandonedCachePopulation:
+        return self._receipt
+
     def _scope_id(self, operation_id: str) -> str:
         if operation_id != self._receipt.operation_id:
             raise Conflict("cache cleanup has another original terminal selection")

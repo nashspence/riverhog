@@ -22,6 +22,7 @@ from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.archive_input_grants import ArchiveInputGrants
 from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.cache_write_grants import CacheWriteGrants
+from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
 from riverhog_core.registration_tuning import RegistrationTuning
@@ -147,6 +148,7 @@ class RuntimeConfig:
     archive_execution: ArchiveExecutionTuning = field(default_factory=ArchiveExecutionTuning)
     archive_write: ArchiveWriteGrants = field(default_factory=ArchiveWriteGrants)
     archive_cleanup: ArchiveCleanupGrants = field(default_factory=ArchiveCleanupGrants)
+    cleanup_execution: CleanupExecutionTuning = field(default_factory=CleanupExecutionTuning)
     cache_write: CacheWriteGrants = field(default_factory=CacheWriteGrants)
     registration: RegistrationTuning = field(default_factory=RegistrationTuning)
     volume_policy: CollectionVolumePolicy = field(default_factory=CollectionVolumePolicy)
