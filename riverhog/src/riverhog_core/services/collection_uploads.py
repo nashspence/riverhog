@@ -476,6 +476,7 @@ if TYPE_CHECKING:
         ArchivePayloadUnit,
     )
     from riverhog_core.services.archive_upload_invocations import InvocationSubmission
+    from riverhog_core.services.archive_upload_terminal_turn import ArchiveUploadTerminalTurn
     from riverhog_core.services.cache_population_cleanup_registry import CacheCleanupCreate
     from riverhog_core.services.physical_execution import PhysicalExecutionKey
 
@@ -1034,6 +1035,20 @@ class SqlAlchemyCollectionUploadService:
             upload = session.get(CollectionUploadRecord, normalized)
             if upload is None or not _upload_visible_to_deleter(session, upload, principal):
                 raise NotFound(f"collection upload not found: {normalized}")
+
+    def _terminal_turn(self, collection_id: int, operation_id: str) -> ArchiveUploadTerminalTurn:
+        """Construct one original execution unit with its reusable current guard."""
+        from .archive_upload_terminal_turn import ArchiveUploadTerminalTurn
+
+        normalized = _collection_id(collection_id)
+        return ArchiveUploadTerminalTurn(
+            self._session_factory,
+            normalized,
+            operation_id,
+            guard=self._terminal_write_guard(normalized, operation_id),
+            adjudication=self._archive_terminal_adjudication,
+            retirement=self._archive_terminal_retirement,
+        )
 
     def _terminal_write_guard(
         self, collection_id: int, operation_id: str
