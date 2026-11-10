@@ -427,7 +427,9 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                     catalog_db.set_authorizer(None)
                 assert locks == [
                     fcntl.LOCK_EX | fcntl.LOCK_NB,
+                    fcntl.LOCK_EX | fcntl.LOCK_NB,
                     fcntl.LOCK_SH | fcntl.LOCK_NB,
+                    fcntl.LOCK_UN,
                     fcntl.LOCK_UN,
                 ]
                 db = result._store.db

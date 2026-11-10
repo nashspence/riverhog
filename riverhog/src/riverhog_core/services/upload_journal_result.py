@@ -405,9 +405,9 @@ def _result_declaration() -> Declaration:
                 "lease_lock_calls",
                 COUNT,
                 "equal",
-                count(3),
-                "Nonblocking coordinator acquisition, shared lease acquisition and coordinator "
-                "release.",
+                count(5),
+                "Nonblocking root-inode and coordinator acquisition, shared lease acquisition, "
+                "then coordinator and root release.",
             ),
             Bound(
                 "filesystem_metadata_calls",
