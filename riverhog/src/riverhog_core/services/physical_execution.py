@@ -9,11 +9,12 @@ from collections.abc import Callable
 from concurrent.futures import Future
 from dataclasses import dataclass, field
 from threading import Lock, Thread, current_thread
-from typing import Literal
+from typing import Literal, overload
 
 from riverhog_protocol.errors import Conflict
 
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
+from riverhog_core.services.physical_workspace_growth import declare_workspace_execution_growth
 
 Submission = Literal["submitted", "retained", "capacity", "target-capacity", "busy", "closed"]
 
@@ -35,19 +36,32 @@ class PhysicalExecutionKey:
 
 
 @dataclass(frozen=True, slots=True)
-class PhysicalExecutionCompletion:
-    """The exact local outcome after the original physical worker has joined.
+class PhysicalWorkspaceExecutionKey:
+    """Route an independent local workspace without adopting collection authority."""
 
-    Receiving this result grants no provider closure, preparation disposal or
-    global quiescence. Those facts remain with the original semantic owners.
-    """
+    workspace_id: str
+    scope_sha256: str
 
-    key: PhysicalExecutionKey
-    target_incarnation: str
-    terminal: bool
-    owner: object | None = field(repr=False, compare=False)
-    identity: object | None = field(repr=False, compare=False)
-    _future: Future[object] = field(repr=False, compare=False)
+    def __post_init__(self) -> None:
+        if (
+            not isinstance(self.workspace_id, str)
+            or re.fullmatch(r"[a-f0-9]{32}", self.workspace_id) is None
+        ):
+            raise ValueError("physical workspace execution requires an exact workspace identity")
+        if (
+            not isinstance(self.scope_sha256, str)
+            or re.fullmatch(r"[a-f0-9]{64}", self.scope_sha256) is None
+        ):
+            raise ValueError("physical workspace execution requires the original scope digest")
+
+
+_ExecutionKey = PhysicalExecutionKey | PhysicalWorkspaceExecutionKey
+
+
+class _PhysicalExecutionResult:
+    __slots__ = ()
+
+    _future: Future[object]
 
     def result(self) -> object:
         return self._future.result()
@@ -70,9 +84,37 @@ class PhysicalExecutionCompletion:
                 pending.extend(current.exceptions)
 
 
+@dataclass(frozen=True, slots=True)
+class PhysicalExecutionCompletion(_PhysicalExecutionResult):
+    """Original collection outcome after actual worker join; no disposal authority."""
+
+    key: PhysicalExecutionKey
+    target_incarnation: str
+    terminal: bool
+    owner: object | None = field(repr=False, compare=False)
+    identity: object | None = field(repr=False, compare=False)
+    _future: Future[object] = field(repr=False, compare=False)
+
+
+@dataclass(frozen=True, slots=True)
+class PhysicalWorkspaceExecutionCompletion(_PhysicalExecutionResult):
+    """Independent original workspace result after actual worker join.
+
+    The exact receiver still owns retained handles, metadata and semantic
+    receiving. Joining this worker never supplies those outcomes.
+    """
+
+    key: PhysicalWorkspaceExecutionKey
+    target_incarnation: str
+    terminal: bool
+    owner: object = field(repr=False, compare=False)
+    identity: object = field(repr=False, compare=False)
+    _future: Future[object] = field(repr=False, compare=False)
+
+
 @dataclass(slots=True)
 class _Slot:
-    key: PhysicalExecutionKey
+    key: _ExecutionKey
     target_incarnation: str
     terminal: bool
     owner: object | None
@@ -103,8 +145,8 @@ class PhysicalExecutionOwner:
         self._tuning = tuning
         self._lock = Lock()
         self._closed = False
-        self._slots: dict[PhysicalExecutionKey, _Slot] = {}
-        self._poll: dict[int, OrderedDict[PhysicalExecutionKey, None]] = {}
+        self._slots: dict[_ExecutionKey, _Slot] = {}
+        self._poll: dict[int, OrderedDict[_ExecutionKey, None]] = {}
         self._counts = {False: 0, True: 0}
         self._targets: dict[tuple[bool, str], int] = {}
 
@@ -131,6 +173,52 @@ class PhysicalExecutionOwner:
         work: Callable[[], object],
         owner: object | None = None,
         identity: object | None = None,
+    ) -> Submission:
+        if not isinstance(key, PhysicalExecutionKey):
+            raise ValueError("collection execution requires its exact collection key")
+        return self._try_submit(
+            key,
+            target_incarnation=target_incarnation,
+            terminal=terminal,
+            work=work,
+            owner=owner,
+            identity=identity,
+        )
+
+    def try_submit_workspace(
+        self,
+        key: PhysicalWorkspaceExecutionKey,
+        *,
+        target_incarnation: str,
+        work: Callable[[], object],
+        owner: object,
+        identity: object,
+    ) -> Submission:
+        """Reserve shared terminal capacity before independent workspace work.
+
+        The exact receiver retains its resource owner through failed receiving.
+        This routes only local execution and grants no archive/provider authority.
+        """
+        if not isinstance(key, PhysicalWorkspaceExecutionKey) or owner is None or identity is None:
+            raise ValueError("workspace execution requires its exact key, receiver and original")
+        return self._try_submit(
+            key,
+            target_incarnation=target_incarnation,
+            terminal=True,
+            work=work,
+            owner=owner,
+            identity=identity,
+        )
+
+    def _try_submit(
+        self,
+        key: _ExecutionKey,
+        *,
+        target_incarnation: str,
+        terminal: bool,
+        work: Callable[[], object],
+        owner: object | None,
+        identity: object | None,
     ) -> Submission:
         if type(terminal) is not bool or not target_incarnation:
             raise ValueError("physical execution requires an exact target and work lane")
@@ -185,7 +273,7 @@ class PhysicalExecutionOwner:
             self._lock.release()
 
     def status(
-        self, key: PhysicalExecutionKey
+        self, key: _ExecutionKey
     ) -> Literal["busy", "untracked", "running", "awaiting-join", "outcome-missing"]:
         """Point observation of this registry, never a global closure proof."""
         if not self._lock.acquire(blocking=False):
@@ -205,6 +293,29 @@ class PhysicalExecutionOwner:
     def collect(
         self, *, limit: int, owner: object | None
     ) -> tuple[PhysicalExecutionCompletion, ...]:
+        return self._collect(limit=limit, owner=owner, workspace=False)
+
+    def collect_workspace(
+        self, *, limit: int, owner: object
+    ) -> tuple[PhysicalWorkspaceExecutionCompletion, ...]:
+        """Receive only this workspace owner's actual joined outcomes."""
+        if owner is None:
+            raise ValueError("workspace receiving requires its exact owner")
+        return self._collect(limit=limit, owner=owner, workspace=True)
+
+    @overload
+    def _collect(
+        self, *, limit: int, owner: object | None, workspace: Literal[False]
+    ) -> tuple[PhysicalExecutionCompletion, ...]: ...
+
+    @overload
+    def _collect(
+        self, *, limit: int, owner: object | None, workspace: Literal[True]
+    ) -> tuple[PhysicalWorkspaceExecutionCompletion, ...]: ...
+
+    def _collect(
+        self, *, limit: int, owner: object | None, workspace: bool
+    ) -> tuple[PhysicalExecutionCompletion, ...] | tuple[PhysicalWorkspaceExecutionCompletion, ...]:
         """Inspect at most limit slots for the exact local receiving owner.
 
         Each receiver rotates only its own charged slots. Interleaved polls by
@@ -217,7 +328,8 @@ class PhysicalExecutionOwner:
         if not self._lock.acquire(blocking=False):
             return ()
         try:
-            completed = []
+            completed: list[PhysicalExecutionCompletion] = []
+            workspace_completed: list[PhysicalWorkspaceExecutionCompletion] = []
             poll = self._poll.get(id(owner))
             if poll is None:
                 return ()
@@ -226,6 +338,8 @@ class PhysicalExecutionOwner:
                 poll[key] = None
                 slot = self._slots[key]
                 assert slot.owner is owner
+                if isinstance(slot.key, PhysicalWorkspaceExecutionKey) != workspace:
+                    raise PhysicalExecutionOccupied("physical receiver has another execution kind")
                 if slot.worker.is_alive():
                     continue
                 # Future.done alone is insufficient: callbacks, thread-local
@@ -235,18 +349,31 @@ class PhysicalExecutionOwner:
                     # Missing original evidence stays charged. A dead local
                     # thread cannot supply an invented successful outcome.
                     continue
-                completed.append(
-                    PhysicalExecutionCompletion(
-                        slot.key,
-                        slot.target_incarnation,
-                        slot.terminal,
-                        slot.owner,
-                        slot.identity,
-                        slot.future,
+                if isinstance(slot.key, PhysicalExecutionKey):
+                    completed.append(
+                        PhysicalExecutionCompletion(
+                            slot.key,
+                            slot.target_incarnation,
+                            slot.terminal,
+                            slot.owner,
+                            slot.identity,
+                            slot.future,
+                        )
                     )
-                )
+                else:
+                    assert slot.owner is not None and slot.identity is not None
+                    workspace_completed.append(
+                        PhysicalWorkspaceExecutionCompletion(
+                            slot.key,
+                            slot.target_incarnation,
+                            slot.terminal,
+                            slot.owner,
+                            slot.identity,
+                            slot.future,
+                        )
+                    )
                 self._remove(slot)
-            return tuple(completed)
+            return tuple(workspace_completed) if workspace else tuple(completed)
         finally:
             self._lock.release()
 
@@ -274,3 +401,7 @@ class PhysicalExecutionOwner:
             self._closed = True
         for worker in workers:
             worker.join()
+
+
+declare_workspace_execution_growth(PhysicalExecutionOwner.try_submit_workspace, collect=False)
+declare_workspace_execution_growth(PhysicalExecutionOwner.collect_workspace, collect=True)
