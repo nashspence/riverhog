@@ -9,7 +9,11 @@ from typing import Literal
 from riverhog_protocol.errors import Conflict
 
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
-from riverhog_core.services.physical_execution import PhysicalExecutionKey
+from riverhog_core.services.physical_execution import (
+    PhysicalExecutionKey,
+    PhysicalWorkspaceExecutionKey,
+)
+from riverhog_core.services.workspace_retention_growth import declare_workspace_retention_growth
 
 RetentionRefusal = Literal["busy", "retention-capacity", "target-retention-capacity"]
 
@@ -22,6 +26,19 @@ class ArchiveConstructionReservation:
     target_incarnation: str
     owner: object = field(repr=False)
     terminal: bool = False
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class WorkspaceConstructionReservation:
+    """Original local workspace charge in the ordinary shared retention lane."""
+
+    key: PhysicalWorkspaceExecutionKey
+    target_incarnation: str
+    owner: object = field(repr=False)
+    terminal: bool = field(default=False, init=False)
+
+
+type _Reservation = ArchiveConstructionReservation | WorkspaceConstructionReservation
 
 
 class ArchiveConstructionRetention:
@@ -44,7 +61,7 @@ class ArchiveConstructionRetention:
             True: tuning.retained_terminals_per_target,
         }
         self._lock = Lock()
-        self._reservations: dict[int, ArchiveConstructionReservation] = {}
+        self._reservations: dict[int, _Reservation] = {}
         self._targets: dict[tuple[bool, str], int] = {}
         self._counts = {False: 0, True: 0}
 
@@ -56,6 +73,46 @@ class ArchiveConstructionRetention:
         owner: object,
         terminal: bool = False,
     ) -> ArchiveConstructionReservation | RetentionRefusal:
+        if not isinstance(key, PhysicalExecutionKey):
+            raise ValueError("archive retention requires its exact collection key")
+        result = self._try_retain(
+            key,
+            target_incarnation=target_incarnation,
+            owner=owner,
+            terminal=terminal,
+        )
+        if isinstance(result, WorkspaceConstructionReservation):
+            raise Conflict("archive retention returned another reservation kind")
+        return result
+
+    def try_retain_workspace(
+        self,
+        key: PhysicalWorkspaceExecutionKey,
+        *,
+        target_incarnation: str,
+        owner: object,
+    ) -> WorkspaceConstructionReservation | RetentionRefusal:
+        """Charge an independent original before construction, using ordinary capacity."""
+        if not isinstance(key, PhysicalWorkspaceExecutionKey) or owner is None:
+            raise ValueError("workspace retention requires its exact key and receiver")
+        result = self._try_retain(
+            key,
+            target_incarnation=target_incarnation,
+            owner=owner,
+            terminal=False,
+        )
+        if isinstance(result, ArchiveConstructionReservation):
+            raise Conflict("workspace retention returned another reservation kind")
+        return result
+
+    def _try_retain(
+        self,
+        key: PhysicalExecutionKey | PhysicalWorkspaceExecutionKey,
+        *,
+        target_incarnation: str,
+        owner: object,
+        terminal: bool,
+    ) -> _Reservation | RetentionRefusal:
         if type(terminal) is not bool:
             raise ValueError("archive retention lane must be explicit")
         if not target_incarnation:
@@ -68,7 +125,13 @@ class ArchiveConstructionRetention:
             target = (terminal, target_incarnation)
             if self._targets.get(target, 0) >= self._per_target[terminal]:
                 return "target-retention-capacity"
-            original = ArchiveConstructionReservation(key, target_incarnation, owner, terminal)
+            original: _Reservation
+            if isinstance(key, PhysicalWorkspaceExecutionKey):
+                if terminal:
+                    raise ValueError("independent workspace retention uses ordinary capacity")
+                original = WorkspaceConstructionReservation(key, target_incarnation, owner)
+            else:
+                original = ArchiveConstructionReservation(key, target_incarnation, owner, terminal)
             self._reservations[id(original)] = original
             self._targets[target] = self._targets.get(target, 0) + 1
             self._counts[terminal] += 1
@@ -76,7 +139,7 @@ class ArchiveConstructionRetention:
         finally:
             self._lock.release()
 
-    def retire(self, original: ArchiveConstructionReservation, *, owner: object) -> bool:
+    def retire(self, original: _Reservation, *, owner: object) -> bool:
         """Retire one exact original, or defer without losing its charge."""
         if not self._lock.acquire(blocking=False):
             return False
@@ -94,3 +157,7 @@ class ArchiveConstructionRetention:
             return True
         finally:
             self._lock.release()
+
+
+declare_workspace_retention_growth(ArchiveConstructionRetention.try_retain_workspace, retire=False)
+declare_workspace_retention_growth(ArchiveConstructionRetention.retire, retire=True)
