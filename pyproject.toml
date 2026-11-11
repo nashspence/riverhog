@@ -100,6 +100,7 @@ time-formats = { workspace = true }
 [dependency-groups]
 browser = ["playwright==1.63.0"]
 dev = [
+  "setuptools==84.2.1",
   "markdown-it-py==4.2.0",
   "PyYAML==6.0.3",
   "boto3-stubs[s3]>=1.43.59,<2.0",

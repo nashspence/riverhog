@@ -62,6 +62,7 @@ members = [
     "http-api-contracts",
     "lifecycle-events",
     "release-documentation-lib",
+    "retained-posix",
     "review0",
     "review0-contracts",
     "review0-planner",
@@ -122,6 +123,7 @@ dev = [
     { name = "reuse", specifier = ">=6,<7" },
     { name = "rfc8785", specifier = ">=0.1.4,<0.2" },
     { name = "ruff", specifier = ">=0.16.0,<1.0" },
+    { name = "setuptools", specifier = "==84.2.1" },
     { name = "types-jsonschema", specifier = ">=4.25,<5.0" },
     { name = "types-pyyaml", specifier = ">=6.0,<7.0" },
 ]
@@ -2735,6 +2737,21 @@ version = "0.1.0"
 source = { editable = "packages/release-documentation-lib" }
 
 [[package]]
+name = "retained-posix"
+version = "0.1.0"
+source = { editable = "packages/retained-posix" }
+dependencies = [
+    { name = "release-documentation-lib" },
+    { name = "riverhog-growth-contracts" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "riverhog-growth-contracts", editable = "packages/riverhog-growth-contracts" },
+]
+
+[[package]]
 name = "reuse"
 version = "6.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3428,6 +3445,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/f6/94/dcdaeb1713cab9c84def276cfac7388b17c7d9855bbcfe88d77e4dbafd44/s3transfer-0.19.0.tar.gz", hash = "sha256:ce436931687addc4c1712d52d40b32f53e88315723f107ffa20ba82b05a0f685", size = 165171, upload-time = "2026-06-16T19:44:51.599Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/46/5f/4c174edad94f82de888ac00a5ddd8d07b35609b6c94f0bdf4d74af57703e/s3transfer-0.19.0-py3-none-any.whl", hash = "sha256:777cc2415536f1debadb5c2ef7779275d0fc0fe0e042411cdd6caebeb2685262", size = 90101, upload-time = "2026-06-16T19:44:50.439Z" },
+]
+
+[[package]]
+name = "setuptools"
+version = "84.2.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/70/b3/c19426f783614d625699a4b247faf628ea9ab1db228674491767b417f9e1/setuptools-84.2.1.tar.gz", hash = "sha256:3ff8b3b5492a0aa66960f4419365a86b84e013070d4313e4d4a6894f5d64d6bc", size = 1230289, upload-time = "2026-10-20T19:01:37.742Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/55/6dc6d6bb953bdfc52519a0059592c52b6e3b8ad51cf8256dffceb55b0610/setuptools-84.2.1-py3-none-any.whl", hash = "sha256:ca140b45d5325a9478f880e351484f62fef15f336462e449ca0c03c873d589c2", size = 876263, upload-time = "2026-10-20T19:01:35.678Z" },
 ]
 
 [[package]]

@@ -47,6 +47,8 @@ PROCESSING_LANES = frozenset(
 )
 IMAGE_GROUPS = ("core", "observers", "targets", "companions")
 NATIVE_TESTS = (
+    "packages/retained-posix/tests/test_receiving.py",
+    "packages/retained-posix/tests/test_receiving_growth.py",
     "tests/platform/test_native_provenance.py",
     "tests/unit/test_cli_upload_source_hashing.py",
     "tests/unit/test_cli_upload_preview.py",

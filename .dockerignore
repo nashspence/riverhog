@@ -13,3 +13,4 @@
 **/.DS_Store
 **/__pycache__/
 **/*.pyc
+/packages/retained-posix/src/retained_posix/_native*.so
