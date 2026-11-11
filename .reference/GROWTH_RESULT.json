@@ -1,0 +1,299 @@
+{
+  "elapsed_seconds": 0.05681367600004705,
+  "declarations": {
+    "format": "riverhog-growth-declarations/v1",
+    "cost_model": "riverhog-primitive-growth-costs/v1",
+    "declarations": {
+      "retained-posix.receive.growth/v1": {
+        "id": "retained-posix.receive.growth/v1",
+        "authority": "retained-posix",
+        "subjects": [
+          "retained_posix.growth.receive"
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "scope": {
+          "kind": "one call on the same caller-retained process-local resource owner",
+          "starts_at": "explicit original-owner retention and resource admission",
+          "ends_at": "recorded native outcome, including refusal or quarantined uncertainty"
+        },
+        "dimensions": {
+          "unrelated_files": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "meaning": "Unrelated namespace population, not enumerated."
+          }
+        },
+        "bounds": {
+          "open_calls": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "relation": "upper",
+            "mode": "worst-case",
+            "expression": {
+              "op": "constant",
+              "value": 0,
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ]
+            },
+            "meaning": "Receiving cannot reopen a path."
+          },
+          "dup_calls": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "relation": "upper",
+            "mode": "worst-case",
+            "expression": {
+              "op": "constant",
+              "value": 0,
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ]
+            },
+            "meaning": "Receiving cannot duplicate another handle."
+          },
+          "fstat_calls": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "relation": "upper",
+            "mode": "worst-case",
+            "expression": {
+              "op": "constant",
+              "value": 0,
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ]
+            },
+            "meaning": "No reuse or inode probe decides receiving."
+          },
+          "close_calls": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "relation": "upper",
+            "mode": "worst-case",
+            "expression": {
+              "op": "constant",
+              "value": 1,
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ]
+            },
+            "meaning": "At most one dispatch, zero after success or unknown."
+          }
+        },
+        "conditions": [
+          "GIL-enabled CPython on the selected Linux/Darwin backend; cooperative cancellation only.",
+          "No external close/detach/dup2 of a borrowed descriptor; original owners remain retained."
+        ],
+        "invariants": [
+          "A resource has at most one acquisition and one native close dispatch across its lifetime.",
+          "No pathname, inode, descriptor absence/reuse, GC or Future state proves receiving."
+        ],
+        "limitations": [
+          "Counts are native backend syscall entries, not kernel path or filesystem IO costs.",
+          "Path validation is linear in already-admitted encoded path length.",
+          "No wall-clock bound or aggregate process/allocator memory claim."
+        ],
+        "delegates": {}
+      },
+      "retained-posix.acquire.growth/v1": {
+        "id": "retained-posix.acquire.growth/v1",
+        "authority": "retained-posix",
+        "subjects": [
+          "retained_posix.growth.acquire"
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "scope": {
+          "kind": "one call on the same caller-retained process-local resource owner",
+          "starts_at": "explicit original-owner retention and resource admission",
+          "ends_at": "recorded native outcome, including refusal or quarantined uncertainty"
+        },
+        "dimensions": {
+          "unrelated_files": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "meaning": "Unrelated namespace population, not enumerated."
+          }
+        },
+        "bounds": {
+          "open_calls": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "relation": "upper",
+            "mode": "worst-case",
+            "expression": {
+              "op": "constant",
+              "value": 1,
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ]
+            },
+            "meaning": "At most one openat entry, no implicit retry."
+          },
+          "dup_calls": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "relation": "upper",
+            "mode": "worst-case",
+            "expression": {
+              "op": "constant",
+              "value": 0,
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ]
+            },
+            "meaning": "Path acquisition does not duplicate descriptors."
+          },
+          "fstat_calls": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "relation": "upper",
+            "mode": "worst-case",
+            "expression": {
+              "op": "constant",
+              "value": 1,
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ]
+            },
+            "meaning": "One type validation after acquisition."
+          },
+          "close_calls": {
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ],
+            "relation": "upper",
+            "mode": "worst-case",
+            "expression": {
+              "op": "constant",
+              "value": 0,
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ]
+            },
+            "meaning": "No constructor/finalizer cleanup hides a close result."
+          }
+        },
+        "conditions": [
+          "GIL-enabled CPython on the selected Linux/Darwin backend; cooperative cancellation only.",
+          "No external close/detach/dup2 of a borrowed descriptor; original owners remain retained."
+        ],
+        "invariants": [
+          "A resource has at most one acquisition and one native close dispatch across its lifetime.",
+          "No pathname, inode, descriptor absence/reuse, GC or Future state proves receiving."
+        ],
+        "limitations": [
+          "Counts are native backend syscall entries, not kernel path or filesystem IO costs.",
+          "Path validation is linear in already-admitted encoded path length.",
+          "No wall-clock bound or aggregate process/allocator memory claim."
+        ],
+        "delegates": {}
+      }
+    }
+  },
+  "native_owner_storage_bytes": [
+    96
+  ],
+  "scope": "actual reference native counters; maintained growth validator at audited source; not product closure/audit qualification",
+  "validated_sample_counts": {
+    "retained-posix.acquire.growth/v1": 24,
+    "retained-posix.receive.growth/v1": 432
+  },
+  "complete_sample_stream_sha256": "e50505e698a25128c6388bdc73e80286eb0ef46492619c903575fecf74001473",
+  "maximum_observed_deltas": {
+    "retained-posix.acquire.growth/v1": {
+      "open_calls": 1,
+      "dup_calls": 0,
+      "fstat_calls": 1,
+      "close_calls": 0
+    },
+    "retained-posix.receive.growth/v1": {
+      "open_calls": 0,
+      "dup_calls": 0,
+      "fstat_calls": 0,
+      "close_calls": 1
+    }
+  },
+  "dimensions": {
+    "unrelated_files": [
+      0,
+      17,
+      257
+    ],
+    "regular_file_extents": [
+      0,
+      17,
+      65537,
+      8388608
+    ],
+    "kinds": [
+      "file",
+      "directory"
+    ],
+    "close_replays_per_resource": 17
+  },
+  "regeneration": "growth_probe.py validates and prints all samples; this record summarizes that exact validated stream."
+}

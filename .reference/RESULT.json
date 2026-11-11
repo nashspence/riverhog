@@ -1,0 +1,61 @@
+{
+  "audited_base": "0e45d35a64d18dbde0f88b89d3c55d60b4977d28",
+  "runtime": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "compiler": "gcc (Debian 14.2.0-19) 14.2.0",
+  "build_backend": "setuptools 82.0.1; standalone reference fixture, not repository-locked qualification",
+  "tests": {
+    "installed_fault_wheel": {
+      "passed": 26,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "command_elapsed_seconds": 0.13135659100021257
+    },
+    "installed_normal_wheel": {
+      "passed": true,
+      "command_elapsed_seconds": 0.042390972000021065,
+      "result": {
+        "module": "<isolated-normal-env>/lib/python3.13/site-packages/retained_posix/__init__.py",
+        "native": "<isolated-normal-env>/lib/python3.13/site-packages/retained_posix/_native.cpython-313-x86_64-linux-gnu.so",
+        "native_sha256": "86f86689a14b6aa2c650dd0e1d2d881c33f871fd713ff677f7c7d7168c9c744d",
+        "fault_hooks": false,
+        "isolated": true,
+        "success": true,
+        "platform": "linux",
+        "python": "3.13.5 (main, Jun 25 2025, 18:55:22) [GCC 14.2.0]"
+      }
+    }
+  },
+  "growth": {
+    "validated_samples": 456,
+    "source_owned_declarations": 2,
+    "command_elapsed_seconds": 0.11817007099989496,
+    "native_owner_storage_bytes": [
+      96
+    ]
+  },
+  "wheels": {
+    "normal": {
+      "filename": "retained_posix_reference-0.1.0-cp313-cp313-linux_x86_64.whl",
+      "sha256": "442d33d3bab1fb64de042ffeb1b3abb0e0af262c6eba4a25d0bd968727490519"
+    },
+    "fault": {
+      "filename": "retained_posix_reference-0.1.0-cp313-cp313-linux_x86_64.whl",
+      "sha256": "301dfa078893170cd4a9180fc3501f17780ae8e57303026053a182a635159a7c"
+    }
+  },
+  "dependency_source": {
+    "rfc8785_version": "0.1.4",
+    "init_git_blob": "5a1f9d919643fa3bcaa0999ea66d9c535568c42a",
+    "impl_git_blob": "3137d3326b98938affadb1be711ee411eb2ab86e",
+    "method": "Exact public tag source fetched through GitHub; git blob identities verified. No serializer substitute."
+  },
+  "limits": [
+    "Linux reference backend only; no native Darwin execution",
+    "CPython 3.13.5 instead of repository 3.12.3",
+    "Fault seams simulate refusal/unknown outcomes; actual file descriptors and close/reuse are exercised",
+    "No maintained DiscoveryRetirementTurn or Core/Native database run",
+    "No full product distribution or complete retirement qualification"
+  ]
+}
