@@ -110,9 +110,9 @@ static int component_equals(Resource *r, const char *s, Py_ssize_t n, const char
 }
 static PyObject *resource_acquire(Resource *r, PyObject *args, PyObject *kw) {
     PyObject *path, *parent_obj = Py_None;
-    int writable = 0;
-    static char *keys[] = {"path", "writable", "parent", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|pO", keys, &path, &writable, &parent_obj)) return NULL;
+    int writable = 0, create = 0, exclusive = 0;
+    static char *keys[] = {"path", "writable", "parent", "create", "exclusive", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|pOpp", keys, &path, &writable, &parent_obj, &create, &exclusive)) return NULL;
     if (!same_process(r)) return NULL;
     if (r->state != NEW) return fail("acquisition is single-attempt; inspect the retained owner");
     if (!PyBytes_CheckExact(path)) return fail("path requires pre-encoded exact bytes");
@@ -129,7 +129,8 @@ static PyObject *resource_acquire(Resource *r, PyObject *args, PyObject *kw) {
         if (p->children == PY_SSIZE_T_MAX) return fail("dependency capacity exhausted");
         at = p->fd;
     } else if (s[0] != '/') return fail("root acquisition requires an admitted absolute path");
-    if (r->directory && writable) return fail("directory acquisition is read-only");
+    if (r->directory && (writable || create)) return fail("directory acquisition opens existing read-only directories");
+    if (exclusive && !create) return fail("exclusive acquisition requires explicit creation");
     int f = consume_fault(r, 1);
     if (f == 1) return fail("injected before-open refusal: no syscall entered");
     /* All allocating validation precedes any resource effect. Parent is retained
@@ -139,9 +140,11 @@ static PyObject *resource_acquire(Resource *r, PyObject *args, PyObject *kw) {
     r->opens++;
     int flags = (writable ? O_RDWR : O_RDONLY) | O_CLOEXEC | O_NOFOLLOW | O_NONBLOCK;
     if (r->directory) flags |= O_DIRECTORY;
+    if (create) flags |= O_CREAT;
+    if (exclusive) flags |= O_EXCL;
     int fd, error;
     Py_BEGIN_ALLOW_THREADS
-    fd = openat(at, s, flags);
+    fd = openat(at, s, flags, (mode_t)0600);
     error = fd < 0 ? errno : 0;
     Py_END_ALLOW_THREADS
     /* No Python-level signal callback or allocating result precedes this store. */

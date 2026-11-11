@@ -3,6 +3,11 @@
 A caller reserves capacity and retains a Group before acquisition. Borrowed
 integers are non-owning: never close, dup, detach, transfer, or retain them past
 the original borrow. Worker completion is established outside this module.
+
+File acquisition may explicitly create with private 0600 mode, optionally
+exclusive. Existing files are never truncated, repaired or replaced. Directory
+acquisition opens existing directories only. Creation uses the same single
+native outcome boundary and original parent dependency as existing acquisition.
 """
 
 import sys

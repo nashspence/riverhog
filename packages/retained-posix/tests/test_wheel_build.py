@@ -49,12 +49,25 @@ if sys.platform not in {'linux','darwin'}:
  else:raise AssertionError('unsupported native profile accepted')
 else:
  path=Path(sys.argv[1])/'data';path.write_bytes(b'owned');path.chmod(0o600)
+ root=Resource('directory');root.acquire(os.fsencode(path.parent))
  owner=Resource('file')
  assert not hasattr(owner,'_test_fault')
- owner.acquire(os.fsencode(path))
- borrow=Borrow(owner);borrow.acquire();os.fstat(borrow.fileno());borrow.close()
+ created=path.parent/'created'
+ owner.acquire(b'created',parent=root,writable=True,create=True,exclusive=True)
+ borrow=Borrow(owner);borrow.acquire()
+ assert os.fstat(borrow.fileno()).st_mode & 0o777 == 0o600
+ os.write(borrow.fileno(),b'original');borrow.close()
  owner.close();owner.close()
  assert owner.received and owner.metrics['close_calls']==1
+ existing=Resource('file');existing.acquire(b'created',parent=root,writable=True,create=True)
+ existing.close()
+ rejected=Resource('file')
+ try:rejected.acquire(b'created',parent=root,create=True,exclusive=True)
+ except FileExistsError:pass
+ else:raise AssertionError('exclusive creation replaced existing storage')
+ rejected.close();root.close()
+ assert root.received and created.read_bytes()==b'original'
+ created.unlink()
 """
     _run([str(python), "-I", "-c", program, str(cwd)], cwd=cwd)
 

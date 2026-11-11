@@ -85,9 +85,15 @@ def declaration(operation: str, limits: tuple[tuple[str, int, str], ...]) -> Dec
     )
 )
 def acquire(
-    owner: Resource, path: bytes, *, writable: bool = False, parent: Resource | None = None
+    owner: Resource,
+    path: bytes,
+    *,
+    writable: bool = False,
+    parent: Resource | None = None,
+    create: bool = False,
+    exclusive: bool = False,
 ) -> None:
-    owner.acquire(path, writable=writable, parent=parent)
+    owner.acquire(path, writable=writable, parent=parent, create=create, exclusive=exclusive)
 
 
 @declare_growth(

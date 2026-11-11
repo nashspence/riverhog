@@ -11,7 +11,13 @@ class Resource:
     @property
     def metrics(self) -> dict[str, int]: ...
     def acquire(
-        self, path: bytes, *, writable: bool = False, parent: Resource | None = None
+        self,
+        path: bytes,
+        *,
+        writable: bool = False,
+        parent: Resource | None = None,
+        create: bool = False,
+        exclusive: bool = False,
     ) -> None: ...
     def duplicate(self, source: Resource) -> None: ...
     def close(self) -> None: ...
