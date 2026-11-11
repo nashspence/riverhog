@@ -126,7 +126,12 @@ def test_native_wheels_survive_locks_index_publication_and_platform_selection(tm
 @pytest.mark.parametrize("platform", TAGS)
 def test_missing_native_platform_is_an_installation_failure(tmp_path, subjects, platform):
     projects, records = subjects
-    records = [item for item in records if not item["name"].endswith(f"-{TAGS[platform]}.whl")]
+    records = [
+        item
+        for item in records
+        if item["distribution"] != "riverhog-client"
+        or not item["name"].endswith(f"-{TAGS[platform]}.whl")
+    ]
     with pytest.raises(installation.InstallationError, match=f"no {platform}"):
         _build(tmp_path, projects, records)
 
@@ -495,4 +500,29 @@ def test_native_build_profile_cannot_publish_a_universal_only_fallback(tmp_path,
         }
     )
     with pytest.raises(installation.InstallationError, match="native build requires"):
+        _build(tmp_path, projects, records)
+
+
+def test_posix_native_profile_requires_native_wheels_and_windows_uses_the_stub(tmp_path, subjects):
+    projects, records = subjects
+    package = {
+        "name": "retained-posix",
+        "version": "0.1.0",
+        "wheels": [
+            {"url": item["name"]} for item in records if item["distribution"] == "retained-posix"
+        ],
+    }
+    for platform, tag in TAGS.items():
+        expected_tag = tag if platform != "windows-x64" else "py3-none-any"
+        selected = installation._select_platform_wheel(package, platform)
+        assert selected["url"] == f"python/retained_posix-0.1.0-{expected_tag}.whl"
+    records = [
+        item
+        for item in records
+        if item["distribution"] != "retained-posix" or item["name"].endswith("-py3-none-any.whl")
+    ]
+    with pytest.raises(
+        installation.InstallationError,
+        match="native build requires a platform wheel: retained-posix linux-x64",
+    ):
         _build(tmp_path, projects, records)

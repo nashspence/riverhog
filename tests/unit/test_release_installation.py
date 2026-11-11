@@ -45,29 +45,39 @@ def _external_lock() -> tuple[str, dict[str, str]]:
 
 
 def _wheel_records(projects: list[Any]) -> list[dict[str, object]]:
+    native_tags = {
+        "linux": "cp312-cp312-manylinux_2_17_x86_64",
+        "darwin": "cp312-cp312-macosx_11_0_arm64",
+        "win32": "cp312-cp312-win_amd64",
+    }
     records = []
     for project in projects:
         name = str(project.name)
-        filename = f"{name.replace('-', '_')}-0.1.0-py3-none-any.whl"
-        records.append(
-            {
-                "kind": "wheel",
-                "name": f"python/{filename}",
-                "sha256": hashlib.sha256(name.encode()).hexdigest(),
-                "size": len(name),
-                "distribution": name,
-            }
+        config = tomllib.loads((REPO_ROOT / project.path / "pyproject.toml").read_text())
+        platforms = (
+            config.get("tool", {})
+            .get("hatch", {})
+            .get("build", {})
+            .get("targets", {})
+            .get("wheel", {})
+            .get("hooks", {})
+            .get("custom", {})
+            .get("native-platforms", [])
         )
-    name = "riverhog_client-0.1.0-cp312-cp312-win_amd64.whl"
-    records.append(
-        {
-            "kind": "wheel",
-            "name": f"python/{name}",
-            "sha256": hashlib.sha256(name.encode()).hexdigest(),
-            "size": len(name),
-            "distribution": "riverhog-client",
-        }
-    )
+        tags = [native_tags[platform] for platform in platforms]
+        if set(platforms) != set(native_tags):
+            tags.append("py3-none-any")
+        for tag in tags:
+            filename = f"{name.replace('-', '_')}-0.1.0-{tag}.whl"
+            records.append(
+                {
+                    "kind": "wheel",
+                    "name": f"python/{filename}",
+                    "sha256": hashlib.sha256(filename.encode()).hexdigest(),
+                    "size": len(filename),
+                    "distribution": name,
+                }
+            )
     return records
 
 
