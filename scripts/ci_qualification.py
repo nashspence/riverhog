@@ -513,7 +513,9 @@ def native_platform() -> None:
     evidence = os.environ.get("RIVERHOG_CI_TIMING_DIR")
     tests = [sys.executable, "-m", "pytest", "-q", "--maxfail=1"]
     if evidence:
-        tests.extend(("--junitxml", str(Path(evidence) / "native-pytest.xml")))
+        tests.extend(
+            ("-o", "junit_family=xunit1", "--junitxml", str(Path(evidence) / "native-pytest.xml"))
+        )
     run([*tests, *NATIVE_TESTS])
     command = [
         sys.executable,

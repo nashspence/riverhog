@@ -961,6 +961,8 @@ def test_native_qualification_retains_structured_results_without_repeating_work(
         "pytest",
         "-q",
         "--maxfail=1",
+        "-o",
+        "junit_family=xunit1",
         "--junitxml",
         str(tmp_path / "native-pytest.xml"),
         *qualification.NATIVE_TESTS,
