@@ -121,6 +121,13 @@ def test_every_workspace_distribution_uses_the_canonical_build_system() -> None:
             assert config["tool"]["hatch"]["build"]["targets"]["wheel"]["hooks"] == {
                 "custom": {"native-platforms": ["win32"]}
             }
+        elif pyproject == REPO_ROOT / "packages/retained-posix/pyproject.toml":
+            requirements.append(
+                "setuptools==84.2.1; sys_platform == 'linux' or sys_platform == 'darwin'"
+            )
+            assert config["tool"]["hatch"]["build"]["targets"]["wheel"]["hooks"] == {
+                "custom": {"native-platforms": ["linux", "darwin"]}
+            }
         assert config["build-system"] == {
             "requires": requirements,
             "build-backend": "hatchling.build",

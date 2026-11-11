@@ -12,6 +12,7 @@ from riverhog_core import canonical_discovery_parent_reclamation as owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
 from sqlalchemy import update
 
+from tests.support.retained_posix import fault_native as fault_native
 from tests.unit.test_canonical_discovery_parent_reclamation import case as case
 from tests.unit.test_canonical_discovery_parent_reclamation import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_parent_reclamation import original as original
@@ -131,23 +132,28 @@ def test_unknown_parent_entry_prevents_catalog_deletion(case):
     assert (path / "unclassified").read_bytes() == b"retained"
 
 
-def test_actual_close_refusal_keeps_original_catalog_and_remaining_custody(case, monkeypatch):
+def test_actual_close_refusal_keeps_original_catalog_and_remaining_custody(
+    case, monkeypatch, fault_native
+):
+    native, _path = fault_native
+    monkeypatch.setattr(owner, "Resource", native.Resource)
+    monkeypatch.setattr(owner, "Borrow", native.Borrow)
     job = prefix(case)
     retained = owner.DiscoveryParentRetirement(case.factory, job, case.root)
-    actual = os.close
-
-    def refuse(descriptor):
-        if descriptor == retained._lease:
-            raise OSError("original close not received")
-        return actual(descriptor)
-
-    with monkeypatch.context() as patch:
-        patch.setattr(os, "close", refuse)
-        with pytest.raises(OSError, match="close not received"):
-            retained.finish()
+    original = retained._resources["_lease"]
+    original._test_fault("before_close")
+    with pytest.raises(RuntimeError):
+        retained.finish()
     assert retained._lease is not None and not retained._closed
+    assert original.state == "live" and original.metrics["close_calls"] == 0
+    assert all(
+        retained._resources[slot].state == "live"
+        for slot in ("_anchor", "_root", "_coordinator", "_directory")
+    )
     assert row(case, job.workspace_id) == retained.job
     retained.close()
+    retained.close()
+    assert sum(resource.metrics["close_calls"] for resource in retained._resources.values()) == 5
     assert finish(case, retained.job).catalog_received
 
 

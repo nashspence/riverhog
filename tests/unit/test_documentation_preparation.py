@@ -338,6 +338,20 @@ def test_dynamic_or_third_party_python_objects_are_explicit_references():
     assert owned_python_declaration(17) is None
 
 
+def test_native_extension_exports_do_not_borrow_fallback_source():
+    from retained_posix import Borrow, Group, Resource
+
+    location = "packages/retained-posix/src/retained_posix/__init__.py"
+    assert owned_python_declaration(Group) == location
+    for owner in (Resource, Borrow):
+        if sys.platform in {"linux", "darwin"}:
+            with pytest.raises(TypeError):
+                owner.__doc__ = owner.__doc__
+            assert owned_python_declaration(owner) is None
+        else:
+            assert owned_python_declaration(owner) == location
+
+
 def test_adapter_library_can_load_its_own_staged_resource(tmp_path):
     source = (
         ROOT / "packages/release-documentation-lib/src/release_documentation_lib/__init__.py"

@@ -39,6 +39,10 @@ def owned_python_declaration(value: object, root: Path | None = None) -> str | N
     """Writable only for one real declaration in this selected source tree."""
     if not (inspect.isfunction(value) or inspect.isclass(value)):
         return None
+    # CPython's Py_TPFLAGS_IMMUTABLETYPE: a facade can contain a fallback with
+    # the same name while exporting a native type with no writable declaration.
+    if inspect.isclass(value) and value.__flags__ & (1 << 8):
+        return None
     root = Path(__file__).resolve().parents[2] if root is None else root
     try:
         path = Path(inspect.getsourcefile(value) or "").resolve()
