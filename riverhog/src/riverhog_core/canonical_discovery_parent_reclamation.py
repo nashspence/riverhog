@@ -6,9 +6,11 @@ import errno
 import os
 import re
 import stat
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 
+from retained_posix import Borrow, Resource
 from riverhog_provenance import JournalValidationCapacity
 from sqlalchemy import select
 from state_schema import read_snapshot
@@ -62,9 +64,10 @@ class DiscoveryParentRetirement:
     descriptor closure and synchronized selected absence. Reclaim preserves the
     catalog row; finish subsequently receives its exact original disposition.
 
-    A failed close retains its descriptor and the remaining custody. The caller
-    must retain this object until close is positively received. After any
-    attempt, use a new owner with the current exact job for cold receiving.
+    A failed close retains its exact native owner and remaining custody.
+    The caller retains this object until positive receiving. Unknown native
+    outcomes never retry a raw descriptor; recorded success is idempotent.
+    After an attempt, cold receiving uses a new owner with the exact current job.
     """
 
     def __init__(self, factory: SessionFactory, job: jobs.DiscoveryJob, root: Path):
@@ -86,14 +89,54 @@ class DiscoveryParentRetirement:
         self._attempted = False
         self._closed = False
         self._catalog_absent = False
+        self._execution = threading.Lock()
+        self._resources = {
+            "_anchor": Resource("directory"),
+            "_root": Resource("directory"),
+            "_coordinator": Resource("file"),
+            "_directory": Resource("directory"),
+            "_lease": Resource("file"),
+        }
+        self._borrows = {slot: Borrow(resource) for slot, resource in self._resources.items()}
+        self._native_paths: dict[str, bytes] = {}
+
+    def _open(self, slot: str, name: str | Path, *, parent: str | None = None) -> int:
+        resource = self._resources[slot]
+        encoded = os.fsencode(name)
+        self._native_paths[slot] = encoded
+        try:
+            resource.acquire(
+                encoded,
+                writable=slot in {"_coordinator", "_lease"},
+                parent=None if parent is None else self._resources[parent],
+            )
+        except RuntimeError as error:
+            if resource.state == "rejected":
+                raise LostJournalValidationWorkspace(
+                    "original discovery parent acquired another resource kind"
+                ) from error
+            raise
+        borrowed = self._borrows[slot]
+        borrowed.acquire()
+        return borrowed.fileno()
+
+    def _close_owned(self) -> None:
+        if self._closed:
+            return
+        for slot in ("_lease", "_directory", "_coordinator", "_root", "_anchor"):
+            self._borrows[slot].close()
+            self._resources[slot].close()
+            setattr(self, slot, None)
+        self._closed = True
 
     def close(self) -> None:
-        for slot in ("_lease", "_directory", "_coordinator", "_root", "_anchor"):
-            descriptor = getattr(self, slot)
-            if descriptor is not None:
-                os.close(descriptor)
-                setattr(self, slot, None)
-        self._closed = True
+        """Receive originals after their descriptor-using execution has returned."""
+        if not self._execution.acquire(blocking=False):
+            raise BlockingIOError("original parent execution has not returned its borrows")
+        try:
+            self._close_owned()
+        finally:
+            self._execution.release()
 
     def _require_current(self) -> None:
         job = self.job
@@ -167,12 +210,10 @@ class DiscoveryParentRetirement:
     def _receive(self) -> bool:
         import fcntl
 
-        self._anchor = os.open(self.root.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        self._anchor = self._open("_anchor", self.root.parent)
         self._verify_anchor()
         try:
-            self._root = os.open(
-                self.root.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=self._anchor
-            )
+            self._root = self._open("_root", self.root.name, parent="_anchor")
         except FileNotFoundError:
             self._require_current()
             self._verify_anchor()
@@ -185,9 +226,7 @@ class DiscoveryParentRetirement:
         except BlockingIOError:
             return False
         try:
-            self._coordinator = os.open(
-                ".coordinator", os.O_RDWR | os.O_NOFOLLOW, dir_fd=self._root
-            )
+            self._coordinator = self._open("_coordinator", ".coordinator", parent="_root")
         except FileNotFoundError:
             pass
         else:
@@ -199,11 +238,7 @@ class DiscoveryParentRetirement:
         self._verify_root()
         self._require_current()
         try:
-            self._directory = os.open(
-                self.job.workspace_id,
-                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                dir_fd=self._root,
-            )
+            self._directory = self._open("_directory", self.job.workspace_id, parent="_root")
         except FileNotFoundError:
             os.fsync(self._root)
             self._advance()
@@ -214,7 +249,7 @@ class DiscoveryParentRetirement:
         if self._coordinator is None:
             raise LostJournalValidationWorkspace("selected parent has lost its root coordinator")
         try:
-            self._lease = os.open(".lease", os.O_RDWR | os.O_NOFOLLOW, dir_fd=self._directory)
+            self._lease = self._open("_lease", ".lease", parent="_directory")
         except FileNotFoundError:
             # Unconfirmed creation can stop between mkdir and lease creation.
             # Directory-phase retries can stop after their exact lease unlink.
@@ -258,6 +293,8 @@ class DiscoveryParentRetirement:
         """Receive one exact parent attempt, preserving catalog and unrelated owners."""
         if self._attempted or self._closed:
             raise RuntimeError("parent receiving requires a fresh retained owner")
+        if not self._execution.acquire(blocking=False):
+            raise BlockingIOError("original parent execution is already active")
         self._attempted = True
         try:
             self._require_current()
@@ -279,7 +316,10 @@ class DiscoveryParentRetirement:
                 ) from None
             raise
         finally:
-            self.close()
+            try:
+                self._close_owned()
+            finally:
+                self._execution.release()
         return DiscoveryParentReceivingProgress(self.job, received)
 
     def _delete_catalog(self) -> None:

@@ -39,7 +39,7 @@ def declare_parent_reclamation_growth(
         "uuid_values": 1,
         "open_calls": 5,
         "close_calls": 5,
-        "stat_calls": 79,
+        "stat_calls": 84,
         "uid_calls": 24,
         "flock_calls": 3,
         "fsync_calls": 3,
@@ -157,6 +157,19 @@ def declare_parent_reclamation_growth(
                 "names, including unlink and rmdir; no sibling traversal.",
             ),
             Bound(
+                "native_control_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        scale(20, dim("path_octets")),
+                        Expression("constant", value=15, unit=OCTETS),
+                    ),
+                ),
+                "Complete native validation operands for at most five original path acquisitions.",
+            ),
+            Bound(
                 "hashed_octets",
                 OCTETS,
                 "upper",
@@ -194,7 +207,8 @@ def declare_parent_reclamation_growth(
         ),
         limitations=(
             "Kernel path/index traversal, physical I/O and lock/fsync latency retain "
-            "filesystem ownership; counts cover actual maintained Python primitives.",
+            "filesystem ownership; counts include maintained Python primitives "
+            "and native owner syscalls.",
             "File extents, confirmed Core/Native closure, catalog deletion, terminal "
             "disposition and service scheduling remain separately owned operations.",
         ),
@@ -270,8 +284,8 @@ def declare_parent_close_growth(operation: Callable[..., Any]) -> None:
                 "The caller retains the owner and remaining custody when a close raises.",
             ),
             invariants=(
-                "A descriptor slot clears only after its actual close returns.",
-                "Uncertain close retains custody and never yields namespace completion.",
+                "A slot clears only after the native owner records positive original receiving.",
+                "Unknown native close keeps custody and never redispatches its old integer.",
                 "Received closure is idempotent and never closes reused descriptors.",
             ),
             limitations=(

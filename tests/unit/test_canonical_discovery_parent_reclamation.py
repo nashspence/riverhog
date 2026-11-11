@@ -13,6 +13,7 @@ from riverhog_core import canonical_discovery_parent_reclamation as owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
 from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 
+from tests.support.retained_posix import fault_native as fault_native
 from tests.unit.test_canonical_discovery_corpus_jobs import case as case
 from tests.unit.test_canonical_discovery_corpus_jobs import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_corpus_jobs import original as original
@@ -266,7 +267,7 @@ def test_phase_rollback_or_committed_lost_reply_preserves_cold_receiving(
     operation="riverhog_core.canonical_discovery_parent_reclamation.DiscoveryParentRetirement.close",
 )
 def test_close_refusal_retains_owner_and_kernel_custody_until_actual_receiving(
-    case, monkeypatch, record_property
+    case, monkeypatch, record_property, fault_native
 ):
     from riverhog_growth_contracts import (
         growth_binding,
@@ -276,31 +277,29 @@ def test_close_refusal_retains_owner_and_kernel_custody_until_actual_receiving(
 
     from tests.support.workspace_reclamation import execution_sample
 
+    native, _ = fault_native
+    monkeypatch.setattr(owner, "Resource", native.Resource)
+    monkeypatch.setattr(owner, "Borrow", native.Borrow)
     job = prefix(case)
     retained = owner.DiscoveryParentRetirement(case.factory, job, case.root)
     binding = growth_binding(owner.DiscoveryParentRetirement.close)
     projection = project_bindings((binding,))
     samples = []
-    close = retained.close
+    close = retained._close_owned
 
     def measured_close():
         occupied = sum(
-            getattr(retained, slot) is not None
-            for slot in ("_anchor", "_root", "_coordinator", "_directory", "_lease")
+            resource.state not in {"new", "absent", "received"}
+            for resource in retained._resources.values()
         )
-        calls = 0
-        primitive = os.close
-
-        def counted(descriptor):
-            nonlocal calls
-            calls += 1
-            return primitive(descriptor)
-
+        before = sum(resource.metrics["close_calls"] for resource in retained._resources.values())
         try:
-            with pytest.MonkeyPatch.context() as patch:
-                patch.setattr(os, "close", counted)
-                return close()
+            return close()
         finally:
+            calls = (
+                sum(resource.metrics["close_calls"] for resource in retained._resources.values())
+                - before
+            )
             metrics = {bound.metric: 0 for bound in binding.declaration.bounds}
             metrics.update(close_calls=calls, descriptor_slots=occupied)
             observed = execution_sample(
@@ -309,18 +308,10 @@ def test_close_refusal_retains_owner_and_kernel_custody_until_actual_receiving(
             validate_execution_samples(projection, binding.declaration.id, [observed])
             samples.append(observed)
 
-    retained.close = measured_close
-    actual = os.close
-
-    def refuse(descriptor):
-        if descriptor == retained._lease:
-            raise OSError("actual selected close unreceived")
-        return actual(descriptor)
-
-    with monkeypatch.context() as patch:
-        patch.setattr(os, "close", refuse)
-        with pytest.raises(OSError, match="close unreceived"):
-            retained.reclaim()
+    retained._close_owned = measured_close
+    retained._resources["_lease"]._test_fault("before_close")
+    with pytest.raises(RuntimeError, match="before-close refusal"):
+        retained.reclaim()
     assert not retained._closed and retained._lease is not None
     assert retained._coordinator is not None
     independent = os.open(case.root / ".coordinator", os.O_RDWR)
@@ -332,7 +323,7 @@ def test_close_refusal_retains_owner_and_kernel_custody_until_actual_receiving(
     retained.close()
     assert retained._closed
     retained.close()
-    assert [s["metrics"]["close_calls"] for s in samples] == [1, 5, 0]
+    assert [s["metrics"]["close_calls"] for s in samples] == [0, 5, 0]
     record_property("growth_samples", samples)
     assert receive(case, current(case, job.workspace_id)).namespace_received
 

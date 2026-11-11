@@ -143,6 +143,40 @@ class Recorder:
                 return catalog_connect(path, *args, **kwargs)
 
             patch.setattr(owner.sqlite3, "connect", connect)
+            from riverhog_core.canonical_discovery_parent_reclamation import (
+                DiscoveryParentRetirement,
+            )
+
+            def native_totals(receiver):
+                totals = {
+                    metric: sum(
+                        resource.metrics[metric] for resource in receiver._resources.values()
+                    )
+                    for metric in ("open_calls", "close_calls", "fstat_calls", "control_octets")
+                }
+                totals["path_octets"] = sum(map(len, receiver._native_paths.values()))
+                return totals
+
+            for name in ("_open", "_close_owned"):
+                actual_native = getattr(DiscoveryParentRetirement, name)
+
+                def native_effect(receiver, *args, _actual=actual_native, **kwargs):
+                    before = native_totals(receiver)
+                    try:
+                        return _actual(receiver, *args, **kwargs)
+                    finally:
+                        if self.active:
+                            after = native_totals(receiver)
+                            for source, metric in (
+                                ("open_calls", "open_calls"),
+                                ("close_calls", "close_calls"),
+                                ("fstat_calls", "stat_calls"),
+                                ("control_octets", "native_control_octets"),
+                                ("path_octets", "encoded_path_octets"),
+                            ):
+                                self.metrics[metric] += after[source] - before[source]
+
+                patch.setattr(DiscoveryParentRetirement, name, native_effect)
             for name, metric in (
                 ("open", "open_calls"),
                 ("close", "close_calls"),

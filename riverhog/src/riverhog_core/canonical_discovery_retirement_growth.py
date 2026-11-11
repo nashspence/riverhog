@@ -58,7 +58,7 @@ def declare_retirement_growth(operation: Callable[..., Any]) -> None:
         "uuid_values": 1,
         "open_calls": 16,
         "close_calls": 16,
-        "stat_calls": 224,
+        "stat_calls": 229,
         "uid_calls": 96,
         "flock_calls": 8,
         "fsync_calls": 10,
@@ -147,6 +147,19 @@ def declare_retirement_growth(operation: Callable[..., Any]) -> None:
                         ),
                     ),
                     "Every acquisition, custody probe, fixed-name mutation and actual extent path.",
+                ),
+                Bound(
+                    "native_control_octets",
+                    OCTETS,
+                    "upper",
+                    Expression(
+                        "sum",
+                        terms=(
+                            scale(20, dim("path_octets")),
+                            Expression("constant", value=15, unit=OCTETS),
+                        ),
+                    ),
+                    "Complete validation operands of the original native parent receiver.",
                 ),
                 Bound(
                     "hashed_octets",
