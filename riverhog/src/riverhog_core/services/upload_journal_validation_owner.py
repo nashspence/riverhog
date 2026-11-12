@@ -447,6 +447,7 @@ class _Slot:
     lease: ValidationWorkspaceLease = field(default_factory=ValidationWorkspaceLease)
     transferred: bool = False
     closing: bool = False
+    receiving_failed: bool = False
     job: jobs.ValidationJob | None = None
     source: _OwnedSource | None = None
     work: source_owner._UploadJournalValidationWork | None = None
@@ -979,7 +980,9 @@ def _sweep_declaration() -> Declaration:
         ),
         scope="concrete nonblocking stale-slot sweep with heterogeneous source and closure calls",
         starts_at="snapshot existing reservations under the pool mutex",
-        ends_at="finish the bounded pass or propagate the first non-stale provider failure",
+        ends_at=(
+            "finish the bounded pass or propagate the first provider failure in the selected scope"
+        ),
         dimensions=(
             Dimension("configured_slots", COUNT, "Positive operator-configured live capacity."),
             Dimension(
@@ -1103,8 +1106,9 @@ def _sweep_declaration() -> Declaration:
                 "accepted native state and independent reader leases."
             ),
             (
-                "Unexpected provider failures propagate without fabricated "
-                "validation progress or acceptance."
+                "Provider failures propagate for a strict sweep or their selected key; "
+                "independent closing failures stay marked on their original retained slots. "
+                "Source failures and process-control exceptions always propagate."
             ),
         ),
         limitations=(
@@ -1797,8 +1801,9 @@ def _advance_declaration() -> Declaration:
                 "accepted progress."
             ),
             (
-                "Known pending receiving keeps the identical closing slot charged without "
-                "blocking an independent key. Unknown cleanup errors still propagate."
+                "Pending or unknown receiving keeps the identical closing slot charged "
+                "without blocking independent admitted keys. Unknown errors remain marked "
+                "on that original and propagate for its key or a strict sweep."
             ),
             (
                 "Native acceptance precedes catalog publication. A replacement "
@@ -1891,7 +1896,12 @@ class UploadJournalValidationOwner:
         with self._lock:
             return tuple((collection, journal) for collection, journal, _ in self._slots)
 
-    def release_stale(self) -> None:
+    def release_stale(self, *, selected_key: tuple[int, str, str] | None = None) -> None:
+        """Sweep all slots; an advance receives errors from its own closing key.
+
+        The default strict sweep reports every provider failure. Independent
+        closing failures remain marked on their identical retained slots.
+        """
         with self._lock:
             slots = tuple(self._slots.items())
         pending = None
@@ -1908,10 +1918,18 @@ class UploadJournalValidationOwner:
                     except source_owner._StaleUploadJournalValidation:
                         self._drop(key, slot)
             except _NativeReceivingPending as error:
-                if pending is None:
+                if pending is None and (selected_key is None or key == selected_key):
                     pending = error
             except BaseException as error:
-                if unknown is None:
+                if slot.closing:
+                    # Keep the failure with its original without retaining traceback frames.
+                    slot.receiving_failed = True
+                if unknown is None and (
+                    not isinstance(error, Exception)
+                    or not slot.closing
+                    or selected_key is None
+                    or key == selected_key
+                ):
                     unknown = error
             finally:
                 slot.lock.release()
@@ -2015,12 +2033,12 @@ class UploadJournalValidationOwner:
         catalog: ContractCatalog,
         budget: JournalValidationBudget = _DEFAULT_BUDGET,
     ) -> ValidationAdvance:
+        key = source.collection_id, source.journal_id, source.attempt_id
         try:
-            self.release_stale()
+            self.release_stale(selected_key=key)
         except _NativeReceivingPending:
             # Pending originals remain charged; a selected closing slot refuses below.
             pass
-        key = source.collection_id, source.journal_id, source.attempt_id
         slot = self._reserve(key)
         if slot is None:
             return ValidationAdvance(False)

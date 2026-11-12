@@ -666,7 +666,11 @@ class UploadJournalGraphCertificates:
         catalog: ContractCatalog,
     ) -> None:
         work = rank._begin(factory, source)
-        if work is None or work.state not in {"complete", "deferred"}:
+        if work is None:
+            # No prepared snapshot survived the source/generation fences. A caller
+            # can retry its bounded preparation without declaring Native state lost.
+            raise source_owner._StaleUploadJournalValidation
+        if work.state not in {"complete", "deferred"}:
             raise InvalidJournalGraphCertificate("finite rank preparation is not complete")
         query = (
             select(*(getattr(Scan, name) for name in _MANIFEST_FIELDS))

@@ -119,3 +119,72 @@ with retained(root,source(journal_id=JOURNAL)) as (_,factory):
     )
     assert run.returncode == 0, (run.stdout + run.stderr)[-5000:]
     assert "ORIGINAL_CORE_UNKNOWN_RETAINED;INDEPENDENT_NATIVE_RECEIVED" in run.stdout
+
+
+def test_actual_unknown_original_does_not_block_independent_owner_advancement(
+    tmp_path, fault_native
+):
+    _native, extension = fault_native
+    code = r"""
+import importlib.util,os,sys
+from pathlib import Path
+import retained_resource
+from riverhog_provenance import JournalConstruction
+from sqlite_admission import SqliteConnectionAdmission
+from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
+from tests.unit.test_upload_journal_validation_custody import assert_lease
+from tests.unit.test_upload_journal_validation_owner import finish
+from tests.unit.test_upload_journal_validation_release_growth import build_cases
+spec=importlib.util.spec_from_file_location("_retained_resource_test._native",sys.argv[2])
+native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
+retained_resource.Resource=native.Resource
+root=Path(sys.argv[1]);frames=[]
+admission=SqliteConnectionAdmission(connection_limit=4,cursor_limit=128,operation_limit=4,verify_process=lambda:None)
+def make():
+ original=JournalConstruction(admission.connection_scope(),resource_limit=2)
+ if not frames:original.creator._test_fault("unknown_close_open")
+ frames.append(original)
+ return original
+with build_cases(root,large=False) as cases:
+ case=cases[2]
+ owner=UploadJournalValidationOwner(case.factory,case.path/"native",construction_factory=make,concurrency=2)
+ first,second=case.works
+ try:owner.advance(first,catalog=case.catalog)
+ except (RuntimeError,OSError):pass
+ else:raise AssertionError("unknown creator returned success")
+ key=(first.collection_id,first.journal_id,first.attempt_id)
+ slot=owner._slots[key];original=frames[0]
+ assert slot.construction is original and slot.session is None and slot.closing
+ assert original.creator.state=="unknown" and not original.received
+ assert_lease(owner.root,slot.job.workspace_id,busy=True)
+ calls=original.creator.metrics["close_calls"]
+ outcome=finish(owner,second)
+ assert outcome.failure is None
+ assert len(frames)==2 and frames[1].received
+ assert owner.active_keys()==((first.collection_id,first.journal_id),)
+ assert owner._slots[key] is slot and slot.construction is original
+ assert slot.receiving_failed
+ assert not original.received and not slot.lease.received
+ try:owner.advance(first,catalog=case.catalog)
+ except RuntimeError:pass
+ else:raise AssertionError("selected unknown construction returned success")
+ assert original.creator.metrics["close_calls"]==calls
+ assert_lease(owner.root,slot.job.workspace_id,busy=True)
+ for _ in range(17):
+  try:owner.release_stale()
+  except RuntimeError:pass
+  else:raise AssertionError("unknown construction became received")
+ assert original.creator.metrics["close_calls"]==calls
+ assert owner._slots[key] is slot and not original.received and not slot.lease.received
+ print("ACTUAL_OWNER_UNKNOWN_RETAINED;INDEPENDENT_OWNER_ADVANCED",flush=True)
+ # Process exit cleans this isolated unknown fixture; it grants no receiving.
+ os._exit(0)
+"""
+    run = subprocess.run(
+        [sys.executable, "-c", code, str(tmp_path), str(extension)],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert run.returncode == 0, (run.stdout + run.stderr)[-5000:]
+    assert "ACTUAL_OWNER_UNKNOWN_RETAINED;INDEPENDENT_OWNER_ADVANCED" in run.stdout

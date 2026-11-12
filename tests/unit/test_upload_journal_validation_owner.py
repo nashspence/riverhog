@@ -367,3 +367,49 @@ def test_scheduler_progresses_two_exact_journals_without_reopening_their_atoms(t
                 assert terminal(factory)["anchor"] == expected.anchor
         finally:
             service.close()
+
+
+@pytest.mark.parametrize("replacement", ["source", "manifest"])
+def test_replaced_prepared_rank_does_not_lose_an_unopened_workspace(
+    tmp_path, monkeypatch, replacement, *, journal_constructions
+):
+    from riverhog_core.services import upload_journal_certificates as certificates
+
+    with retained(tmp_path, source(journal_id=JOURNAL)) as (engine, factory):
+        work, _ = ready(factory)
+        owner = UploadJournalValidationOwner(
+            factory, tmp_path / "native", construction_factory=journal_constructions.retain
+        )
+        begin = certificates.rank.union._begin
+        replacements = []
+
+        def replaced(selected_factory, selected_source):
+            current = begin(selected_factory, selected_source)
+            assert current is not None
+            if not replacements:
+                with factory() as session, session.begin():
+                    if replacement == "source":
+                        session.get(Journal, (1, JOURNAL)).state = "failed"
+                    else:
+                        session.get(certificates.Scan, (1, JOURNAL)).version += 1
+                replacements.append(current)
+            return current
+
+        try:
+            with monkeypatch.context() as patch:
+                patch.setattr(certificates.rank.union, "_begin", replaced)
+                result = owner.advance(work, catalog=source_owner.admission_provenance_catalog())
+            assert len(replacements) == 1
+            assert not result.progressed and result.outcome is None
+            assert owner.active_keys() == ()
+            assert not owner.root.exists()
+            with factory() as session:
+                assert session.scalar(select(Job)) is None
+                assert session.get(Journal, (1, JOURNAL)).state == (
+                    "failed" if replacement == "source" else "validating"
+                )
+            assert engine.pool.checkedout() == 0
+            if replacement == "manifest":
+                assert finish(owner, work).failure is None
+        finally:
+            owner.close()
