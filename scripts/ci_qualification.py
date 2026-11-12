@@ -82,6 +82,7 @@ NATIVE_TESTS = (
     "packages/riverhog-client/tests/test_completion_records_admission.py",
     "packages/riverhog-client/tests/test_sqlite_owner_cleanup_status.py",
     "packages/sqlite-admission/tests/test_connection_admission.py",
+    "packages/sqlite-admission/tests/test_construction_scope.py",
     "packages/sqlite-admission/tests/test_blob_admission.py",
     "packages/sqlite-admission/tests/test_operation_admission.py",
     "packages/sqlite-admission/tests/test_connection_settings.py",

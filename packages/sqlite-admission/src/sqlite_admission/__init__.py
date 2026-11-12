@@ -6,7 +6,7 @@ import sqlite3
 import weakref
 from collections.abc import Callable, Iterable, Iterator
 from dataclasses import dataclass
-from threading import RLock
+from threading import Lock, RLock
 from types import TracebackType
 from typing import Any, Literal, Self, overload
 
@@ -75,6 +75,7 @@ class _ConnectionLease:
     admission: SqliteConnectionAdmission
     connection: _Connection | None = None
     returned: bool = False
+    dispatched: bool = False
 
 
 @dataclass(eq=False)
@@ -232,8 +233,19 @@ class SqliteConnectionAdmission:
                 lease.connection for lease in self._connections if lease.connection is not None
             )
 
+    def connection_scope(self) -> SqliteConnectionScope:
+        """Allocate a passive exact-construction receiver without admitting or opening.
+
+        Retain the scope before reserving its original shared connection grant
+        and before any dependent filesystem effects. Receiving never closes
+        another construction or substitutes an aggregate shared count.
+        """
+        return SqliteConnectionScope(self)
+
     def connect(self, database: Any, **options: Any) -> sqlite3.Connection:
         """Admit the actual open call before process verification or driver work."""
+        if "_reservation" in options:
+            raise ValueError("connection reservation belongs to its original scope")
         self._begin_operation()
         try:
             return self._connect(database, **options)
@@ -257,25 +269,44 @@ class SqliteConnectionAdmission:
             self._operations -= 1
             self._forget_if_settled()
 
-    def _connect(self, database: Any, **options: Any) -> sqlite3.Connection:
-        """Use the selected actual driver and preserve owner URI/thread/transaction options."""
-        if "factory" in options:
-            raise ValueError("SQLite admission owns the connection and cursor factories")
+    def _admit_connection(self, lease: _ConnectionLease) -> None:
         with self._lock:
+            if lease in self._connections:
+                raise RuntimeError("the original connection grant is already admitted")
             if len(self._connections) >= self._connection_limit:
                 raise SqliteCapacity("active SQLite connection grant exhausted")
         self._verify_process()
         with self._lock:
             if len(self._connections) >= self._connection_limit:
                 raise SqliteCapacity("active SQLite connection grant exhausted")
-            lease = _ConnectionLease(self)
             self._connections.add(lease)
             _admissions.add(self)
             self._connection_peak = max(self._connection_peak, len(self._connections))
 
+    def _connect(
+        self, database: Any, *, _reservation: _ConnectionLease | None = None, **options: Any
+    ) -> sqlite3.Connection:
+        """Preserve the original admitted driver and URI/thread/transaction options."""
+        if "factory" in options:
+            raise ValueError("SQLite admission owns the connection and cursor factories")
+        if _reservation is None:
+            lease = _ConnectionLease(self)
+            self._admit_connection(lease)
+        else:
+            lease = _reservation
+            with self._lock:
+                if lease.admission is not self or lease not in self._connections:
+                    raise RuntimeError("construction has no original admitted connection grant")
+                if lease.dispatched:
+                    raise RuntimeError("connection construction is single-attempt")
+            self._verify_process()
+
         class AdmittedConnection(_Connection):
             _reservation = lease
 
+        # Before entering the driver, loss of any return leaves the original
+        # attempt charged. The exact scope already retains this lease.
+        lease.dispatched = True
         connection = _connect(database, factory=AdmittedConnection, **options)
         if not isinstance(connection, _Connection) or connection is not lease.connection:
             raise RuntimeError("SQLite driver returned a different unadmitted connection")
@@ -319,6 +350,97 @@ class SqliteConnectionAdmission:
         with self._lock:
             self._connections.discard(lease)
             self._forget_if_settled()
+
+
+class SqliteConnectionScope:
+    """One passive construction ticket under its original shared admission.
+
+    Reserve before dependent file effects. An unreturned driver invocation stays
+    charged even if no Python connection is available. A returned connection uses
+    the existing independent cursor/blob/operation receiving protocol. Containing
+    storage must first receive its final-reader ownership before asking this scope
+    to close; this scope grants no authority over borrowed Native readers, files,
+    namespace or worker execution.
+    """
+
+    def __init__(self, admission: SqliteConnectionAdmission) -> None:
+        if not isinstance(admission, SqliteConnectionAdmission):
+            raise TypeError("an original SQLite connection admission is required")
+        self._admission = admission
+        self._lease = _ConnectionLease(admission)
+        self._gate = Lock()
+        self._reserved = False
+        self._started = False
+        self._closing = False
+
+    def _reserve(self) -> None:
+        if self._closing or self._started:
+            raise RuntimeError("connection construction is single-attempt")
+        if self._reserved:
+            with self._admission._lock:
+                if self._lease not in self._admission._connections:
+                    raise RuntimeError("the original construction reservation did not succeed")
+            return
+        self._reserved = True
+        self._admission._admit_connection(self._lease)
+
+    def reserve(self) -> None:
+        """Reserve the original shared grant before dependent filesystem effects."""
+        if not self._gate.acquire(blocking=False):
+            raise SqliteCleanupPending("original SQLite construction is still active")
+        try:
+            self._reserve()
+        finally:
+            self._gate.release()
+
+    def connect(self, database: Any, **options: Any) -> sqlite3.Connection:
+        """Dispatch this one admitted original constructor; never retry its driver."""
+        if "_reservation" in options:
+            raise ValueError("connection reservation belongs to its original scope")
+        if not self._gate.acquire(blocking=False):
+            raise SqliteCleanupPending("original SQLite construction is still active")
+        operation = False
+        try:
+            self._reserve()
+            self._started = True
+            self._admission._begin_operation()
+            operation = True
+            return self._admission._connect(database, _reservation=self._lease, **options)
+        finally:
+            if operation:
+                self._admission._end_operation()
+            self._gate.release()
+
+    @property
+    def received(self) -> bool:
+        """Observe only this exact original lease and its connection receipt."""
+        with self._admission._lock:
+            if self._lease in self._admission._connections:
+                return False
+            if not self._lease.dispatched:
+                return True
+            original = self._lease.connection
+            return original is not None and original.cleanup_complete is True
+
+    def close(self) -> None:
+        """Receive this original construction without scanning shared connections."""
+        if not self._gate.acquire(blocking=False):
+            raise SqliteCleanupPending("original SQLite construction is still active")
+        try:
+            self._closing = True
+            if self.received:
+                return
+            original = self._lease.connection
+            if original is not None:
+                original.close()
+            elif self._lease.dispatched:
+                raise SqliteCleanupPending("original SQLite construction remains unreturned")
+            else:
+                self._admission._release_connection(self._lease)
+            if not self.received:
+                raise SqliteCleanupPending("original SQLite construction remains unreceived")
+        finally:
+            self._gate.release()
 
 
 _connect = sqlite3.connect
@@ -754,6 +876,7 @@ __all__ = [
     "SqliteCapacity",
     "SqliteCleanupPending",
     "SqliteConnectionAdmission",
+    "SqliteConnectionScope",
     "SqliteConfigurationError",
     "SqliteConnectionSettings",
     "configure_sqlite_connection",
