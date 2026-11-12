@@ -99,16 +99,22 @@ def publish_shared_history(
 ) -> SharedHistoryFixture:
     """Publish exact payloads, selected shared roots and retained/required history.
 
-    With no geometry, retain the dense shared-history rebuild workload. Every
-    shared journal documents all primary endpoints; attachment fanout is separate
-    from those documentary dependencies. Supplemental journals are retained on
-    the first member. Only explicitly referenced supplemental journals enter the
-    shared root's required closure.
+    With no geometry, retain the dense shared-history rebuild workload.
+    Documentary endpoint count and shared-root attachment fanout are separate
+    input dimensions. Supplemental journals are retained on the first member.
+    Only explicitly referenced supplemental journals enter the shared root's
+    required closure.
     """
     if type(members) is not int or members < 1:
         raise ValueError("publication requires a positive member count")
     if geometry is not None and len(geometry.payload_sizes) != members:
         raise ValueError("payload geometry differs from the exact collection size")
+    claim_members = (
+        members
+        if geometry is None or geometry.shared_claim_members is None
+        else geometry.shared_claim_members
+    )
+    fanout = members if geometry is None else geometry.shared_root_members
     directory.mkdir(parents=True, exist_ok=True)
     container = _container(directory, database_url=database_url)
     container.bootstrap_token = "shared-history-qualification"
@@ -178,7 +184,6 @@ def publish_shared_history(
             producer.append_inputs((source,))
         collection_id = int(producer.collection_id)
         journal_bytes = 0
-        dependency_bytes = 0
         dependency_sizes = []
         first_endpoint = None
         for offset, source in enumerate(sources):
@@ -198,19 +203,22 @@ def publish_shared_history(
                 if first_endpoint is None:
                     first_endpoint = endpoint
                 for frame in summary.frames:
-                    dependency_bytes += len(frame.encoded)
                     prefix_bytes += len(frame.encoded)
                     if frame.reference == endpoint["entry"]:
                         break
-                claims.append(
-                    assertion(
-                        "extension",
-                        who,
-                        subject=endpoint,
-                        property=SHARED_PREDICATE,
-                        value={"type": "text", "value": f"member-token-{offset:06d}:" + "x" * 2048},
+                if offset < claim_members:
+                    claims.append(
+                        assertion(
+                            "extension",
+                            who,
+                            subject=endpoint,
+                            property=SHARED_PREDICATE,
+                            value={
+                                "type": "text",
+                                "value": f"member-token-{offset:06d}:" + "x" * 2048,
+                            },
+                        )
                     )
-                )
             dependency_sizes.append(prefix_bytes)
             primaries.append((source, binding))
         retained = []
@@ -372,11 +380,9 @@ def publish_shared_history(
         generation_id,
         len(shared),
         journal_bytes + len(shared) + supplemental_bytes,
-        journal_bytes + (members - 1) * dependency_bytes + members * len(shared)
-        if geometry is None
-        else journal_bytes
-        + geometry.shared_root_members * (dependency_bytes + len(shared) + required_bytes)
-        - sum(dependency_sizes[: geometry.shared_root_members]),
+        journal_bytes
+        + fanout * (sum(dependency_sizes[:claim_members]) + len(shared) + required_bytes)
+        - sum(dependency_sizes[: min(fanout, claim_members)]),
         expected_snapshots,
         shared_summary.journal_id,
         payload_identities,

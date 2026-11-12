@@ -17,8 +17,8 @@ from tests.support.qualification.publication_geometry import PublicationGeometry
 
 
 @pytest.mark.parametrize(
-    ("fanout", "retained", "required"),
-    [(1, 0, 0), (2, 0, 0), (2, 2, 0), (2, 2, 2)],
+    ("fanout", "retained", "required", "documentary"),
+    [(1, 0, 0, None), (2, 0, 0, None), (2, 2, 0, None), (2, 2, 2, None), (2, 0, 0, 1)],
 )
 def test_real_publication_measures_independent_history_dimensions(
     tmp_path: Path,
@@ -27,11 +27,14 @@ def test_real_publication_measures_independent_history_dimensions(
     fanout: int,
     retained: int,
     required: int,
+    documentary: int | None,
 ) -> None:
     fixture = publish_shared_history(
         tmp_path,
         members=2,
-        geometry=PublicationGeometry((0, 17), fanout, retained, required),
+        geometry=PublicationGeometry(
+            (0, 17), fanout, retained, required, shared_claim_members=documentary
+        ),
     )
     try:
         observed = measure_published_history(fixture)
@@ -43,7 +46,12 @@ def test_real_publication_measures_independent_history_dimensions(
         complete = observed["extents"][RETAINED_HISTORY_EXTENT]
         assert bound["unique_journals"] == 3 + required
         assert complete["unique_journals"] == 3 + retained
-        assert bound["journal_occurrences"] == 2 + fanout * (2 + required)
+        claimed = 2 if documentary is None else documentary
+        assert observed["shared_documentary_primaries"] == claimed
+        assert observed["shared_required_journals"] == 1 + claimed + required
+        assert bound["journal_occurrences"] == (
+            2 - min(fanout, claimed) + fanout * (1 + claimed + required)
+        )
         assert complete["journal_occurrences"] == (
             bound["journal_occurrences"] + retained - required
         )

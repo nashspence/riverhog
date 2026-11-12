@@ -11,6 +11,7 @@ from riverhog_age import iter_decrypt_age_scrypt
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
     RETAINED_HISTORY_EXTENT,
+    HistoryJournalAnchor,
     MemberHistoryBinding,
 )
 from riverhog_core.catalog_db import session_scope
@@ -141,6 +142,7 @@ def measure_published_history(
         physical_entries = set()
         physical_bytes = 0
         journal_ids = set(prepared.iter_journal_ids())
+        shared_anchor = None
         for journal_id in sorted(journal_ids):
             size, _digest = prepared.journal_metadata(journal_id)
             physical_bytes += size
@@ -148,6 +150,8 @@ def measure_published_history(
                 prepared.iter_journal_range(journal_id),
                 catalog=catalog,
             ) as summary:
+                if journal_id == fixture.shared_journal_id:
+                    shared_anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
                 physical_entries.update(
                     (journal_id, frame.reference["entry_id"]) for frame in summary.frames
                 )
@@ -159,6 +163,25 @@ def measure_published_history(
                 "physical_journal_bytes": physical_bytes,
             }
         )
+        assert shared_anchor is not None
+        primary_journals = {
+            prepared.member_history(binding).primary.journal.journal_id for binding in bindings
+        }
+        with MemberHistoryClosure(
+            prepared.history_store(),
+            lambda journal, size: prepared.iter_journal_range(journal, size=size),
+            member_role=COLLECTION_MEMBER_ROLE,
+            catalog=catalog,
+        ) as shared_closure:
+            shared_closure.resolve_snapshot(shared_anchor)
+            shared_required = tuple(shared_closure.journal_anchors())
+            result["shared_documentary_primaries"] = sum(
+                anchor.journal_id in primary_journals for anchor in shared_required
+            )
+            result["shared_required_journals"] = len(shared_required)
+            result["shared_required_journal_bytes"] = sum(
+                anchor.prefix_bytes for anchor in shared_required
+            )
         shared_attachments = 0
         extents = {}
         for extent in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):

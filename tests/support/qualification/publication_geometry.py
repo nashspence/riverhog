@@ -12,8 +12,14 @@ class PublicationGeometry:
     shared_root_members: int
     retained_journals: int = 0
     required_journals: int = 0
+    shared_claim_members: int | None = None
 
     def __post_init__(self) -> None:
+        if self.shared_claim_members is not None and (
+            type(self.shared_claim_members) is not int
+            or not 1 <= self.shared_claim_members <= len(self.payload_sizes)
+        ):
+            raise ValueError("shared documentary claims must select existing members")
         if not self.payload_sizes or any(type(n) is not int or n < 0 for n in self.payload_sizes):
             raise ValueError("payload sizes require a nonempty exact nonnegative extent")
         if type(self.shared_root_members) is not int or not 1 <= self.shared_root_members <= len(
