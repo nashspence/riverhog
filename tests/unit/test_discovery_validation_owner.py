@@ -565,3 +565,103 @@ def test_unreturned_native_corpus_keeps_original_frame_and_lease_until_guard_rec
         available(case)
     finally:
         owner.close()
+
+
+def test_unknown_native_corpus_retains_original_while_independent_owner_work_receives(
+    tmp_path, fault_native
+):
+    import subprocess
+    import sys
+
+    _native, extension = fault_native
+    code = r"""
+import importlib.util,os,sys
+from pathlib import Path
+import retained_resource
+from riverhog_core.journal_storage_grants import JournalStorageGrants
+from riverhog_core.services.journal_storage_resources import JournalStorageResources
+from riverhog_core.services.discovery_validation_owner import DiscoveryValidationOwner
+from riverhog_core import canonical_discovery_corpus_jobs as jobs
+from tests.unit import test_canonical_discovery_corpus_jobs as fixtures
+from tests.unit.test_canonical_discovery_selection import setup
+from tests.unit.test_canonical_discovery_corpus_source import seed
+from tests.unit.test_discovery_validation_owner import independent_build,busy
+from tests.support.validation_workspace import leased_workspace
+spec=importlib.util.spec_from_file_location("_retained_resource_test._native",sys.argv[2])
+native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
+retained_resource.Resource=native.Resource
+retained_resource.Borrow=native.Borrow
+root=Path(sys.argv[1])
+originals=fixtures.original.__wrapped__();original=next(originals)
+path=root/"qualified.sqlite"
+qualified=(path,setup(path,original,inherited=True))
+fixed=fixtures.fixed_inputs.__wrapped__(qualified)
+cases=fixtures.case.__wrapped__(root,fixed);case=next(cases)
+other=independent_build(case,2)
+resources=JournalStorageResources(JournalStorageGrants(connections=1))
+frames=[]
+def retain():
+ frame=resources.corpus();frames.append(frame);return frame
+owner=DiscoveryValidationOwner(case.factory,case.root,concurrency=2,
+ construction_factory=resources.journal,corpus_construction_factory=retain)
+with owner.work(build_id=case.build_id,admission=case.admission,catalog=case.catalog) as work:
+ selection,_=seed(work.metadata,qualified)
+ first=work.corpus(selection)
+ first_metadata=work.metadata
+assert resources.status.connections==1
+slot=owner._slots[case.build_id];frame=frames[0]
+assert slot.corpus_construction is frame and slot.corpus is first
+frame.guard._test_fault("unknown_close_open")
+lost=jobs.lose_discovery_corpus(case.factory,first_metadata.job,failure="controlled custody loss")
+assert lost is not None
+try:owner.release_stale()
+except (RuntimeError,OSError):pass
+else:raise AssertionError("unknown original guard returned success")
+assert owner._slots[case.build_id] is slot and slot.closing
+assert slot.corpus is first and slot.corpus_construction is frame
+assert frame.scope.received and frame.borrow.received
+assert frame.guard.state=="unknown" and not frame.received
+assert not slot.lease.received
+busy(case)
+assert resources.status.connections==0
+calls=frame.guard.metrics["close_calls"]
+with owner.work(build_id=other,admission=case.admission,catalog=case.catalog) as work:
+ assert work is not None
+ selection,anchors=seed(work.metadata,qualified)
+ second=work.corpus(selection)
+ second_id=work.metadata.job.workspace_id
+ assert resources.status.connections==1
+ while not second.advance_source(original[1],frame_budget=1).complete:pass
+ for anchor in anchors:second.select_source(anchor)
+ while not second.advance_semantics(row_budget=1).complete:pass
+ while not second.advance_dependencies(row_budget=1).complete:pass
+ for kind in ("derivation","specialization"):
+  while not second.advance_order(kind,row_budget=1).complete:pass
+assert len(frames)==2 and not frames[1].received
+assert owner._slots[case.build_id] is slot and slot.corpus_construction is frame
+try:owner.close()
+except (RuntimeError,OSError):pass
+else:raise AssertionError("unknown original became received during close")
+assert frames[1].received and resources.status.connections==0
+assert owner.active_build_ids()==(case.build_id,)
+with leased_workspace(case.root,second_id) as released:assert released is not None
+for _ in range(17):
+ try:owner.release_stale()
+ except (RuntimeError,OSError):pass
+ else:raise AssertionError("unknown original became received during retry")
+assert owner._slots[case.build_id] is slot and slot.corpus is first
+assert slot.corpus_construction is frame and not frame.received and not slot.lease.received
+assert frame.guard.metrics["close_calls"]==calls
+busy(case)
+print("ACTUAL_CORPUS_UNKNOWN_RETAINED;INDEPENDENT_CORPUS_RECEIVED",flush=True)
+# Process exit cleans the isolated fixture; it grants no original receiving.
+os._exit(0)
+"""
+    run = subprocess.run(
+        [sys.executable, "-c", code, str(tmp_path), str(extension)],
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert run.returncode == 0, (run.stdout + run.stderr)[-5000:]
+    assert "ACTUAL_CORPUS_UNKNOWN_RETAINED;INDEPENDENT_CORPUS_RECEIVED" in run.stdout

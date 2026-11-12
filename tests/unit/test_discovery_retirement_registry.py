@@ -16,6 +16,7 @@ from riverhog_core.services.archive_construction_retention import ArchiveConstru
 from riverhog_core.services.discovery_retirement_registry import DiscoveryRetirementRegistry
 from riverhog_protocol.errors import Conflict
 
+from tests.support.retained_resource import fault_native as fault_native
 from tests.unit.test_archive_upload_execution import _joined
 from tests.unit.test_archive_upload_execution import owned as owned
 from tests.unit.test_canonical_discovery_child_reclamation import prepare_child
@@ -270,3 +271,128 @@ def test_explicit_shutdown_receiving_keeps_refused_handle_charged(case, registry
         refusing = False
         assert registry.registry.receive_stopped()
     assert registry.ledger._counts[False] == 0
+
+
+def test_actual_native_receiving_and_worker_join_preserve_shared_grants(
+    case, owned, monkeypatch, fault_native
+):
+    from riverhog_core import retained_workspace_handles as handles
+    from riverhog_core.services.physical_execution import PhysicalExecutionKey
+
+    native, _ = fault_native
+    pool = owned.make(
+        terminal_workers=1,
+        retained_constructions=1,
+        retained_constructions_per_target=1,
+        retained_terminals=1,
+        retained_terminals_per_target=1,
+    )
+    ledger = ArchiveConstructionRetention(pool._tuning)
+    value = DiscoveryRetirementRegistry(case.factory, case.root, pool, ledger)
+    f = SimpleNamespace(registry=value, pool=pool, ledger=ledger)
+    job, _, _ = prepare_child(case, count=1)
+    actual_acquire = handles.RetainedWorkspaceResource.acquire
+    selected = []
+    actual_thread = physical.Thread
+    release, returned = owned.event(), threading.Event()
+
+    class LateExit(actual_thread):
+        def run(self):
+            super().run()
+            returned.set()
+            assert release.wait(10)
+
+    def acquire(original, path, **kwargs):
+        result = actual_acquire(original, path, **kwargs)
+        if path == ".lease" and not selected:
+            selected.append(original)
+            original.owner._test_fault("before_close")
+        return result
+
+    receiver = object()
+    archive_key = PhysicalExecutionKey(17, "b" * 64)
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(handles, "Resource", native.Resource)
+            patch.setattr(handles, "Borrow", native.Borrow)
+            patch.setattr(handles.RetainedWorkspaceResource, "acquire", acquire)
+            patch.setattr(physical, "Thread", LateExit)
+            assert submit(f, job) == 1 and returned.wait(5)
+            context = value._contexts[job.workspace_id]
+            actor, reservation = context.actor, context.reservation
+            (original,) = selected
+            assert context.original is actor and not actor.received
+            assert original.borrow.received and original.owner.state == "live"
+            assert original.owner.metrics["close_calls"] == 0
+            assert pool._slots[reservation.key].future.done()
+            assert value.collect(limit=1) == 0
+            assert ledger._counts == {False: 1, True: 0}
+            assert (
+                ledger.try_retain(archive_key, target_incarnation="archive", owner=receiver)
+                == "retention-capacity"
+            )
+            terminal = ledger.try_retain(
+                archive_key, target_incarnation="archive", owner=receiver, terminal=True
+            )
+            assert not isinstance(terminal, str) and terminal.terminal
+            assert (
+                pool.try_submit(
+                    archive_key,
+                    target_incarnation="archive",
+                    terminal=True,
+                    owner=receiver,
+                    identity=terminal,
+                    work=lambda: "independent terminal",
+                )
+                == "capacity"
+            )
+            release.set()
+            assert received(f) == 1
+            assert context.closing and context.received and not context.closed
+            assert value._contexts[job.workspace_id] is context
+            assert context.reservation is reservation and not actor.received
+            assert ledger._counts == {False: 1, True: 1}
+
+            patch.setattr(physical, "Thread", actual_thread)
+            assert (
+                pool.try_submit(
+                    archive_key,
+                    target_incarnation="archive",
+                    terminal=True,
+                    owner=receiver,
+                    identity=terminal,
+                    work=lambda: "independent terminal",
+                )
+                == "submitted"
+            )
+            _joined(pool)
+            (outcome,) = pool.collect(limit=1, owner=receiver)
+            assert outcome.identity is terminal and outcome.result() == "independent terminal"
+            assert ledger.retire(terminal, owner=receiver)
+            assert ledger._counts == {False: 1, True: 0}
+
+            def forbidden(*_args, **_kwargs):
+                pytest.fail("receiving reconstructed an original actor")
+
+            patch.setattr(value, "_create", forbidden)
+            patch.setattr(actor, "_advance", forbidden)
+            release.clear()
+            returned.clear()
+            patch.setattr(physical, "Thread", LateExit)
+            assert value.resume_ready(limit=1, retry_after=RETRY) == 1
+            assert returned.wait(5)
+            assert actor.received and original.owner.received
+            assert original.owner.metrics["close_calls"] == 1
+            assert value.collect(limit=1) == 0
+            assert value._contexts[job.workspace_id] is context
+            assert context.reservation is reservation and ledger._counts[False] == 1
+            release.set()
+            assert received(f) == 2
+            assert ledger._counts == {False: 0, True: 0}
+            assert not value.retained(job.workspace_id)
+    finally:
+        release.set()
+        value.close()
+        pool.close()
+        value.collect(limit=32)
+        assert value.receive_stopped()
