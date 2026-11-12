@@ -32,6 +32,26 @@ def _registry(case, monkeypatch, *, create=None):
         return actor
 
     monkeypatch.setattr(registry, "_create", make)
+    actual_submit = registry._execution.try_submit
+
+    def submit_after_lock(key, **options):
+        if options.get("owner") is not registry:
+            return actual_submit(key, **options)
+        submitted = threading.Event()
+        work = options["work"]
+
+        def after_submission():
+            assert submitted.wait(10)
+            return work()
+
+        # Isolate retirement work after submission releases its status-probe mutex.
+        options["work"] = after_submission
+        try:
+            return actual_submit(key, **options)
+        finally:
+            submitted.set()
+
+    monkeypatch.setattr(registry._execution, "try_submit", submit_after_lock)
     clock = [100.0]
     monkeypatch.setattr(registry_module, "monotonic", lambda: clock[0])
     key = PhysicalExecutionKey(case.collection_id, case.operation)
