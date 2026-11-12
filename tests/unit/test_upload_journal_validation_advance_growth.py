@@ -14,6 +14,7 @@ from types import SimpleNamespace
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_core.services import upload_journal_validation_owner as owner
 from riverhog_growth_contracts import (
     growth_binding,
@@ -101,10 +102,12 @@ def mixed_connection(native, lifecycle):
             return sqlite3.Connection.set_authorizer(self, callback)
 
         def close(self):
+            already = getattr(self, "closed", False)
+            result = super().close()
             recorder = getattr(self, "parent_recorder", None)
-            if recorder is not None:
+            if recorder is not None and not already and self.closed:
                 recorder.add("closed_databases")
-            return super().close()
+            return result
 
         @contextmanager
         def observe(self):
@@ -342,6 +345,20 @@ class Recorder(opening.Recorder):
     def kernel(self):
         with super().kernel():
             actual_close = os.close
+            native_close = RetainedWorkspaceResource.close
+
+            def receiving(original):
+                before = original.owner.metrics["close_calls"]
+                active = self.active and self.callback_active
+                if active:
+                    assert not self.owner._lock.locked()
+                try:
+                    return native_close(original)
+                finally:
+                    if active:
+                        count = original.owner.metrics["close_calls"] - before
+                        self.add("closed_files", count)
+                        self.add("lease_descriptor_closes", count)
 
             def close(fd):
                 if self.active and self.callback_active:
@@ -352,6 +369,7 @@ class Recorder(opening.Recorder):
 
             with pytest.MonkeyPatch.context() as patch:
                 patch.setattr(os, "close", close)
+                patch.setattr(RetainedWorkspaceResource, "close", receiving)
                 yield
 
     def dimensions(self, function, args, kwargs):

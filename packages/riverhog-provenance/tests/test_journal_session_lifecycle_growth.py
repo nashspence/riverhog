@@ -350,7 +350,9 @@ class LifecycleRecorder:
                 LifecycleConnection,
                 original,
                 initialize=initialize,
-                recording=lambda connection: connection.observer.recording,
+                recording=lambda connection: (
+                    connection.observer.recording or getattr(connection, "recording", False)
+                ),
             )
             actual = driver(database, **options)
             assert actual is original._reservation.connection

@@ -4,16 +4,20 @@ import fcntl
 import hashlib
 import os
 import sqlite3
-from contextlib import closing
+import sys
+from contextlib import closing, contextmanager
 from dataclasses import asdict
 
 import pytest
+import sqlite_admission
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_core.services import upload_journal_result as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalFrame, encode_entry, iter_journal_frames, new_id
 from sqlalchemy import event, func, insert, select
 
+from tests.support.sqlite_observation import observe_admitted_scope
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
 from tests.unit.test_upload_journal_result import open_result, sealed
@@ -25,14 +29,17 @@ def octets(value):
     return len(value) if isinstance(value, bytes) else len(str(value).encode())
 
 
-class NativeCursor(sqlite3.Cursor):
-    closed = False
-
+class NativeRows:
     def record(self, row):
         if row is not None:
             self.connection.metrics["returned_rows"] += 1
             self.connection.metrics["returned_metadata_octets"] += sum(map(octets, row))
         return row
+
+
+class NativeCursor(NativeRows, sqlite3.Cursor):
+    _row_observer = NativeRows
+    closed = False
 
     def fetchone(self):
         return self.record(super().fetchone())
@@ -41,17 +48,16 @@ class NativeCursor(sqlite3.Cursor):
         return [self.record(row) for row in super().fetchall()]
 
     def close(self):
+        result = super().close()
         self.closed = True
-        return super().close()
+        return result
 
 
 class NativeConnection(sqlite3.Connection):
     def execute(self, statement, parameters=()):
         if not self.recording:
             return super().execute(statement, parameters)
-        self.metrics["bound_parameter_octets"] += sum(map(octets, parameters))
         cursor = self.cursor(factory=NativeCursor)
-        self.executions.append((statement, parameters, cursor))
         return cursor.execute(statement, parameters)
 
 
@@ -311,11 +317,9 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                     observations["source_probes"] += 1
                     return actual(self)
 
-                def observed_connect(
-                    database_path, *, observations=native_metrics, opened=connections, **kwargs
+                def initialize_connection(
+                    connection, *, observations=native_metrics, opened=connections
                 ):
-                    assert str(database_path).endswith("?mode=ro")
-                    connection = connect(database_path, factory=NativeConnection, **kwargs)
                     connection.metrics, connection.executions, connection.recording = (
                         observations,
                         [],
@@ -357,6 +361,7 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                     opened=connections,
                     child_samples=children,
                     inputs=child_dimensions,
+                    initialize=initialize_connection,
                     **kwargs,
                 ):
                     callback = kwargs.get("on_storage_open")
@@ -367,14 +372,20 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                             return callback(opening)
 
                         kwargs["on_storage_open"] = retained
-                    result = native_open(*args, **kwargs)
+                    with observe_admitted_scope(
+                        kwargs["construction"].scope,
+                        NativeConnection,
+                        initialize=initialize,
+                        recording=lambda connection: connection.recording,
+                    ):
+                        result = native_open(*args, **kwargs)
                     db = result._store.db
                     observations.update(
                         returned_handles=int(result._store._frozen),
                         opened_databases=len(opened),
                         changed_rows=db.total_changes,
                         open_cursors=sum(
-                            not cursor.closed for _sql, _params, cursor in db.executions
+                            not cursor._cleanup_complete for _sql, _params, cursor in db.executions
                         ),
                     )
                     child_samples.append(
@@ -399,6 +410,61 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
 
                     return invoke
 
+                actual_cursor_execute = sqlite_admission._Cursor.execute
+                actual_cursor_fetch = sqlite_admission._Cursor.fetchone
+                actual_acquire = RetainedWorkspaceResource.acquire
+                actual_lease = owner.lease_journal_validation_workspace
+
+                def observed_cursor_execute(
+                    cursor, sql, parameters=(), opened=connections, actual=actual_cursor_execute
+                ):
+                    connection = cursor.connection
+                    if connection in opened and connection.recording:
+                        connection.metrics["bound_parameter_octets"] += sum(map(octets, parameters))
+                        connection.executions.append((sql, parameters, cursor))
+                    return actual(cursor, sql, parameters)
+
+                def observed_cursor_fetch(cursor, opened=connections, actual=actual_cursor_fetch):
+                    row = actual(cursor)
+                    connection = cursor.connection
+                    observed = getattr(cursor, "_row_observer", None)
+                    if (
+                        connection in opened
+                        and connection.recording
+                        and observed is not NativeRows
+                        and row is not None
+                    ):
+                        connection.metrics["returned_rows"] += 1
+                        connection.metrics["returned_metadata_octets"] += sum(map(octets, row))
+                    return row
+
+                def observed_acquire(
+                    resource, path, *, observations=metrics, actual=actual_acquire, **options
+                ):
+                    observations["filesystem_path_octets"] += len(os.fsencode(path))
+                    return actual(resource, path, **options)
+
+                @contextmanager
+                def observed_lease(*args, observations=metrics, actual=actual_lease, **kwargs):
+                    receiver = kwargs["receiver"]
+                    before = [record.owner.metrics for record in receiver.records]
+                    context = actual(*args, **kwargs)
+                    try:
+                        directory = context.__enter__()
+                    finally:
+                        for record, previous in zip(receiver.records, before, strict=True):
+                            after = record.owner.metrics
+                            observations["lease_opens"] += (
+                                after["open_calls"] - previous["open_calls"]
+                            )
+                            observations["filesystem_metadata_calls"] += (
+                                after["fstat_calls"] - previous["fstat_calls"]
+                            )
+                    try:
+                        yield directory
+                    finally:
+                        context.__exit__(*sys.exc_info())
+
                 event.listen(engine, "before_cursor_execute", statement)
                 catalog_db.set_progress_handler(tick_catalog, 1)
                 catalog_db.set_authorizer(authorize_catalog)
@@ -409,7 +475,10 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                         patch.setattr(owner._SealedSource, "read_window", payload_read)
                         patch.setattr(owner._SealedSource, "read_exact", payload_read)
                         patch.setattr(owner, "open_retained_journal_result", observe_native)
-                        patch.setattr(sqlite3, "connect", observed_connect)
+                        patch.setattr(sqlite_admission._Cursor, "execute", observed_cursor_execute)
+                        patch.setattr(sqlite_admission._Cursor, "fetchone", observed_cursor_fetch)
+                        patch.setattr(RetainedWorkspaceResource, "acquire", observed_acquire)
+                        patch.setattr(owner, "lease_journal_validation_workspace", observed_lease)
                         patch.setattr(os, "open", observer(os.open, "lease_opens", path=True))
                         patch.setattr(os, "fsync", observer(os.fsync, "lease_fsyncs"))
                         for operation in ("stat", "lstat", "fstat", "readlink"):
@@ -441,7 +510,7 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                 ]
                 db = result._store.db
                 native_metrics["open_cursors"] = sum(
-                    not cursor.closed for _sql, _params, cursor in db.executions
+                    not cursor._cleanup_complete for _sql, _params, cursor in db.executions
                 )
                 metrics.update(("native_" + key, value) for key, value in native_metrics.items())
                 metrics.update(
@@ -464,7 +533,13 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                                 row[3]
                                 for row in oracle.execute("EXPLAIN QUERY PLAN " + sql, parameters)
                             )
-                            assert "SCAN " not in plan and "TEMP B-TREE" not in plan, plan
+                            if sql == (
+                                "SELECT sqlite_compileoption_used('TEMP_STORE=0'), "
+                                "sqlite_compileoption_used('TEMP_STORE=3')"
+                            ):
+                                assert "SCAN CONSTANT ROW" in plan and "TEMP B-TREE" not in plan
+                            else:
+                                assert "SCAN " not in plan and "TEMP B-TREE" not in plan, plan
                 with result:
                     assert result.journal_sha256 == hashlib.sha256(raw).hexdigest()
                     assert result.anchor["through"]["sequence"] == str(frames - 1)

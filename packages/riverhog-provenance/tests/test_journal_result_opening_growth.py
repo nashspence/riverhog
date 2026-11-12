@@ -6,6 +6,7 @@ import sqlite3
 from contextlib import contextmanager
 
 import pytest
+import sqlite_admission
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import (
@@ -25,16 +26,17 @@ CLOSE = JournalResultOpening.close
 def observe(source, monkeypatch):
     metrics = {bound.metric: 0 for bound in growth_binding(CLOSE).declaration.bounds}
     recording = {"active": False}
-    connect = sqlite3.connect
+    connect = sqlite_admission._connect
+    driver_close = sqlite_admission._Connection._driver_close
 
-    class Connection(sqlite3.Connection):
-        def close(self):
-            if recording["active"]:
-                metrics["closed_databases"] += 1
-            return super().close()
+    def receive_connection(connection):
+        result = driver_close(connection)
+        if recording["active"]:
+            metrics["closed_databases"] += 1
+        return result
 
     def open_connection(*args, **kwargs):
-        connection = connect(*args, factory=Connection, **kwargs)
+        connection = connect(*args, **kwargs)
 
         def trace(_statement):
             if recording["active"]:
@@ -58,7 +60,8 @@ def observe(source, monkeypatch):
         return connection
 
     with monkeypatch.context() as patch:
-        patch.setattr(sqlite3, "connect", open_connection)
+        patch.setattr(sqlite_admission, "_connect", open_connection)
+        patch.setattr(sqlite_admission._Connection, "_driver_close", receive_connection)
         current = source.verify_current
 
         def checked():
