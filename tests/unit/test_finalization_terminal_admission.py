@@ -7,6 +7,7 @@ import pytest
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission
+from riverhog_core.services.upload_journal_result_receiving import UploadJournalResultResources
 from riverhog_protocol.errors import Conflict
 from sqlalchemy import select
 from time_formats import utc_timestamp_now
@@ -94,8 +95,17 @@ def _closed_catalog_stage(tmp_path, stage, *, database_url=None):
             before = {
                 column.name: getattr(upload, column.name) for column in Upload.__table__.columns
             }
-        with pytest.raises(Conflict, match="archive write admission is closed"):
-            getattr(case.service, stage)(case.collection_id)
+        resources = UploadJournalResultResources(case.service._journal_storage.journal)
+        try:
+            with pytest.raises(Conflict, match="archive write admission is closed"):
+                options = (
+                    {"result_resources": resources}
+                    if stage == "_advance_catalog_projection"
+                    else {}
+                )
+                getattr(case.service, stage)(case.collection_id, **options)
+        finally:
+            resources.close()
         with session_scope(case.factory) as session:
             upload = session.get(Upload, case.collection_id)
             after = {

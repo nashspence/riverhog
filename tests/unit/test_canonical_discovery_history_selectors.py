@@ -28,13 +28,13 @@ KINDS = owner._KINDS
 
 
 @pytest.fixture(scope="module")
-def original_histories(tmp_path_factory, *, journal_constructions):
+def original_histories(tmp_path_factory, *, module_journal_constructions):
     path = tmp_path_factory.mktemp("native-history-selectors") / "source.sqlite3"
     with primary_work(
         path,
         inherited_extent=RETAINED_HISTORY_EXTENT,
         retained=True,
-        journal_constructions=journal_constructions,
+        journal_constructions=module_journal_constructions,
     ) as values:
         db, key, primary, descriptor, state, *_ = values
         descriptors = [

@@ -170,17 +170,17 @@ def test_native_staged_corpus_cache_eviction_preserves_an_independent_reader(
                 directory = selected._store._storage.directory
                 expected = selected.materialize()
                 corpus[identities[1]]
-                with pytest.raises(BlockingIOError, match="final Native readers"):
-                    corpus[identities[2]]
-                assert len(corpus.cache) == 3 and identities[0] in corpus.cache
+                corpus[identities[2]]
+                assert len(corpus.cache) == 2 and identities[0] not in corpus.cache
+                assert len(corpus._result_resources._openings) == 3
                 assert selected.materialize() == expected and directory.exists()
                 original_anchor = selected.anchor
-                with pytest.raises(BlockingIOError, match="final Native readers"):
-                    corpus[identities[0]]
-                assert len(corpus.cache) == 3 and selected.materialize() == expected
+                assert corpus[identities[0]].anchor == original_anchor
+                assert len(corpus._result_resources._openings) == 3
+                assert len(corpus.cache) == 2 and selected.materialize() == expected
             assert not directory.exists()
             corpus[identities[2]]
-            assert identities[0] not in corpus.cache and len(corpus.cache) == 2
+            assert identities[0] in corpus.cache and len(corpus.cache) == 2
             assert corpus[identities[0]].anchor == original_anchor
             remaining = [row.result._store._storage.directory for row in corpus.cache.values()]
         assert not any(path.exists() for path in remaining)

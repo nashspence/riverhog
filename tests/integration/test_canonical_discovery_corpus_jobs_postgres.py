@@ -14,12 +14,12 @@ from riverhog_core.catalog_provenance_index_models import (
 from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexStateRecord as State,
 )
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import delete, select
 from sqlalchemy.orm import sessionmaker
 
 from tests.integration.test_canonical_discovery_rebuild_postgres import database_url as database_url
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_jobs import (
     _closed_projection,
     _reclamation_stages,
@@ -61,7 +61,7 @@ def prepared(database_url, fixed_inputs):
 
 def test_postgresql_discovery_claim_skips_locked_build_and_keeps_its_epoch(prepared, tmp_path):
     factory, engine, job, _ = prepared
-    with lease_journal_validation_workspace(
+    with leased_workspace(
         tmp_path / "owned",
         job.workspace_id,
         create=True,
@@ -93,7 +93,7 @@ def test_postgresql_discovery_claim_cas_and_pinned_job_survive_generation_deleti
     prepared, tmp_path
 ):
     factory, engine, job, frozen = prepared
-    with lease_journal_validation_workspace(
+    with leased_workspace(
         tmp_path / "owned",
         job.workspace_id,
         create=True,
@@ -225,7 +225,7 @@ def test_postgresql_discovery_reclamation_retains_exact_phases_after_rollback_an
             failure="original storage open unavailable",
         )
         assert current is not None
-    with lease_journal_validation_workspace(
+    with leased_workspace(
         tmp_path / "owned",
         current.workspace_id,
         create=True,

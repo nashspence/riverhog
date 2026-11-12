@@ -11,6 +11,7 @@ import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_parent_reclamation as owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 
 from tests.support.retained_resource import fault_native as fault_native
 from tests.support.validation_workspace import leased_workspace
@@ -28,18 +29,18 @@ def current(case, identity):
 
 
 def prefix(case, variant="lease"):
-    actual = os.open
+    actual = RetainedWorkspaceResource.acquire
 
-    def interrupted(name, *args, **kwargs):
+    def interrupted(handle, name, **kwargs):
         if (variant == "root" and name == ".coordinator") or (
             variant == "directory" and name == ".lease"
         ):
             raise OSError("actual creator interrupted")
-        return actual(name, *args, **kwargs)
+        return actual(handle, name, **kwargs)
 
     if variant != "absent":
         with pytest.MonkeyPatch.context() as patch:
-            patch.setattr(os, "open", interrupted)
+            patch.setattr(RetainedWorkspaceResource, "acquire", interrupted)
             if variant == "lease":
                 with leased_workspace(
                     case.root,

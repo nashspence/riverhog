@@ -5939,7 +5939,7 @@ class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
 
     def _receive_oldest(self) -> None:
         key = next(iter(self.cache))
-        self._result_resources.receive(self.cache[key])
+        self._result_resources.retire(self.cache[key])
         del self.cache[key]
 
     def __getitem__(self, journal_id: str) -> JournalSummary:
@@ -5955,6 +5955,9 @@ class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
         )
         if record is None or record.state != "sealed":
             raise KeyError(journal_id)
+        self._result_resources.receive_retired()
+        while not self._result_resources.capacity_available and self.cache:
+            self._receive_oldest()
         original = self._result_resources.retain()
         summary = original.result = self._open_summary(journal_id, original)
         if (

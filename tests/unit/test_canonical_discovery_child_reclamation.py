@@ -10,6 +10,7 @@ from riverhog_core.catalog_discovery_validation_models import DiscoveryValidatio
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
 )
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 
 from tests.support.retirement_namespace import lease_retiring_journal_workspace
 from tests.support.validation_workspace import leased_workspace
@@ -36,23 +37,23 @@ def prepare_child(case, *, prefix="data", confirmed=True, extent=7, count=2):
             register_children(db, live.job, bindings, confirmed=confirmed)
         root = path / "journals"
         child = root / bindings[0].directory_id
-        actual_open, actual_mkdir = os.open, os.mkdir
+        actual_acquire, actual_mkdir = RetainedWorkspaceResource.acquire, os.mkdir
         with pytest.MonkeyPatch.context() as patch:
             if prefix in {"root", "root-control", "directory"}:
 
-                def opened(name, flags, *args, **kwargs):
+                def acquired(handle, name, **kwargs):
                     if prefix == "root" and name == ".coordinator":
                         raise OSError(errno.EIO, "actual root-control creation interrupted")
-                    if prefix == "directory" and name == ".lease" and flags & os.O_CREAT:
+                    if prefix == "directory" and name == ".lease" and kwargs.get("create"):
                         raise OSError(errno.EIO, "actual child-lease creation interrupted")
-                    return actual_open(name, flags, *args, **kwargs)
+                    return actual_acquire(handle, name, **kwargs)
 
                 def made(name, *args, **kwargs):
                     if prefix == "root-control" and name == bindings[0].directory_id:
                         raise OSError(errno.EIO, "actual child-directory creation interrupted")
                     return actual_mkdir(name, *args, **kwargs)
 
-                patch.setattr(os, "open", opened)
+                patch.setattr(RetainedWorkspaceResource, "acquire", acquired)
                 patch.setattr(os, "mkdir", made)
             if prefix != "absent-root":
                 if prefix in {"root", "root-control", "directory"}:
@@ -123,12 +124,14 @@ def test_actual_frozen_native_borrower_prevents_parent_reclamation_then_allows_s
             with case.factory() as session, session.begin():
                 job = jobs.retire_discovery_job(session, original_job)
             assert job is not None
-            case.pool.close()
+            with pytest.raises(BlockingIOError, match="original journal construction"):
+                case.pool.close()
             first.close()
             with lease_retiring_journal_workspace(case.root, job.workspace_id) as busy:
                 assert busy is None
             assert last.journal_sha256 == binding.source_sha256
             last.close()
+            case.pool.close()
             job = directory_job(case, job, budget=1024 * 1024)
             result = step(case, job)
             assert result.job.reclamation_phase == "children"

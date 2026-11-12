@@ -351,7 +351,12 @@ class Recorder:
             },
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        try:
+            validate_execution_samples(projection, binding.declaration.id, [sample])
+        except ValueError as error:
+            raise AssertionError(
+                {"operation": operation, "dimensions": dimensions, "metrics": sample["metrics"]}
+            ) from error
         return sample
 
 
@@ -423,18 +428,21 @@ def case_for(root, admission, retained, width, *, template=None, catalog=None):
             claimed = jobs.claim_discovery_worker(factory, selected)
             assert claimed is not None
             metadata = owner.DiscoveryMetadata(factory, claimed, admission, captured[0])
+            case = SimpleNamespace(
+                engine=engine,
+                factory=factory,
+                metadata=metadata,
+                path=path,
+                retained=retained,
+                width=width,
+                admission=admission,
+            )
             try:
-                yield SimpleNamespace(
-                    engine=engine,
-                    factory=factory,
-                    metadata=metadata,
-                    path=path,
-                    retained=retained,
-                    width=width,
-                    admission=admission,
-                )
+                yield case
             finally:
-                metadata.close()
+                case.metadata.close()
+                if case.metadata is not metadata:
+                    metadata.close()
     finally:
         engine.dispose()
 

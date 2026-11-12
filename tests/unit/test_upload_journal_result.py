@@ -152,6 +152,44 @@ def test_independent_sealed_readers_can_reopen_while_an_evicted_borrow_remains_l
                 assert free is not None
 
 
+def test_retired_sealed_reader_keeps_its_original_grant_until_last_borrow_receives(
+    tmp_path, *, journal_constructions
+):
+    from riverhog_core.services.upload_journal_result_receiving import UploadJournalResultResources
+
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (_, factory, root, _, _):
+        resources = UploadJournalResultResources(journal_constructions.retain)
+        with factory() as session, session.begin():
+            first = resources.retain()
+            first.result = result_owner.open_upload_journal_result(
+                session,
+                root,
+                1,
+                JOURNAL,
+                catalog=source_owner.admission_provenance_catalog(),
+                receiver=first,
+            )
+            last = first.result.borrow()
+            expected = last.anchor
+            try:
+                resources.retire(first)
+                assert resources.pending and not first.construction.received
+                assert not first.construction.scope.received
+                assert last.anchor == expected
+                second, third = resources.retain(), resources.retain()
+                assert not resources.capacity_available
+                with pytest.raises(BlockingIOError, match="occupy this catalog turn"):
+                    resources.retain()
+                assert last.anchor == expected
+            finally:
+                last.close()
+                resources.close()
+            assert first.construction.received and first.lease.received
+            assert first.construction.scope.received
+            assert second.construction.received and third.construction.received
+            assert not resources.pending
+
+
 def test_busy_sealed_result_leaves_the_same_completed_job_pending_for_retry(
     tmp_path, *, journal_constructions, upload_result_openings
 ):

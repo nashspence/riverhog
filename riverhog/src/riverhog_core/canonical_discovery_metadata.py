@@ -367,6 +367,8 @@ def _metadata_declaration(operation: str) -> Declaration:
     opening = operation == "open"
     closing_storage = operation == "close"
     fences = 0 if closing_storage else 4 if opening else 1 if operation == "verify_current" else 2
+    # The pre-sync directory custody check has no matching metadata-file/catalog fence.
+    custody_fences = fences + int(opening)
 
     def count(value: int) -> Expression:
         return Expression("constant", value=value, unit=COUNT)
@@ -402,8 +404,11 @@ def _metadata_declaration(operation: str) -> Declaration:
         "uuid_values": int(opening),
         "open_calls": 2 if opening else 0,
         "close_calls": int(opening or closing_storage),
-        "stat_calls": fences * 8,
-        "uid_calls": fences * 4,
+        # Each custody check validates three descriptors and three entries.
+        # Each metadata-file check validates its descriptor and entry; acquisition
+        # also checks the native file kind once.
+        "stat_calls": custody_fences * 6 + fences * 2 + int(opening),
+        "uid_calls": custody_fences * 3 + fences,
         "fsync_calls": 2 if opening else 0,
         "directory_enumerations": 0,
     }
