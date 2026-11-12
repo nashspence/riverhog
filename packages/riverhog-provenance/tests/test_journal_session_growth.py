@@ -681,7 +681,12 @@ def session_cases(
                 if key not in seen:
                     seen.add(key)
                     path = root / f"session-{ordinal}-checkpoint-{len(seen)}.sqlite3"
-                    with closing(sqlite3.connect(path)) as saved:
+                    connect = (
+                        journal_constructions.admission.connect
+                        if mode == "retained"
+                        else sqlite3.connect
+                    )
+                    with closing(connect(path)) as saved:
                         session._store.db.backup(saved)
                     stream_state = (
                         None

@@ -6,6 +6,7 @@ import sys
 import threading
 
 import pytest
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 
 from tests.support.validation_workspace import leased_workspace
 
@@ -89,14 +90,14 @@ def test_actual_creator_before_marker_excludes_absence_receiver_until_stopped(
     arrived, release, stopped = threading.Event(), threading.Event(), threading.Event()
     current = [True]
     outcomes, errors = [], []
-    actual = os.open
+    actual = RetainedWorkspaceResource.acquire
 
-    def paused(name, *args, **kwargs):
+    def paused(handle, name, **kwargs):
         if name == ".coordinator":
             arrived.set()
             if not release.wait(10):
                 raise TimeoutError("pre-coordinator creator was not released")
-        return actual(name, *args, **kwargs)
+        return actual(handle, name, **kwargs)
 
     def writer():
         try:
@@ -110,7 +111,7 @@ def test_actual_creator_before_marker_excludes_absence_receiver_until_stopped(
             stopped.set()
 
     with monkeypatch.context() as patch:
-        patch.setattr(os, "open", paused)
+        patch.setattr(RetainedWorkspaceResource, "acquire", paused)
         thread = threading.Thread(target=writer)
         thread.start()
         try:
@@ -135,11 +136,12 @@ def test_actual_process_exit_before_marker_releases_root_inode_without_creating_
     script = """import os,sys
 from pathlib import Path
 from tests.support.validation_workspace import leased_workspace
-actual=os.open
-def interrupted(name,*args,**kwargs):
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
+actual=RetainedWorkspaceResource.acquire
+def interrupted(handle,name,**kwargs):
     if name==".coordinator":os._exit(86)
-    return actual(name,*args,**kwargs)
-os.open=interrupted
+    return actual(handle,name,**kwargs)
+RetainedWorkspaceResource.acquire=interrupted
 with leased_workspace(
     Path(sys.argv[1]),"a"*32,create=True,creation_current=lambda:True
 ):

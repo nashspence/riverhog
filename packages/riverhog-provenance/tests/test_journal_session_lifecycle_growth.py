@@ -691,7 +691,9 @@ def replacement_samples(catalog, cases, *, samples, journal_constructions):
             source = previous._source
             input_state = previous._input.state
             oracle_directory = Path(mkdtemp(prefix="lifecycle-oracle-", dir=directory.parent))
-            with closing(sqlite3.connect(oracle_directory / "snapshot.sqlite3")) as destination:
+            with closing(
+                journal_constructions.admission.connect(oracle_directory / "snapshot.sqlite3")
+            ) as destination:
                 previous._store.db.backup(destination)
             previous.close()
             with closing(

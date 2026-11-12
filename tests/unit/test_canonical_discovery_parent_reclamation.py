@@ -382,15 +382,16 @@ from riverhog_core.canonical_discovery_corpus_jobs import DiscoveryJob,discovery
 from tests.support.validation_workspace import leased_workspace
 engine=create_catalog_engine(sys.argv[1]);factory=sessionmaker(engine,expire_on_commit=False)
 with factory() as session: job=DiscoveryJob.read(session.get(Row,sys.argv[3]))
-actual=os.open
-def interrupted(name,*args,**kwargs):
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
+actual=RetainedWorkspaceResource.acquire
+def interrupted(handle,name,**kwargs):
  if (sys.argv[4]=="root" and name==".coordinator") or (
   sys.argv[4]=="directory" and name==".lease"
  ): os._exit(68)
- result=actual(name,*args,**kwargs)
+ result=actual(handle,name,**kwargs)
  if sys.argv[4]=="lease" and name==".lease": os._exit(68)
  return result
-os.open=interrupted
+RetainedWorkspaceResource.acquire=interrupted
 with leased_workspace(
  Path(sys.argv[2]),job.workspace_id,create=True,
  creation_current=lambda: discovery_worker_current(factory,job)

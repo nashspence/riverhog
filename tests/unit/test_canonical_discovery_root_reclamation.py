@@ -76,18 +76,18 @@ def test_actual_root_creation_interrupt_or_stale_callback_needs_no_repair(
     case, monkeypatch, before_control
 ):
     job, path = prepare_root(case, variant="absent")
-    actual = os.open
+    actual = RetainedWorkspaceResource.acquire
 
-    def interrupted(name, *args, **kwargs):
+    def interrupted(handle, name, **kwargs):
         if name == ".coordinator":
             raise OSError("actual root creation interrupted before control")
-        return actual(name, *args, **kwargs)
+        return actual(handle, name, **kwargs)
 
     with retired(case, job) as metadata:
         metadata.open()
         with monkeypatch.context() as patch:
             if before_control:
-                patch.setattr(os, "open", interrupted)
+                patch.setattr(RetainedWorkspaceResource, "acquire", interrupted)
                 with pytest.raises(OSError, match="creation interrupted"):
                     with leased_workspace(
                         path / "journals", "f" * 32, create=True, creation_current=lambda: False
