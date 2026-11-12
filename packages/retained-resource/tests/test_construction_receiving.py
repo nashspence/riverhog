@@ -276,7 +276,7 @@ def test_sync_failure_keeps_original_resource_for_receiving(tmp_path, fault_nati
     target = encoded(tmp_path if os.name == "posix" else path)
     for fault in ("before_sync", "after_sync"):
         resource = native.Resource("directory" if os.name == "posix" else "file")
-        resource.acquire(target)
+        resource.acquire(target, writable=os.name == "nt")
         resource._test_fault(fault)
         with pytest.raises(RuntimeError):
             resource.sync()
@@ -312,7 +312,7 @@ def test_actual_sync_growth_is_independent_of_population_and_extent(tmp_path, re
             for kind in kinds:
                 resource = Resource(kind)
                 target = encoded(path if kind == "file" else root)
-                resource.acquire(target)
+                resource.acquire(target, writable=kind == "file")
                 before = resource.metrics
                 sync(resource)
                 after = resource.metrics
