@@ -96,7 +96,9 @@ class Recorder:
                     storage.on_close = recorder.callback(storage.on_close)
                     live.append((key, slot, storage))
             try:
-                observed = recorder.measure(self.case, selected, live, {}, cold=False, busy=False)
+                observed = recorder.measure(
+                    self.case, selected, live, {}, cold=False, busy=False, borrowed=()
+                )
                 self.children["sweep"].append(observed)
             finally:
                 remaining = dict(selected._slots)

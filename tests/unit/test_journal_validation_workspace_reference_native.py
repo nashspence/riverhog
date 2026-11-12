@@ -17,7 +17,51 @@ from tests.support.retained_resource import fault_native as fault_native
 def test_actual_compiled_duplicate_reply_loss_keeps_original_custody(
     tmp_path, monkeypatch, fault_native, fault
 ):
-    native, _ = fault_native
+    native, extension = fault_native
+    if fault == "signal_after_open":
+        program = r"""
+import importlib.util,signal,sys
+from pathlib import Path
+from riverhog_core import journal_validation_workspace as kernel
+from riverhog_core import journal_validation_workspace_reference as references
+from riverhog_core import retained_workspace_handles as handles
+from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
+# The process owns the pending interrupt's handler and main interpreter thread.
+signal.signal(signal.SIGINT,signal.default_int_handler)
+spec=importlib.util.spec_from_file_location("_retained_resource_test._native",sys.argv[1])
+native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
+handles.Resource,handles.Borrow=native.Resource,native.Borrow
+frame=ValidationWorkspaceLease();retained=[];custody=[]
+def retain(original):
+ retained.append(original)
+ assert original._resource.owner.state=="new"
+ original._resource.owner._test_fault("signal_after_open")
+try:
+ with kernel.lease_journal_validation_workspace(
+  Path(sys.argv[2])/"original","a"*32,receiver=frame,create=True,on_custody=custody.append):
+  try:references.retain_validation_workspace(custody[0],on_reference=retain)
+  except KeyboardInterrupt:pass
+  else:raise AssertionError("native duplicate did not deliver the pending interrupt")
+  assert len(retained)==1 and retained[0].closed
+  assert retained[0]._resource.owner.received
+  assert retained[0]._resource.owner.metrics["dup_calls"]==1
+  assert custody[0].verify_current()
+  assert frame.directory.owner.metrics["children"]==1
+ frame.close();assert frame.received
+finally:
+ for original in retained:original.close()
+ frame.close()
+print("ACTUAL_DUPLICATE_INTERRUPT_AND_ORIGINAL_RECEIVING",flush=True)
+"""
+        result = subprocess.run(
+            [sys.executable, "-I", "-c", program, str(extension), str(tmp_path)],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        assert result.returncode == 0, (result.stdout + result.stderr)[-2800:]
+        assert "ACTUAL_DUPLICATE_INTERRUPT_AND_ORIGINAL_RECEIVING" in result.stdout
+        return
     monkeypatch.setattr(handles, "Resource", native.Resource)
     monkeypatch.setattr(handles, "Borrow", native.Borrow)
     frame = ValidationWorkspaceLease()
@@ -33,8 +77,7 @@ def test_actual_compiled_duplicate_reply_loss_keeps_original_custody(
         with kernel.lease_journal_validation_workspace(
             root, "a" * 32, receiver=frame, create=True, on_custody=custody.append
         ):
-            expected = KeyboardInterrupt if fault == "signal_after_open" else RuntimeError
-            with pytest.raises(expected):
+            with pytest.raises(RuntimeError):
                 references.retain_validation_workspace(custody[0], on_reference=retain)
             assert len(retained) == 1 and retained[0].closed
             assert retained[0]._resource.owner.received
