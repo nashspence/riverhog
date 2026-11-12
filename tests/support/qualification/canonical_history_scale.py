@@ -100,6 +100,7 @@ def publish_shared_history(
     database_url: str | None = None,
     geometry: PublicationGeometry | None = None,
     progress: Callable[[dict[str, object]], None] | None = None,
+    finalization_timeout_seconds: int = PUBLICATION_TIMEOUT_SECONDS,
 ) -> SharedHistoryFixture:
     """Publish exact payloads, selected shared roots and retained/required history.
 
@@ -124,6 +125,8 @@ def publish_shared_history(
         if progress is not None:
             progress({"phase": phase, **values})
 
+    if type(finalization_timeout_seconds) is not int or finalization_timeout_seconds <= 0:
+        raise ValueError("publication finalization deadline requires positive seconds")
     directory.mkdir(parents=True, exist_ok=True)
     container = _container(directory, database_url=database_url)
     container.bootstrap_token = "shared-history-qualification"
@@ -349,7 +352,7 @@ def publish_shared_history(
             emit("finalization", members=members)
             finalized = producer.finish(
                 poll_seconds=PUBLICATION_POLL_SECONDS,
-                timeout_seconds=PUBLICATION_TIMEOUT_SECONDS,
+                timeout_seconds=finalization_timeout_seconds,
             )
             assert finalized.archive_root_sha256 is not None
             assert finalized.receipt["state"] == "finalized"

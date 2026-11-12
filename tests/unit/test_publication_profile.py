@@ -10,7 +10,7 @@ from riverhog_archive_contracts import BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EX
 
 from scripts import performance_measurement as performance
 from scripts import transfer_profile, validation_identity, validation_process
-from tests.support.qualification import publication_profile
+from tests.support.qualification import canonical_history_scale, publication_profile
 from tests.support.qualification.publication_geometry import (
     WORKLOAD_FORMAT,
     PublicationGeometry,
@@ -106,7 +106,7 @@ def test_profile_preserves_the_original_refusal_and_attempts_both_resource_recei
 
 @pytest.mark.parametrize(
     "fault",
-    ["exit", "run-id", "unverified", "geometry", "source", "receipt-shape"],
+    ["exit", "run-id", "unverified", "geometry", "source", "receipt-shape", "deadline"],
 )
 def test_parent_rejects_invalid_or_interrupted_completion_after_receiving_the_helper(
     tmp_path: Path,
@@ -134,7 +134,13 @@ def test_parent_rejects_invalid_or_interrupted_completion_after_receiving_the_he
         workspaces.append(workspace)
         selected = json.loads(Path(command[3]).read_text())
         selected.pop("format")
-        observed = {"completion_verified": True, "workload": selected}
+        observed = {
+            "completion_verified": True,
+            "workload": selected,
+            "conditions": {"finalization_timeout_seconds": 900},
+        }
+        if fault == "deadline":
+            assert command[9] == "3600"
         receipt = {
             "format": "riverhog-publication-completion/v1",
             "run_id": command[7],
@@ -159,7 +165,11 @@ def test_parent_rejects_invalid_or_interrupted_completion_after_receiving_the_he
     workload.write_text(json.dumps(document()))
     output = tmp_path / "profiles"
     with pytest.raises(performance.PerformanceError):
-        transfer_profile._profile_collection_publication(workload, output)
+        transfer_profile._profile_collection_publication(
+            workload,
+            output,
+            finalization_timeout_seconds=3600 if fault == "deadline" else None,
+        )
     assert workspaces and all(not path.exists() for path in workspaces)
     assert not list(output.glob("*/profile.json"))
     phases = list(output.glob("*/phase.json"))
@@ -177,11 +187,22 @@ def test_real_native_profile_verifies_one_collection_through_explicit_reader_cac
     sentinel = str(tmp_path / "unavailable-deployed-config")
     monkeypatch.setenv("RIVERHOG_CONFIG", sentinel)
     phases = []
+    received_deadlines = []
+    original_finish = canonical_history_scale.IncrementalCollectionProducer.finish
+
+    def finish(producer, *args, **kwargs):
+        received_deadlines.append(kwargs["timeout_seconds"])
+        return original_finish(producer, *args, **kwargs)
+
+    monkeypatch.setattr(canonical_history_scale.IncrementalCollectionProducer, "finish", finish)
     result = publication_profile.run_publication_profile(
         PublicationGeometry((17,), 1, 1, 1, shared_claim_members=1),
         tmp_path / "profile-workspace",
         record_phase=phases.append,
+        finalization_timeout_seconds=3600,
     )
+    assert received_deadlines == [3600]
+    assert result["conditions"]["finalization_timeout_seconds"] == 3600
     assert os.environ["RIVERHOG_CONFIG"] == sentinel
     assert result["completion_verified"] is True
     assert phases[-1]["phase"] == "cleanup-received"
@@ -220,3 +241,44 @@ def test_real_native_profile_verifies_one_collection_through_explicit_reader_cac
     assert result["publication_verified_members_per_second"] == pytest.approx(
         1 / result["publication_seconds"]
     )
+
+
+@pytest.mark.parametrize("seconds", [0, -1, True])
+def test_profile_rejects_invalid_resource_deadlines_before_creating_workspace(
+    tmp_path: Path,
+    seconds: int,
+) -> None:
+    workspace = tmp_path / "profile"
+    with pytest.raises(ValueError):
+        publication_profile.run_publication_profile(
+            PublicationGeometry((17,), 1),
+            workspace,
+            record_phase=lambda _value: None,
+            finalization_timeout_seconds=seconds,
+        )
+    assert not workspace.exists()
+
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        [
+            "--scenario",
+            "collection-publication",
+            "--publication-workload",
+            "workload.json",
+            "--finalization-timeout-seconds",
+            "0",
+        ],
+        ["--scenario", "stove0-scale", "--finalization-timeout-seconds", "3600"],
+        ["--scenario", "riverhog-ingress", "--finalization-timeout-seconds", "3600"],
+    ],
+)
+def test_resource_deadline_argument_requires_a_positive_publication_scenario(
+    argv: list[str],
+) -> None:
+    parser = transfer_profile._parser()
+    with pytest.raises(SystemExit) as caught:
+        args = parser.parse_args(argv)
+        transfer_profile._validate_args(args, parser)
+    assert caught.value.code == 2

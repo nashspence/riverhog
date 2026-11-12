@@ -164,6 +164,11 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         help="exact input geometry JSON for the maintained collection-publication profile",
     )
+    parser.add_argument(
+        "--finalization-timeout-seconds",
+        type=_positive_int,
+        help="positive finalization resource deadline for collection-publication",
+    )
     parser.add_argument("--payload-bytes", type=_positive_int)
     parser.add_argument("--items", type=_positive_int)
     parser.add_argument(
@@ -215,6 +220,8 @@ def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         return []
     if args.publication_workload is not None:
         parser.error("--publication-workload requires --scenario collection-publication")
+    if args.finalization_timeout_seconds is not None:
+        parser.error("--finalization-timeout-seconds requires --scenario collection-publication")
     if args.scenario == "stove0-scale":
         transfer_fields = (
             "workload",
@@ -369,7 +376,12 @@ def _profile_stove0_scale(output: Path) -> int:
     return status
 
 
-def _profile_collection_publication(workload: Path, output: Path) -> int:
+def _profile_collection_publication(
+    workload: Path,
+    output: Path,
+    *,
+    finalization_timeout_seconds: int | None = None,
+) -> int:
     from dataclasses import asdict
 
     from riverhog_canonical_json import canonical_json_bytes
@@ -386,6 +398,10 @@ def _profile_collection_publication(workload: Path, output: Path) -> int:
         geometry = read_workload(workload)
     except (OSError, ValueError, TypeError) as error:
         raise performance.PerformanceError("publication workload is invalid") from error
+    if finalization_timeout_seconds is not None and (
+        type(finalization_timeout_seconds) is not int or finalization_timeout_seconds <= 0
+    ):
+        raise performance.PerformanceError("publication finalization deadline is invalid")
     target = asdict(geometry)
     target["payload_sizes"] = list(geometry.payload_sizes)
     output.mkdir(parents=True, exist_ok=True)
@@ -431,6 +447,7 @@ def _profile_collection_publication(workload: Path, output: Path) -> int:
                     str(directory / "phase.json"),
                     run_id,
                     str(source["source_sha"]),
+                    str(finalization_timeout_seconds) if finalization_timeout_seconds else "",
                 ],
                 cwd=root,
                 env=environment,
@@ -457,6 +474,14 @@ def _profile_collection_publication(workload: Path, output: Path) -> int:
                 or receipt["source"] != source
                 or receipt["observed"].get("completion_verified") is not True
                 or receipt["observed"].get("workload") != target
+                or (
+                    finalization_timeout_seconds is not None
+                    and (
+                        not isinstance(receipt["observed"].get("conditions"), dict)
+                        or receipt["observed"]["conditions"].get("finalization_timeout_seconds")
+                        != finalization_timeout_seconds
+                    )
+                )
             ):
                 raise performance.PerformanceError("publication completion receipt is invalid")
             observed = receipt["observed"]
@@ -501,7 +526,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             output = (
                 args.output or Path(__file__).resolve().parents[1] / "build/publication-profile"
             )
-            return _profile_collection_publication(args.publication_workload, output)
+            return _profile_collection_publication(
+                args.publication_workload,
+                output,
+                finalization_timeout_seconds=args.finalization_timeout_seconds,
+            )
         if args.scenario == "stove0-scale":
             output = (
                 args.output or Path(__file__).resolve().parents[1] / "build/stove0-scale-profile"

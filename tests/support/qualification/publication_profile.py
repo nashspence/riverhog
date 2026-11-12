@@ -49,6 +49,7 @@ def run_publication_profile(
     workspace: Path,
     *,
     record_phase: Callable[[dict[str, object]], None],
+    finalization_timeout_seconds: int | None = None,
 ) -> dict[str, object]:
     """Publish once, then verify complete output/history under named reader states.
 
@@ -59,6 +60,13 @@ def run_publication_profile(
     The caller owns workspace lifetime and receives the fixture process before
     removing its files, including when a resource close is unconfirmed.
     """
+    timeout = (
+        PUBLICATION_TIMEOUT_SECONDS
+        if finalization_timeout_seconds is None
+        else finalization_timeout_seconds
+    )
+    if type(timeout) is not int or timeout <= 0:
+        raise ValueError("publication finalization deadline requires positive seconds")
     directory = workspace
     directory.mkdir(parents=True, exist_ok=True)
     config = write_test_runtime_config(directory)
@@ -70,6 +78,7 @@ def run_publication_profile(
             members=len(geometry.payload_sizes),
             geometry=geometry,
             progress=record_phase,
+            finalization_timeout_seconds=timeout,
         )
         publication_seconds = time.perf_counter() - started
         try:
@@ -137,7 +146,7 @@ def run_publication_profile(
                     "producer_cache": False,
                     "append_mode": "one-member-at-a-time",
                     "finalization_poll_seconds": PUBLICATION_POLL_SECONDS,
-                    "finalization_timeout_seconds": PUBLICATION_TIMEOUT_SECONDS,
+                    "finalization_timeout_seconds": timeout,
                     "native_cache_byte_budget": _OBJECT_CACHE_BYTES,
                     "native_cache_entry_budget": _OBJECT_CACHE_ENTRIES,
                     "cache_scope": "verified Native bytes; OS caches are not cleared",
@@ -170,9 +179,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     from scripts.validation_identity import source_identity
 
     args = list(sys.argv[1:] if argv is None else argv)
-    if len(args) != 6:
+    if len(args) != 7:
         return 2
-    workload, workspace, completion, progress, run_id, expected_source = args
+    workload, workspace, completion, progress, run_id, expected_source, timeout = args
     root = Path(__file__).resolve().parents[3]
     source = source_identity(root)
     directory = Path(workspace)
@@ -199,6 +208,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     read_workload(Path(workload)),
                     directory,
                     record_phase=phase,
+                    finalization_timeout_seconds=int(timeout) if timeout else None,
                 )
                 if source_identity(root) != source:
                     raise ValueError("publication helper source changed")
