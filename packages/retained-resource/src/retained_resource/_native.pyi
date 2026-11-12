@@ -12,14 +12,16 @@ class Resource:
     def metrics(self) -> dict[str, int]: ...
     def acquire(
         self,
-        path: bytes,
+        path: bytes | str,
         *,
         writable: bool = False,
         parent: Resource | None = None,
         create: bool = False,
         exclusive: bool = False,
+        private_owned: bool = False,
     ) -> None: ...
     def duplicate(self, source: Resource) -> None: ...
+    def sync(self) -> None: ...
     def close(self) -> None: ...
 
 class Borrow:

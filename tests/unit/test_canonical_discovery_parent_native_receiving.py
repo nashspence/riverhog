@@ -8,7 +8,7 @@ import threading
 import pytest
 from riverhog_core import canonical_discovery_parent_reclamation as owner
 
-from tests.support.retained_posix import fault_native as fault_native
+from tests.support.retained_resource import fault_native as fault_native
 from tests.unit.test_canonical_discovery_parent_reclamation import current, prefix
 from tests.unit.test_canonical_discovery_retired_metadata import case as case
 from tests.unit.test_canonical_discovery_retired_metadata import fixed_inputs as fixed_inputs
@@ -150,7 +150,7 @@ from riverhog_core.catalog_db import create_catalog_engine
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
 from riverhog_core.canonical_discovery_corpus_jobs import DiscoveryJob
 from riverhog_core import canonical_discovery_parent_reclamation as owner
-spec=importlib.util.spec_from_file_location("_retained_posix_test._native",sys.argv[4])
+spec=importlib.util.spec_from_file_location("_retained_resource_test._native",sys.argv[4])
 native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
 owner.Resource,owner.Borrow=native.Resource,native.Borrow
 engine=create_catalog_engine(sys.argv[1]);factory=sessionmaker(engine,expire_on_commit=False)

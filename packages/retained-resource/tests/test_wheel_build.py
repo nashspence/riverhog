@@ -11,7 +11,7 @@ import zipfile
 from pathlib import Path
 
 OWNER = Path(__file__).resolve().parents[1]
-NATIVE = sys.platform in {"linux", "darwin"}
+NATIVE = sys.platform in {"linux", "darwin", "win32"}
 
 
 def _run(command, *, cwd):
@@ -42,11 +42,26 @@ def _installed_owner(python, cwd):
     program = """
 import os,sys
 from pathlib import Path
-from retained_posix import Resource,Borrow
-if sys.platform not in {'linux','darwin'}:
+from retained_resource import Resource,Borrow
+if sys.platform not in {'linux','darwin','win32'}:
  try:Resource('file')
  except RuntimeError:pass
  else:raise AssertionError('unsupported native profile accepted')
+elif os.name=='nt':
+ path=Path(sys.argv[1])/'native-é-🐲';owner=Resource('file')
+ assert not hasattr(owner,'_test_fault')
+ owner.acquire(str(path),writable=True,create=True,exclusive=True)
+ borrower=Borrow(owner);borrower.acquire()
+ os.write(borrower.fileno(),b'original');borrower.close()
+ owner.sync();owner.close();owner.close()
+ assert owner.received and owner.metrics['close_calls']==1
+ rejected=Resource('file')
+ try:rejected.acquire(str(path),create=True,exclusive=True)
+ except FileExistsError:pass
+ else:raise AssertionError('exclusive creation replaced existing storage')
+ rejected.close()
+ assert path.read_bytes()==b'original'
+ path.unlink()
 else:
  path=Path(sys.argv[1])/'data';path.write_bytes(b'owned');path.chmod(0o600)
  root=Resource('directory');root.acquire(os.fsencode(path.parent))
@@ -76,7 +91,7 @@ def test_normal_wheel_preserves_source_and_does_not_reuse_an_editable_binary(tmp
     source = _source(tmp_path)
     for existing in (False, True) if NATIVE else (False,):
         artifact = (
-            source / "src/retained_posix" / ("_native" + sysconfig.get_config_var("EXT_SUFFIX"))
+            source / "src/retained_resource" / ("_native" + sysconfig.get_config_var("EXT_SUFFIX"))
         )
         if existing:
             artifact.write_bytes(b"independent existing editable artifact")
@@ -127,4 +142,13 @@ def test_editable_install_keeps_its_actual_native_owner_importable(tmp_path):
         cwd=tmp_path,
     )
     _installed_owner(python, tmp_path)
-    assert bool(list((source / "src/retained_posix").glob("_native*.so"))) == NATIVE
+    assert (
+        bool(
+            list(
+                (source / "src/retained_resource").glob(
+                    "_native*" + (".pyd" if os.name == "nt" else ".so")
+                )
+            )
+        )
+        == NATIVE
+    )

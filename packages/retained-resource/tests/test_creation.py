@@ -8,11 +8,11 @@ import subprocess
 import sys
 
 import pytest
-from retained_posix import Borrow, Resource
-from retained_posix.growth import acquire, receive
+from retained_resource import Borrow, Resource
+from retained_resource.growth import acquire, receive
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
-from tests.support.retained_posix import fault_native as fault_native
+from tests.support.retained_resource import fault_native as fault_native
 from tests.support.workspace_reclamation import execution_sample
 
 pytestmark = pytest.mark.skipif(
@@ -156,7 +156,7 @@ def test_unknown_creation_or_receiving_preserves_original_dependency_in_child(
     _, extension = fault_native
     program = r"""
 import importlib.util,os,sys
-spec=importlib.util.spec_from_file_location('_retained_posix_test._native',sys.argv[1])
+spec=importlib.util.spec_from_file_location('_retained_resource_test._native',sys.argv[1])
 native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
 parent=native.Resource('directory');parent.acquire(os.fsencode(sys.argv[2]))
 owner=native.Resource('file');borrow=native.Borrow(owner)
@@ -200,7 +200,7 @@ if replacement is not None:os.close(replacement)
 
 
 @pytest.mark.growth_witness(
-    "retained-posix.native-creation-work",
+    "retained-resource.native-creation-work",
     gates=("unit", "client-platform-qualification"),
 )
 def test_creation_measures_actual_native_entries_and_full_control_operands(

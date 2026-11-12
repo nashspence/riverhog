@@ -5,11 +5,36 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#ifdef _WIN32
+#if !defined(_MSC_VER) || !defined(_DLL)
+#error "Windows requires the same dynamic UCRT profile as supported CPython, not a separate static CRT"
+#endif
+#include <windows.h>
+#include <io.h>
+#include <share.h>
+#include <process.h>
+#include <stdlib.h>
+#include <wchar.h>
+#define getpid _getpid
+/* A local handler turns invalid-descriptor diagnosis into UNKNOWN, not process
+   termination. Never change the process-global handler. */
+static void invalid_argument(const wchar_t *e, const wchar_t *f, const wchar_t *p,
+                             unsigned int line, uintptr_t reserved) {
+    (void)e; (void)f; (void)p; (void)line; (void)reserved;
+}
+static int native_close(int fd) {
+    _invalid_parameter_handler prior = _set_thread_local_invalid_parameter_handler(invalid_argument);
+    int rc = _close(fd); int error = errno;
+    _set_thread_local_invalid_parameter_handler(prior); errno = error; return rc;
+}
+#else
 #include <unistd.h>
+#define native_close close
+#endif
 #include <string.h>
 
-#if !defined(__linux__) && !defined(__APPLE__)
-#error "This backend supports only Linux and Darwin."
+#if !defined(__linux__) && !defined(__APPLE__) && !defined(_WIN32)
+#error "This backend supports Linux/Darwin POSIX and Windows UCRT."
 #endif
 #ifdef Py_GIL_DISABLED
 #error "The backend requires GIL-enabled CPython."
@@ -21,12 +46,12 @@ static const char *names[] = {"new", "opening", "live", "rejected", "absent", "c
 typedef struct Resource Resource;
 struct Resource {
     PyObject_HEAD
-    int fd, directory, error, fault;
+    int fd, directory, error, fault, syncing;
     State state;
     pid_t pid;
     Py_ssize_t pins, children;
     Resource *parent;
-    unsigned long opens, duplicates, stats, closes, control_octets;
+    unsigned long opens, duplicates, stats, closes, syncs, control_octets;
 };
 typedef struct {
     PyObject_HEAD
@@ -69,6 +94,9 @@ static PyObject *resource_new(PyTypeObject *type, PyObject *args, PyObject *kw) 
     static char *keys[] = {"kind", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kw, "s", keys, &kind)) return NULL;
     if (strcmp(kind,"file") && strcmp(kind,"directory")) return fail("kind must be file or directory");
+#ifdef _WIN32
+    if (!strcmp(kind, "directory")) return fail("Windows Native journal creation uses CRT regular files; POSIX corpus/directory receiving is not enabled on Windows");
+#endif
     Resource *r = (Resource *)type->tp_alloc(type, 0);
     if (!r) return NULL;
     r->fd = -1; r->state = NEW; r->pid = getpid();
@@ -83,14 +111,14 @@ static void resource_dealloc(Resource *r) {
 }
 
 /* Test seams are not in the normal wheel. They never supply production evidence. */
-#ifdef RETAINED_POSIX_TESTING
+#ifdef RETAINED_RESOURCE_TESTING
 static PyObject *set_fault(Resource *r, PyObject *arg) {
     const char *s = PyUnicode_AsUTF8(arg);
     if (!s) return NULL;
     if (!same_process(r)) return NULL;
     if (r->state == OPENING || r->state == CLOSING) return fail("operation is active");
-    const char *f[] = {"none", "before_open", "after_open", "before_close", "after_close", "unknown_open", "unknown_close_open", "unknown_close_closed", "signal_after_open", "signal_after_close", "stat_refusal"};
-    for (int i=0;i<11;i++) if (!strcmp(s,f[i])) { r->fault=i; Py_RETURN_NONE; }
+    const char *f[] = {"none", "before_open", "after_open", "before_close", "after_close", "unknown_open", "unknown_close_open", "unknown_close_closed", "signal_after_open", "signal_after_close", "stat_refusal", "before_sync", "after_sync"};
+    for (int i=0;i<13;i++) if (!strcmp(s,f[i])) { r->fault=i; Py_RETURN_NONE; }
     return fail("unknown test seam");
 }
 #endif
@@ -100,6 +128,7 @@ static int consume_fault(Resource *r, int opening) {
     if ((opening && for_open) || (!opening && !for_open)) { r->fault=0; return f; }
     return 0;
 }
+#ifndef _WIN32
 static int contains(Resource *r, const char *s, Py_ssize_t n, int value) {
     r->control_octets += (unsigned long)n;
     return memchr(s, value, (size_t)n) != NULL;
@@ -108,72 +137,115 @@ static int component_equals(Resource *r, const char *s, Py_ssize_t n, const char
     r->control_octets += (unsigned long)n + (unsigned long)strlen(other);
     return !strcmp(s, other);
 }
+#endif
 static PyObject *resource_acquire(Resource *r, PyObject *args, PyObject *kw) {
     PyObject *path, *parent_obj = Py_None;
-    int writable = 0, create = 0, exclusive = 0;
-    static char *keys[] = {"path", "writable", "parent", "create", "exclusive", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kw, "O|pOpp", keys, &path, &writable, &parent_obj, &create, &exclusive)) return NULL;
-    if (!same_process(r)) return NULL;
-    if (r->state != NEW) return fail("acquisition is single-attempt; inspect the retained owner");
-    if (!PyBytes_CheckExact(path)) return fail("path requires pre-encoded exact bytes");
-    char *s = PyBytes_AS_STRING(path); Py_ssize_t n = PyBytes_GET_SIZE(path);
-    if (!n || contains(r,s,n,0)) return fail("empty or NUL-containing path");
-    Resource *p = NULL;
-    int at = AT_FDCWD;
-    if (parent_obj != Py_None) {
-        if (!Py_IS_TYPE(parent_obj, &ResourceType)) return fail("parent requires a retained directory owner");
-        p = (Resource *)parent_obj;
-        if (p == r || !p->directory) return fail("invalid parent owner");
-        if (!live(p)) return NULL;
-        if (contains(r,s,n,'/') || component_equals(r,s,n,".") || component_equals(r,s,n,"..")) return fail("relative child must be one exact component");
-        if (p->children == PY_SSIZE_T_MAX) return fail("dependency capacity exhausted");
-        at = p->fd;
-    } else if (s[0] != '/') return fail("root acquisition requires an admitted absolute path");
-    if (r->directory && (writable || create)) return fail("directory acquisition opens existing read-only directories");
-    if (exclusive && !create) return fail("exclusive acquisition requires explicit creation");
-    int f = consume_fault(r, 1);
-    if (f == 1) return fail("injected before-open refusal: no syscall entered");
-    /* All allocating validation precedes any resource effect. Parent is retained
-       and pinned before releasing the GIL. No Python callback/custom opener. */
-    if (p) { Py_INCREF(p); r->parent=p; p->children++; }
-    r->state = OPENING;
-    r->opens++;
-    int flags = (writable ? O_RDWR : O_RDONLY) | O_CLOEXEC | O_NOFOLLOW | O_NONBLOCK;
-    if (r->directory) flags |= O_DIRECTORY;
-    if (create) flags |= O_CREAT;
-    if (exclusive) flags |= O_EXCL;
-    int fd, error;
-    Py_BEGIN_ALLOW_THREADS
-    fd = openat(at, s, flags, (mode_t)0600);
-    error = fd < 0 ? errno : 0;
-    Py_END_ALLOW_THREADS
-    /* No Python-level signal callback or allocating result precedes this store. */
-    r->fd = fd; r->error = error;
-    if (fd < 0) {
-        r->state = ABSENT; release_parent(r);
-        errno = error; return PyErr_SetFromErrno(PyExc_OSError);
+    int writable=0, create=0, exclusive=0, private_owned=0;
+    static char *keys[]={"path","writable","parent","create","exclusive","private_owned",NULL};
+    if(!PyArg_ParseTupleAndKeywords(args,kw,"O|pOppp",keys,&path,&writable,&parent_obj,&create,&exclusive,&private_owned)) return NULL;
+    if(!same_process(r)) return NULL;
+    if(r->state!=NEW) return fail("acquisition is single-attempt; inspect the retained owner");
+    if(r->directory && (writable || create)) return fail("directory acquisition cannot create or write");
+    if(exclusive && !create) return fail("exclusive acquisition requires explicit creation");
+    Resource *p=NULL;
+#ifdef _WIN32
+    if(parent_obj!=Py_None) return fail("CRT acquisition requires owner-validated absolute path, not a POSIX dir_fd");
+    if(!PyUnicode_CheckExact(path)) return fail("Windows path requires an exact Unicode string");
+    Py_ssize_t n=0;
+    wchar_t *s=PyUnicode_AsWideCharString(path,&n);
+    if(!s) return NULL;
+    /* Admit native absolute paths, including UNC/extended names. The caller
+       retains and authenticates the private namespace; this is not that guard. */
+    int absolute=n>=3 && ((s[0]>=L'A'&&s[0]<=L'Z')||(s[0]>=L'a'&&s[0]<=L'z'))
+                 && s[1]==L':' && (s[2]==L'\\'||s[2]==L'/');
+    absolute = absolute || (n>=2 && s[0]==L'\\' && s[1]==L'\\');
+    r->control_octets += (unsigned long)n * (unsigned long)sizeof(wchar_t);
+    if(!absolute || (Py_ssize_t)wcslen(s)!=n) {
+        PyMem_Free(s); return fail("Windows profile requires a native absolute path");
     }
-    if (f == 5) { r->state=UNKNOWN; return fail("injected acquisition outcome unknown; original remains charged"); }
-    struct stat st;
+    /* CRT pmode is not an ACL. The application has already admitted its
+       private current-user directory. Do not claim a POSIX UID/mode proof. */
+    if(private_owned) { PyMem_Free(s); return fail("Windows privacy belongs to the existing admitted directory/ACL owner, not CRT mode bits"); }
+#else
+    if(!PyBytes_CheckExact(path)) return fail("POSIX path requires pre-encoded exact bytes");
+    char *s=PyBytes_AS_STRING(path); Py_ssize_t n=PyBytes_GET_SIZE(path);
+    if(!n || contains(r,s,n,0)) return fail("empty or NUL-containing path");
+    int at=AT_FDCWD;
+    if(parent_obj!=Py_None) {
+        if(!Py_IS_TYPE(parent_obj,&ResourceType)) return fail("parent requires a retained directory owner");
+        p=(Resource*)parent_obj;
+        if(p==r || !p->directory || !live(p)) return fail("invalid or unconfirmed parent");
+        if(contains(r,s,n,'/')||component_equals(r,s,n,".")||component_equals(r,s,n,"..")) return fail("relative child must be one component");
+        if(p->children==PY_SSIZE_T_MAX) return fail("dependency capacity exhausted");
+        at=p->fd;
+    } else if(s[0]!='/') return fail("root acquisition requires an admitted absolute path");
+#endif
+    int f=consume_fault(r,1);
+    if(f==1) {
+#ifdef _WIN32
+        PyMem_Free(s);
+#endif
+        return fail("injected before-open refusal: no syscall entered");
+    }
+    if(p) { Py_INCREF(p); r->parent=p; p->children++; }
+    r->state=OPENING; r->opens++;
+    int fd=-1, error=0, rc;
+    Py_BEGIN_ALLOW_THREADS
+#ifdef _WIN32
+    int flags=(writable?_O_RDWR:_O_RDONLY)|_O_BINARY|_O_NOINHERIT;
+    if(create) flags|=_O_CREAT;
+    if(exclusive) flags|=_O_EXCL;
+    errno_t result=_wsopen_s(&fd,s,flags,_SH_DENYNO,_S_IREAD|_S_IWRITE);
+    error=result ? (int)result : 0;
+#else
+    int flags=(writable?O_RDWR:O_RDONLY)|O_CLOEXEC|O_NOFOLLOW|O_NONBLOCK;
+    if(r->directory) flags|=O_DIRECTORY;
+    if(create) flags|=O_CREAT;
+    if(exclusive) flags|=O_EXCL;
+    fd=openat(at,s,flags,0600); error=fd<0?errno:0;
+#endif
+    Py_END_ALLOW_THREADS
+    /* Same retained native object, before any allocating result or Python callback. */
+    r->fd=fd; r->error=error; r->state=fd<0?ABSENT:OPENING;
+#ifdef _WIN32
+    PyMem_Free(s);
+#endif
+    if(fd<0) { release_parent(r); errno=error; return PyErr_SetFromErrno(PyExc_OSError); }
+    if(f==5) { r->state=UNKNOWN; return fail("injected acquisition outcome unknown; original remains charged"); }
     r->stats++;
-    int rc;
+#ifdef _WIN32
+    struct _stat64 st;
+#else
+    struct stat st;
+#endif
     Py_BEGIN_ALLOW_THREADS
-    rc = fstat(fd, &st); error = rc < 0 ? errno : 0;
+#ifdef _WIN32
+    rc=_fstat64(fd,&st);
+#else
+    rc=fstat(fd,&st);
+#endif
+    error=rc<0?errno:0;
     Py_END_ALLOW_THREADS
-    if (f == 10) { rc=-1; error=EIO; }
-    if (rc < 0) {
-        r->state=REJECTED; r->error=error;
-        errno=error; return PyErr_SetFromErrno(PyExc_OSError);
-    }
-    if (!(r->directory ? S_ISDIR(st.st_mode) : S_ISREG(st.st_mode))) {
-        r->state=REJECTED; return fail("wrong resource kind; retained owner must receive close");
-    }
+    if(f==10) { rc=-1; error=EIO; }
+    r->state=REJECTED;
+    if(rc<0) { r->error=error; errno=error; return PyErr_SetFromErrno(PyExc_OSError); }
+#ifdef _WIN32
+    int valid=(st.st_mode&_S_IFMT)==_S_IFREG;
+#else
+    int valid=r->directory?S_ISDIR(st.st_mode):S_ISREG(st.st_mode);
+    if(private_owned && (st.st_uid!=geteuid() || (st.st_mode&077))) valid=0;
+#endif
+    if(!valid) return fail("rejected post-open kind/private-owner validation; original remains retained");
     r->state=LIVE;
-    if (f == 2) return fail("injected lost acquisition reply after retained native result");
-    if (f == 8) { PyErr_SetInterrupt(); if (PyErr_CheckSignals() < 0) return NULL; }
+    if(f==2) return fail("injected lost acquisition reply after retained native result");
+    if(f==8) { PyErr_SetInterrupt(); if(PyErr_CheckSignals()<0) return NULL; }
     Py_RETURN_NONE;
 }
 static PyObject *resource_duplicate(Resource *r, PyObject *arg) {
+#ifdef _WIN32
+    (void)r; (void)arg;
+    return fail("this Windows constructor profile does not duplicate descriptors");
+#else
     if (!same_process(r)) return NULL;
     if (r->state != NEW || !Py_IS_TYPE(arg,&ResourceType)) return fail("duplication requires new destination and retained source");
     Resource *s = (Resource *)arg;
@@ -196,13 +268,14 @@ static PyObject *resource_duplicate(Resource *r, PyObject *arg) {
     if (f==2) return fail("injected lost duplicate reply");
     if (f==8) { PyErr_SetInterrupt(); if(PyErr_CheckSignals()<0) return NULL; }
     Py_RETURN_NONE;
+#endif
 }
 static PyObject *resource_close(Resource *r, PyObject *unused) {
     (void)unused;
     if (!same_process(r)) return NULL;
     if (r->state==RECEIVED) Py_RETURN_NONE;
     if (r->state==UNKNOWN) return fail("original close/acquisition is unknown; no integer retry is allowed");
-    if (r->pins || r->children || r->state==OPENING || r->state==CLOSING) {
+    if (r->pins || r->children || r->syncing || r->state==OPENING || r->state==CLOSING) {
         PyErr_SetString(PyExc_BlockingIOError,"dependent borrow, child, or native operation has not received"); return NULL;
     }
     if (r->state==NEW || r->state==ABSENT) { r->state=RECEIVED; Py_RETURN_NONE; }
@@ -215,7 +288,7 @@ static PyObject *resource_close(Resource *r, PyObject *unused) {
     else {
         r->closes++;
         Py_BEGIN_ALLOW_THREADS
-        rc=close(fd); error=rc<0?errno:0;
+        rc=native_close(fd); error=rc<0?errno:0;
         Py_END_ALLOW_THREADS
         if(f==7 && rc==0) { rc=-1; error=EINTR; } /* lost native outcome */
     }
@@ -229,18 +302,41 @@ static PyObject *resource_close(Resource *r, PyObject *unused) {
     if(f==9) { PyErr_SetInterrupt(); if(PyErr_CheckSignals()<0) return NULL; }
     Py_RETURN_NONE;
 }
+static PyObject *resource_sync(Resource *r, PyObject *unused) {
+    (void)unused;
+    if(!live(r)) return NULL;
+    if(r->syncing) return fail("sync is active");
+    int f=r->fault;
+    if(f==11 || f==12) r->fault=0;
+    if(f==11) return fail("injected before-sync refusal");
+    r->syncing=1; r->syncs++;
+    int rc,error;
+    Py_BEGIN_ALLOW_THREADS
+#ifdef _WIN32
+    rc=_commit(r->fd);
+#else
+    rc=fsync(r->fd);
+#endif
+    error=rc<0?errno:0;
+    Py_END_ALLOW_THREADS
+    r->syncing=0;
+    if(rc<0) { errno=error; return PyErr_SetFromErrno(PyExc_OSError); }
+    if(f==12) return fail("injected lost sync reply; no mutation success is inferred");
+    Py_RETURN_NONE;
+}
 static PyObject *get_state(Resource *r, void *c) { (void)c; return PyUnicode_FromString(names[r->state]); }
 static PyObject *get_received(Resource *r, void *c) { (void)c; return PyBool_FromLong(r->state==RECEIVED && getpid()==r->pid); }
 static PyObject *get_error(Resource *r, void *c) { (void)c; return PyLong_FromLong(r->error); }
 static PyObject *get_metrics(Resource *r, void *c) {
     (void)c;
-    return Py_BuildValue("{s:k,s:k,s:k,s:k,s:k,s:n,s:n,s:n}","open_calls",r->opens,"dup_calls",r->duplicates,"fstat_calls",r->stats,"close_calls",r->closes,"control_octets",r->control_octets,"borrows",r->pins,"children",r->children,"owner_storage_bytes",(Py_ssize_t)sizeof(Resource));
+    return Py_BuildValue("{s:k,s:k,s:k,s:k,s:k,s:k,s:n,s:n,s:n}","open_calls",r->opens,"dup_calls",r->duplicates,"fstat_calls",r->stats,"close_calls",r->closes,"sync_calls",r->syncs,"control_octets",r->control_octets,"borrows",r->pins,"children",r->children,"owner_storage_bytes",(Py_ssize_t)sizeof(Resource));
 }
 static PyMethodDef resource_methods[] = {
+    {"sync",(PyCFunction)resource_sync,METH_NOARGS,"Sync the original live resource; not a closure or construction receipt."},
     {"acquire",(PyCFunction)(void(*)(void))resource_acquire,METH_VARARGS|METH_KEYWORDS,"Acquire into the already retained owner; never reopen it."},
     {"duplicate",(PyCFunction)resource_duplicate,METH_O,"Duplicate actual held custody into an already retained new owner."},
     {"close",(PyCFunction)resource_close,METH_NOARGS,"Receive once, refuse busy, or quarantine; never retry an uncertain integer."},
-#ifdef RETAINED_POSIX_TESTING
+#ifdef RETAINED_RESOURCE_TESTING
     {"_test_fault",(PyCFunction)set_fault,METH_O,"Only present in the fault-witness build."},
 #endif
     {NULL,NULL,0,NULL}
@@ -288,12 +384,12 @@ static PyMethodDef borrow_methods[]={
 };
 static PyGetSetDef borrow_getset[]={{"active",(getter)borrow_active,NULL,NULL,NULL},{"received",(getter)borrow_received,NULL,NULL,NULL},{NULL,NULL,NULL,NULL,NULL}};
 static PyTypeObject ResourceType={PyVarObject_HEAD_INIT(NULL,0)
-    .tp_name="retained_posix.Resource",.tp_basicsize=sizeof(Resource),.tp_flags=Py_TPFLAGS_DEFAULT,
+    .tp_name="retained_resource.Resource",.tp_basicsize=sizeof(Resource),.tp_flags=Py_TPFLAGS_DEFAULT,
     .tp_new=resource_new,.tp_dealloc=(destructor)resource_dealloc,.tp_methods=resource_methods,.tp_getset=resource_getset};
 static PyTypeObject BorrowType={PyVarObject_HEAD_INIT(NULL,0)
-    .tp_name="retained_posix.Borrow",.tp_basicsize=sizeof(Borrow),.tp_flags=Py_TPFLAGS_DEFAULT,
+    .tp_name="retained_resource.Borrow",.tp_basicsize=sizeof(Borrow),.tp_flags=Py_TPFLAGS_DEFAULT,
     .tp_new=borrow_new,.tp_dealloc=(destructor)borrow_dealloc,.tp_methods=borrow_methods,.tp_getset=borrow_getset};
-static PyModuleDef module={PyModuleDef_HEAD_INIT,.m_name="_native",.m_doc="Explicit retained POSIX resource effects.",.m_size=-1};
+static PyModuleDef module={PyModuleDef_HEAD_INIT,.m_name="_native",.m_doc="Explicit retained POSIX and UCRT constructor resource effects.",.m_size=-1};
 PyMODINIT_FUNC PyInit__native(void) {
     if(PyType_Ready(&ResourceType)<0 || PyType_Ready(&BorrowType)<0) return NULL;
     PyObject *m=PyModule_Create(&module); if(!m) return NULL;

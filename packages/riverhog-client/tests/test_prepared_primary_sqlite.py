@@ -1634,7 +1634,7 @@ def test_retained_ordering_preserves_consumer_failure_and_can_reopen_after_parti
 
 
 @pytest.mark.parametrize("mutation", ["missing", "replaced", "symlink"])
-def test_retained_posix_ordering_refuses_changed_physical_scratch_without_recreating_it(
+def test_retained_resource_ordering_refuses_changed_physical_scratch_without_recreating_it(
     tmp_path, mutation
 ):
     from riverhog_client._prepared_primary_posix import PrimaryFiles

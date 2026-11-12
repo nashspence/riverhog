@@ -10,7 +10,7 @@ import threading
 from dataclasses import dataclass
 from pathlib import Path
 
-from retained_posix import Borrow, Resource
+from retained_resource import Borrow, Resource
 from riverhog_provenance import JournalValidationCapacity
 from sqlalchemy import select
 from state_schema import read_snapshot

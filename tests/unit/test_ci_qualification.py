@@ -271,7 +271,7 @@ def test_native_qualification_preserves_staged_install_and_bounded_failure_evide
     assert commands[0][3:] == ["-q", "--maxfail=1", *qualification.NATIVE_TESTS]
     native_modules = {
         path.relative_to(qualification.ROOT).as_posix()
-        for path in (qualification.ROOT / "packages/retained-posix/tests").glob("test_*.py")
+        for path in (qualification.ROOT / "packages/retained-resource/tests").glob("test_*.py")
     }
     assert native_modules <= set(commands[0][5:])
     assert commands[1][-4:] == [

@@ -62,7 +62,7 @@ members = [
     "http-api-contracts",
     "lifecycle-events",
     "release-documentation-lib",
-    "retained-posix",
+    "retained-resource",
     "review0",
     "review0-contracts",
     "review0-planner",
@@ -2737,9 +2737,9 @@ version = "0.1.0"
 source = { editable = "packages/release-documentation-lib" }
 
 [[package]]
-name = "retained-posix"
+name = "retained-resource"
 version = "0.1.0"
-source = { editable = "packages/retained-posix" }
+source = { editable = "packages/retained-resource" }
 dependencies = [
     { name = "release-documentation-lib" },
     { name = "riverhog-growth-contracts" },
@@ -3180,7 +3180,7 @@ dependencies = [
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic" },
     { name = "release-documentation-lib" },
-    { name = "retained-posix" },
+    { name = "retained-resource" },
     { name = "riverhog-age" },
     { name = "riverhog-application-access" },
     { name = "riverhog-archive-contracts" },
@@ -3210,7 +3210,7 @@ requires-dist = [
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.4,<4.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
-    { name = "retained-posix", editable = "packages/retained-posix" },
+    { name = "retained-resource", editable = "packages/retained-resource" },
     { name = "riverhog-age", editable = "packages/riverhog-age" },
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },

@@ -4,8 +4,8 @@ import os
 import sys
 
 import pytest
-from retained_posix import Borrow, Resource
-from retained_posix.growth import acquire, receive
+from retained_resource import Borrow, Resource
+from retained_resource.growth import acquire, receive
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
 from tests.support.workspace_reclamation import execution_sample
@@ -16,7 +16,7 @@ pytestmark = pytest.mark.skipif(
 
 
 @pytest.mark.growth_witness(
-    "retained-posix.native-resource-work",
+    "retained-resource.native-resource-work",
     gates=("unit", "client-platform-qualification"),
 )
 def test_native_receiving_has_one_lifetime_dispatch_and_complete_control_work(

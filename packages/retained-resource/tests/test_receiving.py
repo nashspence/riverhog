@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 
 import pytest
-from retained_posix import Borrow, Group, Resource
+from retained_resource import Borrow, Group, Resource
 
 pytestmark = pytest.mark.skipif(
     sys.platform not in {"linux", "darwin"}, reason="native Linux/Darwin POSIX owner backend"
@@ -195,7 +195,7 @@ class Receiving(unittest.TestCase):
     def test_genuinely_unknown_open_and_close_stay_charged_in_child(self):
         code = r"""
 import json,os,sys
-from retained_posix import Resource,Borrow
+from retained_resource import Resource,Borrow
 root=Resource('directory'); root.acquire(os.fsencode(sys.argv[1]))
 r=Resource('file')
 if sys.argv[2]=='acquire':
@@ -222,9 +222,9 @@ print(json.dumps({'unknown':True,'charged_parent':True,'close_calls':r.metrics['
         for phase in ("acquire", "close"):
             prefix = (
                 "import importlib.util,sys\n"
-                f"spec=importlib.util.spec_from_file_location('retained_posix._native',{str(FAULT_EXTENSION)!r})\n"
+                f"spec=importlib.util.spec_from_file_location('retained_resource._native',{str(FAULT_EXTENSION)!r})\n"
                 "module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)\n"
-                "sys.modules['retained_posix._native']=module\n"
+                "sys.modules['retained_resource._native']=module\n"
             )
             run = subprocess.run(
                 [sys.executable, "-c", prefix + code, str(self.root), phase],

@@ -12,7 +12,7 @@ from riverhog_core import canonical_discovery_parent_reclamation as owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
 from sqlalchemy import update
 
-from tests.support.retained_posix import fault_native as fault_native
+from tests.support.retained_resource import fault_native as fault_native
 from tests.unit.test_canonical_discovery_parent_reclamation import case as case
 from tests.unit.test_canonical_discovery_parent_reclamation import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_parent_reclamation import original as original

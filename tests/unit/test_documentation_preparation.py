@@ -339,9 +339,9 @@ def test_dynamic_or_third_party_python_objects_are_explicit_references():
 
 
 def test_native_extension_exports_do_not_borrow_fallback_source():
-    from retained_posix import Borrow, Group, Resource
+    from retained_resource import Borrow, Group, Resource
 
-    location = "packages/retained-posix/src/retained_posix/__init__.py"
+    location = "packages/retained-resource/src/retained_resource/__init__.py"
     assert owned_python_declaration(Group) == location
     for owner in (Resource, Borrow):
         if sys.platform in {"linux", "darwin"}:

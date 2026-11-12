@@ -1,4 +1,4 @@
-"""Build the retained POSIX outcome owner with the platform wheel."""
+"""Build the retained native outcome owner with the platform wheel."""
 
 from __future__ import annotations
 
@@ -21,9 +21,13 @@ class CustomBuildHook(BuildHookInterface):
 
         root = Path(self.root)
         extension = Extension(
-            "retained_posix._native",
+            "retained_resource._native",
             sources=[str(root / "native/owner.c")],
-            extra_compile_args=["-std=c11", "-Wall", "-Wextra", "-Werror"],
+            extra_compile_args=(
+                ["/std:c11", "/W4"]
+                if sys.platform == "win32"
+                else ["-std=c11", "-Wall", "-Wextra", "-Werror"]
+            ),
         )
         editable = version == "editable"
         temporary = tempfile.TemporaryDirectory(prefix="riverhog-native-build-")
@@ -43,7 +47,7 @@ class CustomBuildHook(BuildHookInterface):
                 temporary.cleanup()
                 self._build_scratch = None
             else:
-                build_data["force_include"][str(artifact)] = "retained_posix/" + artifact.name
+                build_data["force_include"][str(artifact)] = "retained_resource/" + artifact.name
         except BaseException:
             temporary.cleanup()
             self._build_scratch = None

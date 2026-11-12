@@ -13,17 +13,19 @@ native outcome boundary and original parent dependency as existing acquisition.
 import sys
 from typing import TYPE_CHECKING, Any, Literal
 
-if TYPE_CHECKING or sys.platform in {"linux", "darwin"}:
+if TYPE_CHECKING or sys.platform in {"linux", "darwin", "win32"}:
     from ._native import Borrow, Resource
 else:
 
     class Resource:
         def __new__(cls, *_args: Any, **_kwargs: Any) -> Any:
-            raise RuntimeError("retained POSIX owners require native Linux or Darwin")
+            raise RuntimeError("retained POSIX owners require native Linux, Darwin or Windows UCRT")
 
     class Borrow:
         def __new__(cls, *_args: Any, **_kwargs: Any) -> Any:
-            raise RuntimeError("retained POSIX borrowing requires native Linux or Darwin")
+            raise RuntimeError(
+                "retained POSIX borrowing requires native Linux, Darwin or Windows UCRT"
+            )
 
 
 class Group:

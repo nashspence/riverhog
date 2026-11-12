@@ -18,9 +18,9 @@ from . import Resource
 
 def declaration(operation: str, limits: tuple[tuple[str, int, str], ...]) -> Declaration:
     return Declaration(
-        id=f"retained-posix.{operation}.growth/v1",
-        authority="retained-posix",
-        subjects=(f"retained_posix.growth.{operation}",),
+        id=f"retained-resource.{operation}.growth/v1",
+        authority="retained-resource",
+        subjects=(f"retained_resource.growth.{operation}",),
         scope="one call on the same caller-retained process-local resource owner",
         starts_at="explicit original-owner retention and resource admission",
         ends_at="recorded native outcome, including refusal or quarantined uncertainty",
@@ -58,7 +58,7 @@ def declaration(operation: str, limits: tuple[tuple[str, int, str], ...]) -> Dec
             ),
         ),
         conditions=(
-            "GIL-enabled Linux/Darwin CPython with cooperative cancellation.",
+            "GIL-enabled Linux/Darwin POSIX or Windows dynamic-UCRT CPython.",
             "Owners stay retained; borrowed descriptors are never replaced or closed.",
         ),
         invariants=(
@@ -66,7 +66,7 @@ def declaration(operation: str, limits: tuple[tuple[str, int, str], ...]) -> Dec
             "No pathname, inode, descriptor absence/reuse, GC or Future state proves receiving.",
         ),
         limitations=(
-            "Counts are native backend syscall entries, not kernel path or filesystem IO costs.",
+            "Counts are native backend API entries, not internal CRT/syscall or filesystem costs.",
             "Path validation is linear in already-admitted encoded path length.",
             "No wall-clock bound or aggregate process/allocator memory claim.",
         ),
@@ -86,14 +86,22 @@ def declaration(operation: str, limits: tuple[tuple[str, int, str], ...]) -> Dec
 )
 def acquire(
     owner: Resource,
-    path: bytes,
+    path: bytes | str,
     *,
     writable: bool = False,
     parent: Resource | None = None,
     create: bool = False,
     exclusive: bool = False,
+    private_owned: bool = False,
 ) -> None:
-    owner.acquire(path, writable=writable, parent=parent, create=create, exclusive=exclusive)
+    owner.acquire(
+        path,
+        writable=writable,
+        parent=parent,
+        create=create,
+        exclusive=exclusive,
+        private_owned=private_owned,
+    )
 
 
 @declare_growth(
@@ -109,3 +117,19 @@ def acquire(
 )
 def receive(owner: Resource) -> None:
     owner.close()
+
+
+@declare_growth(
+    declaration(
+        "sync",
+        (
+            ("open_calls", 0, "Sync uses only the original retained resource."),
+            ("dup_calls", 0, "No transient duplicate is acquired."),
+            ("fstat_calls", 0, "No new identity probe supplies custody."),
+            ("close_calls", 0, "Sync outcome does not establish close receiving."),
+            ("sync_calls", 1, "At most one native durability API entry; no latency bound."),
+        ),
+    )
+)
+def sync(owner: Resource) -> None:
+    owner.sync()
