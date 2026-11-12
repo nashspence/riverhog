@@ -69,19 +69,24 @@ class _PhysicalExecutionResult:
     def release_exception_frames(self) -> None:
         """Drop joined worker locals while preserving its original exception."""
         error = self._future.exception()
-        pending = [error] if error is not None else []
-        seen: set[int] = set()
-        while pending:
-            current = pending.pop()
-            if id(current) in seen:
-                continue
-            seen.add(id(current))
-            traceback.clear_frames(current.__traceback__)
-            for chained in (current.__cause__, current.__context__):
-                if chained is not None:
-                    pending.append(chained)
-            if isinstance(current, BaseExceptionGroup):
-                pending.extend(current.exceptions)
+        release_exception_graph(error)
+
+
+def release_exception_graph(error: BaseException | None) -> None:
+    """Execution-only frame receiving; never a resource or worker receipt."""
+    pending = [error] if error is not None else []
+    seen: set[int] = set()
+    while pending:
+        current = pending.pop()
+        if id(current) in seen:
+            continue
+        seen.add(id(current))
+        traceback.clear_frames(current.__traceback__)
+        for chained in (current.__cause__, current.__context__):
+            if chained is not None:
+                pending.append(chained)
+        if isinstance(current, BaseExceptionGroup):
+            pending.extend(current.exceptions)
 
 
 @dataclass(frozen=True, slots=True)

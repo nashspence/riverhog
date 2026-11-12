@@ -24,6 +24,7 @@ from riverhog_core.services.physical_execution import (
     PhysicalExecutionOwner,
     PhysicalWorkspaceExecutionCompletion,
     PhysicalWorkspaceExecutionKey,
+    release_exception_graph,
 )
 
 _LOG = logging.getLogger("riverhog_core.workspace_retirement_registry")
@@ -48,6 +49,13 @@ class _Closed:
     """Only actual local handle receiving; no catalog or terminal outcome."""
 
 
+@dataclass(frozen=True, slots=True)
+class _ReceivingPending:
+    """A joined close attempt is not a positive resource/diagnostic receipt."""
+
+    error_type: str
+
+
 @dataclass(slots=True)
 class _Context[JobT, ProgressT]:
     job: JobT
@@ -61,6 +69,8 @@ class _Context[JobT, ProgressT]:
     closed: bool = False
     progress: ProgressT | None = None
     unknown: PhysicalWorkspaceExecutionCompletion | None = None
+    pending_diagnostic: BaseException | None = None
+    diagnostic_failure: BaseException | None = None
     resume_after: float = 0
     lock: Lock = field(default_factory=Lock)
 
@@ -125,7 +135,10 @@ class WorkspaceRetirementRegistry[JobT: WorkspaceJob, ProgressT]:
                 progressed += 1
                 try:
                     result = outcome.result()
-                    if isinstance(result, _Closed):
+                    if isinstance(result, _ReceivingPending):
+                        if not context.closing or context.closed:
+                            raise Conflict("pending receiving lacks its original context")
+                    elif isinstance(result, _Closed):
                         if not context.closing or not context.closed:
                             raise Conflict("workspace close receiving lacks its original proof")
                     else:
@@ -135,6 +148,7 @@ class WorkspaceRetirementRegistry[JobT: WorkspaceJob, ProgressT]:
                         context.closed = True
                 except BaseException as error:
                     context.closing = True
+                    context.closed = False
                     if context.unknown is None:
                         context.unknown = outcome
                     _LOG.warning(
@@ -142,12 +156,6 @@ class WorkspaceRetirementRegistry[JobT: WorkspaceJob, ProgressT]:
                         outcome.key.workspace_id,
                         type(error).__name__,
                     )
-                finally:
-                    if context.closed:
-                        outcome.release_exception_frames()
-                        if context.unknown is not None:
-                            context.unknown.release_exception_frames()
-                            context.unknown = None
             for _ in range(min(limit, len(self._contexts))):
                 workspace, context = self._contexts.popitem(last=False)
                 self._contexts[workspace] = context
@@ -278,14 +286,37 @@ class WorkspaceRetirementRegistry[JobT: WorkspaceJob, ProgressT]:
     def _create(self, job: JobT) -> WorkspaceRetirementActor[ProgressT]:
         raise NotImplementedError
 
-    def _run(self, context: _Context[JobT, ProgressT]) -> ProgressT | _Closed:
+    def _run(self, context: _Context[JobT, ProgressT]) -> ProgressT | _Closed | _ReceivingPending:
         with context.lock:
             if context.closing:
                 if context.actor is None:
                     raise Conflict("original workspace constructor remains unknown")
-                context.actor.close()
-                if not context.actor.received:
-                    raise Conflict("original workspace receiving remains unconfirmed")
+                # Retain secondary receiving exceptions before frame disposal.
+                if context.pending_diagnostic is not None:
+                    try:
+                        release_exception_graph(context.pending_diagnostic)
+                    except BaseException as error:
+                        context.diagnostic_failure = error
+                        return _ReceivingPending(type(error).__name__)
+                    context.pending_diagnostic = None
+                    context.diagnostic_failure = None
+                try:
+                    context.actor.close()
+                    if not context.actor.received:
+                        raise Conflict("original workspace receiving remains unconfirmed")
+                    if context.unknown is not None:
+                        context.unknown.release_exception_frames()
+                        context.unknown = None
+                except BaseException as error:
+                    context.pending_diagnostic = error
+                    try:
+                        release_exception_graph(error)
+                    except BaseException as failure:
+                        context.diagnostic_failure = failure
+                    else:
+                        context.pending_diagnostic = None
+                        context.diagnostic_failure = None
+                    return _ReceivingPending(type(error).__name__)
                 context.closed = True
                 return _Closed()
             if context.entered:
@@ -313,14 +344,19 @@ class WorkspaceRetirementRegistry[JobT: WorkspaceJob, ProgressT]:
                     return False
                 if context.entered and context.actor is None:
                     return False
+                context.closed = False
                 if context.actor is not None:
                     context.actor.close()
                     if not context.actor.received:
                         return False
-                context.closed = True
+                if context.pending_diagnostic is not None:
+                    release_exception_graph(context.pending_diagnostic)
+                    context.pending_diagnostic = None
+                    context.diagnostic_failure = None
                 if context.unknown is not None:
                     context.unknown.release_exception_frames()
                     context.unknown = None
+                context.closed = True
                 if self._retention.retire(context.reservation, owner=self):
                     del self._contexts[workspace]
             return not self._contexts

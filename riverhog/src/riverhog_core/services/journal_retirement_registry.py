@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import asdict
+from datetime import timedelta
 from threading import Lock
 from typing import TYPE_CHECKING
 
@@ -22,10 +23,20 @@ from riverhog_core.services.physical_execution import (
     PhysicalWorkspaceExecutionKey,
 )
 from riverhog_core.services.upload_journal_validation_jobs import ValidationJob
-from riverhog_core.services.workspace_retirement_registry import WorkspaceRetirementRegistry
+from riverhog_core.services.workspace_retirement_registry import (
+    WorkspaceRetirementRegistry,
+    _Closed,
+    _Context,
+    _ReceivingPending,
+)
 
 if TYPE_CHECKING:
     from .upload_journal_validation_retirement import UploadJournalValidationRetirement
+
+
+def format_retirement_blocker(error: BaseException) -> str:
+    """Format the complete error on its worker before the existing detached slice."""
+    return str(error)[:1000]
 
 
 class JournalRetirementTurn:
@@ -69,7 +80,7 @@ class JournalRetirementTurn:
                 result = self.cleanup._advance(self.job, octet_budget, turn=self)
             except (JournalValidationCapacity, LostJournalValidationWorkspace) as error:
                 self._receive()
-                return self.cleanup._blocked(self.job, str(error)[:1000])
+                return self.cleanup._blocked(self.job, format_retirement_blocker(error))
             self._receive()
             return result
         finally:
@@ -87,6 +98,36 @@ class JournalRetirementRegistry(WorkspaceRetirementRegistry[ValidationJob, bool]
     ) -> None:
         super().__init__(execution, retention)
         self._cleanup = cleanup
+
+    def collect(self, *, limit: int) -> int:
+        return super().collect(limit=limit)
+
+    def resume_ready(self, *, limit: int, retry_after: timedelta) -> int:
+        return super().resume_ready(limit=limit, retry_after=retry_after)
+
+    def retained(self, workspace_id: str) -> bool:
+        return super().retained(workspace_id)
+
+    def submit(
+        self,
+        job: ValidationJob,
+        *,
+        octet_budget: int,
+        metadata_budget: int,
+        retry_after: timedelta,
+    ) -> int:
+        return super().submit(
+            job,
+            octet_budget=octet_budget,
+            metadata_budget=metadata_budget,
+            retry_after=retry_after,
+        )
+
+    def _run(
+        self,
+        context: _Context[ValidationJob, bool],
+    ) -> bool | _Closed | _ReceivingPending:
+        return super()._run(context)
 
     def _scope(
         self, job: ValidationJob, metadata_budget: int

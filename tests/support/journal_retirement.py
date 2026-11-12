@@ -16,8 +16,8 @@ RETRY = timedelta(microseconds=1)
 def cleanups(owned):
     originals = []
 
-    def make(case, *, metadata_budget=1024 * 1024):
-        pool = owned.make(terminal_workers=2)
+    def make(case, *, metadata_budget=1024 * 1024, terminal_workers=2):
+        pool = owned.make(terminal_workers=terminal_workers)
         ledger = ArchiveConstructionRetention(pool._tuning)
         cleanup = UploadJournalValidationRetirement(
             case.factory,

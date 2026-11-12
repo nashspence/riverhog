@@ -14,6 +14,7 @@ from riverhog_core.services import collection_uploads as owner
 from riverhog_growth_contracts import growth_binding
 from sqlalchemy import event, func, select
 
+from tests.support.async_retirement_growth import REGISTRY, PhaseEvidence
 from tests.unit import test_upload_journal_service_caller_growth as callers
 from tests.unit import test_upload_journal_service_coordination_growth as coordination
 from tests.unit import test_upload_journal_validation_pool_growth as pool
@@ -21,6 +22,9 @@ from tests.unit import test_upload_journal_validation_release_growth as release
 from tests.unit import test_upload_journal_validation_retirement_loop_growth as retirement
 from tests.unit import test_upload_journal_validation_sweep_growth as sweeps
 from tests.unit.test_upload_journal_source_growth import octets
+
+_ASYNC_WORKERS = []
+_ASYNC_TRANSCRIPTS = []
 
 ROOT = owner.SqlAlchemyCollectionUploadService.process_due_provenance_journal_validations
 CHILDREN = dict(owner._service_scheduler_children())
@@ -157,7 +161,12 @@ class Recorder:
         )
         with self.child():
             result, observed = retirement.measure(
-                self.case, selected, limit=limit, budget=octet_budget, cold=False
+                self.case,
+                selected,
+                limit=limit,
+                budget=octet_budget,
+                cold=False,
+                evidence=self.retirement_evidence,
             )
             self.children["retirement"].append(observed)
             return result
@@ -286,6 +295,26 @@ class Recorder:
             return result
 
     def measure(self, *, limit=1, interrupt=False, expected_error=None):
+        cleanup = self.current._journal_validation_retirement
+        original = SimpleNamespace(
+            cleanup=cleanup,
+            registry=cleanup._registry,
+            pool=cleanup._registry._execution,
+            ledger=cleanup._registry._retention,
+        )
+        self.retirement_evidence = PhaseEvidence(self.case, original)
+        with self.retirement_evidence.installed(install_schedule=False) as evidence:
+            try:
+                result = self._measure(
+                    limit=limit, interrupt=interrupt, expected_error=expected_error
+                )
+            finally:
+                evidence.drain()
+        _ASYNC_WORKERS.extend(sample for op, sample, _ in evidence.roots if op is REGISTRY["_run"])
+        _ASYNC_TRANSCRIPTS.append(evidence.transcript())
+        return result
+
+    def _measure(self, *, limit=1, interrupt=False, expected_error=None):
         self.interrupt, self.expected_error = interrupt, expected_error
         result, error = None, None
         self.own = defaultdict(int)
@@ -474,7 +503,11 @@ def small_samples(root):
             row.state = "failed"
             jobs.retire_source(session, 1, JOURNAL, row.capture_attempt_id)
         result, observed = recorder.measure(limit=2)
-        assert result == 2 and observed["metrics"]["retirement_calls"] == 2
+        assert result == 1 and observed["metrics"]["retirement_calls"] == 2
+        # Original join is outside ROOT; receive its bookkeeping on the next call.
+        samples.append(observed)
+        result, observed = recorder.measure(limit=2)
+        assert result == 1 and observed["metrics"]["retirement_calls"] == 2
         samples.append(observed)
     return samples
 
@@ -557,7 +590,11 @@ def rejection_samples(root):
     ),
 )
 def test_actual_scheduler_runs_validation_readiness_and_retirement(tmp_path, record_property):
+    _ASYNC_WORKERS.clear()
+    _ASYNC_TRANSCRIPTS.clear()
     record_property("growth_samples", small_samples(tmp_path))
+    record_property("separate_original_worker_samples", list(_ASYNC_WORKERS))
+    record_property("retirement_transcripts", list(_ASYNC_TRANSCRIPTS))
 
 
 @pytest.mark.growth_witness(
@@ -569,7 +606,11 @@ def test_actual_scheduler_runs_validation_readiness_and_retirement(tmp_path, rec
     ),
 )
 def test_actual_scheduler_bounds_real_busy_reservations(tmp_path, record_property):
+    _ASYNC_WORKERS.clear()
+    _ASYNC_TRANSCRIPTS.clear()
     record_property("growth_samples", busy_samples(tmp_path))
+    record_property("separate_original_worker_samples", list(_ASYNC_WORKERS))
+    record_property("retirement_transcripts", list(_ASYNC_TRANSCRIPTS))
 
 
 @pytest.mark.growth_witness(
@@ -581,4 +622,8 @@ def test_actual_scheduler_bounds_real_busy_reservations(tmp_path, record_propert
     ),
 )
 def test_actual_scheduler_preserves_rejection_identity_and_retries(tmp_path, record_property):
+    _ASYNC_WORKERS.clear()
+    _ASYNC_TRANSCRIPTS.clear()
     record_property("growth_samples", rejection_samples(tmp_path))
+    record_property("separate_original_worker_samples", list(_ASYNC_WORKERS))
+    record_property("retirement_transcripts", list(_ASYNC_TRANSCRIPTS))

@@ -24,7 +24,6 @@ from workspace_reclamation import FileReclamationOwner
 
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
-from riverhog_core.growth_bounds import bound_envelope
 from riverhog_core.journal_validation_retirement import (
     lease_retiring_journal_workspace,
     remove_retired_journal_workspace_directory,
@@ -32,6 +31,7 @@ from riverhog_core.journal_validation_retirement import (
 
 from . import upload_journal_validation_jobs as jobs
 from .archive_construction_retention import ArchiveConstructionRetention
+from .journal_retirement_growth import declare_journal_retirement_growth
 from .journal_retirement_registry import JournalRetirementRegistry, JournalRetirementTurn
 from .physical_execution import PhysicalExecutionOwner
 
@@ -436,8 +436,8 @@ def _retirement_unit_declaration() -> Declaration:
         ),
         starts_at="receive the detached pinned job and explicit positive file-extent admission",
         ends_at=(
-            "close every catalog/kernel resource and return the progress "
-            "decision or propagate the real storage rejection"
+            "return the unit decision or propagate rejection while the caller-retained "
+            "original turn still owns uncertain resources"
         ),
         dimensions=(
             Dimension(
@@ -672,318 +672,8 @@ def _retirement_unit_declaration() -> Declaration:
                 "lock/CPU latency."
             ),
             (
-                "The outer scheduling loop retains its own selection, candidate, "
-                "failure-formatting and repeated-unit composition."
-            ),
-        ),
-    )
-
-
-def _retirement_loop_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
-    return (
-        ("select", UploadJournalValidationRetirement._select),
-        ("unit", UploadJournalValidationRetirement._advance),
-        ("blocked", UploadJournalValidationRetirement._blocked),
-    )
-
-
-def _retirement_loop_declaration() -> Declaration:
-    children = {tag: growth_binding(operation) for tag, operation in _retirement_loop_children()}
-
-    def dimension(name: str) -> Expression:
-        return Expression("dimension", name=name)
-
-    def count(value: int) -> Expression:
-        return Expression("constant", value=value, unit=COUNT)
-
-    def scale(value: int, term: Expression) -> Expression:
-        return Expression("product", terms=(Expression("constant", value=value), term))
-
-    def times(calls: Expression, term: Expression) -> Expression:
-        return Expression(
-            "product", terms=(Expression("constant", value=1, unit=(("count", -1),)), calls, term)
-        )
-
-    def add(terms: tuple[Expression, ...], unit: tuple[tuple[str, int], ...]) -> Expression:
-        if not terms:
-            return Expression("constant", value=0, unit=unit)
-        return terms[0] if len(terms) == 1 else Expression("sum", terms=terms)
-
-    units: dict[str, tuple[tuple[str, int], ...]] = {}
-    for binding in children.values():
-        for bound in binding.declaration.bounds:
-            if bound.metric in units and units[bound.metric] != bound.unit:
-                raise ValueError("retirement loop primitive units must agree")
-            units[bound.metric] = bound.unit
-
-    def child(tag: str, metric: str, unit: tuple[tuple[str, int], ...]) -> Expression:
-        binding = children[tag]
-        if metric not in {bound.metric for bound in binding.declaration.bounds}:
-            return Expression("constant", value=0, unit=unit)
-        arguments = {
-            item.name: dimension(tag + "_" + item.name) for item in binding.declaration.dimensions
-        }
-        return times(
-            dimension(tag + "_calls"), bound_envelope(binding.operation, metric, arguments)
-        )
-
-    limits = {
-        "select": scale(3, dimension("unit_limit")),
-        "unit": dimension("select_calls"),
-        "blocked": dimension("unit_calls"),
-    }
-    return Declaration(
-        id="riverhog-server.validation-retirement-loop.growth/v1",
-        authority="riverhog-server",
-        subjects=(
-            "riverhog_core.services.upload_journal_validation_retirement.UploadJournalValidationRetirement.advance",
-        ),
-        scope=(
-            "complete bounded retirement scheduling with real heterogeneous catalog and file units"
-        ),
-        starts_at="receive the finite unit limit and positive per-unit file-extent admission",
-        ends_at=(
-            "return actual progressed units after bounded candidates and real "
-            "blocker recording, or propagate a rejected control call"
-        ),
-        dimensions=(
-            Dimension(
-                "unit_limit",
-                COUNT,
-                ("Nonnegative effective caller unit limit, independent of observed progress."),
-            ),
-            Dimension(
-                "octet_budget", OCTETS, ("Positive caller admission for each attempted file unit.")
-            ),
-            Dimension(
-                "error_control_octets",
-                OCTETS,
-                (
-                    "Largest complete received "
-                    "capacity/custody error argument "
-                    "before bounded blocker slicing."
-                ),
-            ),
-            *(
-                Dimension(
-                    tag + "_calls",
-                    COUNT,
-                    (
-                        "Actual child invocations, independently "
-                        "capped by the finite scheduling loop."
-                    ),
-                )
-                for tag in children
-            ),
-            *(
-                Dimension(
-                    tag + "_" + item.name,
-                    item.unit,
-                    (
-                        "Dominating envelope over the "
-                        "actual selected child inputs; "
-                        "absent children may use zero. "
-                    )
-                    + item.meaning,
-                )
-                for tag, binding in children.items()
-                for item in binding.declaration.dimensions
-            ),
-        ),
-        bounds=(
-            *(
-                Bound(
-                    metric,
-                    unit,
-                    "upper",
-                    add(tuple(child(tag, metric, unit) for tag in children), unit),
-                    (
-                        "Complete actual "
-                        "child work bounded "
-                        "by monotone "
-                        "source-owned numeric"
-                        " envelopes; each "
-                        "invocation retains "
-                        "its own "
-                        "independently "
-                        "validated inputs."
-                    ),
-                )
-                for metric, unit in units.items()
-            ),
-            *(
-                Bound(
-                    tag + "_calls",
-                    COUNT,
-                    "equal",
-                    dimension(tag + "_calls"),
-                    ("Every selected child invocation retains its actual sample."),
-                )
-                for tag in children
-            ),
-            *(
-                Bound(
-                    tag + "_calls_limit",
-                    COUNT,
-                    "upper",
-                    limit,
-                    (
-                        "Each outer unit attempts "
-                        "at most three candidates;"
-                        " only selected jobs "
-                        "advance and only real "
-                        "unit failures record "
-                        "blockers."
-                    ),
-                )
-                for tag, limit in limits.items()
-            ),
-            Bound(
-                "outer_iterations",
-                COUNT,
-                "upper",
-                dimension("unit_limit"),
-                ("The real outer range never exceeds the caller limit."),
-            ),
-            Bound(
-                "candidate_iterations",
-                COUNT,
-                "upper",
-                scale(3, dimension("unit_limit")),
-                (
-                    "The actual candidate"
-                    " loop performs at "
-                    "most three "
-                    "iterations for each "
-                    "outer unit."
-                ),
-            ),
-            Bound(
-                "excluded_jobs_per_call",
-                COUNT,
-                "upper",
-                count(2),
-                (
-                    "The current per-unit"
-                    " candidate list "
-                    "contains at most two"
-                    " earlier identities "
-                    "before a selection "
-                    "call."
-                ),
-            ),
-            Bound(
-                "exclusion_copy_references",
-                COUNT,
-                "upper",
-                scale(6, dimension("unit_limit")),
-                (
-                    "Actual "
-                    "excluded-identity "
-                    "tuples retain at "
-                    "most two references "
-                    "per candidate call."
-                ),
-            ),
-            Bound(
-                "error_format_calls",
-                COUNT,
-                "upper",
-                dimension("unit_calls"),
-                ("Each actual capacity/custody failure is formatted once."),
-            ),
-            Bound(
-                "error_formatted_octets",
-                OCTETS,
-                "upper",
-                times(dimension("unit_calls"), dimension("error_control_octets")),
-                (
-                    "Complete actual "
-                    "error formatting "
-                    "remains charged "
-                    "before the bounded "
-                    "detached blocker "
-                    "slice."
-                ),
-            ),
-            Bound(
-                "native_admission_per_call",
-                OCTETS,
-                "upper",
-                dimension("octet_budget"),
-                ("Each selected file unit receives at most the caller admission."),
-            ),
-            Bound(
-                "progressed_units",
-                COUNT,
-                "upper",
-                dimension("unit_limit"),
-                ("Confirmed file/catalog/blocker progress is counted at most once per outer unit."),
-            ),
-            *(
-                Bound(
-                    tag + "_" + bound.metric,
-                    bound.unit,
-                    "upper",
-                    child(tag, bound.metric, bound.unit),
-                    (
-                        "Preserve the actual "
-                        "aggregate child "
-                        "metric without "
-                        "requiring "
-                        "heterogeneous calls "
-                        "to have identical "
-                        "dimensions."
-                    ),
-                )
-                for tag, binding in children.items()
-                for bound in binding.declaration.bounds
-            ),
-        ),
-        conditions=(
-            (
-                "The unit limit is a finite integer; the exact positive integer "
-                "octet admission is validated before work."
-            ),
-            (
-                "Actual child dimensions are independently obtained from their "
-                "selected inputs; componentwise envelopes dominate them and use "
-                "monotone nonnegative numeric bounds."
-            ),
-            (
-                "Catalog indexes, detached fences and exclusive private workspace "
-                "custody retain their child contracts."
-            ),
-        ),
-        invariants=(
-            (
-                "A busy or blocked job does not prevent another candidate in the "
-                "same bounded attempt from progressing."
-            ),
-            (
-                "The exact real error is formatted and recorded without "
-                "fabricating successful validation or replacing source/archive "
-                "authority."
-            ),
-            (
-                "An unchanged blocker does not rewrite its row; exhausted "
-                "candidates stop without a hot retry loop."
-            ),
-            (
-                "Durable phases, exact final deletion fences and independent "
-                "reader exclusion remain with every actual child invocation."
-            ),
-            "No unscoped catalog/filesystem work or archive-size census is hidden in coordination.",
-        ),
-        limitations=(
-            (
-                "Logical loop, reference, SQL, control, file and extent "
-                "observations exclude physical allocation, internal index/path "
-                "comparisons, I/O and lock/CPU latency."
-            ),
-            (
-                "This finite scheduling call does not replace whole "
-                "service/pipeline composition or member qualification."
+                "The original worker owns error formatting and receiving. The scheduler "
+                "has a distinct coordination scope and does not compose worker work inline."
             ),
         ),
     )
@@ -1130,7 +820,13 @@ class UploadJournalValidationRetirement:
             return progress.removed_octets > 0 or progress.removed_files > 0
 
     def advance(self, *, limit: int = 1, octet_budget: int = 4 * 1024 * 1024) -> int:
-        """Schedule/receive bounded quanta without waiting for Native filesystem work."""
+        """Return scheduling bookkeeping events, not confirmed retirement progress.
+
+        Each received physical outcome and each withdrawn ordinary reservation
+        count separately. Close resubmissions and new submissions also count.
+        For positive limit L the three phases return at most 2L, L and L.
+        Resource and catalog work remains on the exact original worker.
+        """
         if type(octet_budget) is not int or octet_budget < 1:
             raise ValueError("retirement requires a positive file-extent admission")
         if type(limit) is not int:
@@ -1175,6 +871,4 @@ declare_growth(_retirement_unit_declaration(), delegates=_retirement_unit_childr
 )
 
 
-declare_growth(_retirement_loop_declaration(), delegates=_retirement_loop_children())(
-    UploadJournalValidationRetirement.advance
-)
+declare_journal_retirement_growth(UploadJournalValidationRetirement)

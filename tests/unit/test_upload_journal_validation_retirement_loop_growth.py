@@ -1,190 +1,40 @@
 from __future__ import annotations
 
-import builtins
-import inspect
-import io
 import os
-import sqlite3
-from collections import defaultdict
-from contextlib import ExitStack, contextmanager
+from contextlib import ExitStack
 
 import pytest
 from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
-from riverhog_core.services import upload_journal_validation_retirement as owner
-from riverhog_growth_contracts import growth_binding
 from riverhog_provenance import JournalValidationCapacity
-from sqlalchemy import event
 
+from tests.support.async_retirement_growth import REGISTRY, SCHEDULE, PhaseEvidence
+from tests.support.journal_retirement import cleanups as cleanups
 from tests.unit import test_upload_journal_validation_retirement_catalog_growth as catalog
 from tests.unit import test_upload_journal_validation_retirement_growth as units
+from tests.unit.test_archive_upload_execution import owned as owned
 from tests.unit.test_journal_validation_retirement_custody_growth import held
 from tests.unit.test_journal_validation_workspace_growth import private_file, setup
 
-ROOT = owner.UploadJournalValidationRetirement.advance
-CHILDREN = dict(owner._retirement_loop_children())
+pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX Native retirement composition")
+ROOT = SCHEDULE
 CAPACITY = "retired journal reclamation lacks capacity"
 UNKNOWN = "unclassified files prevent directory retirement"
 LOST = "retired workspace custody is unavailable"
 
 
-def measure(
-    case, current, *, limit, budget, cold, expected_error=None, failure_text=None, fault=None
-):
-    children = {tag: [] for tag in CHILDREN}
-    own = defaultdict(int)
-    active, depth, ranges = False, 0, 0
-
-    @contextmanager
-    def child():
-        nonlocal depth
-        depth += 1
-        try:
-            yield
-        finally:
-            depth -= 1
-
-    def select(selected, excluding):
-        own["excluded_jobs_per_call"] = max(own["excluded_jobs_per_call"], len(excluding))
-        own["exclusion_copy_references"] += len(excluding)
-        with child(), pytest.MonkeyPatch.context() as patch:
-            patch.setattr(type(selected), "_select", CHILDREN["select"])
-            result, observed = catalog.measure(case, selected, "_select", excluding, cold=cold)
-        children["select"].append(observed)
-        return result
-
-    def unit(selected, job, admission):
-        own["native_admission_per_call"] = max(own["native_admission_per_call"], admission)
-        errors = []
-        with child():
-            result, observed = units.measure(
-                case,
-                selected,
-                job,
-                admission,
-                cold=cold,
-                error=expected_error,
-                fault=fault,
-                observed_error=errors,
-            )
-        children["unit"].append(observed)
-        if errors[0] is not None:
-            raise errors[0]
-        return result
-
-    def blocked(selected, job, failure):
-        with child():
-            persisted = catalog.read(case, job.workspace_id)
-        changed = int(
-            persisted == job and persisted.collection_id is None and persisted.failure != failure
-        )
-        with child(), pytest.MonkeyPatch.context() as patch:
-            patch.setattr(type(selected), "_blocked", CHILDREN["blocked"])
-            result, observed = catalog.measure(
-                case, selected, "_blocked", job, proposed=failure, cold=cold, changed=changed
-            )
-        children["blocked"].append(observed)
-        assert result is bool(changed)
-        return result
-
-    def ranges_observed(*args):
-        nonlocal ranges
-        caller = inspect.currentframe().f_back
-        if not active or caller.f_code is not ROOT.__code__:
-            return builtins.range(*args)
-        metric = "outer_iterations" if ranges == 0 else "candidate_iterations"
-        ranges += 1
-
-        def iterate():
-            for value in builtins.range(*args):
-                own[metric] += 1
-                yield value
-
-        return iterate()
-
-    def format_error(value):
-        assert isinstance(value, (JournalValidationCapacity, LostJournalValidationWorkspace))
-        result = str(value)
-        assert result == failure_text
-        own["error_format_calls"] += 1
-        own["error_formatted_octets"] += len(result.encode())
-        return result
-
-    def catalog_guard(*_args):
-        if active and depth == 0:
-            raise units.EvidenceFailure("retirement coordination issued unscoped SQL")
-
-    event.listen(case.engine, "before_cursor_execute", catalog_guard)
-    try:
-        with pytest.MonkeyPatch.context() as patch:
-            patch.setattr(owner.UploadJournalValidationRetirement, "_select", select)
-            patch.setattr(owner.UploadJournalValidationRetirement, "_advance", unit)
-            patch.setattr(owner.UploadJournalValidationRetirement, "_blocked", blocked)
-            patch.setattr(owner, "range", ranges_observed, raising=False)
-            patch.setattr(owner, "str", format_error, raising=False)
-            for module, name in (
-                *(
-                    (os, name)
-                    for name in (
-                        "open",
-                        "close",
-                        "stat",
-                        "fstat",
-                        "fsync",
-                        "unlink",
-                        "rmdir",
-                        "ftruncate",
-                        "read",
-                        "write",
-                        "listdir",
-                        "scandir",
-                    )
-                ),
-                (builtins, "open"),
-                (io, "open"),
-                (sqlite3, "connect"),
-            ):
-                actual = getattr(module, name)
-
-                def guarded(*args, _actual=actual, **kwargs):
-                    if active and depth == 0:
-                        raise units.EvidenceFailure(
-                            "retirement coordination performed unscoped filesystem work"
-                        )
-                    return _actual(*args, **kwargs)
-
-                patch.setattr(module, name, guarded)
-            active = True
-            try:
-                result = ROOT(current, limit=limit, octet_budget=budget)
-            finally:
-                active = False
-    finally:
-        event.remove(case.engine, "before_cursor_execute", catalog_guard)
-    own["progressed_units"] = result
-    dimensions = {
-        "unit_limit": max(0, limit),
-        "octet_budget": budget,
-        "error_control_octets": 0 if failure_text is None else len(failure_text.encode()),
-    }
-    metrics = dict(own)
-    for tag, operation in CHILDREN.items():
-        binding = growth_binding(operation)
-        dimensions[tag + "_calls"] = len(children[tag])
-        metrics[tag + "_calls"] = metrics[tag + "_calls_limit"] = len(children[tag])
-        for item in binding.declaration.dimensions:
-            dimensions[tag + "_" + item.name] = max(
-                (row["dimensions"][item.name] for row in children[tag]), default=0
-            )
-        for bound in binding.declaration.bounds:
-            value = sum(row["metrics"][bound.metric] for row in children[tag])
-            metrics[tag + "_" + bound.metric] = value
-            metrics[bound.metric] = metrics.get(bound.metric, 0) + value
-    assert own["outer_iterations"] <= max(0, limit)
-    assert own["candidate_iterations"] <= 3 * max(0, limit)
-    return result, units.sample(ROOT, dimensions, metrics, children)
+def contexts_for(original, evidence):
+    return [context for context, _, _ in evidence.gates]
 
 
-def loop_samples(root, samples, *, large=True):
+def measure(case, current, *, limit, budget, cold, evidence):
+    before = len(evidence.roots)
+    result = evidence.wrapper(SCHEDULE)(current, limit=limit, octet_budget=budget)
+    return result, next(row for op, row, _ in evidence.roots[before:] if op is SCHEDULE)
+
+
+def loop_samples(root, samples, cleanups, *, large=True):
+    worker_samples = []
+    transcripts = []
     with catalog.build_cases(root / "catalogs", large=large) as all_cases:
         cases = [
             case for index, case in enumerate(all_cases) if not large or index in {0, 1, 2, 3, 6, 7}
@@ -286,7 +136,9 @@ def loop_samples(root, samples, *, large=True):
                         if kind in {"capacity", "repeated-blocker"}
                         else None
                     )
-                    current = owner.UploadJournalValidationRetirement(case.factory, layout.root)
+                    case.root = layout.root
+                    original = cleanups(case, terminal_workers=3 if kind == "three-busy" else 2)
+                    current = original.cleanup
                     with ExitStack() as resources:
                         if kind in {"busy-writer", "busy-reader", "busy-active", "three-busy"}:
                             for row in rows if kind == "three-busy" else rows[:1]:
@@ -296,34 +148,73 @@ def loop_samples(root, samples, *, large=True):
                                         shared=kind != "busy-writer",
                                     )
                                 )
-                        result, observed = measure(
+                        evidence = PhaseEvidence(
                             case,
-                            current,
-                            limit=limit,
-                            budget=budget,
+                            original,
                             cold=cold,
-                            expected_error=expected_error,
-                            failure_text=failure_text,
+                            error=expected_error,
+                            text=failure_text,
                             fault=fault,
                         )
-                    if limit == 0 or kind in {
-                        "empty",
-                        "linked",
-                        "busy-writer",
-                        "busy-reader",
-                        "three-busy",
-                        "repeated-blocker",
-                    }:
-                        assert result == 0
-                    elif kind in {"capacity", "unclassified", "missing-coordinator"}:
-                        assert result == 1
-                    elif kind in {"active", "busy-active"}:
-                        assert result == min(limit, 3)
-                    else:
-                        assert result == limit
-                    if kind == "three-busy" and limit:
-                        assert observed["metrics"]["candidate_iterations"] == 3
-                        assert observed["metrics"]["excluded_jobs_per_call"] == 2
+                        with evidence.installed():
+                            result = current.advance(limit=limit, octet_budget=budget)
+                            schedule_sample = next(
+                                row for op, row, _ in evidence.roots if op is SCHEDULE
+                            )
+                            # Workers are held at an event before entering the
+                            # original callback. No submitted file work is inline.
+                            if kind in {"capacity", "repeated-blocker"}:
+                                assert (directory / units.DATA[-1]).stat().st_size == 2 * budget + 3
+                            evidence.drain()
+                            # The observation of a positive actor receipt does
+                            # not itself withdraw ordinary retention.
+                            assert all(
+                                context.reservation is not None
+                                for context in original.registry._contexts.values()
+                            )
+                            # Receiving is another scheduling turn. Do not admit
+                            # further work while this witness checks one wave.
+                            current.close()
+                            later = current.advance(limit=max(1, limit), octet_budget=budget)
+                            assert later <= 2 * max(1, limit)
+                        assert result <= 4 * max(0, limit)
+
+                        actual_workers = [
+                            row for op, row, _ in evidence.roots if op is REGISTRY["_run"]
+                        ]
+                        transcripts.append(
+                            {
+                                "case": index,
+                                "cold": cold,
+                                "kind": kind,
+                                "limit": limit,
+                                "budget": budget,
+                                **evidence.transcript(),
+                            }
+                        )
+                        if limit == 0 or kind in {"empty", "linked"}:
+                            assert result == 0 and not actual_workers
+                        else:
+                            # Busy filesystem custody is observed by workers,
+                            # not guessed by scheduling from their submission.
+                            assert result >= 1 and actual_workers
+                        if kind == "three-busy" and limit:
+                            assert schedule_sample["metrics"]["candidate_iterations"] <= 3 * limit
+                            assert all(
+                                row["metrics"]["work_or_close_entries"] == 1
+                                for row in actual_workers
+                            )
+                        samples.extend(row for op, row, _ in evidence.roots if op is SCHEDULE)
+                        worker_samples.extend(
+                            row for op, row, _ in evidence.roots if op is REGISTRY["_run"]
+                        )
+                        progress_values = [
+                            context.progress for context in contexts_for(original, evidence)
+                        ]
+                        if kind in {"busy-writer", "busy-reader", "three-busy", "repeated-blocker"}:
+                            assert all(value is False for value in progress_values)
+                        if kind in {"capacity", "unclassified", "missing-coordinator"} and limit:
+                            assert any(value is True for value in progress_values)
                     if kind == "repeated-blocker":
                         assert catalog.read(case).version == selected["version"]
                     if kind == "unclassified":
@@ -331,16 +222,17 @@ def loop_samples(root, samples, *, large=True):
                             directory / "unclassified"
                         ).read_bytes() == b"preserve unknown bytes"
                     if kind in {"capacity", "repeated-blocker"}:
-                        removed = (
-                            0
-                            if limit == 0
-                            else budget * (2 if kind == "capacity" and limit > 1 else 1)
-                        )
+                        removed = 0 if limit == 0 else budget
                         assert (directory / units.DATA[-1]).read_bytes() == b"p" * (
                             2 * budget + 3 - removed
                         )
+                    current.close()
+                    original.pool.close()
+                    assert current.receive_stopped()
+                    assert original.ledger._counts == {False: 0, True: 0}
                     assert case.engine.pool.checkedout() == 0
-                    samples.append(observed)
+
+    return worker_samples, transcripts
 
 
 @pytest.mark.growth_witness(
@@ -349,8 +241,11 @@ def loop_samples(root, samples, *, large=True):
     operation="riverhog_core.services.upload_journal_validation_retirement.UploadJournalValidationRetirement.advance",
 )
 def test_actual_retirement_loop_bounds_candidates_and_preserves_real_blockers(
-    tmp_path, record_property
+    tmp_path, record_property, cleanups
 ):
     samples = []
+    workers, transcripts = loop_samples(tmp_path, samples, cleanups)
     record_property("growth_samples", samples)
-    loop_samples(tmp_path, samples)
+    record_property("separate_original_worker_samples", workers)
+    record_property("retirement_transcripts", transcripts)
+    assert workers
