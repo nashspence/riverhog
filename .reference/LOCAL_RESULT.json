@@ -1,0 +1,99 @@
+{
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "linux",
+  "setuptools": "82.0.1",
+  "compiler": "x86_64-linux-gnu-gcc",
+  "steps": [
+    {
+      "variant": "normal",
+      "wheel_sha256": "13e2168e07d8ce0779707cbc7d9b85fe688d7f0b9ccf9ae42c45a838dac5c75d",
+      "installed_extension_sha256": "83acd43278225b8bb3012ee329e0bbbeb4e3f1d62845e8da0501c0d5bc89edf9",
+      "returncode": 0,
+      "elapsed_seconds": 2.9523072729998603
+    },
+    {
+      "variant": "fault",
+      "wheel_sha256": "ac84e50cdbd865acae13dd7efd513a065e07fb1ea5c17fedb90ff620b612ce40",
+      "installed_extension_sha256": "214cb180049c9737da85463090accbd2d3a18533ed48960e41c862e75fb076ac",
+      "returncode": 0,
+      "elapsed_seconds": 4.468371930000103,
+      "counts": {
+        "tests": 24,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      }
+    },
+    {
+      "variant": "actual-native-reference-bridge",
+      "returncode": 0,
+      "elapsed_seconds": 11.169564172999799,
+      "counts": {
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skips": 0
+      }
+    }
+  ],
+  "growth": {
+    "platform": "linux",
+    "elapsed_seconds": 0.14156352800000604,
+    "sample_counts": {
+      "retained-resource.acquire.growth/v1": 24,
+      "retained-resource.receive.growth/v1": 432,
+      "retained-resource.sync.growth/v1": 24
+    },
+    "sample_stream_sha256": "2af2152cdca2bfbb0e05b43522551789d5661fca4a61985d33274c92b50c1c69",
+    "native_owner_bytes": [
+      112
+    ],
+    "maxima": {
+      "retained-resource.acquire.growth/v1": {
+        "open_calls": 1,
+        "dup_calls": 0,
+        "fstat_calls": 1,
+        "close_calls": 0,
+        "sync_calls": 0
+      },
+      "retained-resource.receive.growth/v1": {
+        "open_calls": 0,
+        "dup_calls": 0,
+        "fstat_calls": 0,
+        "close_calls": 1,
+        "sync_calls": 0
+      },
+      "retained-resource.sync.growth/v1": {
+        "open_calls": 0,
+        "dup_calls": 0,
+        "fstat_calls": 0,
+        "close_calls": 0,
+        "sync_calls": 1
+      }
+    },
+    "scope": "native entry counts, not kernel work, aggregate memory, or complete construction/retirement qualification",
+    "declaration_projection_sha256": "ae90d9061e89180c4d74c43d19159c2c67a146d827cc911bbd0456d9055ce96c",
+    "projection_location": "Regenerated in full by growth_probe.py; this record summarizes the executed run."
+  },
+  "public_source": "c5157d69712185aa8d4ad185e2e6d465dfbd7179",
+  "reproduction": {
+    "all_probe_descriptors_closed": true,
+    "competing_lease_acquired": true,
+    "descriptor_open_after_slot_removed": true,
+    "elapsed_seconds": 0.9531753919999346,
+    "phase": "reproduced-not-qualified",
+    "qualification": false,
+    "source": "c5157d69712185aa8d4ad185e2e6d465dfbd7179",
+    "source_hashes": {
+      "packages/riverhog-provenance/src/riverhog_provenance/journal_store.py": "424f59752bc92fb7443ec3089062d7f1e197e9bbfbeaf5fbc23cfdff74cb4fe8",
+      "riverhog/src/riverhog_core/journal_validation_workspace.py": "0841aa89ade4e1d5182c5e3db2eb8c09fbf1dc12c42a01f45397949e5d73ff2b",
+      "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py": "22d07df1c9bd5b48b83706a085571b620b6ad04b4182e434284da81dde8811c3"
+    },
+    "source_unchanged": true
+  },
+  "limits": [
+    "Scratch Python/setuptools differ from repository lock.",
+    "Reference boundary and explicit test bridge, not full integrated product acceptance.",
+    "Native platform CI outcomes are recorded by exact SHA in owning issue."
+  ]
+}

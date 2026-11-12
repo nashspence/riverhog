@@ -1,0 +1,47 @@
+name: Reference Native constructor witnesses
+on:
+  push:
+    branches:
+      - reference/external/988-native-constructor-receiving
+permissions:
+  contents: read
+jobs:
+  native-reference:
+    name: reference constructor (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Install pinned repository Python and uv
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        with:
+          install_args: python uv
+      - name: Isolated installed normal/fault wheels and actual Native bridge
+        shell: bash
+        run: >-
+          mise x python uv -- uv run --locked --all-packages --group dev
+          python .reference/run_witness.py --native --output constructor-result.json
+      - name: Reproduce unchanged public Core gap separately
+        if: runner.os != 'Windows'
+        shell: bash
+        run: >-
+          mise x python uv -- uv run --locked --all-packages --group dev
+          python .reference/reproduce_public.py > reproduction-result.json
+      - name: Retain reference-only evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: reference-constructor-${{ matrix.os }}-${{ github.sha }}
+          path: |
+            constructor-result.json
+            reproduction-result.json
+          if-no-files-found: warn
+          retention-days: 14
