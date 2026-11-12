@@ -1,0 +1,41 @@
+name: Reference asynchronous retirement growth
+on:
+  push:
+    branches: [reference/external/989-asynchronous-retirement-growth]
+permissions:
+  contents: read
+jobs:
+  witness:
+    name: retirement scopes (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        with:
+          install_args: python uv
+      - name: Reproduce unchanged-source scheduling mismatch
+        run: mise x python uv -- uv run --locked --all-packages --group dev python .reference/reproduce.py > reproduction-result.json
+      - name: Apply explicit reference-only source overlay
+        run: mise x python uv -- uv run --locked --all-packages --group dev python .reference/apply.py
+      - name: Maintained-owner phase and custody witnesses
+        run: mise x python uv -- uv run --locked --all-packages --group dev python .reference/run_witness.py
+      - name: Retain failed and passing evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: retirement-scopes-${{ matrix.os }}-${{ github.sha }}
+          path: |
+            reproduction-result.json
+            reference-result.json
+            phase-samples.jsonl
+          if-no-files-found: error
+          retention-days: 14
