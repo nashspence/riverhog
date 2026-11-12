@@ -9,9 +9,17 @@ import hashlib
 import json
 import os
 import pathlib
+import sys
 import tempfile
 import time
 from unittest.mock import patch
+
+# Repository test support is not an installed runtime package. Running this
+# script by path must explicitly locate the exact checkout before importing it.
+_CHECKOUT = pathlib.Path(__file__).resolve().parents[1]
+if pathlib.Path.cwd().resolve() != _CHECKOUT:
+    raise RuntimeError("run the public-source probe from its exact checkout root")
+sys.path.insert(0, str(_CHECKOUT))
 
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
