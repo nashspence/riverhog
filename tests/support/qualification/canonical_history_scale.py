@@ -8,6 +8,7 @@ import sys
 import time
 import tracemalloc
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
@@ -70,6 +71,8 @@ MAX_REBUILD_PEAK_BYTES = 64 * 1024 * 1024
 MAX_REBUILD_SECONDS = 900
 NATIVE_HTTP_TARGET_SECONDS = 5
 SHARED_PREDICATE = "https://example.invalid/qualification/member-evidence"
+PUBLICATION_POLL_SECONDS = 0.05
+PUBLICATION_TIMEOUT_SECONDS = 900
 
 
 @dataclass
@@ -96,6 +99,7 @@ def publish_shared_history(
     members: int,
     database_url: str | None = None,
     geometry: PublicationGeometry | None = None,
+    progress: Callable[[dict[str, object]], None] | None = None,
 ) -> SharedHistoryFixture:
     """Publish exact payloads, selected shared roots and retained/required history.
 
@@ -115,6 +119,11 @@ def publish_shared_history(
         else geometry.shared_claim_members
     )
     fanout = members if geometry is None else geometry.shared_root_members
+
+    def emit(phase: str, **values: object) -> None:
+        if progress is not None:
+            progress({"phase": phase, **values})
+
     directory.mkdir(parents=True, exist_ok=True)
     container = _container(directory, database_url=database_url)
     container.bootstrap_token = "shared-history-qualification"
@@ -180,8 +189,11 @@ def publish_shared_history(
     try:
         # This witness measures history extent, independently of the PostgreSQL
         # upload-concurrency rail. Keep its SQLite unit fixture deterministic.
-        for source in sources:
+        emit("append-inputs", completed=0, members=members)
+        for count, source in enumerate(sources, 1):
             producer.append_inputs((source,))
+            if count == members or count & (count - 1) == 0:
+                emit("append-inputs", completed=count, members=members)
         collection_id = int(producer.collection_id)
         journal_bytes = 0
         dependency_sizes = []
@@ -221,6 +233,7 @@ def publish_shared_history(
                     )
             dependency_sizes.append(prefix_bytes)
             primaries.append((source, binding))
+        emit("primary-history-received", members=members)
         retained = []
         supplemental_bytes = 0
         required_bytes = 0
@@ -329,8 +342,15 @@ def publish_shared_history(
                             {"bindings": [selected.to_mapping()]}
                         ),
                     )
+                count = member + 1
+                if count == members or count & (count - 1) == 0:
+                    emit("member-histories-staged", completed=count, members=members)
             assert all(source.source.exists() for source in sources)
-            finalized = producer.finish(poll_seconds=0.05, timeout_seconds=900)
+            emit("finalization", members=members)
+            finalized = producer.finish(
+                poll_seconds=PUBLICATION_POLL_SECONDS,
+                timeout_seconds=PUBLICATION_TIMEOUT_SECONDS,
+            )
             assert finalized.archive_root_sha256 is not None
             assert finalized.receipt["state"] == "finalized"
         finally:

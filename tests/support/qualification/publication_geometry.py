@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
+
+WORKLOAD_FORMAT = "riverhog-publication-workload/v1"
 
 
 @dataclass(frozen=True)
@@ -32,6 +35,24 @@ class PublicationGeometry:
             or not 0 <= self.required_journals <= self.retained_journals
         ):
             raise ValueError("required journals must select from the retained journal pool")
+
+
+def read_workload(path: Path) -> PublicationGeometry:
+    value = json.loads(path.read_text(encoding="utf-8"))
+    fields = {
+        "format",
+        "payload_sizes",
+        "shared_root_members",
+        "shared_claim_members",
+        "retained_journals",
+        "required_journals",
+    }
+    if not isinstance(value, dict) or set(value) != fields:
+        raise ValueError("publication workload fields are invalid")
+    if value.pop("format") != WORKLOAD_FORMAT or not isinstance(value["payload_sizes"], list):
+        raise ValueError("publication workload format or payload extent is invalid")
+    value["payload_sizes"] = tuple(value["payload_sizes"])
+    return PublicationGeometry(**value)
 
 
 def write_payload(path: Path, *, member: int, size: int) -> None:
