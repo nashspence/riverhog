@@ -37,6 +37,7 @@ from .corpus import (
     HistoricalAssertion,
     SelectedDeliverySupport,
 )
+from .corpus_construction import CorpusConstruction
 from .errors import IncompleteSourceError, JournalValidationCapacity
 from .journal import JournalSummary
 
@@ -121,14 +122,6 @@ def _one(db: sqlite3.Connection, sql: str, parameters: tuple[Any, ...] = ()) -> 
 def _write(db: sqlite3.Connection, sql: str, parameters: tuple[Any, ...] = ()) -> int:
     with closing(db.execute(sql, parameters)) as rows:
         return rows.rowcount
-
-
-def _sync_directory(directory: Path) -> None:
-    descriptor = os.open(directory, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
-    try:
-        os.fsync(descriptor)
-    finally:
-        os.close(descriptor)
 
 
 def _checkpoint(corpus: CanonicalCorpusValidator) -> bytes:
@@ -238,6 +231,7 @@ class RetainedCorpusValidator:
     Every successful bounded call commits its data and checkpoint together.
     This owner exposes no whole-corpus reset or discovery-publication grant.
     The application serializes all calls, which may move between worker threads.
+    The caller retains an exact construction frame before any Native effects.
     The optional opening callback retains the handle before initialization can fail.
     It owns no independent result readers; close releases the callback only
     after its sole database handle closes. The application retains the files.
@@ -252,7 +246,9 @@ class RetainedCorpusValidator:
     _storage_closed: bool
     _on_close: Callable[[], None] | None
     _directory: Path
-    _descriptor: int | None
+    _construction: CorpusConstruction
+    _received: bool
+    _corpus_storage: CanonicalCorpusValidator | None
     _db: sqlite3.Connection
     _corpus: CanonicalCorpusValidator
 
@@ -263,22 +259,56 @@ class RetainedCorpusValidator:
         directory: Path,
         source: CorpusValidationSource,
         *,
+        construction: CorpusConstruction,
         worker_epoch: int,
         create: bool = False,
         catalog: ContractCatalog | None = None,
         metadata_byte_budget: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
         on_storage_close: Callable[[], None] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
-        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        projection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> Self:
-        """Open exact retained work through an optional application connection factory.
+        """Open through the caller's exact retained guard and SQLite scope.
 
-        The SQLite-compatible factory admits resources before connecting and
-        receives the existing URI and thread options. It owns unconfirmed
-        construction or close obligations. A returned connection stays with
-        this workspace through confirmed close; on_storage_open retains the
-        workspace before schema work or worker replacement can fail.
+        The optional connection factory belongs only to disposable projections
+        created later by the corpus algorithm. It cannot replace this retained
+        database's single original construction scope.
         """
+        if not isinstance(construction, CorpusConstruction):
+            raise TypeError("retained corpus requires its original construction frame")
+        construction.begin()
+        try:
+            return cls._open_retained(
+                directory,
+                source,
+                construction=construction,
+                worker_epoch=worker_epoch,
+                create=create,
+                catalog=catalog,
+                metadata_byte_budget=metadata_byte_budget,
+                on_storage_close=on_storage_close,
+                on_storage_open=on_storage_open,
+                projection_connection_factory=projection_connection_factory,
+            )
+        finally:
+            construction.end()
+
+    @classmethod
+    def _open_retained(
+        cls,
+        directory: Path,
+        source: CorpusValidationSource,
+        *,
+        construction: CorpusConstruction,
+        worker_epoch: int,
+        create: bool,
+        catalog: ContractCatalog | None,
+        metadata_byte_budget: int,
+        on_storage_close: Callable[[], None] | None,
+        on_storage_open: Callable[[Self], None] | None,
+        projection_connection_factory: Callable[..., sqlite3.Connection] | None,
+    ) -> Self:
+        construction.require_active()
         if type(worker_epoch) is not int or worker_epoch < 0:
             raise ValueError("retained corpus requires a nonnegative worker epoch")
         if type(metadata_byte_budget) is not int or metadata_byte_budget < 1:
@@ -297,31 +327,31 @@ class RetainedCorpusValidator:
         path = directory / "corpus.sqlite3"
         if directory.is_symlink() or not directory.is_dir() or path.is_symlink():
             raise StaleCorpusWorkspace("retained corpus directory is unavailable")
-        try:
-            descriptor = os.open(
-                path,
-                os.O_RDWR | os.O_NOFOLLOW | (os.O_CREAT | os.O_EXCL if create else 0),
-                0o600,
-            )
-        except FileNotFoundError as error:
-            raise StaleCorpusWorkspace("retained corpus database is missing") from error
         result = cls.__new__(cls)
         result._source, result._binding, result._encoded = source, binding, encoded
         result._epoch, result._metadata_budget = worker_epoch, metadata_byte_budget
-        result._closed, result._storage_closed, result._on_close = False, False, on_storage_close
-        result._directory, result._descriptor = directory, descriptor
+        result._closed, result._storage_closed, result._received = False, False, False
+        result._on_close = None
+        result._directory, result._construction = directory, construction
+        result._corpus_storage = None
+        construction.retain_storage(result)
         try:
+            try:
+                construction.acquire_guard(path, create=create)
+            except FileNotFoundError as error:
+                raise StaleCorpusWorkspace("retained corpus database is missing") from error
+            except RuntimeError as error:
+                if construction.guard.state == "rejected":
+                    raise StaleCorpusWorkspace("retained corpus file custody changed") from error
+                raise
             result._verify_file()
-            connect = sqlite3.connect if connection_factory is None else connection_factory
-            result._db = connect(path.as_uri() + "?mode=rw", uri=True, check_same_thread=False)
-        except BaseException:
-            os.close(descriptor)
-            result._descriptor = None
-            raise
-        result._corpus = CanonicalCorpusValidator._from_workspace(
-            result._db, directory, connection_factory=connection_factory
-        )
-        try:
+            result._db = construction.scope.connect(
+                path.as_uri() + "?mode=rw", uri=True, check_same_thread=False
+            )
+            result._corpus = CanonicalCorpusValidator._from_workspace(
+                result._db, directory, connection_factory=projection_connection_factory
+            )
+            result._corpus_storage = result._corpus
             # Retain the handle before initialization or fencing can fail.
             # The caller keeps its lease if a following close is unconfirmed.
             if on_storage_open is not None:
@@ -373,15 +403,17 @@ class RetainedCorpusValidator:
             result._verify_current()
             db.commit()
             if create:
-                _sync_directory(directory)
+                construction.sync_directory(directory)
         except sqlite3.DatabaseError as error:
-            result.close()
+            result._receive_storage()
             raise StaleCorpusWorkspace(
                 "retained corpus storage is corrupt or incomplete"
             ) from error
         except BaseException:
-            result.close()
+            result._receive_storage()
             raise
+        construction.ready()
+        result._on_close = on_storage_close
         return result
 
     def _initialize(self) -> None:
@@ -422,9 +454,7 @@ class RetainedCorpusValidator:
 
     def _verify_file(self) -> None:
         try:
-            if self._descriptor is None:
-                raise StaleCorpusWorkspace("retained corpus file custody is closed")
-            held = os.fstat(self._descriptor)
+            held = os.fstat(self._construction.descriptor())
             entry = os.stat(self._directory / "corpus.sqlite3", follow_symlinks=False)
             current = (
                 stat.S_ISREG(held.st_mode)
@@ -493,40 +523,41 @@ class RetainedCorpusValidator:
     @declare_growth(lifecycle_declaration("_operation"))
     @contextmanager
     def _operation(self) -> Iterator[None]:
-        if self._closed:
-            raise RuntimeError("retained corpus is closed")
-        self._verify_current()
-        db = self._db
-        _write(db, "BEGIN IMMEDIATE")
-        try:
-            epoch, version, checkpoint, _, _ = self._load()
-            _restore(self._corpus, checkpoint)
-            self._corpus._orders = {
-                kind: _RetainedOrder(db, kind) for kind in ("derivation", "specialization")
-            }
-            yield
+        with self._construction.execution():
+            if self._closed:
+                raise RuntimeError("retained corpus is closed")
             self._verify_current()
-            after_checkpoint = _checkpoint(self._corpus)
-            self._admit_checkpoint(after_checkpoint, version=version + 1)
-            changed = _write(
-                db,
-                "UPDATE corpus_workspace SET checkpoint=?,version=? WHERE singleton=1 "
-                "AND worker_epoch=? AND version=? AND checkpoint=? AND binding=?",
-                (
-                    after_checkpoint,
-                    str(version + 1),
-                    str(epoch),
-                    str(version),
-                    checkpoint,
-                    self._encoded,
-                ),
-            )
-            if changed != 1:
-                raise StaleCorpusWorkspace("retained corpus checkpoint changed")
-            db.commit()
-        except BaseException:
-            db.rollback()
-            raise
+            db = self._db
+            _write(db, "BEGIN IMMEDIATE")
+            try:
+                epoch, version, checkpoint, _, _ = self._load()
+                _restore(self._corpus, checkpoint)
+                self._corpus._orders = {
+                    kind: _RetainedOrder(db, kind) for kind in ("derivation", "specialization")
+                }
+                yield
+                self._verify_current()
+                after_checkpoint = _checkpoint(self._corpus)
+                self._admit_checkpoint(after_checkpoint, version=version + 1)
+                changed = _write(
+                    db,
+                    "UPDATE corpus_workspace SET checkpoint=?,version=? WHERE singleton=1 "
+                    "AND worker_epoch=? AND version=? AND checkpoint=? AND binding=?",
+                    (
+                        after_checkpoint,
+                        str(version + 1),
+                        str(epoch),
+                        str(version),
+                        checkpoint,
+                        self._encoded,
+                    ),
+                )
+                if changed != 1:
+                    raise StaleCorpusWorkspace("retained corpus checkpoint changed")
+                db.commit()
+            except BaseException:
+                db.rollback()
+                raise
 
     def _admit(self, anchor: HistoryJournalAnchor, *, selection: bool) -> None:
         admission = self._source.admit_selection if selection else self._source.admit_source
@@ -695,18 +726,35 @@ class RetainedCorpusValidator:
                 metadata_byte_budget=metadata_byte_budget,
             )
 
-    @declare_growth(lifecycle_declaration("close"))
-    def close(self) -> None:
+    @property
+    def storage_received(self) -> bool:
+        return self._received
+
+    def _receive_storage(self) -> None:
+        """Receive only database work inside the original held Native gate."""
+        self._construction.require_active()
         self._closed = True
         if not self._storage_closed:
-            self._corpus.__exit__()
+            if self._corpus_storage is not None:
+                self._corpus_storage.close()
+            self._construction.scope.close()
+            if not self._construction.scope.received:
+                raise BlockingIOError("original corpus SQLite storage remains unreceived")
             self._storage_closed = True
-        if self._descriptor is not None:
-            os.close(self._descriptor)
-            self._descriptor = None
-        callback, self._on_close = self._on_close, None
-        if callback is not None:
-            callback()
+
+    def _release_storage(self) -> None:
+        self._construction.require_active()
+        if not self._storage_closed or not self._construction.dependents_received:
+            raise BlockingIOError("original corpus dependents remain unreceived")
+        if self._on_close is not None:
+            self._on_close()
+            self._on_close = None
+        self._received = True
+
+    @declare_growth(lifecycle_declaration("close"))
+    def close(self) -> None:
+        if not self._construction.close_step():
+            raise BlockingIOError("original corpus receiving remains pending")
 
     def __enter__(self) -> Self:
         if self._closed:

@@ -9,14 +9,18 @@ from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_corpus_reclamation as owner
 from riverhog_core.canonical_discovery_retired_metadata import RetiredDiscoveryMetadata
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Job
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalValidationCapacity
 from riverhog_provenance import corpus_reclamation as native
 from sqlalchemy import update
 
 from tests.support.catalog_work import octets
-from tests.support.workspace_reclamation import execution_sample, observe_reclamation
+from tests.support.retirement_namespace import lease_retiring_journal_workspace
+from tests.support.workspace_reclamation import (
+    execution_sample,
+    observe_file_delegate,
+    observe_reclamation,
+)
 from tests.unit import test_canonical_discovery_metadata_growth as basis
 from tests.unit.test_canonical_discovery_child_reclamation_growth import (
     combined_sample,
@@ -138,55 +142,37 @@ def count_original_scalars(recorder):
 def native_delegate(recorder, projection, dimensions, samples, fault):
     operation = owner.reclaim_retired_corpus_workspace
     binding = growth_binding(operation)
-    file_operation = native.reclaim_retired_files
-    file_binding = growth_binding(file_operation)
 
-    def observed(directory, *, octet_budget):
+    def observed(directory, *, receiver, octet_budget):
+        directory_width = len(os.fsencode(directory))
         active, recorder.active = recorder.active, False
         files = []
         try:
             with pytest.MonkeyPatch.context() as patch:
 
                 def uncertain(descriptor):
-                    raise OSError(28, "actual delegated child sync capacity")
+                    raise OSError(28, "actual delegated corpus sync capacity")
 
                 if fault:
                     patch.setattr(os, "fsync", uncertain)
                 with observe_reclamation(patch, operation) as metrics:
-
-                    def file_call(path, *, names, octet_budget):
-                        before = dict(metrics)
-                        try:
-                            return file_operation(path, names=names, octet_budget=octet_budget)
-                        finally:
-                            # The instrumentation's fixed name widths are outside
-                            # the actual observed filename encoder.
-                            name_sizes = tuple(len(name.encode()) for name in names)
-                            files.append(
-                                execution_sample(
-                                    file_binding,
-                                    projection,
-                                    {
-                                        "candidate_files": len(names),
-                                        "name_octets": sum(name_sizes),
-                                        "maximum_name_octets": max(name_sizes, default=0),
-                                        **dimensions,
-                                        "octet_budget": octet_budget,
-                                    },
-                                    {key: metrics[key] - before[key] for key in metrics},
-                                    {},
-                                )
-                            )
-
-                    patch.setattr(native, "reclaim_retired_files", file_call)
                     try:
-                        return operation(directory, octet_budget=octet_budget)
+                        with observe_file_delegate(
+                            patch, native, projection, dimensions, metrics
+                        ) as files:
+                            return operation(
+                                directory, receiver=receiver, octet_budget=octet_budget
+                            )
                     finally:
                         samples.append(
                             execution_sample(
                                 binding,
                                 projection,
-                                {**dimensions, "octet_budget": octet_budget},
+                                {
+                                    **dimensions,
+                                    "directory_octets": directory_width,
+                                    "octet_budget": octet_budget,
+                                },
                                 metrics,
                                 {"files": files},
                             )
@@ -247,6 +233,7 @@ def test_measured_original_corpus_reclamation(
                         ),
                         "path_octets": len(os.fsencode(case.path / "discovery.sqlite3")),
                         "native_calls": 0,
+                        "native_directory_octets": len(os.fsencode(case.path)),
                         "native_retained_octets": extent,
                         "native_retained_files": files,
                         "native_octet_budget": 3,
@@ -259,7 +246,7 @@ def test_measured_original_corpus_reclamation(
                     }
                     with (
                         observe_binding_codec(recorder),
-                        recorder.observe(case, cold=cold),
+                        recorder.observe(case, cold=cold, file_primitives=False),
                         direct_primitives(recorder),
                         count_original_scalars(recorder),
                         native_delegate(

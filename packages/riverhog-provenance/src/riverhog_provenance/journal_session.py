@@ -37,6 +37,7 @@ from .errors import IncompleteSourceError, JournalValidationCapacity, Provenance
 from .framing import JournalFramingCursor, advance_journal_framing
 from .graph_certificates import InvalidJournalGraphCertificate, JournalGraphCertificates
 from .journal import JournalFrame, JournalSummary
+from .journal_construction import JournalConstruction
 from .journal_store import JournalStore
 from .replay_binding import JournalReplayBinding
 
@@ -1292,6 +1293,7 @@ class JournalValidationSession:
         directory: Path,
         source: JournalValidationSource,
         *,
+        construction: JournalConstruction,
         attempt_id: str,
         worker_epoch: int,
         create: bool = False,
@@ -1301,7 +1303,6 @@ class JournalValidationSession:
         certificates: JournalGraphCertificates | None = None,
         on_storage_close: Callable[[], None] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
-        connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> Self:
         """Open this owner's workspace; a replacement requires a newer worker epoch.
 
@@ -1317,121 +1318,131 @@ class JournalValidationSession:
         The optional open callback receives the closeable Session before native
         schema or prefix initialization. It must retain the handle first; a
         cleanup failure then remains reachable for a later explicit close.
-        The optional connection factory is delegated to JournalStore before
-        schema work or source reads, with the same retained-reader lifetime.
+        The required caller-retained construction receives every earlier file
+        and SQLite origin even if no Session returns. Its original connection
+        scope follows the same retained-reader lifetime.
         """
-        selected = catalog or ContractCatalog()
-        binding = source.binding
-        certificate_binding = None if certificates is None else certificates.binding
-        if certificate_binding is not None and certificate_binding.source != binding:
-            raise InvalidJournalGraphCertificate(
-                "graph certificate belongs to another finite source"
-            )
-        prefix_source_binding = binding.to_json()
-        if certificate_binding is not None:
-            prefix_source_binding = canonical_json_bytes(
-                {
-                    "source": prefix_source_binding,
-                    "graph_certificate": certificate_binding.to_json(),
-                }
-            ).decode()
-        if binding.catalog_sha256 != selected.checkpoint_sha256():
-            raise ValueError("retained validation source has a different contract catalog")
-        if type(worker_epoch) is not int or worker_epoch < 0:
-            raise ValueError("retained validation requires an explicit nonnegative worker epoch")
-        if source.verify_current() is not True:
-            raise IncompleteSourceError("retained validation source is no longer current")
-        result = object.__new__(cls)
-        result.attempt_id = attempt_id
-        result._closed = False
-        result._closing = False
-        result._summary = None
-        result._failure = None
-        result._catalog = selected
-        result._source, result._source_binding = source, binding
-
-        def retain_storage(store: JournalStore) -> None:
-            result._store = store
-            if on_storage_open is not None:
-                on_storage_open(result)
-
-        store_opened = False
+        if not isinstance(construction, JournalConstruction):
+            raise TypeError("retained Session requires its original construction frame")
+        construction.begin()
         try:
-            result._store = JournalStore.open_retained(
-                directory,
-                create=create,
-                on_storage_open=retain_storage,
-                connection_factory=connection_factory,
-            )
-            store_opened = True
-            result._prefix = JournalPrefix(
-                result._store.db,
-                attempt_id=attempt_id,
-                source_binding=prefix_source_binding,
-                catalog=selected,
-                require_profiles=binding.require_profiles,
-                expected_anchor=expected_anchor,
-                require_exact_tail=require_exact_tail,
-            )
-            with closing(
-                result._store.db.execute(
-                    "SELECT 1 FROM sqlite_master WHERE type='table' AND name='journal_validation'"
+            selected = catalog or ContractCatalog()
+            binding = source.binding
+            certificate_binding = None if certificates is None else certificates.binding
+            if certificate_binding is not None and certificate_binding.source != binding:
+                raise InvalidJournalGraphCertificate(
+                    "graph certificate belongs to another finite source"
                 )
-            ) as rows:
-                initialized = rows.fetchone() is not None
-            if initialized:
+            prefix_source_binding = binding.to_json()
+            if certificate_binding is not None:
+                prefix_source_binding = canonical_json_bytes(
+                    {
+                        "source": prefix_source_binding,
+                        "graph_certificate": certificate_binding.to_json(),
+                    }
+                ).decode()
+            if binding.catalog_sha256 != selected.checkpoint_sha256():
+                raise ValueError("retained validation source has a different contract catalog")
+            if type(worker_epoch) is not int or worker_epoch < 0:
+                raise ValueError(
+                    "retained validation requires an explicit nonnegative worker epoch"
+                )
+            if source.verify_current() is not True:
+                raise IncompleteSourceError("retained validation source is no longer current")
+            result = object.__new__(cls)
+            result.attempt_id = attempt_id
+            result._closed = False
+            result._closing = False
+            result._summary = None
+            result._failure = None
+            result._catalog = selected
+            result._source, result._source_binding = source, binding
+
+            def retain_storage(store: JournalStore) -> None:
+                result._store = store
+                if on_storage_open is not None:
+                    on_storage_open(result)
+
+            store_opened = False
+            try:
+                result._store = JournalStore._open_retained(
+                    directory,
+                    create=create,
+                    on_storage_open=retain_storage,
+                    construction=construction,
+                )
+                store_opened = True
+                result._prefix = JournalPrefix(
+                    result._store.db,
+                    attempt_id=attempt_id,
+                    source_binding=prefix_source_binding,
+                    catalog=selected,
+                    require_profiles=binding.require_profiles,
+                    expected_anchor=expected_anchor,
+                    require_exact_tail=require_exact_tail,
+                )
                 with closing(
                     result._store.db.execute(
-                        "SELECT substr(worker_epoch,1,8193) FROM journal_validation "
-                        "WHERE singleton=1"
+                        "SELECT 1 FROM sqlite_master WHERE type='table' "
+                        "AND name='journal_validation'"
                     )
                 ) as rows:
-                    old = rows.fetchone()
-                if (
-                    old is None
-                    or type(old[0]) is not str
-                    or not old[0].isascii()
-                    or not old[0].isdecimal()
-                ):
-                    raise RuntimeError("retained validation worker epoch is missing or corrupt")
-                old_epoch = int(old[0])
-                if str(old_epoch) != old[0] or worker_epoch <= old_epoch:
-                    raise ValueError(
-                        "retained validation replacement requires a newer worker epoch"
+                    initialized = rows.fetchone() is not None
+                if initialized:
+                    with closing(
+                        result._store.db.execute(
+                            "SELECT substr(worker_epoch,1,8193) FROM journal_validation "
+                            "WHERE singleton=1"
+                        )
+                    ) as rows:
+                        old = rows.fetchone()
+                    if (
+                        old is None
+                        or type(old[0]) is not str
+                        or not old[0].isascii()
+                        or not old[0].isdecimal()
+                    ):
+                        raise RuntimeError("retained validation worker epoch is missing or corrupt")
+                    old_epoch = int(old[0])
+                    if str(old_epoch) != old[0] or worker_epoch <= old_epoch:
+                        raise ValueError(
+                            "retained validation replacement requires a newer worker epoch"
+                        )
+                    previous = ValidationLedger(
+                        result._store.db,
+                        attempt_id=attempt_id,
+                        binding=result._prefix.binding,
+                        worker_epoch=old_epoch,
                     )
-                previous = ValidationLedger(
-                    result._store.db,
-                    attempt_id=attempt_id,
-                    binding=result._prefix.binding,
-                    worker_epoch=old_epoch,
+                    result._ledger = previous.replace_worker(worker_epoch)
+                else:
+                    # An interrupted atomic initialization has no accepted prefix.
+                    result._ledger = ValidationLedger(
+                        result._store.db,
+                        attempt_id=attempt_id,
+                        binding=result._prefix.binding,
+                        worker_epoch=worker_epoch,
+                    )
+                    result._initialize(retained=True)
+                result._replay = EntryReplay(
+                    result._store,
+                    prefix=result._prefix,
+                    ledger=result._ledger,
+                    catalog=selected,
+                    certificates=certificates,
                 )
-                result._ledger = previous.replace_worker(worker_epoch)
-            else:
-                # An interrupted atomic initialization has no accepted prefix.
-                result._ledger = ValidationLedger(
-                    result._store.db,
-                    attempt_id=attempt_id,
-                    binding=result._prefix.binding,
-                    worker_epoch=worker_epoch,
-                )
-                result._initialize(retained=True)
-            result._replay = EntryReplay(
-                result._store,
-                prefix=result._prefix,
-                ledger=result._ledger,
-                catalog=selected,
-                certificates=certificates,
-            )
-            result._input = RetainedInput(result._ledger, source)
-        except BaseException:
-            result._closing = True
-            # A failing Store constructor already attempted its own cleanup.
-            # Its early retained handle preserves a failed close for retry.
-            if store_opened:
-                result.close()
-            raise
-        result._store._storage.on_close = on_storage_close
-        return result
+                result._input = RetainedInput(result._ledger, source)
+            except BaseException:
+                result._closing = True
+                # A failing Store constructor already attempted its own cleanup.
+                # Its early retained handle preserves a failed close for retry.
+                if store_opened:
+                    result.close()
+                raise
+            result._store._storage.on_close = on_storage_close
+            return result
+        finally:
+            construction.end()
 
     def _require_open(self) -> None:
         if self._closing or self._closed:
@@ -1567,6 +1578,11 @@ class JournalValidationSession:
         if self._summary is None:
             raise RuntimeError("journal validation has no successful terminal result")
         return self._summary.borrow()
+
+    @property
+    def storage_received(self) -> bool:
+        """All original storage phases received after the final independent reader."""
+        return self._store.storage_received
 
     @declare_growth(_lifecycle_declaration("close"))
     def close(self) -> None:

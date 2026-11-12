@@ -10,8 +10,10 @@ from contextlib import ExitStack, contextmanager
 from types import SimpleNamespace
 
 import pytest
+import sqlite_admission
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.catalog_models import CollectionUploadRecord
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_epochs as epochs
 from riverhog_core.services import upload_journal_rank as rank
@@ -23,6 +25,8 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import JournalValidationSession
 from sqlalchemy import event, select
 
+from tests.support.sqlite_observation import observed_connection_type
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_journal_capture import advance, retained
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL, Chunk, Journal
@@ -243,14 +247,55 @@ class Recorder:
                 return super().execute(*args, **kwargs)
 
             def close(self):
-                if recorder.recording():
-                    assert not recorder.pool_held and recorder.native_active
+                received = self.closed
+                if not received:
+                    if recorder.recording():
+                        assert not recorder.pool_held and recorder.native_active
+                    self.last_changes = self.total_changes
+                result = super().close()
+                self.closed = True
+                if not received and recorder.recording():
                     recorder.values["closed_databases"] += 1
                     recorder.native_values["closed_databases"] += 1
-                if not self.closed:
-                    self.last_changes = self.total_changes
-                self.closed = True
-                return super().close()
+                return result
+
+        driver = sqlite_admission._connect
+        resource_close = RetainedWorkspaceResource.close
+
+        def initialize(connection):
+            recorder.native_connections.append(connection)
+            connection.closed, connection.last_changes = False, 0
+            connection.set_trace_callback(connection.trace)
+            connection.set_progress_handler(connection.tick, 1)
+            connection.set_authorizer(connection.authorize)
+
+        def admitted_connect(database, **options):
+            if self.recording() and not catalog_reads:
+                raise AssertionError("retained release opened an admitted database")
+            original = options["factory"]
+            options["factory"] = observed_connection_type(
+                Connection,
+                original,
+                initialize=initialize,
+                recording=lambda _connection: recorder.recording(),
+            )
+            actual = driver(database, **options)
+            assert actual is original._reservation.connection
+            return actual
+
+        def received_resource(original):
+            before = original.owner.metrics["close_calls"]
+            try:
+                return resource_close(original)
+            finally:
+                count = original.owner.metrics["close_calls"] - before
+                if self.recording() and count:
+                    assert not self.pool_held
+                    self.add("closed_files", count)
+                    if self.native_active:
+                        self.native_values["closed_files"] += count
+                    if self.in_callback:
+                        self.add("lease_descriptor_closes", count)
 
         def observed_connect(*args, **kwargs):
             if self.recording() and (not catalog_reads or "factory" not in kwargs):
@@ -334,6 +379,8 @@ class Recorder:
                         if hasattr(module, "json"):
                             patch.setattr(module, "json", Json(module.json))
                 patch.setattr(sqlite3, "connect", observed_connect)
+                patch.setattr(sqlite_admission, "_connect", admitted_connect)
+                patch.setattr(RetainedWorkspaceResource, "close", received_resource)
                 patch.setattr(
                     JournalValidationSession, "close", lambda session: self.close(session)
                 )
@@ -355,7 +402,7 @@ class Recorder:
         finally:
             event.remove(engine, "before_cursor_execute", sql)
 
-    def measure(self, current, operation, key=None, slot=None):
+    def measure(self, current, operation, key=None, slot=None, *, pending=False):
         selected = [slot] if operation is DROP else list(current._slots.values())
         dimensions = {
             "configured_slots": current.concurrency,
@@ -375,13 +422,22 @@ class Recorder:
             if not connection.closed
         }
         self.thread, self.active = threading.get_ident(), True
+        refusal = None
         try:
-            if operation is DROP:
-                operation(current, key, slot)
-            else:
-                operation(current)
+            try:
+                if operation is DROP:
+                    operation(current, key, slot)
+                else:
+                    operation(current)
+            except BlockingIOError as error:
+                if not pending:
+                    raise
+                refusal = error
         finally:
             self.active = False
+        assert (refusal is not None) is pending
+        if pending:
+            assert "original Native construction" in str(refusal)
         dimensions["release_calls"] = len(self.delegates["release"])
         dimensions["retain_calls"] = len(self.delegates["retain"])
         self.values["native_close_classes"] = self.values["native_close_calls"]
@@ -519,10 +575,13 @@ def release_cases(tmp_path_factory):
 
 
 @contextmanager
-def live_owner(case, *, recorder_type=Recorder):
+def live_owner(case, *, recorder_type=Recorder, journal_constructions):
     recorder = recorder_type()
     current = owner.UploadJournalValidationOwner(
-        case.factory, case.path / "native", concurrency=max(1, case.slots)
+        case.factory,
+        case.path / "native",
+        concurrency=max(1, case.slots),
+        construction_factory=journal_constructions.retain,
     )
     current._lock, current._slots = Lock(current._lock, recorder, pool=True), Pool(recorder)
     borrowed, selected = [], []
@@ -556,9 +615,9 @@ def live_owner(case, *, recorder_type=Recorder):
                 slot.lock.release()
             yield current, recorder, selected, borrowed
         finally:
-            current.close()
             for reader in borrowed:
                 reader.close()
+            current.close()
             assert all(storage._closed for _key, _slot, storage in selected)
 
 
@@ -566,29 +625,51 @@ def verify_custody(current, selected, borrowed):
     for _key, slot, storage in selected:
         if borrowed:
             assert not storage._closed and storage._readers == len(borrowed)
-            with owner.lease_journal_validation_workspace(
-                current.root, slot.job.workspace_id
-            ) as directory:
+            with leased_workspace(current.root, slot.job.workspace_id) as directory:
                 assert directory is None
         else:
             assert storage._closed and storage._readers == 0
-            with owner.lease_journal_validation_workspace(
-                current.root, slot.job.workspace_id
-            ) as directory:
+            with leased_workspace(current.root, slot.job.workspace_id) as directory:
                 assert directory == storage.directory
 
 
-def release_samples(cases, operation, *, samples):
+def release_samples(cases, operation, *, samples, journal_constructions):
     for case in cases:
-        with live_owner(case) as (current, recorder, selected, borrowed):
+        with live_owner(case, journal_constructions=journal_constructions) as (
+            current,
+            recorder,
+            selected,
+            borrowed,
+        ):
             before = snapshot(case.engine)
             progresses = {key: slot.session.progress() for key, slot, _storage in selected}
             if operation is DROP:
                 for key, slot, _storage in selected:
                     slot.lock.acquire()
                     try:
+                        if borrowed:
+                            original = slot.session
+                            samples.append(
+                                recorder.measure(current, operation, key, slot, pending=True)
+                            )
+                            assert current._slots[key] is slot and slot.session is original
+                            assert not slot.construction.received
+                            assert not slot.construction.scope.received
+                            verify_custody(current, selected, borrowed)
+                            while borrowed:
+                                borrowed.pop().close()
+                                if borrowed:
+                                    samples.append(
+                                        recorder.measure(
+                                            current, operation, key, slot, pending=True
+                                        )
+                                    )
+                                    assert current._slots[key] is slot
+                                    verify_custody(current, selected, borrowed)
+                            assert slot.construction.scope.received
                         samples.append(recorder.measure(current, operation, key, slot))
                         assert key not in current._slots and slot.session is None
+                        assert slot.construction is None or slot.construction.received
                         samples.append(recorder.measure(current, operation, key, slot))
                         replacement = current._reserve(key)
                         assert replacement is not None
@@ -607,6 +688,21 @@ def release_samples(cases, operation, *, samples):
                     finally:
                         slot.lock.release()
             else:
+                if borrowed:
+                    originals = tuple((key, slot, slot.session) for key, slot, _ in selected)
+                    samples.append(recorder.measure(current, operation, pending=True))
+                    assert current._closed
+                    for key, slot, native in originals:
+                        assert current._slots[key] is slot and slot.session is native
+                        assert not slot.construction.received
+                        assert not slot.construction.scope.received
+                    verify_custody(current, selected, borrowed)
+                    while borrowed:
+                        borrowed.pop().close()
+                        if borrowed:
+                            samples.append(recorder.measure(current, operation, pending=True))
+                            verify_custody(current, selected, borrowed)
+                    assert all(slot.construction.scope.received for _, slot, _ in selected)
                 samples.append(recorder.measure(current, operation))
                 assert current._closed and not current._slots
                 samples.append(recorder.measure(current, operation))
@@ -618,7 +714,10 @@ def release_samples(cases, operation, *, samples):
             assert recorder.callbacks == len(selected)
             verify_custody(current, selected, borrowed)
             replacement = owner.UploadJournalValidationOwner(
-                case.factory, current.root, concurrency=max(1, len(selected))
+                case.factory,
+                current.root,
+                concurrency=max(1, len(selected)),
+                construction_factory=journal_constructions.retain,
             )
             try:
                 for work in case.works:
@@ -644,8 +743,13 @@ def release_samples(cases, operation, *, samples):
                 replacement.close()
 
 
-def waiting_shutdown_sample(case, *, samples):
-    with live_owner(case) as (current, recorder, selected, borrowed):
+def waiting_shutdown_sample(case, *, samples, journal_constructions):
+    with live_owner(case, journal_constructions=journal_constructions) as (
+        current,
+        recorder,
+        selected,
+        borrowed,
+    ):
         _key, slot, _storage = selected[0]
         before = snapshot(case.engine)
         waiting = threading.Event()
@@ -690,11 +794,13 @@ def waiting_shutdown_sample(case, *, samples):
     operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner._drop",
 )
 def test_actual_slot_drop_composes_native_release_and_preserves_replacement(
-    release_cases, record_property
+    release_cases, record_property, *, journal_constructions
 ):
     samples = []
     record_property("growth_samples", samples)
-    release_samples(release_cases, DROP, samples=samples)
+    release_samples(
+        release_cases, DROP, samples=samples, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -702,10 +808,16 @@ def test_actual_slot_drop_composes_native_release_and_preserves_replacement(
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner.close",
 )
-def test_actual_pool_shutdown_preserves_final_reader_custody(release_cases, record_property):
+def test_actual_pool_shutdown_preserves_final_reader_custody(
+    release_cases, record_property, *, journal_constructions
+):
     samples = []
     record_property("growth_samples", samples)
-    release_samples(release_cases, CLOSE, samples=samples)
+    release_samples(
+        release_cases, CLOSE, samples=samples, journal_constructions=journal_constructions
+    )
     for case in release_cases:
         if len(case.works) == 1 and (case.readers or case.slots == 1 and not case.accepted):
-            waiting_shutdown_sample(case, samples=samples)
+            waiting_shutdown_sample(
+                case, samples=samples, journal_constructions=journal_constructions
+            )

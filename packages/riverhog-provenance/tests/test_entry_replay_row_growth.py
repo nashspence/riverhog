@@ -23,7 +23,7 @@ from test_entry_replay_growth import REGIMES, ReplayConnection, finish_entry, ob
 from test_entry_replay_growth import admission_histories as admission_histories
 from test_entry_replay_publication_growth import restore
 from test_generic_semantics import code_tree
-from test_semantic_edge import WorkCursor, observed_work
+from test_semantic_edge import WorkCursor, WorkRows, observed_work
 from test_semantic_owner import snapshot
 
 ROW_CASES = (
@@ -36,7 +36,7 @@ _LENGTH = "SELECT length(value) FROM assertions WHERE assertion_id = ? AND activ
 _PAYLOAD = "SELECT value FROM assertions WHERE assertion_id = ? AND active = 1"
 
 
-class RowCursor(WorkCursor):
+class RowRows(WorkRows):
     def record(self, row):
         result = super().record(row)
         if row is not None:
@@ -51,6 +51,10 @@ class RowCursor(WorkCursor):
                 self.connection.metrics["returned_metadata_octets"] -= size
                 self.connection.metrics["returned_atom_octets"] += size
         return result
+
+
+class RowCursor(RowRows, WorkCursor):
+    _row_observer = RowRows
 
 
 class RowConnection(ReplayConnection):

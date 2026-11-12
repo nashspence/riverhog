@@ -9,8 +9,10 @@ import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_retirement as owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 
+from tests.support.retirement_namespace import refuse_native_child_resource
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_child_reclamation import prepare_child
 from tests.unit.test_canonical_discovery_metadata import owned
 from tests.unit.test_canonical_discovery_metadata_reclamation import prepare_metadata
@@ -124,7 +126,7 @@ def test_root_coordination_is_released_before_child_work_and_other_identity_can_
     observed = []
 
     def responsive(metadata, **kwargs):
-        with lease_journal_validation_workspace(
+        with leased_workspace(
             case.root, "f" * 32, create=True, creation_current=lambda: True
         ) as sibling:
             assert sibling is not None
@@ -187,7 +189,7 @@ def test_actual_core_close_refusal_retains_exclusive_parent_until_receiving(
         with pytest.raises(OSError):
             retained.advance(octet_budget=3)
     assert not retained._closed and retained._custody.verify_current()
-    with lease_journal_validation_workspace(case.root, job.workspace_id, shared=True) as busy:
+    with leased_workspace(case.root, job.workspace_id, shared=True) as busy:
         assert busy is None
     with pytest.raises(RuntimeError, match="fresh retained turn"):
         retained.advance(octet_budget=3)
@@ -205,41 +207,28 @@ def test_failed_child_descriptor_close_retains_child_and_parent_ownership(case, 
         assert result.job.reclamation_phase == "child_directory"
         job = result.job
     retained = owner.DiscoveryRetirementTurn(case.factory, job, case.root)
-    actual_close, actual_open = os.close, os.open
-    targets = set()
     child_inode = (path / "journals" / bindings[0].directory_id).stat().st_ino
     refusing = True
-    triggered = []
 
-    def opened(name, flags, *args, **kwargs):
-        descriptor = actual_open(name, flags, *args, **kwargs)
-        if (mode == "prefix-probe" and name == bindings[0].directory_id) or (
-            mode != "prefix-probe"
-            and name == ".lease"
-            and retained._metadata is not None
-            and os.fstat(kwargs["dir_fd"]).st_ino == child_inode
-        ):
-            targets.add(descriptor)
-        return descriptor
-
-    def closed(descriptor):
-        if refusing and descriptor in targets:
-            triggered.append(descriptor)
-            raise OSError("actual child close not received")
-        return actual_close(descriptor)
-
-    with monkeypatch.context() as patch:
-        patch.setattr(os, "open", opened)
-        patch.setattr(os, "close", closed)
+    with (
+        monkeypatch.context() as patch,
+        refuse_native_child_resource(
+            patch,
+            child_inode,
+            lambda: refusing,
+            lease=mode != "prefix-probe",
+            message="actual child close not received",
+        ) as native_triggered,
+    ):
         with pytest.raises(OSError, match="child close not received"):
             retained.advance(octet_budget=1024 * 1024)
-        assert triggered and retained._metadata._child_handles._callbacks
+        assert native_triggered and retained._metadata._child_handles._callbacks
         assert not retained._metadata.verify_current()
         assert retained._custody.verify_current()
         with pytest.raises(OSError, match="child close not received"):
             retained.close()
         assert retained._metadata._db is not None and retained._custody.verify_current()
-        with lease_journal_validation_workspace(case.root, job.workspace_id, shared=True) as busy:
+        with leased_workspace(case.root, job.workspace_id, shared=True) as busy:
             assert busy is None
         refusing = False
         retained.close()
@@ -251,16 +240,21 @@ def test_failed_child_descriptor_close_retains_child_and_parent_ownership(case, 
 def test_parent_lease_close_refusal_keeps_custody_held_until_actual_success(case, monkeypatch):
     job, _, _ = prepare_child(case, count=1)
     retained = owner.DiscoveryRetirementTurn(case.factory, job, case.root)
-    actual = os.close
+    actual = RetainedWorkspaceResource.close
     refusing = True
 
-    def closed(descriptor):
-        if refusing and retained._custody is not None and descriptor == retained._custody._lease:
+    def closed(handle):
+        if (
+            refusing
+            and retained._custody is not None
+            and handle.borrow.active
+            and handle.fileno() == retained._custody._lease
+        ):
             raise OSError("actual parent close not received")
-        return actual(descriptor)
+        return actual(handle)
 
     with monkeypatch.context() as patch:
-        patch.setattr(os, "close", closed)
+        patch.setattr(RetainedWorkspaceResource, "close", closed)
         with pytest.raises(OSError, match="parent close not received"):
             retained.advance(octet_budget=3)
         assert retained._metadata._closed and retained._custody.verify_current()

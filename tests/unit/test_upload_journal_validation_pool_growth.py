@@ -182,7 +182,7 @@ def measure(current, recorder, operation, selected, *, closed=False):
     return sample
 
 
-def samples(root, operation):
+def samples(root, operation, *, journal_constructions):
     values = []
     for capacity in (1, 2, 17, 1025):
         for count in sorted({0, 1, capacity - 1, capacity}):
@@ -192,7 +192,12 @@ def samples(root, operation):
                 recorder.add("catalog_calls")
                 pytest.fail("pool reservation opened a catalog session")
 
-            current = owner.UploadJournalValidationOwner(factory, root, concurrency=capacity)
+            current = owner.UploadJournalValidationOwner(
+                factory,
+                root,
+                concurrency=capacity,
+                construction_factory=journal_constructions.retain,
+            )
             current._lock = Lock(current._lock, recorder, pool=True)
             current._slots = Slots(recorder)
             for number in range(count):
@@ -223,8 +228,12 @@ def samples(root, operation):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner._reserve",
 )
-def test_actual_pool_reservations_are_nonblocking_and_independent(tmp_path, record_property):
-    record_property("growth_samples", samples(tmp_path, RESERVE))
+def test_actual_pool_reservations_are_nonblocking_and_independent(
+    tmp_path, record_property, *, journal_constructions
+):
+    record_property(
+        "growth_samples", samples(tmp_path, RESERVE, journal_constructions=journal_constructions)
+    )
 
 
 @pytest.mark.growth_witness(
@@ -232,5 +241,9 @@ def test_actual_pool_reservations_are_nonblocking_and_independent(tmp_path, reco
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner.active_keys",
 )
-def test_actual_pool_key_snapshots_visit_only_configured_slots(tmp_path, record_property):
-    record_property("growth_samples", samples(tmp_path, KEYS))
+def test_actual_pool_key_snapshots_visit_only_configured_slots(
+    tmp_path, record_property, *, journal_constructions
+):
+    record_property(
+        "growth_samples", samples(tmp_path, KEYS, journal_constructions=journal_constructions)
+    )

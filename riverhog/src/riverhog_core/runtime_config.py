@@ -24,6 +24,7 @@ from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.cache_write_grants import CacheWriteGrants
 from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
 from riverhog_core.collection_plan import CollectionVolumePolicy
+from riverhog_core.journal_storage_grants import JournalStorageGrants
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
 from riverhog_core.registration_tuning import RegistrationTuning
 from riverhog_core.throughput import ArchiveThroughputTuning
@@ -129,6 +130,7 @@ class RuntimeConfig:
     archive_scrypt_work_factor: int = DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR
     journal_validation_workspace: Path = Path("/scratch/journal-validation")
     journal_validation_concurrency: int = 2
+    journal_storage: JournalStorageGrants = field(default_factory=JournalStorageGrants)
     archive_upload_sweep_interval: timedelta = field(default_factory=lambda: timedelta(seconds=30))
     collection_upload_custody_lease: timedelta = field(default_factory=lambda: timedelta(hours=1))
     retrieval_restore_poll_interval: timedelta = field(default_factory=lambda: timedelta(minutes=5))

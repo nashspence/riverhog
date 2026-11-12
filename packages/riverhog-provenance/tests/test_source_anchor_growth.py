@@ -253,12 +253,20 @@ def test_source_headers_preserve_correction_boundaries_without_returning_tail_vi
 
 
 def test_retained_source_header_survives_reopen_and_independent_reader_close(
-    tmp_path, journal, catalog
+    tmp_path, journal, catalog, *, journal_constructions
 ):
     from riverhog_provenance import open_retained_journal_result
 
-    path, source, confirmed, certificates, expected = completed(tmp_path, journal, catalog)
-    with open_retained_journal_result(path, source, confirmed=confirmed, catalog=catalog) as first:
+    path, source, confirmed, certificates, expected = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
+    with open_retained_journal_result(
+        path,
+        source,
+        confirmed=confirmed,
+        catalog=catalog,
+        construction=journal_constructions.retain(),
+    ) as first:
         independent = first.borrow()
         header = first.anchor_at(0)
         assert header == expected["journal"]

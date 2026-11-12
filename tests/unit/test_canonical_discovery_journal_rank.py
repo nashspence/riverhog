@@ -242,8 +242,10 @@ def test_deferred_original_union_never_claims_rank_acceptance(tmp_path, raw):
         assert not snapshot(case.metadata)["graphs"]
 
 
-def test_actual_worker_handoff_keeps_rank_file_binding_and_rejects_old_delta(tmp_path):
-    with owned(tmp_path / "owned") as case:
+def test_actual_worker_handoff_keeps_rank_file_binding_and_rejects_old_delta(
+    tmp_path, *, journal_constructions
+):
+    with owned(tmp_path / "owned", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             original = epochs.DiscoveryJournalEpochWork(framing, work.journal_source(framing))
             begin_epochs(work.metadata, original)
@@ -260,7 +262,12 @@ def test_actual_worker_handoff_keeps_rank_file_binding_and_rejects_old_delta(tmp
             path = work.metadata.custody.directory / "discovery.sqlite3"
             inode, binding = path.stat().st_ino, original.source.binding
         case.pool.close()
-        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        case.pool = DiscoveryValidationOwner(
+            case.factory,
+            case.root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         with quantum(case) as (work, framing):
             original = epochs.DiscoveryJournalEpochWork(framing, work.journal_source(framing))
             facts = topology.DiscoveryJournalTopologyWork(original)

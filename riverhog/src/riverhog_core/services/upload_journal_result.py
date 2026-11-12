@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import sqlite3
 from collections.abc import Mapping
-from contextlib import ExitStack
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -31,6 +30,7 @@ from riverhog_provenance.replay_binding import JournalReplayBinding
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
+from sqlite_admission import SqliteCapacity
 
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalRecord as Journal
@@ -38,6 +38,7 @@ from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     lease_journal_validation_workspace,
 )
+from riverhog_core.services.upload_journal_result_receiving import UploadJournalResultOpening
 
 from . import upload_journal_validation_jobs as jobs
 from .upload_journal_result_admission_growth import declare_growth_for_sealed_admission
@@ -465,6 +466,7 @@ def open_upload_journal_result(
     journal_id: str,
     *,
     catalog: ContractCatalog,
+    receiver: UploadJournalResultOpening,
 ) -> JournalSummary:
     """Own one read-only result without a new catalog writer or native worker.
 
@@ -473,28 +475,36 @@ def open_upload_journal_result(
     the exact frozen projection and shared kernel lease until their last close.
     Missing retained state is explicit; this never recreates or revalidates it.
     """
-    admission = prepare_upload_journal_result(session, collection_id, journal_id, catalog=catalog)
-    job = admission.job
-    resources = ExitStack()
-    transferred = False
+    if not isinstance(receiver, UploadJournalResultOpening) or receiver.started:
+        raise ValueError("sealed result requires its retained original single-attempt opening")
+    receiver.started = True
+    resources = receiver.resources
     try:
+        admission = prepare_upload_journal_result(
+            session, collection_id, journal_id, catalog=catalog
+        )
+        job = admission.job
         owned_source = _SealedSource(session, dict(admission._source), job, admission.binding)
         directory = resources.enter_context(
-            lease_journal_validation_workspace(root, job.workspace_id, shared=True)
+            lease_journal_validation_workspace(
+                root, job.workspace_id, shared=True, receiver=receiver.lease
+            )
         )
         if directory is None:
             raise JournalValidationCapacity(
                 "sealed native result is busy; publication remains pending"
             )
-        result = open_retained_journal_result(
+        result = receiver.result = open_retained_journal_result(
             directory,
             owned_source,
+            construction=receiver.construction,
             confirmed=admission.confirmed,
             catalog=catalog,
             certificates=admission.certificates,
-            on_storage_close=resources.close,
+            on_storage_open=receiver.retain_native,
+            on_storage_close=receiver.receive_workspace,
         )
-        transferred = True
+        receiver.transferred = True
         try:
             if result.anchor != admission.anchor:
                 raise LostJournalValidationWorkspace(
@@ -506,6 +516,8 @@ def open_upload_journal_result(
             raise
     except JournalValidationCapacity:
         raise
+    except SqliteCapacity as error:
+        raise JournalValidationCapacity("sealed result storage admission is full") from error
     except sqlite3.OperationalError as error:
         if error.sqlite_errorcode in {
             sqlite3.SQLITE_BUSY,
@@ -520,8 +532,8 @@ def open_upload_journal_result(
     except (RuntimeError, ValueError, sqlite3.DatabaseError) as error:
         raise LostJournalValidationWorkspace("sealed native result is unavailable") from error
     finally:
-        if not transferred:
-            resources.close()
+        if not receiver.transferred:
+            receiver.close()
 
 
 declare_growth_for_sealed_admission(prepare_upload_journal_result, SealedJournalResultAdmission)

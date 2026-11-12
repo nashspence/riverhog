@@ -59,7 +59,7 @@ def seed(metadata, qualified):
 
 
 def test_native_receives_full_original_sources_and_exact_clipped_selections(
-    case, qualified, original
+    case, qualified, original, *, journal_constructions
 ):
     with owned(case) as (metadata, path):
         metadata.open()
@@ -73,7 +73,12 @@ def test_native_receives_full_original_sources_and_exact_clipped_selections(
         assert all(source.admit_selection(anchor) for anchor in anchors)
         assert not source.admit_selection(replace(anchors[0], prefix_bytes=1))
         with RetainedCorpusValidator.open_retained(
-            path, source, worker_epoch=metadata.job.worker_epoch, create=True, catalog=case.catalog
+            path,
+            source,
+            worker_epoch=metadata.job.worker_epoch,
+            create=True,
+            catalog=case.catalog,
+            construction=journal_constructions.retain_corpus(),
         ) as native:
             while not native.advance_source(original[1], frame_budget=1).complete:
                 pass

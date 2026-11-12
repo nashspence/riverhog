@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 import shutil
 import sqlite3
 import weakref
@@ -62,6 +61,7 @@ from ._semantic_source import install as install_semantic_source
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ProvenanceValidationError
 from .graph import GraphValidation, _Validator, time_ns
+from .journal_construction import JournalConstruction
 
 
 class _Map[T](MutableMapping[Any, T]):
@@ -556,15 +556,6 @@ class InvalidJournalWorkspace(RuntimeError):
     """Owned retained state is missing, corrupt, incomplete or incompatible."""
 
 
-def _sync_workspace_directory(directory: Path) -> None:
-    if os.name == "posix":
-        descriptor = os.open(directory, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
-        try:
-            os.fsync(descriptor)
-        finally:
-            os.close(descriptor)
-
-
 class _SnapshotStorage:
     """One frozen projection shared by independently owned reader leases."""
 
@@ -664,37 +655,53 @@ class JournalStore:
         cls,
         directory: Path,
         *,
+        construction: JournalConstruction,
         create: bool = False,
         read_only: bool = False,
         on_storage_close: Callable[[], None] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
-        connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> Self:
-        """Open an owner-created private directory without deleting it on close.
+        """Open an owner's private workspace under its pre-retained construction.
 
-        The owner retains and authenticates the directory across worker changes.
-        This method does not trust imported databases, arbitrate job ownership,
-        repair lost state or reclaim files. Creation is exclusive; reopening
-        requires the current complete format and never performs an upgrade.
+        The caller retains the exact passive frame before invoking this method,
+        including failures before a storage handle returns. Creation is exclusive;
+        reopening never repairs or upgrades missing/incomplete state. The original
+        SQLite scope supplies the connection with unchanged URI/thread/cache options.
 
-        A successful return transfers the optional owner release callback to the
-        shared storage. It runs after the last reader closes its database. Failed calls remain
-        retryable; the callback must retain its own unconfirmed release work.
-        On construction failure the caller retains that resource's ownership.
-        The optional open callback receives the closeable handle before schema
-        initialization or restoration. It must retain the handle before doing
-        other work, so a failed cleanup remains reachable for an explicit retry.
-        Read-only admission opens the existing database with SQLite mode=ro;
-        it never creates, upgrades or advances a checkpoint.
-
-        An application may supply a SQLite-compatible connection factory to
-        admit process and connection resources before opening the database.
-        The factory receives the same URI, thread and statement-cache options
-        as sqlite3.connect. It retains any unconfirmed construction or close
-        obligations; the storage closes a returned connection only after its
-        final reader releases it. The open callback still runs before schema
-        work, after the connection has been returned.
+        Actual storage is attached to the frame before the optional early callback
+        and schema work. Successful return transfers on_storage_close only after
+        transient creator/sync receiving. That callback runs after independent
+        SQLite receiving and the last reader; failed callbacks stay retryable.
+        The frame grants no application custody, worker join or reclamation authority.
         """
+        if not isinstance(construction, JournalConstruction):
+            raise TypeError("retained journal requires its original construction frame")
+        construction.begin()
+        try:
+            return cls._open_retained(
+                directory,
+                construction=construction,
+                create=create,
+                read_only=read_only,
+                on_storage_close=on_storage_close,
+                on_storage_open=on_storage_open,
+            )
+        finally:
+            construction.end()
+
+    @classmethod
+    def _open_retained(
+        cls,
+        directory: Path,
+        *,
+        construction: JournalConstruction,
+        create: bool = False,
+        read_only: bool = False,
+        on_storage_close: Callable[[], None] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
+    ) -> Self:
+        """Continue an enclosing Native Session/result's original execution."""
+        construction.require_active()
         if create and read_only:
             raise ValueError("read-only journal admission cannot create a workspace")
         directory = Path(directory)
@@ -704,20 +711,26 @@ class JournalStore:
         if path.is_symlink():
             raise InvalidJournalWorkspace("retained journal database must be owner-created")
         if create:
-            descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            os.close(descriptor)
-            _sync_workspace_directory(directory)
+            construction.create_exclusive(path)
+            construction.sync_directory(directory)
         elif not path.is_file():
             raise InvalidJournalWorkspace("retained journal database is missing")
+
+        def retain(actual: Self) -> None:
+            construction.retain_storage(actual)
+            if on_storage_open is not None:
+                on_storage_open(actual)
+
         store = cls.__new__(cls)
         store._open(
             directory,
             retained=True,
             reopen=not create,
             read_only=read_only,
-            on_storage_open=on_storage_open,
-            connection_factory=connection_factory,
+            on_storage_open=retain,
+            construction=construction,
         )
+        construction.ready()
         store._storage.on_close = on_storage_close
         return store
 
@@ -730,9 +743,16 @@ class JournalStore:
         read_only: bool = False,
         on_storage_open: Callable[[Self], None] | None = None,
         connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        construction: JournalConstruction | None = None,
     ) -> None:
         # Frozen reader leases share this connection but require independent statement state.
-        connect = sqlite3.connect if connection_factory is None else connection_factory
+        connect: Callable[..., sqlite3.Connection]
+        if retained:
+            if construction is None or connection_factory is not None:
+                raise TypeError("retained storage requires its original construction scope")
+            connect = construction.scope.connect
+        else:
+            connect = sqlite3.connect if connection_factory is None else connection_factory
         try:
             if retained:
                 connection = connect(
@@ -797,7 +817,8 @@ class JournalStore:
                         "INSERT INTO journal_workspace VALUES(1,?)", (WORKSPACE_FORMAT,)
                     ).close()
                     self.db.commit()
-                    _sync_workspace_directory(directory)
+                    assert construction is not None
+                    construction.sync_directory(directory)
         except BaseException:
             self.close()
             raise
@@ -1125,6 +1146,12 @@ class JournalStore:
     def require_open(self) -> None:
         if self._closing or not self._cleanup.alive or self._lease.closed:
             raise RuntimeError("journal summary is closed")
+
+    @property
+    def storage_received(self) -> bool:
+        """The original storage confirmed database, directory and final callback receiving."""
+        with self._storage._lock:
+            return self._storage._closed
 
     @property
     def cleanup_complete(self) -> bool:

@@ -10,12 +10,12 @@ from riverhog_core.catalog_discovery_validation_models import DiscoveryValidatio
 from riverhog_core.incremental_emission import VolumeEmissionCapacity
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
-    lease_journal_validation_workspace,
 )
 from riverhog_core.services import archive_upload_projection_cleanup as module
 from riverhog_core.services.archive_upload_projection_cleanup import ArchiveUploadProjectionCleanup
 from riverhog_protocol.errors import Conflict
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_archive_upload_projection_cleanup import (
     LIMITS,
     _count,
@@ -36,7 +36,7 @@ def _job(ready):
 
 
 def _busy(ready):
-    with lease_journal_validation_workspace(
+    with leased_workspace(
         ready.discovery.root, ready.discovery.original.workspace_id, create=False
     ) as directory:
         assert directory is None
@@ -62,7 +62,7 @@ def _retire(ready):
     assert asdict(retired) == expected and retired.version != held.original.version
     assert held.marker.read_bytes() == b"original independently leased bytes"
     # Catalog detachment does not claim independent file reclamation.
-    with lease_journal_validation_workspace(held.root, retired.workspace_id) as directory:
+    with leased_workspace(held.root, retired.workspace_id) as directory:
         assert directory == held.marker.parent
     _finish(ready)
     assert _job(ready) == retired
@@ -276,9 +276,7 @@ def _composed(ready, monkeypatch, *, committed=None):
     )
     assert asdict(retired) == expected
     assert ready.discovery.marker.read_bytes() == b"original independently leased bytes"
-    with lease_journal_validation_workspace(
-        ready.discovery.root, retired.workspace_id, create=False
-    ) as directory:
+    with leased_workspace(ready.discovery.root, retired.workspace_id, create=False) as directory:
         assert directory == ready.discovery.marker.parent
 
 

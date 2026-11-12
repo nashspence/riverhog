@@ -17,11 +17,17 @@ import workspace_reclamation
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
 from riverhog_core.services import upload_journal_validation_retirement as owner
+from riverhog_core.services.journal_retirement_registry import JournalRetirementTurn
+from riverhog_core.services.physical_execution import PhysicalWorkspaceExecutionKey
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalValidationCapacity
 
+from tests.support.journal_retirement import cleanups as cleanups
+from tests.support.retirement_namespace import observe_retained_namespace
+from tests.support.workspace_reclamation import ReclamationMetrics, execution_sample
 from tests.unit import test_journal_validation_workspace_growth as workspaces
 from tests.unit import test_upload_journal_validation_retirement_catalog_growth as catalog
+from tests.unit.test_archive_upload_execution import owned as owned
 from tests.unit.test_journal_validation_retirement_custody_growth import held
 from tests.unit.test_upload_journal_source_growth import octets
 from tests.unit.test_upload_journal_validation_jobs_growth import Recorder as CatalogRecorder
@@ -47,6 +53,10 @@ class EvidenceFailure(RuntimeError):
 def sample(operation, inputs, metrics, delegates=None):
     binding = growth_binding(operation)
     projection = project_bindings((binding,))
+    if operation is workspace_reclamation.reclaim_retired_files:
+        result = execution_sample(binding, projection, inputs, metrics, delegates or {})
+        validate_execution_samples(projection, binding.declaration.id, [result])
+        return result
     result = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -85,6 +95,7 @@ class FilesystemRecorder:
         self.metrics, self.live = defaultdict(int), set()
         self.active, self.scope, self.fault = False, None, fault
         self.invocations = defaultdict(int)
+        self.attempts = []
 
     @contextmanager
     def paused(self):
@@ -98,7 +109,9 @@ class FilesystemRecorder:
     def observe(self):
         actual_flock, actual_fstat, actual_stat = fcntl.flock, os.fstat, os.stat
         actual_fsencode, actual_compare = os.fsencode, workspace_reclamation._compare_names
-        with pytest.MonkeyPatch.context() as patch:
+        actual_directory_encoder = workspace_reclamation._encode_directory
+        encoding_directory = False
+        with pytest.MonkeyPatch.context() as patch, observe_retained_namespace(self):
             for name, metric in self.GROUPS.items():
                 actual = getattr(os, name)
 
@@ -149,7 +162,10 @@ class FilesystemRecorder:
             def fsencode(name):
                 result = actual_fsencode(name)
                 if self.active and self.scope == "reclaim":
-                    self.metrics["encoded_name_octets"] += len(result)
+                    metric = (
+                        "encoded_directory_octets" if encoding_directory else "encoded_name_octets"
+                    )
+                    self.metrics[metric] += len(result)
                 return result
 
             def compare(left, right, **kwargs):
@@ -158,6 +174,63 @@ class FilesystemRecorder:
                     self.metrics["name_comparison_octets"] += len(left) + len(right)
                 return actual_compare(left, right, **kwargs)
 
+            def encode_directory(directory):
+                nonlocal encoding_directory
+                previous, encoding_directory = encoding_directory, True
+                try:
+                    return actual_directory_encoder(directory)
+                finally:
+                    encoding_directory = previous
+
+            def native_observed(actual):
+                binding = growth_binding(actual)
+
+                def observed(receiver, *args, **kwargs):
+                    originals = [
+                        resource.metrics for resource in (receiver._directory, receiver._file)
+                    ]
+                    beginning = dict(self.metrics)
+                    try:
+                        return actual(receiver, *args, **kwargs)
+                    finally:
+                        for resource, before in zip(
+                            (receiver._directory, receiver._file), originals, strict=True
+                        ):
+                            after = resource.metrics
+                            for name, metric in (
+                                ("open_calls", "open_calls"),
+                                ("close_calls", "close_calls"),
+                                ("fstat_calls", "stat_calls"),
+                                ("dup_calls", "dup_calls"),
+                                ("control_octets", "native_control_octets"),
+                            ):
+                                self.metrics[metric] += after[name] - before[name]
+                        if actual.__name__ == "reclaim":
+                            observed_metrics = differences(self.metrics, beginning)
+                            self.attempts.append(
+                                {
+                                    "binding": binding,
+                                    "names": len(kwargs["names"]),
+                                    "directory_octets": len(receiver._path),
+                                    "octet_budget": kwargs["octet_budget"],
+                                    "metrics": {
+                                        bound.metric: observed_metrics.get(
+                                            ALIASES.get(bound.metric, bound.metric), 0
+                                        )
+                                        for bound in binding.declaration.bounds
+                                    },
+                                }
+                            )
+
+                return observed
+
+            patch.setattr(workspace_reclamation, "_encode_directory", encode_directory)
+            for name in ("reclaim", "close"):
+                patch.setattr(
+                    workspace_reclamation.FileReclamationOwner,
+                    name,
+                    native_observed(getattr(workspace_reclamation.FileReclamationOwner, name)),
+                )
             patch.setattr(os, "fsencode", fsencode)
             patch.setattr(workspace_reclamation, "_compare_names", compare)
             patch.setattr(fcntl, "flock", flock)
@@ -199,7 +272,9 @@ def totals(recorder):
     return result
 
 
-def measure(case, current, job, budget, *, cold=False, error=None, fault=None, observed_error=None):
+def measure(
+    case, current, job, budget, *, turn, cold=False, error=None, fault=None, observed_error=None
+):
     before = snapshot(case.engine)
     row_width = max(octets(row) for rows in before.values() for row in rows)
     control = tuple(asdict(job).values())
@@ -215,7 +290,7 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
     children = {tag: [] for tag in CHILDREN}
 
     def record(tag, inputs, metrics, delegates=None):
-        if tag == "reclaim":
+        if tag in {"reclaim", "receive"}:
             metrics = {
                 bound.metric: metrics.get(ALIASES.get(bound.metric, bound.metric), 0)
                 for bound in growth_binding(CHILDREN[tag]).declaration.bounds
@@ -237,15 +312,16 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
             record("transition", inputs, differences(totals(sql), beginning))
 
     @contextmanager
-    def lease(root, identity):
+    def lease(root, identity, *, handles):
         inputs = {
             "root_path_octets": len(os.fsencode(root)),
             "workspace_identity_octets": len(identity.encode()),
         }
         previous, fs.scope = fs.scope, "lease"
         beginning, body = dict(fs.metrics), defaultdict(int)
+        receive_start = len(children["receive"])
         try:
-            with CHILDREN["lease"](root, identity) as owned:
+            with CHILDREN["lease"](root, identity, handles=handles) as owned:
                 body_start = dict(fs.metrics)
                 fs.scope = previous
                 try:
@@ -256,10 +332,15 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
         finally:
             metrics = differences(fs.metrics, beginning)
             metrics = differences(metrics, body)
+            for received in children["receive"][receive_start:]:
+                metrics = differences(
+                    metrics,
+                    {ALIASES.get(name, name): value for name, value in received["metrics"].items()},
+                )
             fs.scope = previous
             record("lease", inputs, metrics)
 
-    def directory(root, identity):
+    def directory(root, identity, *, handles):
         inputs = {
             "root_path_octets": len(os.fsencode(root)),
             "workspace_identity_octets": len(identity.encode()),
@@ -267,12 +348,15 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
         previous, fs.scope = fs.scope, "directory"
         beginning = dict(fs.metrics)
         try:
-            return CHILDREN["directory"](root, identity)
+            return CHILDREN["directory"](root, identity, handles=handles)
         finally:
             fs.scope = previous
             record("directory", inputs, differences(fs.metrics, beginning))
 
-    def reclaim(path, *, octet_budget):
+    receive_inputs = None
+
+    def reclaim(path, *, receiver, octet_budget):
+        nonlocal receive_inputs
         with fs.paused():
             active, sql.active = sql.active, False
             try:
@@ -285,6 +369,7 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
                 sql.active = active
             extents = [item.stat().st_size for name in DATA if (item := path / name).exists()]
         inputs = {
+            "directory_octets": len(os.fsencode(path)),
             "retained_octets": sum(extents),
             "retained_files": len(extents),
             "octet_budget": octet_budget,
@@ -294,7 +379,8 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
         files_operation = native_reclamation.reclaim_retired_files
         file_children = []
 
-        def files(directory, *, names, octet_budget):
+        def files(directory, *, receiver, names, octet_budget):
+            nonlocal receive_inputs
             with fs.paused():
                 encoded = tuple(os.fsencode(name) for name in names)
             child_inputs = {
@@ -304,21 +390,28 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
                 **inputs,
                 "octet_budget": octet_budget,
             }
+            receive_inputs = child_inputs
             child_beginning = dict(fs.metrics)
+            attempt_start = len(fs.attempts)
             try:
-                return files_operation(directory, names=names, octet_budget=octet_budget)
+                return files_operation(
+                    directory, receiver=receiver, names=names, octet_budget=octet_budget
+                )
             finally:
                 actual = differences(fs.metrics, child_beginning)
-                child_metrics = {
-                    bound.metric: actual.get(ALIASES.get(bound.metric, bound.metric), 0)
-                    for bound in growth_binding(files_operation).declaration.bounds
-                }
+                child_metrics = ReclamationMetrics(
+                    {
+                        bound.metric: actual.get(ALIASES.get(bound.metric, bound.metric), 0)
+                        for bound in growth_binding(files_operation).declaration.bounds
+                    }
+                )
+                child_metrics.attempts = fs.attempts[attempt_start:]
                 file_children.append(sample(files_operation, child_inputs, child_metrics))
 
         try:
             with pytest.MonkeyPatch.context() as patch:
                 patch.setattr(native_reclamation, "reclaim_retired_files", files)
-                return CHILDREN["reclaim"](path, octet_budget=octet_budget)
+                return CHILDREN["reclaim"](path, receiver=receiver, octet_budget=octet_budget)
         finally:
             fs.scope = previous
             record(
@@ -330,6 +423,17 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
 
     caught, result = None, None
     with fs.observe(), pytest.MonkeyPatch.context() as patch:
+        actual_close = workspace_reclamation.FileReclamationOwner.close
+
+        def receive(receiver):
+            assert receive_inputs is not None and receiver is turn._files
+            beginning = dict(fs.metrics)
+            try:
+                return actual_close(receiver)
+            finally:
+                record("receive", receive_inputs, differences(fs.metrics, beginning))
+
+        patch.setattr(workspace_reclamation.FileReclamationOwner, "close", receive)
         patch.setattr(owner.UploadJournalValidationRetirement, "_transition", transition)
         patch.setattr(owner, "lease_retiring_journal_workspace", lease)
         patch.setattr(owner, "remove_retired_journal_workspace_directory", directory)
@@ -337,7 +441,7 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
         with sql.observe(case.engine, cold=cold):
             fs.active = True
             try:
-                result = ROOT(current, job, budget)
+                result = ROOT(current, job, budget, turn=turn)
             except (
                 JournalValidationCapacity,
                 LostJournalValidationWorkspace,
@@ -388,7 +492,36 @@ def measure(case, current, job, budget, *, cold=False, error=None, fault=None, o
     return result, sample(ROOT, dimensions, metrics, children)
 
 
-def unit_samples(root, samples, *, large=True):
+def measure_in_worker(case, original, job, budget, **kwargs):
+    current = original.cleanup
+    turn = JournalRetirementTurn(current, job)
+    key = PhysicalWorkspaceExecutionKey(job.workspace_id, job.version)
+    target = "native-journal:" + str(current.root / job.workspace_id)
+
+    def work():
+        try:
+            return measure(case, current, job, budget, turn=turn, **kwargs)
+        finally:
+            turn.close()
+
+    assert (
+        original.pool.try_submit_workspace(
+            key, target_incarnation=target, work=work, owner=turn, identity=turn
+        )
+        == "submitted"
+    )
+    slot = original.pool._slots[key]
+    slot.worker.join(timeout=30)
+    assert not slot.worker.is_alive()
+    (completed,) = original.pool.collect_workspace(owner=turn, limit=1)
+    assert completed.key == key and completed.target_incarnation == target
+    assert completed.identity is turn and completed.terminal
+    result = completed.result()
+    assert turn.received and not original.pool.has_unreceived_work()
+    return result
+
+
+def unit_samples(root, samples, cleanups, *, large=True):
     with catalog.build_cases(root / "catalogs", large=large) as cases:
         for index, case in enumerate(cases):
             for cold in (False, True):
@@ -450,7 +583,8 @@ def unit_samples(root, samples, *, large=True):
                         workspaces.private_file(
                             directory / "unclassified", b"retain unrelated bytes"
                         )
-                    current = owner.UploadJournalValidationRetirement(case.factory, layout.root)
+                    case.root = layout.root
+                    original = cleanups(case)
                     argument = catalog.read(case)
                     if kind in {"stale-delete", "stale-transition"}:
                         argument = replace(argument, version="1" * 64)
@@ -473,8 +607,8 @@ def unit_samples(root, samples, *, large=True):
                             resources.enter_context(
                                 held(directory / ".lease", shared=kind == "busy-reader")
                             )
-                        result, observed = measure(
-                            case, current, argument, 65536, cold=cold, error=failure, fault=fault
+                        result, observed = measure_in_worker(
+                            case, original, argument, 65536, cold=cold, error=failure, fault=fault
                         )
                     if failure is None:
                         assert result is (
@@ -502,13 +636,15 @@ def unit_samples(root, samples, *, large=True):
                         ).read_bytes() == b"retain unrelated bytes"
                     if kind in {"directory-capacity", "stale-delete"}:
                         # Retry reconciles lease unlink or an already removed exact directory.
-                        result, retry = measure(case, current, catalog.read(case), 65536, cold=cold)
+                        result, retry = measure_in_worker(
+                            case, original, catalog.read(case), 65536, cold=cold
+                        )
                         assert result is True and catalog.read(case) is None
                         samples.append(retry)
                     samples.append(observed)
 
 
-def history_samples(root, samples, *, large=True):
+def history_samples(root, samples, cleanups, *, large=True):
     with catalog.build_cases(root / "catalogs", large=large) as cases:
         for index, case in enumerate(cases):
             for cold, budget, extents in (
@@ -519,13 +655,16 @@ def history_samples(root, samples, *, large=True):
                 layout = workspaces.setup(root / "files" / f"{index}-{cold}")
                 for name, size in zip(DATA, extents, strict=False):
                     workspaces.private_file(layout.root / catalog.ONE / name, b"p" * size)
-                current = owner.UploadJournalValidationRetirement(case.factory, layout.root)
+                case.root = layout.root
+                original = cleanups(case)
                 expected_units = 2 + sum(max(1, (size + budget - 1) // budget) for size in extents)
                 reclaimed = 0
                 for number in range(expected_units):
                     argument = catalog.read(case)
                     assert argument is not None
-                    result, observed = measure(case, current, argument, budget, cold=cold)
+                    result, observed = measure_in_worker(
+                        case, original, argument, budget, cold=cold
+                    )
                     assert result is True
                     reclaimed += observed["metrics"]["reclaimed_extent_octets"]
                     samples.append(observed)
@@ -542,9 +681,9 @@ def history_samples(root, samples, *, large=True):
     operation="riverhog_core.services.upload_journal_validation_retirement.UploadJournalValidationRetirement._advance",
 )
 def test_actual_retirement_unit_composes_catalog_custody_extents_and_directory(
-    tmp_path, record_property
+    tmp_path, record_property, cleanups
 ):
     samples = []
     record_property("growth_samples", samples)
-    unit_samples(tmp_path / "branches", samples)
-    history_samples(tmp_path / "histories", samples)
+    unit_samples(tmp_path / "branches", samples, cleanups)
+    history_samples(tmp_path / "histories", samples, cleanups)

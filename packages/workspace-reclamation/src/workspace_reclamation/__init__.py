@@ -5,9 +5,11 @@ from __future__ import annotations
 import errno
 import os
 import stat
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
+from threading import Lock
 
+from retained_resource import Borrow, Resource
 from riverhog_growth_contracts import (
     COUNT,
     OCTETS,
@@ -16,9 +18,11 @@ from riverhog_growth_contracts import (
     Dimension,
     Expression,
     declare_growth,
+    growth_binding,
 )
 
 __all__ = [
+    "FileReclamationOwner",
     "FileReclamationProgress",
     "InvalidWorkspaceFiles",
     "WorkspaceReclamationCapacity",
@@ -47,11 +51,130 @@ class FileReclamationProgress:
         return self.remaining_files == 0
 
 
+def _encode_directory(directory: Path) -> bytes:
+    return os.fsencode(directory)
+
+
+class FileReclamationOwner:
+    """Retain this owner and its resource charge before calling reclaim.
+
+    Successful progress follows native receiving. An exception keeps this exact
+    attempt, including partial acquisition, until close positively succeeds.
+    Close retries receive original resources without repeating a mutation.
+    Actual worker join and charge withdrawal remain the caller's responsibility.
+    """
+
+    def __init__(self) -> None:
+        self._directory = Resource("directory")
+        self._directory_borrow = Borrow(self._directory)
+        self._file = Resource("file")
+        self._file_borrow = Borrow(self._file)
+        self._execution = Lock()
+        self._attempted = False
+        self._closing = False
+        self._closed = False
+        self._path = b""
+        self._names: tuple[bytes, ...] = ()
+
+    @property
+    def received(self) -> bool:
+        return self._closed
+
+    def _receive(self) -> None:
+        self._closing = True
+        self._file_borrow.close()
+        self._file.close()
+        self._directory_borrow.close()
+        self._directory.close()
+        self._closed = True
+
+    def close(self) -> None:
+        """Receive dependent native resources after actual descriptor use exits."""
+        if not self._execution.acquire(blocking=False):
+            raise BlockingIOError("the original extent executor still uses its borrows")
+        try:
+            self._receive()
+        finally:
+            self._execution.release()
+
+    def reclaim(
+        self, directory: Path, *, names: tuple[str, ...], octet_budget: int
+    ) -> FileReclamationProgress:
+        """Run one admitted original mutation and receive before returning it."""
+        if type(octet_budget) is not int or octet_budget < 1:
+            raise ValueError("workspace reclamation requires a positive octet budget")
+        if not self._execution.acquire(blocking=False):
+            raise BlockingIOError("the original extent executor still uses its borrows")
+        try:
+            if self._attempted or self._closing:
+                raise RuntimeError("extent disposal requires a fresh retained owner")
+            self._names = _validate_names(names)
+            self._path = _encode_directory(directory)
+            self._attempted = True
+            result = self._reclaim(octet_budget)
+            self._receive()
+            return result
+        except OSError as error:
+            if error.errno in {errno.ENOSPC, errno.EDQUOT}:
+                raise WorkspaceReclamationCapacity(
+                    "retired workspace reclamation lacks capacity"
+                ) from None
+            raise
+        finally:
+            self._execution.release()
+
+    def _reclaim(self, octet_budget: int) -> FileReclamationProgress:
+        self._directory.acquire(self._path)
+        self._directory_borrow.acquire()
+        descriptor = self._directory_borrow.fileno()
+        identity = os.fstat(descriptor)
+        if (
+            not stat.S_ISDIR(identity.st_mode)
+            or identity.st_uid != os.getuid()
+            or stat.S_IMODE(identity.st_mode) != 0o700
+        ):
+            raise InvalidWorkspaceFiles("reclamation requires a private owned directory")
+        before = _files(descriptor, self._names)
+        removed_octets = removed_files = 0
+        if before:
+            name, selected = before[0]
+            assert isinstance(name, bytes)
+            self._file.acquire(name, writable=True, parent=self._directory)
+            self._file_borrow.acquire()
+            handle = self._file_borrow.fileno()
+            current = os.fstat(handle)
+            _private_file(current)
+            if (current.st_dev, current.st_ino, current.st_size) != (
+                selected.st_dev,
+                selected.st_ino,
+                selected.st_size,
+            ):
+                raise InvalidWorkspaceFiles("retired workspace file was replaced")
+            removed_octets = min(current.st_size, octet_budget)
+            if current.st_size > octet_budget:
+                os.ftruncate(handle, current.st_size - octet_budget)
+                os.fsync(handle)
+            else:
+                check = os.stat(name, dir_fd=descriptor, follow_symlinks=False)
+                if (check.st_dev, check.st_ino) != (current.st_dev, current.st_ino):
+                    raise InvalidWorkspaceFiles("retired workspace file was replaced")
+                os.unlink(name, dir_fd=descriptor)
+                removed_files = 1
+                os.fsync(descriptor)
+        after = _files(descriptor, self._names)
+        return FileReclamationProgress(
+            removed_octets,
+            removed_files,
+            sum(item.st_size for _, item in after),
+            len(after),
+        )
+
+
 def _compare_names(left: bytes, right: bytes, *, equal: bool = False) -> bool:
     return left == right if equal else left <= right
 
 
-def _validate_names(names: tuple[str, ...]) -> None:
+def _validate_names(names: tuple[str, ...]) -> tuple[bytes, ...]:
     if not isinstance(names, tuple):
         raise TypeError("workspace file names require an explicit tuple")
     encoded = []
@@ -59,6 +182,7 @@ def _validate_names(names: tuple[str, ...]) -> None:
         if not isinstance(name, str) or name in {"", ".", ".."} or "/" in name or "\x00" in name:
             raise ValueError("workspace file names must be exact single path components")
         encoded.append(os.fsencode(name))
+    original = tuple(encoded)
     # A bounded comparison sort validates uniqueness without relying on hash
     # collision behavior and preserves the caller's independent disposal order.
     count = len(encoded)
@@ -82,6 +206,7 @@ def _validate_names(names: tuple[str, ...]) -> None:
     for index in range(1, count):
         if _compare_names(ordered[index - 1], ordered[index], equal=True):
             raise ValueError("workspace file names must be distinct")
+    return original
 
 
 def _private_file(identity: os.stat_result) -> None:
@@ -94,7 +219,9 @@ def _private_file(identity: os.stat_result) -> None:
         raise InvalidWorkspaceFiles("reclamation requires private owned regular files")
 
 
-def _files(directory: int, names: tuple[str, ...]) -> list[tuple[str, os.stat_result]]:
+def _files(
+    directory: int, names: tuple[str, ...] | tuple[bytes, ...]
+) -> list[tuple[str | bytes, os.stat_result]]:
     selected = []
     for name in names:
         try:
@@ -244,76 +371,55 @@ def _declaration() -> Declaration:
     )
 
 
-@declare_growth(_declaration())
+from .receiving_growth import declare_receiving_growth  # noqa: E402
+
+declare_receiving_growth(FileReclamationOwner)
+
+
+def _facade_declaration() -> Declaration:
+    child = growth_binding(FileReclamationOwner.reclaim).declaration
+    return replace(
+        child,
+        id="workspace-reclamation.private-file-extents.growth/v1",
+        subjects=("workspace_reclamation.reclaim_retired_files",),
+        bounds=tuple(
+            replace(
+                bound,
+                expression=Expression(
+                    "delegate",
+                    name="attempt",
+                    metric=bound.metric,
+                    terms=(Expression("constant", value=1, unit=COUNT),),
+                    arguments=tuple(
+                        (dimension.name, Expression("dimension", name=dimension.name))
+                        for dimension in child.dimensions
+                    ),
+                ),
+            )
+            for bound in child.bounds
+        ),
+    )
+
+
+@declare_growth(
+    _facade_declaration(),
+    delegates=(("attempt", FileReclamationOwner.reclaim),),
+)
 def reclaim_retired_files(
     directory: Path,
     *,
+    receiver: FileReclamationOwner,
     names: tuple[str, ...],
     octet_budget: int,
 ) -> FileReclamationProgress:
-    """Remove one byte-admitted extent from an exactly retired owned file set.
+    """Dispose one exact extent through a caller-retained original native owner.
 
-    The caller supplies positive original namespace ownership, durable irreversible
-    retirement, and exclusive custody over every writer and reader. This function
-    validates private POSIX files, not application identities or disposal rights.
-    Only exact supplied names are inspected. The caller's lease, directory and
-    every unclassified entry remain intact. Missing named data is reconciled;
-    missing directory custody remains a fault. No SQLite parser or enumeration
-    runs, and a damaged retired data file needs no reconstruction.
+    The caller retains this receiver and its resource charge before acquisition,
+    supplies irreversible original retirement and excludes every writer/reader.
+    Successful progress includes positive native receiving. An exception keeps
+    this exact receiver until its close succeeds; retrying close repeats no
+    extent mutation. Worker join and charge withdrawal remain separate.
     """
-    if os.name != "posix":
-        raise RuntimeError("workspace reclamation requires the POSIX owner backend")
-    if type(octet_budget) is not int or octet_budget < 1:
-        raise ValueError("workspace reclamation requires a positive octet budget")
-    _validate_names(names)
-    descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-    try:
-        identity = os.fstat(descriptor)
-        if (
-            not stat.S_ISDIR(identity.st_mode)
-            or identity.st_uid != os.getuid()
-            or stat.S_IMODE(identity.st_mode) != 0o700
-        ):
-            raise InvalidWorkspaceFiles("reclamation requires a private owned directory")
-        before = _files(descriptor, names)
-        removed_octets = removed_files = 0
-        if before:
-            name, selected = before[0]
-            handle = os.open(name, os.O_RDWR | os.O_NOFOLLOW, dir_fd=descriptor)
-            try:
-                current = os.fstat(handle)
-                _private_file(current)
-                if (current.st_dev, current.st_ino, current.st_size) != (
-                    selected.st_dev,
-                    selected.st_ino,
-                    selected.st_size,
-                ):
-                    raise InvalidWorkspaceFiles("retired workspace file was replaced")
-                removed_octets = min(current.st_size, octet_budget)
-                if current.st_size > octet_budget:
-                    os.ftruncate(handle, current.st_size - octet_budget)
-                    os.fsync(handle)
-                else:
-                    check = os.stat(name, dir_fd=descriptor, follow_symlinks=False)
-                    if (check.st_dev, check.st_ino) != (current.st_dev, current.st_ino):
-                        raise InvalidWorkspaceFiles("retired workspace file was replaced")
-                    os.unlink(name, dir_fd=descriptor)
-                    removed_files = 1
-                    os.fsync(descriptor)
-            finally:
-                os.close(handle)
-        after = _files(descriptor, names)
-        return FileReclamationProgress(
-            removed_octets,
-            removed_files,
-            sum(item.st_size for _, item in after),
-            len(after),
-        )
-    except OSError as error:
-        if error.errno in {errno.ENOSPC, errno.EDQUOT}:
-            raise WorkspaceReclamationCapacity(
-                "retired workspace reclamation lacks capacity"
-            ) from None
-        raise
-    finally:
-        os.close(descriptor)
+    if not isinstance(receiver, FileReclamationOwner):
+        raise TypeError("file reclamation requires its retained original receiver")
+    return receiver.reclaim(directory, names=names, octet_budget=octet_budget)

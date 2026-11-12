@@ -13,8 +13,10 @@ from pathlib import Path
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core import journal_validation_retirement as owner
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceHandles
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from tests.support.retirement_namespace import observe_retained_namespace
 from tests.unit import test_journal_validation_workspace_growth as basis
 
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX retirement custody backend")
@@ -58,7 +60,16 @@ class Recorder:
     @contextmanager
     def observe(self):
         actual_flock = fcntl.flock
-        with pytest.MonkeyPatch.context() as patch:
+
+        def before_acquire():
+            self.invocations["open"] = self.invocations.get("open", 0) + 1
+            if self.fault is not None and ("open", self.invocations["open"]) == self.fault[:2]:
+                raise OSError(self.fault[2], "injected retirement acquisition failure")
+
+        with (
+            pytest.MonkeyPatch.context() as patch,
+            observe_retained_namespace(self, before_acquire=before_acquire),
+        ):
             for name, metric in self.GROUPS.items():
                 actual = getattr(os, name)
 
@@ -135,19 +146,22 @@ def measure(
     )
     recorder = Recorder(operation, root, identity, fault)
     caught, returned = None, None
+    handles = RetainedWorkspaceHandles()
     with recorder.observe():
         try:
             if lease:
-                with operation(root, identity) as returned:
+                with operation(root, identity, handles=handles) as returned:
                     with recorder.paused():
                         if body is not None:
                             body(returned)
                         if body_error is not None:
                             raise body_error
             else:
-                returned = operation(root, identity)
+                returned = operation(root, identity, handles=handles)
         except BaseException as failure:
             caught = failure
+        finally:
+            handles.close()
     if error is None:
         assert caught is None
         assert returned == expected
@@ -185,7 +199,7 @@ def held(path, *, shared=False):
 
 def body_custody(case):
     def verify(returned):
-        assert returned == owner.RetiringJournalWorkspace(case.root / ONE)
+        assert returned == owner.RetiringJournalWorkspace(case.root / ONE, None, None)
         # Caller work is outside the leaf's metrics. Root coordination is free;
         # the exact selected lease still excludes a second independent reader.
         with held(case.root / ".coordinator"):
@@ -235,9 +249,11 @@ def custody_samples(root, *, lease, samples, large=True):
             )
             identity, selected_root = ONE, case.root
             fault, failure, body_error = None, None, None
-            expected = owner.RetiringJournalWorkspace(case.root / ONE) if lease else True
+            expected = (
+                owner.RetiringJournalWorkspace(case.root / ONE, None, None) if lease else True
+            )
             if kind == "missing-directory":
-                expected = owner.RetiringJournalWorkspace(None) if lease else True
+                expected = owner.RetiringJournalWorkspace(None, None, None) if lease else True
             elif kind == "missing-lease":
                 failure = owner.LostJournalValidationWorkspace if lease else None
             elif kind == "missing-coordinator":

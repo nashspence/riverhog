@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import sqlite3
-
 import pytest
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalValidationCapacity, JournalValidationSession, parse_journal
@@ -17,29 +15,36 @@ from test_journal_session_growth import (
     snapshot,
 )
 
+from tests.support.sqlite_observation import observe_admitted_scope
+
 ADVANCE = JournalValidationSession.advance
 
 
-def capacity_samples(root, catalog, raw_source, *, samples, large=True):
+def capacity_samples(root, catalog, raw_source, *, samples, large=True, journal_constructions):
     specifications = [(64, "metadata", 0), (64, "atom", 65537)]
     if large:
         specifications.extend(((8192, "metadata", 0), (8192, "atom", 1024 * 1024)))
-    connect = sqlite3.connect
     for width, kind, payload in specifications:
         raw = raw_source(payload)
         source = FiniteSource(raw, parse_journal(raw)[0], 1, catalog, directory_width=width)
         directory = root / f"{width}-{kind}"
-        directory.mkdir(parents=True)
+        directory.mkdir(mode=0o700, parents=True)
 
-        def observed_connect(*args, **kwargs):
-            assert "factory" not in kwargs
-            kwargs["factory"] = SessionConnection
-            return connect(*args, **kwargs)
-
-        with pytest.MonkeyPatch.context() as patch:
-            patch.setattr(sqlite3, "connect", observed_connect)
+        construction = journal_constructions.retain()
+        with observe_admitted_scope(
+            construction.scope,
+            SessionConnection,
+            initialize=lambda _connection: None,
+            recording=lambda connection: connection.recording,
+        ):
             session = JournalValidationSession.open_retained(
-                directory, source, attempt_id=ATTEMPT, worker_epoch=1, create=True, catalog=catalog
+                directory,
+                source,
+                attempt_id=ATTEMPT,
+                worker_epoch=1,
+                create=True,
+                catalog=catalog,
+                construction=construction,
             )
             db = session._store.db
             session._source = session._input.source = SourcePorts(source, db)
@@ -119,7 +124,7 @@ def capacity_samples(root, catalog, raw_source, *, samples, large=True):
     operation="riverhog_provenance.journal_session.JournalValidationSession.advance",
 )
 def test_actual_input_capacity_preserves_checkpoint_and_pending_atom(
-    tmp_path, catalog, record_property
+    tmp_path, catalog, record_property, *, journal_constructions
 ):
     from riverhog_provenance import (
         BoundedSourceObserver,
@@ -146,4 +151,6 @@ def test_actual_input_capacity_preserves_checkpoint_and_pending_atom(
 
     samples = []
     record_property("growth_samples", samples)
-    capacity_samples(tmp_path, catalog, source, samples=samples)
+    capacity_samples(
+        tmp_path, catalog, source, samples=samples, journal_constructions=journal_constructions
+    )

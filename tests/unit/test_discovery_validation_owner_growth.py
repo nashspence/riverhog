@@ -8,15 +8,17 @@ import os
 import sqlite3
 import sys
 from collections import defaultdict
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import asdict
 from types import SimpleNamespace
 
 import pytest
 import sha256_continuation
+import sqlite_admission
 from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core.catalog_db import create_catalog_engine
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_core.services import discovery_validation_owner as owner
 from riverhog_growth_contracts import (
     evaluate_bound,
@@ -28,8 +30,10 @@ from riverhog_provenance import CorpusReplayBinding
 from riverhog_provenance import corpus_workspace as native_owner
 from sha256_continuation import CheckpointSHA256
 from sqlalchemy.orm import sessionmaker
+from sqlite_admission import SqliteCleanupPending
 
 from tests.support.catalog_work import CatalogRecorder, octets
+from tests.support.sqlite_observation import observed_connection_type
 from tests.unit.test_canonical_discovery_corpus_source import seed
 from tests.unit.test_canonical_discovery_metadata_growth import (
     SPECIFICATIONS,
@@ -51,7 +55,19 @@ from tests.unit.test_discovery_validation_owner import UncertainClose, independe
 _CONNECT = sqlite3.connect
 
 
-class Cursor(sqlite3.Cursor):
+class CursorRows:
+    def record(self, row):
+        rec, kind = self.connection.observer, self.connection.kind
+        if row is not None and rec.active:
+            rec.metrics[kind + "_returned_rows"] += 1
+            rec.metrics[kind + "_returned_octets"] += octets(row)
+            rec.maximum_control = max(rec.maximum_control, octets(row))
+        return row
+
+
+class Cursor(CursorRows, sqlite3.Cursor):
+    _row_observer = CursorRows
+
     def execute(self, statement, parameters=()):
         rec, kind = self.connection.observer, self.connection.kind
         before = self.connection.total_changes
@@ -61,14 +77,6 @@ class Cursor(sqlite3.Cursor):
             rec.metrics[kind + "_changed_rows"] += self.connection.total_changes - before
             rec.statements.append((kind, statement, parameters, self.connection))
         return result
-
-    def record(self, row):
-        rec, kind = self.connection.observer, self.connection.kind
-        if row is not None and rec.active:
-            rec.metrics[kind + "_returned_rows"] += 1
-            rec.metrics[kind + "_returned_octets"] += octets(row)
-            rec.maximum_control = max(rec.maximum_control, octets(row))
-        return row
 
     def fetchone(self):
         return self.record(super().fetchone())
@@ -88,9 +96,12 @@ class Connection(sqlite3.Connection):
         return self.cursor(factory=Cursor).execute(statement, parameters)
 
     def close(self):
-        if self.observer.active:
+        received = getattr(self, "_observed_closed", False)
+        result = super().close()
+        self._observed_closed = True
+        if self.observer.active and not received:
             self.observer.metrics[self.kind + "_closed_connections"] += 1
-        super().close()
+        return result
 
 
 class Slots(dict):
@@ -140,10 +151,15 @@ class Recorder:
         self.maximum_slots = 0
 
     def connect(self, path, *args, **kwargs):
-        kind = "core" if "discovery.sqlite3" in str(path) else "native"
         kwargs["factory"] = Connection
         db = _CONNECT(path, *args, **kwargs)
+        self.initialize_connection(db, path)
+        return db
+
+    def initialize_connection(self, db, path):
+        kind = "core" if "discovery.sqlite3" in str(path) else "native"
         db.kind, db.observer, db.location = kind, self, str(path)
+        db._observed_closed = False
 
         def trace(_sql):
             if self.active:
@@ -165,6 +181,83 @@ class Recorder:
     def connect_only(self):
         with pytest.MonkeyPatch.context() as patch:
             actual_connect = sqlite3.connect
+            driver = sqlite_admission._connect
+            native_close = RetainedWorkspaceResource.close
+
+            def admitted(path, **options):
+                if not any(
+                    name in str(path)
+                    for name in ("discovery.sqlite3", "corpus.sqlite3", "snapshot.sqlite3")
+                ):
+                    return driver(path, **options)
+                original = options["factory"]
+
+                def initialize(db):
+                    self.initialize_connection(db, path)
+
+                options["factory"] = observed_connection_type(
+                    Connection, original, initialize=initialize, recording=lambda _db: self.active
+                )
+                actual = driver(path, **options)
+                assert actual is original._reservation.connection
+                return actual
+
+            def received(original):
+                before = original.owner.metrics["close_calls"]
+                try:
+                    return native_close(original)
+                finally:
+                    if self.active:
+                        self.metrics["close_calls"] += (
+                            original.owner.metrics["close_calls"] - before
+                        )
+
+            def executed(actual):
+                def execute(cursor, statement, parameters=()):
+                    before = cursor._owner.total_changes
+                    result = actual(cursor, statement, parameters)
+                    if self.active and getattr(cursor._owner, "observer", None) is self:
+                        kind = cursor._owner.kind
+                        self.metrics[kind + "_parameter_octets"] += octets(parameters)
+                        self.metrics[kind + "_changed_rows"] += cursor._owner.total_changes - before
+                        self.statements.append((kind, statement, parameters, cursor._owner))
+                    return result
+
+                return execute
+
+            def fetched(actual, many):
+                def fetch(cursor, *args, **kwargs):
+                    rows = actual(cursor, *args, **kwargs)
+                    marker = getattr(cursor, "_row_observer", None)
+                    if (
+                        self.active
+                        and getattr(cursor._owner, "observer", None) is self
+                        and not (isinstance(marker, type) and issubclass(marker, CursorRows))
+                    ):
+                        values = rows if many else (() if rows is None else (rows,))
+                        kind = cursor._owner.kind
+                        for row in values:
+                            self.metrics[kind + "_returned_rows"] += 1
+                            self.metrics[kind + "_returned_octets"] += octets(row)
+                            self.maximum_control = max(self.maximum_control, octets(row))
+                    return rows
+
+                return fetch
+
+            patch.setattr(sqlite_admission, "_connect", admitted)
+            patch.setattr(RetainedWorkspaceResource, "close", received)
+            patch.setattr(
+                sqlite_admission._Cursor, "execute", executed(sqlite_admission._Cursor.execute)
+            )
+            for method in ("fetchone", "fetchall", "fetchmany", "__next__"):
+                patch.setattr(
+                    sqlite_admission._Cursor,
+                    method,
+                    fetched(
+                        getattr(sqlite_admission._Cursor, method),
+                        method in {"fetchall", "fetchmany"},
+                    ),
+                )
 
             def connect(path, *args, **kwargs):
                 if any(
@@ -412,13 +505,21 @@ class Recorder:
                         str(row[3]).upper()
                         for row in db.execute("EXPLAIN QUERY PLAN " + statement, parameters)
                     )
-                except sqlite3.ProgrammingError:
-                    with _CONNECT(db.location.replace("mode=rw", "mode=ro"), uri=True) as check:
+                except (sqlite3.ProgrammingError, SqliteCleanupPending):
+                    with closing(
+                        _CONNECT(db.location.replace("mode=rw", "mode=ro"), uri=True)
+                    ) as check:
                         plan = " ".join(
                             str(row[3]).upper()
                             for row in check.execute("EXPLAIN QUERY PLAN " + statement, parameters)
                         )
-                assert "SCAN " not in plan and "TEMP B-TREE" not in plan, (kind, plan)
+                if plan == "SCAN CONSTANT ROW":
+                    assert statement == (
+                        "SELECT sqlite_compileoption_used('TEMP_STORE=0'), "
+                        "sqlite_compileoption_used('TEMP_STORE=3')"
+                    )
+                else:
+                    assert "SCAN " not in plan and "TEMP B-TREE" not in plan, (kind, plan)
         dimensions = dict(
             dimensions,
             control_octets=max(dimensions["control_octets"], self.maximum_control),
@@ -461,14 +562,20 @@ class Recorder:
 
 
 @contextmanager
-def case_for(root, admission, template, *, capacity=2):
+def case_for(root, admission, template, *, capacity=2, journal_constructions):
     root.mkdir()
     with _CONNECT(template.path) as source, _CONNECT(root / "catalog.sqlite3") as copied:
         source.backup(copied)
     engine = create_catalog_engine("sqlite:///" + str(root / "catalog.sqlite3"))
     factory = sessionmaker(engine, expire_on_commit=False)
     catalog = owner.ContractCatalog()
-    pool = owner.DiscoveryValidationOwner(factory, root / "owned", concurrency=capacity)
+    pool = owner.DiscoveryValidationOwner(
+        factory,
+        root / "owned",
+        concurrency=capacity,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     rec = Recorder()
     pool._slots = Slots(rec)
     case = SimpleNamespace(
@@ -734,13 +841,27 @@ def exercise_case(case, qualified, retained, width, cold, mode, samples):
         measure(case.pool.close)
 
 
-def exercise(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, mode):
+def exercise(
+    tmp_path,
+    fixed_inputs,
+    qualified,
+    catalog_templates,
+    record_property,
+    mode,
+    *,
+    journal_constructions,
+):
     admission, _ = fixed_inputs
     samples = []
     for retained, width in SPECIFICATIONS:
         for cold in (False, True):
             path = tmp_path / f"{retained}-{width}-{cold}"
-            with case_for(path, admission, catalog_templates[(retained, width)]) as case:
+            with case_for(
+                path,
+                admission,
+                catalog_templates[(retained, width)],
+                journal_constructions=journal_constructions,
+            ) as case:
                 exercise_case(case, qualified, retained, width, cold, mode, samples)
     record_property("growth_samples", samples)
     record_property(
@@ -758,8 +879,18 @@ def exercise(tmp_path, fixed_inputs, qualified, catalog_templates, record_proper
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner._reserve",
 )
-def test_owner_reserve_work(tmp_path, fixed_inputs, qualified, catalog_templates, record_property):
-    exercise(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "_reserve")
+def test_owner_reserve_work(
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "_reserve",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -767,8 +898,18 @@ def test_owner_reserve_work(tmp_path, fixed_inputs, qualified, catalog_templates
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner._open",
 )
-def test_owner_open_work(tmp_path, fixed_inputs, qualified, catalog_templates, record_property):
-    exercise(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "_open")
+def test_owner_open_work(
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "_open",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -776,8 +917,18 @@ def test_owner_open_work(tmp_path, fixed_inputs, qualified, catalog_templates, r
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner.work",
 )
-def test_owner_work_work(tmp_path, fixed_inputs, qualified, catalog_templates, record_property):
-    exercise(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "work")
+def test_owner_work_work(
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "work",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -785,8 +936,18 @@ def test_owner_work_work(tmp_path, fixed_inputs, qualified, catalog_templates, r
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationWork.corpus",
 )
-def test_owner_corpus_work(tmp_path, fixed_inputs, qualified, catalog_templates, record_property):
-    exercise(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "corpus")
+def test_owner_corpus_work(
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "corpus",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -794,8 +955,18 @@ def test_owner_corpus_work(tmp_path, fixed_inputs, qualified, catalog_templates,
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner._drop",
 )
-def test_owner_drop_work(tmp_path, fixed_inputs, qualified, catalog_templates, record_property):
-    exercise(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "_drop")
+def test_owner_drop_work(
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "_drop",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -804,10 +975,16 @@ def test_owner_drop_work(tmp_path, fixed_inputs, qualified, catalog_templates, r
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner.active_build_ids",
 )
 def test_owner_active_build_ids_work(
-    tmp_path, fixed_inputs, qualified, catalog_templates, record_property
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
 ):
     exercise(
-        tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "active_build_ids"
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "active_build_ids",
+        journal_constructions=journal_constructions,
     )
 
 
@@ -817,9 +994,17 @@ def test_owner_active_build_ids_work(
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner.release_stale",
 )
 def test_owner_release_stale_work(
-    tmp_path, fixed_inputs, qualified, catalog_templates, record_property
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
 ):
-    exercise(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "release_stale")
+    exercise(
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "release_stale",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -827,8 +1012,18 @@ def test_owner_release_stale_work(
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner.close",
 )
-def test_owner_close_work(tmp_path, fixed_inputs, qualified, catalog_templates, record_property):
-    exercise(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "close")
+def test_owner_close_work(
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "close",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -837,9 +1032,17 @@ def test_owner_close_work(tmp_path, fixed_inputs, qualified, catalog_templates, 
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner.close",
 )
 def test_owner_actual_close_retries_and_independent_slots(
-    tmp_path, fixed_inputs, qualified, catalog_templates, record_property
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
 ):
-    cleanup_regimes(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "close")
+    cleanup_regimes(
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "close",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -848,21 +1051,42 @@ def test_owner_actual_close_retries_and_independent_slots(
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner.release_stale",
 )
 def test_owner_actual_stale_retries_and_independent_slots(
-    tmp_path, fixed_inputs, qualified, catalog_templates, record_property
+    tmp_path, fixed_inputs, qualified, catalog_templates, record_property, *, journal_constructions
 ):
     cleanup_regimes(
-        tmp_path, fixed_inputs, qualified, catalog_templates, record_property, "release_stale"
+        tmp_path,
+        fixed_inputs,
+        qualified,
+        catalog_templates,
+        record_property,
+        "release_stale",
+        journal_constructions=journal_constructions,
     )
 
 
-def cleanup_regimes(tmp_path, fixed_inputs, qualified, catalog_templates, record_property, mode):
+def cleanup_regimes(
+    tmp_path,
+    fixed_inputs,
+    qualified,
+    catalog_templates,
+    record_property,
+    mode,
+    *,
+    journal_constructions,
+):
     admission, _ = fixed_inputs
     samples = []
     root = getattr(owner.DiscoveryValidationOwner, mode)
     for count in (1, 2, 8):
         for failure in (None, "native-before", "native-lost", "core-before", "core-lost"):
             path = tmp_path / f"{count}-{failure}"
-            with case_for(path, admission, catalog_templates[(17, 17)], capacity=count) as case:
+            with case_for(
+                path,
+                admission,
+                catalog_templates[(17, 17)],
+                capacity=count,
+                journal_constructions=journal_constructions,
+            ) as case:
                 builds = [case.build_id] + [
                     independent_build(case, index + 2) for index in range(count - 1)
                 ]

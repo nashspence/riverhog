@@ -10,10 +10,11 @@ from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.services import upload_journal_validation_jobs as jobs
-from riverhog_core.services import upload_journal_validation_retirement as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import delete
 
+from tests.support.journal_retirement import cleanups as cleanups
+from tests.unit.test_archive_upload_execution import owned as owned
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL
@@ -158,7 +159,7 @@ def measure(case, current, mode, argument, *, proposed=None, cold=False, changed
     return result, sample
 
 
-def selection_samples(cases, samples):
+def selection_samples(cases, samples, cleanups):
     for case in cases:
         for cold in (False, True):
             scenarios = [
@@ -190,7 +191,7 @@ def selection_samples(cases, samples):
                         if row["collection_id"] is None
                     )
                     excluded = tuple(dict.fromkeys((*eligible, ONE, TWO)))[: len(excluded)]
-                current = owner.UploadJournalValidationRetirement(case.factory, case.root)
+                current = cleanups(case).cleanup
                 current._phase = phase
                 current._after = dict.fromkeys(PHASES, "f" * 32 if wrap else None)
                 before_cursor = dict(current._after)
@@ -233,7 +234,7 @@ def selection_samples(cases, samples):
                     )
                 ),
             )
-            current = owner.UploadJournalValidationRetirement(case.factory, case.root)
+            current = cleanups(case).cleanup
             orphan_keys = sorted(
                 [THREE, *(row["workspace_id"] for row in case.base if row["collection_id"] is None)]
             )
@@ -243,10 +244,10 @@ def selection_samples(cases, samples):
                 samples.append(sample)
 
 
-def mutation_samples(mode, cases, samples):
+def mutation_samples(mode, cases, samples, cleanups):
     for case in cases:
         for cold in (False, True):
-            current = owner.UploadJournalValidationRetirement(case.factory, case.root)
+            current = cleanups(case).cleanup
             for rejected in (
                 "version",
                 "epoch",
@@ -344,11 +345,11 @@ def mutation_samples(mode, cases, samples):
     operation="riverhog_core.services.upload_journal_validation_retirement.UploadJournalValidationRetirement._select",
 )
 def test_retirement_selection_uses_actual_indexed_phases_and_wraps(
-    retirement_cases, record_property
+    retirement_cases, record_property, cleanups
 ):
     samples = []
     record_property("growth_samples", samples)
-    selection_samples(retirement_cases, samples)
+    selection_samples(retirement_cases, samples, cleanups)
 
 
 @pytest.mark.growth_witness(
@@ -356,10 +357,12 @@ def test_retirement_selection_uses_actual_indexed_phases_and_wraps(
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_validation_retirement.UploadJournalValidationRetirement._transition",
 )
-def test_retirement_transitions_preserve_exact_orphan_fences(retirement_cases, record_property):
+def test_retirement_transitions_preserve_exact_orphan_fences(
+    retirement_cases, record_property, cleanups
+):
     samples = []
     record_property("growth_samples", samples)
-    mutation_samples("_transition", retirement_cases, samples)
+    mutation_samples("_transition", retirement_cases, samples, cleanups)
 
 
 @pytest.mark.growth_witness(
@@ -368,8 +371,8 @@ def test_retirement_transitions_preserve_exact_orphan_fences(retirement_cases, r
     operation="riverhog_core.services.upload_journal_validation_retirement.UploadJournalValidationRetirement._blocked",
 )
 def test_retirement_blockers_preserve_full_width_and_do_not_hot_rewrite(
-    retirement_cases, record_property
+    retirement_cases, record_property, cleanups
 ):
     samples = []
     record_property("growth_samples", samples)
-    mutation_samples("_blocked", retirement_cases, samples)
+    mutation_samples("_blocked", retirement_cases, samples, cleanups)

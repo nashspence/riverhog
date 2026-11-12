@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -12,7 +12,9 @@ from uuid import uuid4
 
 from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_provenance import (
+    CorpusConstruction,
     InvalidJournalWorkspace,
+    JournalConstruction,
     JournalGraphCertificates,
     JournalSummary,
     JournalValidationBudget,
@@ -48,6 +50,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
     lease_journal_validation_workspace,
 )
+from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
 from riverhog_core.services.discovery_corpus_replay_growth import declare_corpus_replay_dispatch
 from riverhog_core.services.discovery_journal_growth import declare_growth_for_journal_dispatch
 from riverhog_core.services.discovery_journal_owner import DiscoveryJournalOwner
@@ -62,9 +65,11 @@ from riverhog_core.services.discovery_validation_growth import declare_owner_gro
 class _Slot:
     lock: Lock = field(default_factory=Lock)
     resources: ExitStack = field(default_factory=ExitStack)
+    lease: ValidationWorkspaceLease = field(default_factory=ValidationWorkspaceLease)
     metadata: DiscoveryMetadata | None = None
     source: DiscoveryCorpusSource | None = None
     corpus: RetainedCorpusValidator | None = None
+    corpus_construction: CorpusConstruction | None = None
     replay: replay.CorpusReplayWork | None = None
     replay_initialized: bool = False
     replay_summary: JournalSummary | None = None
@@ -89,7 +94,16 @@ class DiscoveryValidationWork:
     another execution or create an independent reader lifecycle.
     """
 
-    def __init__(self, slot: _Slot, catalog: ContractCatalog, journal_root: Path) -> None:
+    def __init__(
+        self,
+        slot: _Slot,
+        catalog: ContractCatalog,
+        journal_root: Path,
+        construction_factory: Callable[[], JournalConstruction],
+        corpus_construction_factory: Callable[[], CorpusConstruction],
+    ) -> None:
+        self._construction_factory = construction_factory
+        self._corpus_construction_factory = corpus_construction_factory
         self._slot, self._catalog, self._journal_root = slot, catalog, journal_root
         self._active = True
 
@@ -202,7 +216,7 @@ class DiscoveryValidationWork:
             retained.close()
             slot.journal = None
         # Retain the helper before reference acquisition or Native construction.
-        retained = DiscoveryJournalOwner(source)
+        retained = DiscoveryJournalOwner(source, construction=self._construction_factory())
         slot.journal = retained
         with metadata.read() as (db, key):
             selected = registration.find_discovery_journal(db, key, work)
@@ -253,7 +267,9 @@ class DiscoveryValidationWork:
             retained.close()
             slot.sealed = None
         try:
-            retained = DiscoverySealedJournalOwner.prepare(source, collection_id, self._catalog)
+            retained = DiscoverySealedJournalOwner.prepare(
+                source, collection_id, self._catalog, construction=self._construction_factory()
+            )
         except KeyError:
             return None
         # Retain before acquisition can leave partial Native cleanup uncertain.
@@ -276,6 +292,9 @@ class DiscoveryValidationWork:
             ):
                 raise StaleArchiveTask("retained Native corpus has another current input owner")
             return slot.corpus
+        if slot.corpus_construction is not None:
+            raise StaleArchiveTask("retained corpus construction has unconfirmed receiving")
+        slot.corpus_construction = self._corpus_construction_factory()
         with metadata.read() as (db, key):
             manifest = frozen_corpus_selection(db, key, selection)
         pinned = jobs.pin_discovery_corpus(metadata.factory, metadata.job, manifest)
@@ -293,6 +312,7 @@ class DiscoveryValidationWork:
             native = RetainedCorpusValidator.open_retained(
                 metadata.custody.directory,
                 slot.source,
+                construction=slot.corpus_construction,
                 worker_epoch=current.worker_epoch,
                 create=create,
                 catalog=self._catalog,
@@ -408,11 +428,15 @@ class DiscoveryValidationOwner:
         factory: SessionFactory,
         root: Path,
         *,
+        construction_factory: Callable[[], JournalConstruction],
+        corpus_construction_factory: Callable[[], CorpusConstruction],
         concurrency: int = 2,
         journal_root: Path | None = None,
     ) -> None:
         if type(concurrency) is not int or concurrency < 1:
             raise ValueError("discovery concurrency must be positive")
+        self._construction_factory = construction_factory
+        self._corpus_construction_factory = corpus_construction_factory
         self.factory, self.root, self.concurrency = factory, root, concurrency
         self.journal_root = root if journal_root is None else journal_root
         self._lock = Lock()
@@ -445,6 +469,10 @@ class DiscoveryValidationOwner:
         if slot.corpus is not None:
             slot.corpus.close()
             slot.corpus = None
+        if slot.corpus_construction is not None:
+            if not slot.corpus_construction.close_step():
+                raise BlockingIOError("original Native corpus construction remains unreceived")
+            slot.corpus_construction = None
         slot.replay = None
         slot.replay_initialized = False
         slot.preparation = None
@@ -454,6 +482,7 @@ class DiscoveryValidationOwner:
             slot.metadata.close()
             slot.metadata = None
         slot.resources.close()
+        slot.lease.close()
         with self._lock:
             if self._slots.get(build_id) is slot:
                 del self._slots[build_id]
@@ -480,6 +509,7 @@ class DiscoveryValidationOwner:
                 lease_journal_validation_workspace(
                     self.root,
                     selected.workspace_id,
+                    receiver=slot.lease,
                     create=selected.state == "preparing",
                     creation_current=lambda: jobs.discovery_worker_current(self.factory, selected),
                     on_custody=captured.append,
@@ -544,7 +574,13 @@ class DiscoveryValidationOwner:
                 self._drop(build_id, slot)
                 yield None
                 return
-            work = DiscoveryValidationWork(slot, catalog, self.journal_root)
+            work = DiscoveryValidationWork(
+                slot,
+                catalog,
+                self.journal_root,
+                self._construction_factory,
+                self._corpus_construction_factory,
+            )
             yield work
             if not metadata.verify_current():
                 raise StaleArchiveTask("discovery quantum lost its current owner")

@@ -38,7 +38,7 @@ def service_for(factory):
     )
 
 
-def native_outcome(factory, work):
+def native_outcome(factory, work, *, journal_constructions):
     from contextlib import closing
 
     from riverhog_core.runtime_config import RuntimeConfig
@@ -66,7 +66,11 @@ def native_outcome(factory, work):
     assert replay.prepare_upload_journal_replay(factory, work, catalog=catalog)
     config = RuntimeConfig.for_testing(database_url=str(factory.kw["bind"].url))
     with closing(
-        UploadJournalValidationOwner(factory, config.journal_validation_workspace)
+        UploadJournalValidationOwner(
+            factory,
+            config.journal_validation_workspace,
+            construction_factory=journal_constructions.retain,
+        )
     ) as current:
         for _ in range(10000):
             step = current.advance(work, catalog=catalog)
@@ -87,7 +91,9 @@ def record_state(factory):
         return tuple(getattr(record, column.name) for column in Journal.__table__.columns)
 
 
-def test_native_computation_reads_exact_captured_windows_after_readers_close(tmp_path, monkeypatch):
+def test_native_computation_reads_exact_captured_windows_after_readers_close(
+    tmp_path, monkeypatch, *, journal_constructions
+):
     from riverhog_core.services.upload_journal_source import UploadJournalValidationSource
 
     raw = source(2 * EXTENT + 37, journal_id=JOURNAL)
@@ -111,7 +117,7 @@ def test_native_computation_reads_exact_captured_windows_after_readers_close(tmp
 
         monkeypatch.setattr(UploadJournalValidationSource, "read_window", window)
         monkeypatch.setattr(UploadJournalValidationSource, "read_exact", exact)
-        outcome = native_outcome(factory, work)
+        outcome = native_outcome(factory, work, journal_constructions=journal_constructions)
         assert b"".join(windows) == raw and max(map(len, windows)) <= 65536
         assert atoms == [raw[1:-1]]
         assert outcome.failure is None and engine.pool.checkedout() == 0
@@ -139,11 +145,13 @@ def test_native_computation_reads_exact_captured_windows_after_readers_close(tmp
         "state",
     ],
 )
-def test_stale_success_and_failure_cannot_publish_or_read_replacement(tmp_path, failure, fence):
+def test_stale_success_and_failure_cannot_publish_or_read_replacement(
+    tmp_path, failure, fence, *, journal_constructions
+):
     raw = source(journal_id=JOURNAL)
     with retained(tmp_path, raw) as (_, factory):
         work = complete_capture(factory)
-        outcome = native_outcome(factory, work)
+        outcome = native_outcome(factory, work, journal_constructions=journal_constructions)
         if failure:
             outcome = owner._UploadJournalValidationOutcome("rejected old attempt")
         replacements = {
@@ -174,13 +182,13 @@ def test_stale_success_and_failure_cannot_publish_or_read_replacement(tmp_path, 
 
 
 @pytest.mark.parametrize("failure", [False, True])
-def test_duplicate_terminal_publication_is_fenced(tmp_path, failure):
+def test_duplicate_terminal_publication_is_fenced(tmp_path, failure, *, journal_constructions):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work = complete_capture(factory)
         outcome = (
             owner._UploadJournalValidationOutcome("native rejection")
             if failure
-            else native_outcome(factory, work)
+            else native_outcome(factory, work, journal_constructions=journal_constructions)
         )
         assert owner._commit_upload_journal_validation(factory, work, outcome)
         published = terminal(factory), checkpoint(factory)
@@ -263,21 +271,25 @@ def test_unrelated_catalog_work_progresses_during_native_computation(
             service.close()
 
 
-def test_captured_source_survives_original_transport_chunk_removal(tmp_path):
+def test_captured_source_survives_original_transport_chunk_removal(
+    tmp_path, *, journal_constructions
+):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (engine, factory):
         work = complete_capture(factory)
         with factory() as session, session.begin():
             session.execute(delete(Chunk))
-        outcome = native_outcome(factory, work)
+        outcome = native_outcome(factory, work, journal_constructions=journal_constructions)
         assert outcome.failure is None and engine.pool.checkedout() == 0
         assert owner._commit_upload_journal_validation(factory, work, outcome)
         assert terminal(factory)["state"] == "sealed" and terminal(factory)["anchor"] is not None
 
 
-def test_lost_capture_manifest_link_before_publication_fails_closed(tmp_path):
+def test_lost_capture_manifest_link_before_publication_fails_closed(
+    tmp_path, *, journal_constructions
+):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work = complete_capture(factory)
-        outcome = native_outcome(factory, work)
+        outcome = native_outcome(factory, work, journal_constructions=journal_constructions)
         with factory() as session, session.begin():
             session.execute(delete(Frame))
         before = record_state(factory)
@@ -302,7 +314,9 @@ from riverhog_core.services import collection_uploads as owner
 factory = make_session_factory(sys.argv[1])
 work = owner._read_upload_journal_validation(factory, 1, sys.argv[2])
 from tests.unit.test_journal_validation_handoff import native_outcome
-outcome = native_outcome(factory, work)
+from tests.support.native_construction import JournalConstructions
+constructions = JournalConstructions()
+outcome = native_outcome(factory, work, journal_constructions=constructions)
 assert outcome.failure is None
 original = owner.session_scope
 @contextmanager

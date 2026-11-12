@@ -26,10 +26,12 @@ def row(db, sql):
 
 
 @pytest.mark.parametrize("temporary", ["FILE", "MEMORY"])
-def test_journal_profile_precedes_schema_and_survives_cold_retained_reopen(tmp_path, temporary):
+def test_journal_profile_precedes_schema_and_survives_cold_retained_reopen(
+    tmp_path, temporary, journal_constructions
+):
     admission, retained = selected(temporary), []
     directory = tmp_path / "retained"
-    directory.mkdir()
+    directory.mkdir(mode=0o700)
 
     def retain(store):
         retained.append(store)
@@ -38,7 +40,10 @@ def test_journal_profile_precedes_schema_and_survives_cold_retained_reopen(tmp_p
 
     with closing(
         JournalStore.open_retained(
-            directory, create=True, connection_factory=admission.connect, on_storage_open=retain
+            directory,
+            create=True,
+            construction=journal_constructions.retain(admission),
+            on_storage_open=retain,
         )
     ) as store:
         assert row(store.db, "PRAGMA cache_size") == (-19,)
@@ -51,7 +56,10 @@ def test_journal_profile_precedes_schema_and_survives_cold_retained_reopen(tmp_p
     before = hashlib.sha256((directory / "snapshot.sqlite3").read_bytes()).hexdigest()
     with closing(
         JournalStore.open_retained(
-            directory, read_only=True, connection_factory=admission.connect, on_storage_open=retain
+            directory,
+            read_only=True,
+            construction=journal_constructions.retain(admission),
+            on_storage_open=retain,
         )
     ) as store:
         assert row(store.db, "PRAGMA cache_size") == (-19,)
@@ -89,10 +97,10 @@ def test_journal_helper_result_reader_keeps_selected_profile_and_exact_anchor(
 
 @pytest.mark.parametrize("temporary", ["FILE", "MEMORY"])
 def test_corrupt_retained_journal_settings_preserve_error_custody_and_original_bytes(
-    tmp_path, temporary
+    tmp_path, temporary, journal_constructions
 ):
     directory = tmp_path / "retained"
-    directory.mkdir()
+    directory.mkdir(mode=0o700)
     path = directory / "snapshot.sqlite3"
     original = b"original corrupt retained bytes"
     path.write_bytes(original)
@@ -100,7 +108,7 @@ def test_corrupt_retained_journal_settings_preserve_error_custody_and_original_b
     with pytest.raises(InvalidJournalWorkspace) as caught:
         JournalStore.open_retained(
             directory,
-            connection_factory=admission.connect,
+            construction=journal_constructions.retain(admission),
             on_storage_open=retained.append,
             on_storage_close=lambda: released.append(True),
         )

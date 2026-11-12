@@ -50,7 +50,6 @@ _COUNT_METRICS = (
     "native_changed_rows",
     "native_opened_connections",
     "native_closed_connections",
-    "stream_close_calls",
     "native_vm_instructions",
     "native_source_checks",
     "native_opening_callbacks",
@@ -148,7 +147,13 @@ def _metric(kind: str, metric: str) -> str:
             "payload_octets": "source_payload_octets",
         }.get(metric, metric)
     if kind == "reference":
-        return {"stream_closes": "stream_close_calls"}.get(metric, metric)
+        return {
+            "native_close_calls": "close_calls",
+            "native_fstat_calls": "stat_calls",
+            "native_control_octets": "encoded_path_octets",
+            "path_opens": "open_calls",
+            "payload_reads": "source_reads",
+        }.get(metric, metric)
     if kind == "journal":
         return {
             "sql_statements": "native_sql_statements",

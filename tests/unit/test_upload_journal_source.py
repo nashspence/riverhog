@@ -129,7 +129,9 @@ def test_replaced_source_cannot_return_cached_octets(tmp_path, method):
 
 
 @pytest.mark.parametrize("malformed", [False, True])
-def test_core_retained_source_preserves_native_result_or_error(tmp_path, malformed):
+def test_core_retained_source_preserves_native_result_or_error(
+    tmp_path, malformed, *, journal_constructions
+):
     raw = source(journal_id=JOURNAL) + (b"bad framing" if malformed else b"")
     failure = None
     try:
@@ -148,6 +150,7 @@ def test_core_retained_source_preserves_native_result_or_error(tmp_path, malform
             worker_epoch=0,
             create=True,
             catalog=source_owner.admission_provenance_catalog(),
+            construction=journal_constructions.retain(),
         ) as validation:
             try:
                 for _ in range(10000):

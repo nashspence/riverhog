@@ -4,11 +4,52 @@ from __future__ import annotations
 
 import os
 from collections.abc import Callable
-from typing import Any
+from pathlib import Path
+from typing import Any, Literal
+
+from retained_resource import Borrow, Resource
 
 
-def _close_descriptor(descriptor: int) -> None:
-    os.close(descriptor)
+class RetainedWorkspaceResource:
+    """One original native namespace owner and its explicit descriptor borrow."""
+
+    def __init__(
+        self, kind: Literal["file", "directory"], after_close: Callable[[], None] | None = None
+    ) -> None:
+        self.owner = Resource(kind)
+        self.borrow = Borrow(self.owner)
+        self._after_close = after_close
+
+    def acquire(
+        self,
+        path: str | Path,
+        *,
+        parent: RetainedWorkspaceResource | None = None,
+        writable: bool = False,
+        create: bool = False,
+        exclusive: bool = False,
+    ) -> None:
+        self.owner.acquire(
+            os.fsencode(path),
+            writable=writable,
+            parent=None if parent is None else parent.owner,
+            create=create,
+            exclusive=exclusive,
+        )
+        self.borrow.acquire()
+
+    def duplicate(self, source: RetainedWorkspaceResource) -> None:
+        self.owner.duplicate(source.owner)
+        self.borrow.acquire()
+
+    def fileno(self) -> int:
+        return self.borrow.fileno()
+
+    def close(self) -> None:
+        self.borrow.close()
+        self.owner.close()
+        if self._after_close is not None:
+            self._after_close()
 
 
 class RetainedWorkspaceHandles:
@@ -22,6 +63,22 @@ class RetainedWorkspaceHandles:
     def __init__(self) -> None:
         self._callbacks: list[tuple[Callable[..., Any], tuple[Any, ...]]] = []
         self.uncertain = False
+
+    def acquire(
+        self,
+        kind: Literal["file", "directory"],
+        path: str | Path,
+        *,
+        parent: RetainedWorkspaceResource | None = None,
+        writable: bool = False,
+        create: bool = False,
+        exclusive: bool = False,
+        after_close: Callable[[], None] | None = None,
+    ) -> RetainedWorkspaceResource:
+        original = RetainedWorkspaceResource(kind, after_close)
+        self.callback(original.close)
+        original.acquire(path, parent=parent, writable=writable, create=create, exclusive=exclusive)
+        return original
 
     def callback(self, operation: Callable[..., Any], *arguments: Any) -> None:
         self._callbacks.append((operation, arguments))

@@ -6,6 +6,7 @@ from contextlib import ExitStack
 from pathlib import Path
 
 from riverhog_provenance import (
+    JournalConstruction,
     JournalGraphCertificates,
     JournalReplayBinding,
     JournalValidationSession,
@@ -19,6 +20,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
     lease_journal_validation_workspace,
 )
+from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
 from riverhog_core.journal_validation_workspace_reference import (
     retain_validation_workspace,
 )
@@ -67,12 +69,16 @@ class DiscoveryJournalOwner:
     partial handle and original child context confirm closure.
     """
 
-    def __init__(self, source: DiscoveryJournalSource) -> None:
+    def __init__(
+        self, source: DiscoveryJournalSource, *, construction: JournalConstruction
+    ) -> None:
+        self.construction = construction
         self.source = source
         self.native_source: DiscoveryJournalCustodySource | None = None
         self.session: JournalValidationSession | None = None
         self.references = JournalWorkspaceReferences()
         self.resources = ExitStack()
+        self.lease = ValidationWorkspaceLease()
         self.transferred = False
         self.closing = False
         self.directory: Path | None = None
@@ -103,6 +109,7 @@ class DiscoveryJournalOwner:
                 create=not confirmed,
                 creation_current=metadata.verify_current,
                 on_custody=self.retain_custody,
+                receiver=self.lease,
             )
         )
         if directory is None:
@@ -115,27 +122,39 @@ class DiscoveryJournalOwner:
         session = JournalValidationSession.open_retained(
             directory,
             self.native_source,
+            construction=self.construction,
             attempt_id=self.source.binding.attempt_id,
             worker_epoch=metadata.job.worker_epoch,
             create=not confirmed and not (directory / "snapshot.sqlite3").exists(),
             catalog=catalog,
             certificates=certificates,
             on_storage_open=self.retain_session,
-            on_storage_close=self.references.close,
+            on_storage_close=self.receive_references,
         )
         # The early callback retained the exact partial object before Native I/O.
         assert self.session is session
         self.transferred = True
         return session
 
+    def receive_references(self) -> None:
+        if not self.construction.dependents_received:
+            raise BlockingIOError("original journal construction dependents have not received")
+        self.references.close()
+
     def close(self) -> None:
         self.closing = True
         if self.session is not None:
             self.session.close()
-            self.session = None
+            if self.session.storage_received:
+                self.session = None
+        if not self.construction.close_step():
+            raise BlockingIOError("original journal construction has not received")
         self.resources.close()
         if not self.transferred:
             self.references.close()
+        self.lease.close()
+        if self.session is not None:
+            raise BlockingIOError("final Native readers still retain the original storage")
 
 
 declare_growth_for_journal_owner(DiscoveryJournalOwner)

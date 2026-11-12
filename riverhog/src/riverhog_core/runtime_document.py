@@ -21,6 +21,7 @@ from riverhog_core.archive_write_grants import ArchiveWriteGrants
 from riverhog_core.cache_write_grants import CacheWriteGrants
 from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
 from riverhog_core.collection_plan import CollectionVolumePolicy
+from riverhog_core.journal_storage_grants import JournalStorageGrants
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
 from riverhog_core.registration_tuning import RegistrationTuning
 from riverhog_core.runtime_config import (
@@ -45,6 +46,7 @@ _ARCHIVE_CLEANUP = ArchiveCleanupGrants()
 _CLEANUP_EXECUTION = CleanupExecutionTuning()
 _ARCHIVE_EXECUTION = ArchiveExecutionTuning()
 _ARCHIVE_INPUT = ArchiveInputGrants()
+_JOURNAL_STORAGE = JournalStorageGrants()
 
 
 class _Document(BaseModel):
@@ -323,6 +325,25 @@ class ArchiveExecutionDocument(_Document):
         )
 
 
+class JournalStorageDocument(_Document):
+    connections: int = Field(default=_JOURNAL_STORAGE.connections, ge=1, strict=True)
+    cursors: int = Field(default=_JOURNAL_STORAGE.cursors, ge=1, strict=True)
+    operations: int = Field(default=_JOURNAL_STORAGE.operations, ge=1, strict=True)
+    file_records: int = Field(default=_JOURNAL_STORAGE.file_records, ge=2, strict=True)
+    corpus_file_records: int = Field(
+        default=_JOURNAL_STORAGE.corpus_file_records, ge=3, strict=True
+    )
+
+    def grants(self) -> JournalStorageGrants:
+        return JournalStorageGrants(
+            connections=self.connections,
+            cursors=self.cursors,
+            operations=self.operations,
+            file_records=self.file_records,
+            corpus_file_records=self.corpus_file_records,
+        )
+
+
 class RegistrationDocument(_Document):
     candidates_per_step: int = Field(default=_REGISTRATION.candidates_per_step, ge=1, strict=True)
     plans_per_step: int = Field(default=_REGISTRATION.plans_per_step, ge=1, strict=True)
@@ -406,6 +427,7 @@ class RiverhogDocument(_Document):
         strict=True,
         description="Maximum active native validation sessions; other jobs wait for capacity.",
     )
+    journal_storage: JournalStorageDocument = Field(default_factory=JournalStorageDocument)
     archive_upload_sweep_interval: str = "30s"
     collection_upload_custody_lease: str = "1h"
     retrieval_restore_poll_interval: str = "5m"
@@ -525,6 +547,7 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         archive_scrypt_work_factor=document.archive_scrypt_work_factor,
         journal_validation_workspace=document.journal_validation_workspace,
         journal_validation_concurrency=document.journal_validation_concurrency,
+        journal_storage=document.journal_storage.grants(),
         archive_upload_sweep_interval=parse_duration(document.archive_upload_sweep_interval),
         collection_upload_custody_lease=parse_duration(document.collection_upload_custody_lease),
         retrieval_restore_poll_interval=parse_duration(document.retrieval_restore_poll_interval),

@@ -178,7 +178,9 @@ def test_native_replay_remains_the_only_acceptance_authority(tmp_path, monkeypat
 
 
 @pytest.mark.parametrize("suffix", [b"\x1e{}\n", b"\x1e[1]\n", b"\x1e", b"x"])
-def test_late_speculative_failure_never_outranks_an_earlier_native_prefix_error(tmp_path, suffix):
+def test_late_speculative_failure_never_outranks_an_earlier_native_prefix_error(
+    tmp_path, suffix, *, journal_constructions
+):
     document = parse_journal(source(journal_id=JOURNAL))[0].document
     document["sequence"] = "7"
     raw = b"\x1e" + canonical_json_bytes(document) + b"\n" + suffix
@@ -188,7 +190,7 @@ def test_late_speculative_failure_never_outranks_an_earlier_native_prefix_error(
         work = complete_capture(factory)
         finish(factory, work)
         assert progress(factory)[-1] == "deferred"
-        outcome = native_outcome(factory, work)
+        outcome = native_outcome(factory, work, journal_constructions=journal_constructions)
         assert outcome.failure == str(expected.value)
         assert terminal(factory)["anchor"] is None
 

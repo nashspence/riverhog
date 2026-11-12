@@ -9,11 +9,11 @@ from types import SimpleNamespace
 import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_retired_metadata as owner
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
 from riverhog_growth_contracts import growth_binding
 from riverhog_provenance import replay_binding
 
 from tests.support.catalog_work import octets
+from tests.support.retirement_namespace import lease_retiring_journal_workspace
 from tests.unit import test_canonical_discovery_metadata_growth as basis
 from tests.unit.test_canonical_discovery_metadata_growth import (
     catalog_templates as catalog_templates,

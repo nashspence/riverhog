@@ -7,6 +7,7 @@ from pathlib import Path
 
 from riverhog_growth_contracts import declare_growth
 from workspace_reclamation import (
+    FileReclamationOwner,
     InvalidWorkspaceFiles,
     WorkspaceReclamationCapacity,
     reclaim_retired_files,
@@ -42,6 +43,7 @@ class CorpusReclamationProgress:
 def reclaim_retired_corpus_workspace(
     directory: Path,
     *,
+    receiver: FileReclamationOwner,
     octet_budget: int = 4 * 1024 * 1024,
 ) -> CorpusReclamationProgress:
     """Dispose one admitted extent of an exclusively retired Native corpus.
@@ -53,7 +55,9 @@ def reclaim_retired_corpus_workspace(
     respective owners. No file-format parser or directory enumeration runs.
     """
     try:
-        progress = reclaim_retired_files(directory, names=_FILES, octet_budget=octet_budget)
+        progress = reclaim_retired_files(
+            directory, receiver=receiver, names=_FILES, octet_budget=octet_budget
+        )
     except InvalidWorkspaceFiles as error:
         raise StaleCorpusWorkspace(str(error)) from None
     except WorkspaceReclamationCapacity as error:

@@ -54,19 +54,31 @@ def test_no_fork_is_explicit_and_requires_an_open_owned_projection(journal, cata
 
 
 def test_fork_metadata_retained_reopen_uses_the_same_original_atom(
-    tmp_path, journal, graph, who, catalog
+    tmp_path, journal, graph, who, catalog, *, journal_constructions
 ):
     from riverhog_provenance import open_retained_journal_result
 
     raw, anchor = forked(journal, graph, who, catalog)
-    path, source, confirmed, _, _ = completed(tmp_path, raw, catalog)
-    with open_retained_journal_result(path, source, confirmed=confirmed, catalog=catalog) as first:
+    path, source, confirmed, _, _ = completed(
+        tmp_path, raw, catalog, journal_constructions=journal_constructions
+    )
+    with open_retained_journal_result(
+        path,
+        source,
+        confirmed=confirmed,
+        catalog=catalog,
+        construction=journal_constructions.retain(),
+    ) as first:
         independent = first.borrow()
         assert first.fork_anchor() == anchor
     with independent:
         assert independent.fork_anchor() == anchor
     with open_retained_journal_result(
-        path, source, confirmed=confirmed, catalog=catalog
+        path,
+        source,
+        confirmed=confirmed,
+        catalog=catalog,
+        construction=journal_constructions.retain(),
     ) as reopened:
         assert reopened.fork_anchor() == anchor
 

@@ -28,10 +28,12 @@ def measure(work, framing, operation, values, monkeypatch, samples):
     return result
 
 
-def exercise(tmp_path, monkeypatch, record_property, operation):
+def exercise(tmp_path, monkeypatch, record_property, operation, *, journal_constructions):
     samples = []
     for retained in (1, 17, 1025):
-        with prepared(tmp_path / str(retained)) as case:
+        with prepared(
+            tmp_path / str(retained), journal_constructions=journal_constructions
+        ) as case:
             with quantum(case) as (work, framing):
                 seed_independent_registrations(work, framing, retained)
                 values = {"retained_journals": retained + 1}
@@ -70,11 +72,11 @@ def exercise(tmp_path, monkeypatch, record_property, operation):
     ),
 )
 def test_actual_original_preparation_dispatch_and_cached_evidence(
-    tmp_path,
-    monkeypatch,
-    record_property,
+    tmp_path, monkeypatch, record_property, *, journal_constructions
 ):
-    exercise(tmp_path, monkeypatch, record_property, PREPARE)
+    exercise(
+        tmp_path, monkeypatch, record_property, PREPARE, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -85,8 +87,8 @@ def test_actual_original_preparation_dispatch_and_cached_evidence(
     ),
 )
 def test_actual_pending_open_and_warm_native_advance_dispatch(
-    tmp_path,
-    monkeypatch,
-    record_property,
+    tmp_path, monkeypatch, record_property, *, journal_constructions
 ):
-    exercise(tmp_path, monkeypatch, record_property, ADVANCE)
+    exercise(
+        tmp_path, monkeypatch, record_property, ADVANCE, journal_constructions=journal_constructions
+    )

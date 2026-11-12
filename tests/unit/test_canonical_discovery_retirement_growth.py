@@ -9,11 +9,12 @@ import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_retirement as owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import update
 
 from tests.support.catalog_work import octets
+from tests.support.retirement_namespace import refuse_native_child_resource
+from tests.support.validation_workspace import leased_workspace
 from tests.unit import test_canonical_discovery_metadata_growth as basis
 from tests.unit.test_canonical_discovery_child_reclamation import prepare_child
 from tests.unit.test_canonical_discovery_child_reclamation_growth import direct_primitives
@@ -64,7 +65,7 @@ def prepared(root, inputs, template, retained, width, variant):
     namespace = case.path.parent
     if variant in {"children", "child_directory", "child-truncate", "busy", "stale"}:
         child_root = case.path / "journals"
-        with lease_journal_validation_workspace(
+        with leased_workspace(
             child_root, binding.directory_id, create=True, creation_current=lambda: True
         ) as child:
             assert child is not None
@@ -258,30 +259,20 @@ def test_measured_dependent_child_close_receiving(case, monkeypatch, record_prop
         assert job.reclamation_phase == "child_directory"
     turn = owner.DiscoveryRetirementTurn(case.factory, job, case.root)
     recorder = basis.Recorder()
-    actual_open, actual_close = os.open, os.close
-    targets = set()
     child_inode = (path / "journals" / bindings[0].directory_id).stat().st_ino
 
-    def opened(name, flags, *args, **kwargs):
-        descriptor = actual_open(name, flags, *args, **kwargs)
-        if (mode == "prefix-probe" and name == bindings[0].directory_id) or (
-            mode != "prefix-probe"
-            and name == ".lease"
-            and turn._metadata is not None
-            and os.fstat(kwargs["dir_fd"]).st_ino == child_inode
-        ):
-            targets.add(descriptor)
-        return descriptor
-
-    def refused(descriptor):
-        if descriptor in targets:
-            raise OSError("actual original child close refused")
-        return actual_close(descriptor)
-
     try:
-        with monkeypatch.context() as patch, recorder.connect_only():
-            patch.setattr(os, "open", opened)
-            patch.setattr(os, "close", refused)
+        with (
+            monkeypatch.context() as patch,
+            recorder.connect_only(),
+            refuse_native_child_resource(
+                patch,
+                child_inode,
+                lambda: True,
+                lease=mode != "prefix-probe",
+                message="actual original child close refused",
+            ),
+        ):
             with pytest.raises(OSError, match="child close refused"):
                 turn.advance(octet_budget=1024 * 1024)
         metadata = turn._metadata

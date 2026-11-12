@@ -10,6 +10,7 @@ from riverhog_provenance import (
     StaleCorpusWorkspace,
 )
 from riverhog_provenance import corpus_workspace as owner
+from sqlite_admission import SqliteCleanupPending
 from test_corpus_order_growth import edges_for, insert
 from test_retained_corpus_workspace import directory, finish, open_workspace
 
@@ -38,10 +39,14 @@ class EmptySource:
 
 
 @pytest.mark.parametrize("fault", ["format", "marker", "checkpoint", "order_table", "file", "mode"])
-def test_corrupt_or_missing_workspace_is_rejected_without_repair(tmp_path, catalog, fault):
+def test_corrupt_or_missing_workspace_is_rejected_without_repair(
+    journal_constructions, tmp_path, catalog, fault
+):
     path = directory(tmp_path)
     source = EmptySource(catalog)
-    with open_workspace(path, source, create=True) as workspace:
+    with open_workspace(
+        path, source, create=True, journal_constructions=journal_constructions
+    ) as workspace:
         if fault == "format":
             workspace._db.execute("UPDATE corpus_workspace SET format='foreign'")
         elif fault == "marker":
@@ -59,14 +64,18 @@ def test_corrupt_or_missing_workspace_is_rejected_without_repair(tmp_path, catal
             assert db.execute("PRAGMA journal_mode=WAL").fetchone() == ("wal",)
     before = file.read_bytes() if file.exists() else None
     with pytest.raises(StaleCorpusWorkspace):
-        open_workspace(path, source, epoch=1)
+        open_workspace(path, source, epoch=1, journal_constructions=journal_constructions)
     assert (file.read_bytes() if file.exists() else None) == before
 
 
-def test_order_mutations_and_parent_checkpoint_rollback_together(tmp_path, catalog, monkeypatch):
+def test_order_mutations_and_parent_checkpoint_rollback_together(
+    journal_constructions, tmp_path, catalog, monkeypatch
+):
     path = directory(tmp_path)
     source = EmptySource(catalog)
-    with open_workspace(path, source, create=True) as workspace:
+    with open_workspace(
+        path, source, create=True, journal_constructions=journal_constructions
+    ) as workspace:
         # The Native ordering owner also qualifies arbitrary fixed edge indexes.
         with workspace._operation():
             insert(workspace._corpus, edges_for("chain", 17), "derivation")
@@ -89,7 +98,9 @@ def test_order_mutations_and_parent_checkpoint_rollback_together(tmp_path, catal
                 workspace.advance_order("derivation", row_budget=3)
         assert (path / "corpus.sqlite3").read_bytes() == before
         assert workspace.advance_order("derivation", row_budget=3).source_edges == 10
-    with open_workspace(path, source, epoch=1) as resumed:
+    with open_workspace(
+        path, source, epoch=1, journal_constructions=journal_constructions
+    ) as resumed:
         assert finish(resumed)[0].source_edges == 17
 
 
@@ -105,10 +116,14 @@ class LostCommit:
         raise InterruptedError("successful commit return was lost")
 
 
-def test_lost_commit_reply_reloads_actual_parent_and_order_progress(tmp_path, catalog):
+def test_lost_commit_reply_reloads_actual_parent_and_order_progress(
+    journal_constructions, tmp_path, catalog
+):
     path = directory(tmp_path)
     source = EmptySource(catalog)
-    with open_workspace(path, source, create=True) as workspace:
+    with open_workspace(
+        path, source, create=True, journal_constructions=journal_constructions
+    ) as workspace:
         with workspace._operation():
             insert(workspace._corpus, edges_for("chain", 17), "derivation")
         while not workspace.advance_semantics().complete:
@@ -125,10 +140,16 @@ def test_lost_commit_reply_reloads_actual_parent_and_order_progress(tmp_path, ca
 
 
 @pytest.mark.parametrize("epoch", [True, -1, "1", 1.0])
-def test_invalid_epoch_never_creates_storage(tmp_path, catalog, epoch):
+def test_invalid_epoch_never_creates_storage(journal_constructions, tmp_path, catalog, epoch):
     path = directory(tmp_path)
     with pytest.raises(ValueError):
-        open_workspace(path, EmptySource(catalog), epoch=epoch, create=True)
+        open_workspace(
+            path,
+            EmptySource(catalog),
+            epoch=epoch,
+            create=True,
+            journal_constructions=journal_constructions,
+        )
     assert not (path / "corpus.sqlite3").exists()
 
 
@@ -146,18 +167,27 @@ def test_binding_rejects_ambiguous_or_noncanonical_expectations(catalog, field, 
         replace(EmptySource(catalog).binding, **{field: value})
 
 
-def test_release_callback_runs_after_actual_database_close(tmp_path, catalog):
+def test_release_callback_runs_after_actual_database_close(
+    journal_constructions, tmp_path, catalog
+):
     path = directory(tmp_path)
     source = EmptySource(catalog)
     calls = []
 
     def release():
-        with pytest.raises(sqlite3.ProgrammingError):
+        from sqlite_admission import SqliteCleanupPending
+
+        with pytest.raises(SqliteCleanupPending):
             workspace._db.execute("SELECT 1")
         calls.append("released")
 
     workspace = RetainedCorpusValidator.open_retained(
-        path, source, worker_epoch=0, create=True, on_storage_close=release
+        path,
+        source,
+        worker_epoch=0,
+        create=True,
+        on_storage_close=release,
+        construction=journal_constructions.retain_corpus(),
     )
     assert finish(workspace)[0].vertices == 0
     workspace.close()
@@ -165,31 +195,45 @@ def test_release_callback_runs_after_actual_database_close(tmp_path, catalog):
     assert calls == ["released"]
 
 
-def test_replacement_cannot_publish_metadata_that_its_budget_cannot_read(tmp_path, catalog):
+def test_replacement_cannot_publish_metadata_that_its_budget_cannot_read(
+    journal_constructions, tmp_path, catalog
+):
     path = directory(tmp_path)
     source = EmptySource(catalog)
-    with open_workspace(path, source, create=True):
+    with open_workspace(path, source, create=True, journal_constructions=journal_constructions):
         pass
     before = (path / "corpus.sqlite3").read_bytes()
     from riverhog_provenance import JournalValidationCapacity
 
     with pytest.raises(JournalValidationCapacity):
-        open_workspace(path, source, epoch=10**1024, metadata_byte_budget=1024)
+        open_workspace(
+            path,
+            source,
+            epoch=10**1024,
+            metadata_byte_budget=1024,
+            journal_constructions=journal_constructions,
+        )
     assert (path / "corpus.sqlite3").read_bytes() == before
-    with open_workspace(path, source, epoch=1) as resumed:
+    with open_workspace(
+        path, source, epoch=1, journal_constructions=journal_constructions
+    ) as resumed:
         assert finish(resumed)[0].complete
 
 
 def test_reopening_never_reads_native_corpus_payload_or_ordering_rows(
-    tmp_path, catalog, monkeypatch
+    journal_constructions, tmp_path, catalog, monkeypatch
 ):
     path = directory(tmp_path)
     source = EmptySource(catalog)
-    with open_workspace(path, source, create=True) as workspace:
+    with open_workspace(
+        path, source, create=True, journal_constructions=journal_constructions
+    ) as workspace:
         with workspace._operation():
             insert(workspace._corpus, edges_for("chain", 129), "derivation")
         finish(workspace)
-    connect = owner.sqlite3.connect
+    import sqlite_admission
+
+    connect = sqlite_admission._connect
 
     def metadata_only(*args, **kwargs):
         db = connect(*args, **kwargs)
@@ -203,8 +247,8 @@ def test_reopening_never_reads_native_corpus_payload_or_ordering_rows(
         return db
 
     with monkeypatch.context() as patch:
-        patch.setattr(owner.sqlite3, "connect", metadata_only)
-        with open_workspace(path, source, epoch=1):
+        patch.setattr(sqlite_admission, "_connect", metadata_only)
+        with open_workspace(path, source, epoch=1, journal_constructions=journal_constructions):
             pass
 
 
@@ -224,13 +268,17 @@ class UncertainClose:
 
 @pytest.mark.parametrize("lost_reply", [False, True])
 def test_uncertain_storage_close_can_be_confirmed_without_reopening_work(
-    tmp_path, catalog, lost_reply
+    journal_constructions, tmp_path, catalog, lost_reply
 ):
     path = directory(tmp_path)
     source = EmptySource(catalog)
     releases = []
     workspace = open_workspace(
-        path, source, create=True, on_storage_close=lambda: releases.append("released")
+        path,
+        source,
+        create=True,
+        on_storage_close=lambda: releases.append("released"),
+        journal_constructions=journal_constructions,
     )
     db = workspace._db
 
@@ -242,12 +290,12 @@ def test_uncertain_storage_close_can_be_confirmed_without_reopening_work(
         with pytest.raises(RuntimeError, match="closed"):
             workspace.advance_semantics()
         if lost_reply:
-            with pytest.raises(sqlite3.ProgrammingError):
+            with pytest.raises((sqlite3.ProgrammingError, SqliteCleanupPending)):
                 db.execute("SELECT 1")
         else:
             assert db.execute("SELECT 1").fetchone() == (1,)
         workspace.close()
-        with pytest.raises(sqlite3.ProgrammingError):
+        with pytest.raises((sqlite3.ProgrammingError, SqliteCleanupPending)):
             db.execute("SELECT 1")
         assert releases == ["released"]
         workspace.close()
@@ -257,10 +305,14 @@ def test_uncertain_storage_close_can_be_confirmed_without_reopening_work(
 
 
 @pytest.mark.parametrize("damage", ["unlink", "replace", "symlink", "permissions", "hardlink"])
-def test_live_handle_rejects_lost_or_replaced_database_before_work(tmp_path, catalog, damage):
+def test_live_handle_rejects_lost_or_replaced_database_before_work(
+    journal_constructions, tmp_path, catalog, damage
+):
     path = directory(tmp_path)
     source = EmptySource(catalog)
-    workspace = open_workspace(path, source, create=True)
+    workspace = open_workspace(
+        path, source, create=True, journal_constructions=journal_constructions
+    )
     file = path / "corpus.sqlite3"
     try:
         if damage == "unlink":
@@ -284,12 +336,16 @@ def test_live_handle_rejects_lost_or_replaced_database_before_work(tmp_path, cat
         workspace.close()
 
 
-def test_serialized_native_work_and_close_can_move_between_worker_threads(tmp_path, catalog):
+def test_serialized_native_work_and_close_can_move_between_worker_threads(
+    journal_constructions, tmp_path, catalog
+):
     from concurrent.futures import ThreadPoolExecutor
 
     path = directory(tmp_path)
     source = EmptySource(catalog)
-    workspace = open_workspace(path, source, create=True)
+    workspace = open_workspace(
+        path, source, create=True, journal_constructions=journal_constructions
+    )
     try:
         with ThreadPoolExecutor(max_workers=1) as worker:
             assert worker.submit(workspace.advance_semantics).result(timeout=10).complete
@@ -306,7 +362,7 @@ def test_serialized_native_work_and_close_can_move_between_worker_threads(tmp_pa
 
 @pytest.mark.parametrize("lost_reply", [False, True])
 def test_uncertain_open_close_leaves_the_actual_handle_reachable(
-    tmp_path, catalog, monkeypatch, lost_reply
+    journal_constructions, tmp_path, catalog, monkeypatch, lost_reply
 ):
     path = directory(tmp_path)
     source = EmptySource(catalog)
@@ -327,16 +383,17 @@ def test_uncertain_open_close_leaves_the_actual_handle_reachable(
                 create=True,
                 on_storage_open=retained.append,
                 on_storage_close=lambda: released.append(True),
+                journal_constructions=journal_constructions,
             )
     assert len(retained) == 1
     workspace = retained[0]
     assert not workspace._storage_closed
-    assert workspace._descriptor is not None
+    assert workspace._construction.borrow.active
     assert released == []
     with pytest.raises(RuntimeError, match="closed"):
         workspace.advance_semantics()
     workspace.close()
-    assert workspace._descriptor is None
-    assert released == [True]
+    assert workspace._construction.borrow.received
+    assert released == []
     workspace.close()
-    assert released == [True]
+    assert released == []

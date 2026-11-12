@@ -10,7 +10,10 @@ from pathlib import Path
 from tempfile import mkdtemp
 
 import pytest
+import retained_resource
+import sqlite_admission
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+from riverhog_provenance import JournalConstruction
 from riverhog_provenance import journal_store as store_owner
 from riverhog_provenance.journal_session import JournalValidationSession
 from test_child_admission_growth import octets
@@ -22,14 +25,20 @@ from test_journal_session_growth import native_session_checkpoints as native_ses
 from test_semantic_edge import observed_work, parameter_octets
 from test_semantic_owner import snapshot
 
+from tests.support.sqlite_observation import observed_connection_type
 
-class LifecycleCursor(sqlite3.Cursor):
+
+class LifecycleRows:
     def record(self, row):
         owner = self.connection.observer
         if owner.recording and row is not None:
             owner.metrics["returned_rows"] += 1
             owner.metrics["returned_metadata_octets"] += parameter_octets(row)
         return row
+
+
+class LifecycleCursor(LifecycleRows, sqlite3.Cursor):
+    _row_observer = LifecycleRows
 
     def fetchone(self):
         return self.record(super().fetchone())
@@ -72,8 +81,9 @@ class LifecycleConnection(sqlite3.Connection):
     def execute(self, sql, parameters=()):
         owner = self.observer
         if owner.recording:
-            owner.attempts["sql_attempts"] += 1
-            owner.statements.append((sql, parameters, None))
+            if not isinstance(self, sqlite_admission._Connection):
+                owner.attempts["sql_attempts"] += 1
+                owner.statements.append((sql, parameters, None))
             if sql.startswith(("SELECT", "UPDATE", "DELETE")) and "sqlite_master" not in sql:
                 # The sole empty-frame probe belongs to fresh initialization.
                 if sql == "SELECT 1 FROM frames LIMIT 1":
@@ -87,7 +97,13 @@ class LifecycleConnection(sqlite3.Connection):
                             plan = " ".join(row[3] for row in cursor.fetchall())
                     finally:
                         owner.recording = True
-                    assert "SEARCH" in plan and "SCAN" not in plan and "USE TEMP" not in plan
+                    if plan == "SCAN CONSTANT ROW":
+                        assert sql == (
+                            "SELECT sqlite_compileoption_used('TEMP_STORE=0'), "
+                            "sqlite_compileoption_used('TEMP_STORE=3')"
+                        )
+                    else:
+                        assert "SEARCH" in plan and "SCAN" not in plan and "USE TEMP" not in plan
         before = self.total_changes
         result = self.cursor(factory=LifecycleCursor).execute(sql, parameters)
         if owner.recording:
@@ -97,7 +113,7 @@ class LifecycleConnection(sqlite3.Connection):
         return result
 
     def executescript(self, script):
-        if self.observer.recording:
+        if self.observer.recording and not isinstance(self, sqlite_admission._Connection):
             self.observer.attempts["sql_attempts"] += 1
         before = self.total_changes
         result = super().executescript(script)
@@ -108,9 +124,10 @@ class LifecycleConnection(sqlite3.Connection):
         return result
 
     def close(self):
+        received = self.closed
         result = super().close()
         self.closed = True
-        if self.observer.recording:
+        if self.observer.recording and not received:
             self.observer.metrics["closed_databases"] += 1
         return result
 
@@ -118,6 +135,8 @@ class LifecycleConnection(sqlite3.Connection):
 class LifecycleRecorder:
     def __init__(self, *, initializing=False):
         self.recording = False
+        self.native_resources = []
+        self.native_baselines = {}
         self.initializing = initializing
         self.attempts = {"database_open_attempts": 0, "file_open_attempts": 0, "sql_attempts": 0}
         self.changes = 0
@@ -152,6 +171,41 @@ class LifecycleRecorder:
                 "retention_callbacks",
             )
         }
+
+    @property
+    def recording(self):
+        return getattr(self, "_recording", False)
+
+    @recording.setter
+    def recording(self, value):
+        before = getattr(self, "_recording", False)
+        if value and not before:
+            self.native_baselines = {
+                original: original.metrics for original in self.native_resources
+            }
+        elif before and not value:
+            for original in self.native_resources:
+                start = self.native_baselines[original]
+                end = original.metrics
+                for metric, counter in (
+                    ("opened_files", "open_calls"),
+                    ("closed_files", "close_calls"),
+                    ("file_syncs", "sync_calls"),
+                ):
+                    self.metrics[metric] += end[counter] - start[counter]
+        self._recording = value
+
+    def retain_resource(self, original):
+        if original not in self.native_resources:
+            self.native_resources.append(original)
+            if self.recording:
+                self.native_baselines[original] = original.metrics
+        return original
+
+    def retain_construction(self, original):
+        self.retain_resource(original.creator)
+        if original.directory is not None:
+            self.retain_resource(original.directory)
 
     @property
     def total_changes(self):
@@ -219,6 +273,91 @@ class LifecycleRecorder:
     def kernel(self):
         owner = self
         real_connect, real_scandir = sqlite3.connect, os.scandir
+        driver = sqlite_admission._connect
+        admitted_connect = sqlite_admission.SqliteConnectionAdmission._connect
+        resource_type = retained_resource.Resource
+        create, sync = JournalConstruction.create_exclusive, JournalConstruction.sync_directory
+
+        def allocate(kind):
+            return owner.retain_resource(resource_type(kind))
+
+        def row_observed(cursor):
+            selected = getattr(cursor, "_row_observer", None)
+            return isinstance(selected, type) and issubclass(selected, LifecycleRows)
+
+        def cursor_call(actual, method):
+            def invoke(cursor, *args, **kwargs):
+                selected = getattr(cursor._owner, "observer", None) is owner
+                if selected and owner.recording:
+                    owner.attempts["sql_attempts"] += 1
+                    query = args[0]
+                    parameters = args[1] if len(args) > 1 and method != "executescript" else ()
+                    owner.statements.append((query, parameters, None))
+                    if (
+                        method == "execute"
+                        and query.startswith("SELECT")
+                        and not row_observed(cursor)
+                    ):
+                        assert query == (
+                            "SELECT sqlite_compileoption_used('TEMP_STORE=0'), "
+                            "sqlite_compileoption_used('TEMP_STORE=3')"
+                        )
+                return actual(cursor, *args, **kwargs)
+
+            return invoke
+
+        def cursor_rows(actual, many):
+            def invoke(cursor, *args, **kwargs):
+                rows = actual(cursor, *args, **kwargs)
+                if (
+                    getattr(cursor._owner, "observer", None) is owner
+                    and owner.recording
+                    and not row_observed(cursor)
+                ):
+                    values = rows if many else (() if rows is None else (rows,))
+                    for row in values:
+                        owner.metrics["returned_rows"] += 1
+                        owner.metrics["returned_metadata_octets"] += parameter_octets(row)
+                return rows
+
+            return invoke
+
+        def creating(original, path):
+            if owner.recording:
+                owner.attempts["file_open_attempts"] += 1
+            return create(original, path)
+
+        def syncing(original, path):
+            if owner.recording and original.directory is not None:
+                owner.attempts["file_open_attempts"] += 1
+            return sync(original, path)
+
+        def admitting(admission, *args, **kwargs):
+            if owner.recording:
+                owner.attempts["database_open_attempts"] += 1
+            return admitted_connect(admission, *args, **kwargs)
+
+        def initialize(connection):
+            connection.observer = owner
+            connection.closed = False
+            connection.set_trace_callback(connection.trace)
+            connection.set_progress_handler(connection.tick, 1)
+            connection.set_authorizer(connection.authorize)
+
+        def admitted(database, **options):
+            original = options["factory"]
+            options["factory"] = observed_connection_type(
+                LifecycleConnection,
+                original,
+                initialize=initialize,
+                recording=lambda connection: connection.observer.recording,
+            )
+            actual = driver(database, **options)
+            assert actual is original._reservation.connection
+            owner.connections.append(actual)
+            if owner.recording:
+                owner.metrics["opened_databases"] += 1
+            return actual
 
         def connect(*args, **kwargs):
             assert "factory" not in kwargs
@@ -275,6 +414,23 @@ class LifecycleRecorder:
 
         with pytest.MonkeyPatch.context() as patch:
             patch.setattr(sqlite3, "connect", connect)
+            patch.setattr(sqlite_admission, "_connect", admitted)
+            for method in ("execute", "executemany", "executescript"):
+                patch.setattr(
+                    sqlite_admission._Cursor,
+                    method,
+                    cursor_call(getattr(sqlite_admission._Cursor, method), method),
+                )
+            for method in ("fetchone", "fetchmany", "fetchall"):
+                patch.setattr(
+                    sqlite_admission._Cursor,
+                    method,
+                    cursor_rows(getattr(sqlite_admission._Cursor, method), method != "fetchone"),
+                )
+            patch.setattr(sqlite_admission.SqliteConnectionAdmission, "_connect", admitting)
+            patch.setattr(retained_resource, "Resource", allocate)
+            patch.setattr(JournalConstruction, "create_exclusive", creating)
+            patch.setattr(JournalConstruction, "sync_directory", syncing)
             patch.setattr(os, "scandir", scandir)
             for name, metric in (
                 ("open", "opened_files"),
@@ -403,7 +559,15 @@ def packaged_catalog():
 
 
 def constructor_samples(
-    tmp_path, catalog, build, *, samples, default_cases=True, stream=True, retained=True
+    tmp_path,
+    catalog,
+    build,
+    *,
+    samples,
+    default_cases=True,
+    stream=True,
+    retained=True,
+    journal_constructions,
 ):
     from uuid import UUID
 
@@ -458,7 +622,7 @@ def constructor_samples(
             case = build(regime)
             source = finite_source({**case, "regime": regime}, catalog, window=7)
             directory = tmp_path / f"retained-create-{ordinal}"
-            directory.mkdir()
+            directory.mkdir(mode=0o700)
             recorder = LifecycleRecorder(initializing=True)
             operation = JournalValidationSession.open_retained.__func__
             metadata = 32768 + 2 * octets((source.binding.to_json(), str(regime[4])))
@@ -479,6 +643,7 @@ def constructor_samples(
                         catalog=catalog,
                         on_storage_close=recorder.callback(partial(callback_calls.append, 1)),
                         on_storage_open=recorder.retention_callback(retained_handles.append),
+                        construction=journal_constructions.retain(),
                     ),
                 )
                 samples.append(sample)
@@ -501,7 +666,7 @@ def constructor_samples(
             assert (directory / "snapshot.sqlite3").is_file()
 
 
-def replacement_samples(catalog, cases, *, samples):
+def replacement_samples(catalog, cases, *, samples, journal_constructions):
     seen = set()
     for case in cases:
         if case["mode"] != "retained":
@@ -511,7 +676,12 @@ def replacement_samples(catalog, cases, *, samples):
             continue
         seen.add(key)
         recorder = LifecycleRecorder()
-        with recorder.kernel(), session_fixture(case, catalog, cold=True) as previous:
+        with (
+            recorder.kernel(),
+            session_fixture(
+                case, catalog, cold=True, journal_constructions=journal_constructions
+            ) as previous,
+        ):
             directory = previous._store._storage.directory
             original = snapshot(previous._store.db)
             before = previous._ledger.load()
@@ -529,6 +699,7 @@ def replacement_samples(catalog, cases, *, samples):
                     attempt_id=ATTEMPT,
                     worker_epoch=epoch,
                     catalog=catalog,
+                    construction=journal_constructions.retain(),
                 )
             ) as oracle:
                 expected = snapshot(oracle._store.db)
@@ -556,6 +727,7 @@ def replacement_samples(catalog, cases, *, samples):
                         attempt_id=ATTEMPT,
                         worker_epoch=epoch,
                         catalog=catalog,
+                        construction=journal_constructions.retain(),
                     )
                 ),
             )
@@ -582,14 +754,19 @@ def replacement_samples(catalog, cases, *, samples):
     assert seen
 
 
-def close_samples(catalog, cases, *, samples):
+def close_samples(catalog, cases, *, samples, journal_constructions):
     selected = {}
     for case in cases:
         key = case["mode"], case["regime"], case["key"], case["binding"].source_sha256
         selected.setdefault(key, case)
     for case in selected.values():
         recorder = LifecycleRecorder()
-        with recorder.kernel(), session_fixture(case, catalog, cold=False) as session:
+        with (
+            recorder.kernel(),
+            session_fixture(
+                case, catalog, cold=False, journal_constructions=journal_constructions
+            ) as session,
+        ):
             storage = session._store._storage
             assert storage._readers == 1
             directory = storage.directory
@@ -606,7 +783,7 @@ def close_samples(catalog, cases, *, samples):
             assert all(value == 0 for value in again["metrics"].values())
 
 
-def reader_lifetime_samples(tmp_path, catalog, build, *, samples):
+def reader_lifetime_samples(tmp_path, catalog, build, *, samples, journal_constructions):
     case = build(REGIMES[0])
     source = finite_source({**case, "regime": REGIMES[0]}, catalog, window=65536)
     for retained in (False, True):
@@ -616,7 +793,7 @@ def reader_lifetime_samples(tmp_path, catalog, build, *, samples):
             with recorder.kernel():
                 if retained:
                     directory = tmp_path / f"reader-lease-{readers}"
-                    directory.mkdir()
+                    directory.mkdir(mode=0o700)
                     session = JournalValidationSession.open_retained(
                         directory,
                         source,
@@ -625,6 +802,7 @@ def reader_lifetime_samples(tmp_path, catalog, build, *, samples):
                         create=True,
                         catalog=catalog,
                         on_storage_close=recorder.callback(partial(released.append, 1)),
+                        construction=journal_constructions.retain(),
                     )
                 else:
                     session = JournalValidationSession(
@@ -676,11 +854,18 @@ def reader_lifetime_samples(tmp_path, catalog, build, *, samples):
     operation="riverhog_provenance.journal_session.JournalValidationSession.__init__",
 )
 def test_actual_native_session_construction(
-    tmp_path, catalog, admission_histories, record_property
+    tmp_path, catalog, admission_histories, record_property, *, journal_constructions
 ):
     samples = []
     record_property("growth_samples", samples)
-    constructor_samples(tmp_path, catalog, admission_histories, samples=samples, retained=False)
+    constructor_samples(
+        tmp_path,
+        catalog,
+        admission_histories,
+        samples=samples,
+        retained=False,
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -689,11 +874,18 @@ def test_actual_native_session_construction(
     operation="riverhog_provenance.journal_session.JournalValidationSession.open_retained",
 )
 def test_actual_native_retained_session_construction(
-    tmp_path, catalog, admission_histories, record_property
+    tmp_path, catalog, admission_histories, record_property, *, journal_constructions
 ):
     samples = []
     record_property("growth_samples", samples)
-    constructor_samples(tmp_path, catalog, admission_histories, samples=samples, stream=False)
+    constructor_samples(
+        tmp_path,
+        catalog,
+        admission_histories,
+        samples=samples,
+        stream=False,
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -701,11 +893,15 @@ def test_actual_native_retained_session_construction(
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_provenance.journal_session.JournalValidationSession.open_retained",
 )
-def test_actual_native_session_replacement(catalog, native_session_checkpoints, record_property):
+def test_actual_native_session_replacement(
+    catalog, native_session_checkpoints, record_property, *, journal_constructions
+):
     samples = []
     record_property("growth_samples", samples)
     _, cases = native_session_checkpoints
-    replacement_samples(catalog, cases, samples=samples)
+    replacement_samples(
+        catalog, cases, samples=samples, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -713,11 +909,13 @@ def test_actual_native_session_replacement(catalog, native_session_checkpoints, 
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_provenance.journal_session.JournalValidationSession.close",
 )
-def test_actual_native_session_close(catalog, native_session_checkpoints, record_property):
+def test_actual_native_session_close(
+    catalog, native_session_checkpoints, record_property, *, journal_constructions
+):
     samples = []
     record_property("growth_samples", samples)
     _, cases = native_session_checkpoints
-    close_samples(catalog, cases, samples=samples)
+    close_samples(catalog, cases, samples=samples, journal_constructions=journal_constructions)
 
 
 @pytest.mark.growth_witness(
@@ -726,8 +924,14 @@ def test_actual_native_session_close(catalog, native_session_checkpoints, record
     operation="riverhog_provenance.journal_session.JournalValidationSession.close",
 )
 def test_actual_native_session_reader_lifetimes(
-    tmp_path, catalog, admission_histories, record_property
+    tmp_path, catalog, admission_histories, record_property, *, journal_constructions
 ):
     samples = []
     record_property("growth_samples", samples)
-    reader_lifetime_samples(tmp_path, catalog, admission_histories, samples=samples)
+    reader_lifetime_samples(
+        tmp_path,
+        catalog,
+        admission_histories,
+        samples=samples,
+        journal_constructions=journal_constructions,
+    )

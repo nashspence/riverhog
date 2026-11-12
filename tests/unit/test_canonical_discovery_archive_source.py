@@ -35,8 +35,15 @@ def forbid_scan(monkeypatch, source):
         monkeypatch.setattr(source.reader, name, forbidden)
 
 
-def test_original_decimal_offset_index_seeks_boundaries_and_eof(case, qualified, original):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+def test_original_decimal_offset_index_seeks_boundaries_and_eof(
+    case, qualified, original, *, journal_constructions
+):
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             source = source_for(work, qualified)
@@ -55,9 +62,14 @@ def test_original_decimal_offset_index_seeks_boundaries_and_eof(case, qualified,
 
 
 def test_authentic_short_windows_and_exact_reads_feed_native_without_rescanning(
-    case, qualified, original, monkeypatch
+    case, qualified, original, monkeypatch, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             source = source_for(work, qualified)
@@ -81,9 +93,14 @@ def test_authentic_short_windows_and_exact_reads_feed_native_without_rescanning(
 
 
 def test_one_payload_cache_stays_current_and_never_reloads_small_warm_windows(
-    case, qualified, original, monkeypatch
+    case, qualified, original, monkeypatch, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             source = source_for(work, qualified)
@@ -109,8 +126,15 @@ def test_one_payload_cache_stays_current_and_never_reloads_small_warm_windows(
 
 
 @pytest.mark.parametrize("damage", ["worker", "header", "admission", "file", "lease"])
-def test_cached_payload_cannot_replace_live_original_custody(case, qualified, monkeypatch, damage):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+def test_cached_payload_cannot_replace_live_original_custody(
+    case, qualified, monkeypatch, damage, *, journal_constructions
+):
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         disposition = (
             nullcontext() if damage in ("header", "admission") else pytest.raises(StaleArchiveTask)
@@ -142,8 +166,15 @@ def test_cached_payload_cannot_replace_live_original_custody(case, qualified, mo
         app.close()
 
 
-def test_changed_source_during_payload_read_is_not_cached_or_returned(case, qualified, monkeypatch):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+def test_changed_source_during_payload_read_is_not_cached_or_returned(
+    case, qualified, monkeypatch, *, journal_constructions
+):
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             source = source_for(work, qualified)
@@ -166,8 +197,15 @@ def test_changed_source_during_payload_read_is_not_cached_or_returned(case, qual
 
 
 @pytest.mark.parametrize("field", ["offset", "digest", "journal"])
-def test_index_and_original_descriptor_disagreement_is_rejected(case, qualified, field):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+def test_index_and_original_descriptor_disagreement_is_rejected(
+    case, qualified, field, *, journal_constructions
+):
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             source = source_for(work, qualified)
@@ -192,8 +230,15 @@ def test_index_and_original_descriptor_disagreement_is_rejected(case, qualified,
 
 
 @pytest.mark.parametrize("range_", [(-1, 1), (True, 1), (0, -1), (0, True), (100000, 1)])
-def test_invalid_ranges_do_not_read_payload(case, qualified, monkeypatch, range_):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+def test_invalid_ranges_do_not_read_payload(
+    case, qualified, monkeypatch, range_, *, journal_constructions
+):
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             source = source_for(work, qualified)
@@ -210,8 +255,15 @@ def test_invalid_ranges_do_not_read_payload(case, qualified, monkeypatch, range_
         app.close()
 
 
-def test_payload_fixity_failure_is_never_cached(case, qualified, monkeypatch):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+def test_payload_fixity_failure_is_never_cached(
+    case, qualified, monkeypatch, *, journal_constructions
+):
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             source = source_for(work, qualified)
@@ -233,11 +285,16 @@ def test_payload_fixity_failure_is_never_cached(case, qualified, monkeypatch):
 
 @pytest.mark.parametrize("operation", ["read_window", "read_exact"])
 def test_worker_loss_during_payload_acquisition_never_returns_bytes(
-    case, qualified, monkeypatch, operation
+    case, qualified, monkeypatch, operation, *, journal_constructions
 ):
     from riverhog_core import canonical_discovery_corpus_jobs as jobs
 
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with pytest.raises(StaleArchiveTask), unit(app, case) as work:
             source = source_for(work, qualified)

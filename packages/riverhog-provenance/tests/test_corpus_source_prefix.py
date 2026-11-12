@@ -68,15 +68,17 @@ def source_for(summary, catalog, anchors):
 
 @pytest.mark.parametrize("retained", [False, True])
 def test_exact_prefix_ingestion_excludes_future_documentary_obligations(
-    tmp_path, future_reference, catalog, monkeypatch, retained
+    tmp_path, future_reference, catalog, monkeypatch, retained, *, journal_constructions
 ):
     with validate_journal(future_reference, catalog=catalog) as summary:
         anchor = HistoryJournalAnchor.from_mapping(summary.anchor_at(0))
         owner = source_for(summary, catalog, [anchor])
         path = tmp_path / "corpus"
-        path.mkdir()
+        path.mkdir(mode=0o700)
         corpus = (
-            open_workspace(path, owner, create=True) if retained else CanonicalCorpusValidator()
+            open_workspace(path, owner, create=True, journal_constructions=journal_constructions)
+            if retained
+            else CanonicalCorpusValidator()
         )
         try:
             with source_reads(monkeypatch) as reads:
@@ -88,7 +90,9 @@ def test_exact_prefix_ingestion_excludes_future_documentary_obligations(
             assert progress.source_octets == anchor.prefix_bytes
             if retained:
                 corpus.close()
-                corpus = open_workspace(path, owner, epoch=1)
+                corpus = open_workspace(
+                    path, owner, epoch=1, journal_constructions=journal_constructions
+                )
             with source_reads(monkeypatch) as reads:
                 assert corpus.advance_source(summary, through=0).complete
             assert reads == []
@@ -110,14 +114,16 @@ def test_exact_prefix_ingestion_excludes_future_documentary_obligations(
 
 
 def test_prefix_manifest_rejects_implicit_head_before_any_frame_is_loaded(
-    tmp_path, future_reference, catalog, monkeypatch
+    tmp_path, future_reference, catalog, monkeypatch, *, journal_constructions
 ):
     with validate_journal(future_reference, catalog=catalog) as summary:
         anchor = HistoryJournalAnchor.from_mapping(summary.anchor_at(0))
         owner = source_for(summary, catalog, [anchor])
         path = tmp_path / "corpus"
-        path.mkdir()
-        with open_workspace(path, owner, create=True) as corpus:
+        path.mkdir(mode=0o700)
+        with open_workspace(
+            path, owner, create=True, journal_constructions=journal_constructions
+        ) as corpus:
             with source_reads(monkeypatch) as reads:
                 with pytest.raises(IncompleteSourceError, match="manifest"):
                     corpus.advance_source(summary)
@@ -126,16 +132,20 @@ def test_prefix_manifest_rejects_implicit_head_before_any_frame_is_loaded(
 
 
 def test_requested_prefix_extension_resumes_without_replaying_confirmed_frames(
-    tmp_path, future_reference, catalog, monkeypatch
+    tmp_path, future_reference, catalog, monkeypatch, *, journal_constructions
 ):
     with validate_journal(future_reference, catalog=catalog) as summary:
         anchors = [HistoryJournalAnchor.from_mapping(summary.anchor_at(i)) for i in (0, 1)]
         owner = source_for(summary, catalog, anchors)
         path = tmp_path / "corpus"
-        path.mkdir()
-        with open_workspace(path, owner, create=True) as corpus:
+        path.mkdir(mode=0o700)
+        with open_workspace(
+            path, owner, create=True, journal_constructions=journal_constructions
+        ) as corpus:
             assert corpus.advance_source(summary, through=0).complete
-        with open_workspace(path, owner, epoch=1) as corpus:
+        with open_workspace(
+            path, owner, epoch=1, journal_constructions=journal_constructions
+        ) as corpus:
             with source_reads(monkeypatch) as reads:
                 progress = corpus.advance_source(summary, through=1, frame_budget=1)
             assert [position for position, _ in reads] == [1]

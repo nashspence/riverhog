@@ -7,6 +7,7 @@ from riverhog_core.services import upload_journal_result as owner
 from riverhog_provenance import JournalValidationSession, open_retained_journal_result
 from sqlalchemy import update
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_upload_journal_result import JOURNAL, Job, Journal, sealed, source_owner
 
 
@@ -16,8 +17,16 @@ def prepare(session):
     )
 
 
-def test_metadata_admission_detaches_original_binding_before_native_opening(tmp_path, monkeypatch):
-    with sealed(tmp_path) as (engine, factory, root, job, raw):
+def test_metadata_admission_detaches_original_binding_before_native_opening(
+    tmp_path, monkeypatch, *, journal_constructions
+):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        engine,
+        factory,
+        root,
+        job,
+        raw,
+    ):
 
         def forbidden(*args, **kwargs):
             pytest.fail("catalog-only admission opened Native storage or read source bytes")
@@ -55,10 +64,8 @@ def test_metadata_admission_detaches_original_binding_before_native_opening(tmp_
             def read_exact(self, *args):
                 forbidden()
 
-        from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
-
         # Native storage is admitted after the metadata transaction has ended.
-        with lease_journal_validation_workspace(root, job.workspace_id, shared=True) as directory:
+        with leased_workspace(root, job.workspace_id, shared=True) as directory:
             assert directory is not None and engine.pool.checkedout() == 0
             openings = []
             with open_retained_journal_result(
@@ -68,6 +75,7 @@ def test_metadata_admission_detaches_original_binding_before_native_opening(tmp_
                 certificates=admitted.certificates,
                 catalog=source_owner.admission_provenance_catalog(),
                 on_storage_open=openings.append,
+                construction=journal_constructions.retain(),
             ) as result:
                 assert result.anchor == admitted.anchor
                 assert result.journal_sha256 == admitted.binding.source_sha256
@@ -76,8 +84,16 @@ def test_metadata_admission_detaches_original_binding_before_native_opening(tmp_
 
 
 @pytest.mark.parametrize("changed", ["source", "job", "missing"])
-def test_detached_admission_checks_live_authority_in_a_new_short_transaction(tmp_path, changed):
-    with sealed(tmp_path) as (_, factory, _root, job, _raw):
+def test_detached_admission_checks_live_authority_in_a_new_short_transaction(
+    tmp_path, changed, *, journal_constructions
+):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        _,
+        factory,
+        _root,
+        job,
+        _raw,
+    ):
         with factory() as session, session.begin():
             admitted = prepare(session)
         with factory() as session, session.begin():
@@ -98,8 +114,16 @@ def test_detached_admission_checks_live_authority_in_a_new_short_transaction(tmp
             assert not admitted.verify_current(session)
 
 
-def test_catalog_only_admission_does_not_autoflush_unrelated_pending_rows(tmp_path):
-    with sealed(tmp_path) as (_, factory, _root, _job, _raw):
+def test_catalog_only_admission_does_not_autoflush_unrelated_pending_rows(
+    tmp_path, *, journal_constructions
+):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        _,
+        factory,
+        _root,
+        _job,
+        _raw,
+    ):
         with factory() as session, session.begin():
             pending = Job(
                 workspace_id="invalid pending caller fixture",
@@ -115,8 +139,16 @@ def test_catalog_only_admission_does_not_autoflush_unrelated_pending_rows(tmp_pa
             session.expunge(pending)
 
 
-def test_prepare_requires_the_callers_current_catalog_transaction(tmp_path):
-    with sealed(tmp_path) as (_, factory, _root, _job, _raw):
+def test_prepare_requires_the_callers_current_catalog_transaction(
+    tmp_path, *, journal_constructions
+):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        _,
+        factory,
+        _root,
+        _job,
+        _raw,
+    ):
         with factory() as session:
             with pytest.raises(RuntimeError, match="transaction"):
                 prepare(session)

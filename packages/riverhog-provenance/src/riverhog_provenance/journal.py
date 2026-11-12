@@ -526,6 +526,11 @@ class JournalSummary:
     assertion_entries: Mapping[str, dict[str, str]]
     _store: JournalStore | None = field(default=None, init=False, repr=False, compare=False)
 
+    @property
+    def storage_received(self) -> bool:
+        """The original shared storage confirmed every final-reader receiving phase."""
+        return self._store is None or self._store.storage_received
+
     def close(self) -> None:
         """Release this owned handle; its views borrow the same handle's lifetime."""
         if self._store is not None:

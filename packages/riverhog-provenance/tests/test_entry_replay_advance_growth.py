@@ -27,6 +27,7 @@ from test_entry_replay_child_growth import (
     TRAJECTORIES,
     ChildConnection,
     ChildCursor,
+    ChildRows,
     dimensions_for,
     node_kernels,
     trajectories,
@@ -47,7 +48,7 @@ from test_semantic_edge import observed_work
 from test_semantic_owner import snapshot
 
 
-class AdvanceCursor(ChildCursor):
+class AdvanceRows(ChildRows):
     def record(self, row):
         result = super().record(row)
         if row is not None:
@@ -58,6 +59,10 @@ class AdvanceCursor(ChildCursor):
                 self.connection.metrics["returned_metadata_octets"] -= size
                 self.connection.metrics["source_payload_octets"] += size
         return result
+
+
+class AdvanceCursor(AdvanceRows, ChildCursor):
+    _row_observer = AdvanceRows
 
 
 class AdvanceConnection(ChildConnection):

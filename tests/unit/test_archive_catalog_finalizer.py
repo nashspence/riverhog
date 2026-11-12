@@ -324,3 +324,54 @@ def test_registered_catalog_result_survives_original_workflow_feedback_loss(
         assert service._archive_finalizers.retire_idle(
             context.key, target_incarnation=context.target
         )
+
+
+@pytest.mark.parametrize("after", [False, True])
+def test_original_catalog_turn_retains_native_receiving_after_committed_body(
+    tmp_path, monkeypatch, after
+):
+    from riverhog_provenance import validate_journal
+
+    from tests.unit.test_journal_summary_consumers import source
+
+    with _original(tmp_path, monkeypatch, "member-histories") as (case, claim, owner):
+        actual = owner._advance
+        bodies, callbacks, openings = [], [], []
+
+        def receive():
+            callbacks.append(1)
+            if len(callbacks) == 1 and not after:
+                raise InterruptedError("original Native final callback is unconfirmed")
+            openings[-1].lease.close()
+            if len(callbacks) == 1:
+                raise InterruptedError("original Native final callback reply was lost")
+
+        def advance(session, upload):
+            bodies.append(owner._cursor(upload))
+            original = owner.result_resources.retain()
+            openings.append(original)
+            original.lease.root.acquire(tmp_path)
+            original.result = validate_journal(source())
+            original.result._store._storage.on_close = receive
+            return actual(session, upload)
+
+        owner._advance = advance
+        try:
+            with pytest.raises(InterruptedError, match="Native final callback"):
+                owner.advance()
+            assert len(bodies) == len(openings) == len(callbacks) == 1
+            original = openings[0]
+            assert owner.has_pending and owner.result_resources.pending
+            assert not original.result.storage_received and not owner._completed
+            assert original.lease.received is after
+            assert original.lease.root.owner.metrics["close_calls"] == int(after)
+            committed = _cursor(case, owner)
+            assert committed == owner._after and committed != owner._before
+            assert owner.advance() is True
+            assert len(bodies) == 1 and len(callbacks) == 2
+            assert _cursor(case, owner) == committed
+            assert not owner.result_resources.pending and not owner.has_pending
+            assert original.result is None and original.lease.received
+            assert original.lease.root.owner.metrics["close_calls"] == 1
+        finally:
+            owner.result_resources.close()

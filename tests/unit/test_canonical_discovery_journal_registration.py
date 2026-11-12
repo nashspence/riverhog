@@ -10,10 +10,10 @@ from riverhog_core.canonical_discovery_archive_source import ArchiveJournalSourc
 from riverhog_core.canonical_discovery_archive_work import StaleArchiveTask
 from riverhog_core.canonical_discovery_journal_source import DiscoveryJournalSource
 from riverhog_core.canonical_discovery_metadata import DiscoveryMetadata
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_provenance import JournalValidationSession
 from riverhog_provenance_contracts import ContractCatalog
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_journal_source import source_case
 
 DIRECTORY = "a" * 32
@@ -127,14 +127,16 @@ def test_mutation_requires_transaction_and_confirmation_cannot_select_another_di
                 owner.confirm_discovery_journal(db, key, work, selected)
 
 
-def test_actual_native_open_confirmation_does_not_grant_semantic_acceptance(tmp_path):
+def test_actual_native_open_confirmation_does_not_grant_semantic_acceptance(
+    tmp_path, *, journal_constructions
+):
     catalog = ContractCatalog()
     with source_case(tmp_path / "native", b"\x1e{}\n", catalog=catalog) as (case, work, original):
         binding = replace(original.binding, directory_id=DIRECTORY)
         selected = register(case, work, binding)
         source = DiscoveryJournalSource(work, directory_id=selected.binding.directory_id)
         root = case.metadata.custody.directory / "journals"
-        with lease_journal_validation_workspace(root, DIRECTORY, create=True) as directory:
+        with leased_workspace(root, DIRECTORY, create=True) as directory:
             assert directory is not None and read(case, work) == selected
             with JournalValidationSession.open_retained(
                 directory,
@@ -143,6 +145,7 @@ def test_actual_native_open_confirmation_does_not_grant_semantic_acceptance(tmp_
                 worker_epoch=case.metadata.job.worker_epoch,
                 create=True,
                 catalog=catalog,
+                construction=journal_constructions.retain(),
             ) as native:
                 with case.metadata.transaction() as (db, key):
                     assert owner.confirm_discovery_journal(db, key, work, selected)

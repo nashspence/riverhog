@@ -6,7 +6,8 @@ import sys
 import threading
 
 import pytest
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+
+from tests.support.validation_workspace import leased_workspace
 
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX root-inode creation custody")
 
@@ -28,7 +29,7 @@ def test_busy_root_inode_does_not_create_a_marker_or_selected_directory(tmp_path
     root.mkdir(mode=0o700)
     descriptor = lock_root(root)
     try:
-        with lease_journal_validation_workspace(
+        with leased_workspace(
             root, "a" * 32, create=True, creation_current=lambda: True
         ) as selected:
             assert selected is None
@@ -36,21 +37,17 @@ def test_busy_root_inode_does_not_create_a_marker_or_selected_directory(tmp_path
             assert not (root / ("a" * 32)).exists()
     finally:
         os.close(descriptor)
-    with lease_journal_validation_workspace(
-        root, "a" * 32, create=True, creation_current=lambda: True
-    ) as selected:
+    with leased_workspace(root, "a" * 32, create=True, creation_current=lambda: True) as selected:
         assert selected == root / ("a" * 32)
 
 
 def test_successful_body_releases_root_inode_and_allows_an_independent_sibling(tmp_path):
     root = tmp_path / "owned"
-    with lease_journal_validation_workspace(
-        root, "a" * 32, create=True, creation_current=lambda: True
-    ) as first:
+    with leased_workspace(root, "a" * 32, create=True, creation_current=lambda: True) as first:
         assert first is not None
         descriptor = lock_root(root)
         os.close(descriptor)
-        with lease_journal_validation_workspace(
+        with leased_workspace(
             root, "b" * 32, create=True, creation_current=lambda: True
         ) as sibling:
             assert sibling == root / ("b" * 32)
@@ -66,7 +63,7 @@ def test_busy_marker_body_releases_root_inode_before_returning_to_caller(tmp_pat
     descriptor = os.open(marker, os.O_RDWR | os.O_NOFOLLOW)
     try:
         fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        with lease_journal_validation_workspace(
+        with leased_workspace(
             root, "a" * 32, create=True, creation_current=lambda: True
         ) as selected:
             assert selected is None
@@ -78,9 +75,7 @@ def test_busy_marker_body_releases_root_inode_before_returning_to_caller(tmp_pat
 
 def test_stale_creation_releases_root_inode_and_never_creates_selected_namespace(tmp_path):
     root = tmp_path / "owned"
-    with lease_journal_validation_workspace(
-        root, "a" * 32, create=True, creation_current=lambda: False
-    ) as selected:
+    with leased_workspace(root, "a" * 32, create=True, creation_current=lambda: False) as selected:
         assert selected is None
         independent = lock_root(root)
         os.close(independent)
@@ -105,7 +100,7 @@ def test_actual_creator_before_marker_excludes_absence_receiver_until_stopped(
 
     def writer():
         try:
-            with lease_journal_validation_workspace(
+            with leased_workspace(
                 root, "a" * 32, create=True, creation_current=lambda: current[0]
             ) as selected:
                 outcomes.append(selected)
@@ -139,13 +134,13 @@ def test_actual_process_exit_before_marker_releases_root_inode_without_creating_
     root = tmp_path / "owned"
     script = """import os,sys
 from pathlib import Path
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+from tests.support.validation_workspace import leased_workspace
 actual=os.open
 def interrupted(name,*args,**kwargs):
     if name==".coordinator":os._exit(86)
     return actual(name,*args,**kwargs)
 os.open=interrupted
-with lease_journal_validation_workspace(
+with leased_workspace(
     Path(sys.argv[1]),"a"*32,create=True,creation_current=lambda:True
 ):
     raise AssertionError("interrupted creator entered body")
@@ -169,18 +164,14 @@ def test_known_database_or_sidecar_with_missing_lease_never_repairs_custody(
 
     root = tmp_path / "owned"
     identity = "a" * 32
-    with lease_journal_validation_workspace(
-        root, identity, create=True, creation_current=lambda: True
-    ) as selected:
+    with leased_workspace(root, identity, create=True, creation_current=lambda: True) as selected:
         assert selected is not None
     (selected / ".lease").unlink()
     data = selected / (database + suffix)
     data.write_bytes(b"retained-data")
     data.chmod(0o600)
     with pytest.raises(LostJournalValidationWorkspace, match="lease was lost"):
-        with lease_journal_validation_workspace(
-            root, identity, create=True, creation_current=lambda: True
-        ):
+        with leased_workspace(root, identity, create=True, creation_current=lambda: True):
             pytest.fail("known retained data acquired a repaired lease")
     assert not (selected / ".lease").exists()
     assert data.read_bytes() == b"retained-data"

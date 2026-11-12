@@ -14,6 +14,8 @@ from riverhog_growth_contracts import (
     declare_growth,
 )
 
+from .journal_construction import JournalConstruction
+
 if TYPE_CHECKING:
     from .journal_store import JournalStore
 
@@ -79,10 +81,13 @@ class JournalResultOpening:
     The early callback retains this object before any database acquisition.
     Failure keeps partial Native storage here until close confirms. Success
     transfers custody to the returned result and closes this empty opening.
+    Closing during the original constructor refuses until that actual call
+    returns; even an opening without storage can retain its reserved ticket.
     This handle exposes no result, query, replay or acceptance authority.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, construction: JournalConstruction) -> None:
+        self.construction = construction
         self._store: JournalStore | None = None
         self._closed = False
 
@@ -93,6 +98,14 @@ class JournalResultOpening:
     def _retain(self, store: JournalStore) -> None:
         self._store = store
 
+    def _receive_storage(self) -> None:
+        """Constructor-local cleanup; retain the frame until its call returns."""
+        self.construction.require_active()
+        if self._store is not None:
+            self._store.close()
+            if not self._store.storage_received:
+                raise BlockingIOError("independent Native result readers still retain storage")
+
     def _transfer(self) -> None:
         self._store = None
         self._closed = True
@@ -101,7 +114,7 @@ class JournalResultOpening:
     def close(self) -> None:
         if self._closed:
             return
-        if self._store is not None:
-            self._store.close()
-            self._store = None
+        if not self.construction.close_step():
+            raise BlockingIOError("original result construction has not received")
+        self._store = None
         self._closed = True

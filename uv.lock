@@ -3113,6 +3113,7 @@ source = { editable = "packages/riverhog-provenance" }
 dependencies = [
     { name = "jsonschema" },
     { name = "release-documentation-lib" },
+    { name = "retained-resource" },
     { name = "riverhog-archive-contracts" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-growth-contracts" },
@@ -3135,6 +3136,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8,<10" },
     { name = "rdflib", marker = "extra == 'test'", specifier = ">=7,<8" },
     { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "retained-resource", editable = "packages/retained-resource" },
     { name = "riverhog-archive-contracts", editable = "packages/riverhog-archive-contracts" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-growth-contracts", editable = "packages/riverhog-growth-contracts" },
@@ -3193,6 +3195,7 @@ dependencies = [
     { name = "riverhog-storage-adapter-support" },
     { name = "sha256-continuation" },
     { name = "sqlalchemy" },
+    { name = "sqlite-admission" },
     { name = "starlette" },
     { name = "state-schema" },
     { name = "time-formats" },
@@ -3223,6 +3226,7 @@ requires-dist = [
     { name = "riverhog-storage-adapter-support", editable = "packages/riverhog-storage-adapter-support" },
     { name = "sha256-continuation", editable = "packages/sha256-continuation" },
     { name = "sqlalchemy", specifier = ">=2.0,<2.1" },
+    { name = "sqlite-admission", editable = "packages/sqlite-admission" },
     { name = "starlette", specifier = ">=0.37,<2.0" },
     { name = "state-schema", editable = "packages/state-schema" },
     { name = "time-formats", editable = "packages/time-formats" },
@@ -4233,11 +4237,13 @@ version = "0.1.0"
 source = { editable = "packages/workspace-reclamation" }
 dependencies = [
     { name = "release-documentation-lib" },
+    { name = "retained-resource" },
     { name = "riverhog-growth-contracts" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "release-documentation-lib", editable = "packages/release-documentation-lib" },
+    { name = "retained-resource", editable = "packages/retained-resource" },
     { name = "riverhog-growth-contracts", editable = "packages/riverhog-growth-contracts" },
 ]

@@ -24,7 +24,6 @@ from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     _private_directory,
 )
-from riverhog_core.retained_workspace_handles import _close_descriptor
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,25 +52,23 @@ def _creation_prefix(
     parent = metadata._custody._owner
     with metadata._child_handles as resources:
         try:
-            root_fd = os.open(
-                "journals", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent
+            root_owner = resources.acquire(
+                "directory", "journals", parent=metadata.retirement.namespace
             )
+            root_fd = root_owner.fileno()
         except FileNotFoundError:
             os.fsync(parent)
             return "absent"
-        resources.callback(_close_descriptor, root_fd)
         _private_directory(root_fd)
         try:
-            child = os.open(
-                selected.binding.directory_id,
-                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                dir_fd=root_fd,
+            child_owner = resources.acquire(
+                "directory", selected.binding.directory_id, parent=root_owner
             )
+            child = child_owner.fileno()
         except FileNotFoundError:
             os.fsync(root_fd)
             _same_entry("journals", parent, root_fd)
             return "absent"
-        resources.callback(_close_descriptor, child)
         _private_directory(child)
         try:
             os.stat(".lease", dir_fd=child, follow_symlinks=False)
@@ -102,10 +99,12 @@ def _directory_missing(metadata: RetiredDiscoveryMetadata) -> bool:
     parent = metadata._custody._owner
     with metadata._child_handles as resources:
         try:
-            root = os.open("journals", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+            root_owner = resources.acquire(
+                "directory", "journals", parent=metadata.retirement.namespace
+            )
+            root = root_owner.fileno()
         except FileNotFoundError:
             return True
-        resources.callback(_close_descriptor, root)
         _private_directory(root)
         assert metadata.job.reclamation_directory_id is not None
         try:
@@ -214,7 +213,11 @@ def reclaim_discovery_child(
                 _advance(metadata, "child_directory", selected), True
             )
         _selected_current(metadata, selected, child)
-        progress = reclaim_retired_journal_workspace(child.directory, octet_budget=octet_budget)
+        receiver = metadata._file_receiver()
+        metadata._child_handles.callback(receiver.close)
+        progress = reclaim_retired_journal_workspace(
+            child.directory, receiver=receiver, octet_budget=octet_budget
+        )
         _selected_current(metadata, selected, child)
         successor = job
         if progress.files_reclaimed:

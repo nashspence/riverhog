@@ -7,12 +7,12 @@ import pytest
 from riverhog_core import canonical_discovery_child_reclamation as owner
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Job
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
-    lease_journal_validation_workspace,
 )
 
+from tests.support.retirement_namespace import lease_retiring_journal_workspace
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_metadata import owned
 from tests.unit.test_canonical_discovery_retired_metadata import case as case
 from tests.unit.test_canonical_discovery_retired_metadata import (
@@ -57,7 +57,7 @@ def prepare_child(case, *, prefix="data", confirmed=True, extent=7, count=2):
             if prefix != "absent-root":
                 if prefix in {"root", "root-control", "directory"}:
                     with pytest.raises(OSError, match="creation interrupted"):
-                        with lease_journal_validation_workspace(
+                        with leased_workspace(
                             root,
                             bindings[0].directory_id,
                             create=True,
@@ -65,7 +65,7 @@ def prepare_child(case, *, prefix="data", confirmed=True, extent=7, count=2):
                         ):
                             pytest.fail("injected actual creation prefix unexpectedly completed")
                 else:
-                    with lease_journal_validation_workspace(
+                    with leased_workspace(
                         root,
                         bindings[0].directory_id,
                         create=True,
@@ -102,12 +102,16 @@ def directory_job(case, job, *, budget=64):
     pytest.fail("small exact child did not reach its directory phase")
 
 
-def test_actual_frozen_native_borrower_prevents_parent_reclamation_then_allows_same_child(tmp_path):
+def test_actual_frozen_native_borrower_prevents_parent_reclamation_then_allows_same_child(
+    tmp_path, *, journal_constructions
+):
     from tests.unit.test_discovery_journal_owner import finish, prepared, quantum
 
     retained = []
     try:
-        with prepared(tmp_path / "actual-borrower") as case:
+        with prepared(
+            tmp_path / "actual-borrower", journal_constructions=journal_constructions
+        ) as case:
             with quantum(case) as (work, framing):
                 native = work.journal(framing)
                 finish(native)
@@ -215,7 +219,7 @@ def test_unclassified_entry_blocks_namespace_but_preserves_selected_routing(case
 def test_busy_original_child_is_prompt_and_does_not_change_extents_or_catalog(case):
     job, path, bindings = prepare_child(case)
     root = path / "journals"
-    with lease_journal_validation_workspace(root, bindings[0].directory_id, shared=True) as held:
+    with leased_workspace(root, bindings[0].directory_id, shared=True) as held:
         assert held is not None
         result = step(case, job)
         assert not result.advanced and result.job == job

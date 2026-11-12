@@ -147,14 +147,18 @@ def test_prepared_binding_is_idempotent_and_accepts_no_semantics(tmp_path):
 
 @pytest.mark.parametrize("phase", ["reopen", "compute", "publish"])
 def test_catalog_replacement_cannot_reuse_replay_binding_or_publish_anchor(
-    tmp_path, monkeypatch, phase
+    tmp_path, monkeypatch, phase, *, journal_constructions
 ):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work = ready(factory)
         assert replay.prepare_upload_journal_replay(
             factory, work, catalog=owner.admission_provenance_catalog()
         )
-        outcome = native_outcome(factory, work) if phase == "publish" else None
+        outcome = (
+            native_outcome(factory, work, journal_constructions=journal_constructions)
+            if phase == "publish"
+            else None
+        )
         monkeypatch.setattr(
             owner, "admission_provenance_catalog", lambda: ContractCatalog((pack("replacement"),))
         )
@@ -164,7 +168,7 @@ def test_catalog_replacement_cannot_reuse_replay_binding_or_publish_anchor(
                     factory, work, catalog=owner.admission_provenance_catalog()
                 )
             elif phase == "compute":
-                native_outcome(factory, work)
+                native_outcome(factory, work, journal_constructions=journal_constructions)
             else:
                 owner._commit_upload_journal_validation(factory, work, outcome)
         assert terminal(factory)["anchor"] is None and terminal(factory)["state"] == "validating"
@@ -181,7 +185,9 @@ def test_catalog_replacement_cannot_reuse_replay_binding_or_publish_anchor(
         "require_profiles",
     ],
 )
-def test_changed_binding_fails_closed_before_native_replay(tmp_path, field):
+def test_changed_binding_fails_closed_before_native_replay(
+    tmp_path, field, *, journal_constructions
+):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work = ready(factory)
         binding = replay._binding(work, owner.admission_provenance_catalog())
@@ -201,7 +207,7 @@ def test_changed_binding_fails_closed_before_native_replay(tmp_path, field):
                 )
             )
         with pytest.raises(RuntimeError, match="retained replay inputs"):
-            native_outcome(factory, work)
+            native_outcome(factory, work, journal_constructions=journal_constructions)
         assert terminal(factory)["anchor"] is None
 
 

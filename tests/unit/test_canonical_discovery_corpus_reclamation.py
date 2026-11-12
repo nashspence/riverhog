@@ -9,12 +9,12 @@ import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_corpus_reclamation as owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Job
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
 from riverhog_core.services.discovery_validation_owner import DiscoveryValidationOwner
 from riverhog_provenance import JournalValidationCapacity
 from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 
+from tests.support.retirement_namespace import lease_retiring_journal_workspace
 from tests.unit.test_canonical_discovery_child_reclamation import current_job
 from tests.unit.test_canonical_discovery_metadata import owned
 from tests.unit.test_canonical_discovery_retired_metadata import case as case
@@ -254,12 +254,17 @@ def test_original_corpus_phase_rollback_or_committed_lost_reply(case, monkeypatc
 @pytest.mark.parametrize("storage", ("native", "core"))
 @pytest.mark.parametrize("lost_reply", (False, True))
 def test_actual_uncertain_owner_close_prevents_parent_disposal_until_received(
-    case, qualified, storage, lost_reply
+    case, qualified, storage, lost_reply, *, journal_constructions
 ):
     from tests.unit.test_canonical_discovery_corpus_source import seed
     from tests.unit.test_discovery_validation_owner import UncertainClose, unit
 
-    actor = DiscoveryValidationOwner(case.factory, case.root)
+    actor = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(actor, case) as work:
             assert work is not None
@@ -297,7 +302,7 @@ from riverhog_core.catalog_discovery_validation_models import DiscoveryValidatio
 from riverhog_core.canonical_discovery_corpus_jobs import DiscoveryJob
 from riverhog_core.canonical_discovery_retired_metadata import RetiredDiscoveryMetadata
 from riverhog_core.canonical_discovery_corpus_reclamation import reclaim_discovery_corpus
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
+from tests.support.retirement_namespace import lease_retiring_journal_workspace
 engine=create_catalog_engine(sys.argv[1]);factory=sessionmaker(engine,expire_on_commit=False)
 with factory() as session:
     job=DiscoveryJob.read(session.get(Row,sys.argv[3]))

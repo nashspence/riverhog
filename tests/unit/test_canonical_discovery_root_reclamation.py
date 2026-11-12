@@ -9,9 +9,14 @@ import sys
 import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_root_reclamation as owner
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 
+from tests.support.retained_resource import fault_native as fault_native
+from tests.support.retirement_namespace import (
+    lease_retiring_journal_workspace,
+    native_namespace_close_fault,
+)
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_reclamation import case as case
 from tests.unit.test_canonical_discovery_corpus_reclamation import (
     current_job,
@@ -47,7 +52,7 @@ def step(case, job):
         result = owner.reclaim_discovery_journals_root(metadata)
         if result.advanced:
             assert metadata._closed and metadata._db is None and metadata._descriptor is None
-            assert metadata._child_root is None and metadata._root_coordinator is None
+            assert not metadata._namespace_handles._callbacks
         return result
 
 
@@ -84,12 +89,12 @@ def test_actual_root_creation_interrupt_or_stale_callback_needs_no_repair(
             if before_control:
                 patch.setattr(os, "open", interrupted)
                 with pytest.raises(OSError, match="creation interrupted"):
-                    with lease_journal_validation_workspace(
+                    with leased_workspace(
                         path / "journals", "f" * 32, create=True, creation_current=lambda: False
                     ):
                         pytest.fail("interrupted creation entered its body")
             else:
-                with lease_journal_validation_workspace(
+                with leased_workspace(
                     path / "journals", "f" * 32, create=True, creation_current=lambda: False
                 ) as stale:
                     assert stale is None
@@ -119,7 +124,7 @@ def test_busy_actual_root_coordinator_retains_core_and_catalog_phase(case):
             result = owner.reclaim_discovery_journals_root(metadata)
             assert not result.advanced and not result.metadata_closed and result.job == job
             assert metadata.verify_current()
-            assert metadata._child_root is None and metadata._root_coordinator is None
+            assert not metadata._namespace_handles._callbacks
         assert current_job(case, job.workspace_id) == job
         assert (path / "journals" / ".coordinator").is_file()
     finally:
@@ -153,22 +158,23 @@ def test_unsafe_root_or_control_never_grants_namespace_disposal(case, damage):
 
 def test_replaced_root_descriptor_preserves_both_namespaces(case, monkeypatch):
     job, path = prepare_root(case)
-    actual = os.open
+    actual = RetainedWorkspaceResource.acquire
     original = (path / "journals").stat()
 
-    def replaced(name, *args, **kwargs):
-        descriptor = actual(name, *args, **kwargs)
-        parent = os.fstat(kwargs["dir_fd"]) if name == ".coordinator" else None
-        if parent is not None and (parent.st_dev, parent.st_ino) == (
-            original.st_dev,
-            original.st_ino,
+    def replaced(handle, name, **kwargs):
+        result = actual(handle, name, **kwargs)
+        parent = kwargs.get("parent")
+        if (
+            name == ".coordinator"
+            and parent is not None
+            and os.fstat(parent.fileno()).st_ino == original.st_ino
         ):
             (path / "journals").rename(path / "original-journals")
             (path / "journals").mkdir(mode=0o700)
-        return descriptor
+        return result
 
     with monkeypatch.context() as patch:
-        patch.setattr(os, "open", replaced)
+        patch.setattr(RetainedWorkspaceResource, "acquire", replaced)
         with pytest.raises(owner.LostJournalValidationWorkspace, match="replaced"):
             step(case, job)
     assert (path / "original-journals" / ".coordinator").is_file()
@@ -289,42 +295,41 @@ def test_actual_core_close_uncertainty_retains_parent_and_forbids_phase_advance(
     assert step(case, job).job.reclamation_phase == "metadata"
 
 
-@pytest.mark.parametrize("field", ("_root_coordinator", "_child_root"))
+@pytest.mark.parametrize(
+    "target",
+    (pytest.param("coordinator", id="_root_coordinator"), pytest.param("root", id="_child_root")),
+)
 @pytest.mark.parametrize("lost_reply", (False, True))
 def test_uncertain_namespace_close_retains_selected_handle_and_parent(
-    case, monkeypatch, field, lost_reply
+    case, monkeypatch, target, lost_reply, fault_native
 ):
+    native, _ = fault_native
     job, path = prepare_root(case)
-    actual = os.close
-    held = []
-    with retired(case, job) as metadata:
+    parent_inode = (path / "journals" if target == "coordinator" else path).stat().st_ino
+    with (
+        monkeypatch.context() as patch,
+        native_namespace_close_fault(
+            patch,
+            native,
+            parent_inode=parent_inode,
+            name=".coordinator" if target == "coordinator" else "journals",
+            after=lost_reply,
+        ) as (selected, descriptors),
+        retired(case, job) as metadata,
+    ):
         metadata.open()
-
-        def uncertain(descriptor):
-            if descriptor == getattr(metadata, field):
-                held.append(descriptor)
-                if lost_reply:
-                    actual(descriptor)
-                raise OSError("root descriptor close uncertain")
-            actual(descriptor)
-
-        with monkeypatch.context() as patch:
-            patch.setattr(os, "close", uncertain)
-            with pytest.raises(OSError, match="close uncertain"):
-                owner.reclaim_discovery_journals_root(metadata)
-        assert held == [getattr(metadata, field)] and not metadata.verify_current()
+        with pytest.raises((RuntimeError, OSError)):
+            owner.reclaim_discovery_journals_root(metadata)
+        assert len(selected) == 1 and len(descriptors) == 1
+        original = selected[0]
+        assert not metadata.verify_current() and metadata._namespace_handles._callbacks
+        assert original.owner.state == ("received" if lost_reply else "live")
         assert current_job(case, job.workspace_id) == job
         with lease_retiring_journal_workspace(case.root, job.workspace_id) as busy:
             assert busy is None
-        if lost_reply:
-            # Receive the selected repeat-close explicitly, without risking a
-            # reused descriptor. The first lost reply supplied no completion.
-            with monkeypatch.context() as patch:
-                patch.setattr(os, "close", lambda fd: None if fd == held[0] else actual(fd))
-                metadata.close()
-        else:
-            metadata.close()
-        assert metadata._closed
+        metadata.close()
+        assert metadata._closed and not metadata._namespace_handles._callbacks
+        assert original.owner.received and original.owner.metrics["close_calls"] == 1
     assert step(case, job).job.reclamation_phase == "metadata"
 
 
@@ -339,7 +344,13 @@ from riverhog_core.catalog_discovery_validation_models import DiscoveryValidatio
 from riverhog_core.canonical_discovery_corpus_jobs import DiscoveryJob
 from riverhog_core.canonical_discovery_retired_metadata import RetiredDiscoveryMetadata
 from riverhog_core.canonical_discovery_root_reclamation import reclaim_discovery_journals_root
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
+
+from tests.support.retained_resource import fault_native as fault_native
+from tests.support.retirement_namespace import (
+    lease_retiring_journal_workspace,
+    native_namespace_close_fault,
+)
 engine=create_catalog_engine(sys.argv[1]);factory=sessionmaker(engine,expire_on_commit=False)
 with factory() as session:job=DiscoveryJob.read(session.get(Row,sys.argv[3]))
 with lease_retiring_journal_workspace(Path(sys.argv[2]),job.workspace_id) as parent:

@@ -21,13 +21,14 @@ from riverhog_core.catalog_provenance_index_models import (
 from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexStateRecord as State,
 )
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+from riverhog_core.services.upload_journal_result_receiving import UploadJournalResultResources
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import delete, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 from tests.support.canonical_discovery_work import write
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_index import _collection
 from tests.unit.test_canonical_discovery_selection import original as original
 from tests.unit.test_canonical_discovery_selection import qualified as qualified
@@ -94,7 +95,7 @@ def claimed(case):
 
 
 def test_one_attempt_and_original_binding_survive_claim_pin_and_reopen(case):
-    with lease_journal_validation_workspace(
+    with leased_workspace(
         case.root,
         case.job.workspace_id,
         create=True,
@@ -114,10 +115,10 @@ def test_one_attempt_and_original_binding_survive_claim_pin_and_reopen(case):
         active = owner.activate_discovery_corpus(case.factory, pinned)
         assert active is not None and active.state == "active"
         assert owner.pin_discovery_corpus(case.factory, pinned, case.frozen) == active
-        with lease_journal_validation_workspace(case.root, first.workspace_id) as busy:
+        with leased_workspace(case.root, first.workspace_id) as busy:
             assert busy is None
         assert case.engine.pool.checkedout() == 0
-    with lease_journal_validation_workspace(case.root, case.job.workspace_id) as path:
+    with leased_workspace(case.root, case.job.workspace_id) as path:
         assert path is not None
         again = owner.select_discovery_job(
             case.factory, build_id=case.build_id, admission=case.admission, catalog=case.catalog
@@ -438,7 +439,7 @@ def test_closed_native_gate_cannot_construct_a_new_discovery_job(case):
         assert session.get(Job, case.job.workspace_id) is None
 
 
-def _closed_projection(tmp_path, monkeypatch, *, database_url=None):
+def _closed_projection(tmp_path, monkeypatch, *, database_url=None, journal_constructions):
     from riverhog_protocol.errors import Conflict
 
     from tests.unit.test_archive_write_admission import _case, _selected
@@ -451,11 +452,18 @@ def _closed_projection(tmp_path, monkeypatch, *, database_url=None):
 
         monkeypatch.setattr(native.service, "_commit_catalog_projection", forbidden)
         with pytest.raises(Conflict, match="admission is closed"):
-            native.service._advance_catalog_projection(native.collection_id)
+            native.service._advance_catalog_projection(
+                native.collection_id,
+                result_resources=UploadJournalResultResources(
+                    construction_factory=journal_constructions.retain
+                ),
+            )
 
 
-def test_native_catalog_projection_keeps_the_original_upload_write_interlock(tmp_path, monkeypatch):
-    _closed_projection(tmp_path, monkeypatch)
+def test_native_catalog_projection_keeps_the_original_upload_write_interlock(
+    tmp_path, monkeypatch, *, journal_constructions
+):
+    _closed_projection(tmp_path, monkeypatch, journal_constructions=journal_constructions)
 
 
 def _original_storage_retirement(factory, job, root, *, detach):
@@ -463,7 +471,7 @@ def _original_storage_retirement(factory, job, root, *, detach):
 
     from riverhog_core.canonical_discovery_archive_work import StaleArchiveTask
 
-    with lease_journal_validation_workspace(
+    with leased_workspace(
         root,
         job.workspace_id,
         create=True,
@@ -638,7 +646,7 @@ def test_original_storage_and_irreversible_reclamation_stages_survive_restart_an
             failure="original storage open unavailable",
         )
         assert current is not None
-    with lease_journal_validation_workspace(
+    with leased_workspace(
         case.root,
         current.workspace_id,
         create=True,

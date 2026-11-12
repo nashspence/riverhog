@@ -6,16 +6,12 @@ import os
 import subprocess
 import sys
 from contextlib import ExitStack
+from types import SimpleNamespace
 
 import pytest
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
-from riverhog_core.journal_validation_retirement import (
-    lease_retiring_journal_workspace,
-    remove_retired_journal_workspace_directory,
-)
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
-    lease_journal_validation_workspace,
 )
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_validation_jobs as jobs
@@ -26,6 +22,14 @@ from riverhog_core.services.upload_journal_validation_retirement import (
 from riverhog_provenance.journal_store import JournalStore
 from sqlalchemy import delete, event, select
 
+from tests.support.journal_retirement import cleanups as cleanups
+from tests.support.retirement_namespace import (
+    lease_retiring_journal_workspace,
+    remove_retired_journal_workspace_directory,
+)
+from tests.support.validation_workspace import leased_workspace
+from tests.unit.test_archive_upload_execution import _joined
+from tests.unit.test_archive_upload_execution import owned as owned
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
@@ -58,19 +62,44 @@ def detached_job(identity, *, state="retiring"):
     )
 
 
+@pytest.fixture
+def retirement_owners(cleanups):
+    def make(factory, root):
+        return cleanups(SimpleNamespace(factory=factory, root=root)).cleanup
+
+    return make
+
+
+def retirement_step(
+    current: UploadJournalValidationRetirement, *, limit=1, octet_budget=4 * 1024 * 1024
+):
+    assert not current._registry._contexts
+    current.advance(limit=limit, octet_budget=octet_budget)
+    originals = tuple(current._registry._contexts.values())
+    _joined(current._registry._execution)
+    current._registry.collect(limit=max(1, 2 * len(originals)))
+    assert not current._registry._contexts
+    assert all(original.received and original.closed for original in originals)
+    return sum(original.progress is True for original in originals)
+
+
 def finish(current, factory, identity):
     for _ in range(1000):
         if selected(factory, identity) is None:
             return
-        assert current.advance(limit=1, octet_budget=65536) == 1
+        retirement_step(current, limit=1, octet_budget=65536)
     pytest.fail("small retired workspace did not finish")
 
 
-def test_source_deletion_queues_bounded_files_then_directory_then_catalog_removal(tmp_path):
+def test_source_deletion_queues_bounded_files_then_directory_then_catalog_removal(
+    tmp_path, retirement_owners, *, journal_constructions
+):
     root = tmp_path / "native"
     with retained(tmp_path, source(journal_id=JOURNAL)) as (engine, factory):
         work, _ = ready(factory)
-        current = UploadJournalValidationOwner(factory, root)
+        current = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         current.advance(work, catalog=source_owner.admission_provenance_catalog())
         job = selected(factory)
         identity = job.workspace_id
@@ -82,8 +111,14 @@ def test_source_deletion_queues_bounded_files_then_directory_then_catalog_remova
         orphan = selected(factory)
         assert orphan.workspace_id == job.workspace_id and orphan.collection_id is None
         assert orphan.progress_json == job.progress_json
-        cleanup = UploadJournalValidationRetirement(factory, root)
-        assert cleanup.advance() == 1 and selected(factory).state == "retiring"
+        cleanup = retirement_owners(factory, root)
+        assert (
+            retirement_step(
+                cleanup,
+            )
+            == 1
+            and selected(factory).state == "retiring"
+        )
         assert hashlib.sha256(database.read_bytes()).hexdigest() == before
         observed_directory_phase = False
         for _ in range(1000):
@@ -94,40 +129,50 @@ def test_source_deletion_queues_bounded_files_then_directory_then_catalog_remova
             if job.state == "directory":
                 observed_directory_phase = True
                 assert not database.exists() and (root / job.workspace_id / ".lease").exists()
-            assert cleanup.advance(octet_budget=65536) == 1
+            assert retirement_step(cleanup, octet_budget=65536) == 1
             remaining = database.stat().st_size if database.exists() else 0
             assert 0 <= old - remaining <= 65536
             assert engine.pool.checkedout() == 0
         else:
             pytest.fail("retirement stopped making bounded progress")
         assert observed_directory_phase and not (root / identity).exists()
-        assert (root / ".coordinator").is_file() and cleanup.advance() == 0
+        assert (root / ".coordinator").is_file() and retirement_step(
+            cleanup,
+        ) == 0
 
 
-def test_live_source_remains_ineligible_and_native_bytes_are_preserved(tmp_path):
+def test_live_source_remains_ineligible_and_native_bytes_are_preserved(
+    tmp_path, retirement_owners, *, journal_constructions
+):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
         root = tmp_path / "native"
-        current = UploadJournalValidationOwner(factory, root)
+        current = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         try:
             current.advance(work, catalog=source_owner.admission_provenance_catalog())
             job = selected(factory)
             database = root / job.workspace_id / "snapshot.sqlite3"
             before = database.read_bytes()
-            assert UploadJournalValidationRetirement(factory, root).advance(limit=3) == 0
+            assert retirement_step(retirement_owners(factory, root), limit=3) == 0
             assert selected(factory) == job and database.read_bytes() == before
         finally:
             current.close()
 
 
-def test_native_rejection_retires_only_the_derived_workspace_after_publication(tmp_path):
+def test_native_rejection_retires_only_the_derived_workspace_after_publication(
+    tmp_path, retirement_owners, *, journal_constructions
+):
     from riverhog_core.catalog_models import CollectionUploadProvenanceJournalChunkRecord as Chunk
 
     raw = source(journal_id=JOURNAL) + b"malformed late framing"
     root = tmp_path / "native"
     with retained(tmp_path, raw) as (_, factory):
         work, _ = ready(factory)
-        current = UploadJournalValidationOwner(factory, root)
+        current = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         try:
             for _ in range(10000):
                 step = current.advance(work, catalog=source_owner.admission_provenance_catalog())
@@ -137,8 +182,14 @@ def test_native_rejection_retires_only_the_derived_workspace_after_publication(t
                 pytest.fail("small native rejection did not complete")
             assert step.outcome.failure
             job = selected(factory)
-            cleanup = UploadJournalValidationRetirement(factory, root)
-            assert cleanup.advance() == 0 and job.state == "failed"
+            cleanup = retirement_owners(factory, root)
+            assert (
+                retirement_step(
+                    cleanup,
+                )
+                == 0
+                and job.state == "failed"
+            )
             assert source_owner._commit_upload_journal_validation(factory, work, step.outcome)
             assert selected(factory).state == "retiring"
             finish(cleanup, factory, job.workspace_id)
@@ -151,7 +202,7 @@ def test_native_rejection_retires_only_the_derived_workspace_after_publication(t
             current.close()
 
 
-def test_old_selected_creator_cannot_recreate_a_removed_job(tmp_path):
+def test_old_selected_creator_cannot_recreate_a_removed_job(tmp_path, retirement_owners):
     from riverhog_core.services.upload_journal_replay import _binding
 
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
@@ -164,14 +215,14 @@ def test_old_selected_creator_cannot_recreate_a_removed_job(tmp_path):
             certificate_binding=certificates.binding.to_json(),
         )
         root = tmp_path / "native"
-        with lease_journal_validation_workspace(root, TWO, create=True):
+        with leased_workspace(root, TWO, create=True):
             pass
         assert jobs.creation_current(factory, work, job)
         with factory() as session, session.begin():
             session.execute(delete(Journal))
-        cleanup = UploadJournalValidationRetirement(factory, root)
+        cleanup = retirement_owners(factory, root)
         finish(cleanup, factory, job.workspace_id)
-        with lease_journal_validation_workspace(
+        with leased_workspace(
             root,
             job.workspace_id,
             create=True,
@@ -181,24 +232,39 @@ def test_old_selected_creator_cannot_recreate_a_removed_job(tmp_path):
         assert not (root / job.workspace_id).exists() and (root / TWO).is_dir()
 
 
-def test_borrowed_reader_blocks_only_its_retirement_and_other_job_finishes(tmp_path):
+def test_borrowed_reader_blocks_only_its_retirement_and_other_job_finishes(
+    tmp_path, retirement_owners, *, journal_constructions
+):
     root = tmp_path / "native"
     resources = ExitStack()
-    path = resources.enter_context(lease_journal_validation_workspace(root, ONE, create=True))
-    store = JournalStore.open_retained(path, create=True, on_storage_close=resources.close)
+    path = resources.enter_context(leased_workspace(root, ONE, create=True))
+    store = JournalStore.open_retained(
+        path,
+        create=True,
+        on_storage_close=resources.close,
+        construction=journal_constructions.retain(),
+    )
     store.freeze()
     borrowed = store.borrow()
     store.close()
-    with lease_journal_validation_workspace(root, TWO, create=True) as second:
-        JournalStore.open_retained(second, create=True).close()
+    with leased_workspace(root, TWO, create=True) as second:
+        JournalStore.open_retained(
+            second, create=True, construction=journal_constructions.retain()
+        ).close()
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         with factory() as session, session.begin():
             session.add_all([detached_job(ONE), detached_job(TWO)])
-        cleanup = UploadJournalValidationRetirement(factory, root)
+        cleanup = retirement_owners(factory, root)
         try:
             finish(cleanup, factory, TWO)
             assert selected(factory, ONE).state == "retiring"
-            assert cleanup.advance() == 0 and (root / ONE / "snapshot.sqlite3").exists()
+            assert (
+                retirement_step(
+                    cleanup,
+                )
+                == 0
+                and (root / ONE / "snapshot.sqlite3").exists()
+            )
             assert borrowed.db.execute("SELECT 1").fetchone() == (1,)
         finally:
             borrowed.close()
@@ -206,32 +272,51 @@ def test_borrowed_reader_blocks_only_its_retirement_and_other_job_finishes(tmp_p
         assert not (root / ONE).exists() and not (root / TWO).exists()
 
 
-def test_unknown_files_are_preserved_and_do_not_create_a_hot_retry_loop(tmp_path):
+def test_unknown_files_are_preserved_and_do_not_create_a_hot_retry_loop(
+    tmp_path, retirement_owners
+):
     root = tmp_path / "native"
-    with lease_journal_validation_workspace(root, ONE, create=True) as directory:
+    with leased_workspace(root, ONE, create=True) as directory:
         unknown = directory / "unclassified"
         unknown.write_bytes(b"preserve this owned fixture")
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         with factory() as session, session.begin():
             session.add(detached_job(ONE, state="directory"))
-        cleanup = UploadJournalValidationRetirement(factory, root)
-        assert cleanup.advance() == 1
+        cleanup = retirement_owners(factory, root)
+        assert (
+            retirement_step(
+                cleanup,
+            )
+            == 1
+        )
         blocked = selected(factory)
         assert blocked.state == "directory" and "unclassified" in blocked.failure
-        assert cleanup.advance() == 0 and selected(factory) == blocked
+        assert (
+            retirement_step(
+                cleanup,
+            )
+            == 0
+            and selected(factory) == blocked
+        )
         assert unknown.read_bytes() == b"preserve this owned fixture"
         unknown.unlink()
-        assert cleanup.advance() == 1 and selected(factory) is None
+        assert (
+            retirement_step(
+                cleanup,
+            )
+            == 1
+            and selected(factory) is None
+        )
 
 
 @pytest.mark.parametrize("fault", ["lease-unlink", "directory-remove"])
 def test_real_worker_exit_finishes_the_durable_directory_phase(tmp_path, fault):
     root = tmp_path / "native"
-    with lease_journal_validation_workspace(root, ONE, create=True):
+    with leased_workspace(root, ONE, create=True):
         pass
     program = """import os,sys
 from pathlib import Path
-from riverhog_core.journal_validation_retirement import remove_retired_journal_workspace_directory
+from tests.support.retirement_namespace import remove_retired_journal_workspace_directory
 name='unlink' if sys.argv[3]=='lease-unlink' else 'rmdir'
 original=getattr(os,name)
 def interrupted(*args,**kwargs):
@@ -250,9 +335,11 @@ raise AssertionError('interruption was not reached')
     assert not (root / ONE).exists() and (root / ".coordinator").is_file()
 
 
-def test_capacity_after_directory_removal_does_not_lose_the_catalog_pointer(tmp_path, monkeypatch):
+def test_capacity_after_directory_removal_does_not_lose_the_catalog_pointer(
+    tmp_path, monkeypatch, retirement_owners
+):
     root = tmp_path / "native"
-    with lease_journal_validation_workspace(root, ONE, create=True):
+    with leased_workspace(root, ONE, create=True):
         pass
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         with factory() as session, session.begin():
@@ -264,18 +351,29 @@ def test_capacity_after_directory_removal_does_not_lose_the_catalog_pointer(tmp_
                 raise OSError(errno.ENOSPC, "injected root synchronization capacity")
             return sync(descriptor)
 
-        cleanup = UploadJournalValidationRetirement(factory, root)
+        cleanup = retirement_owners(factory, root)
         with monkeypatch.context() as patch:
             patch.setattr(os, "fsync", failed)
-            assert cleanup.advance() == 1
+            assert (
+                retirement_step(
+                    cleanup,
+                )
+                == 1
+            )
         assert selected(factory).state == "directory" and not (root / ONE).exists()
-        assert cleanup.advance() == 1 and selected(factory) is None
+        assert (
+            retirement_step(
+                cleanup,
+            )
+            == 1
+            and selected(factory) is None
+        )
 
 
 @pytest.mark.parametrize("fault", ["root", "coordinator", "lease"])
-def test_missing_storage_custody_preserves_the_pending_job(tmp_path, fault):
+def test_missing_storage_custody_preserves_the_pending_job(tmp_path, fault, retirement_owners):
     root = tmp_path / "native"
-    with lease_journal_validation_workspace(root, ONE, create=True):
+    with leased_workspace(root, ONE, create=True):
         pass
     if fault == "root":
         root.rename(tmp_path / "unavailable")
@@ -286,24 +384,39 @@ def test_missing_storage_custody_preserves_the_pending_job(tmp_path, fault):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         with factory() as session, session.begin():
             session.add(detached_job(ONE))
-        cleanup = UploadJournalValidationRetirement(factory, root)
-        assert cleanup.advance() == 1
+        cleanup = retirement_owners(factory, root)
+        assert (
+            retirement_step(
+                cleanup,
+            )
+            == 1
+        )
         pending = selected(factory)
         assert pending.state == "retiring" and pending.failure
-        assert cleanup.advance() == 0 and selected(factory) == pending
+        assert (
+            retirement_step(
+                cleanup,
+            )
+            == 0
+            and selected(factory) == pending
+        )
 
 
-def test_directory_phase_refuses_a_remaining_owned_database(tmp_path):
+def test_directory_phase_refuses_a_remaining_owned_database(tmp_path, *, journal_constructions):
     root = tmp_path / "native"
-    with lease_journal_validation_workspace(root, ONE, create=True) as directory:
-        JournalStore.open_retained(directory, create=True).close()
+    with leased_workspace(root, ONE, create=True) as directory:
+        JournalStore.open_retained(
+            directory, create=True, construction=journal_constructions.retain()
+        ).close()
     with pytest.raises(LostJournalValidationWorkspace, match="still has data"):
         remove_retired_journal_workspace_directory(root, ONE)
     assert (root / ONE / "snapshot.sqlite3").is_file() and (root / ONE / ".lease").is_file()
 
 
 @pytest.mark.parametrize("count", [1, 17, 129, 1025])
-def test_orphan_selection_uses_its_partial_index_without_a_pending_job_census(tmp_path, count):
+def test_orphan_selection_uses_its_partial_index_without_a_pending_job_census(
+    tmp_path, count, retirement_owners
+):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (engine, factory):
         with factory() as session, session.begin():
             session.add_all(detached_job(f"{number:032x}") for number in range(count))
@@ -317,7 +430,7 @@ def test_orphan_selection_uses_its_partial_index_without_a_pending_job_census(tm
 
         event.listen(engine, "before_cursor_execute", record)
         try:
-            cleanup = UploadJournalValidationRetirement(factory, tmp_path / "native")
+            cleanup = retirement_owners(factory, tmp_path / "native")
             first = cleanup._select(())
             assert first.state == "retiring"
             second = cleanup._select(())
@@ -335,30 +448,30 @@ def test_orphan_selection_uses_its_partial_index_without_a_pending_job_census(tm
 
 def test_retired_metadata_custody_retains_exact_exclusive_descriptors_until_lease_exit(tmp_path):
     root = tmp_path / "native"
-    with lease_journal_validation_workspace(root, ONE, create=True):
+    with leased_workspace(root, ONE, create=True):
         pass
     with lease_retiring_journal_workspace(root, ONE) as selected:
         assert selected is not None and selected.directory == root / ONE
         custody = selected.custody
         assert custody is not None and custody.verify_current()
-        with lease_journal_validation_workspace(root, ONE, shared=True) as reader:
+        with leased_workspace(root, ONE, shared=True) as reader:
             assert reader is None
         with lease_retiring_journal_workspace(root, ONE) as second:
             assert second is None
-        with lease_journal_validation_workspace(root, TWO, create=True) as unrelated:
+        with leased_workspace(root, TWO, create=True) as unrelated:
             assert unrelated == root / TWO
         assert custody.verify_current()
     assert not custody.verify_current()
     with pytest.raises(OSError):
         os.fstat(custody._lease)
-    with lease_journal_validation_workspace(root, ONE, shared=True) as reader:
+    with leased_workspace(root, ONE, shared=True) as reader:
         assert reader == root / ONE
 
 
 @pytest.mark.parametrize("changed", ("root", "directory", "lease"))
 def test_retired_metadata_custody_rejects_replaced_original_storage(tmp_path, changed):
     root = tmp_path / "native"
-    with lease_journal_validation_workspace(root, ONE, create=True):
+    with leased_workspace(root, ONE, create=True):
         pass
     with lease_retiring_journal_workspace(root, ONE) as selected:
         custody = selected.custody
@@ -379,7 +492,7 @@ def test_retired_metadata_custody_rejects_replaced_original_storage(tmp_path, ch
 
 def test_missing_retired_directory_reconciliation_has_no_metadata_custody(tmp_path):
     root = tmp_path / "native"
-    with lease_journal_validation_workspace(root, TWO, create=True):
+    with leased_workspace(root, TWO, create=True):
         pass
     with lease_retiring_journal_workspace(root, ONE) as selected:
         assert selected is not None and selected.directory is None and selected.custody is None
@@ -388,7 +501,7 @@ def test_missing_retired_directory_reconciliation_has_no_metadata_custody(tmp_pa
 
 def test_retired_metadata_custody_is_invalidated_after_body_failure(tmp_path):
     root = tmp_path / "native"
-    with lease_journal_validation_workspace(root, ONE, create=True):
+    with leased_workspace(root, ONE, create=True):
         pass
     with pytest.raises(RuntimeError, match="retired metadata close failed"):
         with lease_retiring_journal_workspace(root, ONE) as selected:

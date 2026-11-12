@@ -9,7 +9,6 @@ from types import SimpleNamespace
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_certificates as certificates_owner
 from riverhog_core.services import upload_journal_replay as replay
@@ -21,6 +20,7 @@ from riverhog_provenance import InvalidJournalGraphCertificate
 from riverhog_provenance import replay_binding as codec_owner
 from sqlalchemy import event, select
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_upload_journal_certificate_lifecycle_growth import TABLES
 from tests.unit.test_upload_journal_source_growth import octets, source_metadata_octets
 from tests.unit.test_upload_journal_validation_jobs_growth import build_cases as job_cases
@@ -461,14 +461,17 @@ def changed(case, kind, certificates):
 
 
 @contextmanager
-def build_cases(root, *, large=True):
-    with job_cases(root, large=large) as cases:
+def build_cases(root, *, large=True, journal_constructions):
+    with job_cases(root, large=large, journal_constructions=journal_constructions) as cases:
         yield cases
 
 
 @pytest.fixture(scope="module")
-def fence_cases(tmp_path_factory):
-    with build_cases(tmp_path_factory.mktemp("owned-source-fence-inputs")) as cases:
+def fence_cases(tmp_path_factory, *, module_journal_constructions):
+    with build_cases(
+        tmp_path_factory.mktemp("owned-source-fence-inputs"),
+        journal_constructions=module_journal_constructions,
+    ) as cases:
         yield cases
 
 
@@ -518,7 +521,7 @@ def fence_samples(cases, mode, *, samples):
         selected = UploadJournalValidationSource(case.factory, case.work, catalog=catalog)
         current = owner._OwnedSource(case.factory, selected, read_job(case.active), certificates)
         root = Path(case.engine.url.database).parent / "native"
-        with lease_journal_validation_workspace(root, current.job.workspace_id) as directory:
+        with leased_workspace(root, current.job.workspace_id) as directory:
             assert directory is not None
             for cold in (False, True):
                 samples.append(measure(case, current, certificates, mode, cold=cold))

@@ -104,7 +104,10 @@ class PointObserver(Observer):
         db.set_progress_handler(stepped, 1)
         db.set_authorizer(authorized)
         try:
-            with super().observe(monkeypatch, source), monkeypatch.context() as patch:
+            with (
+                super().observe(monkeypatch, source, workspace, observe_sql=False),
+                monkeypatch.context() as patch,
+            ):
                 connection = PointConnection(db, self)
                 patch.setattr(workspace, "_db", connection)
                 patch.setattr(workspace._corpus, "_db", connection)
@@ -218,7 +221,7 @@ def original_octets(oracle, expected):
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.historical_assertion",
 )
 def test_retained_historical_points_compose_exact_intervals_and_owner_work(
-    tmp_path, journal, who, catalog, monkeypatch, record_property
+    tmp_path, journal, who, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     samples = []
     cases = [(history(journal, count, catalog), None, (0, count - 1)) for count in (1, 17, 129)]
@@ -229,10 +232,12 @@ def test_retained_historical_points_compose_exact_intervals_and_owner_work(
         cases.append((raw, first["id"], (1, count, count + 1)))
     for index, (raw, identity, positions) in enumerate(cases):
         path = tmp_path / str(index)
-        path.mkdir()
+        path.mkdir(mode=0o700)
         with validate_journal(raw, catalog=catalog) as summary:
             source = OwnedCorpusSource(summary, catalog)
-            workspace = open_workspace(path, source, create=True)
+            workspace = open_workspace(
+                path, source, create=True, journal_constructions=journal_constructions
+            )
             try:
                 populate(workspace, summary)
                 identity = identity or summary.states[0]["id"]
@@ -272,7 +277,9 @@ def test_retained_historical_points_compose_exact_intervals_and_owner_work(
                         assert result is None
                         samples.append(sample)
                 workspace.close()
-                workspace = open_workspace(path, source, epoch=1)
+                workspace = open_workspace(
+                    path, source, epoch=1, journal_constructions=journal_constructions
+                )
                 anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
                 identity = summary.states[0]["id"]
                 expected = summary.graph_validation.objects[identity]
@@ -369,7 +376,7 @@ def test_retained_historical_points_compose_exact_intervals_and_owner_work(
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.selected_delivery_support",
 )
 def test_retained_delivery_points_preserve_narrow_support_and_owner_work(
-    tmp_path, graph, who, catalog, monkeypatch, record_property
+    tmp_path, graph, who, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     samples = []
     payload_sizes = []
@@ -382,13 +389,15 @@ def test_retained_delivery_points_preserve_narrow_support_and_owner_work(
         )
     ):
         path = tmp_path / str(index)
-        path.mkdir()
+        path.mkdir(mode=0o700)
         with delivery_source(graph, who, catalog, opaque_octets=opaque, role=role) as (
             summary,
             arguments,
         ):
             source = OwnedCorpusSource(summary, catalog)
-            workspace = open_workspace(path, source, create=True)
+            workspace = open_workspace(
+                path, source, create=True, journal_constructions=journal_constructions
+            )
             try:
                 populate(workspace, summary)
                 expected = selected_delivery_occurrence(summary, **arguments)
@@ -420,7 +429,9 @@ def test_retained_delivery_points_preserve_narrow_support_and_owner_work(
                 for epoch in (0, 1, 2):
                     if epoch:
                         workspace.close()
-                        workspace = open_workspace(path, source, epoch=epoch)
+                        workspace = open_workspace(
+                            path, source, epoch=epoch, journal_constructions=journal_constructions
+                        )
                     actual, sample, observed = measure(
                         workspace,
                         source,

@@ -5,9 +5,11 @@ import sqlite3
 from contextlib import closing
 
 import pytest
+import sqlite_admission
 from riverhog_provenance import journal_store as owner
 from riverhog_provenance.journal_session import JournalValidationSession
 from riverhog_provenance.journal_store import JournalStore
+from sqlite_admission import SqliteCleanupPending
 from test_retained_journal_session import ATTEMPT, OwnedSource, finish
 
 
@@ -30,22 +32,43 @@ def fault_connection(monkeypatch, *, fail=False, after=False):
         state["connections"].append(result)
         return result
 
+    driver, driver_close = sqlite_admission._connect, sqlite_admission._Connection._driver_close
+
+    def admitted_connect(*args, **kwargs):
+        result = driver(*args, **kwargs)
+        state["connections"].append(result)
+        return result
+
+    def admitted_close(connection):
+        state["closes"] += 1
+        if state["fail"]:
+            state["fail"] = False
+            if after:
+                driver_close(connection)
+            raise OSError("database close unconfirmed")
+        return driver_close(connection)
+
     monkeypatch.setattr(owner.sqlite3, "connect", connect)
+    monkeypatch.setattr(sqlite_admission, "_connect", admitted_connect)
+    monkeypatch.setattr(sqlite_admission._Connection, "_driver_close", admitted_close)
     return state
 
 
 @pytest.mark.parametrize("retained", [False, True])
 @pytest.mark.parametrize("after", [False, True])
 def test_last_reader_retries_uncertain_database_close_without_losing_its_lease(
-    tmp_path, monkeypatch, retained, after
+    tmp_path, monkeypatch, retained, after, *, journal_constructions
 ):
     state = fault_connection(monkeypatch, after=after)
     path = tmp_path / "retained"
-    path.mkdir()
+    path.mkdir(mode=0o700)
     released = []
     if retained:
         current = JournalStore.open_retained(
-            path, create=True, on_storage_close=lambda: released.append("released")
+            path,
+            create=True,
+            on_storage_close=lambda: released.append("released"),
+            construction=journal_constructions.retain(),
         )
     else:
         current = JournalStore()
@@ -76,7 +99,7 @@ def test_last_reader_retries_uncertain_database_close_without_losing_its_lease(
 
 
 def test_owner_release_failure_keeps_real_kernel_custody_until_confirmed_retry(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, *, journal_constructions
 ):
     fcntl = pytest.importorskip("fcntl")
     state = fault_connection(monkeypatch)
@@ -86,7 +109,7 @@ def test_owner_release_failure_keeps_real_kernel_custody_until_confirmed_retry(
     attempts = []
 
     def release():
-        with pytest.raises(sqlite3.ProgrammingError):
+        with pytest.raises(SqliteCleanupPending):
             state["connections"][0].execute("SELECT 1")
         attempts.append(1)
         if len(attempts) == 1:
@@ -95,8 +118,10 @@ def test_owner_release_failure_keeps_real_kernel_custody_until_confirmed_retry(
         os.close(descriptor)
 
     path = tmp_path / "retained"
-    path.mkdir()
-    current = JournalStore.open_retained(path, create=True, on_storage_close=release)
+    path.mkdir(mode=0o700)
+    current = JournalStore.open_retained(
+        path, create=True, on_storage_close=release, construction=journal_constructions.retain()
+    )
     current.freeze()
     last = current.borrow()
     current.close()
@@ -144,11 +169,15 @@ def test_disposable_directory_cleanup_is_retryable_after_database_close(monkeypa
     assert current._storage._readers == 0 and current._storage._closed
 
 
-def test_explicit_close_can_retry_even_after_an_uncertain_finalizer_attempt(tmp_path, monkeypatch):
+def test_explicit_close_can_retry_even_after_an_uncertain_finalizer_attempt(
+    tmp_path, monkeypatch, *, journal_constructions
+):
     state = fault_connection(monkeypatch)
     path = tmp_path / "retained"
-    path.mkdir()
-    current = JournalStore.open_retained(path, create=True)
+    path.mkdir(mode=0o700)
+    current = JournalStore.open_retained(
+        path, create=True, construction=journal_constructions.retain()
+    )
     state["fail"] = True
     with pytest.raises(OSError, match="unconfirmed"):
         current._cleanup()
@@ -159,12 +188,12 @@ def test_explicit_close_can_retry_even_after_an_uncertain_finalizer_attempt(tmp_
 
 @pytest.mark.parametrize("failure", ["store", "prefix", "retention"])
 def test_early_session_retention_preserves_failed_initialization_and_close_for_retry(
-    tmp_path, journal, catalog, monkeypatch, failure
+    tmp_path, journal, catalog, monkeypatch, failure, *, journal_constructions
 ):
     state = fault_connection(monkeypatch, fail=True)
     retained, released = [], []
     path = tmp_path / "retained"
-    path.mkdir()
+    path.mkdir(mode=0o700)
 
     def retain(current):
         retained.append(current)
@@ -189,6 +218,7 @@ def test_early_session_retention_preserves_failed_initialization_and_close_for_r
             catalog=catalog,
             on_storage_open=retain,
             on_storage_close=lambda: released.append(1),
+            construction=journal_constructions.retain(),
         )
     assert len(retained) == 1 and state["closes"] == 1 and not released
     current = retained[0]
@@ -203,11 +233,11 @@ def test_early_session_retention_preserves_failed_initialization_and_close_for_r
 
 @pytest.mark.parametrize("completed", [False, True])
 def test_session_or_frozen_result_retries_a_failed_last_database_close(
-    tmp_path, journal, catalog, monkeypatch, completed
+    tmp_path, journal, catalog, monkeypatch, completed, *, journal_constructions
 ):
     state = fault_connection(monkeypatch)
     path = tmp_path / "retained"
-    path.mkdir()
+    path.mkdir(mode=0o700)
     retained, released = [], []
     session = JournalValidationSession.open_retained(
         path,
@@ -218,6 +248,7 @@ def test_session_or_frozen_result_retries_a_failed_last_database_close(
         catalog=catalog,
         on_storage_open=retained.append,
         on_storage_close=lambda: released.append(1),
+        construction=journal_constructions.retain(),
     )
     assert retained == [session]
     if completed:

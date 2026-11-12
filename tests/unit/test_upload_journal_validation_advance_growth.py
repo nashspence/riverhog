@@ -893,7 +893,7 @@ def populate(case):
     case.journals = 1
 
 
-def finite_cases(witness, root, *, large):
+def finite_cases(witness, root, *, large, journal_constructions):
     owner = witness.owner
     samples = []
     with witness.opening.build_cases(root, large=large) as cases:
@@ -907,7 +907,9 @@ def finite_cases(witness, root, *, large):
                     lifecycle, "LifecycleConnection", witness.mixed_connection(native, lifecycle)
                 )
                 current = owner.UploadJournalValidationOwner(
-                    case.factory, case.path / "parent-native"
+                    case.factory,
+                    case.path / "parent-native",
+                    construction_factory=journal_constructions.retain,
                 )
                 key = case.work.collection_id, case.work.journal_id, case.work.attempt_id
                 try:
@@ -981,7 +983,10 @@ def finite_cases(witness, root, *, large):
                     current.close()
                 for capacity, busy in ((1, True), (2, True), (1, False), (2, False)):
                     current = owner.UploadJournalValidationOwner(
-                        case.factory, case.path / f"pool-{capacity}", concurrency=capacity
+                        case.factory,
+                        case.path / f"pool-{capacity}",
+                        concurrency=capacity,
+                        construction_factory=journal_constructions.retain,
                     )
                     held = []
                     try:
@@ -1007,7 +1012,7 @@ def finite_cases(witness, root, *, large):
     return samples
 
 
-def graph_case(witness, root):
+def graph_case(witness, root, *, journal_constructions):
     from copy import deepcopy
 
     from riverhog_provenance import (
@@ -1068,7 +1073,9 @@ def graph_case(witness, root):
             patch.setattr(
                 lifecycle, "LifecycleConnection", witness.mixed_connection(native, lifecycle)
             )
-            current = owner.UploadJournalValidationOwner(factory, root / "parent-native")
+            current = owner.UploadJournalValidationOwner(
+                factory, root / "parent-native", construction_factory=journal_constructions.retain
+            )
             recorder = witness.Recorder(case)
             try:
                 result, sample = recorder.measure(
@@ -1124,13 +1131,26 @@ def graph_case(witness, root):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner.advance",
 )
-def test_actual_owner_composes_opening_execution_publication_and_custody(tmp_path, record_property):
-    samples = finite_cases(sys.modules[__name__], tmp_path / "owner-advance", large=True)
-    samples.extend(graph_case(sys.modules[__name__], tmp_path / "owner-graph"))
+def test_actual_owner_composes_opening_execution_publication_and_custody(
+    tmp_path, record_property, *, journal_constructions
+):
+    samples = finite_cases(
+        sys.modules[__name__],
+        tmp_path / "owner-advance",
+        large=True,
+        journal_constructions=journal_constructions,
+    )
+    samples.extend(
+        graph_case(
+            sys.modules[__name__],
+            tmp_path / "owner-graph",
+            journal_constructions=journal_constructions,
+        )
+    )
     record_property("growth_samples", samples)
 
 
-def owner_capacity_cases(witness, root, *, large):
+def owner_capacity_cases(witness, root, *, large, journal_constructions):
 
     owner = witness.owner
     samples = []
@@ -1145,7 +1165,9 @@ def owner_capacity_cases(witness, root, *, large):
                     lifecycle, "LifecycleConnection", witness.mixed_connection(native, lifecycle)
                 )
                 current = owner.UploadJournalValidationOwner(
-                    case.factory, case.path / "capacity-native"
+                    case.factory,
+                    case.path / "capacity-native",
+                    construction_factory=journal_constructions.retain,
                 )
                 recorder = witness.Recorder(case)
                 key = case.work.collection_id, case.work.journal_id, case.work.attempt_id
@@ -1239,14 +1261,19 @@ def owner_capacity_cases(witness, root, *, large):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner.advance",
 )
-def test_actual_owner_retains_unchanged_native_input_after_capacity(tmp_path, record_property):
+def test_actual_owner_retains_unchanged_native_input_after_capacity(
+    tmp_path, record_property, *, journal_constructions
+):
     samples = owner_capacity_cases(
-        sys.modules[__name__], tmp_path / "owner-input-capacity", large=True
+        sys.modules[__name__],
+        tmp_path / "owner-input-capacity",
+        large=True,
+        journal_constructions=journal_constructions,
     )
     record_property("growth_samples", samples)
 
 
-def recording_cases(witness, root, *, large):
+def recording_cases(witness, root, *, large, journal_constructions):
     witness.opening.native_helpers()
     path = (
         Path(witness.opening.__file__).resolve().parents[2] / "packages/riverhog-provenance/tests"
@@ -1290,7 +1317,9 @@ def recording_cases(witness, root, *, large):
                         "LifecycleConnection",
                         witness.mixed_connection(native, lifecycle),
                     )
-                    current = owner.UploadJournalValidationOwner(factory, path / "native")
+                    current = owner.UploadJournalValidationOwner(
+                        factory, path / "native", construction_factory=journal_constructions.retain
+                    )
                     recorder = witness.Recorder(case)
                     try:
                         result, sample = recorder.measure(
@@ -1370,8 +1399,13 @@ def recording_cases(witness, root, *, large):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner.advance",
 )
-def test_actual_owner_publishes_failed_recording_at_last_accepted_prefix(tmp_path, record_property):
+def test_actual_owner_publishes_failed_recording_at_last_accepted_prefix(
+    tmp_path, record_property, *, journal_constructions
+):
     samples = recording_cases(
-        sys.modules[__name__], tmp_path / "owner-recording-rejection", large=True
+        sys.modules[__name__],
+        tmp_path / "owner-recording-rejection",
+        large=True,
+        journal_constructions=journal_constructions,
     )
     record_property("growth_samples", samples)

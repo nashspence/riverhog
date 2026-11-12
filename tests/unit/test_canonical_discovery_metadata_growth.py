@@ -20,13 +20,13 @@ from riverhog_core.catalog_discovery_validation_models import DiscoveryValidatio
 from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexGenerationRecord as Generation,
 )
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance_contracts import ContractCatalog
 from sha256_continuation import CheckpointSHA256
 from sqlalchemy.orm import sessionmaker
 
 from tests.support.catalog_work import CatalogRecorder, octets
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_jobs import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_corpus_jobs import original as original
 from tests.unit.test_canonical_discovery_corpus_jobs import qualified as qualified
@@ -133,7 +133,7 @@ class Recorder:
             yield
 
     @contextmanager
-    def observe(self, case, *, cold):
+    def observe(self, case, *, cold, file_primitives=True):
         with self.catalog.observe(case.engine, cold=cold), pytest.MonkeyPatch.context() as patch:
             catalog_connect = owner.sqlite3.connect
 
@@ -147,36 +147,110 @@ class Recorder:
                 DiscoveryParentRetirement,
             )
 
-            def native_totals(receiver):
-                totals = {
-                    metric: sum(
-                        resource.metrics[metric] for resource in receiver._resources.values()
-                    )
-                    for metric in ("open_calls", "close_calls", "fstat_calls", "control_octets")
-                }
-                totals["path_octets"] = sum(map(len, receiver._native_paths.values()))
-                return totals
+            seen_native = {}
+
+            def prime_native(resource):
+                if self.active and resource not in seen_native:
+                    seen_native[resource] = resource.metrics
+
+            def receive_native(resource):
+                if not self.active:
+                    return
+                before, after = seen_native[resource], resource.metrics
+                for source, metric in (
+                    ("open_calls", "open_calls"),
+                    ("close_calls", "close_calls"),
+                    ("fstat_calls", "stat_calls"),
+                    ("dup_calls", "dup_calls"),
+                    ("control_octets", "native_control_octets"),
+                ):
+                    self.metrics[metric] += after[source] - before[source]
+                seen_native[resource] = after
+                if resource.state in {"opening", "live", "rejected", "unknown"}:
+                    self.live.add(resource)
+                else:
+                    self.live.discard(resource)
 
             for name in ("_open", "_close_owned"):
                 actual_native = getattr(DiscoveryParentRetirement, name)
 
                 def native_effect(receiver, *args, _actual=actual_native, **kwargs):
-                    before = native_totals(receiver)
+                    before_path = sum(map(len, receiver._native_paths.values()))
+                    for resource in receiver._resources.values():
+                        prime_native(resource)
                     try:
                         return _actual(receiver, *args, **kwargs)
                     finally:
                         if self.active:
-                            after = native_totals(receiver)
-                            for source, metric in (
-                                ("open_calls", "open_calls"),
-                                ("close_calls", "close_calls"),
-                                ("fstat_calls", "stat_calls"),
-                                ("control_octets", "native_control_octets"),
-                                ("path_octets", "encoded_path_octets"),
-                            ):
-                                self.metrics[metric] += after[source] - before[source]
+                            for resource in receiver._resources.values():
+                                receive_native(resource)
+                            self.metrics["encoded_path_octets"] += (
+                                sum(map(len, receiver._native_paths.values())) - before_path
+                            )
 
                 patch.setattr(DiscoveryParentRetirement, name, native_effect)
+            from riverhog_core.retained_workspace_handles import (
+                RetainedWorkspaceHandles,
+                RetainedWorkspaceResource,
+            )
+            from workspace_reclamation import FileReclamationOwner
+
+            def retained_effect(actual, *, files, acquiring):
+                def observed(receiver, *args, **kwargs):
+                    resources = (
+                        (receiver._directory, receiver._file) if files else (receiver.owner,)
+                    )
+                    for resource in resources:
+                        prime_native(resource)
+                    try:
+                        return actual(receiver, *args, **kwargs)
+                    finally:
+                        if self.active:
+                            for resource in resources:
+                                receive_native(resource)
+                            if acquiring:
+                                width = (
+                                    len(receiver._path) + sum(map(len, receiver._names))
+                                    if files
+                                    else len(os.fsencode(args[0]))
+                                )
+                                self.metrics["encoded_path_octets"] += width
+
+                return observed
+
+            for receiver_type, files, methods in (
+                (RetainedWorkspaceResource, False, ("acquire", "close")),
+                (FileReclamationOwner, True, ("reclaim", "close")),
+            ):
+                if files and not file_primitives:
+                    continue
+                for name in methods:
+                    patch.setattr(
+                        receiver_type,
+                        name,
+                        retained_effect(
+                            getattr(receiver_type, name), files=files, acquiring=name != "close"
+                        ),
+                    )
+            actual_handles_close = RetainedWorkspaceHandles.close
+
+            def close_retained_handles(receiver):
+                originals = set()
+                for callback, _arguments in receiver._callbacks:
+                    original = getattr(callback, "__self__", None)
+                    if isinstance(original, RetainedWorkspaceResource):
+                        originals.add(original.owner)
+                    elif isinstance(original, FileReclamationOwner):
+                        originals.update((original._directory, original._file))
+                for resource in originals:
+                    prime_native(resource)
+                try:
+                    return actual_handles_close(receiver)
+                finally:
+                    for resource in originals:
+                        receive_native(resource)
+
+            patch.setattr(RetainedWorkspaceHandles, "close", close_retained_handles)
             for name, metric in (
                 ("open", "open_calls"),
                 ("close", "close_calls"),
@@ -338,7 +412,7 @@ def case_for(root, admission, retained, width, *, template=None, catalog=None):
             assert selected is not None
         captured = []
         lease_root = root / "owned"
-        with lease_journal_validation_workspace(
+        with leased_workspace(
             lease_root,
             selected.workspace_id,
             create=True,

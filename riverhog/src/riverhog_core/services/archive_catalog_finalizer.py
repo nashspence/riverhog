@@ -8,6 +8,7 @@ from threading import Lock
 from typing import Literal
 
 from riverhog_protocol.errors import Conflict
+from riverhog_provenance import JournalConstruction
 from sqlalchemy import inspect, select
 from sqlalchemy.orm import Session
 
@@ -23,6 +24,7 @@ from riverhog_core.services.collection_upload_authority import (
     require_archive_write_control,
     require_open_upload_writes,
 )
+from riverhog_core.services.upload_journal_result_receiving import UploadJournalResultResources
 
 CatalogFinalizationKind = Literal[
     "member-histories", "provenance-closure", "artifact-tree", "catalog-projection"
@@ -98,6 +100,7 @@ class ArchiveCatalogFinalizer:
         collection_id: int,
         claim_id: str,
         kind: CatalogFinalizationKind,
+        construction_factory: Callable[[], JournalConstruction],
         advance: Callable[[Session, CollectionUploadRecord], bool],
     ) -> None:
         self._factory = factory
@@ -115,16 +118,18 @@ class ArchiveCatalogFinalizer:
         self._result: bool | None = None
         self._published_after: tuple[object, ...] | None = None
         self._completed = False
+        self.result_resources = UploadJournalResultResources(construction_factory)
 
     @property
     def has_pending(self) -> bool:
-        return self._before is not None and not self._completed
+        return (self._before is not None and not self._completed) or self.result_resources.pending
 
     def _cursor(self, upload: CollectionUploadRecord) -> tuple[object, ...]:
         return tuple(getattr(upload, field) for field in self._fields)
 
     def advance(self) -> bool:
         with self._lock:
+            self.result_resources.close()
             self._terminal.require_forward()
             if self._completed:
                 assert self._result is not None
@@ -143,6 +148,7 @@ class ArchiveCatalogFinalizer:
                     self._advance_current(session, upload)
             # A commit exception leaves the original preimage, postimage and
             # result available to this owner, rather than selecting another page.
+            self.result_resources.close()
             self._completed = True
             assert self._result is not None
             return self._result
@@ -228,6 +234,7 @@ class ArchiveCatalogFinalizer:
         try:
             # Catalog transactions hold the construction lock. Once joined,
             # there is no outside writer to cancel; retained facts stay owned.
+            self.result_resources.close()
             return self._terminal.drain_original(operation_id, None)
         finally:
             self._lock.release()

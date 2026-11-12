@@ -96,11 +96,21 @@ def test_documentary_dependency_retains_retracted_original_without_effective_att
         assert anchor != current.anchor
 
 
-def test_dependency_anchor_retained_reopen_and_independent_close(tmp_path, journal, catalog):
+def test_dependency_anchor_retained_reopen_and_independent_close(
+    tmp_path, journal, catalog, *, journal_constructions
+):
     from riverhog_provenance import open_retained_journal_result
 
-    path, source, confirmed, certificates, expected = completed(tmp_path, journal, catalog)
-    with open_retained_journal_result(path, source, confirmed=confirmed, catalog=catalog) as first:
+    path, source, confirmed, certificates, expected = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
+    with open_retained_journal_result(
+        path,
+        source,
+        confirmed=confirmed,
+        catalog=catalog,
+        construction=journal_constructions.retain(),
+    ) as first:
         dependency = selected(first)
         independent = first.borrow()
         anchor = first.reference_anchor(dependency)

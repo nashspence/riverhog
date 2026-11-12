@@ -68,6 +68,7 @@ def declare_corpus_reclamation_growth(
         "uuid_values": 1,
         "open_calls": 0,
         "close_calls": 0,
+        "dup_calls": 0,
         "stat_calls": fences * 8 + 4,
         "uid_calls": fences * 4,
         "fsync_calls": 1,
@@ -152,6 +153,14 @@ def declare_corpus_reclamation_growth(
                     ("json_encoded_octets", 1, "Complete canonical original binding encoding."),
                     ("scalar_parsed_octets", 1, "Complete original Native count scalar inputs."),
                 )
+            ),
+            Bound(
+                "native_control_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Direct corpus coordination acquires no native namespace owner; the extent "
+                "delegate records its own complete native operands.",
             ),
             Bound(
                 "encoded_path_octets",

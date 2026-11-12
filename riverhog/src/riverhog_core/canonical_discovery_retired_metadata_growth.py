@@ -53,7 +53,8 @@ def _declaration(operation: str) -> Declaration:
         "uuid_values": 0,
         "open_calls": int(opening or retiring),
         "close_calls": 7 if closing else int(retiring),
-        "stat_calls": fences * 8 + (4 if opening else 3 if retiring else 0),
+        "dup_calls": 0,
+        "stat_calls": fences * 8 + (5 if opening else 4 if retiring else 0),
         "uid_calls": fences * 4 + (2 if opening else int(retiring)),
         "fsync_calls": int(retiring),
         "directory_enumerations": 0,
@@ -184,6 +185,21 @@ def _declaration(operation: str) -> Declaration:
                 "equal",
                 octets(0),
                 "No archive hash continuation is serialized.",
+            ),
+            Bound(
+                "native_control_octets",
+                OCTETS,
+                "upper" if opening or retiring else "equal",
+                Expression(
+                    "constant",
+                    value=4 * len(b"discovery.sqlite3") + 3
+                    if opening
+                    else 4 * len(b"journals") + 3
+                    if retiring
+                    else 0,
+                    unit=OCTETS,
+                ),
+                "Four name scans plus fixed dot comparisons; receiving scans no paths.",
             ),
             Bound(
                 "encoded_path_octets",

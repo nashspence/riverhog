@@ -16,6 +16,7 @@ from riverhog_provenance.journal_store import JournalStore
 from sqlalchemy import update
 
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_archive_work import root_for
 from tests.unit.test_canonical_discovery_index import _collection
 from tests.unit.test_discovery_journal_owner import access
@@ -24,8 +25,14 @@ from tests.unit.test_upload_journal_result import JOURNAL, Job, Journal, sealed,
 
 
 @contextmanager
-def prepared(path, *, archive_raw=None):
-    with sealed(path / "upload") as (engine, factory, native_root, job, raw):
+def prepared(path, *, archive_raw=None, journal_constructions):
+    with sealed(path / "upload", journal_constructions=journal_constructions) as (
+        engine,
+        factory,
+        native_root,
+        job,
+        raw,
+    ):
         reader, objects, _, _ = archive_reader_fixture(
             raw if archive_raw is None else archive_raw, journal_id=JOURNAL, segment_ends=()
         )
@@ -52,7 +59,13 @@ def prepared(path, *, archive_raw=None):
             build_id=build_id,
             root=path / "discovery",
         )
-        case.pool = DiscoveryValidationOwner(factory, case.root, journal_root=native_root)
+        case.pool = DiscoveryValidationOwner(
+            factory,
+            case.root,
+            journal_root=native_root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         try:
             with quantum(case) as (work, _source):
                 metadata = work.metadata
@@ -90,8 +103,10 @@ def both(case, *, busy):
     access(case.native_root, case.job.workspace_id, busy=busy)
 
 
-def test_actual_sealed_result_is_warm_without_catalog_transaction_or_replay(tmp_path, monkeypatch):
-    with prepared(tmp_path) as case:
+def test_actual_sealed_result_is_warm_without_catalog_transaction_or_replay(
+    tmp_path, monkeypatch, *, journal_constructions
+):
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
         native_open = result_owner.open_retained_journal_result
         calls = []
 
@@ -127,30 +142,46 @@ def test_actual_sealed_result_is_warm_without_catalog_transaction_or_replay(tmp_
         assert len(calls) == 1 and case.engine.pool.checkedout() == 0
 
 
-def test_final_independent_borrower_keeps_both_actual_leases_after_owner_closes(tmp_path):
-    with prepared(tmp_path) as case:
+def test_final_independent_borrower_keeps_original_slot_and_both_actual_leases(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, source):
             first = open_result(work, source)
             last = first.borrow()
             expected = first.anchor
+            original, retained = work._slot, work._slot.sealed
         try:
-            case.pool.close()
-            assert case.pool.active_build_ids() == ()
+            with pytest.raises(BlockingIOError):
+                case.pool.close()
+            assert case.pool.active_build_ids() == (case.build_id,)
+            assert case.pool._slots[case.build_id] is original
+            assert original.sealed is retained and retained.result is not None
+            assert not first.storage_received and not retained.lease.received
             first.close()
+            with pytest.raises(BlockingIOError):
+                case.pool.close()
             both(case, busy=True)
             assert last.anchor == expected
             last.close()
+            assert first.storage_received and last.storage_received
+            assert not retained.lease.received
+            case.pool.close()
+            assert case.pool.active_build_ids() == ()
+            assert retained.lease.received and original.lease.received
             both(case, busy=False)
         finally:
             first.close()
             last.close()
+            case.pool.close()
 
 
-def test_busy_actual_upload_workspace_returns_pending_without_replacing_it(tmp_path):
-    from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+def test_busy_actual_upload_workspace_returns_pending_without_replacing_it(
+    tmp_path, *, journal_constructions
+):
 
-    with prepared(tmp_path) as case:
-        with lease_journal_validation_workspace(case.native_root, case.job.workspace_id) as held:
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
+        with leased_workspace(case.native_root, case.job.workspace_id) as held:
             assert held is not None
             with quantum(case) as (work, source):
                 assert open_result(work, source) is None
@@ -161,8 +192,10 @@ def test_busy_actual_upload_workspace_returns_pending_without_replacing_it(tmp_p
 
 
 @pytest.mark.parametrize("changed", ["source", "job", "archive", "lease"])
-def test_live_fences_reject_warm_result_before_another_borrow(tmp_path, changed):
-    with prepared(tmp_path) as case:
+def test_live_fences_reject_warm_result_before_another_borrow(
+    tmp_path, changed, *, journal_constructions
+):
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, source):
             open_result(work, source).close()
             retained = work._slot.sealed
@@ -191,8 +224,10 @@ def test_live_fences_reject_warm_result_before_another_borrow(tmp_path, changed)
 
 
 @pytest.mark.parametrize("after", [False, True])
-def test_actual_native_close_fault_retains_selected_slot_and_both_locks(tmp_path, after):
-    with prepared(tmp_path) as case:
+def test_actual_native_close_fault_retains_selected_slot_and_both_locks(
+    tmp_path, after, *, journal_constructions
+):
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, source):
             open_result(work, source).close()
             retained = work._slot.sealed
@@ -210,7 +245,7 @@ def test_actual_native_close_fault_retains_selected_slot_and_both_locks(tmp_path
 
 @pytest.mark.parametrize("after", [False, True])
 def test_partial_native_constructor_cleanup_remains_reachable_in_actual_slot(
-    tmp_path, monkeypatch, after
+    tmp_path, monkeypatch, after, *, journal_constructions
 ):
     restore = JournalStore._restore_workspace
 
@@ -219,7 +254,7 @@ def test_partial_native_constructor_cleanup_remains_reachable_in_actual_slot(
         store._storage.connection = UncertainClose(store.db, lost_reply=after, failures=2)
         raise InterruptedError("actual sealed opening interrupted")
 
-    with prepared(tmp_path) as case:
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
         path = case.native_root / case.job.workspace_id / "snapshot.sqlite3"
         before, inode = path.read_bytes(), path.stat().st_ino
         with monkeypatch.context() as patch:
@@ -238,15 +273,17 @@ def test_partial_native_constructor_cleanup_remains_reachable_in_actual_slot(
 
 
 @pytest.mark.parametrize("domain", ["child", "parent"])
-def test_actual_reference_release_failure_keeps_slot_for_ordered_retry(tmp_path, domain):
+def test_actual_reference_release_failure_keeps_slot_for_ordered_retry(
+    tmp_path, domain, *, journal_constructions
+):
     from tests.unit.test_journal_validation_workspace_reference import CloseFault
 
-    with prepared(tmp_path) as case:
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, source):
             open_result(work, source).close()
             references = work._slot.sealed.references
             reference = getattr(references, domain)
-            reference._stream = CloseFault(reference._stream, after=False)
+            reference._resource = CloseFault(reference._resource, after=False)
         with pytest.raises(OSError, match="close unconfirmed"):
             case.pool.close()
         assert not reference.closed and case.pool.active_build_ids() == (case.build_id,)
@@ -256,8 +293,10 @@ def test_actual_reference_release_failure_keeps_slot_for_ordered_retry(tmp_path,
         both(case, busy=False)
 
 
-def test_another_collection_is_rejected_before_native_opening(tmp_path, monkeypatch):
-    with prepared(tmp_path) as case:
+def test_another_collection_is_rejected_before_native_opening(
+    tmp_path, monkeypatch, *, journal_constructions
+):
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
 
         def forbidden(*args, **kwargs):
             pytest.fail("another collection acquired Native storage")
@@ -268,8 +307,14 @@ def test_another_collection_is_rejected_before_native_opening(tmp_path, monkeypa
                 work.sealed_journal(source, collection_id=2)
 
 
-def test_original_full_archive_commitment_must_match_before_native_admission(tmp_path, monkeypatch):
-    with prepared(tmp_path, archive_raw=b"different archived journal\n") as case:
+def test_original_full_archive_commitment_must_match_before_native_admission(
+    tmp_path, monkeypatch, *, journal_constructions
+):
+    with prepared(
+        tmp_path,
+        archive_raw=b"different archived journal\n",
+        journal_constructions=journal_constructions,
+    ) as case:
 
         def forbidden(*args, **kwargs):
             pytest.fail("a different original source opened Native storage")
@@ -280,8 +325,8 @@ def test_original_full_archive_commitment_must_match_before_native_admission(tmp
                 open_result(work, source)
 
 
-def test_unsealed_source_has_no_frozen_fast_path(tmp_path):
-    with prepared(tmp_path) as case:
+def test_unsealed_source_has_no_frozen_fast_path(tmp_path, *, journal_constructions):
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
         with case.factory() as session, session.begin():
             session.execute(update(Journal).values(state="validating"))
         with quantum(case) as (work, source):
@@ -290,8 +335,10 @@ def test_unsealed_source_has_no_frozen_fast_path(tmp_path):
 
 
 @pytest.mark.parametrize("damage", ["missing", "corrupt"])
-def test_confirmed_missing_or_corrupt_storage_is_never_recreated(tmp_path, damage):
-    with prepared(tmp_path) as case:
+def test_confirmed_missing_or_corrupt_storage_is_never_recreated(
+    tmp_path, damage, *, journal_constructions
+):
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
         path = case.native_root / case.job.workspace_id / "snapshot.sqlite3"
         before = b"unrecognized owned Native storage"
         if damage == "missing":

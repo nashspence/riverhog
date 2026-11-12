@@ -8,6 +8,7 @@ from pathlib import Path
 
 from riverhog_growth_contracts import declare_growth
 from workspace_reclamation import (
+    FileReclamationOwner,
     InvalidWorkspaceFiles,
     WorkspaceReclamationCapacity,
     reclaim_retired_files,
@@ -43,6 +44,7 @@ class JournalReclamationProgress:
 def reclaim_retired_journal_workspace(
     directory: Path,
     *,
+    receiver: FileReclamationOwner,
     octet_budget: int = 4 * 1024 * 1024,
 ) -> JournalReclamationProgress:
     """Dispose at most one admitted file extent after exclusive owner retirement.
@@ -68,7 +70,9 @@ def reclaim_retired_journal_workspace(
     if type(octet_budget) is not int or octet_budget < 1:
         raise ValueError("journal reclamation requires a positive octet budget")
     try:
-        progress = reclaim_retired_files(directory, names=_FILES, octet_budget=octet_budget)
+        progress = reclaim_retired_files(
+            directory, receiver=receiver, names=_FILES, octet_budget=octet_budget
+        )
     except InvalidWorkspaceFiles as error:
         raise InvalidJournalWorkspace(
             str(error).replace("retired workspace", "retired journal")

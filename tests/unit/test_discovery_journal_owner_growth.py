@@ -137,10 +137,12 @@ def seed_independent_registrations(work, framing, retained):
             ).close()
 
 
-def exercise(tmp_path, monkeypatch, record_property, operation):
+def exercise(tmp_path, monkeypatch, record_property, operation, *, journal_constructions):
     samples = []
     for retained in (1, 17, 1025):
-        with prepared(tmp_path / str(retained)) as case:
+        with prepared(
+            tmp_path / str(retained), journal_constructions=journal_constructions
+        ) as case:
             with quantum(case) as (work, framing):
                 # Actual unrelated durable registrations, not an invented count.
                 seed_independent_registrations(work, framing, retained)
@@ -160,7 +162,9 @@ def exercise(tmp_path, monkeypatch, record_property, operation):
                     assert metrics["child_opens"] == 0
                 elif operation is OPEN:
                     source = work.journal_source(framing)
-                    retained_child = child.DiscoveryJournalOwner(source)
+                    retained_child = child.DiscoveryJournalOwner(
+                        source, construction=journal_constructions.retain()
+                    )
                     work._slot.journal = retained_child
                     with observe(operation, monkeypatch) as metrics:
                         native = OPEN(
@@ -196,8 +200,12 @@ def exercise(tmp_path, monkeypatch, record_property, operation):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationWork.journal_source",
 )
-def test_original_source_preparation_dispatch(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, SOURCE)
+def test_original_source_preparation_dispatch(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path, monkeypatch, record_property, SOURCE, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -205,8 +213,12 @@ def test_original_source_preparation_dispatch(tmp_path, monkeypatch, record_prop
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationWork.journal",
 )
-def test_actual_child_open_and_warm_dispatch(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, JOURNAL)
+def test_actual_child_open_and_warm_dispatch(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path, monkeypatch, record_property, JOURNAL, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -214,8 +226,10 @@ def test_actual_child_open_and_warm_dispatch(tmp_path, monkeypatch, record_prope
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_owner.DiscoveryJournalOwner.open",
 )
-def test_actual_child_open_ports(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, OPEN)
+def test_actual_child_open_ports(tmp_path, monkeypatch, record_property, *, journal_constructions):
+    exercise(
+        tmp_path, monkeypatch, record_property, OPEN, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -223,8 +237,12 @@ def test_actual_child_open_ports(tmp_path, monkeypatch, record_property):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_owner.DiscoveryJournalOwner.close",
 )
-def test_actual_child_close_and_retry_ports(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, CLOSE)
+def test_actual_child_close_and_retry_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path, monkeypatch, record_property, CLOSE, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -232,8 +250,16 @@ def test_actual_child_close_and_retry_ports(tmp_path, monkeypatch, record_proper
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.journal_validation_workspace_references.JournalWorkspaceReferences.close",
 )
-def test_actual_child_parent_reference_release_ports(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, REFERENCES)
+def test_actual_child_parent_reference_release_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path,
+        monkeypatch,
+        record_property,
+        REFERENCES,
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -241,10 +267,14 @@ def test_actual_child_parent_reference_release_ports(tmp_path, monkeypatch, reco
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner.close",
 )
-def test_actual_child_cleanup_in_composed_application_close(tmp_path, monkeypatch, record_property):
+def test_actual_child_cleanup_in_composed_application_close(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
     samples = []
     for retained in (1, 17, 1025):
-        with prepared(tmp_path / str(retained)) as case:
+        with prepared(
+            tmp_path / str(retained), journal_constructions=journal_constructions
+        ) as case:
             recorder = Recorder()
             case.readers = [case.reader]
             case.pool._slots = Slots(recorder)
@@ -268,29 +298,43 @@ def test_actual_child_cleanup_in_composed_application_close(tmp_path, monkeypatc
                 values = dimensions(case, retained=retained, width=17)
                 values["path_octets"] = max(values["path_octets"], child_path_octets)
 
-                class Stream:
-                    def __init__(self, actual):
-                        self.actual = actual
+                originals = (references.parent, references.child)
+                reference_closes = []
+                actual_close = ValidationWorkspaceReference.close
 
-                    def close(self, _recorder=recorder):
-                        if _recorder.active:
-                            _recorder.metrics["stream_close_calls"] += 1
-                        return self.actual.close()
+                def received(
+                    reference,
+                    _close=actual_close,
+                    _originals=originals,
+                    _closes=reference_closes,
+                ):
+                    before = reference._resource.owner.metrics["close_calls"]
+                    try:
+                        return _close(reference)
+                    finally:
+                        if reference in _originals:
+                            _closes.append(
+                                reference._resource.owner.metrics["close_calls"] - before
+                            )
 
-                references.parent._stream = Stream(references.parent._stream)
-                references.child._stream = Stream(references.child._stream)
-                with recorder.observe(case, cold=False):
-                    case.pool.close()
+                with monkeypatch.context() as patch:
+                    patch.setattr(ValidationWorkspaceReference, "close", received)
+                    with recorder.observe(case, cold=False):
+                        case.pool.close()
                 assert recorder.metrics["native_closed_connections"] == 1
-                assert recorder.metrics["stream_close_calls"] == 2
+                assert sum(reference_closes) == 2 and all(
+                    reference.closed for reference in originals
+                )
                 samples.append(recorder.sample(type(case.pool).close, values))
     record_property("growth_samples", samples)
 
 
-def custody_exercise(tmp_path, monkeypatch, record_property, operation):
+def custody_exercise(tmp_path, monkeypatch, record_property, operation, *, journal_constructions):
     samples = []
     for retained in (1, 17, 1025):
-        with prepared(tmp_path / str(retained)) as case:
+        with prepared(
+            tmp_path / str(retained), journal_constructions=journal_constructions
+        ) as case:
             with quantum(case) as (work, framing):
                 seed_independent_registrations(work, framing, retained)
                 assert work.journal(framing) is not None
@@ -326,8 +370,12 @@ def custody_exercise(tmp_path, monkeypatch, record_property, operation):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_owner.DiscoveryJournalCustodySource.verify_current",
 )
-def test_actual_child_source_currentness_ports(tmp_path, monkeypatch, record_property):
-    custody_exercise(tmp_path, monkeypatch, record_property, CURRENT)
+def test_actual_child_source_currentness_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    custody_exercise(
+        tmp_path, monkeypatch, record_property, CURRENT, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -335,8 +383,12 @@ def test_actual_child_source_currentness_ports(tmp_path, monkeypatch, record_pro
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_owner.DiscoveryJournalCustodySource.read_window",
 )
-def test_actual_child_source_window_ports(tmp_path, monkeypatch, record_property):
-    custody_exercise(tmp_path, monkeypatch, record_property, WINDOW)
+def test_actual_child_source_window_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    custody_exercise(
+        tmp_path, monkeypatch, record_property, WINDOW, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -344,5 +396,9 @@ def test_actual_child_source_window_ports(tmp_path, monkeypatch, record_property
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_owner.DiscoveryJournalCustodySource.read_exact",
 )
-def test_actual_child_source_exact_ports(tmp_path, monkeypatch, record_property):
-    custody_exercise(tmp_path, monkeypatch, record_property, EXACT)
+def test_actual_child_source_exact_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    custody_exercise(
+        tmp_path, monkeypatch, record_property, EXACT, journal_constructions=journal_constructions
+    )

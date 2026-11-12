@@ -2,15 +2,14 @@ from __future__ import annotations
 
 import errno
 import hashlib
-import os
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import replace
-from pathlib import Path
 
 import pytest
+import sqlite_admission
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
-from riverhog_provenance import JournalValidationSession, parse_journal
+from riverhog_provenance import JournalConstruction, JournalValidationSession, parse_journal
 from riverhog_provenance.errors import IncompleteSourceError
 from riverhog_provenance.journal_store import InvalidJournalWorkspace
 from test_child_admission_growth import octets
@@ -26,42 +25,45 @@ OPEN = JournalValidationSession.open_retained.__func__
 
 
 @contextmanager
-def storage_fault(kind):
+def storage_fault(kind, construction):
     with pytest.MonkeyPatch.context() as patch:
         if kind in {"space", "quota"}:
-            actual = os.open
+            actual = JournalConstruction.create_exclusive
 
-            def open_file(path, *args, **kwargs):
-                if Path(path).name == "snapshot.sqlite3":
+            def open_file(original, path):
+                if original is construction:
                     raise OSError(
                         errno.ENOSPC if kind == "space" else errno.EDQUOT,
-                        ("selected native admission capacity"),
+                        "selected Native creation admission capacity",
                     )
-                return actual(path, *args, **kwargs)
+                return actual(original, path)
 
-            patch.setattr(os, "open", open_file)
+            patch.setattr(JournalConstruction, "create_exclusive", open_file)
         elif kind == "connect":
+            actual = sqlite_admission.SqliteConnectionAdmission._connect
 
-            def connect(*_args, **_kwargs):
-                raise sqlite3.OperationalError("selected native connection unavailable")
+            def connect(admission, *args, **kwargs):
+                if kwargs.get("_reservation") is construction.scope._lease:
+                    raise sqlite3.OperationalError(
+                        "selected Native connection admission unavailable"
+                    )
+                return actual(admission, *args, **kwargs)
 
-            patch.setattr(sqlite3, "connect", connect)
+            patch.setattr(sqlite_admission.SqliteConnectionAdmission, "_connect", connect)
         elif kind == "sql":
-            import test_journal_session_lifecycle_growth as lifecycle
+            actual = sqlite_admission._Cursor.execute
 
-            actual = lifecycle.LifecycleCursor
+            def execute(cursor, sql, parameters=()):
+                if cursor._owner._lease is construction.scope._lease:
+                    if not sql.startswith("EXPLAIN QUERY PLAN"):
+                        raise sqlite3.OperationalError("selected Native statement capacity")
+                return actual(cursor, sql, parameters)
 
-            class Cursor(actual):
-                def execute(self, sql, parameters=()):
-                    if sql == "PRAGMA auto_vacuum=INCREMENTAL":
-                        raise sqlite3.OperationalError("selected native statement capacity")
-                    return super().execute(sql, parameters)
-
-            patch.setattr(lifecycle, "LifecycleCursor", Cursor)
+            patch.setattr(sqlite_admission._Cursor, "execute", execute)
         yield
 
 
-def measure(directory, source, catalog, kind):
+def measure(directory, source, catalog, kind, *, journal_constructions):
     callbacks = []
     recorder = LifecycleRecorder()
     admissions = int(kind in {"corrupt", "format", "epoch", "epoch-text", "sql"})
@@ -82,14 +84,21 @@ def measure(directory, source, catalog, kind):
         "on_storage_close": recorder.callback(lambda: callbacks.append(1)),
     }
     failure = None
-    with storage_fault(kind), recorder.kernel():
+    construction = journal_constructions.retain()
+    recorder.retain_construction(construction)
+    with storage_fault(kind, construction), recorder.kernel():
         with observe_replay(recorder, catalog, dimensions, root_operation=OPEN) as (
             frame,
             complete,
         ):
             recorder.recording = True
             try:
-                JournalValidationSession.open_retained(directory, recorder.source(source), **kwargs)
+                JournalValidationSession.open_retained(
+                    directory,
+                    recorder.source(source),
+                    **kwargs,
+                    construction=construction,
+                )
             except BaseException as error:
                 failure = error
             finally:
@@ -124,6 +133,7 @@ def measure(directory, source, catalog, kind):
         else InvalidJournalWorkspace
     )
     assert isinstance(failure, expected)
+    assert construction.close_step() and construction.received
     assert callbacks == []
     assert source.calls == ([("verify",)] if checks else [])
     assert (
@@ -143,7 +153,7 @@ def measure(directory, source, catalog, kind):
     return sample
 
 
-def admission_samples(root, catalog, journal, *, samples, large=True):
+def admission_samples(root, catalog, journal, *, samples, large=True, journal_constructions):
     frame = parse_journal(journal)[0]
     widths = (64, 8192) if large else (64,)
     kinds = (
@@ -166,7 +176,7 @@ def admission_samples(root, catalog, journal, *, samples, large=True):
         for kind in kinds:
             directory = root / f"{width}-{kind}"
             if kind != "directory":
-                directory.mkdir()
+                directory.mkdir(mode=0o700)
             source = FiniteSource(journal, frame, 1, catalog, directory_width=width)
             path = directory / "snapshot.sqlite3"
             if kind in {"format", "epoch", "epoch-text", "connect"}:
@@ -177,6 +187,7 @@ def admission_samples(root, catalog, journal, *, samples, large=True):
                     worker_epoch=2,
                     create=True,
                     catalog=catalog,
+                    construction=journal_constructions.retain(),
                 )
                 current.close()
                 if kind in {"format", "epoch-text"}:
@@ -198,7 +209,9 @@ def admission_samples(root, catalog, journal, *, samples, large=True):
                 source.binding = replace(source.binding, catalog_sha256="0" * 64)
             source.calls.clear()
             before = None if not path.is_file() else hashlib.sha256(path.read_bytes()).hexdigest()
-            sample = measure(directory, source, catalog, kind)
+            sample = measure(
+                directory, source, catalog, kind, journal_constructions=journal_constructions
+            )
             samples.append(sample)
             if before is not None:
                 assert hashlib.sha256(path.read_bytes()).hexdigest() == before
@@ -212,8 +225,10 @@ def admission_samples(root, catalog, journal, *, samples, large=True):
     operation="riverhog_provenance.journal_session.JournalValidationSession.open_retained",
 )
 def test_actual_native_input_and_storage_admission_rejections(
-    tmp_path, catalog, journal, record_property
+    tmp_path, catalog, journal, record_property, *, journal_constructions
 ):
     samples = []
     record_property("growth_samples", samples)
-    admission_samples(tmp_path, catalog, journal, samples=samples)
+    admission_samples(
+        tmp_path, catalog, journal, samples=samples, journal_constructions=journal_constructions
+    )

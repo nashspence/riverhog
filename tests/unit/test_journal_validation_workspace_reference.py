@@ -7,16 +7,25 @@ import pytest
 from riverhog_core import journal_validation_workspace as kernel
 from riverhog_core import journal_validation_workspace_reference as owner
 
+from tests.support.validation_workspace import leased_workspace, retained_workspace_frames
+
+
+@pytest.fixture(autouse=True)
+def original_workspace_receivers():
+    with retained_workspace_frames() as frames:
+        yield frames
+
+
 ONE, TWO = "1" * 32, "2" * 32
 
 
 @contextmanager
 def held(root, *, shared=False):
     if shared:
-        with kernel.lease_journal_validation_workspace(root, ONE, create=True) as directory:
+        with leased_workspace(root, ONE, create=True) as directory:
             assert directory is not None
     captured = []
-    with kernel.lease_journal_validation_workspace(
+    with leased_workspace(
         root, ONE, create=not shared, shared=shared, on_custody=captured.append
     ) as directory:
         assert directory is not None
@@ -24,7 +33,7 @@ def held(root, *, shared=False):
 
 
 def available(root, *, busy, shared=False):
-    with kernel.lease_journal_validation_workspace(root, ONE, shared=shared) as directory:
+    with leased_workspace(root, ONE, shared=shared) as directory:
         assert (directory is None) is busy
 
 
@@ -58,7 +67,7 @@ def test_independent_references_keep_the_actual_original_lock_until_last_close(t
     available(root, busy=True)
     if shared:
         available(root, busy=False, shared=True)
-    with kernel.lease_journal_validation_workspace(root, TWO, create=True) as independent:
+    with leased_workspace(root, TWO, create=True) as independent:
         assert independent is not None
     first.close()
     available(root, busy=True)
@@ -77,15 +86,15 @@ def test_failed_close_retries_the_same_stream_without_closing_a_recycled_descrip
     references = []
     with held(root) as custody:
         reference = owner.retain_validation_workspace(custody, on_reference=references.append)
-        original = reference._stream
+        original = reference._resource
         descriptor = original.fileno()
         fault = CloseFault(original, after=after)
-        reference._stream = fault
+        reference._resource = fault
     replacement = None
     try:
         with pytest.raises(OSError, match="unconfirmed"):
             reference.close()
-        assert not reference.closed and reference._stream is fault and fault.calls == 1
+        assert not reference.closed and reference._resource is fault and fault.calls == 1
         available(root, busy=not after)
         if after:
             replacement = os.open(tmp_path / "replacement", os.O_RDWR | os.O_CREAT, 0o600)
@@ -130,7 +139,7 @@ def test_post_acquisition_custody_loss_keeps_unconfirmed_cleanup_reachable(
     root = tmp_path / "retained"
     references, faults, checks = [], [], []
     current = kernel.ValidationWorkspaceCustody.verify_current
-    file_io = owner.FileIO
+    actual_duplicate = owner.RetainedWorkspaceResource.duplicate
     with held(root) as custody:
 
         def changed(selected):
@@ -139,15 +148,16 @@ def test_post_acquisition_custody_loss_keeps_unconfirmed_cleanup_reachable(
             checks.append(1)
             return current(selected) if len(checks) == 1 else False
 
-        def stream(*args, **kwargs):
-            result = CloseFault(file_io(*args, **kwargs))
-            faults.append(result)
+        def duplicate(selected, source):
+            result = actual_duplicate(selected, source)
+            references[-1]._resource = CloseFault(selected)
+            faults.append(references[-1]._resource)
             return result
 
         with monkeypatch.context() as patch:
             patch.setattr(kernel.ValidationWorkspaceCustody, "verify_current", changed)
             if failed_cleanup:
-                patch.setattr(owner, "FileIO", stream)
+                patch.setattr(owner.RetainedWorkspaceResource, "duplicate", duplicate)
                 expected, message = OSError, "close unconfirmed"
             else:
                 expected, message = (
@@ -175,18 +185,18 @@ def test_early_rejection_releases_only_its_acquisition_and_preserves_original_cu
 
         def retain(reference):
             references.append(reference)
-            assert reference._stream is None
+            assert reference._resource.owner.state == "new"
             if failure == "callback":
                 raise InterruptedError("retention callback interrupted")
             if failure == "callback-close":
                 reference.close()
 
-        def duplicate(_descriptor):
+        def duplicate(_resource, _source):
             raise OSError("descriptor acquisition failed")
 
         with monkeypatch.context() as patch:
             if failure == "duplicate":
-                patch.setattr(owner.os, "dup", duplicate)
+                patch.setattr(owner.RetainedWorkspaceResource, "duplicate", duplicate)
                 expected, message = OSError, "descriptor acquisition failed"
             elif failure == "callback-close":
                 expected, message = (
@@ -207,7 +217,9 @@ def test_early_rejection_releases_only_its_acquisition_and_preserves_original_cu
     "fault",
     [None, ("child", False), ("child", True), ("parent", False), ("parent", True)],
 )
-def test_actual_frozen_native_borrowers_retain_both_parent_and_child_custody(tmp_path, fault):
+def test_actual_frozen_native_borrowers_retain_both_parent_and_child_custody(
+    tmp_path, fault, *, journal_constructions
+):
     from riverhog_core import canonical_discovery_journal_registration as registration
     from riverhog_core.canonical_discovery_journal_source import DiscoveryJournalSource
     from riverhog_provenance import (
@@ -241,7 +253,7 @@ def test_actual_frozen_native_borrowers_retain_both_parent_and_child_custody(tmp
                 selected = registration.register_discovery_journal(db, key, work, source.binding)
             child_root = case.metadata.custody.directory / "journals"
             captured = []
-            with kernel.lease_journal_validation_workspace(
+            with leased_workspace(
                 child_root, child_identity, create=True, on_custody=captured.append
             ) as directory:
                 assert directory is not None
@@ -262,6 +274,7 @@ def test_actual_frozen_native_borrowers_retain_both_parent_and_child_custody(tmp
                     catalog=fixture.catalog,
                     on_storage_open=handles.append,
                     on_storage_close=release,
+                    construction=journal_constructions.retain(),
                 )
                 with case.metadata.transaction() as (db, key):
                     assert registration.confirm_discovery_journal(db, key, work, selected)
@@ -282,12 +295,12 @@ def test_actual_frozen_native_borrowers_retain_both_parent_and_child_custody(tmp
         # Both original kernel contexts and actual Core metadata are now closed.
         # Only the last independently owned Native result retains these locks.
         for root, workspace in ((parent_root, parent_identity), (child_root, child_identity)):
-            with kernel.lease_journal_validation_workspace(root, workspace) as blocked:
+            with leased_workspace(root, workspace) as blocked:
                 assert blocked is None
         assert last.journal_sha256 == source.binding.source_sha256
         if fault is not None:
             selected_reference = child if fault[0] == "child" else parent
-            selected_reference._stream = CloseFault(selected_reference._stream, after=fault[1])
+            selected_reference._resource = CloseFault(selected_reference._resource, after=fault[1])
             with pytest.raises(OSError, match="close unconfirmed"):
                 last.close()
             assert not selected_reference.closed
@@ -296,7 +309,7 @@ def test_actual_frozen_native_borrowers_retain_both_parent_and_child_custody(tmp
         last.close()
         assert child.closed and parent.closed
         for root, workspace in ((parent_root, parent_identity), (child_root, child_identity)):
-            with kernel.lease_journal_validation_workspace(root, workspace) as released:
+            with leased_workspace(root, workspace) as released:
                 assert released is not None
         assert (directory / "snapshot.sqlite3").stat().st_ino == identity
     finally:

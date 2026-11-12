@@ -169,11 +169,17 @@ def seed(factory, retained):
         )
 
 
-def exercise(tmp_path, monkeypatch, record_property, operation):
+def exercise(tmp_path, monkeypatch, record_property, operation, *, journal_constructions):
     samples = []
     catalog = source_owner.admission_provenance_catalog()
     for retained in (1, 17, 1025):
-        with sealed(tmp_path / str(retained)) as (_, factory, _root, job, _raw):
+        with sealed(tmp_path / str(retained), journal_constructions=journal_constructions) as (
+            _,
+            factory,
+            _root,
+            job,
+            _raw,
+        ):
             seed(factory, retained)
             with factory() as session, session.begin():
                 admitted = PREPARE(session, 1, JOURNAL, catalog=catalog)
@@ -229,9 +235,11 @@ def exercise(tmp_path, monkeypatch, record_property, operation):
     operation="riverhog_core.services.upload_journal_result.prepare_upload_journal_result",
 )
 def test_actual_detached_admission_work_is_independent_of_other_catalog_rows(
-    tmp_path, monkeypatch, record_property
+    tmp_path, monkeypatch, record_property, *, journal_constructions
 ):
-    exercise(tmp_path, monkeypatch, record_property, PREPARE)
+    exercise(
+        tmp_path, monkeypatch, record_property, PREPARE, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -239,5 +247,9 @@ def test_actual_detached_admission_work_is_independent_of_other_catalog_rows(
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_result.SealedJournalResultAdmission.verify_current",
 )
-def test_actual_detached_currentness_is_one_indexed_join(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, CURRENT)
+def test_actual_detached_currentness_is_one_indexed_join(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path, monkeypatch, record_property, CURRENT, journal_constructions=journal_constructions
+    )

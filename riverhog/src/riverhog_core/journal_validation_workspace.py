@@ -7,7 +7,7 @@ import os
 import re
 import stat
 from collections.abc import Callable, Iterator
-from contextlib import ExitStack, contextmanager
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -21,6 +21,9 @@ from riverhog_growth_contracts import (
     declare_growth,
 )
 from riverhog_provenance import JournalValidationCapacity
+
+from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 
 
 def _lease_declaration() -> Declaration:
@@ -37,12 +40,12 @@ def _lease_declaration() -> Declaration:
         id="riverhog-server.validation-workspace-lease.growth/v1",
         authority="riverhog-server",
         subjects=("riverhog_core.journal_validation_workspace.lease_journal_validation_workspace",),
-        scope=("POSIX owner-private workspace lease acquisition and complete context release"),
+        scope=("POSIX owner-private original workspace lease acquisition and body receiving"),
         starts_at=(
             "enter the context with the exact absolute root, workspace identity and custody mode"
         ),
         ends_at=(
-            "release all owned descriptors after normal exit, busy/stale selection or rejection"
+            "receive the original lease after body exit; retain parents of independent references"
         ),
         dimensions=(
             Dimension(
@@ -76,10 +79,10 @@ def _lease_declaration() -> Declaration:
                 "stat_calls",
                 COUNT,
                 "upper",
-                count(16),
+                count(21),
                 (
-                    "Four exact descriptor checks and twelve known Core/Native "
-                    "database and sidecar probes; no payload read."
+                    "Four private descriptor checks, twelve known sidecar probes "
+                    "and at most five actual native kind checks."
                 ),
             ),
             Bound(
@@ -169,6 +172,21 @@ def _lease_declaration() -> Declaration:
                 "equal",
                 count(0),
                 ("The exact selected identity is opened without listing siblings or children."),
+            ),
+            Bound("dup_calls", COUNT, "equal", count(0), "Lease selection duplicates no resource."),
+            Bound(
+                "native_control_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        scale(2, dimension("root_path_octets")),
+                        scale(4, dimension("workspace_identity_octets")),
+                        Expression("constant", value=108, unit=OCTETS),
+                    ),
+                ),
+                "Two absolute opens and the native four-scan relative name validation.",
             ),
         ),
         conditions=(
@@ -271,12 +289,24 @@ class ValidationWorkspaceCustody:
     _root: int
     _owner: int
     _lease: int
+    _resources: tuple[
+        RetainedWorkspaceResource, RetainedWorkspaceResource, RetainedWorkspaceResource
+    ]
     _held: bool = True
 
     def verify_current(self) -> bool:
         if not self._held:
             return False
         try:
+            if not all(
+                original.owner.state == "live"
+                and original.borrow.active
+                and original.fileno() == descriptor
+                for original, descriptor in zip(
+                    self._resources, (self._root, self._owner, self._lease), strict=True
+                )
+            ):
+                return False
             descriptors = (
                 _private_directory(self._root),
                 _private_directory(self._owner),
@@ -297,24 +327,21 @@ class ValidationWorkspaceCustody:
 
 
 def _select_workspace(
-    root_fd: int,
-    resources: ExitStack,
+    root_owner: RetainedWorkspaceResource,
+    receiver: ValidationWorkspaceLease,
     *,
     workspace_id: str,
     create: bool,
     shared: bool,
     creation_current: Callable[[], bool] | None,
-) -> tuple[int, int] | None:
+) -> tuple[RetainedWorkspaceResource, RetainedWorkspaceResource] | None:
     """Select under actual root-inode custody before any control can exist."""
     import fcntl
 
-    coordinator = os.open(
-        ".coordinator",
-        os.O_RDWR | (os.O_CREAT if create else 0) | os.O_NOFOLLOW,
-        0o600,
-        dir_fd=root_fd,
-    )
-    resources.callback(os.close, coordinator)
+    root_fd = root_owner.fileno()
+    coordinator_owner = receiver.coordinator
+    coordinator_owner.acquire(".coordinator", parent=root_owner, writable=True, create=create)
+    coordinator = coordinator_owner.fileno()
     _private_file(coordinator)
     os.fsync(coordinator)
     try:
@@ -332,31 +359,27 @@ def _select_workspace(
                 pass
             else:
                 created = True
-        owner = os.open(workspace_id, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=root_fd)
-        resources.callback(os.close, owner)
+        directory_owner = receiver.directory
+        directory_owner.acquire(workspace_id, parent=root_owner)
+        owner = directory_owner.fileno()
         _private_directory(owner)
+        lease_owner = receiver.existing_lease
         try:
-            lease = os.open(".lease", os.O_RDWR | os.O_NOFOLLOW, dir_fd=owner)
+            lease_owner.acquire(".lease", parent=directory_owner, writable=True)
         except FileNotFoundError:
             if not create:
                 raise
-            # Only interrupted initial creation can lack a lease.
-            # Every known Core/Native database or sidecar establishes existing owned state.
             for state_name in _RETAINED_STATE_NAMES:
                 try:
                     os.stat(state_name, dir_fd=owner, follow_symlinks=False)
                 except FileNotFoundError:
                     continue
                 raise LostJournalValidationWorkspace("retained validation lease was lost") from None
-            lease = os.open(
-                ".lease",
-                os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
-                0o600,
-                dir_fd=owner,
+            lease_owner = receiver.select_created_lease()
+            lease_owner.acquire(
+                ".lease", parent=directory_owner, writable=True, create=True, exclusive=True
             )
-            resources.callback(os.close, lease)
-        else:
-            resources.callback(os.close, lease)
+        lease = lease_owner.fileno()
         _private_file(lease)
         busy = False
         try:
@@ -370,7 +393,7 @@ def _select_workspace(
                 os.fsync(root_fd)
     finally:
         fcntl.flock(coordinator, fcntl.LOCK_UN)
-    return None if busy else (owner, lease)
+    return None if busy else (directory_owner, lease_owner)
 
 
 @contextmanager
@@ -378,27 +401,25 @@ def lease_journal_validation_workspace(
     root: Path,
     workspace_id: str,
     *,
+    receiver: ValidationWorkspaceLease,
     create: bool = False,
     shared: bool = False,
     creation_current: Callable[[], bool] | None = None,
     on_custody: Callable[[ValidationWorkspaceCustody], None] | None = None,
 ) -> Iterator[Path | None]:
-    """Lease one exact catalog-selected directory, preserving its files on release.
+    """Lease an exact selected directory through its original retained native frame.
 
-    All workers resuming this job use the same retained root. The catalog owns
-    attempt selection, worker epochs, terminal disposition and bounded cleanup.
-    A busy lease returns None without waiting; unrelated job leases remain free.
-    Existing directories, databases or leases are never replaced or repaired.
-    Root-inode custody covers the prefix before a coordinator exists. The owner
-    creation check runs under both root locks before directory creation;
-    a stale selection returns None so a retired identity cannot reappear.
-    Shared leases admit only existing owner-confirmed frozen readers; all
-    writers and reclamation require an exclusive lease until every reader closes.
+    The caller retains receiver and its original admission before entering.
+    Body exit invalidates custody and receives the original lease. Independent
+    references retain their original native parents; the caller must receive
+    the complete frame before releasing its original reservation.
     """
     import fcntl
 
     if not root.is_absolute() or re.fullmatch(r"[0-9a-f]{32}", workspace_id) is None:
         raise ValueError("validation workspace requires an absolute root and exact owned identity")
+    if not isinstance(receiver, ValidationWorkspaceLease):
+        raise TypeError("validation workspace requires its retained original native lease frame")
     if type(create) is not bool or type(shared) is not bool:
         raise TypeError("validation workspace creation and reader mode must be explicit")
     if create and shared:
@@ -406,52 +427,56 @@ def lease_journal_validation_workspace(
 
     exposed = False
     custody: ValidationWorkspaceCustody | None = None
+    receiver.begin()
     try:
-        with ExitStack() as resources:
-            root_created = False
-            if create:
-                try:
-                    root.mkdir(mode=0o700)
-                except FileExistsError:
-                    pass
-                else:
-                    root_created = True
-            root_fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-            resources.callback(os.close, root_fd)
-            _private_directory(root_fd)
-            if root_created:
-                parent = os.open(root.parent, os.O_RDONLY | os.O_DIRECTORY)
-                try:
-                    os.fsync(parent)
-                finally:
-                    os.close(parent)
+        root_created = False
+        if create:
             try:
-                fcntl.flock(root_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except BlockingIOError:
-                exposed = True
-                yield None
-                return
-            try:
-                selected = _select_workspace(
-                    root_fd,
-                    resources,
-                    workspace_id=workspace_id,
-                    create=create,
-                    shared=shared,
-                    creation_current=creation_current,
-                )
-            finally:
-                fcntl.flock(root_fd, fcntl.LOCK_UN)
+                root.mkdir(mode=0o700)
+            except FileExistsError:
+                pass
+            else:
+                root_created = True
+        root_owner = receiver.root
+        root_owner.acquire(root)
+        root_fd = root_owner.fileno()
+        _private_directory(root_fd)
+        if root_created:
+            receiver.parent_sync.acquire(root.parent)
+            os.fsync(receiver.parent_sync.fileno())
+            receiver.parent_sync.close()
+        try:
+            fcntl.flock(root_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
             exposed = True
-            if selected is None:
-                yield None
-                return
-            owner, lease = selected
-            custody = ValidationWorkspaceCustody(root / workspace_id, root_fd, owner, lease)
-            resources.callback(setattr, custody, "_held", False)
-            if on_custody is not None:
-                on_custody(custody)
-            yield custody.directory
+            yield None
+            return
+        try:
+            selected = _select_workspace(
+                root_owner,
+                receiver,
+                workspace_id=workspace_id,
+                create=create,
+                shared=shared,
+                creation_current=creation_current,
+            )
+        finally:
+            fcntl.flock(root_fd, fcntl.LOCK_UN)
+        exposed = True
+        if selected is None:
+            yield None
+            return
+        directory_owner, lease_owner = selected
+        custody = ValidationWorkspaceCustody(
+            root / workspace_id,
+            root_fd,
+            directory_owner.fileno(),
+            lease_owner.fileno(),
+            (root_owner, directory_owner, lease_owner),
+        )
+        if on_custody is not None:
+            on_custody(custody)
+        yield custody.directory
     except _StaleWorkspaceCreation:
         yield None
     except OSError as error:
@@ -469,6 +494,7 @@ def lease_journal_validation_workspace(
     finally:
         if custody is not None:
             custody._held = False
+        receiver.finish()
 
 
 def _custody_declaration() -> Declaration:

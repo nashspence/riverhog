@@ -28,9 +28,14 @@ KINDS = owner._KINDS
 
 
 @pytest.fixture(scope="module")
-def original_histories(tmp_path_factory):
+def original_histories(tmp_path_factory, *, journal_constructions):
     path = tmp_path_factory.mktemp("native-history-selectors") / "source.sqlite3"
-    with primary_work(path, inherited_extent=RETAINED_HISTORY_EXTENT, retained=True) as values:
+    with primary_work(
+        path,
+        inherited_extent=RETAINED_HISTORY_EXTENT,
+        retained=True,
+        journal_constructions=journal_constructions,
+    ) as values:
         db, key, primary, descriptor, state, *_ = values
         descriptors = [
             MemberHistoryDocument.from_json_bytes(raw.encode())
@@ -309,9 +314,13 @@ def test_real_archive_member_identity_uses_sha256_with_native_uuid_coordinates(c
 
 
 @pytest.mark.parametrize("extent", [BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT])
-def test_authored_import_extent_is_retained_on_documentary_child(tmp_path, extent):
+def test_authored_import_extent_is_retained_on_documentary_child(
+    tmp_path, extent, *, journal_constructions
+):
     path = tmp_path / "extent.sqlite3"
-    with primary_work(path, inherited_extent=extent, retained=True) as values:
+    with primary_work(
+        path, inherited_extent=extent, retained=True, journal_constructions=journal_constructions
+    ) as values:
         db, key, primary, descriptor, *_ = values
         for (raw,) in list(db.execute("SELECT descriptor_json FROM discovery_history_descriptors")):
             item = MemberHistoryDocument.from_json_bytes(raw.encode())

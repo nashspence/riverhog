@@ -18,6 +18,7 @@ from riverhog_provenance import InvalidJournalGraphCertificate, JournalValidatio
 from riverhog_provenance.constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from sqlalchemy import select
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_journal_capture import Frame, retained
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL, Chunk
@@ -49,9 +50,11 @@ READ_FUNCTIONS = (WINDOW, EXACT, SOURCE_WINDOW, SOURCE_EXACT, CAPTURE)
 
 
 @contextmanager
-def build_cases(root, *, large=True):
+def build_cases(root, *, large=True, journal_constructions):
     with ExitStack() as resources:
-        cases = resources.enter_context(job_cases(root / "jobs", large=large))
+        cases = resources.enter_context(
+            job_cases(root / "jobs", large=large, journal_constructions=journal_constructions)
+        )
         if large:
             catalog = source_owner.admission_provenance_catalog()
             for name, raw in (
@@ -70,7 +73,7 @@ def build_cases(root, *, large=True):
                     certificate_binding=certificates.binding.to_json(),
                 )
                 assert opening is not None and opening.state == "opening"
-                with owner.lease_journal_validation_workspace(
+                with leased_workspace(
                     path / "native",
                     opening.workspace_id,
                     create=True,
@@ -88,6 +91,7 @@ def build_cases(root, *, large=True):
                         create=True,
                         catalog=catalog,
                         certificates=certificates,
+                        construction=journal_constructions.retain(),
                     )
                     try:
                         progress = native.progress()
@@ -140,8 +144,11 @@ def build_cases(root, *, large=True):
 
 
 @pytest.fixture(scope="module")
-def read_cases(tmp_path_factory):
-    with build_cases(tmp_path_factory.mktemp("owned-source-read-inputs")) as cases:
+def read_cases(tmp_path_factory, *, module_journal_constructions):
+    with build_cases(
+        tmp_path_factory.mktemp("owned-source-read-inputs"),
+        journal_constructions=module_journal_constructions,
+    ) as cases:
         yield cases
 
 
@@ -303,7 +310,7 @@ def read_samples(cases, mode, *, samples):
         if prefix < total:
             vectors.add((prefix, 1))
         root = Path(case.engine.url.database).parent / "native"
-        with owner.lease_journal_validation_workspace(root, current.job.workspace_id) as directory:
+        with leased_workspace(root, current.job.workspace_id) as directory:
             assert directory is not None
             for offset, size in sorted(vectors):
                 pages = selected_pages(case, mode, offset, size)

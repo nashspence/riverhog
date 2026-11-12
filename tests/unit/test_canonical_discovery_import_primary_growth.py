@@ -142,14 +142,18 @@ def sample(dims, metrics):
     operation="riverhog_core.canonical_discovery_primary_work.verify_history_import_primary",
 )
 def test_actual_import_primary_equality_is_indexed_metadata_point_work(
-    tmp_path, monkeypatch, record_property
+    tmp_path, monkeypatch, record_property, *, journal_constructions
 ):
     samples = []
     for retained in (1, 17, 1025):
         for width in (1, 17, 128):
             path = tmp_path / f"{retained}-{width}.sqlite"
             with primary_work(
-                path, retained=True, inherited_extent=BOUND_HISTORY_EXTENT, worker_id="w" * width
+                path,
+                retained=True,
+                inherited_extent=BOUND_HISTORY_EXTENT,
+                worker_id="w" * width,
+                journal_constructions=journal_constructions,
             ) as values:
                 db, key, owner, imports, record, history = imported_primary(values)
                 frame_type = values[-1]

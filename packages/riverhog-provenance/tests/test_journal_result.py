@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import sqlite3
-from contextlib import closing
+from contextlib import closing, contextmanager
 from dataclasses import replace
 
 import pytest
+import sqlite_admission as sqlite_owner
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import (
@@ -26,7 +27,7 @@ from test_journal_graph_certificates import Certificates
 from test_retained_journal_session import ATTEMPT, OwnedSource, directory, finish
 
 
-def completed(tmp_path, journal, catalog, *, certified=False):
+def completed(tmp_path, journal, catalog, *, certified=False, journal_constructions):
     path = directory(tmp_path)
     source = OwnedSource(journal, catalog)
     certificates = Certificates(source) if certified else None
@@ -38,6 +39,7 @@ def completed(tmp_path, journal, catalog, *, certified=False):
         create=True,
         catalog=catalog,
         certificates=certificates,
+        construction=journal_constructions.retain(),
     ) as session:
         confirmed = finish(session)
         with session.result() as result:
@@ -50,6 +52,39 @@ def logical_octets(value):
     if value is None:
         return 0
     return len(value) if isinstance(value, bytes) else len(str(value).encode())
+
+
+@contextmanager
+def admitted_result_metrics(monkeypatch):
+    """Measure the actual admitted cursors, retaining their real close receipts."""
+    execute = sqlite_owner._Cursor.execute
+
+    def executing(cursor, statement, parameters=()):
+        connection = cursor.connection
+        if getattr(connection, "recording", False):
+            connection.metrics["bound_parameter_octets"] += sum(map(logical_octets, parameters))
+            connection.executions.append((statement, parameters, cursor))
+        return execute(cursor, statement, parameters)
+
+    def observe_rows(actual, many):
+        def reading(cursor, *args, **kwargs):
+            rows = actual(cursor, *args, **kwargs)
+            connection = cursor.connection
+            if getattr(connection, "recording", False):
+                values = rows if many else (() if rows is None else (rows,))
+                for row in values:
+                    connection.metrics["returned_rows"] += 1
+                    connection.metrics["returned_metadata_octets"] += sum(map(logical_octets, row))
+            return rows
+
+        return reading
+
+    with monkeypatch.context() as patch:
+        patch.setattr(sqlite_owner._Cursor, "execute", executing)
+        for name in ("fetchone", "fetchmany", "fetchall"):
+            actual = getattr(sqlite_owner._Cursor, name)
+            patch.setattr(sqlite_owner._Cursor, name, observe_rows(actual, name != "fetchone"))
+        yield
 
 
 class ResultCursor(sqlite3.Cursor):
@@ -121,7 +156,7 @@ def history(raw, frame_count, catalog):
     operation="riverhog_provenance.journal_result.open_retained_journal_result",
 )
 def test_retained_result_admission_records_actual_work(
-    tmp_path, journal, graph, who, catalog, monkeypatch, record_property
+    tmp_path, journal, graph, who, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     binding = growth_binding(open_retained_journal_result)
     projection = project_bindings((binding,))
@@ -150,7 +185,9 @@ def test_retained_result_admission_records_actual_work(
         raw = history(raw, frame_count, catalog)
         fixture = tmp_path / str(index)
         fixture.mkdir()
-        path, source, confirmed, _, expected = completed(fixture, raw, catalog)
+        path, source, confirmed, _, expected = completed(
+            fixture, raw, catalog, journal_constructions=journal_constructions
+        )
         with closing(connect(path / "snapshot.sqlite3")) as db:
             headers = []
             for table in (
@@ -190,8 +227,10 @@ def test_retained_result_admission_records_actual_work(
 
         def observed_connect(database_path, *, observations=metrics, opened=connections, **kwargs):
             assert str(database_path).endswith("?mode=ro")
-            connection = connect(database_path, factory=ResultConnection, **kwargs)
+            connection = connect(database_path, **kwargs)
             connection.metrics = observations
+            connection.executions = []
+            connection.recording = True
             opened.append(connection)
 
             def trace(_statement):
@@ -225,10 +264,15 @@ def test_retained_result_admission_records_actual_work(
             observations["opening_callbacks"] += 1
             kept.append(opening)
 
-        with monkeypatch.context() as patch:
-            patch.setattr(sqlite3, "connect", observed_connect)
+        with monkeypatch.context() as patch, admitted_result_metrics(patch):
+            patch.setattr(sqlite_owner, "_connect", observed_connect)
             result = open_retained_journal_result(
-                path, source, confirmed=confirmed, catalog=catalog, on_storage_open=retained
+                path,
+                source,
+                confirmed=confirmed,
+                catalog=catalog,
+                on_storage_open=retained,
+                construction=journal_constructions.retain(),
             )
         assert len(openings) == 1 and openings[0].closed
         connection = result._store.db
@@ -237,7 +281,9 @@ def test_retained_result_admission_records_actual_work(
             opened_databases=len(connections),
             changed_rows=connection.total_changes,
             source_payload_octets=sum(octets for _offset, octets in source.calls),
-            open_cursors=sum(not cursor.closed for _sql, _params, cursor in connection.executions),
+            open_cursors=sum(
+                not cursor._cleanup_complete for _sql, _params, cursor in connection.executions
+            ),
         )
         executions = list(connection.executions)
         connection.recording = False
@@ -250,7 +296,14 @@ def test_retained_result_admission_records_actual_work(
                         row[3]
                         for row in oracle.execute("EXPLAIN QUERY PLAN " + statement, parameters)
                     )
-                    assert "SCAN " not in plan and "TEMP B-TREE" not in plan, plan
+                    if plan == "SCAN CONSTANT ROW":
+                        # This fixed engine-capability probe reads no resource table.
+                        assert statement == (
+                            "SELECT sqlite_compileoption_used('TEMP_STORE=0'), "
+                            "sqlite_compileoption_used('TEMP_STORE=3')"
+                        )
+                    else:
+                        assert "SCAN " not in plan and "TEMP B-TREE" not in plan, plan
         with result:
             assert result.anchor == expected["journal"]
             assert len(result.frames) == frame_count
@@ -272,9 +325,11 @@ def test_retained_result_admission_records_actual_work(
 
 
 def test_confirmed_result_reads_only_fixed_metadata_and_preserves_worker_checkpoint(
-    tmp_path, journal, catalog, monkeypatch
+    tmp_path, journal, catalog, monkeypatch, *, journal_constructions
 ):
-    path, source, confirmed, _, expected = completed(tmp_path, journal, catalog)
+    path, source, confirmed, _, expected = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     before = (path / "snapshot.sqlite3").read_bytes()
     connect = sqlite3.connect
     statements = []
@@ -299,11 +354,17 @@ def test_confirmed_result_reads_only_fixed_metadata_and_preserves_worker_checkpo
         connection.set_trace_callback(statements.append)
         return connection
 
-    monkeypatch.setattr(sqlite3, "connect", readonly)
+    monkeypatch.setattr(sqlite_owner, "_connect", readonly)
     monkeypatch.setattr(source, "read_window", forbidden)
     monkeypatch.setattr(source, "read_exact", forbidden)
     monkeypatch.setattr(JournalValidationSession, "advance", forbidden)
-    with open_retained_journal_result(path, source, confirmed=confirmed, catalog=catalog) as result:
+    with open_retained_journal_result(
+        path,
+        source,
+        confirmed=confirmed,
+        catalog=catalog,
+        construction=journal_constructions.retain(),
+    ) as result:
         assert result.anchor == expected["journal"]
         count = len(statements)
         with result.borrow() as independent:
@@ -317,17 +378,27 @@ def test_confirmed_result_reads_only_fixed_metadata_and_preserves_worker_checkpo
 
 
 def test_frozen_result_sqlite_connection_cannot_write_even_if_query_only_is_disabled(
-    tmp_path, journal, catalog
+    tmp_path, journal, catalog, *, journal_constructions
 ):
-    path, source, confirmed, _, _ = completed(tmp_path, journal, catalog)
-    with open_retained_journal_result(path, source, confirmed=confirmed, catalog=catalog) as result:
+    path, source, confirmed, _, _ = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
+    with open_retained_journal_result(
+        path,
+        source,
+        confirmed=confirmed,
+        catalog=catalog,
+        construction=journal_constructions.retain(),
+    ) as result:
         db = result._store.db
         db.execute("PRAGMA query_only=OFF").close()
         with pytest.raises(sqlite3.OperationalError, match="readonly"):
             db.execute("UPDATE journal_workspace SET format='changed'")
         db.rollback()
     with pytest.raises(ValueError, match="cannot create"):
-        JournalStore.open_retained(path, create=True, read_only=True)
+        JournalStore.open_retained(
+            path, create=True, read_only=True, construction=journal_constructions.retain()
+        )
 
 
 @pytest.mark.parametrize(
@@ -345,8 +416,12 @@ def test_frozen_result_sqlite_connection_cannot_write_even_if_query_only_is_disa
         {"source_octets": 0},
     ],
 )
-def test_frozen_result_requires_the_exact_confirmed_progress(tmp_path, journal, catalog, fault):
-    path, source, confirmed, _, _ = completed(tmp_path, journal, catalog)
+def test_frozen_result_requires_the_exact_confirmed_progress(
+    tmp_path, journal, catalog, fault, *, journal_constructions
+):
+    path, source, confirmed, _, _ = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     before = (path / "snapshot.sqlite3").read_bytes()
     released = []
     with pytest.raises((InvalidJournalWorkspace, StaleValidationCheckpoint)):
@@ -356,6 +431,7 @@ def test_frozen_result_requires_the_exact_confirmed_progress(tmp_path, journal, 
             confirmed=replace(confirmed, **fault),
             catalog=catalog,
             on_storage_close=lambda: released.append("closed"),
+            construction=journal_constructions.retain(),
         )
     assert not released
     assert (path / "snapshot.sqlite3").read_bytes() == before
@@ -363,9 +439,11 @@ def test_frozen_result_requires_the_exact_confirmed_progress(tmp_path, journal, 
 
 @pytest.mark.parametrize("when", ["before", "during"])
 def test_frozen_result_checks_live_source_authority_on_both_sides_of_admission(
-    tmp_path, journal, catalog, when
+    tmp_path, journal, catalog, when, *, journal_constructions
 ):
-    path, source, confirmed, _, _ = completed(tmp_path, journal, catalog)
+    path, source, confirmed, _, _ = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     calls = []
 
     def current():
@@ -374,16 +452,22 @@ def test_frozen_result_checks_live_source_authority_on_both_sides_of_admission(
 
     source.verify_current = current
     with pytest.raises(IncompleteSourceError):
-        open_retained_journal_result(path, source, confirmed=confirmed, catalog=catalog)
+        open_retained_journal_result(
+            path,
+            source,
+            confirmed=confirmed,
+            catalog=catalog,
+            construction=journal_constructions.retain(),
+        )
     assert len(calls) == (1 if when == "before" else 2)
 
 
 @pytest.mark.parametrize("changed", [False, True])
 def test_frozen_result_requires_its_original_certificate_binding(
-    tmp_path, journal, catalog, changed
+    tmp_path, journal, catalog, changed, *, journal_constructions
 ):
     path, source, confirmed, certificates, expected = completed(
-        tmp_path, journal, catalog, certified=True
+        tmp_path, journal, catalog, certified=True, journal_constructions=journal_constructions
     )
     with open_retained_journal_result(
         path,
@@ -391,6 +475,7 @@ def test_frozen_result_requires_its_original_certificate_binding(
         confirmed=confirmed,
         catalog=catalog,
         certificates=certificates.binding,
+        construction=journal_constructions.retain(),
     ) as result:
         assert result.anchor == expected["journal"]
     binding = replace(certificates.binding, manifest_sha256="e" * 64) if changed else None
@@ -401,11 +486,16 @@ def test_frozen_result_requires_its_original_certificate_binding(
             confirmed=confirmed,
             catalog=catalog,
             certificates=binding,
+            construction=journal_constructions.retain(),
         )
 
 
-def test_frozen_result_releases_owner_only_after_last_borrow(tmp_path, journal, catalog):
-    path, source, confirmed, _, expected = completed(tmp_path, journal, catalog)
+def test_frozen_result_releases_owner_only_after_last_borrow(
+    tmp_path, journal, catalog, *, journal_constructions
+):
+    path, source, confirmed, _, expected = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     released = []
     first = open_retained_journal_result(
         path,
@@ -413,6 +503,7 @@ def test_frozen_result_releases_owner_only_after_last_borrow(tmp_path, journal, 
         confirmed=confirmed,
         catalog=catalog,
         on_storage_close=lambda: released.append("closed"),
+        construction=journal_constructions.retain(),
     )
     last = first.borrow()
     first.close()
@@ -426,9 +517,11 @@ def test_frozen_result_releases_owner_only_after_last_borrow(tmp_path, journal, 
 
 @pytest.mark.parametrize("fault", ["missing", "input", "unfinished"])
 def test_frozen_result_never_recreates_or_repairs_lost_native_state(
-    tmp_path, journal, catalog, fault
+    tmp_path, journal, catalog, fault, *, journal_constructions
 ):
-    path, source, confirmed, _, _ = completed(tmp_path, journal, catalog)
+    path, source, confirmed, _, _ = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     if fault == "missing":
         (path / "snapshot.sqlite3").unlink()
     else:
@@ -449,6 +542,7 @@ def test_frozen_result_never_recreates_or_repairs_lost_native_state(
             confirmed=confirmed,
             catalog=catalog,
             on_storage_close=lambda: released.append("closed"),
+            construction=journal_constructions.retain(),
         )
     assert not released
     assert (path / "snapshot.sqlite3").exists() is (fault != "missing")
@@ -465,19 +559,35 @@ def test_frozen_result_never_recreates_or_repairs_lost_native_state(
         {"catalog_sha256": "0" * 64},
     ],
 )
-def test_frozen_result_cannot_adopt_another_source_or_mode(tmp_path, journal, catalog, fault):
-    path, source, confirmed, _, _ = completed(tmp_path, journal, catalog)
+def test_frozen_result_cannot_adopt_another_source_or_mode(
+    tmp_path, journal, catalog, fault, *, journal_constructions
+):
+    path, source, confirmed, _, _ = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     source.binding = replace(source.binding, **fault)
     with pytest.raises((InvalidJournalWorkspace, StaleValidationCheckpoint)):
-        open_retained_journal_result(path, source, confirmed=confirmed, catalog=catalog)
+        open_retained_journal_result(
+            path,
+            source,
+            confirmed=confirmed,
+            catalog=catalog,
+            construction=journal_constructions.retain(),
+        )
 
 
 def test_parallel_borrowed_readers_preserve_exact_retained_snapshot(
-    tmp_path, journal, catalog, parallel_snapshot_reads
+    tmp_path, journal, catalog, parallel_snapshot_reads, *, journal_constructions
 ):
-    path, source, confirmed, _, expected = completed(tmp_path, journal, catalog)
+    path, source, confirmed, _, expected = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     with open_retained_journal_result(
-        path, source, confirmed=confirmed, catalog=catalog
+        path,
+        source,
+        confirmed=confirmed,
+        catalog=catalog,
+        construction=journal_constructions.retain(),
     ) as summary:
         parallel_snapshot_reads(summary)
         assert summary.materialize() == expected

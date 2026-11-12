@@ -25,6 +25,7 @@ from ._session_input import RetainedInput
 from .errors import IncompleteSourceError
 from .graph_certificates import JournalGraphCertificateBinding
 from .journal import JournalSummary
+from .journal_construction import JournalConstruction
 from .journal_result_opening import JournalResultOpening
 from .journal_session import (
     JournalValidationProgress,
@@ -219,6 +220,7 @@ def open_retained_journal_result(
     directory: Path,
     source: JournalValidationSource,
     *,
+    construction: JournalConstruction,
     confirmed: JournalValidationProgress,
     catalog: ContractCatalog | None = None,
     certificates: JournalGraphCertificateBinding | None = None,
@@ -242,87 +244,96 @@ def open_retained_journal_result(
     there for explicit retry. Success transfers custody to the result; closing
     the now-empty opening cannot invalidate that result or its other borrowers.
     """
-    selected = catalog or ContractCatalog()
-    binding = source.binding
-    if confirmed.complete is not True or confirmed.phase != "done":
-        raise InvalidJournalWorkspace("a frozen result requires confirmed complete progress")
-    if binding.catalog_sha256 != selected.checkpoint_sha256():
-        raise InvalidJournalWorkspace("frozen result catalog differs from its current owner")
-    if source.verify_current() is not True:
-        raise IncompleteSourceError("frozen journal source is no longer current")
-    prefix_binding = binding.to_json()
-    if certificates is not None:
-        if certificates.source != binding:
-            raise InvalidJournalWorkspace("frozen graph evidence belongs to another source")
-        prefix_binding = canonical_json_bytes(
-            {"source": prefix_binding, "graph_certificate": certificates.to_json()}
-        ).decode()
-    opening = JournalResultOpening()
-    store_opened = False
+    if not isinstance(construction, JournalConstruction):
+        raise TypeError("retained result requires its original construction frame")
+    construction.begin()
     try:
-        if on_storage_open is not None:
-            on_storage_open(opening)
-        if opening.closed:
-            raise InvalidJournalWorkspace("frozen result opening closed before acquisition")
-        store = JournalStore.open_retained(
-            directory, read_only=True, on_storage_open=opening._retain
-        )
-        store_opened = True
-        prefix = JournalPrefix(
-            store.db,
-            attempt_id=confirmed.attempt_id,
-            source_binding=prefix_binding,
-            catalog=selected,
-            require_profiles=binding.require_profiles,
-            expected_anchor=expected_anchor,
-            require_exact_tail=require_exact_tail,
-        )
-        ledger = ValidationLedger(
-            store.db,
-            attempt_id=confirmed.attempt_id,
-            binding=prefix.binding,
-            worker_epoch=confirmed.worker_epoch,
-        )
-        snapshot = ledger.load()
-        source_cursor = RetainedInput(ledger, source)
-        progress = _checkpoint_progress(
-            confirmed.attempt_id, ledger, snapshot, source_cursor.cursor.byte_offset
-        )
-        if progress != confirmed or not source_cursor.complete or source_cursor.pending:
-            raise InvalidJournalWorkspace("frozen result differs from its confirmed checkpoint")
-        with closing(
-            store.db.execute("SELECT 1 FROM journal_validation_frame WHERE singleton=1")
-        ) as rows:
-            if rows.fetchone() is not None:
-                raise InvalidJournalWorkspace("frozen result has an unfinished frame")
-        state = prefix.finish()
-        if (
-            state.journal_id != binding.journal_id
-            or state.byte_count != int(binding.source_bytes)
-            or state.frame_count != int(binding.frame_count)
-            or state.hexdigest != binding.source_sha256
-            or store.frame_count != state.frame_count
-        ):
-            raise InvalidJournalWorkspace("frozen result differs from its exact source")
-        if source.binding != binding or source.verify_current() is not True:
-            raise IncompleteSourceError("frozen journal source changed during result admission")
-        store.freeze()
-        result = JournalSummary(
-            state.journal_id,
-            store.frames,
-            store.graph_validation,
-            store.retired,
-            state.hexdigest,
-            state.byte_count,
-            store.origins,
-        )
-        object.__setattr__(result, "_store", store)
-    except BaseException:
-        # A failing Store constructor already attempted its own cleanup.
-        # Its actual handle remains in the early-retained opening for retry.
-        if store_opened:
-            opening.close()
-        raise
-    store._storage.on_close = on_storage_close
-    opening._transfer()
-    return result
+        selected = catalog or ContractCatalog()
+        binding = source.binding
+        if confirmed.complete is not True or confirmed.phase != "done":
+            raise InvalidJournalWorkspace("a frozen result requires confirmed complete progress")
+        if binding.catalog_sha256 != selected.checkpoint_sha256():
+            raise InvalidJournalWorkspace("frozen result catalog differs from its current owner")
+        if source.verify_current() is not True:
+            raise IncompleteSourceError("frozen journal source is no longer current")
+        prefix_binding = binding.to_json()
+        if certificates is not None:
+            if certificates.source != binding:
+                raise InvalidJournalWorkspace("frozen graph evidence belongs to another source")
+            prefix_binding = canonical_json_bytes(
+                {"source": prefix_binding, "graph_certificate": certificates.to_json()}
+            ).decode()
+        opening = JournalResultOpening(construction)
+        store_opened = False
+        try:
+            if on_storage_open is not None:
+                on_storage_open(opening)
+            if opening.closed:
+                raise InvalidJournalWorkspace("frozen result opening closed before acquisition")
+            store = JournalStore._open_retained(
+                directory,
+                construction=construction,
+                read_only=True,
+                on_storage_open=opening._retain,
+            )
+            store_opened = True
+            prefix = JournalPrefix(
+                store.db,
+                attempt_id=confirmed.attempt_id,
+                source_binding=prefix_binding,
+                catalog=selected,
+                require_profiles=binding.require_profiles,
+                expected_anchor=expected_anchor,
+                require_exact_tail=require_exact_tail,
+            )
+            ledger = ValidationLedger(
+                store.db,
+                attempt_id=confirmed.attempt_id,
+                binding=prefix.binding,
+                worker_epoch=confirmed.worker_epoch,
+            )
+            snapshot = ledger.load()
+            source_cursor = RetainedInput(ledger, source)
+            progress = _checkpoint_progress(
+                confirmed.attempt_id, ledger, snapshot, source_cursor.cursor.byte_offset
+            )
+            if progress != confirmed or not source_cursor.complete or source_cursor.pending:
+                raise InvalidJournalWorkspace("frozen result differs from its confirmed checkpoint")
+            with closing(
+                store.db.execute("SELECT 1 FROM journal_validation_frame WHERE singleton=1")
+            ) as rows:
+                if rows.fetchone() is not None:
+                    raise InvalidJournalWorkspace("frozen result has an unfinished frame")
+            state = prefix.finish()
+            if (
+                state.journal_id != binding.journal_id
+                or state.byte_count != int(binding.source_bytes)
+                or state.frame_count != int(binding.frame_count)
+                or state.hexdigest != binding.source_sha256
+                or store.frame_count != state.frame_count
+            ):
+                raise InvalidJournalWorkspace("frozen result differs from its exact source")
+            if source.binding != binding or source.verify_current() is not True:
+                raise IncompleteSourceError("frozen journal source changed during result admission")
+            store.freeze()
+            result = JournalSummary(
+                state.journal_id,
+                store.frames,
+                store.graph_validation,
+                store.retired,
+                state.hexdigest,
+                state.byte_count,
+                store.origins,
+            )
+            object.__setattr__(result, "_store", store)
+        except BaseException:
+            # A failing Store constructor already attempted its own cleanup.
+            # Its actual handle remains in the early-retained opening for retry.
+            if store_opened:
+                opening._receive_storage()
+            raise
+        store._storage.on_close = on_storage_close
+        opening._transfer()
+        return result
+    finally:
+        construction.end()

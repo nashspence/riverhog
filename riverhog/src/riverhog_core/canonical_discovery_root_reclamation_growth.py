@@ -65,7 +65,8 @@ def declare_root_reclamation_growth(operation: Callable[..., Any]) -> None:
         "uuid_values": 1,
         "open_calls": 2,
         "close_calls": 3,
-        "stat_calls": fences * 8 + 20,
+        "dup_calls": 0,
+        "stat_calls": fences * 8 + 20 + 2,
         "uid_calls": fences * 4 + 5,
         "fsync_calls": 2,
         "flock_calls": 2,
@@ -141,6 +142,15 @@ def declare_root_reclamation_growth(operation: Callable[..., Any]) -> None:
                     ("json_decoded_octets", 1, "Complete selected Native binding decoding."),
                     ("json_encoded_octets", 1, "Complete canonical original binding encoding."),
                 )
+            ),
+            Bound(
+                "native_control_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "constant", value=4 * (len(b"journals") + len(b".coordinator")) + 6, unit=OCTETS
+                ),
+                "Four scans of each relative root/control name and fixed dot comparisons.",
             ),
             Bound(
                 "encoded_path_octets",

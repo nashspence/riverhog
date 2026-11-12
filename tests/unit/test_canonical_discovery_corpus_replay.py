@@ -68,9 +68,14 @@ def finish(metadata, owner, original):
     ["sources", "selections", "semantics", "dependencies", "derivation", "specialization"],
 )
 def test_native_commit_before_core_confirmation_resumes_exact_inputs_without_reset(
-    case, qualified, original, interrupted_phase
+    case, qualified, original, interrupted_phase, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, anchors = seed(work.metadata, qualified)
@@ -89,7 +94,12 @@ def test_native_commit_before_core_confirmation_resumes_exact_inputs_without_res
             del prepared
     finally:
         app.close()
-    resumed = DiscoveryValidationOwner(case.factory, case.root)
+    resumed = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(resumed, case) as work:
             assert work.metadata.job.worker_epoch == epoch + 1
@@ -115,9 +125,14 @@ def test_native_commit_before_core_confirmation_resumes_exact_inputs_without_res
 
 
 def test_raw_sources_and_selected_prefixes_have_independent_counted_barriers(
-    case, qualified, original
+    case, qualified, original, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, anchors = seed(work.metadata, qualified)
@@ -139,9 +154,14 @@ def test_raw_sources_and_selected_prefixes_have_independent_counted_barriers(
 
 
 def test_clipped_or_unrequested_source_cannot_advance_full_source_coverage(
-    case, qualified, original
+    case, qualified, original, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, anchors = seed(work.metadata, qualified)
@@ -172,9 +192,14 @@ def test_clipped_or_unrequested_source_cannot_advance_full_source_coverage(
 
 
 def test_native_capacity_fault_does_not_publish_core_progress_and_retry_resumes(
-    case, qualified, original, monkeypatch
+    case, qualified, original, monkeypatch, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -201,9 +226,14 @@ def test_native_capacity_fault_does_not_publish_core_progress_and_retry_resumes(
 
 @pytest.mark.parametrize("damage", ["worker", "manifest", "missing", "extra", "count", "receipt"])
 def test_changed_original_inputs_or_cursor_never_advance_a_prepared_result(
-    case, qualified, original, damage
+    case, qualified, original, damage, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -239,9 +269,14 @@ def test_changed_original_inputs_or_cursor_never_advance_a_prepared_result(
 
 
 def test_only_current_detached_result_is_accepted_and_core_rollback_retries(
-    case, qualified, original
+    case, qualified, original, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -267,8 +302,15 @@ def test_only_current_detached_result_is_accepted_and_core_rollback_retries(
         app.close()
 
 
-def test_terminal_dispatch_rechecks_the_actual_native_file(case, qualified, original):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+def test_terminal_dispatch_rechecks_the_actual_native_file(
+    case, qualified, original, *, journal_constructions
+):
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -289,9 +331,14 @@ def test_terminal_dispatch_rechecks_the_actual_native_file(case, qualified, orig
 
 @pytest.mark.parametrize("damage", ["journal", "digest", "bytes", "frames", "terminal"])
 def test_wrong_native_source_result_cannot_count_an_original_input(
-    case, qualified, original, monkeypatch, damage
+    case, qualified, original, monkeypatch, damage, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, _ = seed(work.metadata, qualified)

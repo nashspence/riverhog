@@ -10,16 +10,14 @@ from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core.canonical_discovery_archive_work import StaleArchiveTask
 from riverhog_core.canonical_discovery_metadata import DiscoveryMetadata
 from riverhog_core.canonical_discovery_retired_metadata import RetiredDiscoveryMetadata
-from riverhog_core.journal_validation_retirement import (
-    RetiringJournalWorkspace,
-    lease_retiring_journal_workspace,
-)
+from riverhog_core.journal_validation_retirement import RetiringJournalWorkspace
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
-    lease_journal_validation_workspace,
 )
 from riverhog_provenance import JournalReplayBinding
 
+from tests.support.retirement_namespace import lease_retiring_journal_workspace
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_metadata import case as case
 from tests.unit.test_canonical_discovery_metadata import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_metadata import original as original
@@ -96,7 +94,7 @@ def test_retired_original_routing_reopens_without_live_worker_or_disposal(case, 
         assert first.binding == bindings[0] and first.confirmed is confirmed
         assert metadata.child() == first
         metadata.open()
-        with lease_journal_validation_workspace(case.root, job.workspace_id, shared=True) as reader:
+        with leased_workspace(case.root, job.workspace_id, shared=True) as reader:
             assert reader is None
         with pytest.raises(StaleArchiveTask):
             DiscoveryMetadata(case.factory, job, case.admission, metadata.retirement.custody)
@@ -110,7 +108,9 @@ def test_retired_original_routing_reopens_without_live_worker_or_disposal(case, 
     assert database.read_bytes() == before and (path / ".lease").exists()
 
 
-@pytest.mark.parametrize("damage", ("live", "unconfirmed", "later-phase", "path-only"))
+@pytest.mark.parametrize(
+    "damage", ("live", "unconfirmed", "later-phase", "path-only", "missing-namespace")
+)
 def test_retired_accessor_does_not_acquire_authority_from_labels(case, damage):
     job, path, _ = prepare_retired(case)
     with lease_retiring_journal_workspace(case.root, job.workspace_id) as custody:
@@ -120,8 +120,10 @@ def test_retired_accessor_does_not_acquire_authority_from_labels(case, damage):
             job = replace(job, storage_state="unconfirmed")
         elif damage == "later-phase":
             job = replace(job, reclamation_phase="metadata")
+        elif damage == "missing-namespace":
+            custody = replace(custody, namespace=None)
         else:
-            custody = RetiringJournalWorkspace(path)
+            custody = RetiringJournalWorkspace(path, None, None)
         with pytest.raises(StaleArchiveTask):
             RetiredDiscoveryMetadata(case.factory, job, custody)
 

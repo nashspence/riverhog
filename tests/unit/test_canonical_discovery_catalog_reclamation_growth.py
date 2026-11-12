@@ -7,11 +7,11 @@ import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core.canonical_discovery_parent_reclamation import DiscoveryParentRetirement
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import update
 
 from tests.support.catalog_work import CatalogRecorder, octets
+from tests.support.validation_workspace import leased_workspace
 from tests.support.workspace_reclamation import execution_sample
 from tests.unit.test_canonical_discovery_corpus_jobs_growth import cases as cases
 from tests.unit.test_canonical_discovery_corpus_jobs_growth import fixed_inputs as fixed_inputs
@@ -44,7 +44,7 @@ def test_measured_exact_catalog_deletion(cases, record_property):
                         .values(failure=failure)
                     )
                 job = replace(job, failure=failure)
-                with lease_journal_validation_workspace(
+                with leased_workspace(
                     case.root,
                     job.workspace_id,
                     create=True,

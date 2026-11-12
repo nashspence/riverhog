@@ -530,9 +530,7 @@ def test_semantic_versions_remain_decimal_text(tmp_path):
         assert current.advance().version == large + 1
 
 
-class WorkCursor(sqlite3.Cursor):
-    closed = False
-
+class WorkRows:
     def record(self, row):
         if row is not None:
             metrics = self.connection.metrics
@@ -545,6 +543,11 @@ class WorkCursor(sqlite3.Cursor):
             if "FROM dag_edges AS edges" in self.sql or "FROM dag_incoming AS incoming" in self.sql:
                 metrics["adjacency_rows"] += 1
         return row
+
+
+class WorkCursor(WorkRows, sqlite3.Cursor):
+    _row_observer = WorkRows
+    closed = False
 
     def fetchone(self):
         return self.record(super().fetchone())

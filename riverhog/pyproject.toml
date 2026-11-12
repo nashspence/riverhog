@@ -19,6 +19,7 @@ classifiers = [
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
+  "sqlite-admission>=0.1,<0.2",
   "retained-resource>=0.1,<0.2","release-documentation-lib>=0.1,<0.2",
   "alembic>=1.18.5,<2.0",
   "config-validation>=0.1,<0.2",
@@ -50,6 +51,7 @@ dependencies = [
 riverhog-api = "riverhog_api.app:main"
 
 [tool.uv.sources]
+sqlite-admission = { workspace = true }
 retained-resource = { workspace = true }
 release-documentation-lib = { workspace = true }
 config-validation = { workspace = true }

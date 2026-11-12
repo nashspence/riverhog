@@ -67,8 +67,12 @@ def declare_child_reclamation_growth(
         "catalog_changed_rows": 1,
         "uuid_values": 1,
         "open_calls": 6,
-        "close_calls": 6,
-        "stat_calls": 128,
+        # Six namespace handles plus dependent data/directory receiving if the
+        # Native extent call raises before it can receive its own file owners.
+        "close_calls": 6 + 2,
+        "dup_calls": 0,
+        # Two prefix/routing probes and four lease acquisitions validate their actual kind.
+        "stat_calls": 128 + 6,
         "uid_calls": 64,
         "fsync_calls": 8,
         "flock_calls": 3,
@@ -112,7 +116,8 @@ def declare_child_reclamation_growth(
                     COUNT,
                     "upper" if value else "equal",
                     count(value),
-                    "Direct original routing, catalog, custody and namespace primitives; "
+                    "Direct original routing, catalog, custody, namespace and "
+                    "dependent file receiving; "
                     "Native extent primitives remain separately delegated.",
                 )
                 for metric, value in limits.items()
@@ -150,6 +155,20 @@ def declare_child_reclamation_growth(
                     ("json_decoded_octets", 5, "Complete selected Native binding decoding."),
                     ("json_encoded_octets", 5, "Complete canonical original binding encoding."),
                 )
+            ),
+            Bound(
+                "native_control_octets",
+                OCTETS,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        scale(4, dim("path_octets")),
+                        Expression("constant", value=140, unit=OCTETS),
+                    ),
+                ),
+                "Original namespace acquisition/type-validation operands; relative child paths "
+                "fit within the complete selected path, plus fixed coordinator/lease controls.",
             ),
             Bound(
                 "encoded_path_octets",

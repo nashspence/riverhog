@@ -69,7 +69,9 @@ def test_exact_ranges_use_normalized_pages_without_reading_original_segments(tmp
 
 
 @pytest.mark.parametrize("raw", [b"x" * 17, b"\x1e{}\n" + b"x" * 17])
-def test_deferred_framing_preserves_short_original_fallback_and_native_failure_order(tmp_path, raw):
+def test_deferred_framing_preserves_short_original_fallback_and_native_failure_order(
+    tmp_path, raw, *, journal_constructions
+):
     with source_case(tmp_path / "deferred", raw, segments=2, byte_budget=1) as (case, work, source):
         captured = source._progress.cursor.byte_offset
         assert source._progress.phase == "deferred" and captured < len(raw)
@@ -88,6 +90,7 @@ def test_deferred_framing_preserves_short_original_fallback_and_native_failure_o
             attempt_id=case.metadata.job.workspace_id,
             worker_epoch=case.metadata.job.worker_epoch,
             create=True,
+            construction=journal_constructions.retain(),
         ) as native:
             with pytest.raises(type(original.value)) as retained:
                 for _ in range(10000):
@@ -167,7 +170,7 @@ def test_existing_frame_capacity_and_writer_boundary_remain_explicit(tmp_path):
 
 @pytest.mark.parametrize("exact_header", [True, False])
 def test_real_native_session_checks_original_journal_binding_from_normalized_pages(
-    tmp_path, exact_header
+    tmp_path, exact_header, *, journal_constructions
 ):
     from tests.support.canonical_discovery_work import corrected_journal_fixture
 
@@ -188,6 +191,7 @@ def test_real_native_session_checks_original_journal_binding_from_normalized_pag
             worker_epoch=case.metadata.job.worker_epoch,
             create=True,
             catalog=fixture.catalog,
+            construction=journal_constructions.retain(),
         ) as native:
 
             def finish():

@@ -24,6 +24,7 @@ from riverhog_growth_contracts import (
 from riverhog_provenance import (
     InvalidJournalGraphCertificate,
     InvalidJournalWorkspace,
+    JournalConstruction,
     JournalReplayBinding,
     JournalValidationBudget,
     JournalValidationCapacity,
@@ -31,6 +32,7 @@ from riverhog_provenance import (
     ProvenanceValidationError,
 )
 from riverhog_provenance_contracts import ContractCatalog
+from sqlite_admission import SqliteCapacity
 
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.growth_bounds import bound_envelope
@@ -38,6 +40,7 @@ from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     lease_journal_validation_workspace,
 )
+from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
 
 from . import collection_uploads as source_owner
 from . import upload_journal_validation_jobs as jobs
@@ -438,13 +441,22 @@ class _OwnedSource:
 @dataclass(slots=True)
 class _Slot:
     lock: Lock = field(default_factory=Lock)
+    construction: JournalConstruction | None = None
     session: JournalValidationSession | None = None
     resources: ExitStack = field(default_factory=ExitStack)
+    lease: ValidationWorkspaceLease = field(default_factory=ValidationWorkspaceLease)
+    transferred: bool = False
     closing: bool = False
     job: jobs.ValidationJob | None = None
     source: _OwnedSource | None = None
     work: source_owner._UploadJournalValidationWork | None = None
     catalog_sha256: str | None = None
+
+    def receive_workspace(self) -> None:
+        if self.construction is not None and not self.construction.dependents_received:
+            raise BlockingIOError("original Native construction dependents have not received")
+        self.resources.close()
+        self.lease.close()
 
     def retain_session(self, session: JournalValidationSession) -> None:
         if self.session is not None:
@@ -1816,9 +1828,19 @@ class UploadJournalValidationOwner:
     returns immediately, allowing the application scheduler to select other work.
     """
 
-    def __init__(self, factory: SessionFactory, root: Path, *, concurrency: int = 2) -> None:
+    def __init__(
+        self,
+        factory: SessionFactory,
+        root: Path,
+        *,
+        construction_factory: Callable[[], JournalConstruction],
+        concurrency: int = 2,
+    ) -> None:
         if type(concurrency) is not int or concurrency < 1:
             raise ValueError("journal validation concurrency must be positive")
+        if not callable(construction_factory):
+            raise TypeError("validation requires an application construction-scope factory")
+        self._construction_factory = construction_factory
         self.factory, self.root, self.concurrency = factory, root, concurrency
         self._lock = Lock()
         self._slots: dict[tuple[int, str, str], _Slot] = {}
@@ -1841,8 +1863,16 @@ class UploadJournalValidationOwner:
         slot.closing = True
         if slot.session is not None:
             slot.session.close()
+        if slot.construction is not None and not slot.construction.close_step():
+            raise BlockingIOError("original Native construction has not received")
+        if slot.session is not None:
+            if not slot.session.storage_received:
+                raise BlockingIOError("final Native readers still retain the original storage")
             slot.session = None
-        slot.resources.close()
+        if not slot.transferred:
+            slot.receive_workspace()
+        else:
+            slot.lease.close()
         with self._lock:
             if self._slots.get(key) is slot:
                 del self._slots[key]
@@ -1893,6 +1923,10 @@ class UploadJournalValidationOwner:
         slot: _Slot,
         catalog: ContractCatalog,
     ) -> ValidationAdvance | None:
+        if slot.construction is None:
+            slot.construction = self._construction_factory()
+            if not isinstance(slot.construction, JournalConstruction):
+                raise TypeError("validation requires an original passive Native construction")
         selected = UploadJournalValidationSource(self.factory, source, catalog=catalog)
         if not selected.verify_current():
             return ValidationAdvance(False)
@@ -1914,54 +1948,48 @@ class UploadJournalValidationOwner:
         slot.job = job
         creation_job = job
         resources = slot.resources
-        try:
-            directory = resources.enter_context(
-                lease_journal_validation_workspace(
-                    self.root,
-                    job.workspace_id,
-                    create=job.state == "opening",
-                    creation_current=lambda: jobs.creation_current(
-                        self.factory, source, creation_job
-                    ),
-                )
+        directory = resources.enter_context(
+            lease_journal_validation_workspace(
+                self.root,
+                job.workspace_id,
+                receiver=slot.lease,
+                create=job.state == "opening",
+                creation_current=lambda: jobs.creation_current(self.factory, source, creation_job),
             )
-            if directory is None:
-                return ValidationAdvance(False)
-            claimed = jobs.claim_worker(self.factory, source, job)
-            if claimed is None:
-                return ValidationAdvance(False)
-            job = slot.job = claimed
-            # Only unconfirmed initial creation may create a database. Active
-            # accepted work never turns a missing file into a fresh validator.
-            create = job.state == "opening" and not (directory / "snapshot.sqlite3").exists()
-            owned_source = _OwnedSource(self.factory, selected, job, certificates)
-            current = JournalValidationSession.open_retained(
-                directory,
-                owned_source,
-                attempt_id=job.workspace_id,
-                worker_epoch=job.worker_epoch,
-                create=create,
-                catalog=catalog,
-                certificates=certificates,
-                on_storage_close=resources.close,
-                on_storage_open=slot.retain_session,
-            )
-            assert slot.session is current
-            # Successful construction transfers the lease to final Native storage
-            # release, including independently borrowed frozen readers.
-            slot.resources = ExitStack()
-            slot.source, slot.work = owned_source, source
-            slot.catalog_sha256 = catalog.checkpoint_sha256()
-            adopted = jobs.publish_progress(self.factory, source, job, current.progress())
-            if adopted is None:
-                raise source_owner._StaleUploadJournalValidation
-            slot.job = adopted
-            return None
-        finally:
-            # An early Native callback retains even partially initialized storage.
-            # Its uncertain closure must precede release of application custody.
-            if slot.session is None:
-                resources.close()
+        )
+        if directory is None:
+            return ValidationAdvance(False)
+        claimed = jobs.claim_worker(self.factory, source, job)
+        if claimed is None:
+            return ValidationAdvance(False)
+        job = slot.job = claimed
+        # Only unconfirmed initial creation may create a database. Active
+        # accepted work never turns a missing file into a fresh validator.
+        create = job.state == "opening" and not (directory / "snapshot.sqlite3").exists()
+        owned_source = _OwnedSource(self.factory, selected, job, certificates)
+        current = JournalValidationSession.open_retained(
+            directory,
+            owned_source,
+            construction=slot.construction,
+            attempt_id=job.workspace_id,
+            worker_epoch=job.worker_epoch,
+            create=create,
+            catalog=catalog,
+            certificates=certificates,
+            on_storage_close=slot.receive_workspace,
+            on_storage_open=slot.retain_session,
+        )
+        assert slot.session is current
+        slot.transferred = True
+        # Successful construction transfers the lease to final Native storage
+        # release, including independently borrowed frozen readers.
+        slot.source, slot.work = owned_source, source
+        slot.catalog_sha256 = catalog.checkpoint_sha256()
+        adopted = jobs.publish_progress(self.factory, source, job, current.progress())
+        if adopted is None:
+            raise source_owner._StaleUploadJournalValidation
+        slot.job = adopted
+        return None
 
     def advance(
         self,
@@ -2020,7 +2048,7 @@ class UploadJournalValidationOwner:
             if outcome is not None:
                 self._drop(key, slot)
             return ValidationAdvance(after != before or outcome is not None, outcome)
-        except JournalValidationCapacity:
+        except (JournalValidationCapacity, SqliteCapacity):
             # A successfully opened atom stays warm; failed initialization retains
             # its early storage handle only until application cleanup confirms.
             if slot.source is None and not slot.closing:

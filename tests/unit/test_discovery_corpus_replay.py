@@ -7,10 +7,10 @@ from riverhog_core import canonical_discovery_archive_framing as framing
 from riverhog_core import canonical_discovery_corpus_replay as replay
 from riverhog_core.canonical_discovery_archive_source import ArchiveJournalSource
 from riverhog_core.canonical_discovery_archive_work import StaleArchiveTask
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_core.services.discovery_validation_owner import DiscoveryValidationOwner
 from riverhog_provenance import JournalSummary, JournalValidationBudget
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_source import case as case
 from tests.unit.test_canonical_discovery_corpus_source import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_corpus_source import original as original
@@ -65,8 +65,15 @@ def finish(work, selection):
     pytest.fail("finite actual corpus replay did not complete")
 
 
-def test_actual_full_source_and_selected_prefixes_share_retained_native_owners(case, qualified):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+def test_actual_full_source_and_selected_prefixes_share_retained_native_owners(
+    case, qualified, *, journal_constructions
+):
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, anchors = seed(work.metadata, qualified)
@@ -104,9 +111,14 @@ def test_actual_full_source_and_selected_prefixes_share_retained_native_owners(c
 
 
 def test_native_source_commit_before_core_reply_survives_actual_worker_takeover(
-    case, qualified, monkeypatch
+    case, qualified, monkeypatch, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -135,7 +147,12 @@ def test_native_source_commit_before_core_reply_survives_actual_worker_takeover(
                     work.advance_corpus(selection, byte_budget=65536)
     finally:
         app.close()
-    resumed = DiscoveryValidationOwner(case.factory, case.root)
+    resumed = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(resumed, case) as work:
             assert work.metadata.job.worker_epoch == epoch + 1
@@ -158,8 +175,15 @@ def test_native_source_commit_before_core_reply_survives_actual_worker_takeover(
         resumed.close()
 
 
-def test_initialized_conductor_is_not_recreated_after_control_loss(case, qualified):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+def test_initialized_conductor_is_not_recreated_after_control_loss(
+    case, qualified, *, journal_constructions
+):
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -177,9 +201,14 @@ def test_initialized_conductor_is_not_recreated_after_control_loss(case, qualifi
 
 @pytest.mark.parametrize("lost_reply", [False, True])
 def test_uncertain_actual_source_borrow_release_retains_both_custody_domains(
-    case, qualified, monkeypatch, lost_reply
+    case, qualified, monkeypatch, lost_reply, *, journal_constructions
 ):
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     actual, held, failures = JournalSummary.close, [], 2
     try:
         with unit(app, case) as work:
@@ -209,16 +238,16 @@ def test_uncertain_actual_source_borrow_release_retains_both_custody_domains(
                     work.advance_corpus(selection, byte_budget=65536)
             assert slot.closing and slot.replay_summary is held[0]
             assert app.active_build_ids() == (case.build_id,)
-            with lease_journal_validation_workspace(parent, workspace) as acquired:
+            with leased_workspace(parent, workspace) as acquired:
                 assert acquired is None
-            with lease_journal_validation_workspace(child.parent, child.name) as acquired:
+            with leased_workspace(child.parent, child.name) as acquired:
                 assert acquired is None
             app.close()
             assert slot.replay_summary is None
             assert app.active_build_ids() == ()
-        with lease_journal_validation_workspace(parent, workspace) as acquired:
+        with leased_workspace(parent, workspace) as acquired:
             assert acquired is not None
-        with lease_journal_validation_workspace(child.parent, child.name) as acquired:
+        with leased_workspace(child.parent, child.name) as acquired:
             assert acquired is not None
     finally:
         app.close()

@@ -107,7 +107,10 @@ class PhysicalObserver(Observer):
         db.set_progress_handler(stepped, 1)
         db.set_authorizer(authorized)
         try:
-            with super().observe(monkeypatch, source), monkeypatch.context() as patch:
+            with (
+                super().observe(monkeypatch, source, workspace, observe_sql=False),
+                monkeypatch.context() as patch,
+            ):
                 patch.setattr(workspace, "_db", PhysicalConnection(db, self))
                 patch.setattr(CanonicalCorpusValidator, "advance_order", native)
                 patch.setattr(ordering._CorpusOrder, "_next", transitioned)
@@ -195,7 +198,7 @@ def measure(workspace, source, edges, kind, monkeypatch, *, rows, byte_budget, r
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.advance_order",
 )
 def test_actual_retained_ordering_composes_lifecycle_and_physical_progress(
-    tmp_path, catalog, monkeypatch, record_property
+    tmp_path, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     samples = []
     shapes = [
@@ -229,9 +232,11 @@ def test_actual_retained_ordering_composes_lifecycle_and_physical_progress(
         other_kind = "specialization" if kind == "derivation" else "derivation"
         for index, (shape, edges, rows, byte_budget) in enumerate(shapes):
             path = tmp_path / (kind + str(index))
-            path.mkdir()
+            path.mkdir(mode=0o700)
             source = EmptySource(catalog)
-            workspace = open_workspace(path, source, create=True)
+            workspace = open_workspace(
+                path, source, create=True, journal_constructions=journal_constructions
+            )
             unrelated = edges_for("chain", 129)
             with workspace._operation():
                 insert(workspace._corpus, edges, kind)
@@ -270,7 +275,9 @@ def test_actual_retained_ordering_composes_lifecycle_and_physical_progress(
                     previous_vertices = result.vertices
                     if not resumed and shape in ("long-chain", "dense"):
                         workspace.close()
-                        workspace = open_workspace(path, source, epoch=1)
+                        workspace = open_workspace(
+                            path, source, epoch=1, journal_constructions=journal_constructions
+                        )
                         resumed = True
                     if result.complete:
                         break

@@ -11,7 +11,6 @@ from riverhog_core.canonical_discovery_archive_framing import ArchiveJournalFram
 from riverhog_core.canonical_discovery_archive_source import ArchiveJournalSource
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
-    lease_journal_validation_workspace,
 )
 from riverhog_core.services.discovery_validation_owner import DiscoveryValidationOwner
 from riverhog_provenance import (
@@ -23,12 +22,13 @@ from riverhog_provenance import (
 )
 
 from tests.support.canonical_discovery_work import corrected_journal_fixture
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_journal_source import source_case
 from tests.unit.test_discovery_validation_owner import UncertainClose
 
 
 @contextmanager
-def prepared(path, *, retained=1):
+def prepared(path, *, retained=1, journal_constructions):
     fixture, raw, _ = corrected_journal_fixture()
     journal_id = tuple(iter_journal_frames((raw,)))[0].document["journal_id"]
     with source_case(
@@ -49,7 +49,12 @@ def prepared(path, *, retained=1):
             reader=framing.source.reader,
             journal_id=journal_id,
         )
-    case.pool = DiscoveryValidationOwner(case.factory, case.root)
+    case.pool = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         yield case
     finally:
@@ -69,7 +74,7 @@ def quantum(case):
 
 
 def access(root, identity, *, busy):
-    with lease_journal_validation_workspace(root, identity) as path:
+    with leased_workspace(root, identity) as path:
         assert (path is None) is busy
 
 
@@ -80,8 +85,10 @@ def finish(session):
     pytest.fail("small actual Native journal did not complete")
 
 
-def test_source_is_registered_before_native_directory_creation_and_stays_warm(tmp_path):
-    with prepared(tmp_path / "warm") as case:
+def test_source_is_registered_before_native_directory_creation_and_stays_warm(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path / "warm", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             source = work.journal_source(framing)
             child_root = work.metadata.custody.directory / "journals"
@@ -108,8 +115,10 @@ def test_source_is_registered_before_native_directory_creation_and_stays_warm(tm
             ).stat().st_ino == identity
 
 
-def test_real_worker_handoff_resumes_same_child_inode_and_checkpoint(tmp_path):
-    with prepared(tmp_path / "replacement") as case:
+def test_real_worker_handoff_resumes_same_child_inode_and_checkpoint(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path / "replacement", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             native = work.journal(framing)
             before = native.advance(JournalValidationBudget(rows=1))
@@ -118,7 +127,12 @@ def test_real_worker_handoff_resumes_same_child_inode_and_checkpoint(tmp_path):
             directory = work.metadata.custody.directory / "journals" / binding.directory_id
             inode = (directory / "snapshot.sqlite3").stat().st_ino
         case.pool.close()
-        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        case.pool = DiscoveryValidationOwner(
+            case.factory,
+            case.root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         with quantum(case) as (work, framing):
             assert work.metadata.job.worker_epoch == epoch + 1
             assert work.journal_source(framing).binding == binding
@@ -130,8 +144,10 @@ def test_real_worker_handoff_resumes_same_child_inode_and_checkpoint(tmp_path):
 
 
 @pytest.mark.parametrize("after", [False, True])
-def test_actual_native_close_fault_keeps_both_lease_domains_until_retry(tmp_path, after):
-    with prepared(tmp_path / "uncertain") as case:
+def test_actual_native_close_fault_keeps_both_lease_domains_until_retry(
+    tmp_path, after, *, journal_constructions
+):
+    with prepared(tmp_path / "uncertain", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             native = work.journal(framing)
             binding = work.journal_source(framing).binding
@@ -151,7 +167,7 @@ def test_actual_native_close_fault_keeps_both_lease_domains_until_retry(tmp_path
 
 
 def test_failed_native_constructor_retains_partial_storage_and_retries_cleanup(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, *, journal_constructions
 ):
     initialize = JournalValidationSession._initialize
 
@@ -162,7 +178,7 @@ def test_failed_native_constructor_retains_partial_storage_and_retries_cleanup(
         )
         raise InterruptedError("actual Native initialization interrupted")
 
-    with prepared(tmp_path / "partial") as case:
+    with prepared(tmp_path / "partial", journal_constructions=journal_constructions) as case:
         with monkeypatch.context() as patch:
             patch.setattr(JournalValidationSession, "_initialize", interrupted)
             with pytest.raises(OSError, match="unconfirmed"):
@@ -182,35 +198,52 @@ def test_failed_native_constructor_retains_partial_storage_and_retries_cleanup(
             assert resumed.advance(JournalValidationBudget(rows=1)) is not None
 
 
-def test_actual_frozen_borrower_outlives_owner_and_keeps_both_leases(tmp_path):
-    results = []
-    try:
-        with prepared(tmp_path / "borrower") as case:
+def test_actual_frozen_borrower_keeps_original_owner_and_both_leases(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path / "borrower", journal_constructions=journal_constructions) as case:
+        results = []
+        try:
             with quantum(case) as (work, framing):
+                original = work._slot
                 native = work.journal(framing)
+                child = original.journal
                 finish(native)
                 first = native.result()
                 last = first.borrow()
                 results.extend((first, last))
                 binding = work.journal_source(framing).binding
                 child_root = work.metadata.custody.directory / "journals"
-            case.pool.close()
-            assert case.pool.active_build_ids() == ()
+            with pytest.raises(BlockingIOError):
+                case.pool.close()
+            assert case.pool.active_build_ids() == (case.build_id,)
+            assert case.pool._slots[case.build_id] is original
+            assert original.journal is child and child.session is native
+            assert not native.storage_received and not child.lease.received
             first.close()
+            with pytest.raises(BlockingIOError):
+                case.pool.close()
+            assert case.pool._slots[case.build_id] is original
             access(case.root, case.workspace_id, busy=True)
             access(child_root, binding.directory_id, busy=True)
             assert last.journal_sha256 == binding.source_sha256
             last.close()
+            assert native.storage_received and child.references.parent is None
+            assert not child.lease.received
+            case.pool.close()
+            assert case.pool.active_build_ids() == ()
+            assert child.lease.received and original.lease.received
             access(case.root, case.workspace_id, busy=False)
             access(child_root, binding.directory_id, busy=False)
-    finally:
-        for result in results:
-            result.close()
+        finally:
+            for result in results:
+                result.close()
+            case.pool.close()
 
 
 @pytest.mark.parametrize("committed", [False, True])
 def test_lost_registration_confirmation_reopens_actual_file_without_reset(
-    tmp_path, monkeypatch, committed
+    tmp_path, monkeypatch, committed, *, journal_constructions
 ):
     confirm = registration.confirm_discovery_journal
 
@@ -222,7 +255,7 @@ def test_lost_registration_confirmation_reopens_actual_file_without_reset(
             return True
         raise TimeoutError("registration confirmation lost")
 
-    with prepared(tmp_path / "lost-reply") as case:
+    with prepared(tmp_path / "lost-reply", journal_constructions=journal_constructions) as case:
         with monkeypatch.context() as patch:
             patch.setattr(registration, "confirm_discovery_journal", uncertain)
             with pytest.raises(TimeoutError, match="confirmation lost"):
@@ -239,12 +272,14 @@ def test_lost_registration_confirmation_reopens_actual_file_without_reset(
             assert resumed.advance(JournalValidationBudget(rows=1)) is not None
 
 
-def test_busy_child_returns_without_replacing_registration_or_leaking_references(tmp_path):
-    with prepared(tmp_path / "busy") as case:
+def test_busy_child_returns_without_replacing_registration_or_leaking_references(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path / "busy", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             binding = work.journal_source(framing).binding
             root = work.metadata.custody.directory / "journals"
-            with lease_journal_validation_workspace(
+            with leased_workspace(
                 root,
                 binding.directory_id,
                 create=True,
@@ -256,15 +291,22 @@ def test_busy_child_returns_without_replacing_registration_or_leaking_references
             assert work.journal(framing) is not None
 
 
-def test_confirmed_missing_native_file_marks_job_lost_without_recreation(tmp_path):
-    with prepared(tmp_path / "missing") as case:
+def test_confirmed_missing_native_file_marks_job_lost_without_recreation(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path / "missing", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             binding = work.journal_source(framing).binding
             assert work.journal(framing) is not None
             directory = work.metadata.custody.directory / "journals" / binding.directory_id
         case.pool.close()
         (directory / "snapshot.sqlite3").unlink()
-        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        case.pool = DiscoveryValidationOwner(
+            case.factory,
+            case.root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         with pytest.raises((LostJournalValidationWorkspace, InvalidJournalWorkspace)):
             with quantum(case) as (work, framing):
                 work.journal(framing)
@@ -277,17 +319,21 @@ def test_confirmed_missing_native_file_marks_job_lost_without_recreation(tmp_pat
 
 @pytest.mark.parametrize("domain", ["child", "parent"])
 @pytest.mark.parametrize("after", [False, True])
-def test_transferred_reference_close_fault_retains_actual_slot_for_retry(tmp_path, domain, after):
+def test_transferred_reference_close_fault_retains_actual_slot_for_retry(
+    tmp_path, domain, after, *, journal_constructions
+):
     from tests.unit.test_journal_validation_workspace_reference import CloseFault
 
-    with prepared(tmp_path / "reference-fault") as case:
+    with prepared(
+        tmp_path / "reference-fault", journal_constructions=journal_constructions
+    ) as case:
         with quantum(case) as (work, framing):
             native = work.journal(framing)
             binding = work.journal_source(framing).binding
             child_root = work.metadata.custody.directory / "journals"
             references = work._slot.journal.references
             reference = getattr(references, domain)
-            reference._stream = CloseFault(reference._stream, after=after)
+            reference._resource = CloseFault(reference._resource, after=after)
         with pytest.raises(OSError, match="close unconfirmed"):
             case.pool.close()
         assert case.pool.active_build_ids() == (case.build_id,)
@@ -303,8 +349,12 @@ def test_transferred_reference_close_fault_retains_actual_slot_for_retry(tmp_pat
         access(child_root, binding.directory_id, busy=False)
 
 
-def test_changed_actual_child_custody_rejects_warm_native_advance_without_reset(tmp_path):
-    with prepared(tmp_path / "changed-custody") as case:
+def test_changed_actual_child_custody_rejects_warm_native_advance_without_reset(
+    tmp_path, *, journal_constructions
+):
+    with prepared(
+        tmp_path / "changed-custody", journal_constructions=journal_constructions
+    ) as case:
         with quantum(case) as (work, framing):
             native = work.journal(framing)
             binding = work.journal_source(framing).binding
@@ -315,15 +365,24 @@ def test_changed_actual_child_custody_rejects_warm_native_advance_without_reset(
                 native.advance(JournalValidationBudget(rows=1))
             assert (directory / "snapshot.sqlite3").read_bytes() == before
         case.pool.close()
-        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        case.pool = DiscoveryValidationOwner(
+            case.factory,
+            case.root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         with pytest.raises(LostJournalValidationWorkspace):
             with quantum(case) as (work, framing):
                 work.journal(framing)
         assert (directory / "snapshot.sqlite3").read_bytes() == before
 
 
-def test_confirmed_corrupt_native_file_is_preserved_and_marks_job_lost(tmp_path):
-    with prepared(tmp_path / "corrupt-storage") as case:
+def test_confirmed_corrupt_native_file_is_preserved_and_marks_job_lost(
+    tmp_path, *, journal_constructions
+):
+    with prepared(
+        tmp_path / "corrupt-storage", journal_constructions=journal_constructions
+    ) as case:
         with quantum(case) as (work, framing):
             binding = work.journal_source(framing).binding
             assert work.journal(framing) is not None
@@ -332,7 +391,12 @@ def test_confirmed_corrupt_native_file_is_preserved_and_marks_job_lost(tmp_path)
         path = directory / "snapshot.sqlite3"
         before = b"unrecognized owned retained Native format"
         path.write_bytes(before)
-        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        case.pool = DiscoveryValidationOwner(
+            case.factory,
+            case.root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         with pytest.raises((InvalidJournalWorkspace, sqlite3.DatabaseError)):
             with quantum(case) as (work, framing):
                 work.journal(framing)

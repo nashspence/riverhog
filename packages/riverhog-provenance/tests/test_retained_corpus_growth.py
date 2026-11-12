@@ -4,6 +4,8 @@ from collections import defaultdict
 from contextlib import contextmanager
 
 import pytest
+import retained_resource
+import sqlite_admission
 from riverhog_growth_contracts import growth_binding
 from riverhog_provenance import RetainedCorpusValidator, StaleCorpusWorkspace
 from riverhog_provenance import corpus_workspace as owner
@@ -24,6 +26,7 @@ def octets(value):
 class Cursor:
     def __init__(self, cursor, observer):
         self.cursor, self.observer = cursor, observer
+        self.closed = False
         observer.live += 1
         observer.maximum_live = max(observer.maximum_live, observer.live)
 
@@ -44,13 +47,20 @@ class Cursor:
         return row
 
     def close(self):
-        self.cursor.close()
-        self.observer.live -= 1
+        if not self.closed:
+            self.cursor.close()
+            self.closed = True
+            self.observer.live -= 1
 
 
 class Connection:
+    """Keep the existing outer Native-close fault boundary observable."""
+
     def __init__(self, db, observer):
         self.db, self.observer = db, observer
+
+    def __getattr__(self, name):
+        return getattr(self.db, name)
 
     def execute(self, query, parameters=()):
         self.observer.metrics["sql_statements"] += 1
@@ -68,34 +78,41 @@ class Connection:
 
     def close(self):
         self.observer.metrics["closed_connections"] += 1
-        self.db.close()
+        self.observer.close_depth += 1
+        try:
+            self.db.close()
+        finally:
+            self.observer.close_depth -= 1
 
 
 class Observer:
     def __init__(self):
         self.metrics = defaultdict(int)
         self.live, self.maximum_live = 0, 0
+        self.close_depth = 0
         self.checkpoint_octets = 0
 
     @contextmanager
-    def observe(self, monkeypatch, source, workspace=None):
-        connect, checkpoint, restore = owner.sqlite3.connect, owner._checkpoint, owner._restore
+    def observe(self, monkeypatch, source, workspace=None, *, observe_sql=True):
+        driver, checkpoint, restore = sqlite_admission._connect, owner._checkpoint, owner._restore
+        execute = sqlite_admission._Cursor.execute
+        close = sqlite_admission._Connection.close
+        transaction = sqlite_admission._Connection._transaction
         current = source.verify_current
-        opened_fd, closed_fd = owner.os.open, owner.os.close
-        actual_fsync = owner.os.fsync
         fstat, stat, lstat = owner.os.fstat, owner.os.stat, owner.os.lstat
+        resource_type = retained_resource.Resource
+        resources, cursors = [], []
 
-        def synced(*args, **kwargs):
-            self.metrics["fsync_calls"] += 1
-            return actual_fsync(*args, **kwargs)
+        def retain_resource(original):
+            resources.append((original, original.metrics))
+            return original
 
-        def descriptor_opened(*args, **kwargs):
-            self.metrics["descriptor_opens"] += 1
-            return opened_fd(*args, **kwargs)
+        def allocate(kind):
+            return retain_resource(resource_type(kind))
 
-        def descriptor_closed(*args, **kwargs):
-            self.metrics["descriptor_closes"] += 1
-            return closed_fd(*args, **kwargs)
+        if workspace is not None:
+            retain_resource(workspace._construction.guard)
+            retain_resource(workspace._construction.directory)
 
         def inspected(operation):
             def inspect(*args, **kwargs):
@@ -106,7 +123,40 @@ class Observer:
 
         def opened(*args, **kwargs):
             self.metrics["opened_connections"] += 1
-            return Connection(connect(*args, **kwargs), self)
+            return driver(*args, **kwargs)
+
+        def executing(cursor, query, parameters=()):
+            self.metrics["sql_statements"] += 1
+            self.metrics["parameter_octets"] += octets(parameters)
+            assert not query.startswith("SELECT") or "FROM assertion_payloads" not in query
+            if cursor not in cursors:
+                cursors.append(cursor)
+            self.live = sum(not item._cleanup_complete for item in cursors)
+            self.maximum_live = max(self.maximum_live, self.live)
+            return execute(cursor, query, parameters)
+
+        def read_rows(actual, many):
+            def reading(cursor, *args, **kwargs):
+                rows = actual(cursor, *args, **kwargs)
+                values = rows if many else (() if rows is None else (rows,))
+                for row in values:
+                    self.metrics["returned_rows"] += 1
+                    self.metrics["returned_octets"] += octets(row)
+                    for value in row:
+                        if isinstance(value, bytes):
+                            self.checkpoint_octets = max(self.checkpoint_octets, len(value))
+                return rows
+
+            return reading
+
+        def transacted(connection, method):
+            self.metrics["sql_statements"] += 1
+            return transaction(connection, method)
+
+        def closed(connection):
+            if not self.close_depth and not connection.cleanup_complete:
+                self.metrics["closed_connections"] += 1
+            return close(connection)
 
         def checked():
             self.metrics["source_checks"] += 1
@@ -124,20 +174,38 @@ class Observer:
             return restore(corpus, raw)
 
         with monkeypatch.context() as patch:
-            patch.setattr(owner.sqlite3, "connect", opened)
+            patch.setattr(sqlite_admission, "_connect", opened)
+            if observe_sql:
+                patch.setattr(sqlite_admission._Cursor, "execute", executing)
+                for name in ("fetchone", "fetchmany", "fetchall"):
+                    patch.setattr(
+                        sqlite_admission._Cursor,
+                        name,
+                        read_rows(getattr(sqlite_admission._Cursor, name), name != "fetchone"),
+                    )
+                patch.setattr(sqlite_admission._Connection, "_transaction", transacted)
+            patch.setattr(sqlite_admission._Connection, "close", closed)
+            patch.setattr(retained_resource, "Resource", allocate)
             patch.setattr(owner, "_checkpoint", encoded)
             patch.setattr(owner, "_restore", decoded)
             patch.setattr(source, "verify_current", checked)
-            patch.setattr(owner.os, "fsync", synced)
-            patch.setattr(owner.os, "open", descriptor_opened)
-            patch.setattr(owner.os, "close", descriptor_closed)
             patch.setattr(owner.os, "fstat", inspected(fstat))
             patch.setattr(owner.os, "stat", inspected(stat))
             patch.setattr(owner.os, "lstat", inspected(lstat))
-            db = None if workspace is None else workspace._db
-            if db is not None:
-                patch.setattr(workspace, "_db", Connection(db, self))
-            yield
+            try:
+                yield
+            finally:
+                for original, before in resources:
+                    after = original.metrics
+                    for metric, counter in (
+                        ("descriptor_opens", "open_calls"),
+                        ("descriptor_closes", "close_calls"),
+                        ("fsync_calls", "sync_calls"),
+                        ("file_identity_reads", "fstat_calls"),
+                    ):
+                        self.metrics[metric] += after[counter] - before[counter]
+        if observe_sql:
+            self.live = sum(not cursor._cleanup_complete for cursor in cursors)
         assert self.live == 0 and self.maximum_live <= 1
 
     def sample(self, root, source, rows, *, counter_octets=2):
@@ -159,15 +227,17 @@ class Observer:
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator._operation",
 )
 def test_owner_checkpoint_work_does_not_scan_retained_inputs(
-    tmp_path, catalog, monkeypatch, record_property
+    journal_constructions, tmp_path, catalog, monkeypatch, record_property
 ):
     samples = []
     for count in (0, 1, 17, 129):
         for width in (1, 17, 129):
             path = tmp_path / (str(count) + "-" + str(width))
-            path.mkdir()
+            path.mkdir(mode=0o700)
             source = EmptySource(catalog)
-            with open_workspace(path, source, create=True) as workspace:
+            with open_workspace(
+                path, source, create=True, journal_constructions=journal_constructions
+            ) as workspace:
                 with workspace._operation():
                     insert(workspace._corpus, edges_for("chain", count), "derivation")
                 version = str(10 ** (width - 1))
@@ -194,12 +264,12 @@ def test_owner_checkpoint_work_does_not_scan_retained_inputs(
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.open_retained",
 )
 def test_actual_owner_create_reopen_and_rejection_are_metadata_work(
-    tmp_path, catalog, monkeypatch, record_property
+    journal_constructions, tmp_path, catalog, monkeypatch, record_property
 ):
     samples = []
     for count in (0, 1, 17, 129):
         path = tmp_path / str(count)
-        path.mkdir()
+        path.mkdir(mode=0o700)
         source = EmptySource(catalog)
         observer = Observer()
         retained = []
@@ -210,36 +280,51 @@ def test_actual_owner_create_reopen_and_rejection_are_metadata_work(
 
         with observer.observe(monkeypatch, source):
             workspace = open_workspace(
-                path, source, create=True, catalog=catalog, on_storage_open=retain
+                path,
+                source,
+                create=True,
+                catalog=catalog,
+                on_storage_open=retain,
+                journal_constructions=journal_constructions,
             )
         assert retained == [workspace]
         samples.append(observer.sample(RetainedCorpusValidator.open_retained, source, 0))
         # Subsequent actual SQL belongs to fixture setup, not this opening sample.
-        workspace._db = workspace._db.db
-        workspace._corpus._db = workspace._db
         with workspace._operation():
             insert(workspace._corpus, edges_for("chain", count), "derivation")
         workspace.close()
         observer = Observer()
         with observer.observe(monkeypatch, source):
-            workspace = open_workspace(path, source, epoch=1, catalog=catalog)
+            workspace = open_workspace(
+                path, source, epoch=1, catalog=catalog, journal_constructions=journal_constructions
+            )
         samples.append(observer.sample(RetainedCorpusValidator.open_retained, source, count))
-        workspace._db = workspace._db.db
-        workspace._corpus._db = workspace._db
         workspace.close()
         observer = Observer()
         with observer.observe(monkeypatch, source):
             with pytest.raises(ValueError, match="newer"):
-                open_workspace(path, source, epoch=1, catalog=catalog)
+                open_workspace(
+                    path,
+                    source,
+                    epoch=1,
+                    catalog=catalog,
+                    journal_constructions=journal_constructions,
+                )
         samples.append(observer.sample(RetainedCorpusValidator.open_retained, source, count))
         (path / "corpus.sqlite3").unlink()
         observer = Observer()
         with observer.observe(monkeypatch, source):
             with pytest.raises(StaleCorpusWorkspace, match="missing"):
-                open_workspace(path, source, epoch=2, catalog=catalog)
+                open_workspace(
+                    path,
+                    source,
+                    epoch=2,
+                    catalog=catalog,
+                    journal_constructions=journal_constructions,
+                )
         samples.append(observer.sample(RetainedCorpusValidator.open_retained, source, count))
         rejected = tmp_path / ("rejected-" + str(count))
-        rejected.mkdir()
+        rejected.mkdir(mode=0o700)
         source = EmptySource(catalog)
         current = [True]
         source.verify_current = lambda state=current: state[0]
@@ -263,11 +348,18 @@ def test_actual_owner_create_reopen_and_rejection_are_metadata_work(
                     catalog=catalog,
                     on_storage_open=retain_rejected,
                     on_storage_close=release_rejected,
+                    journal_constructions=journal_constructions,
                 )
         assert len(retained) == 1 and retained[0]._storage_closed
-        assert retained[0]._descriptor is None
-        assert observer.metrics["opening_callbacks"] == observer.metrics["release_callbacks"] == 1
+        assert retained[0]._construction.borrow.active
+        assert observer.metrics["opening_callbacks"] == 1
+        assert observer.metrics["release_callbacks"] == 0
         samples.append(observer.sample(RetainedCorpusValidator.open_retained, source, count))
+        # A failed constructor left the release callback with its caller.
+        retained[0].close()
+        assert retained[0]._construction.dependents_received
+        release_rejected()
+        assert observer.metrics["release_callbacks"] == 1
     record_property("growth_samples", samples)
 
 
@@ -277,20 +369,26 @@ def test_actual_owner_create_reopen_and_rejection_are_metadata_work(
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.close",
 )
 def test_actual_close_releases_only_its_native_handle(
-    tmp_path, catalog, monkeypatch, record_property
+    journal_constructions, tmp_path, catalog, monkeypatch, record_property
 ):
     samples = []
     for count in (0, 1, 17, 129, 1025):
         for failure in (None, "before", "lost-reply"):
             path = tmp_path / (str(count) + "-" + str(failure))
-            path.mkdir()
+            path.mkdir(mode=0o700)
             source = EmptySource(catalog)
             active = [Observer()]
 
             def release(observers=active):
                 observers[0].metrics["release_callbacks"] += 1
 
-            workspace = open_workspace(path, source, create=True, on_storage_close=release)
+            workspace = open_workspace(
+                path,
+                source,
+                create=True,
+                on_storage_close=release,
+                journal_constructions=journal_constructions,
+            )
             with workspace._operation():
                 insert(workspace._corpus, edges_for("chain", count), "derivation")
             db = workspace._db

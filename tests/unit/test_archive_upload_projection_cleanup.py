@@ -24,6 +24,7 @@ from riverhog_core.services.archive_upload_terminal_result import ArchiveUploadT
 from riverhog_protocol.errors import Conflict
 from sqlalchemy import func, select
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_archive_upload_cleanup_turn import _bind, _complete
 from tests.unit.test_archive_write_admission import _case
 from tests.unit.test_collection_registration_cleanup import CLEANUP
@@ -525,7 +526,6 @@ def _seed_linked_discovery(case, build_id, root, resources):
     from riverhog_core.catalog_provenance_index_models import (
         CollectionProvenanceIndexGenerationRecord as Generation,
     )
-    from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 
     with session_scope(case.factory) as session:
         upload = session.get(Upload, case.collection_id)
@@ -555,7 +555,7 @@ def _seed_linked_discovery(case, build_id, root, resources):
     assert discovery_worker_current(case.factory, original)
     custody = resources.enter_context(ExitStack())
     path = custody.enter_context(
-        lease_journal_validation_workspace(
+        leased_workspace(
             root,
             original.workspace_id,
             create=True,
@@ -573,7 +573,6 @@ def _linked_discovery(ready, tmp_path):
     from riverhog_core.catalog_discovery_validation_models import (
         DiscoveryValidationJobRecord as Job,
     )
-    from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 
     held = ready.discovery
     assert held is not None and held.root == tmp_path / "independent-discovery"
@@ -584,7 +583,7 @@ def _linked_discovery(ready, tmp_path):
         assert progress.pending_reason == "discovery-custody" and progress.removed == 0
         assert not progress.exhausted and _count(ready) == total
         assert held.marker.read_bytes() == b"original independently leased bytes"
-    with lease_journal_validation_workspace(held.root, held.original.workspace_id) as busy:
+    with leased_workspace(held.root, held.original.workspace_id) as busy:
         assert busy is None
     with session_scope(ready.case.factory) as session:
         assert DiscoveryJob.read(session.get(Job, held.original.workspace_id)) == held.original

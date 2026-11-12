@@ -45,9 +45,15 @@ class OwnedSource:
         return self.current
 
 
-def open_session(path, source, catalog, *, epoch=0, create=False):
+def open_session(path, source, catalog, *, epoch=0, create=False, journal_constructions):
     return JournalValidationSession.open_retained(
-        path, source, attempt_id=ATTEMPT, worker_epoch=epoch, create=create, catalog=catalog
+        path,
+        source,
+        attempt_id=ATTEMPT,
+        worker_epoch=epoch,
+        create=create,
+        catalog=catalog,
+        construction=journal_constructions.retain(),
     )
 
 
@@ -68,10 +74,14 @@ def directory(tmp_path):
 
 
 @pytest.mark.parametrize("phase", ["source", "entry", "staging", "generic", "lifecycle", "publish"])
-def test_retained_session_resumes_its_exact_bounded_unit(tmp_path, journal, catalog, phase):
+def test_retained_session_resumes_its_exact_bounded_unit(
+    tmp_path, journal, catalog, phase, *, journal_constructions
+):
     path = directory(tmp_path)
     source = OwnedSource(journal, catalog)
-    first = open_session(path, source, catalog, create=True)
+    first = open_session(
+        path, source, catalog, create=True, journal_constructions=journal_constructions
+    )
     try:
         if phase == "source":
             first.advance(JournalValidationBudget(source_octets=7))
@@ -85,7 +95,9 @@ def test_retained_session_resumes_its_exact_bounded_unit(tmp_path, journal, cata
                 raise AssertionError("the fixture did not reach its native phase")
         before = first._ledger.load()
         source.calls.clear()
-        with open_session(path, source, catalog, epoch=1) as resumed:
+        with open_session(
+            path, source, catalog, epoch=1, journal_constructions=journal_constructions
+        ) as resumed:
             assert resumed._ledger.load().checkpoint.version == before.checkpoint.version + 1
             with pytest.raises(StaleValidationCheckpoint):
                 first.advance()
@@ -105,14 +117,18 @@ def test_retained_session_resumes_its_exact_bounded_unit(tmp_path, journal, cata
 
 
 def test_completed_retained_result_reopens_without_reading_source_or_history(
-    tmp_path, journal, catalog
+    tmp_path, journal, catalog, *, journal_constructions
 ):
     path = directory(tmp_path)
     source = OwnedSource(journal, catalog)
-    with open_session(path, source, catalog, create=True) as first:
+    with open_session(
+        path, source, catalog, create=True, journal_constructions=journal_constructions
+    ) as first:
         finish(first)
     source.calls.clear()
-    with open_session(path, source, catalog, epoch=1) as resumed:
+    with open_session(
+        path, source, catalog, epoch=1, journal_constructions=journal_constructions
+    ) as resumed:
         assert resumed.advance().complete
         result = resumed.result()
     with result:
@@ -123,10 +139,14 @@ def test_completed_retained_result_reopens_without_reading_source_or_history(
 
 
 @pytest.mark.parametrize("fault", ["attempt", "directory", "mode", "digest"])
-def test_foreign_source_binding_cannot_adopt_retained_progress(tmp_path, journal, catalog, fault):
+def test_foreign_source_binding_cannot_adopt_retained_progress(
+    tmp_path, journal, catalog, fault, *, journal_constructions
+):
     path = directory(tmp_path)
     source = OwnedSource(journal, catalog)
-    with open_session(path, source, catalog, create=True) as first:
+    with open_session(
+        path, source, catalog, create=True, journal_constructions=journal_constructions
+    ) as first:
         first.advance(JournalValidationBudget(source_octets=7))
     before = (path / "snapshot.sqlite3").read_bytes()
     changes = {
@@ -137,14 +157,18 @@ def test_foreign_source_binding_cannot_adopt_retained_progress(tmp_path, journal
     }
     source.binding = replace(source.binding, **changes[fault])
     with pytest.raises(StaleValidationCheckpoint):
-        open_session(path, source, catalog, epoch=1)
+        open_session(path, source, catalog, epoch=1, journal_constructions=journal_constructions)
     assert (path / "snapshot.sqlite3").read_bytes() == before
 
 
-def test_terminal_provider_fence_is_required_before_result(tmp_path, journal, catalog):
+def test_terminal_provider_fence_is_required_before_result(
+    tmp_path, journal, catalog, *, journal_constructions
+):
     path = directory(tmp_path)
     source = OwnedSource(journal, catalog)
-    with open_session(path, source, catalog, create=True) as first:
+    with open_session(
+        path, source, catalog, create=True, journal_constructions=journal_constructions
+    ) as first:
         for _ in range(100000):
             progress = first.advance()
             if progress.phase == "terminal":
@@ -157,23 +181,31 @@ def test_terminal_provider_fence_is_required_before_result(tmp_path, journal, ca
         with pytest.raises(RuntimeError, match="terminal result"):
             first.result()
     source.current = True
-    with open_session(path, source, catalog, epoch=1) as resumed:
+    with open_session(
+        path, source, catalog, epoch=1, journal_constructions=journal_constructions
+    ) as resumed:
         assert resumed.advance().complete
         resumed.result().close()
 
 
-def test_source_commitment_is_checked_after_native_validation(tmp_path, journal, catalog):
+def test_source_commitment_is_checked_after_native_validation(
+    tmp_path, journal, catalog, *, journal_constructions
+):
     path = directory(tmp_path)
     source = OwnedSource(journal, catalog)
     source.binding = replace(source.binding, source_sha256="0" * 64)
-    with open_session(path, source, catalog, create=True) as session:
+    with open_session(
+        path, source, catalog, create=True, journal_constructions=journal_constructions
+    ) as session:
         with pytest.raises(IncompleteSourceError, match="differs from its exact retained binding"):
             finish(session)
         assert session._ledger.load().checkpoint.phase == "terminal"
 
 
 @pytest.mark.parametrize("cut", ["source", "pending", "publish"])
-def test_actual_process_exit_retains_source_and_parent_cursor(tmp_path, journal, catalog, cut):
+def test_actual_process_exit_retains_source_and_parent_cursor(
+    tmp_path, journal, catalog, cut, *, journal_constructions
+):
     path = directory(tmp_path)
     raw = tmp_path / "retained-source"
     raw.write_bytes(journal)
@@ -185,7 +217,11 @@ from riverhog_provenance.journal_session import JournalValidationBudget
 from test_retained_journal_session import OwnedSource,open_session
 catalog=ContractCatalog()
 source=OwnedSource(Path(sys.argv[3]).read_bytes(),catalog)
-session=open_session(Path(sys.argv[2]),source,catalog,create=True)
+from tests.support.native_construction import JournalConstructions
+originals=JournalConstructions()
+session=open_session(
+ Path(sys.argv[2]),source,catalog,create=True,journal_constructions=originals
+)
 cut=sys.argv[4]
 for _ in range(100000):
  progress=session.advance(JournalValidationBudget(rows=1,source_octets=7))
@@ -201,7 +237,9 @@ os._exit(82)
     )
     assert process.returncode == 82, process.stderr.decode()
     source = OwnedSource(journal, catalog)
-    with open_session(path, source, catalog, epoch=1) as resumed:
+    with open_session(
+        path, source, catalog, epoch=1, journal_constructions=journal_constructions
+    ) as resumed:
         cursor = resumed._input.cursor.byte_offset
         finish(resumed)
         with resumed.result() as result:
@@ -212,7 +250,9 @@ os._exit(82)
         assert not source.calls
 
 
-def test_retained_session_transfers_resource_to_its_last_result_reader(tmp_path, journal, catalog):
+def test_retained_session_transfers_resource_to_its_last_result_reader(
+    tmp_path, journal, catalog, *, journal_constructions
+):
     source = OwnedSource(journal, catalog)
     released = []
     current = JournalValidationSession.open_retained(
@@ -223,6 +263,7 @@ def test_retained_session_transfers_resource_to_its_last_result_reader(tmp_path,
         create=True,
         catalog=catalog,
         on_storage_close=lambda: released.append("closed"),
+        construction=journal_constructions.retain(),
     )
     finish(current)
     first = current.result()
@@ -239,7 +280,7 @@ def test_retained_session_transfers_resource_to_its_last_result_reader(tmp_path,
 
 
 def test_unfinished_retained_session_releases_owner_without_removing_files(
-    tmp_path, journal, catalog
+    tmp_path, journal, catalog, *, journal_constructions
 ):
     path = directory(tmp_path)
     released = []
@@ -251,6 +292,7 @@ def test_unfinished_retained_session_releases_owner_without_removing_files(
         create=True,
         catalog=catalog,
         on_storage_close=lambda: released.append("closed"),
+        construction=journal_constructions.retain(),
     )
     current.advance(JournalValidationBudget(source_octets=1))
     current.close()
@@ -260,7 +302,7 @@ def test_unfinished_retained_session_releases_owner_without_removing_files(
 
 @pytest.mark.parametrize("failure", ["source", "database", "initialization"])
 def test_failed_retained_session_construction_leaves_resource_with_caller(
-    tmp_path, journal, catalog, failure
+    tmp_path, journal, catalog, failure, *, journal_constructions
 ):
     source = OwnedSource(journal, catalog)
     path = directory(tmp_path)
@@ -277,14 +319,23 @@ def test_failed_retained_session_construction_leaves_resource_with_caller(
             catalog=catalog,
             on_storage_close=lambda: released.append("closed"),
             **options,
+            construction=journal_constructions.retain(),
         )
     assert not released
 
 
-def test_retained_source_may_supply_short_closed_windows(tmp_path, journal, catalog):
+def test_retained_source_may_supply_short_closed_windows(
+    tmp_path, journal, catalog, *, journal_constructions
+):
     source = OwnedSource(journal, catalog)
     source.read_window = lambda offset, maximum: source.read_exact(offset, min(maximum, 127))
-    with open_session(directory(tmp_path), source, catalog, create=True) as current:
+    with open_session(
+        directory(tmp_path),
+        source,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as current:
         finish(current)
         with current.result() as result:
             assert result.journal_sha256 == hashlib.sha256(journal).hexdigest()
@@ -292,19 +343,35 @@ def test_retained_source_may_supply_short_closed_windows(tmp_path, journal, cata
 
 
 @pytest.mark.parametrize("bad", [b"", b"overrun", memoryview(b"x")])
-def test_invalid_source_window_cannot_publish_progress(tmp_path, journal, catalog, bad):
+def test_invalid_source_window_cannot_publish_progress(
+    tmp_path, journal, catalog, bad, *, journal_constructions
+):
     source = OwnedSource(journal, catalog)
     source.read_window = lambda offset, maximum: bad
-    with open_session(directory(tmp_path), source, catalog, create=True) as current:
+    with open_session(
+        directory(tmp_path),
+        source,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as current:
         before = current._ledger.load()
         with pytest.raises(IncompleteSourceError, match="supply its window"):
             current.advance(JournalValidationBudget(source_octets=1))
         assert current._ledger.load() == before
 
 
-def test_each_retained_unit_checks_current_source_before_local_progress(tmp_path, journal, catalog):
+def test_each_retained_unit_checks_current_source_before_local_progress(
+    tmp_path, journal, catalog, *, journal_constructions
+):
     source = OwnedSource(journal, catalog)
-    with open_session(directory(tmp_path), source, catalog, create=True) as current:
+    with open_session(
+        directory(tmp_path),
+        source,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as current:
         current.advance(JournalValidationBudget(source_octets=7))
         before = current._ledger.load()
         source.current = False
@@ -315,12 +382,18 @@ def test_each_retained_unit_checks_current_source_before_local_progress(tmp_path
 
 @pytest.mark.parametrize("phase", ["source", "entry", "done"])
 def test_progress_reads_no_payload_and_never_advances_the_checkpoint(
-    tmp_path, journal, catalog, phase
+    tmp_path, journal, catalog, phase, *, journal_constructions
 ):
     import sqlite3
 
     source = OwnedSource(journal, catalog)
-    with open_session(directory(tmp_path), source, catalog, create=True) as current:
+    with open_session(
+        directory(tmp_path),
+        source,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as current:
         if phase == "source":
             current.advance(JournalValidationBudget(source_octets=7))
         elif phase == "entry":

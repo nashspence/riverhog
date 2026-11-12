@@ -27,6 +27,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
     lease_journal_validation_workspace,
 )
+from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
 from riverhog_core.services.archive_upload_cleanup import ArchiveUploadCleanup
 from riverhog_core.services.catalog_retirement import (
     CatalogRetirementRow,
@@ -246,6 +247,16 @@ class ArchiveUploadProjectionCleanup:
         self._factory = factory
         self._cleanup = cleanup
         self._discovery_root = discovery_root
+        self._resources: ExitStack | None = None
+        self._lease: ValidationWorkspaceLease | None = None
+
+    def _receive_workspace(self) -> None:
+        if self._resources is not None:
+            self._resources.close()
+        if self._lease is not None:
+            self._lease.close()
+        self._resources = None
+        self._lease = None
 
     def advance(
         self,
@@ -255,165 +266,184 @@ class ArchiveUploadProjectionCleanup:
         guard: Callable[[Session], None],
         limits: VolumeEmissionLimits,
     ) -> ProjectionCleanupProgress:
+        self._receive_workspace()
+        resources = self._resources = ExitStack()
+        self._lease = ValidationWorkspaceLease()
         # Exact filesystem custody outlives both catalog commit and rollback.
-        with ExitStack() as resources, session_scope(self._factory) as session:
-            self._cleanup.require_exhausted(session, collection_id, operation_id, guard=guard)
-            upload = session.get(Upload, collection_id)
-            assert upload is not None
-            if upload.active_registration_id is not None:
-                raise Conflict("projection retirement requires completed hidden registration")
-            original = _original_projection(session, upload)
-            if original is None:
-                return ProjectionCleanupProgress(None, exhausted=True)
-            used = metadata_row_bytes(original)
-            if used > limits.metadata_bytes:
-                raise VolumeEmissionCapacity(
-                    dimension="metadata_bytes", required=used, admitted=limits.metadata_bytes
-                )
-
-            def window(
-                table: Table, scope: tuple[ColumnElement[bool], ...]
-            ) -> tuple[list[CatalogRetirementRow], int]:
-                available = limits.metadata_bytes - used
-                if available < 1:
-                    raise VolumeEmissionCapacity(
-                        dimension="metadata_bytes",
-                        required=used + 1,
-                        admitted=limits.metadata_bytes,
-                    )
-                try:
-                    rows, charge = read_catalog_window(
-                        session,
-                        table,
-                        scope,
-                        count=limits.input_transitions,
-                        metadata_bytes=available,
-                    )
-                except VolumeEmissionCapacity as error:
-                    raise VolumeEmissionCapacity(
-                        dimension="metadata_bytes",
-                        required=used + error.required,
-                        admitted=limits.metadata_bytes,
-                    ) from None
-                return rows, used + charge
-
-            for name, column in INDEPENDENT_ROOTS.items():
-                table = Base.metadata.tables[name]
-                if (
-                    session.scalar(
-                        select(1)
-                        .select_from(table)
-                        .where(table.c[column] == collection_id)
-                        .limit(1)
-                    )
-                    is not None
-                ):
-                    raise Conflict("unpublished projection retains independent work: " + name)
-            generation = (
-                session.execute(
-                    select(
-                        Generation.build_id,
-                        Generation.archive_generation,
-                        Generation.archive_root_sha256,
-                        Generation.provenance_identity,
-                        Generation.expected_epoch,
-                        Generation.extraction_contract_sha256,
-                    )
-                    .where(Generation.collection_id == collection_id)
-                    .order_by(Generation.build_id)
-                    .limit(1)
-                    .with_for_update()
-                )
-                .mappings()
-                .one_or_none()
-            )
-            if generation is not None:
-                if any(
-                    generation[name] != original[name]
-                    for name in ("archive_generation", "archive_root_sha256", "provenance_identity")
-                ):
-                    raise Conflict("unpublished discovery generation differs from its original")
-                used += metadata_row_bytes(dict(generation))
+        try:
+            with session_scope(self._factory) as session:
+                self._cleanup.require_exhausted(session, collection_id, operation_id, guard=guard)
+                upload = session.get(Upload, collection_id)
+                assert upload is not None
+                if upload.active_registration_id is not None:
+                    raise Conflict("projection retirement requires completed hidden registration")
+                original = _original_projection(session, upload)
+                if original is None:
+                    return ProjectionCleanupProgress(None, exhausted=True)
+                used = metadata_row_bytes(original)
                 if used > limits.metadata_bytes:
                     raise VolumeEmissionCapacity(
                         dimension="metadata_bytes", required=used, admitted=limits.metadata_bytes
                     )
-                build_id = generation["build_id"]
-                record = session.scalar(
-                    select(Job).where(Job.build_id == build_id).limit(1).with_for_update()
+
+                def window(
+                    table: Table, scope: tuple[ColumnElement[bool], ...]
+                ) -> tuple[list[CatalogRetirementRow], int]:
+                    available = limits.metadata_bytes - used
+                    if available < 1:
+                        raise VolumeEmissionCapacity(
+                            dimension="metadata_bytes",
+                            required=used + 1,
+                            admitted=limits.metadata_bytes,
+                        )
+                    try:
+                        rows, charge = read_catalog_window(
+                            session,
+                            table,
+                            scope,
+                            count=limits.input_transitions,
+                            metadata_bytes=available,
+                        )
+                    except VolumeEmissionCapacity as error:
+                        raise VolumeEmissionCapacity(
+                            dimension="metadata_bytes",
+                            required=used + error.required,
+                            admitted=limits.metadata_bytes,
+                        ) from None
+                    return rows, used + charge
+
+                for name, column in INDEPENDENT_ROOTS.items():
+                    table = Base.metadata.tables[name]
+                    if (
+                        session.scalar(
+                            select(1)
+                            .select_from(table)
+                            .where(table.c[column] == collection_id)
+                            .limit(1)
+                        )
+                        is not None
+                    ):
+                        raise Conflict("unpublished projection retains independent work: " + name)
+                generation = (
+                    session.execute(
+                        select(
+                            Generation.build_id,
+                            Generation.archive_generation,
+                            Generation.archive_root_sha256,
+                            Generation.provenance_identity,
+                            Generation.expected_epoch,
+                            Generation.extraction_contract_sha256,
+                        )
+                        .where(Generation.collection_id == collection_id)
+                        .order_by(Generation.build_id)
+                        .limit(1)
+                        .with_for_update()
+                    )
+                    .mappings()
+                    .one_or_none()
                 )
-                if record is not None:
-                    job = DiscoveryJob.read(record)
-                    used += metadata_row_bytes(asdict(job))
+                if generation is not None:
+                    if any(
+                        generation[name] != original[name]
+                        for name in (
+                            "archive_generation",
+                            "archive_root_sha256",
+                            "provenance_identity",
+                        )
+                    ):
+                        raise Conflict("unpublished discovery generation differs from its original")
+                    used += metadata_row_bytes(dict(generation))
                     if used > limits.metadata_bytes:
                         raise VolumeEmissionCapacity(
                             dimension="metadata_bytes",
                             required=used,
                             admitted=limits.metadata_bytes,
                         )
-                    if (
-                        job.archive_generation != original["archive_generation"]
-                        or job.archive_root_sha256 != original["archive_root_sha256"]
-                        or job.provenance_identity != original["provenance_identity"]
-                        or job.artifact_set_identity != original["artifact_set_identity"]
-                        or job.build_epoch != generation["expected_epoch"]
-                        or job.policy_sha256 != generation["extraction_contract_sha256"]
-                    ):
-                        raise Conflict("discovery workspace differs from its original projection")
-                    if self._discovery_root is not None:
-                        captured: list[ValidationWorkspaceCustody] = []
-                        directory = resources.enter_context(
-                            lease_journal_validation_workspace(
-                                self._discovery_root,
-                                job.workspace_id,
-                                create=False,
-                                on_custody=captured.append,
-                            )
-                        )
-                        if directory is not None:
-                            if not captured[0].verify_current():
-                                raise Conflict("discovery retirement lost its original custody")
-                            retired = retire_discovery_job(session, job)
-                            if retired is None:
-                                raise Conflict("discovery retirement lost its exact catalog fence")
-                            return ProjectionCleanupProgress(
-                                "discovery_validation_jobs",
-                                metadata_bytes=used,
-                                discovery_retired=True,
-                            )
-                    return ProjectionCleanupProgress(
-                        "discovery_validation_jobs",
-                        metadata_bytes=used,
-                        pending_reason="discovery-custody",
+                    build_id = generation["build_id"]
+                    record = session.scalar(
+                        select(Job).where(Job.build_id == build_id).limit(1).with_for_update()
                     )
-                for name in (*BUILD_TABLES, "collection_provenance_index_generations"):
+                    if record is not None:
+                        job = DiscoveryJob.read(record)
+                        used += metadata_row_bytes(asdict(job))
+                        if used > limits.metadata_bytes:
+                            raise VolumeEmissionCapacity(
+                                dimension="metadata_bytes",
+                                required=used,
+                                admitted=limits.metadata_bytes,
+                            )
+                        if (
+                            job.archive_generation != original["archive_generation"]
+                            or job.archive_root_sha256 != original["archive_root_sha256"]
+                            or job.provenance_identity != original["provenance_identity"]
+                            or job.artifact_set_identity != original["artifact_set_identity"]
+                            or job.build_epoch != generation["expected_epoch"]
+                            or job.policy_sha256 != generation["extraction_contract_sha256"]
+                        ):
+                            raise Conflict(
+                                "discovery workspace differs from its original projection"
+                            )
+                        if self._discovery_root is not None:
+                            captured: list[ValidationWorkspaceCustody] = []
+                            directory = resources.enter_context(
+                                lease_journal_validation_workspace(
+                                    self._discovery_root,
+                                    job.workspace_id,
+                                    receiver=self._lease,
+                                    create=False,
+                                    on_custody=captured.append,
+                                )
+                            )
+                            if directory is not None:
+                                if not captured[0].verify_current():
+                                    raise Conflict("discovery retirement lost its original custody")
+                                retired = retire_discovery_job(session, job)
+                                if retired is None:
+                                    raise Conflict(
+                                        "discovery retirement lost its exact catalog fence"
+                                    )
+                                return ProjectionCleanupProgress(
+                                    "discovery_validation_jobs",
+                                    metadata_bytes=used,
+                                    discovery_retired=True,
+                                )
+                        return ProjectionCleanupProgress(
+                            "discovery_validation_jobs",
+                            metadata_bytes=used,
+                            pending_reason="discovery-custody",
+                        )
+                    for name in (*BUILD_TABLES, "collection_provenance_index_generations"):
+                        table = Base.metadata.tables[name]
+                        rows, charge = window(table, (table.c.build_id == build_id,))
+                        if not rows:
+                            continue
+                        delete_catalog_window(session, table, rows)
+                        return ProjectionCleanupProgress(name, len(rows), charge)
+                    raise Conflict("original discovery generation disappeared during retirement")
+                for name in (*PROJECTION_TABLES, "collections"):
                     table = Base.metadata.tables[name]
-                    rows, charge = window(table, (table.c.build_id == build_id,))
+                    scope = table.c.id if name == "collections" else table.c.collection_id
+                    rows, charge = window(table, (scope == collection_id,))
                     if not rows:
                         continue
+                    for row in rows:
+                        values = row.values
+                        if "store" in values and values["store"] != upload.archive_store:
+                            raise Conflict("unpublished projection retains another archive store")
+                        if (
+                            "incarnation_id" in values
+                            and values["incarnation_id"] != upload.archive_incarnation_id
+                        ):
+                            raise Conflict(
+                                "unpublished projection retains another archive incarnation"
+                            )
+                        if (
+                            name == "collection_archive_copies"
+                            and values["archive_storage_prefix"] != upload.archive_storage_prefix
+                        ):
+                            raise Conflict("unpublished projection retains another archive prefix")
                     delete_catalog_window(session, table, rows)
                     return ProjectionCleanupProgress(name, len(rows), charge)
-                raise Conflict("original discovery generation disappeared during retirement")
-            for name in (*PROJECTION_TABLES, "collections"):
-                table = Base.metadata.tables[name]
-                scope = table.c.id if name == "collections" else table.c.collection_id
-                rows, charge = window(table, (scope == collection_id,))
-                if not rows:
-                    continue
-                for row in rows:
-                    values = row.values
-                    if "store" in values and values["store"] != upload.archive_store:
-                        raise Conflict("unpublished projection retains another archive store")
-                    if (
-                        "incarnation_id" in values
-                        and values["incarnation_id"] != upload.archive_incarnation_id
-                    ):
-                        raise Conflict("unpublished projection retains another archive incarnation")
-                    if (
-                        name == "collection_archive_copies"
-                        and values["archive_storage_prefix"] != upload.archive_storage_prefix
-                    ):
-                        raise Conflict("unpublished projection retains another archive prefix")
-                delete_catalog_window(session, table, rows)
-                return ProjectionCleanupProgress(name, len(rows), charge)
-            raise Conflict("original unpublished projection disappeared during retirement")
+                raise Conflict("original unpublished projection disappeared during retirement")
+        finally:
+            self._receive_workspace()

@@ -4,6 +4,7 @@ import errno
 import os
 
 import pytest
+import workspace_reclamation
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from workspace_reclamation import (
     InvalidWorkspaceFiles,
@@ -13,7 +14,13 @@ from workspace_reclamation import (
     reclaim_retired_files as reclaim,
 )
 
-from tests.support.workspace_reclamation import execution_sample, observe_reclamation
+from tests.support.workspace_reclamation import (
+    execution_sample,
+    observe_reclamation,
+)
+from tests.support.workspace_reclamation import (
+    retained_file_receivers as retained_file_receivers,
+)
 
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX retained owner backend")
 
@@ -41,77 +48,87 @@ def private_file(path, name, extent):
         (1,),
     ],
 )
-def test_invalid_named_selection_is_rejected_before_opening_custody(tmp_path, monkeypatch, names):
+def test_invalid_named_selection_is_rejected_before_opening_custody(
+    tmp_path, monkeypatch, names, retained_file_receivers
+):
     def opened(*_args, **_kwargs):
         pytest.fail("invalid selection acquired or changed filesystem custody")
 
     monkeypatch.setattr(os, "open", opened)
     with pytest.raises((TypeError, ValueError)):
-        reclaim(tmp_path, names=names, octet_budget=1)
+        reclaim(tmp_path, names=names, octet_budget=1, receiver=retained_file_receivers())
 
 
 @pytest.mark.parametrize("budget", [True, False, 0, -1, 1.5])
-def test_positive_integer_byte_admission_is_required(tmp_path, budget):
+def test_positive_integer_byte_admission_is_required(tmp_path, budget, retained_file_receivers):
     with pytest.raises(ValueError):
-        reclaim(tmp_path, names=(), octet_budget=budget)
+        reclaim(tmp_path, names=(), octet_budget=budget, receiver=retained_file_receivers())
 
 
-def test_uniqueness_validation_preserves_caller_disposal_order_and_unselected_bytes(tmp_path):
+def test_uniqueness_validation_preserves_caller_disposal_order_and_unselected_bytes(
+    tmp_path, retained_file_receivers
+):
     path = tmp_path / "retired"
     path.mkdir(mode=0o700)
     first = private_file(path, "z", 11)
     first.write_bytes(b"abcdefghijk")
     second = private_file(path, "a", 17)
     unrelated = private_file(path, ".lease", 5)
-    progress = reclaim(path, names=("z", "a"), octet_budget=3)
+    progress = reclaim(path, names=("z", "a"), octet_budget=3, receiver=retained_file_receivers())
     assert first.read_bytes() == b"abcdefgh"
     assert second.stat().st_size == 17 and unrelated.stat().st_size == 5
     assert (progress.removed_octets, progress.remaining_octets) == (3, 25)
     assert not progress.files_reclaimed
 
 
-def test_empty_selection_retains_custody_and_unknown_namespace(tmp_path):
+def test_empty_selection_retains_custody_and_unknown_namespace(tmp_path, retained_file_receivers):
     path = tmp_path / "retired"
     path.mkdir(mode=0o700)
     unknown = private_file(path, "unclassified", 7)
-    assert reclaim(path, names=(), octet_budget=1).files_reclaimed
+    assert reclaim(
+        path, names=(), octet_budget=1, receiver=retained_file_receivers()
+    ).files_reclaimed
     assert unknown.stat().st_size == 7
     path.chmod(0o755)
     with pytest.raises(InvalidWorkspaceFiles):
-        reclaim(path, names=(), octet_budget=1)
+        reclaim(path, names=(), octet_budget=1, receiver=retained_file_receivers())
 
 
-def test_absent_directory_is_not_recreated(tmp_path):
+def test_absent_directory_is_not_recreated(tmp_path, retained_file_receivers):
     path = tmp_path / "absent"
     with pytest.raises(FileNotFoundError):
-        reclaim(path, names=("data",), octet_budget=1)
+        reclaim(path, names=("data",), octet_budget=1, receiver=retained_file_receivers())
     assert not path.exists()
 
 
-def test_replaced_inode_is_refused_before_extent_mutation(tmp_path, monkeypatch):
+def test_replaced_inode_is_refused_before_extent_mutation(
+    tmp_path, monkeypatch, retained_file_receivers
+):
     path = tmp_path / "retired"
     path.mkdir(mode=0o700)
     target = private_file(path, "data", 17)
-    original = os.open
+    original = workspace_reclamation._files
+    calls = 0
 
-    def replaced(name, *args, **kwargs):
-        if name == "data":
+    def replaced(descriptor, names):
+        nonlocal calls
+        selected = original(descriptor, names)
+        calls += 1
+        if calls == 1:
             target.rename(path / "original")
             private_file(path, "data", 19)
-        return original(name, *args, **kwargs)
+        return selected
 
     with monkeypatch.context() as patch:
-        patch.setattr(os, "open", replaced)
+        patch.setattr(workspace_reclamation, "_files", replaced)
         with pytest.raises(InvalidWorkspaceFiles, match="replaced"):
-            reclaim(path, names=("data",), octet_budget=3)
+            reclaim(path, names=("data",), octet_budget=3, receiver=retained_file_receivers())
     assert target.stat().st_size == 19 and (path / "original").stat().st_size == 17
 
 
 @pytest.mark.parametrize("code", [errno.ENOSPC, errno.EDQUOT])
 def test_uncertain_unlink_sync_reconciles_actual_absence_without_reconstruction(
-    tmp_path,
-    monkeypatch,
-    code,
+    tmp_path, monkeypatch, code, retained_file_receivers
 ):
     path = tmp_path / "retired"
     path.mkdir(mode=0o700)
@@ -120,12 +137,15 @@ def test_uncertain_unlink_sync_reconciles_actual_absence_without_reconstruction(
     def failed(_descriptor):
         raise OSError(code, "injected directory sync capacity")
 
+    original_receiver = retained_file_receivers()
     with monkeypatch.context() as patch:
         patch.setattr(os, "fsync", failed)
         with pytest.raises(WorkspaceReclamationCapacity):
-            reclaim(path, names=("data",), octet_budget=7)
+            reclaim(path, names=("data",), octet_budget=7, receiver=original_receiver)
     assert not target.exists()
-    progress = reclaim(path, names=("data",), octet_budget=7)
+    original_receiver.close()
+    assert original_receiver.received
+    progress = reclaim(path, names=("data",), octet_budget=7, receiver=retained_file_receivers())
     assert progress.files_reclaimed and progress.removed_octets == 0
 
 
@@ -135,7 +155,7 @@ def test_uncertain_unlink_sync_reconciles_actual_absence_without_reconstruction(
     operation="workspace_reclamation.reclaim_retired_files",
 )
 def test_actual_filename_work_and_extents_vary_independently(
-    tmp_path, monkeypatch, record_property
+    tmp_path, monkeypatch, record_property, retained_file_receivers
 ):
     binding = growth_binding(reclaim)
     projection = project_bindings((binding,))
@@ -160,9 +180,15 @@ def test_actual_filename_work_and_extents_vary_independently(
                         "retained_files": len(present),
                         "retained_octets": len(present) * extent,
                         "octet_budget": budget,
+                        "directory_octets": len(os.fsencode(path)),
                     }
                     with observe_reclamation(monkeypatch, reclaim) as metrics:
-                        progress = reclaim(path, names=names, octet_budget=budget)
+                        progress = reclaim(
+                            path,
+                            names=names,
+                            octet_budget=budget,
+                            receiver=retained_file_receivers(),
+                        )
                     assert progress.removed_octets == metrics["reclaimed_extent_octets"]
                     assert (
                         progress.remaining_octets == len(present) * extent - progress.removed_octets

@@ -126,7 +126,10 @@ class SemanticObserver(Observer):
         db.set_progress_handler(stepped, 1)
         db.set_authorizer(authorized)
         try:
-            with super().observe(monkeypatch, source), monkeypatch.context() as patch:
+            with (
+                super().observe(monkeypatch, source, workspace, observe_sql=False),
+                monkeypatch.context() as patch,
+            ):
                 connection = SemanticConnection(db, self)
                 patch.setattr(workspace, "_db", connection)
                 patch.setattr(workspace._corpus, "_db", connection)
@@ -305,7 +308,7 @@ def expected_facts(objects, edges, comparisons):
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.advance_semantics",
 )
 def test_actual_selected_union_composes_manifests_lifecycle_and_physical_progress(
-    tmp_path, graph, who, journal, catalog, monkeypatch, record_property
+    tmp_path, graph, who, journal, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     samples, equal_work = [], []
     retired, _ = edge_history(journal, who, catalog)
@@ -370,8 +373,10 @@ def test_actual_selected_union_composes_manifests_lifecycle_and_physical_progres
             # prefix rows add separately. This input-derived upper extent includes unrelated data.
             retained_rows = 10 * (len(original) + len(frames) + len(anchors) + 1)
             path = tmp_path / str(len(samples))
-            path.mkdir()
-            workspace = open_workspace(path, source, create=True)
+            path.mkdir(mode=0o700)
+            workspace = open_workspace(
+                path, source, create=True, journal_constructions=journal_constructions
+            )
             try:
                 while not workspace.advance_source(native, frame_budget=64).complete:
                     pass
@@ -425,7 +430,9 @@ def test_actual_selected_union_composes_manifests_lifecycle_and_physical_progres
                     calls += 1
                     if len(expected) >= 17 and actual and not restart:
                         workspace.close()
-                        workspace = open_workspace(path, source, epoch=1)
+                        workspace = open_workspace(
+                            path, source, epoch=1, journal_constructions=journal_constructions
+                        )
                         restart = True
                     if progress.complete:
                         break

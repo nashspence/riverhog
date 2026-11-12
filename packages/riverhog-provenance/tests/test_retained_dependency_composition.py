@@ -181,7 +181,10 @@ class PhysicalObserver(Observer):
         db.set_progress_handler(stepped, 1)
         db.set_authorizer(authorized)
         try:
-            with super().observe(monkeypatch, source), monkeypatch.context() as patch:
+            with (
+                super().observe(monkeypatch, source, workspace, observe_sql=False),
+                monkeypatch.context() as patch,
+            ):
                 connection = PhysicalConnection(db, self)
                 patch.setattr(workspace, "_db", connection)
                 patch.setattr(workspace._corpus, "_db", connection)
@@ -275,7 +278,7 @@ def measure(
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.advance_dependencies",
 )
 def test_retained_dependencies_compose_physical_work_and_confirmed_progress(
-    tmp_path, catalog, monkeypatch, record_property
+    tmp_path, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     samples = []
     for count, rows, byte_budget, width, unrelated in (
@@ -287,9 +290,11 @@ def test_retained_dependencies_compose_physical_work_and_confirmed_progress(
         (129, 64, 16384, 129, 129),
     ):
         path = tmp_path / str(len(samples))
-        path.mkdir()
+        path.mkdir(mode=0o700)
         source = EmptySource(catalog)
-        workspace = open_workspace(path, source, create=True)
+        workspace = open_workspace(
+            path, source, create=True, journal_constructions=journal_constructions
+        )
         try:
             expected, metadata_octets, retained_rows = populate(workspace, count, unrelated, width)
             metadata_octets = max(metadata_octets, len(str(byte_budget)))
@@ -327,7 +332,9 @@ def test_retained_dependencies_compose_physical_work_and_confirmed_progress(
                 native_sql += sample["metrics"]["algorithm_sql_statements"]
                 if count >= 17 and actual and not restart:
                     workspace.close()
-                    workspace = open_workspace(path, source, epoch=1)
+                    workspace = open_workspace(
+                        path, source, epoch=1, journal_constructions=journal_constructions
+                    )
                     restart = True
                 if progress.complete:
                     break

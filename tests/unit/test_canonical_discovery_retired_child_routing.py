@@ -8,9 +8,13 @@ import sys
 import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core.canonical_discovery_archive_work import StaleArchiveTask
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
 from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
 
+from tests.support.retained_resource import fault_native as fault_native
+from tests.support.retirement_namespace import (
+    lease_retiring_journal_workspace,
+    native_namespace_close_fault,
+)
 from tests.unit.test_canonical_discovery_retired_metadata import case as case
 from tests.unit.test_canonical_discovery_retired_metadata import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_retired_metadata import original as original
@@ -93,7 +97,7 @@ def test_routing_absence_never_substitutes_for_exact_namespace_receiving(
         metadata.open()
         with pytest.raises(LostJournalValidationWorkspace, match="namespace still exists"):
             metadata.retire_child()
-        assert metadata._child_root is None and metadata.verify_current()
+        assert not metadata._namespace_handles._callbacks and metadata.verify_current()
     assert rows(path) == before and child.lstat()
 
 
@@ -134,7 +138,7 @@ def test_uncertain_namespace_sync_preserves_routing_for_exact_retry(
             patch.setattr(os, "fsync", uncertain)
             with pytest.raises(OSError, match="sync uncertain"):
                 metadata.retire_child()
-        assert metadata._child_root is None and metadata.verify_current()
+        assert not metadata._namespace_handles._callbacks and metadata.verify_current()
         assert metadata.child().binding == bindings[0]
         assert metadata.retire_child()
         assert metadata.child() is None
@@ -142,48 +146,34 @@ def test_uncertain_namespace_sync_preserves_routing_for_exact_retry(
 
 @pytest.mark.parametrize("after", (False, True))
 def test_uncertain_root_close_retains_handle_and_parent_until_actual_receiving(
-    case, monkeypatch, after
+    case, monkeypatch, after, fault_native
 ):
+    native, _ = fault_native
     job, path, _ = selected_child(case)
     (path / "journals").mkdir(mode=0o700)
     before = rows(path)
-    actual = os.close
-    with retired(case, job) as metadata:
+    with (
+        monkeypatch.context() as patch,
+        native_namespace_close_fault(
+            patch, native, parent_inode=path.stat().st_ino, name="journals", after=after
+        ) as (selected, descriptors),
+        retired(case, job) as metadata,
+    ):
         metadata.open()
-        held = []
-
-        def uncertain(descriptor):
-            if descriptor == metadata._child_root:
-                held.append(descriptor)
-                if after:
-                    actual(descriptor)
-                raise OSError("root close uncertain")
-            actual(descriptor)
-
-        with monkeypatch.context() as patch:
-            patch.setattr(os, "close", uncertain)
-            with pytest.raises(OSError, match="close uncertain"):
-                metadata.retire_child()
-        assert held == [metadata._child_root] and not metadata.verify_current()
+        with pytest.raises((RuntimeError, OSError)):
+            metadata.retire_child()
+        assert len(selected) == 1 and len(descriptors) == 1
+        original = selected[0]
+        assert not metadata.verify_current()
+        assert original.owner.state == ("received" if after else "live")
         assert rows(path) == before
         with lease_retiring_journal_workspace(case.root, job.workspace_id) as busy:
             assert busy is None
         with pytest.raises(StaleArchiveTask):
             metadata.retire_child()
-        if after:
-            # An already-closed descriptor's lost reply is still uncertainty.
-            # Make the selected repeat-close outcome explicit without closing a
-            # descriptor that the process may since have reused.
-            with monkeypatch.context() as patch:
-                patch.setattr(
-                    os,
-                    "close",
-                    lambda descriptor: None if descriptor == held[0] else actual(descriptor),
-                )
-                metadata.close()
-        else:
-            metadata.close()
-        assert metadata._child_root is None
+        metadata.close()
+        assert not metadata._namespace_handles._callbacks
+        assert original.owner.received and original.owner.metrics["close_calls"] == 1
 
 
 @pytest.mark.parametrize("after", (False, True))

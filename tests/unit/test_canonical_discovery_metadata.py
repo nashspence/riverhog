@@ -21,10 +21,10 @@ from riverhog_core.catalog_provenance_index_models import (
 )
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
-    lease_journal_validation_workspace,
 )
 from sqlalchemy import update
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_jobs import case as case
 from tests.unit.test_canonical_discovery_corpus_jobs import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_corpus_jobs import original as original
@@ -38,7 +38,7 @@ def owned(case):
     )
     assert selected is not None
     captured = []
-    with lease_journal_validation_workspace(
+    with leased_workspace(
         case.root,
         selected.workspace_id,
         create=selected.state == "preparing",
@@ -171,9 +171,7 @@ def test_changed_owned_metadata_cannot_read_or_commit_and_is_never_repaired(case
         assert file.read_bytes() == before
         if damage == "lease":
             with pytest.raises(LostJournalValidationWorkspace, match="lease was lost"):
-                with lease_journal_validation_workspace(
-                    case.root, metadata.job.workspace_id, create=True
-                ):
+                with leased_workspace(case.root, metadata.job.workspace_id, create=True):
                     pytest.fail("Core progress allowed a replacement lease")
 
 
@@ -232,12 +230,12 @@ def test_uncertain_core_close_retains_kernel_custody_until_confirmed(case, lost_
         with pytest.raises(OSError, match="unconfirmed"):
             metadata.close()
         assert not metadata.verify_current()
-        with lease_journal_validation_workspace(case.root, metadata.job.workspace_id) as busy:
+        with leased_workspace(case.root, metadata.job.workspace_id) as busy:
             assert busy is None
         metadata.close()
         with pytest.raises(sqlite3.ProgrammingError):
             db.execute("SELECT 1")
-    with lease_journal_validation_workspace(case.root, case.job.workspace_id) as available:
+    with leased_workspace(case.root, case.job.workspace_id) as available:
         assert available is not None
 
 

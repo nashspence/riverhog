@@ -45,6 +45,10 @@ from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     ValidationWorkspaceCustody,
 )
+from riverhog_core.retained_workspace_handles import (
+    RetainedWorkspaceHandles,
+    RetainedWorkspaceResource,
+)
 
 _FORMAT = "riverhog-discovery-metadata/v15"
 
@@ -90,6 +94,13 @@ class DiscoveryMetadata:
         )
         self._db: sqlite3.Connection | None = None
         self._descriptor: int | None = None
+        self._file_handles = RetainedWorkspaceHandles()
+        self._created_file = RetainedWorkspaceResource("file")
+        self._existing_file = RetainedWorkspaceResource("file")
+        self._file_handles.callback(self._created_file.close)
+        self._file_handles.callback(self._existing_file.close)
+        self._file = self._existing_file
+        self._opening_started = False
         self._initialized = False
         self._closing = False
         self._closed = False
@@ -140,7 +151,12 @@ class DiscoveryMetadata:
         )
 
     def _file_current(self) -> bool:
-        if self._descriptor is None:
+        if (
+            self._descriptor is None
+            or self._file.owner.state != "live"
+            or not self._file.borrow.active
+            or self._file.fileno() != self._descriptor
+        ):
             return False
         try:
             held = os.fstat(self._descriptor)
@@ -204,7 +220,7 @@ class DiscoveryMetadata:
         if self._initialized:
             self._require_current()
             return
-        if self._db is not None or self._descriptor is not None:
+        if self._opening_started:
             raise LostJournalValidationWorkspace("Core metadata opening has an unconfirmed outcome")
         if not self._owner_current():
             raise StaleArchiveTask("Core metadata worker is no longer current")
@@ -214,17 +230,22 @@ class DiscoveryMetadata:
         self.job = current
         path = self.custody.directory / "discovery.sqlite3"
         created = False
+        self._opening_started = True
+        parent = self.custody._resources[1]
         if self.job.state == "preparing":
+            self._file = self._created_file
             try:
-                self._descriptor = os.open(
-                    path, os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600
+                self._file.acquire(
+                    "discovery.sqlite3", parent=parent, writable=True, create=True, exclusive=True
                 )
             except FileExistsError:
-                self._descriptor = os.open(path, os.O_RDWR | os.O_NOFOLLOW)
+                self._file = self._existing_file
+                self._file.acquire("discovery.sqlite3", parent=parent, writable=True)
             else:
                 created = True
         else:
-            self._descriptor = os.open(path, os.O_RDWR | os.O_NOFOLLOW)
+            self._file.acquire("discovery.sqlite3", parent=parent, writable=True)
+        self._descriptor = self._file.fileno()
         if not self._file_current():
             raise LostJournalValidationWorkspace("Core metadata file custody is incompatible")
         db = self._db = sqlite3.connect(
@@ -298,13 +319,9 @@ class DiscoveryMetadata:
                 raise
             assert self._descriptor is not None
             os.fsync(self._descriptor)
-            directory = os.open(
-                self.custody.directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-            )
-            try:
-                os.fsync(directory)
-            finally:
-                os.close(directory)
+            if not self.custody.verify_current():
+                raise StaleArchiveTask("Core metadata directory custody changed before sync")
+            os.fsync(self.custody._resources[1].fileno())
         if not self._owner_current() or not self._file_current() or not self._header_current():
             raise LostJournalValidationWorkspace(
                 "Core metadata initialization is missing or changed"
@@ -341,9 +358,8 @@ class DiscoveryMetadata:
         if self._db is not None:
             self._db.close()
             self._db = None
-        if self._descriptor is not None:
-            os.close(self._descriptor)
-            self._descriptor = None
+        self._file_handles.close()
+        self._descriptor = None
         self._closed = True
 
 

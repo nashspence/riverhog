@@ -5,6 +5,7 @@ import hashlib
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.canonical_discovery_rebuild import _ArchiveCorpus
+from riverhog_core.services.upload_journal_result_receiving import UploadJournalResultResources
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import (
     BoundedSourceObserver,
@@ -114,7 +115,9 @@ def test_native_summary_borrow_records_actual_work(monkeypatch, record_property)
     record_property("growth_samples", samples)
 
 
-def test_native_staged_corpus_cache_eviction_preserves_an_independent_reader(tmp_path):
+def test_native_staged_corpus_cache_eviction_preserves_an_independent_reader(
+    tmp_path, *, journal_constructions
+):
     from riverhog_core.services.collection_uploads import _StagedCanonicalCorpus
     from sqlalchemy.orm import Session
 
@@ -155,18 +158,29 @@ def test_native_staged_corpus_cache_eviction_preserves_an_independent_reader(tmp
             _StagedCanonicalCorpus(
                 session,
                 1,
-                open_summary=lambda identity: validate_journal(content[identities.index(identity)]),
+                result_resources=UploadJournalResultResources(
+                    construction_factory=journal_constructions.retain
+                ),
+                open_summary=lambda identity, receiver: validate_journal(
+                    content[identities.index(identity)]
+                ),
             ) as corpus,
         ):
             with corpus[identities[0]].borrow() as selected:
                 directory = selected._store._storage.directory
                 expected = selected.materialize()
                 corpus[identities[1]]
-                corpus[identities[2]]
-                assert identities[0] not in corpus.cache
+                with pytest.raises(BlockingIOError, match="final Native readers"):
+                    corpus[identities[2]]
+                assert len(corpus.cache) == 3 and identities[0] in corpus.cache
                 assert selected.materialize() == expected and directory.exists()
-                assert corpus[identities[0]].anchor == selected.anchor
-                assert selected.materialize() == expected
+                original_anchor = selected.anchor
+                with pytest.raises(BlockingIOError, match="final Native readers"):
+                    corpus[identities[0]]
+                assert len(corpus.cache) == 3 and selected.materialize() == expected
             assert not directory.exists()
-            remaining = [row._store._storage.directory for row in corpus.cache.values()]
+            corpus[identities[2]]
+            assert identities[0] not in corpus.cache and len(corpus.cache) == 2
+            assert corpus[identities[0]].anchor == original_anchor
+            remaining = [row.result._store._storage.directory for row in corpus.cache.values()]
         assert not any(path.exists() for path in remaining)

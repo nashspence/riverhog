@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
@@ -16,9 +17,10 @@ from riverhog_growth_contracts import (
     declare_growth,
     growth_binding,
 )
-from riverhog_provenance import JournalValidationCapacity, reclaim_retired_journal_workspace
+from riverhog_provenance import reclaim_retired_journal_workspace
 from sqlalchemy import delete, or_, select, text, update
 from state_schema import read_snapshot
+from workspace_reclamation import FileReclamationOwner
 
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
@@ -27,9 +29,11 @@ from riverhog_core.journal_validation_retirement import (
     lease_retiring_journal_workspace,
     remove_retired_journal_workspace_directory,
 )
-from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
 
 from . import upload_journal_validation_jobs as jobs
+from .archive_construction_retention import ArchiveConstructionRetention
+from .journal_retirement_registry import JournalRetirementRegistry, JournalRetirementTurn
+from .physical_execution import PhysicalExecutionOwner
 
 
 def _retirement_catalog_declaration(mode: str) -> Declaration:
@@ -338,6 +342,7 @@ def _retirement_unit_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
         ("transition", UploadJournalValidationRetirement._transition),
         ("lease", lease_retiring_journal_workspace),
         ("reclaim", reclaim_retired_journal_workspace),
+        ("receive", FileReclamationOwner.close),
         ("directory", remove_retired_journal_workspace_directory),
     )
 
@@ -988,10 +993,40 @@ _PHASES = ("directory", "retiring", "orphan")
 
 
 class UploadJournalValidationRetirement:
-    def __init__(self, factory: SessionFactory, root: Path) -> None:
+    def __init__(
+        self,
+        factory: SessionFactory,
+        root: Path,
+        *,
+        execution: PhysicalExecutionOwner,
+        retention: ArchiveConstructionRetention,
+        metadata_budget: int,
+        receive_limit: int,
+        retry_after: timedelta,
+    ) -> None:
+        if (
+            type(metadata_budget) is not int
+            or metadata_budget < 1
+            or type(receive_limit) is not int
+            or receive_limit < 1
+            or retry_after.total_seconds() <= 0
+        ):
+            raise ValueError("Native retirement requires positive original resource admissions")
         self.factory, self.root = factory, root
+        self._metadata_budget, self._receive_limit = metadata_budget, receive_limit
+        self._retry_after = retry_after
+        self._registry = JournalRetirementRegistry(self, execution, retention)
         self._after: dict[str, str | None] = dict.fromkeys(_PHASES)
         self._phase = 0
+
+    def close(self) -> None:
+        """Stop admission before shared physical workers join."""
+        self._registry.close()
+
+    def receive_stopped(self) -> bool:
+        """Receive retained originals after actual joins, keeping dependencies open."""
+        self._registry.collect(limit=self._receive_limit)
+        return self._registry.receive_stopped()
 
     def _select(self, excluding: tuple[str, ...]) -> jobs.ValidationJob | None:
         for distance in range(len(_PHASES)):
@@ -1051,7 +1086,9 @@ class UploadJournalValidationRetirement:
             ).scalar_one_or_none()
             return changed is not None
 
-    def _advance(self, job: jobs.ValidationJob, octet_budget: int) -> bool:
+    def _advance(
+        self, job: jobs.ValidationJob, octet_budget: int, *, turn: JournalRetirementTurn
+    ) -> bool:
         if job.collection_id is not None or job.journal_id is not None:
             raise RuntimeError("native cleanup cannot retire a linked source")
         if job.state not in {"retiring", "directory"}:
@@ -1061,7 +1098,9 @@ class UploadJournalValidationRetirement:
             # Retirement is durable before any data extent can be removed.
             return True
         if job.state == "directory":
-            if not remove_retired_journal_workspace_directory(self.root, job.workspace_id):
+            if not remove_retired_journal_workspace_directory(
+                self.root, job.workspace_id, handles=turn._handles
+            ):
                 return False
             with self.factory() as session, session.begin():
                 removed = session.execute(
@@ -1075,36 +1114,51 @@ class UploadJournalValidationRetirement:
                     .returning(Job.workspace_id)
                 ).scalar_one_or_none()
                 return removed is not None
-        with lease_retiring_journal_workspace(self.root, job.workspace_id) as owned:
+        with lease_retiring_journal_workspace(
+            self.root, job.workspace_id, handles=turn._handles
+        ) as owned:
             if owned is None:
                 return False
             if owned.directory is None:
                 return self._transition(job, "directory") is not None
-            progress = reclaim_retired_journal_workspace(owned.directory, octet_budget=octet_budget)
+            turn._handles.callback(turn._files.close)
+            progress = reclaim_retired_journal_workspace(
+                owned.directory, receiver=turn._files, octet_budget=octet_budget
+            )
             if progress.files_reclaimed:
                 return self._transition(job, "directory") is not None
             return progress.removed_octets > 0 or progress.removed_files > 0
 
     def advance(self, *, limit: int = 1, octet_budget: int = 4 * 1024 * 1024) -> int:
+        """Schedule/receive bounded quanta without waiting for Native filesystem work."""
         if type(octet_budget) is not int or octet_budget < 1:
             raise ValueError("retirement requires a positive file-extent admission")
-        processed = 0
-        for _ in range(max(0, limit)):
+        if type(limit) is not int:
+            raise ValueError("retirement scheduling requires an integer unit admission")
+        if limit < 1:
+            return 0
+        processed = self._registry.collect(limit=limit)
+        processed += self._registry.resume_ready(limit=limit, retry_after=self._retry_after)
+        for _ in range(limit):
             attempted: list[str] = []
-            progressed = False
+            submitted = False
             for _candidate in range(3):
                 job = self._select(tuple(attempted))
                 if job is None:
                     break
                 attempted.append(job.workspace_id)
-                try:
-                    progressed = self._advance(job, octet_budget)
-                except (JournalValidationCapacity, LostJournalValidationWorkspace) as error:
-                    progressed = self._blocked(job, str(error)[:1000])
-                if progressed:
+                if self._registry.retained(job.workspace_id):
+                    continue
+                if self._registry.submit(
+                    job,
+                    octet_budget=octet_budget,
+                    metadata_budget=self._metadata_budget,
+                    retry_after=self._retry_after,
+                ):
                     processed += 1
+                    submitted = True
                     break
-            if not progressed:
+            if not submitted:
                 break
         return processed
 

@@ -11,9 +11,9 @@ import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_parent_reclamation as owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 
 from tests.support.retained_resource import fault_native as fault_native
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_jobs import case as case
 from tests.unit.test_canonical_discovery_corpus_jobs import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_corpus_jobs import original as original
@@ -41,7 +41,7 @@ def prefix(case, variant="lease"):
         with pytest.MonkeyPatch.context() as patch:
             patch.setattr(os, "open", interrupted)
             if variant == "lease":
-                with lease_journal_validation_workspace(
+                with leased_workspace(
                     case.root,
                     case.job.workspace_id,
                     create=True,
@@ -50,7 +50,7 @@ def prefix(case, variant="lease"):
                     assert path is not None
             else:
                 with pytest.raises(OSError, match="creator interrupted"):
-                    with lease_journal_validation_workspace(
+                    with leased_workspace(
                         case.root,
                         case.job.workspace_id,
                         create=True,
@@ -378,7 +378,7 @@ from sqlalchemy.orm import sessionmaker
 from riverhog_core.catalog_db import create_catalog_engine
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
 from riverhog_core.canonical_discovery_corpus_jobs import DiscoveryJob,discovery_worker_current
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+from tests.support.validation_workspace import leased_workspace
 engine=create_catalog_engine(sys.argv[1]);factory=sessionmaker(engine,expire_on_commit=False)
 with factory() as session: job=DiscoveryJob.read(session.get(Row,sys.argv[3]))
 actual=os.open
@@ -390,7 +390,7 @@ def interrupted(name,*args,**kwargs):
  if sys.argv[4]=="lease" and name==".lease": os._exit(68)
  return result
 os.open=interrupted
-with lease_journal_validation_workspace(
+with leased_workspace(
  Path(sys.argv[2]),job.workspace_id,create=True,
  creation_current=lambda: discovery_worker_current(factory,job)
 ): raise AssertionError("creation exit point not exercised")

@@ -4,7 +4,6 @@ from contextlib import contextmanager
 
 import pytest
 from riverhog_provenance import (
-    InvalidJournalWorkspace,
     JournalResultOpening,
     open_retained_journal_result,
 )
@@ -32,7 +31,9 @@ class CloseFault:
 
 
 @contextmanager
-def failed_open(path, source, confirmed, catalog, monkeypatch, *, boundary, after):
+def failed_open(
+    path, source, confirmed, catalog, monkeypatch, *, boundary, after, journal_constructions
+):
     openings, connections, releases = [], [], []
     restore = JournalStore._restore_workspace
 
@@ -62,6 +63,7 @@ def failed_open(path, source, confirmed, catalog, monkeypatch, *, boundary, afte
                 catalog=catalog,
                 on_storage_open=openings.append,
                 on_storage_close=lambda: releases.append(True),
+                construction=journal_constructions.retain(),
             )
     assert len(openings) == len(connections) == 1
     opening, connection = openings[0], connections[0]
@@ -74,13 +76,22 @@ def failed_open(path, source, confirmed, catalog, monkeypatch, *, boundary, afte
 @pytest.mark.parametrize("boundary", ["restore", "prefix"])
 @pytest.mark.parametrize("after", [False, True])
 def test_actual_partial_native_handle_survives_unconfirmed_constructor_cleanup(
-    tmp_path, journal, catalog, monkeypatch, boundary, after
+    tmp_path, journal, catalog, monkeypatch, boundary, after, *, journal_constructions
 ):
-    path, source, confirmed, _, _expected = completed(tmp_path, journal, catalog)
+    path, source, confirmed, _, _expected = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     file = path / "snapshot.sqlite3"
     before, inode = file.read_bytes(), file.stat().st_ino
     with failed_open(
-        path, source, confirmed, catalog, monkeypatch, boundary=boundary, after=after
+        path,
+        source,
+        confirmed,
+        catalog,
+        monkeypatch,
+        boundary=boundary,
+        after=after,
+        journal_constructions=journal_constructions,
     ) as (opening, connection, releases):
         assert isinstance(opening, JournalResultOpening) and not opening.closed
         store = opening._store
@@ -98,9 +109,11 @@ def test_actual_partial_native_handle_survives_unconfirmed_constructor_cleanup(
 
 @pytest.mark.parametrize("interruption", ["raise", "close"])
 def test_early_retention_precedes_any_database_acquisition(
-    tmp_path, journal, catalog, monkeypatch, interruption
+    tmp_path, journal, catalog, monkeypatch, interruption, *, journal_constructions
 ):
-    path, source, confirmed, _, _expected = completed(tmp_path, journal, catalog)
+    path, source, confirmed, _, _expected = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     openings = []
 
     def retained(opening):
@@ -114,21 +127,29 @@ def test_early_retention_precedes_any_database_acquisition(
         pytest.fail("interrupted opening acquired a database")
 
     with monkeypatch.context() as patch:
-        patch.setattr(JournalStore, "open_retained", forbidden)
-        error = InterruptedError if interruption == "raise" else InvalidJournalWorkspace
+        patch.setattr(JournalStore, "_open_retained", forbidden)
+        error = InterruptedError if interruption == "raise" else BlockingIOError
         with pytest.raises(error):
             open_retained_journal_result(
-                path, source, confirmed=confirmed, catalog=catalog, on_storage_open=retained
+                path,
+                source,
+                confirmed=confirmed,
+                catalog=catalog,
+                on_storage_open=retained,
+                construction=journal_constructions.retain(),
             )
     assert len(openings) == 1 and openings[0]._store is None
+    assert not openings[0].closed
     openings[0].close()
     assert openings[0].closed and not source.calls
 
 
 def test_connection_failure_leaves_the_early_opening_reachable_without_storage(
-    tmp_path, journal, catalog, monkeypatch
+    tmp_path, journal, catalog, monkeypatch, *, journal_constructions
 ):
-    path, source, confirmed, _, _expected = completed(tmp_path, journal, catalog)
+    path, source, confirmed, _, _expected = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     openings = []
 
     def unavailable(*args, **kwargs):
@@ -136,7 +157,7 @@ def test_connection_failure_leaves_the_early_opening_reachable_without_storage(
         raise OSError("read-only connection unavailable")
 
     with monkeypatch.context() as patch:
-        patch.setattr(owner.JournalStore, "open_retained", unavailable)
+        patch.setattr(owner.JournalStore, "_open_retained", unavailable)
         with pytest.raises(OSError, match="connection unavailable"):
             open_retained_journal_result(
                 path,
@@ -144,19 +165,22 @@ def test_connection_failure_leaves_the_early_opening_reachable_without_storage(
                 confirmed=confirmed,
                 catalog=catalog,
                 on_storage_open=openings.append,
+                construction=journal_constructions.retain(),
             )
     openings[0].close()
     assert openings[0].closed and not source.calls
 
 
 def test_success_transfers_storage_and_last_borrower_alone_releases_callback(
-    tmp_path, journal, catalog, monkeypatch
+    tmp_path, journal, catalog, monkeypatch, *, journal_constructions
 ):
-    path, source, confirmed, _, expected = completed(tmp_path, journal, catalog)
+    path, source, confirmed, _, expected = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
     file = path / "snapshot.sqlite3"
     before, inode = file.read_bytes(), file.stat().st_ino
     openings, releases, results = [], [], []
-    connect = owner.JournalStore.open_retained
+    connect = owner.JournalStore._open_retained
 
     def opened(*args, **kwargs):
         assert len(openings) == 1
@@ -165,7 +189,7 @@ def test_success_transfers_storage_and_last_borrower_alone_releases_callback(
 
     try:
         with monkeypatch.context() as patch:
-            patch.setattr(owner.JournalStore, "open_retained", opened)
+            patch.setattr(owner.JournalStore, "_open_retained", opened)
             result = open_retained_journal_result(
                 path,
                 source,
@@ -173,6 +197,7 @@ def test_success_transfers_storage_and_last_borrower_alone_releases_callback(
                 catalog=catalog,
                 on_storage_open=openings.append,
                 on_storage_close=lambda: releases.append(True),
+                construction=journal_constructions.retain(),
             )
         results.append(result)
         last = result.borrow()

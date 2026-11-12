@@ -21,13 +21,13 @@ from riverhog_core.catalog_provenance_index_models import (
 from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexStateRecord as State,
 )
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import delete, select, update
 from sqlalchemy.orm import sessionmaker
 
 from tests.support.catalog_work import CatalogRecorder, octets
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_jobs import (  # noqa: F401
     fixed_inputs as fixed_inputs,
 )
@@ -134,7 +134,7 @@ def cases(tmp_path_factory, fixed_inputs):
                     session.flush()
                     session.add_all(controls)
                 lease_root = here / "owned"
-                with lease_journal_validation_workspace(
+                with leased_workspace(
                     lease_root,
                     selected.workspace_id,
                     create=True,
@@ -302,10 +302,7 @@ def measure(case, mode, variant, cold):
             "discovery_worker_current",
             "discovery_worker_snapshot",
         }:
-            assert (
-                lease.enter_context(lease_journal_validation_workspace(case.root, job.workspace_id))
-                is not None
-            )
+            assert lease.enter_context(leased_workspace(case.root, job.workspace_id)) is not None
         with recorder.observe(case.engine, cold=cold):
             if expected_error:
                 with pytest.raises(expected_error):

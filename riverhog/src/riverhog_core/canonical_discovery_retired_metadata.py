@@ -10,6 +10,7 @@ from contextlib import closing
 
 from riverhog_provenance import JournalReplayBinding
 from state_schema import read_snapshot
+from workspace_reclamation import FileReclamationOwner
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core.canonical_discovery_archive_work import StaleArchiveTask
@@ -24,7 +25,10 @@ from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     _private_directory,
 )
-from riverhog_core.retained_workspace_handles import RetainedWorkspaceHandles
+from riverhog_core.retained_workspace_handles import (
+    RetainedWorkspaceHandles,
+    RetainedWorkspaceResource,
+)
 
 
 class RetiredDiscoveryMetadata:
@@ -46,13 +50,18 @@ class RetiredDiscoveryMetadata:
             not in {"children", "child_directory", "corpus", "journals_root"}
             or retirement.directory is None
             or retirement.directory.name != job.workspace_id
+            or not isinstance(retirement.namespace, RetainedWorkspaceResource)
             or retirement.custody is None
             or retirement.custody.directory != retirement.directory
+            or retirement.namespace.owner.state != "live"
+            or not retirement.namespace.borrow.active
+            or retirement.namespace.fileno() != retirement.custody._owner
         ):
             raise StaleArchiveTask("retired Core routing requires its confirmed original custody")
         self.factory, self.job, self.retirement = factory, job, retirement
         self._original = job
         self._custody = retirement.custody
+        self._namespace = retirement.namespace
         self._expected = (
             _FORMAT,
             job.workspace_id,
@@ -62,22 +71,34 @@ class RetiredDiscoveryMetadata:
             job.policy_sha256,
             job.catalog_sha256,
         )
+        self._files = FileReclamationOwner()
         self._child_handles = RetainedWorkspaceHandles()
         self._db: sqlite3.Connection | None = None
         self._descriptor: int | None = None
-        self._child_root: int | None = None
-        self._root_coordinator: int | None = None
+        self._storage = RetainedWorkspaceResource("file")
+        self._opening = False
+        self._namespace_handles = RetainedWorkspaceHandles()
         self._initialized = False
         self._closing = False
         self._closed = False
+
+    def _file_receiver(self) -> FileReclamationOwner:
+        if self._files.received:
+            self._files = FileReclamationOwner()
+        return self._files
 
     def _owner_current(self) -> bool:
         if (
             self._closing
             or self._child_handles.uncertain
+            or self._namespace_handles.uncertain
             or self._closed
             or self.job != self._original
             or self.retirement.custody is not self._custody
+            or self.retirement.namespace is not self._namespace
+            or self._namespace.owner.state != "live"
+            or not self._namespace.borrow.active
+            or self._namespace.fileno() != self._custody._owner
             or self.retirement.directory != self._custody.directory
             or self._custody.directory.name != self.job.workspace_id
             or not self._custody.verify_current()
@@ -89,7 +110,12 @@ class RetiredDiscoveryMetadata:
             return jobs.retire_discovery_job(session, self.job) == self._original
 
     def _file_current(self) -> bool:
-        if self._descriptor is None:
+        if (
+            self._descriptor is None
+            or self._storage.owner.state != "live"
+            or not self._storage.borrow.active
+            or self._storage.fileno() != self._descriptor
+        ):
             return False
         try:
             held = os.fstat(self._descriptor)
@@ -148,13 +174,13 @@ class RetiredDiscoveryMetadata:
         if self._initialized:
             self._require_current()
             return
-        if self._db is not None or self._descriptor is not None:
+        if self._opening or self._db is not None or self._descriptor is not None:
             raise LostJournalValidationWorkspace("retired Core opening remains unconfirmed")
         if not self._owner_current():
             raise StaleArchiveTask("retired Core routing has another current disposition")
-        self._descriptor = os.open(
-            "discovery.sqlite3", os.O_RDWR | os.O_NOFOLLOW, dir_fd=self._custody._owner
-        )
+        self._opening = True
+        self._storage.acquire("discovery.sqlite3", parent=self._namespace, writable=True)
+        self._descriptor = self._storage.fileno()
         if not self._file_current():
             raise LostJournalValidationWorkspace("retired Core file custody is incompatible")
         path = self._custody.directory / "discovery.sqlite3"
@@ -229,44 +255,39 @@ class RetiredDiscoveryMetadata:
     def _receive_child_namespace(self) -> None:
         """Synchronize exact absence without creating or removing any namespace."""
         assert self.job.reclamation_directory_id is not None
-        if self._child_root is not None:
-            raise LostJournalValidationWorkspace("retired child root closure remains unconfirmed")
         try:
-            self._child_root = os.open(
-                "journals",
-                os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
-                dir_fd=self._custody._owner,
-            )
-        except FileNotFoundError:
-            os.fsync(self._custody._owner)
-            return
-        try:
-            identity = _private_directory(self._child_root)
-            try:
-                os.stat(
-                    self.job.reclamation_directory_id,
-                    dir_fd=self._child_root,
-                    follow_symlinks=False,
-                )
-            except FileNotFoundError:
-                pass
-            else:
-                raise LostJournalValidationWorkspace("selected child namespace still exists")
-            os.fsync(self._child_root)
-            entry = os.stat("journals", dir_fd=self._custody._owner, follow_symlinks=False)
-            if (identity.st_dev, identity.st_ino, identity.st_mode) != (
-                entry.st_dev,
-                entry.st_ino,
-                entry.st_mode,
-            ):
-                raise LostJournalValidationWorkspace("retired child root was replaced")
-        finally:
-            try:
-                os.close(self._child_root)
-            except BaseException:
+            with self._namespace_handles as resources:
+                try:
+                    root_owner = resources.acquire(
+                        "directory", "journals", parent=self.retirement.namespace
+                    )
+                    child_root = root_owner.fileno()
+                except FileNotFoundError:
+                    os.fsync(self._custody._owner)
+                    return
+                identity = _private_directory(child_root)
+                try:
+                    os.stat(
+                        self.job.reclamation_directory_id,
+                        dir_fd=child_root,
+                        follow_symlinks=False,
+                    )
+                except FileNotFoundError:
+                    pass
+                else:
+                    raise LostJournalValidationWorkspace("selected child namespace still exists")
+                os.fsync(child_root)
+                entry = os.stat("journals", dir_fd=self._custody._owner, follow_symlinks=False)
+                if (identity.st_dev, identity.st_ino, identity.st_mode) != (
+                    entry.st_dev,
+                    entry.st_ino,
+                    entry.st_mode,
+                ):
+                    raise LostJournalValidationWorkspace("retired child root was replaced")
+        except BaseException:
+            if self._namespace_handles.uncertain:
                 self._closing = True
-                raise
-            self._child_root = None
+            raise
 
     def retire_child(self) -> bool:
         """Retire only selected routing after actual namespace absence is received.
@@ -323,27 +344,23 @@ class RetiredDiscoveryMetadata:
 
     def _close_namespace_handles(self) -> None:
         """Retain uncertain namespace handles until actual close is received."""
-        for name in ("_root_coordinator", "_child_root"):
-            descriptor = getattr(self, name)
-            if descriptor is not None:
-                try:
-                    os.close(descriptor)
-                except BaseException:
-                    self._closing = True
-                    raise
-                setattr(self, name, None)
+        try:
+            self._namespace_handles.close()
+        except BaseException:
+            self._closing = True
+            raise
 
     def close(self) -> None:
         """Confirm actual Core closure before the caller ends exclusive custody."""
         self._closing = True
+        self._files.close()
         self._child_handles.close()
         self._close_namespace_handles()
         if self._db is not None:
             self._db.close()
             self._db = None
-        if self._descriptor is not None:
-            os.close(self._descriptor)
-            self._descriptor = None
+        self._storage.close()
+        self._descriptor = None
         self._closed = True
 
 

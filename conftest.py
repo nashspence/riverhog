@@ -4,6 +4,12 @@ from pathlib import Path
 
 import pytest
 
+from tests.support.journal_result import upload_result_openings as upload_result_openings
+from tests.support.native_construction import journal_constructions as journal_constructions
+from tests.support.native_construction import (
+    module_journal_constructions as module_journal_constructions,
+)
+
 
 @pytest.fixture(autouse=True)
 def isolated_provenance_user_state(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

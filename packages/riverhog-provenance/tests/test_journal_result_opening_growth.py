@@ -111,7 +111,7 @@ def sample(dimensions, metrics):
     operation="riverhog_provenance.journal_result_opening.JournalResultOpening.close",
 )
 def test_actual_failed_opening_close_ports_remain_independent_of_retained_history(
-    tmp_path, journal, graph, who, catalog, monkeypatch, record_property
+    tmp_path, journal, graph, who, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     samples = []
     for ordinal, (frames, extensions) in enumerate(((1, 0), (17, 0), (1, 128))):
@@ -134,7 +134,9 @@ def test_actual_failed_opening_close_ports_remain_independent_of_retained_histor
         raw = history(raw, frames, catalog)
         root = tmp_path / str(ordinal)
         root.mkdir()
-        path, source, confirmed, _, _expected = completed(root, raw, catalog)
+        path, source, confirmed, _, _expected = completed(
+            root, raw, catalog, journal_constructions=journal_constructions
+        )
         connection = sqlite3.connect(path / "snapshot.sqlite3")
         try:
             indexed = connection.execute("SELECT count(*) FROM assertions").fetchone()[0]
@@ -152,6 +154,7 @@ def test_actual_failed_opening_close_ports_remain_independent_of_retained_histor
                             confirmed=confirmed,
                             catalog=catalog,
                             on_storage_open=openings.append,
+                            construction=journal_constructions.retain(),
                         )
                         results.append(result)
                         opening = openings[0]
@@ -171,6 +174,7 @@ def test_actual_failed_opening_close_ports_remain_independent_of_retained_histor
                             monkeypatch,
                             boundary="prefix",
                             after=False,
+                            journal_constructions=journal_constructions,
                         ) as (opening, fault, releases):
                             if kind in {"before", "after"}:
                                 fault.after = kind == "after"

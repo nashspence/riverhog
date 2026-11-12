@@ -78,9 +78,16 @@ def measure(work, selection, operation, values, monkeypatch, samples):
     return result
 
 
-def exercise(case, qualified, retained, monkeypatch, record_property, operation):
+def exercise(
+    case, qualified, retained, monkeypatch, record_property, operation, *, journal_constructions
+):
     samples = []
-    app = owner.DiscoveryValidationOwner(case.factory, case.root)
+    app = owner.DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -143,9 +150,17 @@ def exercise(case, qualified, retained, monkeypatch, record_property, operation)
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationWork.corpus_replay",
 )
 def test_actual_cold_and_retained_conductor_ports(
-    case, qualified, retained, monkeypatch, record_property
+    case, qualified, retained, monkeypatch, record_property, *, journal_constructions
 ):
-    exercise(case, qualified, retained, monkeypatch, record_property, RETAIN)
+    exercise(
+        case,
+        qualified,
+        retained,
+        monkeypatch,
+        record_property,
+        RETAIN,
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.parametrize("retained", [1, 17, 1025])
@@ -157,9 +172,17 @@ def test_actual_cold_and_retained_conductor_ports(
     ),
 )
 def test_actual_original_full_source_request_ports(
-    case, qualified, retained, monkeypatch, record_property
+    case, qualified, retained, monkeypatch, record_property, *, journal_constructions
 ):
-    exercise(case, qualified, retained, monkeypatch, record_property, NEXT)
+    exercise(
+        case,
+        qualified,
+        retained,
+        monkeypatch,
+        record_property,
+        NEXT,
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.parametrize("retained", [1, 17, 1025])
@@ -169,6 +192,14 @@ def test_actual_original_full_source_request_ports(
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationWork.advance_corpus",
 )
 def test_actual_pending_source_and_all_native_phase_dispatch_ports(
-    case, qualified, retained, monkeypatch, record_property
+    case, qualified, retained, monkeypatch, record_property, *, journal_constructions
 ):
-    exercise(case, qualified, retained, monkeypatch, record_property, ADVANCE)
+    exercise(
+        case,
+        qualified,
+        retained,
+        monkeypatch,
+        record_property,
+        ADVANCE,
+        journal_constructions=journal_constructions,
+    )

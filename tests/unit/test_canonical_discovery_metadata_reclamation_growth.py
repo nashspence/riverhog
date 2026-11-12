@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import asdict
 
 import pytest
@@ -10,6 +10,7 @@ from riverhog_core import canonical_discovery_root_reclamation as root_owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Job
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import update
+from workspace_reclamation import FileReclamationOwner
 
 from tests.support.catalog_work import octets
 from tests.support.workspace_reclamation import execution_sample, observe_reclamation
@@ -70,7 +71,7 @@ def file_delegate(recorder, projection, dimensions, samples, *, fault=False):
     operation = owner.reclaim_retired_files
     binding = growth_binding(operation)
 
-    def observed(directory, *, names, octet_budget):
+    def observed(directory, *, receiver, names, octet_budget):
         active, recorder.active = recorder.active, False
         sizes = tuple(len(name.encode()) for name in names)
         try:
@@ -83,7 +84,9 @@ def file_delegate(recorder, projection, dimensions, samples, *, fault=False):
                     patch.setattr(os, "fsync", uncertain)
                 with observe_reclamation(patch, operation) as metrics:
                     try:
-                        return operation(directory, names=names, octet_budget=octet_budget)
+                        return operation(
+                            directory, receiver=receiver, names=names, octet_budget=octet_budget
+                        )
                     finally:
                         samples.append(
                             execution_sample(
@@ -136,11 +139,20 @@ def test_measured_metadata_extents(tmp_path, fixed_inputs, catalog_templates, re
         for cold in (False, True):
             for variant in variants:
                 root = tmp_path / f"metadata-{retained}-{width}-{cold}-{variant}"
-                with metadata_case(
-                    root, admission, catalog_templates[(retained, width)], retained, width, variant
-                ) as (case, retirement, job, recorder, extent, files):
+                with (
+                    metadata_case(
+                        root,
+                        admission,
+                        catalog_templates[(retained, width)],
+                        retained,
+                        width,
+                        variant,
+                    ) as (case, retirement, job, recorder, extent, files),
+                    closing(FileReclamationOwner()) as receiver,
+                ):
                     delegated = {
                         "candidate_files": len(owner._FILES),
+                        "directory_octets": len(os.fsencode(case.path)),
                         "name_octets": sum(sizes),
                         "maximum_name_octets": max(sizes),
                         "retained_octets": extent,
@@ -165,7 +177,7 @@ def test_measured_metadata_extents(tmp_path, fixed_inputs, catalog_templates, re
 
                             patch.setattr(owner.jobs, "advance_discovery_reclamation", rolled_back)
                         with (
-                            recorder.observe(case, cold=cold),
+                            recorder.observe(case, cold=cold, file_primitives=False),
                             direct_primitives(recorder),
                             file_delegate(
                                 recorder,
@@ -178,26 +190,42 @@ def test_measured_metadata_extents(tmp_path, fixed_inputs, catalog_templates, re
                             if variant in {"stale", "wrong-phase", "catalog-stale"}:
                                 with pytest.raises(owner.StaleArchiveTask):
                                     owner.reclaim_discovery_metadata(
-                                        case.factory, job, retirement, octet_budget=3
+                                        case.factory,
+                                        job,
+                                        retirement,
+                                        receiver=receiver,
+                                        octet_budget=3,
                                     )
                             elif variant == "prior-corpus":
                                 with pytest.raises(owner.LostJournalValidationWorkspace):
                                     owner.reclaim_discovery_metadata(
-                                        case.factory, job, retirement, octet_budget=3
+                                        case.factory,
+                                        job,
+                                        retirement,
+                                        receiver=receiver,
+                                        octet_budget=3,
                                     )
                             elif variant == "sync-refusal":
                                 with pytest.raises(owner.JournalValidationCapacity):
                                     owner.reclaim_discovery_metadata(
-                                        case.factory, job, retirement, octet_budget=3
+                                        case.factory,
+                                        job,
+                                        retirement,
+                                        receiver=receiver,
+                                        octet_budget=3,
                                     )
                             elif variant == "phase-rollback":
                                 with pytest.raises(OSError, match="phase rollback"):
                                     owner.reclaim_discovery_metadata(
-                                        case.factory, job, retirement, octet_budget=3
+                                        case.factory,
+                                        job,
+                                        retirement,
+                                        receiver=receiver,
+                                        octet_budget=3,
                                     )
                             else:
                                 result = owner.reclaim_discovery_metadata(
-                                    case.factory, job, retirement, octet_budget=3
+                                    case.factory, job, retirement, receiver=receiver, octet_budget=3
                                 )
                                 assert result.advanced
                                 if variant in {"extent-1", "empty"}:

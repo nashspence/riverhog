@@ -86,10 +86,12 @@ def observe(operation, monkeypatch):
         yield metrics
 
 
-def exercise(tmp_path, monkeypatch, record_property, operation):
+def exercise(tmp_path, monkeypatch, record_property, operation, *, journal_constructions):
     samples = []
     for retained in (1, 17, 1025):
-        with prepared(tmp_path / str(retained)) as case:
+        with prepared(
+            tmp_path / str(retained), journal_constructions=journal_constructions
+        ) as case:
             seed(case.factory, retained)
             with quantum(case) as (work, source):
                 values = {"retained_journals": retained + 1}
@@ -147,8 +149,10 @@ def exercise(tmp_path, monkeypatch, record_property, operation):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_result.DiscoverySealedJournalOwner.prepare",
 )
-def test_detached_prepare_ports(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, PREPARE)
+def test_detached_prepare_ports(tmp_path, monkeypatch, record_property, *, journal_constructions):
+    exercise(
+        tmp_path, monkeypatch, record_property, PREPARE, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -156,8 +160,12 @@ def test_detached_prepare_ports(tmp_path, monkeypatch, record_property):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_result.DiscoverySealedJournalOwner.open",
 )
-def test_actual_readonly_open_ports(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, OPEN)
+def test_actual_readonly_open_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path, monkeypatch, record_property, OPEN, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -165,8 +173,12 @@ def test_actual_readonly_open_ports(tmp_path, monkeypatch, record_property):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_result.DiscoverySealedJournalOwner.borrow",
 )
-def test_current_independent_borrow_ports(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, BORROW)
+def test_current_independent_borrow_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path, monkeypatch, record_property, BORROW, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -174,8 +186,12 @@ def test_current_independent_borrow_ports(tmp_path, monkeypatch, record_property
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_result.DiscoverySealedJournalOwner.close",
 )
-def test_actual_close_and_retry_ports(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, CLOSE)
+def test_actual_close_and_retry_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path, monkeypatch, record_property, CLOSE, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -183,8 +199,12 @@ def test_actual_close_and_retry_ports(tmp_path, monkeypatch, record_property):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_result.DiscoverySealedJournalSource.verify_current",
 )
-def test_live_original_source_and_catalog_fence_ports(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, CURRENT)
+def test_live_original_source_and_catalog_fence_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path, monkeypatch, record_property, CURRENT, journal_constructions=journal_constructions
+    )
 
 
 @pytest.mark.growth_witness(
@@ -192,8 +212,16 @@ def test_live_original_source_and_catalog_fence_ports(tmp_path, monkeypatch, rec
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationWork.sealed_journal",
 )
-def test_actual_selected_slot_and_warm_retry_ports(tmp_path, monkeypatch, record_property):
-    exercise(tmp_path, monkeypatch, record_property, DISPATCH)
+def test_actual_selected_slot_and_warm_retry_ports(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        tmp_path,
+        monkeypatch,
+        record_property,
+        DISPATCH,
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -201,11 +229,15 @@ def test_actual_selected_slot_and_warm_retry_ports(tmp_path, monkeypatch, record
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.discovery_journal_result._build_collection_current",
 )
-def test_indexed_build_collection_probe_width_rows_and_vm(tmp_path, monkeypatch, record_property):
+def test_indexed_build_collection_probe_width_rows_and_vm(
+    tmp_path, monkeypatch, record_property, *, journal_constructions
+):
     operation = owner._build_collection_current
     samples = []
     for retained in (1, 17, 1025):
-        with prepared(tmp_path / str(retained)) as case:
+        with prepared(
+            tmp_path / str(retained), journal_constructions=journal_constructions
+        ) as case:
             with case.factory() as session, session.begin():
                 row = session.get(owner.Generation, case.build_id)
                 values = {
@@ -297,15 +329,21 @@ def test_indexed_build_collection_probe_width_rows_and_vm(tmp_path, monkeypatch,
 )
 @pytest.mark.parametrize("warm", [False, True])
 def test_actual_sealed_and_warm_cleanup_in_composed_owner(
-    tmp_path, monkeypatch, record_property, warm
+    tmp_path, monkeypatch, record_property, warm, *, journal_constructions
 ):
     samples = []
     for retained in (1, 17, 1025):
-        with prepared(tmp_path / str(retained)) as case:
+        with prepared(
+            tmp_path / str(retained), journal_constructions=journal_constructions
+        ) as case:
             seed(case.factory, retained)
             case.pool.close()
             case.pool = DiscoveryValidationOwner(
-                case.factory, case.root, journal_root=case.native_root
+                case.factory,
+                case.root,
+                journal_root=case.native_root,
+                construction_factory=journal_constructions.retain,
+                corpus_construction_factory=journal_constructions.retain_corpus,
             )
             recorder = Recorder()
             case.readers = [case.reader]

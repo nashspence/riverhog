@@ -5,14 +5,17 @@ import os
 import sqlite3
 import subprocess
 import sys
+from contextlib import contextmanager
 from dataclasses import replace
 
 import pytest
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_metadata as live
 from riverhog_core import canonical_discovery_metadata_reclamation as owner
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceHandles
+from workspace_reclamation import FileReclamationOwner
 
+from tests.support.retirement_namespace import lease_retiring_journal_workspace
 from tests.unit.test_canonical_discovery_metadata import owned
 from tests.unit.test_canonical_discovery_root_reclamation import case as case
 from tests.unit.test_canonical_discovery_root_reclamation import (
@@ -35,10 +38,23 @@ def prepare_metadata(case):
     return result.job, path
 
 
+@contextmanager
+def metadata_lease(case, job):
+    receiver = FileReclamationOwner()
+    handles = RetainedWorkspaceHandles()
+    with lease_retiring_journal_workspace(
+        case.root, job.workspace_id, handles=handles
+    ) as retirement:
+        handles.callback(receiver.close)
+        yield retirement, receiver
+
+
 def step(case, job, *, budget=1024 * 1024):
-    with lease_retiring_journal_workspace(case.root, job.workspace_id) as retirement:
+    with metadata_lease(case, job) as (retirement, receiver):
         assert retirement is not None and retirement.directory is not None
-        return owner.reclaim_discovery_metadata(case.factory, job, retirement, octet_budget=budget)
+        return owner.reclaim_discovery_metadata(
+            case.factory, job, retirement, receiver=receiver, octet_budget=budget
+        )
 
 
 def finish(case, job, *, budget=1024 * 1024):
@@ -166,7 +182,7 @@ def test_wrong_phase_stale_custody_or_original_identity_never_acquires_extent_au
     def forbidden(*_args, **_kwargs):
         pytest.fail("invalid original metadata acquired neutral extent authority")
 
-    with lease_retiring_journal_workspace(case.root, job.workspace_id) as retirement:
+    with metadata_lease(case, job) as (retirement, receiver):
         assert retirement is not None
         if damage == "phase":
             value = replace(job, reclamation_phase="journals_root")
@@ -180,7 +196,7 @@ def test_wrong_phase_stale_custody_or_original_identity_never_acquires_extent_au
                 patch.setattr(owner, "reclaim_retired_files", forbidden)
                 with pytest.raises(owner.StaleArchiveTask):
                     owner.reclaim_discovery_metadata(
-                        case.factory, value, retirement, octet_budget=3
+                        case.factory, value, retirement, receiver=receiver, octet_budget=3
                     )
         finally:
             retirement.custody._held = True
@@ -203,7 +219,7 @@ def test_uncertain_sync_never_advances_before_positive_absence_receiving(
 ):
     job, path = prepare_metadata(case)
     actual = os.fsync
-    with lease_retiring_journal_workspace(case.root, job.workspace_id) as retirement:
+    with metadata_lease(case, job) as (retirement, receiver):
         assert retirement is not None
         parent = retirement.custody._owner
 
@@ -219,7 +235,7 @@ def test_uncertain_sync_never_advances_before_positive_absence_receiving(
             patch.setattr(os, "fsync", uncertain)
             with pytest.raises(owner.JournalValidationCapacity):
                 owner.reclaim_discovery_metadata(
-                    case.factory, job, retirement, octet_budget=1024 * 1024
+                    case.factory, job, retirement, receiver=receiver, octet_budget=1024 * 1024
                 )
     assert not (path / "discovery.sqlite3").exists()
     assert current_job(case, job.workspace_id) == job
@@ -266,11 +282,14 @@ from riverhog_core.catalog_db import create_catalog_engine
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
 from riverhog_core.canonical_discovery_corpus_jobs import DiscoveryJob
 from riverhog_core.canonical_discovery_metadata_reclamation import reclaim_discovery_metadata
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
+from tests.support.retirement_namespace import lease_retiring_journal_workspace
+from workspace_reclamation import FileReclamationOwner
 engine=create_catalog_engine(sys.argv[1]);factory=sessionmaker(engine,expire_on_commit=False)
 with factory() as session:job=DiscoveryJob.read(session.get(Row,sys.argv[3]))
+receiver=FileReclamationOwner()
 with lease_retiring_journal_workspace(Path(sys.argv[2]),job.workspace_id) as parent:
-    result=reclaim_discovery_metadata(factory,job,parent,octet_budget=3)
+    result=reclaim_discovery_metadata(factory,job,parent,receiver=receiver,octet_budget=3)
+    assert receiver.received
     assert result.files.removed_octets==3 and result.job==job
     os._exit(84)
 """

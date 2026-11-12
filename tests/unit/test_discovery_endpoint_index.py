@@ -20,8 +20,10 @@ from tests.unit.test_canonical_discovery_journal_extraction import run
 from tests.unit.test_discovery_journal_owner import prepared, quantum
 
 
-def test_endpoint_cursor_survives_actual_metadata_and_native_worker_takeover(tmp_path):
-    with prepared(tmp_path / "source") as case:
+def test_endpoint_cursor_survives_actual_metadata_and_native_worker_takeover(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path / "source", journal_constructions=journal_constructions) as case:
         terminal = None
         while terminal is None or not terminal.complete:
             with quantum(case) as (application, framing):
@@ -58,7 +60,12 @@ def test_endpoint_cursor_survives_actual_metadata_and_native_worker_takeover(tmp
         with pytest.raises(StaleArchiveTask):
             with metadata.transaction():
                 pytest.fail("old metadata admitted a replaced worker")
-        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        case.pool = DiscoveryValidationOwner(
+            case.factory,
+            case.root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         with quantum(case) as (application, framing):
             replacement = application.metadata
             assert replacement.job.worker_epoch == epoch + 1

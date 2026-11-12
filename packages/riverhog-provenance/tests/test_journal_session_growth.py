@@ -6,7 +6,7 @@ import shutil
 import sqlite3
 import sys
 from collections.abc import Iterator
-from contextlib import closing, contextmanager
+from contextlib import closing, contextmanager, nullcontext
 from copy import copy
 from dataclasses import replace
 from pathlib import Path
@@ -34,6 +34,8 @@ from test_entry_replay_growth import REGIMES
 from test_entry_replay_growth import admission_histories as admission_histories
 from test_semantic_edge import observed_work
 from test_semantic_owner import snapshot
+
+from tests.support.sqlite_observation import observe_admitted_scope
 
 
 class SessionConnection(AdvanceConnection):
@@ -565,7 +567,9 @@ def finite_source(case, catalog, *, window):
     return source
 
 
-def session_cases(root, catalog, build, graphs, *, specifications=SESSION_CASES):
+def session_cases(
+    root, catalog, build, graphs, *, specifications=SESSION_CASES, journal_constructions
+):
     from copy import deepcopy
 
     from riverhog_provenance import encode_entry, parse_journal, validate_journal
@@ -603,6 +607,7 @@ def session_cases(root, catalog, build, graphs, *, specifications=SESSION_CASES)
                 worker_epoch=regime[4],
                 create=True,
                 catalog=catalog,
+                construction=journal_constructions.retain(),
             )
         else:
             session = JournalValidationSession((), attempt_id=ATTEMPT, catalog=catalog)
@@ -748,7 +753,7 @@ def session_cases(root, catalog, build, graphs, *, specifications=SESSION_CASES)
 
 
 @contextmanager
-def session_fixture(case, catalog, *, cold, measured=False, summary=False):
+def session_fixture(case, catalog, *, cold, measured=False, summary=False, journal_constructions):
     # Reuse the immutable source fact already verified by the native trajectory.
     source = object.__new__(FiniteSource)
     source.raw, source.window, source.binding = case["raw"], case["window"], case["binding"]
@@ -759,13 +764,26 @@ def session_fixture(case, catalog, *, cold, measured=False, summary=False):
         with closing(sqlite3.connect(case["path"])) as seed:
             with closing(sqlite3.connect(owned_directory / "snapshot.sqlite3")) as destination:
                 seed.backup(destination)
-        session = JournalValidationSession.open_retained(
-            owned_directory,
-            source,
-            attempt_id=ATTEMPT,
-            worker_epoch=case["regime"][4] + 1,
-            catalog=catalog,
+        construction = journal_constructions.retain()
+        observing = (
+            observe_admitted_scope(
+                construction.scope,
+                SessionConnection,
+                initialize=lambda _connection: None,
+                recording=lambda connection: connection.recording,
+            )
+            if measured
+            else nullcontext()
         )
+        with observing:
+            session = JournalValidationSession.open_retained(
+                owned_directory,
+                source,
+                attempt_id=ATTEMPT,
+                worker_epoch=case["regime"][4] + 1,
+                catalog=catalog,
+                construction=construction,
+            )
     else:
         session = JournalValidationSession((), attempt_id=ATTEMPT, catalog=catalog)
         with closing(sqlite3.connect(case["path"])) as seed:
@@ -796,11 +814,16 @@ def session_fixture(case, catalog, *, cold, measured=False, summary=False):
         if measured:
             epoch = session._ledger.worker_epoch
             path = session._store._storage.directory / "snapshot.sqlite3"
-            session._store.db.close()
-            session._store._storage.connection = sqlite3.connect(path, factory=SessionConnection)
+            if case["mode"] != "retained":
+                session._store.db.close()
+                session._store._storage.connection = sqlite3.connect(
+                    path, factory=SessionConnection
+                )
+            # Retained observation keeps the exact admitted connection and scope
+            # throughout Native storage, including independent result readers.
             session._store.db.execute("PRAGMA synchronous=FULL").close()
             session._store.db.execute("PRAGMA cache_size=-64").close()
-            # Rebind native owners to the same fresh pager, preserving exact immutable controls.
+            # Rebind Native owners to the bounded pager and exact immutable controls.
             from riverhog_provenance._journal_prefix import JournalPrefix
             from riverhog_provenance._session_checkpoint import ValidationLedger
 
@@ -868,7 +891,9 @@ def invoke(session, operation, budget):
     return operation(session)
 
 
-def checkpoint_samples(root, catalog, cases, *, operation, samples, early=False):
+def checkpoint_samples(
+    root, catalog, cases, *, operation, samples, early=False, journal_constructions
+):
     binding = growth_binding(operation)
     projection = project_bindings((binding,))
     for ordinal, case in enumerate(cases):
@@ -906,16 +931,32 @@ def checkpoint_samples(root, catalog, cases, *, operation, samples, early=False)
                 rows=rows, source_octets=7 if ordinal % 17 == 0 else 65536
             )
             for cold, summary in variants:
-                with session_fixture(case, catalog, cold=cold, summary=summary) as setup:
+                with session_fixture(
+                    case,
+                    catalog,
+                    cold=cold,
+                    summary=summary,
+                    journal_constructions=journal_constructions,
+                ) as setup:
                     if operation is _checkpoint_progress:
                         dimensions = progress_dimensions(setup, setup._ledger.load())
                     else:
                         dimensions, _ = session_dimensions(setup, budget, operation, cold=cold)
                 with session_fixture(
-                    case, catalog, cold=cold, summary=summary, measured=True
+                    case,
+                    catalog,
+                    cold=cold,
+                    summary=summary,
+                    measured=True,
+                    journal_constructions=journal_constructions,
                 ) as current:
                     with session_fixture(
-                        case, catalog, cold=cold, summary=summary, measured=True
+                        case,
+                        catalog,
+                        cold=cold,
+                        summary=summary,
+                        measured=True,
+                        journal_constructions=journal_constructions,
                     ) as oracle:
                         with pytest.MonkeyPatch.context() as patch:
                             from types import SimpleNamespace
@@ -1012,9 +1053,17 @@ def checkpoint_samples(root, catalog, cases, *, operation, samples, early=False)
 
 
 @pytest.fixture(scope="module")
-def native_session_checkpoints(tmp_path_factory, catalog, admission_histories, graph_histories):
+def native_session_checkpoints(
+    tmp_path_factory, catalog, admission_histories, graph_histories, *, module_journal_constructions
+):
     root = tmp_path_factory.mktemp("native-session-checkpoints")
-    return root, session_cases(root, catalog, admission_histories, graph_histories)
+    return root, session_cases(
+        root,
+        catalog,
+        admission_histories,
+        graph_histories,
+        journal_constructions=module_journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -1022,11 +1071,20 @@ def native_session_checkpoints(tmp_path_factory, catalog, admission_histories, g
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_provenance.journal_session._checkpoint_progress",
 )
-def test_actual_checkpoint_progress_encoding(catalog, native_session_checkpoints, record_property):
+def test_actual_checkpoint_progress_encoding(
+    catalog, native_session_checkpoints, record_property, *, journal_constructions
+):
     root, cases = native_session_checkpoints
     samples = []
     record_property("growth_samples", samples)
-    checkpoint_samples(root, catalog, cases, operation=_checkpoint_progress, samples=samples)
+    checkpoint_samples(
+        root,
+        catalog,
+        cases,
+        operation=_checkpoint_progress,
+        samples=samples,
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -1035,13 +1093,18 @@ def test_actual_checkpoint_progress_encoding(catalog, native_session_checkpoints
     operation="riverhog_provenance.journal_session.JournalValidationSession.advance",
 )
 def test_actual_session_source_and_native_advance(
-    catalog, native_session_checkpoints, record_property
+    catalog, native_session_checkpoints, record_property, *, journal_constructions
 ):
     root, cases = native_session_checkpoints
     samples = []
     record_property("growth_samples", samples)
     checkpoint_samples(
-        root, catalog, cases, operation=JournalValidationSession.advance, samples=samples
+        root,
+        catalog,
+        cases,
+        operation=JournalValidationSession.advance,
+        samples=samples,
+        journal_constructions=journal_constructions,
     )
 
 
@@ -1050,12 +1113,19 @@ def test_actual_session_source_and_native_advance(
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_provenance.journal_session.JournalValidationSession.progress",
 )
-def test_actual_session_progress(catalog, native_session_checkpoints, record_property):
+def test_actual_session_progress(
+    catalog, native_session_checkpoints, record_property, *, journal_constructions
+):
     root, cases = native_session_checkpoints
     samples = []
     record_property("growth_samples", samples)
     checkpoint_samples(
-        root, catalog, cases, operation=JournalValidationSession.progress, samples=samples
+        root,
+        catalog,
+        cases,
+        operation=JournalValidationSession.progress,
+        samples=samples,
+        journal_constructions=journal_constructions,
     )
 
 
@@ -1064,12 +1134,19 @@ def test_actual_session_progress(catalog, native_session_checkpoints, record_pro
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_provenance.journal_session.JournalValidationSession.result",
 )
-def test_actual_session_result_borrow(catalog, native_session_checkpoints, record_property):
+def test_actual_session_result_borrow(
+    catalog, native_session_checkpoints, record_property, *, journal_constructions
+):
     root, cases = native_session_checkpoints
     samples = []
     record_property("growth_samples", samples)
     checkpoint_samples(
-        root, catalog, cases, operation=JournalValidationSession.result, samples=samples
+        root,
+        catalog,
+        cases,
+        operation=JournalValidationSession.result,
+        samples=samples,
+        journal_constructions=journal_constructions,
     )
 
 

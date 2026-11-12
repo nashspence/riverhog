@@ -163,9 +163,14 @@ def test_postgresql_closed_native_upload_retires_discovery_source_authority_only
 
 
 def test_postgresql_native_catalog_projection_keeps_the_original_write_interlock(
-    database_url, tmp_path, monkeypatch
+    database_url, tmp_path, monkeypatch, *, journal_constructions
 ):
-    _closed_projection(tmp_path, monkeypatch, database_url=database_url)
+    _closed_projection(
+        tmp_path,
+        monkeypatch,
+        database_url=database_url,
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.parametrize("detach", (False, True))

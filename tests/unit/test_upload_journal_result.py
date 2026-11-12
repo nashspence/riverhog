@@ -7,7 +7,6 @@ import pytest
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
-    lease_journal_validation_workspace,
 )
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_result as result_owner
@@ -22,6 +21,7 @@ from riverhog_provenance.graph_certificates import JournalGraphCertificateBindin
 from riverhog_provenance.replay_binding import JournalReplayBinding
 from sqlalchemy import delete, event, select, update
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
@@ -30,12 +30,14 @@ from tests.unit.test_upload_journal_validation_owner import finish, selected
 
 
 @contextmanager
-def sealed(tmp_path, *, raw=None):
+def sealed(tmp_path, *, raw=None, journal_constructions):
     raw = source(journal_id=JOURNAL) if raw is None else raw
     with retained(tmp_path, raw) as (engine, factory):
         work, _ = ready(factory)
         root = tmp_path / "native"
-        owner = UploadJournalValidationOwner(factory, root)
+        owner = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         try:
             outcome = finish(owner, work)
             assert outcome.failure is None
@@ -45,16 +47,28 @@ def sealed(tmp_path, *, raw=None):
         yield engine, factory, root, selected(factory), raw
 
 
-def open_result(session, root):
+def open_result(session, root, *, upload_result_openings):
+    original = upload_result_openings.retain()
     return result_owner.open_upload_journal_result(
-        session, root, 1, JOURNAL, catalog=source_owner.admission_provenance_catalog()
+        session,
+        root,
+        1,
+        JOURNAL,
+        catalog=source_owner.admission_provenance_catalog(),
+        receiver=original,
     )
 
 
 def test_actual_sealed_result_reopens_inside_catalog_writer_without_replay_or_new_epoch(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, *, journal_constructions, upload_result_openings
 ):
-    with sealed(tmp_path) as (engine, factory, root, job, raw):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        engine,
+        factory,
+        root,
+        job,
+        raw,
+    ):
         with validate_journal(raw, catalog=source_owner.admission_provenance_catalog()) as original:
             expected = original.materialize()
         before = (root / job.workspace_id / "snapshot.sqlite3").read_bytes()
@@ -76,7 +90,9 @@ def test_actual_sealed_result_reopens_inside_catalog_writer_without_replay_or_ne
             )
             event.listen(engine, "before_cursor_execute", observe)
             try:
-                with open_result(session, root) as summary:
+                with open_result(
+                    session, root, upload_result_openings=upload_result_openings
+                ) as summary:
                     assert summary.materialize() == expected
             finally:
                 event.remove(engine, "before_cursor_execute", observe)
@@ -86,8 +102,10 @@ def test_actual_sealed_result_reopens_inside_catalog_writer_without_replay_or_ne
         assert engine.pool.checkedout() == 0
 
 
-def test_sealed_result_does_not_autoflush_unrelated_pending_catalog_work(tmp_path):
-    with sealed(tmp_path) as (_, factory, root, _, _):
+def test_sealed_result_does_not_autoflush_unrelated_pending_catalog_work(
+    tmp_path, *, journal_constructions, upload_result_openings
+):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (_, factory, root, _, _):
         with factory() as session:
             session.execute(select(Journal.collection_id)).close()
             pending = Job(
@@ -99,37 +117,61 @@ def test_sealed_result_does_not_autoflush_unrelated_pending_catalog_work(tmp_pat
                 state="opening",
             )
             session.add(pending)
-            with open_result(session, root) as summary:
+            with open_result(
+                session, root, upload_result_openings=upload_result_openings
+            ) as summary:
                 assert summary.journal_id == JOURNAL
             assert pending in session.new
             session.rollback()
 
 
-def test_independent_sealed_readers_can_reopen_while_an_evicted_borrow_remains_live(tmp_path):
-    with sealed(tmp_path) as (_, factory, root, job, _):
+def test_independent_sealed_readers_can_reopen_while_an_evicted_borrow_remains_live(
+    tmp_path, *, journal_constructions, upload_result_openings
+):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        _,
+        factory,
+        root,
+        job,
+        _,
+    ):
         with factory() as session, session.begin():
-            first = open_result(session, root)
+            first = open_result(session, root, upload_result_openings=upload_result_openings)
             last = first.borrow()
             first.close()
             try:
-                with open_result(session, root) as second:
+                with open_result(
+                    session, root, upload_result_openings=upload_result_openings
+                ) as second:
                     assert second.anchor == last.anchor
-                with lease_journal_validation_workspace(root, job.workspace_id) as busy:
+                with leased_workspace(root, job.workspace_id) as busy:
                     assert busy is None
             finally:
                 last.close()
-            with lease_journal_validation_workspace(root, job.workspace_id) as free:
+            with leased_workspace(root, job.workspace_id) as free:
                 assert free is not None
 
 
-def test_busy_sealed_result_leaves_the_same_completed_job_pending_for_retry(tmp_path):
-    with sealed(tmp_path) as (_, factory, root, job, _):
-        with lease_journal_validation_workspace(root, job.workspace_id):
+def test_busy_sealed_result_leaves_the_same_completed_job_pending_for_retry(
+    tmp_path, *, journal_constructions, upload_result_openings
+):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        _,
+        factory,
+        root,
+        job,
+        _,
+    ):
+        with leased_workspace(root, job.workspace_id):
             with factory() as session, session.begin():
                 with pytest.raises(JournalValidationCapacity, match="busy"):
-                    open_result(session, root)
+                    open_result(session, root, upload_result_openings=upload_result_openings)
         assert selected(factory) == job
-        with factory() as session, session.begin(), open_result(session, root) as summary:
+        with (
+            factory() as session,
+            session.begin(),
+            open_result(session, root, upload_result_openings=upload_result_openings) as summary,
+        ):
             assert summary.journal_id == JOURNAL
 
 
@@ -149,8 +191,16 @@ def test_busy_sealed_result_leaves_the_same_completed_job_pending_for_retry(tmp_
         "missing-coordinator",
     ],
 )
-def test_sealed_result_never_repairs_or_revalidates_changed_authority(tmp_path, fault):
-    with sealed(tmp_path) as (_, factory, root, job, _):
+def test_sealed_result_never_repairs_or_revalidates_changed_authority(
+    tmp_path, fault, *, journal_constructions, upload_result_openings
+):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        _,
+        factory,
+        root,
+        job,
+        _,
+    ):
         binding = JournalReplayBinding.from_json(job.source_binding_json)
         database = root / job.workspace_id / "snapshot.sqlite3"
         if fault == "missing-database":
@@ -203,16 +253,22 @@ def test_sealed_result_never_repairs_or_revalidates_changed_authority(tmp_path, 
                     )
         with factory() as session, session.begin():
             with pytest.raises(LostJournalValidationWorkspace):
-                open_result(session, root)
+                open_result(session, root, upload_result_openings=upload_result_openings)
         assert database.exists() is (fault != "missing-database")
         if fault == "missing-coordinator":
             assert not (root / ".coordinator").exists()
 
 
 def test_changed_source_during_readonly_admission_releases_the_untransferred_lease(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, *, journal_constructions, upload_result_openings
 ):
-    with sealed(tmp_path) as (_, factory, root, job, _):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        _,
+        factory,
+        root,
+        job,
+        _,
+    ):
         original = result_owner._SealedSource.verify_current
         calls = []
 
@@ -227,7 +283,7 @@ def test_changed_source_during_readonly_admission_releases_the_untransferred_lea
         monkeypatch.setattr(result_owner._SealedSource, "verify_current", replaced)
         with factory() as session, session.begin():
             with pytest.raises(LostJournalValidationWorkspace):
-                open_result(session, root)
+                open_result(session, root, upload_result_openings=upload_result_openings)
         assert len(calls) == 2
-        with lease_journal_validation_workspace(root, job.workspace_id) as free:
+        with leased_workspace(root, job.workspace_id) as free:
             assert free is not None

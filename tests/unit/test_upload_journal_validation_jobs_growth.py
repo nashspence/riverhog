@@ -52,7 +52,7 @@ def selected(factory):
 
 
 @contextmanager
-def build_cases(root, *, large=True):
+def build_cases(root, *, large=True, journal_constructions):
     specifications = [(1, 1, 0, False, False), (17, 1, 0, False, False), (1, 1, 0, True, False)]
     if large:
         specifications.extend(
@@ -85,7 +85,9 @@ def build_cases(root, *, large=True):
                 with factory() as session, session.begin():
                     session.execute(update(Job).values(worker_epoch=2**62)).close()
             opening = selected(factory)
-            current = UploadJournalValidationOwner(factory, path / "native")
+            current = UploadJournalValidationOwner(
+                factory, path / "native", construction_factory=journal_constructions.retain
+            )
             progresses, active = [], None
             try:
                 for _ in range(10000):
@@ -151,8 +153,11 @@ def build_cases(root, *, large=True):
 
 
 @pytest.fixture(scope="module")
-def job_cases(tmp_path_factory):
-    with build_cases(tmp_path_factory.mktemp("validation-job-inputs")) as cases:
+def job_cases(tmp_path_factory, *, module_journal_constructions):
+    with build_cases(
+        tmp_path_factory.mktemp("validation-job-inputs"),
+        journal_constructions=module_journal_constructions,
+    ) as cases:
         yield cases
 
 

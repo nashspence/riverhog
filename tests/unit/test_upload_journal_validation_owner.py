@@ -35,7 +35,9 @@ def finish(owner, work):
 
 
 @pytest.mark.parametrize("malformed", [False, True])
-def test_retained_owner_preserves_native_outcome_and_closes_catalog_readers(tmp_path, malformed):
+def test_retained_owner_preserves_native_outcome_and_closes_catalog_readers(
+    tmp_path, malformed, *, journal_constructions
+):
     raw = source(journal_id=JOURNAL) + (b"malformed tail" if malformed else b"")
     failure = None
     try:
@@ -45,7 +47,9 @@ def test_retained_owner_preserves_native_outcome_and_closes_catalog_readers(tmp_
         failure = str(error)
     with retained(tmp_path, raw) as (engine, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, tmp_path / "native")
+        owner = UploadJournalValidationOwner(
+            factory, tmp_path / "native", construction_factory=journal_constructions.retain
+        )
         try:
             outcome = finish(owner, work)
             assert outcome.failure == failure
@@ -66,10 +70,14 @@ def test_retained_owner_preserves_native_outcome_and_closes_catalog_readers(tmp_
             owner.close()
 
 
-def test_capacity_pause_keeps_the_same_live_worker_and_unfinished_atom(tmp_path):
+def test_capacity_pause_keeps_the_same_live_worker_and_unfinished_atom(
+    tmp_path, *, journal_constructions
+):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, tmp_path / "native")
+        owner = UploadJournalValidationOwner(
+            factory, tmp_path / "native", construction_factory=journal_constructions.retain
+        )
         try:
             assert not owner.advance(
                 work,
@@ -82,17 +90,23 @@ def test_capacity_pause_keeps_the_same_live_worker_and_unfinished_atom(tmp_path)
             owner.close()
 
 
-def test_reopen_claims_a_new_epoch_and_never_recreates_lost_accepted_work(tmp_path):
+def test_reopen_claims_a_new_epoch_and_never_recreates_lost_accepted_work(
+    tmp_path, *, journal_constructions
+):
     root = tmp_path / "native"
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, root)
+        owner = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         owner.advance(work, catalog=source_owner.admission_provenance_catalog())
         job = selected(factory)
         owner.close()
         database = root / job.workspace_id / "snapshot.sqlite3"
         database.unlink()
-        replacement = UploadJournalValidationOwner(factory, root)
+        replacement = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         try:
             with pytest.raises(LostJournalValidationWorkspace):
                 replacement.advance(work, catalog=source_owner.admission_provenance_catalog())
@@ -104,12 +118,18 @@ def test_reopen_claims_a_new_epoch_and_never_recreates_lost_accepted_work(tmp_pa
             replacement.close()
 
 
-def test_kernel_lease_rejects_a_second_owner_without_claiming_a_worker(tmp_path):
+def test_kernel_lease_rejects_a_second_owner_without_claiming_a_worker(
+    tmp_path, *, journal_constructions
+):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
         root = tmp_path / "native"
-        first = UploadJournalValidationOwner(factory, root)
-        second = UploadJournalValidationOwner(factory, root)
+        first = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
+        second = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         try:
             assert first.advance(
                 work, catalog=source_owner.admission_provenance_catalog()
@@ -130,7 +150,9 @@ def test_kernel_lease_rejects_a_second_owner_without_claiming_a_worker(tmp_path)
             second.close()
 
 
-def test_real_worker_exit_adopts_committed_prefix_before_catalog_publication(tmp_path, monkeypatch):
+def test_real_worker_exit_adopts_committed_prefix_before_catalog_publication(
+    tmp_path, monkeypatch, *, journal_constructions
+):
     raw = source(journal_id=JOURNAL)
     root = tmp_path / "native"
     with retained(tmp_path, raw) as (engine, factory):
@@ -150,7 +172,9 @@ def publish(factory,work,job,progress,**kwargs):
   os._exit(81)
  return original(factory,work,job,progress,**kwargs)
 jobs.publish_progress=publish
-owner=UploadJournalValidationOwner(factory,Path(sys.argv[2]))
+from tests.support.native_construction import JournalConstructions
+constructions=JournalConstructions()
+owner=UploadJournalValidationOwner(factory,Path(sys.argv[2]),construction_factory=constructions.retain)
 for _ in range(10000):
  owner.advance(work,catalog=source_owner.admission_provenance_catalog())
 raise AssertionError('confirmed prefix crash was not reached')
@@ -170,7 +194,9 @@ raise AssertionError('confirmed prefix crash was not reached')
             "riverhog_core.services.upload_journal_source.UploadJournalValidationSource.read_exact",
             forbidden,
         )
-        replacement = UploadJournalValidationOwner(factory, root)
+        replacement = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         try:
             outcome = finish(replacement, work)
             assert outcome.failure is None
@@ -182,11 +208,15 @@ raise AssertionError('confirmed prefix crash was not reached')
             replacement.close()
 
 
-def test_job_cleanup_pointer_survives_source_deletion_and_stale_owner_cannot_publish(tmp_path):
+def test_job_cleanup_pointer_survives_source_deletion_and_stale_owner_cannot_publish(
+    tmp_path, *, journal_constructions
+):
     root = tmp_path / "native"
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, root)
+        owner = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         try:
             owner.advance(work, catalog=source_owner.admission_provenance_catalog())
             before = selected(factory)
@@ -205,10 +235,14 @@ def test_job_cleanup_pointer_survives_source_deletion_and_stale_owner_cannot_pub
 
 
 @pytest.mark.parametrize("field", ["version", "worker_epoch", "source_binding_json"])
-def test_stale_catalog_worker_cannot_publish_native_progress(tmp_path, field):
+def test_stale_catalog_worker_cannot_publish_native_progress(
+    tmp_path, field, *, journal_constructions
+):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, tmp_path / "native")
+        owner = UploadJournalValidationOwner(
+            factory, tmp_path / "native", construction_factory=journal_constructions.retain
+        )
         try:
             owner.advance(work, catalog=source_owner.admission_provenance_catalog())
             before = selected(factory)
@@ -226,12 +260,16 @@ def test_stale_catalog_worker_cannot_publish_native_progress(tmp_path, field):
             owner.close()
 
 
-def test_changed_rank_manifest_cannot_advance_even_a_non_graph_unit(tmp_path):
+def test_changed_rank_manifest_cannot_advance_even_a_non_graph_unit(
+    tmp_path, *, journal_constructions
+):
     from riverhog_core.catalog_models import CollectionUploadProvenanceEpochScanRecord as Scan
 
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, tmp_path / "native")
+        owner = UploadJournalValidationOwner(
+            factory, tmp_path / "native", construction_factory=journal_constructions.retain
+        )
         try:
             owner.advance(work, catalog=source_owner.admission_provenance_catalog())
             before = selected(factory)

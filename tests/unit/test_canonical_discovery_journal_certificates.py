@@ -183,6 +183,8 @@ def test_actual_native_replay_uses_only_current_acyclic_evidence_and_keeps_error
     tmp_path,
     monkeypatch,
     mode,
+    *,
+    journal_constructions,
 ):
     catalog = ContractCatalog()
     raw = related(catalog, mode=mode)
@@ -232,6 +234,7 @@ def test_actual_native_replay_uses_only_current_acyclic_evidence_and_keeps_error
                 create=True,
                 catalog=catalog,
                 certificates=provider,
+                construction=journal_constructions.retain(),
             ) as session:
                 finish_native(session)
                 with session.result() as result:
@@ -248,6 +251,7 @@ def test_actual_native_replay_uses_only_current_acyclic_evidence_and_keeps_error
                 create=True,
                 catalog=catalog,
                 certificates=provider,
+                construction=journal_constructions.retain(),
             ) as session:
                 with pytest.raises(type(expected_error)) as actual:
                     finish_native(session)
@@ -285,14 +289,14 @@ def prepared_for_owned_work(work, framing):
 
 
 def test_real_worker_takeover_keeps_certificate_identity_and_resumes_same_native_checkpoint(
-    tmp_path,
+    tmp_path, *, journal_constructions
 ):
     from riverhog_core.services.discovery_validation_owner import DiscoveryValidationOwner
 
     from tests.unit.test_discovery_journal_owner import prepared as owned
     from tests.unit.test_discovery_journal_owner import quantum
 
-    with owned(tmp_path / "owned") as case:
+    with owned(tmp_path / "owned", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             first = prepared_for_owned_work(work, framing)
             native = work.journal(framing, certificates=first)
@@ -303,7 +307,12 @@ def test_real_worker_takeover_keeps_certificate_identity_and_resumes_same_native
             inode = (directory / "snapshot.sqlite3").stat().st_ino
             worker_epoch = work.metadata.job.worker_epoch
         case.pool.close()
-        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        case.pool = DiscoveryValidationOwner(
+            case.factory,
+            case.root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         with quantum(case) as (work, framing):
             restored = prepared_for_owned_work(work, framing)
             assert work.metadata.job.worker_epoch == worker_epoch + 1

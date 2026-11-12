@@ -5,11 +5,15 @@ from __future__ import annotations
 import errno
 import os
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from threading import Lock
+from typing import Literal
 
 from riverhog_provenance import JournalValidationCapacity
 from state_schema import read_snapshot
+from workspace_reclamation import FileReclamationOwner
 
 from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core.canonical_discovery_archive_work import StaleArchiveTask
@@ -40,7 +44,10 @@ from riverhog_core.journal_validation_workspace import (
     _private_directory,
     _private_file,
 )
-from riverhog_core.retained_workspace_handles import RetainedWorkspaceHandles, _close_descriptor
+from riverhog_core.retained_workspace_handles import (
+    RetainedWorkspaceHandles,
+    RetainedWorkspaceResource,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,17 +78,33 @@ class DiscoveryRetirementTurn:
         ):
             raise ValueError("discovery retirement requires an exact absolute namespace")
         self.factory, self.job, self.root = factory, job, root
+        self._files = FileReclamationOwner()
         self._handles = RetainedWorkspaceHandles()
+        self._execution = Lock()
         self._metadata: RetiredDiscoveryMetadata | None = None
         self._parent: DiscoveryParentRetirement | None = None
         self._custody: ValidationWorkspaceCustody | None = None
+        self._directory_owner: RetainedWorkspaceResource | None = None
         self._attempted = False
         self._closing = False
         self._closed = False
 
+    @property
+    def received(self) -> bool:
+        return self._closed
+
     def close(self) -> None:
-        """Receive dependent child/Core handles before releasing the parent lease."""
+        """Receive dependent handles only after actual descriptor execution exits."""
+        if not self._execution.acquire(blocking=False):
+            raise BlockingIOError("the original discovery executor still uses custody")
+        try:
+            self._receive()
+        finally:
+            self._execution.release()
+
+    def _receive(self) -> None:
         self._closing = True
+        self._files.close()
         if self._metadata is not None:
             self._metadata.close()
         self._handles.close()
@@ -115,18 +138,27 @@ class DiscoveryRetirementTurn:
         ):
             raise LostJournalValidationWorkspace("original discovery turn namespace was replaced")
 
-    def _open(self, name: str | Path, flags: int, parent: int | None = None) -> int:
-        descriptor = os.open(name, flags | os.O_NOFOLLOW, dir_fd=parent)
-        self._handles.callback(_close_descriptor, descriptor)
-        return descriptor
+    def _open(
+        self,
+        name: str | Path,
+        flags: int,
+        parent: RetainedWorkspaceResource | None = None,
+        *,
+        after_close: Callable[[], None] | None = None,
+    ) -> RetainedWorkspaceResource:
+        kind: Literal["file", "directory"] = "directory" if flags & os.O_DIRECTORY else "file"
+        return self._handles.acquire(
+            kind, name, parent=parent, writable=bool(flags & os.O_RDWR), after_close=after_close
+        )
 
     def _acquire(self) -> str:
         import fcntl
 
         try:
-            root = self._open(self.root, os.O_RDONLY | os.O_DIRECTORY)
+            root_owner = self._open(self.root, os.O_RDONLY | os.O_DIRECTORY)
         except FileNotFoundError:
             return "prefix"
+        root = root_owner.fileno()
         _private_directory(root)
         try:
             fcntl.flock(root, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -136,9 +168,10 @@ class DiscoveryRetirementTurn:
         coordinated = False
         try:
             try:
-                coordinator = self._open(".coordinator", os.O_RDWR, root)
+                coordinator_owner = self._open(".coordinator", os.O_RDWR, root_owner)
             except FileNotFoundError:
                 return "prefix"
+            coordinator = coordinator_owner.fileno()
             _private_file(coordinator)
             try:
                 fcntl.flock(coordinator, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -149,28 +182,37 @@ class DiscoveryRetirementTurn:
             self._same_entry(".coordinator", root, coordinator)
             self._require_current()
             try:
-                directory = self._open(self.job.workspace_id, os.O_RDONLY | os.O_DIRECTORY, root)
+                directory_owner = self._open(
+                    self.job.workspace_id, os.O_RDONLY | os.O_DIRECTORY, root_owner
+                )
             except FileNotFoundError:
                 return "prefix"
+            self._directory_owner = directory_owner
+            directory = directory_owner.fileno()
             _private_directory(directory)
-            try:
-                lease = os.open(".lease", os.O_RDWR | os.O_NOFOLLOW, dir_fd=directory)
-            except FileNotFoundError:
-                return "prefix"
 
-            def close_lease() -> None:
-                os.close(lease)
+            def received_lease() -> None:
                 if self._custody is not None:
                     self._custody._held = False
 
-            self._handles.callback(close_lease)
+            try:
+                lease_owner = self._open(
+                    ".lease", os.O_RDWR, directory_owner, after_close=received_lease
+                )
+            except FileNotFoundError:
+                return "prefix"
+            lease = lease_owner.fileno()
             _private_file(lease)
             try:
                 fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
             except BlockingIOError:
                 return "busy"
             custody = ValidationWorkspaceCustody(
-                self.root / self.job.workspace_id, root, directory, lease
+                self.root / self.job.workspace_id,
+                root,
+                directory,
+                lease,
+                _resources=(root_owner, directory_owner, lease_owner),
             )
             self._custody = custody
             if not custody.verify_current():
@@ -206,7 +248,9 @@ class DiscoveryRetirementTurn:
             self._handles.close()
             return self._finish_parent()
         assert self._custody is not None
-        retirement = RetiringJournalWorkspace(self._custody.directory, self._custody)
+        retirement = RetiringJournalWorkspace(
+            self._custody.directory, self._custody, self._directory_owner
+        )
         result: (
             DiscoveryMetadataReclamationProgress
             | DiscoveryChildReclamationProgress
@@ -215,7 +259,7 @@ class DiscoveryRetirementTurn:
         )
         if self.job.reclamation_phase == "metadata":
             result = reclaim_discovery_metadata(
-                self.factory, self.job, retirement, octet_budget=octet_budget
+                self.factory, self.job, retirement, receiver=self._files, octet_budget=octet_budget
             )
         else:
             self._metadata = RetiredDiscoveryMetadata(self.factory, self.job, retirement)
@@ -245,21 +289,26 @@ class DiscoveryRetirementTurn:
         """Run one bounded attempt; receive all actual handles before returning."""
         if type(octet_budget) is not int or octet_budget < 1:
             raise ValueError("discovery retirement requires a positive octet budget")
-        if self._attempted or self._closing or self._closed:
-            raise RuntimeError("discovery retirement requires a fresh retained turn")
-        self._attempted = True
+        if not self._execution.acquire(blocking=False):
+            raise BlockingIOError("the original discovery executor still uses custody")
         try:
-            result = self._advance(octet_budget)
-            self.close()
-            return result
-        except OSError as error:
-            if error.errno in {errno.ENOSPC, errno.EDQUOT}:
-                raise JournalValidationCapacity("discovery retirement lacks capacity") from None
-            if error.errno in {errno.ENOENT, errno.ENOTDIR, errno.ELOOP}:
-                raise LostJournalValidationWorkspace(
-                    "original discovery retirement custody is unavailable"
-                ) from None
-            raise
+            if self._attempted or self._closing or self._closed:
+                raise RuntimeError("discovery retirement requires a fresh retained turn")
+            self._attempted = True
+            try:
+                result = self._advance(octet_budget)
+                self._receive()
+                return result
+            except OSError as error:
+                if error.errno in {errno.ENOSPC, errno.EDQUOT}:
+                    raise JournalValidationCapacity("discovery retirement lacks capacity") from None
+                if error.errno in {errno.ENOENT, errno.ENOTDIR, errno.ELOOP}:
+                    raise LostJournalValidationWorkspace(
+                        "original discovery retirement custody is unavailable"
+                    ) from None
+                raise
+        finally:
+            self._execution.release()
 
 
 declare_retirement_growth(DiscoveryRetirementTurn.advance)

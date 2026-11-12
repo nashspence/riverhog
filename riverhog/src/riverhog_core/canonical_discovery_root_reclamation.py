@@ -40,34 +40,35 @@ def _same_entry(name: str, parent: int, descriptor: int) -> None:
 def _receive_namespace(metadata: RetiredDiscoveryMetadata) -> bool:
     import fcntl
 
-    if metadata._child_root is not None or metadata._root_coordinator is not None:
+    if metadata._namespace_handles._callbacks:
         raise LostJournalValidationWorkspace("discovery journals namespace closure is unconfirmed")
     parent = metadata._custody._owner
     try:
         try:
-            metadata._child_root = os.open(
-                "journals", os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent
+            root_owner = metadata._namespace_handles.acquire(
+                "directory", "journals", parent=metadata._namespace
             )
         except FileNotFoundError:
             os.fsync(parent)
             return True
-        root = metadata._child_root
+        root = root_owner.fileno()
+        coordinator = None
         _private_directory(root)
         try:
             fcntl.flock(root, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             return False
         try:
-            metadata._root_coordinator = os.open(
-                ".coordinator", os.O_RDWR | os.O_NOFOLLOW, dir_fd=root
+            coordinator_owner = metadata._namespace_handles.acquire(
+                "file", ".coordinator", parent=root_owner, writable=True
             )
+            coordinator = coordinator_owner.fileno()
         except FileNotFoundError:
             # Actual creation can stop before this control exists; irreversible
             # root removal can also lose its reply after unlinking it. Neither
             # prefix permits control repair or an unclassified child deletion.
             pass
         else:
-            coordinator = metadata._root_coordinator
             _private_file(coordinator)
             try:
                 fcntl.flock(coordinator, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -76,7 +77,7 @@ def _receive_namespace(metadata: RetiredDiscoveryMetadata) -> bool:
             _same_entry(".coordinator", root, coordinator)
         _same_entry("journals", parent, root)
         metadata._require_current()
-        if metadata._root_coordinator is not None:
+        if coordinator is not None:
             os.unlink(".coordinator", dir_fd=root)
             os.fsync(root)
         _same_entry("journals", parent, root)

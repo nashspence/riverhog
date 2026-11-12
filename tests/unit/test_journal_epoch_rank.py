@@ -380,7 +380,9 @@ def test_native_acceptance_follows_private_rank_completion(tmp_path, monkeypatch
             service.close()
 
 
-def test_cyclic_private_result_never_outranks_an_earlier_native_error(tmp_path):
+def test_cyclic_private_result_never_outranks_an_earlier_native_error(
+    tmp_path, *, journal_constructions
+):
     document = parse_journal(source(journal_id=JOURNAL))[0].document
     document["sequence"] = "7"
     raw = raw_journal(canonical_json_bytes(document), entry([edge(0, 0, 1), edge(1, 1, 0)]))
@@ -390,7 +392,9 @@ def test_cyclic_private_result_never_outranks_an_earlier_native_error(tmp_path):
         work = prepared(factory)
         finish(factory, work)
         assert snapshot(factory)["graphs"][0][-1] == "cyclic"
-        assert native_outcome(factory, work).failure == str(expected.value)
+        assert native_outcome(
+            factory, work, journal_constructions=journal_constructions
+        ).failure == str(expected.value)
 
 
 def test_rank_headers_use_the_actual_scalar_domain_and_neutral_changes_visit_only_targets():

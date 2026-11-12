@@ -85,7 +85,7 @@ def reclaim_discovery_corpus(
     ):
         raise StaleArchiveTask("retired corpus has another original Native binding")
     progress = reclaim_retired_corpus_workspace(
-        metadata._custody.directory, octet_budget=octet_budget
+        metadata._custody.directory, receiver=metadata._file_receiver(), octet_budget=octet_budget
     )
     metadata._require_current()
     successor = job

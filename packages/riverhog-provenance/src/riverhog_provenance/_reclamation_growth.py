@@ -30,6 +30,7 @@ def reclamation_growth(
         *(
             (name, Expression("dimension", name=name))
             for name in (
+                "directory_octets",
                 "retained_files",
                 "retained_octets",
                 "octet_budget",
@@ -45,6 +46,7 @@ def reclamation_growth(
         starts_at="receive one durably retired owned workspace under its exclusive kernel lease",
         ends_at="synchronize one admitted extent removal and report remaining owned files",
         dimensions=(
+            Dimension("directory_octets", OCTETS, "Complete encoded original directory path."),
             Dimension(
                 "retained_octets", OCTETS, "Logical extents of the remaining owned data files."
             ),

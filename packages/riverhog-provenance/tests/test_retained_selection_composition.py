@@ -99,7 +99,10 @@ class SelectionObserver(Observer):
         db.set_progress_handler(stepped, 1)
         db.set_authorizer(authorized)
         try:
-            with super().observe(monkeypatch, source), monkeypatch.context() as patch:
+            with (
+                super().observe(monkeypatch, source, workspace, observe_sql=False),
+                monkeypatch.context() as patch,
+            ):
                 connection = PointConnection(db, self)
                 patch.setattr(workspace, "_db", connection)
                 patch.setattr(workspace._corpus, "_db", connection)
@@ -198,19 +201,21 @@ def measure(workspace, source, anchor, monkeypatch, *, expected_count, rejection
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.select_source",
 )
 def test_retained_selected_prefixes_compose_exact_membership_unique_counts_and_physical_work(
-    tmp_path, journal, catalog, monkeypatch, record_property
+    tmp_path, journal, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     samples = []
     for index, (frames, count) in enumerate(((1, 0), (1, 1), (129, 1), (129, 17), (129, 129))):
         path = tmp_path / str(index)
-        path.mkdir()
+        path.mkdir(mode=0o700)
         with validate_journal(history(journal, frames, catalog), catalog=catalog) as summary:
             anchors = [
                 HistoryJournalAnchor.from_mapping(summary.anchor_at(position))
                 for position in range(count)
             ]
             source = OwnedCorpusSource(summary, catalog, anchors)
-            workspace = open_workspace(path, source, create=True)
+            workspace = open_workspace(
+                path, source, create=True, journal_constructions=journal_constructions
+            )
             try:
                 while not workspace.advance_source(summary, frame_budget=17).complete:
                     pass
@@ -275,7 +280,9 @@ def test_retained_selected_prefixes_compose_exact_membership_unique_counts_and_p
                     samples.append(sample)
                     if completed == 1:
                         workspace.close()
-                        workspace = open_workspace(path, source, epoch=1)
+                        workspace = open_workspace(
+                            path, source, epoch=1, journal_constructions=journal_constructions
+                        )
                     sample, observed = measure(
                         workspace,
                         source,

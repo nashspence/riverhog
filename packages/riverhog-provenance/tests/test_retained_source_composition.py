@@ -556,16 +556,24 @@ def test_source_parent_composes_actual_children_without_losing_outer_database_ob
     catalog,
     monkeypatch,
     record_property,
+    *,
+    journal_constructions,
 ):
     samples = []
     for frames in (1, 17, 129):
         raw = history(journal, frames, catalog)
         oracle = journal_module_frames(raw)
         path = tmp_path / str(frames)
-        path.mkdir()
+        path.mkdir(mode=0o700)
         with validate_journal(raw, catalog=catalog) as summary:
             source = OwnedCorpusSource(summary, catalog)
-            workspace = open_workspace(path, source, create=True, catalog=catalog)
+            workspace = open_workspace(
+                path,
+                source,
+                create=True,
+                catalog=catalog,
+                journal_constructions=journal_constructions,
+            )
             try:
                 workspace._db.executemany(
                     "INSERT INTO identities VALUES (?,?,?)",
@@ -598,7 +606,13 @@ def test_source_parent_composes_actual_children_without_losing_outer_database_ob
                     )
                     if call == 0:
                         workspace.close()
-                        workspace = open_workspace(path, source, epoch=1, catalog=catalog)
+                        workspace = open_workspace(
+                            path,
+                            source,
+                            epoch=1,
+                            catalog=catalog,
+                            journal_constructions=journal_constructions,
+                        )
                 assert all(v["metrics"]["source_frame_reads"] == 0 for v in samples[-2:])
             finally:
                 workspace.close()
@@ -622,17 +636,25 @@ def test_source_parent_rejection_rolls_back_original_rows_unique_counts_and_chec
     catalog,
     monkeypatch,
     record_property,
+    *,
+    journal_constructions,
 ):
     samples = []
     oracle = journal_module_frames(journal)
     for scenario in ("manifest", "stale-before", "stale-after", "count", "budget"):
         path = tmp_path / scenario
-        path.mkdir()
+        path.mkdir(mode=0o700)
         with validate_journal(journal, catalog=catalog) as summary:
             source = OwnedCorpusSource(summary, catalog)
             if scenario == "count":
                 source.binding = replace(source.binding, source_count=0)
-            with open_workspace(path, source, create=True, catalog=catalog) as workspace:
+            with open_workspace(
+                path,
+                source,
+                create=True,
+                catalog=catalog,
+                journal_constructions=journal_constructions,
+            ) as workspace:
                 if scenario == "manifest":
                     source.sources = set()
                 if scenario == "stale-before":
@@ -670,7 +692,7 @@ def test_source_parent_rejection_rolls_back_original_rows_unique_counts_and_chec
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.advance_source",
 )
 def test_source_parent_keeps_exact_unique_prefixes_and_original_correction_rows(
-    tmp_path, journal, who, catalog, monkeypatch, record_property
+    tmp_path, journal, who, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     from test_corpus_historical_source import correction_history
 
@@ -688,7 +710,13 @@ def test_source_parent_keeps_exact_unique_prefixes_and_original_correction_rows(
             source_count=len(source.sources),
             source_manifest_sha256=source.digest(source.sources),
         )
-        with open_workspace(tmp_path, source, create=True, catalog=catalog) as workspace:
+        with open_workspace(
+            tmp_path,
+            source,
+            create=True,
+            catalog=catalog,
+            journal_constructions=journal_constructions,
+        ) as workspace:
             first = 0
             completed = set()
             for sequence in (1, 3, 5, 0, 2, 4, 5):
@@ -731,7 +759,7 @@ def test_source_parent_keeps_exact_unique_prefixes_and_original_correction_rows(
     operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator.advance_source",
 )
 def test_source_parent_charges_complete_original_payloads_and_external_references(
-    tmp_path, journal, who, catalog, monkeypatch, record_property
+    tmp_path, journal, who, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     from riverhog_provenance import (
         BoundedSourceObserver,
@@ -771,10 +799,16 @@ def test_source_parent_charges_complete_original_payloads_and_external_reference
             raw = create_journal(graph, recorded_by_agent_id=who, catalog=catalog)
             oracle = journal_module_frames(raw)
             path = tmp_path / str(count)
-            path.mkdir()
+            path.mkdir(mode=0o700)
             with validate_journal(raw, catalog=catalog) as summary:
                 source = OwnedCorpusSource(summary, catalog)
-                with open_workspace(path, source, create=True, catalog=catalog) as workspace:
+                with open_workspace(
+                    path,
+                    source,
+                    create=True,
+                    catalog=catalog,
+                    journal_constructions=journal_constructions,
+                ) as workspace:
                     result, sample, observer = measure(
                         workspace, source, summary, oracle, 0, 1, monkeypatch
                     )

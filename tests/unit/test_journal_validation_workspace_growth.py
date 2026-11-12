@@ -15,7 +15,11 @@ from types import SimpleNamespace
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core import journal_validation_workspace as owner
+from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+
+from tests.support.validation_workspace import leased_workspace
 
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX workspace lease backend")
 
@@ -36,6 +40,7 @@ class Recorder:
     def __init__(self):
         self.active = False
         self.live = set()
+        self.native_records = ()
         self.metrics = {
             name: 0
             for name in {
@@ -46,6 +51,8 @@ class Recorder:
                 "custody_callbacks",
                 "payload_octets",
                 "directory_enumerations",
+                "dup_calls",
+                "native_control_octets",
             }
         }
 
@@ -63,7 +70,22 @@ class Recorder:
     @contextmanager
     def observe(self):
         real_flock = fcntl.flock
+        before = [record.owner.metrics for record in self.native_records]
+        acquire = RetainedWorkspaceResource.acquire
+        native_fds = {}
         with pytest.MonkeyPatch.context() as patch:
+
+            def acquiring(resource, path, **options):
+                if self.active:
+                    self.metrics["path_octets"] += len(os.fsencode(path))
+                try:
+                    return acquire(resource, path, **options)
+                finally:
+                    if self.active and resource.borrow.active:
+                        native_fds[resource] = resource.fileno()
+                        self.live.add(resource.fileno())
+
+            patch.setattr(RetainedWorkspaceResource, "acquire", acquiring)
             for name, metric in self.GROUPS.items():
                 actual = getattr(os, name)
 
@@ -145,6 +167,18 @@ class Recorder:
                 yield
             finally:
                 self.active = False
+        for original, previous in zip(self.native_records, before, strict=True):
+            current = original.owner.metrics
+            for native, metric in (
+                ("open_calls", "open_calls"),
+                ("close_calls", "close_calls"),
+                ("fstat_calls", "stat_calls"),
+                ("dup_calls", "dup_calls"),
+                ("control_octets", "native_control_octets"),
+            ):
+                self.metrics[metric] += current[native] - previous[native]
+            if original.owner.received or original.owner.state == "absent":
+                self.live.discard(native_fds.get(original))
         assert not self.live
 
 
@@ -237,6 +271,8 @@ def measure(
 ):
     recorder = Recorder()
     recorder.root = root
+    receiver = ValidationWorkspaceLease()
+    recorder.native_records = receiver.records
     value, caught = None, None
     operation = owner.lease_journal_validation_workspace
     binding = growth_binding(operation)
@@ -259,6 +295,7 @@ def measure(
             with operation(
                 root,
                 identity,
+                receiver=receiver,
                 create=create,
                 shared=shared,
                 creation_current=None if callback is None else recorder.callback(callback),
@@ -268,6 +305,8 @@ def measure(
                     raise body_error
         except BaseException as failure:
             caught = failure
+        finally:
+            receiver.close()
     if error is None:
         assert caught is None
         assert value == expected
@@ -311,16 +350,16 @@ def lease_samples(root, *, samples, large=True):
                 )
             )
             assert snapshot(case) == before
-        with owner.lease_journal_validation_workspace(case.root, ONE) as held:
+        with leased_workspace(case.root, ONE) as held:
             assert held == case.root / ONE
             for shared in (False, True):
                 samples.append(measure(case.root, shared=shared, expected=None))
             assert snapshot(case) == before
-        with owner.lease_journal_validation_workspace(case.root, ONE, shared=True):
-            with owner.lease_journal_validation_workspace(case.root, ONE, shared=True):
+        with leased_workspace(case.root, ONE, shared=True):
+            with leased_workspace(case.root, ONE, shared=True):
                 samples.append(measure(case.root, shared=False, expected=None))
                 samples.append(measure(case.root, shared=True, expected=case.root / ONE))
-        with owner.lease_journal_validation_workspace(case.root, TWO, create=True):
+        with leased_workspace(case.root, TWO, create=True):
             samples.append(measure(case.root, expected=case.root / ONE))
         coordinator = os.open(case.root / ".coordinator", os.O_RDWR)
         try:
@@ -486,7 +525,7 @@ def test_measured_descriptor_custody_currentness(tmp_path, record_property):
         measure(case.root, expected=case.root / ONE, custody_callback=captured.append)
         assert not captured[0].verify_current()
         samples.append(measure_custody(captured[0], case.root, expected=False))
-        with owner.lease_journal_validation_workspace(case.root, ONE, on_custody=captured.append):
+        with leased_workspace(case.root, ONE, on_custody=captured.append):
             custody = captured[-1]
             before = snapshot(case)
             samples.append(measure_custody(custody, case.root, expected=True))
@@ -499,7 +538,7 @@ def test_measured_descriptor_custody_currentness(tmp_path, record_property):
     for fault in ("root", "directory", "lease-mode"):
         case = setup(tmp_path / fault)
         captured = []
-        with owner.lease_journal_validation_workspace(case.root, ONE, on_custody=captured.append):
+        with leased_workspace(case.root, ONE, on_custody=captured.append):
             if fault == "root":
                 case.root.rename(tmp_path / (fault + "-held"))
                 case.root.mkdir(mode=0o700)

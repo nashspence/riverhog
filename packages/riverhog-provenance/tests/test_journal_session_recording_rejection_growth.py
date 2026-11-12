@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sqlite3
 from copy import deepcopy
 
 import pytest
@@ -32,6 +31,8 @@ from test_journal_session_growth import (
     snapshot,
 )
 
+from tests.support.sqlite_observation import observe_admitted_scope
+
 ADVANCE = JournalValidationSession.advance
 
 
@@ -62,11 +63,10 @@ def recording_source(kind, payload, catalog, *, journal_id=None):
     return first + encode_entry(last, catalog=catalog)
 
 
-def recording_samples(root, catalog, *, samples, large=True):
+def recording_samples(root, catalog, *, samples, large=True, journal_constructions):
     specifications = [(64, 0)]
     if large:
         specifications.extend(((8192, 65537), (64, 1024 * 1024)))
-    connect = sqlite3.connect
     for width, payload in specifications:
         for kind, message in (
             ("recorder", "entry recorder must resolve to an effective agent"),
@@ -75,15 +75,15 @@ def recording_samples(root, catalog, *, samples, large=True):
             raw = recording_source(kind, payload, catalog)
             source = FiniteSource(raw, parse_journal(raw)[0], 2, catalog, directory_width=width)
             directory = root / f"{width}-{payload}-{kind}"
-            directory.mkdir(parents=True)
+            directory.mkdir(mode=0o700, parents=True)
 
-            def observed_connect(*args, **kwargs):
-                assert "factory" not in kwargs
-                kwargs["factory"] = SessionConnection
-                return connect(*args, **kwargs)
-
-            with pytest.MonkeyPatch.context() as patch:
-                patch.setattr(sqlite3, "connect", observed_connect)
+            construction = journal_constructions.retain()
+            with observe_admitted_scope(
+                construction.scope,
+                SessionConnection,
+                initialize=lambda _connection: None,
+                recording=lambda connection: connection.recording,
+            ):
                 with JournalValidationSession.open_retained(
                     directory,
                     source,
@@ -91,6 +91,7 @@ def recording_samples(root, catalog, *, samples, large=True):
                     worker_epoch=0,
                     create=True,
                     catalog=catalog,
+                    construction=construction,
                 ) as session:
                     db = session._store.db
                     session._source = session._input.source = SourcePorts(source, db)
@@ -169,7 +170,11 @@ def recording_samples(root, catalog, *, samples, large=True):
     gates=("unit", "check-in", "linux-qualification"),
     operation="riverhog_provenance.journal_session.JournalValidationSession.advance",
 )
-def test_actual_recording_rejection_keeps_last_accepted_prefix(tmp_path, catalog, record_property):
+def test_actual_recording_rejection_keeps_last_accepted_prefix(
+    tmp_path, catalog, record_property, *, journal_constructions
+):
     samples = []
     record_property("growth_samples", samples)
-    recording_samples(tmp_path, catalog, samples=samples)
+    recording_samples(
+        tmp_path, catalog, samples=samples, journal_constructions=journal_constructions
+    )

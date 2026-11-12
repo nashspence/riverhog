@@ -16,12 +16,13 @@ from riverhog_core.canonical_discovery_archive_work import (
 from riverhog_core.canonical_discovery_index import begin_index_build
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
-    lease_journal_validation_workspace,
 )
 from riverhog_core.services.discovery_validation_owner import DiscoveryValidationOwner
 from riverhog_provenance import StaleCorpusWorkspace
 from riverhog_provenance import corpus_workspace as native_owner
 
+from tests.support.retained_resource import fault_native as fault_native
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_source import case as case
 from tests.unit.test_canonical_discovery_corpus_source import fixed_inputs as fixed_inputs
 from tests.unit.test_canonical_discovery_corpus_source import original as original
@@ -37,17 +38,24 @@ def unit(owner, case):
 
 
 def busy(case):
-    with lease_journal_validation_workspace(case.root, case.job.workspace_id) as path:
+    with leased_workspace(case.root, case.job.workspace_id) as path:
         assert path is None
 
 
 def available(case):
-    with lease_journal_validation_workspace(case.root, case.job.workspace_id) as path:
+    with leased_workspace(case.root, case.job.workspace_id) as path:
         assert path is not None
 
 
-def test_core_handle_and_original_checkpoint_stay_warm_across_units(case, qualified):
-    owner = DiscoveryValidationOwner(case.factory, case.root)
+def test_core_handle_and_original_checkpoint_stay_warm_across_units(
+    case, qualified, *, journal_constructions
+):
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(owner, case) as first:
             assert first is not None
@@ -76,9 +84,14 @@ def test_core_handle_and_original_checkpoint_stay_warm_across_units(case, qualif
 
 
 def test_actual_native_input_progress_stays_warm_and_resumes_after_owner_replacement(
-    case, qualified, original
+    case, qualified, original, *, journal_constructions
 ):
-    owner = DiscoveryValidationOwner(case.factory, case.root)
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(owner, case) as first:
             assert first is not None
@@ -92,7 +105,12 @@ def test_actual_native_input_progress_stays_warm_and_resumes_after_owner_replace
             assert native.advance_source(original[1], frame_budget=1).accepted_frames == 2
     finally:
         owner.close()
-    reopened = DiscoveryValidationOwner(case.factory, case.root)
+    reopened = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(reopened, case) as work:
             assert work is not None and work.metadata.job.worker_epoch == epoch + 1
@@ -121,9 +139,14 @@ class UncertainClose:
 @pytest.mark.parametrize("storage", ["native", "core"])
 @pytest.mark.parametrize("lost_reply", [False, True])
 def test_close_keeps_the_slot_and_lease_until_both_actual_handles_confirm(
-    case, qualified, storage, lost_reply
+    case, qualified, storage, lost_reply, *, journal_constructions
 ):
-    owner = DiscoveryValidationOwner(case.factory, case.root)
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(owner, case) as work:
             assert work is not None
@@ -148,9 +171,14 @@ def test_close_keeps_the_slot_and_lease_until_both_actual_handles_confirm(
 
 
 def test_failed_native_initialization_retains_uncertain_storage_for_cleanup_retry(
-    case, qualified, monkeypatch
+    case, qualified, monkeypatch, *, journal_constructions
 ):
-    owner = DiscoveryValidationOwner(case.factory, case.root)
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     initialize = native_owner.RetainedCorpusValidator._initialize
 
     def interrupted(native):
@@ -189,13 +217,21 @@ def test_failed_native_initialization_retains_uncertain_storage_for_cleanup_retr
 
 @pytest.mark.parametrize("boundary", ["native-open", "activation"])
 def test_lost_confirmation_reopens_actual_native_storage_without_reset(
-    case, qualified, monkeypatch, boundary
+    case, qualified, monkeypatch, boundary, *, journal_constructions
 ):
-    owner = DiscoveryValidationOwner(case.factory, case.root)
-    synchronize, activate = native_owner._sync_directory, jobs.activate_discovery_corpus
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
+    synchronize, activate = (
+        native_owner.CorpusConstruction.sync_directory,
+        jobs.activate_discovery_corpus,
+    )
 
-    def lost_sync(directory):
-        synchronize(directory)
+    def lost_sync(construction, directory):
+        synchronize(construction, directory)
         raise TimeoutError("Native opening confirmation lost")
 
     def lost_activation(factory, job):
@@ -205,7 +241,7 @@ def test_lost_confirmation_reopens_actual_native_storage_without_reset(
     try:
         with monkeypatch.context() as patch:
             if boundary == "native-open":
-                patch.setattr(native_owner, "_sync_directory", lost_sync)
+                patch.setattr(native_owner.CorpusConstruction, "sync_directory", lost_sync)
             else:
                 patch.setattr(jobs, "activate_discovery_corpus", lost_activation)
             with pytest.raises(TimeoutError, match="confirmation lost"):
@@ -244,9 +280,17 @@ def independent_build(case, number):
 
 
 @pytest.mark.parametrize("concurrency", [1, 2])
-def test_busy_work_obeys_capacity_and_leaves_independent_slots_responsive(case, concurrency):
+def test_busy_work_obeys_capacity_and_leaves_independent_slots_responsive(
+    case, concurrency, *, journal_constructions
+):
     other = independent_build(case, 2)
-    owner = DiscoveryValidationOwner(case.factory, case.root, concurrency=concurrency)
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        concurrency=concurrency,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     entered, release = Event(), Event()
 
     def waiting_unit():
@@ -278,9 +322,17 @@ def test_busy_work_obeys_capacity_and_leaves_independent_slots_responsive(case, 
 
 
 @pytest.mark.parametrize("cleanup", ["close", "release_stale"])
-def test_uncertain_slot_close_does_not_skip_closing_independent_slots(case, qualified, cleanup):
+def test_uncertain_slot_close_does_not_skip_closing_independent_slots(
+    case, qualified, cleanup, *, journal_constructions
+):
     other = independent_build(case, 2)
-    owner = DiscoveryValidationOwner(case.factory, case.root, concurrency=2)
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        concurrency=2,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(owner, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -297,7 +349,7 @@ def test_uncertain_slot_close_does_not_skip_closing_independent_slots(case, qual
             getattr(owner, cleanup)()
         assert owner.active_build_ids() == (case.build_id,)
         busy(case)
-        with lease_journal_validation_workspace(case.root, second_id) as released:
+        with leased_workspace(case.root, second_id) as released:
             assert released is not None
         with pytest.raises(RuntimeError, match="closed"):
             second.advance_semantics()
@@ -318,9 +370,14 @@ def test_uncertain_slot_close_does_not_skip_closing_independent_slots(case, qual
     ],
 )
 def test_accepted_custody_loss_is_retained_without_recreating_storage(
-    case, qualified, storage, damage
+    case, qualified, storage, damage, *, journal_constructions
 ):
-    owner = DiscoveryValidationOwner(case.factory, case.root)
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     with unit(owner, case) as work:
         assert work is not None
         selection, _ = seed(work.metadata, qualified)
@@ -343,7 +400,12 @@ def test_accepted_custody_loss_is_retained_without_recreating_storage(
         for entry in directory.iterdir()
         if entry.is_file()
     }
-    replacement = DiscoveryValidationOwner(case.factory, case.root)
+    replacement = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with pytest.raises(
             (LostJournalValidationWorkspace, FileNotFoundError, StaleCorpusWorkspace)
@@ -371,9 +433,14 @@ def test_accepted_custody_loss_is_retained_without_recreating_storage(
 @pytest.mark.parametrize("storage", ["native", "core"])
 @pytest.mark.parametrize("lost_reply", [False, True])
 def test_stale_work_attempts_cleanup_once_and_keeps_each_unconfirmed_reply(
-    case, qualified, storage, lost_reply
+    case, qualified, storage, lost_reply, *, journal_constructions
 ):
-    owner = DiscoveryValidationOwner(case.factory, case.root)
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(owner, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -400,11 +467,16 @@ def test_stale_work_attempts_cleanup_once_and_keeps_each_unconfirmed_reply(
 
 @pytest.mark.parametrize("storage", ("none", "native", "core"))
 def test_closed_native_source_keeps_busy_and_uncertain_handles_under_the_original_lease(
-    case, qualified, storage
+    case, qualified, storage, *, journal_constructions
 ):
     from tests.unit.test_canonical_discovery_corpus_jobs import _source_gate
 
-    owner = DiscoveryValidationOwner(case.factory, case.root)
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     metadata = None
     expected = StaleArchiveTask if storage == "none" else OSError
     try:
@@ -441,5 +513,55 @@ def test_closed_native_source_keeps_busy_and_uncertain_handles_under_the_origina
             job = session.get(DiscoveryValidationJobRecord, metadata.job.workspace_id)
             assert job is not None and job.build_id == case.build_id
         assert marker.read_bytes() == b"retained original workspace"
+    finally:
+        owner.close()
+
+
+def test_unreturned_native_corpus_keeps_original_frame_and_lease_until_guard_receives(
+    case, qualified, monkeypatch, fault_native, journal_constructions
+):
+    import retained_resource
+
+    native, _extension = fault_native
+    monkeypatch.setattr(retained_resource, "Resource", native.Resource)
+    monkeypatch.setattr(retained_resource, "Borrow", native.Borrow)
+    frames = []
+
+    def retain():
+        original = journal_constructions.retain_corpus()
+        frames.append(original)
+        return original
+
+    owner = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=retain,
+    )
+
+    def refuse_wrapper(*args, **kwargs):
+        assert len(frames) == 1 and frames[0].storage is not None
+        frames[0].guard._test_fault("before_close")
+        raise MemoryError("Native corpus wrapper allocation failed")
+
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(native_owner.CanonicalCorpusValidator, "_from_workspace", refuse_wrapper)
+            with pytest.raises(RuntimeError, match="before-close refusal"):
+                with unit(owner, case) as work:
+                    selection, _anchors = seed(work.metadata, qualified)
+                    work.corpus(selection)
+        original = frames[0]
+        slot = owner._slots[case.build_id]
+        assert slot.closing and slot.corpus is None and slot.corpus_construction is original
+        assert original.scope.received and original.borrow.received and not original.received
+        assert original.guard.state == "live"
+        assert original.guard.metrics["close_calls"] == 0
+        assert owner.active_build_ids() == (case.build_id,)
+        busy(case)
+        owner.release_stale()
+        assert original.received and original.guard.metrics["close_calls"] == 1
+        assert owner.active_build_ids() == ()
+        available(case)
     finally:
         owner.close()

@@ -4,6 +4,7 @@ import sqlite3
 from pathlib import Path
 
 import pytest
+import sqlite_admission
 from riverhog_archive_contracts import (
     HistoryJournalAnchor,
     MemberHistoryBuilder,
@@ -118,9 +119,25 @@ def test_journal_cleanup_status_requires_directory_acknowledgement(monkeypatch, 
 @pytest.mark.parametrize("borrowed", [False, True])
 @pytest.mark.parametrize("after", [False, True])
 def test_journal_cleanup_status_requires_retained_owner_release_confirmation(
-    tmp_path, borrowed, after
+    tmp_path, borrowed, after, monkeypatch, journal_constructions
 ):
-    population = Population(limit=1)
+    original = journal_constructions.retain()
+    admission = journal_constructions.admission
+    driver_close, closes = sqlite_admission._Connection._driver_close, []
+
+    def close(connection):
+        if connection._lease.admission is admission:
+            closes.append(connection)
+        return driver_close(connection)
+
+    monkeypatch.setattr(sqlite_admission._Connection, "_driver_close", close)
+
+    def observe(handle, expected):
+        before = admission.status, tuple(closes)
+        for _ in range(3):
+            assert handle.cleanup_complete is expected
+        assert (admission.status, tuple(closes)) == before
+
     directory = tmp_path / "retained"
     directory.mkdir(mode=0o700)
     calls, released = [], []
@@ -135,21 +152,22 @@ def test_journal_cleanup_status_requires_retained_owner_release_confirmation(
             released.append(True)
 
     root = JournalStore.open_retained(
-        directory, create=True, connection_factory=population, on_storage_close=release
+        directory, create=True, construction=original, on_storage_close=release
     )
     root.freeze()
     handle = root.borrow() if borrowed else root
     if borrowed:
         root.close()
-        status(root, population, True)
+        observe(root, True)
     with pytest.raises(OSError, match="owner release unconfirmed"):
         handle.close()
-    status(handle, population, False)
-    assert population.active == 0 and len(calls) == 1
+    observe(handle, False)
+    assert admission.status.connections == 0 and len(calls) == 1
+    assert original.scope.received and not original.received
     assert len(released) == int(after) and directory.is_dir()
     handle.close()
-    status(handle, population, True)
-    assert population.connections[0].close_calls == 1
+    observe(handle, True)
+    assert len(closes) == 1
     assert len(calls) == 2 and len(released) == 1 and directory.is_dir()
 
 

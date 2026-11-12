@@ -118,9 +118,16 @@ def sample(mode, dims, metrics):
     return result
 
 
-def exercise(case, qualified, original, monkeypatch, record_property, mode):
+def exercise(
+    case, qualified, original, monkeypatch, record_property, mode, *, journal_constructions
+):
     samples, phases = [], set()
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     try:
         with unit(app, case) as work:
             selection, _ = seed(work.metadata, qualified)
@@ -240,8 +247,18 @@ def exercise(case, qualified, original, monkeypatch, record_property, mode):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_replay.begin_corpus_replay",
 )
-def test_begin_work(case, qualified, original, monkeypatch, record_property):
-    exercise(case, qualified, original, monkeypatch, record_property, "begin")
+def test_begin_work(
+    case, qualified, original, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        case,
+        qualified,
+        original,
+        monkeypatch,
+        record_property,
+        "begin",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -249,8 +266,18 @@ def test_begin_work(case, qualified, original, monkeypatch, record_property):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_replay.corpus_replay_progress",
 )
-def test_progress_work(case, qualified, original, monkeypatch, record_property):
-    exercise(case, qualified, original, monkeypatch, record_property, "progress")
+def test_progress_work(
+    case, qualified, original, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        case,
+        qualified,
+        original,
+        monkeypatch,
+        record_property,
+        "progress",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -258,8 +285,18 @@ def test_progress_work(case, qualified, original, monkeypatch, record_property):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_replay.next_corpus_replay_source",
 )
-def test_next_source_work(case, qualified, original, monkeypatch, record_property):
-    exercise(case, qualified, original, monkeypatch, record_property, "next")
+def test_next_source_work(
+    case, qualified, original, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        case,
+        qualified,
+        original,
+        monkeypatch,
+        record_property,
+        "next",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -267,8 +304,18 @@ def test_next_source_work(case, qualified, original, monkeypatch, record_propert
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_replay.prepare_corpus_replay",
 )
-def test_prepare_work(case, qualified, original, monkeypatch, record_property):
-    exercise(case, qualified, original, monkeypatch, record_property, "prepare")
+def test_prepare_work(
+    case, qualified, original, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        case,
+        qualified,
+        original,
+        monkeypatch,
+        record_property,
+        "prepare",
+        journal_constructions=journal_constructions,
+    )
 
 
 @pytest.mark.growth_witness(
@@ -276,5 +323,15 @@ def test_prepare_work(case, qualified, original, monkeypatch, record_property):
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.canonical_discovery_corpus_replay.apply_corpus_replay",
 )
-def test_apply_work(case, qualified, original, monkeypatch, record_property):
-    exercise(case, qualified, original, monkeypatch, record_property, "apply")
+def test_apply_work(
+    case, qualified, original, monkeypatch, record_property, *, journal_constructions
+):
+    exercise(
+        case,
+        qualified,
+        original,
+        monkeypatch,
+        record_property,
+        "apply",
+        journal_constructions=journal_constructions,
+    )

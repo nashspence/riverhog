@@ -22,6 +22,7 @@ from .corpus import (
     SelectedDeliverySupport,
     validate_canonical_corpus,
 )
+from .corpus_construction import CorpusConstruction
 from .corpus_reclamation import (
     CorpusReclamationProgress,
     reclaim_retired_corpus_workspace,
@@ -86,6 +87,7 @@ from .journal import (
     validate_journal_set_chunks,
     write_assertion_batches,
 )
+from .journal_construction import JournalConstruction
 from .journal_reclamation import (
     JournalReclamationProgress,
     reclaim_retired_journal_workspace,
@@ -120,7 +122,9 @@ from .segmented_archive import (
 from .sources import BytesSource, SegmentSource, StreamSource
 
 __all__ = [
+    "JournalConstruction",
     "CorpusReplayBinding",
+    "CorpusConstruction",
     "CorpusValidationSource",
     "RetainedCorpusValidator",
     "StaleCorpusWorkspace",

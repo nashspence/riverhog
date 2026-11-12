@@ -10,10 +10,10 @@ from riverhog_core import canonical_discovery_corpus_jobs as jobs
 from riverhog_core import canonical_discovery_root_reclamation as owner
 from riverhog_core.canonical_discovery_corpus_reclamation import reclaim_discovery_corpus
 from riverhog_core.canonical_discovery_retired_metadata import RetiredDiscoveryMetadata
-from riverhog_core.journal_validation_retirement import lease_retiring_journal_workspace
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
 from tests.support.catalog_work import octets
+from tests.support.retirement_namespace import lease_retiring_journal_workspace
 from tests.support.workspace_reclamation import execution_sample
 from tests.unit import test_canonical_discovery_metadata_growth as basis
 from tests.unit.test_canonical_discovery_child_reclamation_growth import direct_primitives

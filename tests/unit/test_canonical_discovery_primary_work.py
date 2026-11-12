@@ -136,7 +136,9 @@ class PrimaryCorpusSource:
 
 
 @contextmanager
-def primary_corpus(path, source, summary, store, binding, catalog, *, retained):
+def primary_corpus(
+    path, source, summary, store, binding, catalog, *, retained, journal_constructions
+):
     with ExitStack() as resources:
         if retained:
             directory = path.parent / (path.stem + "-native")
@@ -147,7 +149,12 @@ def primary_corpus(path, source, summary, store, binding, catalog, *, retained):
             inputs = PrimaryCorpusSource(source, summary, selections, directory, catalog)
             corpus = resources.enter_context(
                 RetainedCorpusValidator.open_retained(
-                    directory, inputs, worker_epoch=1, create=True, catalog=catalog
+                    directory,
+                    inputs,
+                    worker_epoch=1,
+                    create=True,
+                    catalog=catalog,
+                    construction=journal_constructions.retain_corpus(),
                 )
             )
         else:
@@ -176,6 +183,7 @@ def primary_work(
     inherited_extent=None,
     import_fault=None,
     worker_id="worker",
+    journal_constructions,
 ):
     catalog, payload = ContractCatalog(), b"primary"
     artifact_id = hashlib.sha256(payload).hexdigest()
@@ -360,7 +368,14 @@ def primary_work(
             with admit_archive_journal(db, key, admission, summary) as source:
                 store = MemberHistoryStore(lambda path: (objects[path],))
                 with primary_corpus(
-                    path, source, summary, store, binding, catalog, retained=retained
+                    path,
+                    source,
+                    summary,
+                    store,
+                    binding,
+                    catalog,
+                    retained=retained,
+                    journal_constructions=journal_constructions,
                 ) as corpus:
                     snapshots = HistorySnapshotWork(roots, source)
                     for selected in store.roots(binding, extent=RETAINED_HISTORY_EXTENT):
@@ -385,9 +400,11 @@ def primary_work(
 
 @pytest.mark.parametrize("retained", [False, True])
 def test_historical_primary_verifies_native_delivery_and_retains_only_original_support(
-    tmp_path, monkeypatch, retained
+    tmp_path, monkeypatch, retained, *, journal_constructions
 ):
-    with primary_work(tmp_path / "work.sqlite", retained=retained) as values:
+    with primary_work(
+        tmp_path / "work.sqlite", retained=retained, journal_constructions=journal_constructions
+    ) as values:
         db, key, owner, descriptor, state, occurrence, frame_type = values
 
         def no_frames(*_args):
@@ -417,9 +434,14 @@ def test_historical_primary_verifies_native_delivery_and_retains_only_original_s
 @pytest.mark.parametrize("retained", [False, True])
 @pytest.mark.parametrize("fault", ["slot", "association", "size", "digest"])
 def test_primary_uses_native_member_and_fixity_policy_before_any_registration(
-    tmp_path, fault, retained
+    tmp_path, fault, retained, *, journal_constructions
 ):
-    with primary_work(tmp_path / "work.sqlite", fault=fault, retained=retained) as values:
+    with primary_work(
+        tmp_path / "work.sqlite",
+        fault=fault,
+        retained=retained,
+        journal_constructions=journal_constructions,
+    ) as values:
         db, key, owner, descriptor, *_ = values
         with pytest.raises(ProvenanceValidationError):
             prepare_history_primary(db, key, owner, descriptor.identity, metadata_byte_budget=65536)
@@ -428,8 +450,12 @@ def test_primary_uses_native_member_and_fixity_policy_before_any_registration(
         )
 
 
-def test_primary_assertion_capacity_does_not_register_partial_support(tmp_path):
-    with primary_work(tmp_path / "work.sqlite") as values:
+def test_primary_assertion_capacity_does_not_register_partial_support(
+    tmp_path, *, journal_constructions
+):
+    with primary_work(
+        tmp_path / "work.sqlite", journal_constructions=journal_constructions
+    ) as values:
         db, key, owner, descriptor, *_ = values
         with pytest.raises(JournalValidationCapacity):
             prepare_history_primary(db, key, owner, descriptor.identity, metadata_byte_budget=1)
@@ -447,8 +473,12 @@ def test_primary_assertion_capacity_does_not_register_partial_support(tmp_path):
     "fault",
     ["descriptor", "roots", "imports", "link", "header", "source", "worker", "role", "page"],
 )
-def test_changed_primary_inputs_or_exact_preparation_cannot_register_support(tmp_path, fault):
-    with primary_work(tmp_path / "work.sqlite") as values:
+def test_changed_primary_inputs_or_exact_preparation_cannot_register_support(
+    tmp_path, fault, *, journal_constructions
+):
+    with primary_work(
+        tmp_path / "work.sqlite", journal_constructions=journal_constructions
+    ) as values:
         db, key, owner, descriptor, *_ = values
         page = prepare_history_primary(
             db, key, owner, descriptor.identity, metadata_byte_budget=65536
@@ -483,8 +513,10 @@ def test_changed_primary_inputs_or_exact_preparation_cannot_register_support(tmp
         )
 
 
-def test_closed_native_source_cannot_commit_a_prepared_primary(tmp_path):
-    with primary_work(tmp_path / "work.sqlite") as values:
+def test_closed_native_source_cannot_commit_a_prepared_primary(tmp_path, *, journal_constructions):
+    with primary_work(
+        tmp_path / "work.sqlite", journal_constructions=journal_constructions
+    ) as values:
         db, key, owner, descriptor, *_ = values
         page = prepare_history_primary(
             db, key, owner, descriptor.identity, metadata_byte_budget=65536
@@ -498,11 +530,15 @@ def test_closed_native_source_cannot_commit_a_prepared_primary(tmp_path):
         )
 
 
-def test_primary_registration_rolls_back_then_retries_exact_support(tmp_path):
+def test_primary_registration_rolls_back_then_retries_exact_support(
+    tmp_path, *, journal_constructions
+):
     class Interrupted(BaseException):
         pass
 
-    with primary_work(tmp_path / "work.sqlite") as values:
+    with primary_work(
+        tmp_path / "work.sqlite", journal_constructions=journal_constructions
+    ) as values:
         db, key, owner, descriptor, *_ = values
         page = prepare_history_primary(
             db, key, owner, descriptor.identity, metadata_byte_budget=65536
@@ -521,8 +557,12 @@ def test_primary_registration_rolls_back_then_retries_exact_support(tmp_path):
         )
 
 
-def test_primary_preparation_and_application_use_the_required_transaction_boundaries(tmp_path):
-    with primary_work(tmp_path / "work.sqlite") as values:
+def test_primary_preparation_and_application_use_the_required_transaction_boundaries(
+    tmp_path, *, journal_constructions
+):
+    with primary_work(
+        tmp_path / "work.sqlite", journal_constructions=journal_constructions
+    ) as values:
         db, key, owner, descriptor, *_ = values
         with write(db):
             with pytest.raises(ValueError, match="no active transaction"):
@@ -599,11 +639,15 @@ def observe_primary(db, owner, frame_type, monkeypatch):
     operation="riverhog_core.canonical_discovery_primary_work.prepare_history_primary",
 )
 def test_actual_primary_preparation_uses_native_point_policy_and_fixed_core_reads(
-    tmp_path, monkeypatch, record_property
+    tmp_path, monkeypatch, record_property, *, journal_constructions
 ):
     samples = []
     for retained in (False, True):
-        with primary_work(tmp_path / f"measured-{retained}.sqlite", retained=retained) as values:
+        with primary_work(
+            tmp_path / f"measured-{retained}.sqlite",
+            retained=retained,
+            journal_constructions=journal_constructions,
+        ) as values:
             db, key, owner, descriptor, _, _, frame_type = values
             for count in (0, 1):
                 with observe_primary(db, owner, frame_type, monkeypatch) as observer:
@@ -626,11 +670,15 @@ def test_actual_primary_preparation_uses_native_point_policy_and_fixed_core_read
     operation="riverhog_core.canonical_discovery_primary_work.apply_history_primary",
 )
 def test_actual_primary_commit_writes_only_original_references_without_source_hashing(
-    tmp_path, monkeypatch, record_property
+    tmp_path, monkeypatch, record_property, *, journal_constructions
 ):
     samples = []
     for retained in (False, True):
-        with primary_work(tmp_path / f"measured-{retained}.sqlite", retained=retained) as values:
+        with primary_work(
+            tmp_path / f"measured-{retained}.sqlite",
+            retained=retained,
+            journal_constructions=journal_constructions,
+        ) as values:
             db, key, owner, descriptor, _, _, frame_type = values
             page = prepare_history_primary(
                 db, key, owner, descriptor.identity, metadata_byte_budget=65536
@@ -668,9 +716,14 @@ def imported_primary(values):
 
 @pytest.mark.parametrize("retained", [False, True])
 @pytest.mark.parametrize("extent", [BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT])
-def test_import_state_matches_exact_native_verified_source_primary(tmp_path, retained, extent):
+def test_import_state_matches_exact_native_verified_source_primary(
+    tmp_path, retained, extent, *, journal_constructions
+):
     with primary_work(
-        tmp_path / "import.sqlite", retained=retained, inherited_extent=extent
+        tmp_path / "import.sqlite",
+        retained=retained,
+        inherited_extent=extent,
+        journal_constructions=journal_constructions,
     ) as values:
         db, key, owner, imports, record, history = imported_primary(values)
         with pytest.raises(StaleArchiveTask, match="Native-verified"):
@@ -686,13 +739,14 @@ def test_import_state_matches_exact_native_verified_source_primary(tmp_path, ret
 
 @pytest.mark.parametrize("fault", ["state", "assertion", "entry"])
 def test_wrong_import_state_rejects_even_when_the_source_history_is_structurally_valid(
-    tmp_path, fault
+    tmp_path, fault, *, journal_constructions
 ):
     with primary_work(
         tmp_path / "import.sqlite",
         retained=True,
         inherited_extent=BOUND_HISTORY_EXTENT,
         import_fault=fault,
+        journal_constructions=journal_constructions,
     ) as values:
         db, key, owner, imports, record, history = imported_primary(values)
         page = prepare_history_primary(db, key, owner, history, metadata_byte_budget=65536)
@@ -716,9 +770,14 @@ def test_wrong_import_state_rejects_even_when_the_source_history_is_structurally
         "proof",
     ],
 )
-def test_import_primary_rejects_changed_original_proof_or_native_binding(tmp_path, damage):
+def test_import_primary_rejects_changed_original_proof_or_native_binding(
+    tmp_path, damage, *, journal_constructions
+):
     with primary_work(
-        tmp_path / "import.sqlite", retained=True, inherited_extent=BOUND_HISTORY_EXTENT
+        tmp_path / "import.sqlite",
+        retained=True,
+        inherited_extent=BOUND_HISTORY_EXTENT,
+        journal_constructions=journal_constructions,
     ) as values:
         db, key, owner, imports, record, history = imported_primary(values)
         page = prepare_history_primary(db, key, owner, history, metadata_byte_budget=65536)

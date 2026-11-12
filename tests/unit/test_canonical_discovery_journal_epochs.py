@@ -52,10 +52,10 @@ def finish(metadata, task):
 
 
 def test_actual_original_epoch_facts_match_native_classifier_and_commit_one_frame(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, *, journal_constructions
 ):
     classify = owner.classify_epoch_boundary
-    with prepared(tmp_path / "owned") as case:
+    with prepared(tmp_path / "owned", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             task = selected(work, framing)
             raw = framing.source.read_exact(0, framing.source.identity.source_bytes)
@@ -95,8 +95,10 @@ def test_actual_original_epoch_facts_match_native_classifier_and_commit_one_fram
             assert not (work.metadata.custody.directory / "journals").exists()
 
 
-def test_epoch_cursor_resumes_same_file_and_binding_after_actual_worker_handoff(tmp_path):
-    with prepared(tmp_path / "owned") as case:
+def test_epoch_cursor_resumes_same_file_and_binding_after_actual_worker_handoff(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path / "owned", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             task = selected(work, framing)
             begin(work.metadata, task)
@@ -108,7 +110,12 @@ def test_epoch_cursor_resumes_same_file_and_binding_after_actual_worker_handoff(
             path = work.metadata.custody.directory / "discovery.sqlite3"
             inode = path.stat().st_ino
         case.pool.close()
-        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        case.pool = DiscoveryValidationOwner(
+            case.factory,
+            case.root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         with quantum(case) as (work, framing):
             task = selected(work, framing)
             assert work.metadata.job.worker_epoch == epoch + 1
@@ -122,8 +129,10 @@ def test_epoch_cursor_resumes_same_file_and_binding_after_actual_worker_handoff(
             assert finish(work.metadata, task).phase == "complete"
 
 
-def test_lost_commit_reply_observes_published_fact_without_reset_or_reclassification(tmp_path):
-    with prepared(tmp_path / "owned") as case:
+def test_lost_commit_reply_observes_published_fact_without_reset_or_reclassification(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path / "owned", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             task = selected(work, framing)
             begin(work.metadata, task)
@@ -144,7 +153,9 @@ def test_lost_commit_reply_observes_published_fact_without_reset_or_reclassifica
                 ).fetchone() == (2,)
 
 
-def test_interrupted_fact_and_checkpoint_publication_roll_back_together(tmp_path):
+def test_interrupted_fact_and_checkpoint_publication_roll_back_together(
+    tmp_path, *, journal_constructions
+):
     class Interrupted:
         def __init__(self, db):
             self.db = db
@@ -157,7 +168,7 @@ def test_interrupted_fact_and_checkpoint_publication_roll_back_together(tmp_path
                 raise InterruptedError("actual checkpoint publication interrupted")
             return self.db.execute(sql, *args)
 
-    with prepared(tmp_path / "owned") as case:
+    with prepared(tmp_path / "owned", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             task = selected(work, framing)
             before = begin(work.metadata, task)
@@ -175,8 +186,10 @@ def test_interrupted_fact_and_checkpoint_publication_roll_back_together(tmp_path
 
 
 @pytest.mark.parametrize("damage", ["binding", "position", "fact", "cursor"])
-def test_changed_private_facts_or_original_registration_fail_closed(tmp_path, damage):
-    with prepared(tmp_path / "owned") as case:
+def test_changed_private_facts_or_original_registration_fail_closed(
+    tmp_path, damage, *, journal_constructions
+):
+    with prepared(tmp_path / "owned", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             task = selected(work, framing)
             begin(work.metadata, task)
@@ -194,8 +207,10 @@ def test_changed_private_facts_or_original_registration_fail_closed(tmp_path, da
                 progress(work.metadata, task)
 
 
-def test_only_the_actual_prepared_atom_can_publish_and_retry_cannot_duplicate_fact(tmp_path):
-    with prepared(tmp_path / "owned") as case:
+def test_only_the_actual_prepared_atom_can_publish_and_retry_cannot_duplicate_fact(
+    tmp_path, *, journal_constructions
+):
+    with prepared(tmp_path / "owned", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             task = selected(work, framing)
             begin(work.metadata, task)

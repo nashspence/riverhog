@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import pytest
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_validation_jobs as jobs
 from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
 from riverhog_provenance import JournalValidationCapacity, JournalValidationSession
 from riverhog_provenance.journal_store import JournalStore
 
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL
@@ -35,17 +35,21 @@ class UncertainClose:
 
 
 def assert_lease(root, workspace_id, *, busy):
-    with lease_journal_validation_workspace(root, workspace_id) as path:
+    with leased_workspace(root, workspace_id) as path:
         assert (path is None) is busy
 
 
 @pytest.mark.parametrize("after", [False, True])
 @pytest.mark.parametrize("cleanup", ["close", "release_stale"])
-def test_unconfirmed_close_retains_the_actual_slot_and_kernel_lease(tmp_path, after, cleanup):
+def test_unconfirmed_close_retains_the_actual_slot_and_kernel_lease(
+    tmp_path, after, cleanup, *, journal_constructions
+):
     root = tmp_path / "native"
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, root)
+        owner = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         try:
             owner.advance(work, catalog=source_owner.admission_provenance_catalog())
             slot = next(iter(owner._slots.values()))
@@ -74,12 +78,14 @@ def test_unconfirmed_close_retains_the_actual_slot_and_kernel_lease(tmp_path, af
 
 @pytest.mark.parametrize("phase", ["store", "session"])
 def test_failed_initialization_keeps_early_native_storage_and_application_custody(
-    tmp_path, monkeypatch, phase
+    tmp_path, monkeypatch, phase, *, journal_constructions
 ):
     root = tmp_path / "native"
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, root)
+        owner = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         retained_storage = []
         target = JournalStore if phase == "store" else JournalValidationSession
         name = "_initialize_schema" if phase == "store" else "_initialize"
@@ -113,11 +119,15 @@ def test_failed_initialization_keeps_early_native_storage_and_application_custod
             owner.close()
 
 
-def test_terminal_cleanup_attempts_once_and_preserves_confirmed_outcome(tmp_path):
+def test_terminal_cleanup_attempts_once_and_preserves_confirmed_outcome(
+    tmp_path, *, journal_constructions
+):
     root = tmp_path / "native"
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, root)
+        owner = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         try:
             owner.advance(work, catalog=source_owner.admission_provenance_catalog())
             slot = next(iter(owner._slots.values()))
@@ -144,10 +154,17 @@ def test_terminal_cleanup_attempts_once_and_preserves_confirmed_outcome(tmp_path
 
 
 @pytest.mark.parametrize("cleanup", ["close", "release_stale"])
-def test_one_uncertain_slot_does_not_prevent_independent_slot_release(tmp_path, cleanup):
+def test_one_uncertain_slot_does_not_prevent_independent_slot_release(
+    tmp_path, cleanup, *, journal_constructions
+):
     with build_cases(tmp_path, large=False) as cases:
         case = cases[2]
-        with live_owner(case) as (owner, _recorder, slots, _borrowed):
+        with live_owner(case, journal_constructions=journal_constructions) as (
+            owner,
+            _recorder,
+            slots,
+            _borrowed,
+        ):
             first, second = slots
             storage = first[1].session._store._storage
             fault = UncertainClose(storage.connection)
@@ -167,12 +184,14 @@ def test_one_uncertain_slot_does_not_prevent_independent_slot_release(tmp_path, 
 
 @pytest.mark.parametrize("failures", [0, 2])
 def test_initialization_capacity_retains_cleanup_then_resumes_the_same_file(
-    tmp_path, monkeypatch, failures
+    tmp_path, monkeypatch, failures, *, journal_constructions
 ):
     root = tmp_path / "native"
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(factory, root)
+        owner = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
         initialize = JournalValidationSession._initialize
         retained_storage = []
 
@@ -211,4 +230,60 @@ def test_initialization_capacity_retains_cleanup_then_resumes_the_same_file(
             assert path.stat().st_ino == identity
             assert selected(factory).worker_epoch == job.worker_epoch + 1
         finally:
+            owner.close()
+
+
+def test_final_independent_native_readers_keep_the_original_slot_and_live_body(
+    tmp_path, *, journal_constructions
+):
+    root = tmp_path / "native"
+    with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
+        work, _ = ready(factory)
+        owner = UploadJournalValidationOwner(
+            factory, root, construction_factory=journal_constructions.retain
+        )
+        readers = []
+        try:
+            key = work.collection_id, work.journal_id, work.attempt_id
+            slot = owner._reserve(key)
+            assert slot is not None
+            try:
+                assert owner._open(work, slot, source_owner.admission_provenance_catalog()) is None
+            finally:
+                slot.lock.release()
+            native = slot.session
+            for _ in range(10000):
+                if native.advance().complete:
+                    break
+            else:
+                pytest.fail("actual retained fixture did not reach its successful result")
+            original = slot.construction
+            assert original is not None and original.storage is native._store
+            readers.extend((native.result(), native.result()))
+            with pytest.raises(BlockingIOError, match="original Native construction"):
+                owner.close()
+            assert owner.active_keys() == ((work.collection_id, work.journal_id),)
+            assert slot.session is native and slot.transferred
+            assert slot.lease._active and not slot.lease.received
+            assert not native.storage_received
+            assert not original.scope.received and not original.received
+            assert not readers[0].storage_received and not readers[1].storage_received
+            assert_lease(root, slot.job.workspace_id, busy=True)
+            readers[0].close()
+            with pytest.raises(BlockingIOError, match="original Native construction"):
+                owner.close()
+            assert slot.lease._active and not native.storage_received
+            assert not original.scope.received and not original.received
+            assert_lease(root, slot.job.workspace_id, busy=True)
+            readers[1].close()
+            assert native.storage_received and slot.lease.received
+            assert original.scope.received and not original.received
+            assert all(reader.storage_received for reader in readers)
+            owner.close()
+            assert owner.active_keys() == ()
+            assert original.received
+            assert_lease(root, slot.job.workspace_id, busy=False)
+        finally:
+            for reader in readers:
+                reader.close()
             owner.close()

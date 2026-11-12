@@ -387,7 +387,9 @@ def test_native_acceptance_follows_private_union_completion(tmp_path, monkeypatc
             service.close()
 
 
-def test_cyclic_later_union_does_not_replace_an_earlier_native_prefix_error(tmp_path):
+def test_cyclic_later_union_does_not_replace_an_earlier_native_prefix_error(
+    tmp_path, *, journal_constructions
+):
     document = parse_journal(source(journal_id=JOURNAL))[0].document
     document["sequence"] = "7"
     raw = raw_journal(canonical_json_bytes(document), entry([edge(0, 0, 1), edge(1, 1, 0)]))
@@ -397,7 +399,9 @@ def test_cyclic_later_union_does_not_replace_an_earlier_native_prefix_error(tmp_
         work = ready(factory)
         finish(factory, work)
         assert checkpoint(factory)[2] == "complete"
-        assert native_outcome(factory, work).failure == str(expected.value)
+        assert native_outcome(
+            factory, work, journal_constructions=journal_constructions
+        ).failure == str(expected.value)
 
 
 @pytest.mark.growth_witness(

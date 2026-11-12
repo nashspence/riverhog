@@ -9,10 +9,11 @@ import sys
 import pytest
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
-    lease_journal_validation_workspace,
 )
 from riverhog_core.scratch_workspace import process_workspace
 from riverhog_provenance import JournalValidationCapacity
+
+from tests.support.validation_workspace import leased_workspace
 
 pytestmark = pytest.mark.skipif(
     os.name != "posix", reason="server kernel file leases require POSIX"
@@ -23,12 +24,12 @@ ONE, TWO = "a" * 32, "b" * 32
 def test_job_workspace_preserves_files_and_is_independent_of_process_scratch(tmp_path):
     root = tmp_path / "retained"
     with process_workspace(base=tmp_path):
-        with lease_journal_validation_workspace(root, ONE, create=True) as directory:
+        with leased_workspace(root, ONE, create=True) as directory:
             assert directory == root / ONE
             (directory / "snapshot.sqlite3").write_bytes(b"owned fixture state")
             assert directory.stat().st_mode & 0o777 == 0o700
             assert (directory / ".lease").stat().st_mode & 0o777 == 0o600
-    with lease_journal_validation_workspace(root, ONE) as reopened:
+    with leased_workspace(root, ONE) as reopened:
         assert (reopened / "snapshot.sqlite3").read_bytes() == b"owned fixture state"
 
 
@@ -36,13 +37,13 @@ def test_busy_attempt_does_not_block_an_independent_worker(tmp_path):
     root = tmp_path / "retained"
     code = """import sys
 from pathlib import Path
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
-with lease_journal_validation_workspace(Path(sys.argv[1]),sys.argv[2]) as busy:
+from tests.support.validation_workspace import leased_workspace
+with leased_workspace(Path(sys.argv[1]),sys.argv[2]) as busy:
  assert busy is None
- with lease_journal_validation_workspace(Path(sys.argv[1]),sys.argv[3],create=True) as free:
+ with leased_workspace(Path(sys.argv[1]),sys.argv[3],create=True) as free:
   assert free is not None
 """
-    with lease_journal_validation_workspace(root, ONE, create=True):
+    with leased_workspace(root, ONE, create=True):
         result = subprocess.run(
             [sys.executable, "-c", code, str(root), ONE, TWO], capture_output=True
         )
@@ -54,8 +55,8 @@ def test_actual_worker_exit_releases_only_its_lease_and_retains_progress(tmp_pat
     root = tmp_path / "retained"
     code = """import os,sys
 from pathlib import Path
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
-with lease_journal_validation_workspace(Path(sys.argv[1]),sys.argv[2],create=True) as directory:
+from tests.support.validation_workspace import leased_workspace
+with leased_workspace(Path(sys.argv[1]),sys.argv[2],create=True) as directory:
  with (directory/'snapshot.sqlite3').open('wb') as stream:
   stream.write(b'owned committed fixture')
   stream.flush()
@@ -64,14 +65,14 @@ with lease_journal_validation_workspace(Path(sys.argv[1]),sys.argv[2],create=Tru
 """
     result = subprocess.run([sys.executable, "-c", code, str(root), ONE], capture_output=True)
     assert result.returncode == 83, result.stderr.decode()
-    with lease_journal_validation_workspace(root, ONE) as directory:
+    with leased_workspace(root, ONE) as directory:
         assert (directory / "snapshot.sqlite3").read_bytes() == b"owned committed fixture"
 
 
 def test_missing_retained_directory_is_not_recreated(tmp_path):
     root = tmp_path / "missing-root"
     with pytest.raises(LostJournalValidationWorkspace):
-        with lease_journal_validation_workspace(root, ONE):
+        with leased_workspace(root, ONE):
             pytest.fail("lost workspace was admitted")
     assert not root.exists()
 
@@ -84,12 +85,12 @@ def test_interrupted_empty_creation_can_finish_but_a_lost_database_lease_cannot(
     directory = root / ONE
     directory.mkdir(parents=True, mode=0o700)
     root.chmod(0o700)
-    with lease_journal_validation_workspace(root, ONE, create=True) as resumed:
+    with leased_workspace(root, ONE, create=True) as resumed:
         assert resumed == directory
     (directory / state_name).write_bytes(b"retained fixture")
     (directory / ".lease").unlink()
     with pytest.raises(LostJournalValidationWorkspace, match="lease was lost"):
-        with lease_journal_validation_workspace(root, ONE, create=True):
+        with leased_workspace(root, ONE, create=True):
             pytest.fail("lost lease was silently recreated")
     assert not (directory / ".lease").exists()
 
@@ -99,7 +100,7 @@ def test_interrupted_empty_creation_can_finish_but_a_lost_database_lease_cannot(
 )
 def test_foreign_or_replaced_files_are_not_admitted_or_repaired(tmp_path, fault):
     root = tmp_path / "retained"
-    with lease_journal_validation_workspace(root, ONE, create=True) as directory:
+    with leased_workspace(root, ONE, create=True) as directory:
         pass
     if fault == "directory-mode":
         directory.chmod(0o755)
@@ -115,7 +116,7 @@ def test_foreign_or_replaced_files_are_not_admitted_or_repaired(tmp_path, fault)
         else:
             os.link(foreign, directory / ".lease")
     with pytest.raises(LostJournalValidationWorkspace):
-        with lease_journal_validation_workspace(root, TWO if fault == "directory-link" else ONE):
+        with leased_workspace(root, TWO if fault == "directory-link" else ONE):
             pytest.fail("foreign workspace state was admitted")
     if fault.startswith("lease"):
         assert foreign.read_bytes() == b"unrelated fixture"
@@ -123,7 +124,7 @@ def test_foreign_or_replaced_files_are_not_admitted_or_repaired(tmp_path, fault)
 
 def test_caller_io_failure_keeps_its_own_meaning(tmp_path):
     with pytest.raises(FileNotFoundError, match="caller source unavailable"):
-        with lease_journal_validation_workspace(tmp_path / "retained", ONE, create=True):
+        with leased_workspace(tmp_path / "retained", ONE, create=True):
             raise FileNotFoundError("caller source unavailable")
 
 
@@ -132,15 +133,17 @@ def test_caller_io_failure_keeps_its_own_meaning(tmp_path):
 def test_workspace_creation_reports_capacity_without_accepting_or_replacing_state(
     tmp_path, monkeypatch, code, phase
 ):
-    original = os.open
+    from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
+
+    original = RetainedWorkspaceResource.acquire
     sync = os.fsync
     regular_syncs = []
     failed = []
 
-    def full(path, *args, **kwargs):
+    def full(resource, path, *args, **kwargs):
         if phase == "open" and path == ".coordinator":
             raise OSError(code, "synthetic storage capacity")
-        return original(path, *args, **kwargs)
+        return original(resource, path, *args, **kwargs)
 
     def full_sync(descriptor):
         if stat.S_ISREG(os.fstat(descriptor).st_mode):
@@ -150,11 +153,11 @@ def test_workspace_creation_reports_capacity_without_accepting_or_replacing_stat
                 raise OSError(code, "synthetic sync capacity")
         return sync(descriptor)
 
-    monkeypatch.setattr(os, "open", full)
+    monkeypatch.setattr(RetainedWorkspaceResource, "acquire", full)
     monkeypatch.setattr(os, "fsync", full_sync)
     root = tmp_path / "retained"
     with pytest.raises(JournalValidationCapacity):
-        with lease_journal_validation_workspace(root, ONE, create=True):
+        with leased_workspace(root, ONE, create=True):
             pytest.fail("workspace was admitted without capacity")
     if phase == "open":
         assert not (root / ONE).exists()
@@ -166,7 +169,9 @@ def test_workspace_creation_reports_capacity_without_accepting_or_replacing_stat
         assert closed.value.errno == errno.EBADF
 
 
-def test_retained_summary_keeps_kernel_lease_until_its_last_reader_closes(tmp_path):
+def test_retained_summary_keeps_kernel_lease_until_its_last_reader_closes(
+    tmp_path, *, journal_constructions
+):
     from contextlib import ExitStack
 
     from riverhog_provenance.journal_store import JournalStore
@@ -174,11 +179,12 @@ def test_retained_summary_keeps_kernel_lease_until_its_last_reader_closes(tmp_pa
     root = tmp_path / "retained"
     resources = ExitStack()
     try:
-        directory = resources.enter_context(
-            lease_journal_validation_workspace(root, ONE, create=True)
-        )
+        directory = resources.enter_context(leased_workspace(root, ONE, create=True))
         current = JournalStore.open_retained(
-            directory, create=True, on_storage_close=resources.close
+            directory,
+            create=True,
+            on_storage_close=resources.close,
+            construction=journal_constructions.retain(),
         )
     except BaseException:
         resources.close()
@@ -188,8 +194,8 @@ def test_retained_summary_keeps_kernel_lease_until_its_last_reader_closes(tmp_pa
     current.close()
     code = """import sys
 from pathlib import Path
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
-with lease_journal_validation_workspace(Path(sys.argv[1]),sys.argv[2]) as directory:
+from tests.support.validation_workspace import leased_workspace
+with leased_workspace(Path(sys.argv[1]),sys.argv[2]) as directory:
  assert (directory is None)==(sys.argv[3]=="busy")
 """
     try:
@@ -211,27 +217,21 @@ def test_shared_frozen_readers_exclude_writers_until_every_independent_reader_cl
     from contextlib import ExitStack
 
     root = tmp_path / "retained"
-    with lease_journal_validation_workspace(root, ONE, create=True):
+    with leased_workspace(root, ONE, create=True):
         pass
     first, second = ExitStack(), ExitStack()
     try:
-        assert (
-            first.enter_context(lease_journal_validation_workspace(root, ONE, shared=True))
-            == root / ONE
-        )
-        assert (
-            second.enter_context(lease_journal_validation_workspace(root, ONE, shared=True))
-            == root / ONE
-        )
+        assert first.enter_context(leased_workspace(root, ONE, shared=True)) == root / ONE
+        assert second.enter_context(leased_workspace(root, ONE, shared=True)) == root / ONE
         code = """import sys
 from pathlib import Path
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
+from tests.support.validation_workspace import leased_workspace
 root=Path(sys.argv[1])
-with lease_journal_validation_workspace(root,sys.argv[2],shared=True) as reader:
+with leased_workspace(root,sys.argv[2],shared=True) as reader:
  assert reader is not None
- with lease_journal_validation_workspace(root,sys.argv[2]) as writer:
+ with leased_workspace(root,sys.argv[2]) as writer:
   assert writer is None
- with lease_journal_validation_workspace(root,sys.argv[3],create=True) as independent:
+ with leased_workspace(root,sys.argv[3],create=True) as independent:
   assert independent is not None
 """
         process = subprocess.run(
@@ -239,30 +239,35 @@ with lease_journal_validation_workspace(root,sys.argv[2],shared=True) as reader:
         )
         assert process.returncode == 0, process.stderr.decode()
         first.close()
-        with lease_journal_validation_workspace(root, ONE) as busy:
+        with leased_workspace(root, ONE) as busy:
             assert busy is None
     finally:
         first.close()
         second.close()
-    with lease_journal_validation_workspace(root, ONE) as ready:
+    with leased_workspace(root, ONE) as ready:
         assert ready == root / ONE
 
 
-def test_shared_database_reader_keeps_its_kernel_lease_through_last_borrow(tmp_path):
+def test_shared_database_reader_keeps_its_kernel_lease_through_last_borrow(
+    tmp_path, *, journal_constructions
+):
     from contextlib import ExitStack
 
     from riverhog_provenance.journal_store import JournalStore
 
     root = tmp_path / "retained"
-    with lease_journal_validation_workspace(root, ONE, create=True) as path:
-        JournalStore.open_retained(path, create=True).close()
+    with leased_workspace(root, ONE, create=True) as path:
+        JournalStore.open_retained(
+            path, create=True, construction=journal_constructions.retain()
+        ).close()
     resources = ExitStack()
     try:
-        directory = resources.enter_context(
-            lease_journal_validation_workspace(root, ONE, shared=True)
-        )
+        directory = resources.enter_context(leased_workspace(root, ONE, shared=True))
         current = JournalStore.open_retained(
-            directory, read_only=True, on_storage_close=resources.close
+            directory,
+            read_only=True,
+            on_storage_close=resources.close,
+            construction=journal_constructions.retain(),
         )
     except BaseException:
         resources.close()
@@ -271,24 +276,24 @@ def test_shared_database_reader_keeps_its_kernel_lease_through_last_borrow(tmp_p
     last = current.borrow()
     current.close()
     try:
-        with lease_journal_validation_workspace(root, ONE, shared=True) as another:
+        with leased_workspace(root, ONE, shared=True) as another:
             assert another == directory
-        with lease_journal_validation_workspace(root, ONE) as busy:
+        with leased_workspace(root, ONE) as busy:
             assert busy is None
     finally:
         last.close()
-    with lease_journal_validation_workspace(root, ONE) as ready:
+    with leased_workspace(root, ONE) as ready:
         assert ready == directory
 
 
 @pytest.mark.parametrize("shared", [False, True])
 def test_existing_reader_or_writer_cannot_recreate_a_lost_coordinator(tmp_path, shared):
     root = tmp_path / "retained"
-    with lease_journal_validation_workspace(root, ONE, create=True):
+    with leased_workspace(root, ONE, create=True):
         pass
     (root / ".coordinator").unlink()
     with pytest.raises(LostJournalValidationWorkspace):
-        with lease_journal_validation_workspace(root, ONE, shared=shared):
+        with leased_workspace(root, ONE, shared=shared):
             pytest.fail("a lost coordinator was recreated")
     assert not (root / ".coordinator").exists()
 
@@ -296,12 +301,14 @@ def test_existing_reader_or_writer_cannot_recreate_a_lost_coordinator(tmp_path, 
 def test_shared_readers_never_create_a_workspace(tmp_path):
     root = tmp_path / "absent"
     with pytest.raises(ValueError, match="cannot create"):
-        with lease_journal_validation_workspace(root, ONE, create=True, shared=True):
+        with leased_workspace(root, ONE, create=True, shared=True):
             pytest.fail("a reader created a workspace")
     assert not root.exists()
 
 
-def test_retained_corpus_holds_the_real_kernel_lease_until_native_close(tmp_path):
+def test_retained_corpus_holds_the_real_kernel_lease_until_native_close(
+    tmp_path, *, journal_constructions
+):
     from contextlib import ExitStack
 
     from riverhog_provenance import CorpusReplayBinding, RetainedCorpusValidator
@@ -333,9 +340,7 @@ def test_retained_corpus_holds_the_real_kernel_lease_until_native_close(tmp_path
     root = tmp_path / "retained"
     resources = ExitStack()
     try:
-        directory = resources.enter_context(
-            lease_journal_validation_workspace(root, ONE, create=True)
-        )
+        directory = resources.enter_context(leased_workspace(root, ONE, create=True))
         corpus = RetainedCorpusValidator.open_retained(
             directory,
             EmptyCorpusSource(),
@@ -343,14 +348,15 @@ def test_retained_corpus_holds_the_real_kernel_lease_until_native_close(tmp_path
             create=True,
             catalog=catalog,
             on_storage_close=resources.close,
+            construction=journal_constructions.retain_corpus(),
         )
     except BaseException:
         resources.close()
         raise
     code = """import sys
 from pathlib import Path
-from riverhog_core.journal_validation_workspace import lease_journal_validation_workspace
-with lease_journal_validation_workspace(Path(sys.argv[1]),sys.argv[2]) as directory:
+from tests.support.validation_workspace import leased_workspace
+with leased_workspace(Path(sys.argv[1]),sys.argv[2]) as directory:
  assert (directory is None)==(sys.argv[3]=="busy")
 """
     try:
@@ -371,20 +377,20 @@ with lease_journal_validation_workspace(Path(sys.argv[1]),sys.argv[2]) as direct
     assert (directory / "corpus.sqlite3").is_file()
     (directory / ".lease").unlink()
     with pytest.raises(LostJournalValidationWorkspace, match="lease was lost"):
-        with lease_journal_validation_workspace(root, ONE, create=True):
+        with leased_workspace(root, ONE, create=True):
             pytest.fail("lost corpus lease was recreated")
     assert not (directory / ".lease").exists()
 
 
 def test_lost_lease_cannot_create_a_second_writer_while_core_owner_still_holds_it(tmp_path):
     root = tmp_path / "retained"
-    with lease_journal_validation_workspace(root, ONE, create=True) as directory:
+    with leased_workspace(root, ONE, create=True) as directory:
         assert directory is not None
         state = directory / "discovery.sqlite3"
         state.write_bytes(b"accepted Core progress")
         (directory / ".lease").unlink()
         with pytest.raises(LostJournalValidationWorkspace, match="lease was lost"):
-            with lease_journal_validation_workspace(root, ONE, create=True):
+            with leased_workspace(root, ONE, create=True):
                 pytest.fail("replacement lease admitted a second Core writer")
         assert state.read_bytes() == b"accepted Core progress"
         assert not (directory / ".lease").exists()
@@ -405,7 +411,7 @@ def test_lost_lease_cannot_create_a_second_writer_while_core_owner_still_holds_i
 def test_descriptor_custody_rejects_replaced_or_incompatible_entries(tmp_path, damage):
     root = tmp_path / "retained"
     captured = []
-    with lease_journal_validation_workspace(root, ONE, create=True, on_custody=captured.append):
+    with leased_workspace(root, ONE, create=True, on_custody=captured.append):
         custody = captured[0]
         assert custody.verify_current()
         if damage == "root-replacement":
@@ -433,14 +439,14 @@ def test_descriptor_custody_rejects_replaced_or_incompatible_entries(tmp_path, d
 def test_descriptor_custody_closes_before_reuse_and_busy_selection_never_exposes_it(tmp_path):
     root = tmp_path / "retained"
     captured = []
-    with lease_journal_validation_workspace(root, ONE, create=True, on_custody=captured.append):
+    with leased_workspace(root, ONE, create=True, on_custody=captured.append):
         first = captured[0]
         assert first.verify_current()
-        with lease_journal_validation_workspace(root, ONE, on_custody=captured.append) as busy:
+        with leased_workspace(root, ONE, on_custody=captured.append) as busy:
             assert busy is None
         assert captured == [first]
     assert not first.verify_current()
-    with lease_journal_validation_workspace(root, ONE, on_custody=captured.append):
+    with leased_workspace(root, ONE, on_custody=captured.append):
         second = captured[1]
         assert second.verify_current()
         assert not first.verify_current()
@@ -458,11 +464,11 @@ def test_custody_handoff_failure_closes_custody_and_releases_lease(tmp_path):
         raise failure
 
     with pytest.raises(ValueError) as raised:
-        with lease_journal_validation_workspace(root, ONE, create=True, on_custody=reject):
+        with leased_workspace(root, ONE, create=True, on_custody=reject):
             pytest.fail("failed handoff was admitted")
     assert raised.value is failure
     assert not captured[0].verify_current()
-    with lease_journal_validation_workspace(root, ONE) as available:
+    with leased_workspace(root, ONE) as available:
         assert available is not None
 
 
@@ -470,16 +476,16 @@ def test_descriptor_custody_becomes_closed_before_any_owned_descriptor_closes(
     tmp_path, monkeypatch
 ):
     captured = []
-    actual_close = os.close
+    from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 
-    def close(descriptor):
+    actual_close = RetainedWorkspaceResource.close
+
+    def close(resource):
         if captured:
             assert not captured[0].verify_current()
-        actual_close(descriptor)
+        actual_close(resource)
 
-    monkeypatch.setattr(os, "close", close)
-    with lease_journal_validation_workspace(
-        tmp_path / "retained", ONE, create=True, on_custody=captured.append
-    ):
+    monkeypatch.setattr(RetainedWorkspaceResource, "close", close)
+    with leased_workspace(tmp_path / "retained", ONE, create=True, on_custody=captured.append):
         assert captured[0].verify_current()
     assert not captured[0].verify_current()

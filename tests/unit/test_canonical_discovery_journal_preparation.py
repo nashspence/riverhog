@@ -215,8 +215,10 @@ def test_deferred_children_reach_explicit_native_fallback_without_acceptance(tmp
         assert task.rank.union.topology.epochs.source.binding.source_bytes == str(len(raw))
 
 
-def test_actual_worker_handoff_keeps_stage_child_version_and_original_metadata_inode(tmp_path):
-    with owned(tmp_path / "owned") as case:
+def test_actual_worker_handoff_keeps_stage_child_version_and_original_metadata_inode(
+    tmp_path, *, journal_constructions
+):
+    with owned(tmp_path / "owned", journal_constructions=journal_constructions) as case:
         with quantum(case) as (work, framing):
             original = epochs.DiscoveryJournalEpochWork(framing, work.journal_source(framing))
             task = owner.DiscoveryJournalPreparationWork(original)
@@ -228,7 +230,12 @@ def test_actual_worker_handoff_keeps_stage_child_version_and_original_metadata_i
             path = work.metadata.custody.directory / "discovery.sqlite3"
             inode, binding = path.stat().st_ino, original.source.binding
         case.pool.close()
-        case.pool = DiscoveryValidationOwner(case.factory, case.root)
+        case.pool = DiscoveryValidationOwner(
+            case.factory,
+            case.root,
+            construction_factory=journal_constructions.retain,
+            corpus_construction_factory=journal_constructions.retain_corpus,
+        )
         with quantum(case) as (work, framing):
             original = epochs.DiscoveryJournalEpochWork(framing, work.journal_source(framing))
             task = owner.DiscoveryJournalPreparationWork(original)

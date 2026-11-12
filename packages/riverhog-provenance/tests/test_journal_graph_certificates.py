@@ -106,7 +106,9 @@ def test_certificate_binding_restoration_rejects_changed_protocol_or_noncanonica
         JournalGraphCertificateBinding.from_json(raw)
 
 
-def open_session(path, source, certificates, catalog, *, create=False, epoch=0):
+def open_session(
+    path, source, certificates, catalog, *, create=False, epoch=0, journal_constructions
+):
     return JournalValidationSession.open_retained(
         path,
         source,
@@ -115,11 +117,12 @@ def open_session(path, source, certificates, catalog, *, create=False, epoch=0):
         create=create,
         catalog=catalog,
         certificates=certificates,
+        construction=journal_constructions.retain(),
     )
 
 
 def test_acyclic_rank_evidence_replaces_only_native_graph_traversal(
-    tmp_path, journal, catalog, who, monkeypatch
+    tmp_path, journal, catalog, who, monkeypatch, *, journal_constructions
 ):
     raw, _ = related(journal, catalog, who)
     with validate_journal(raw, catalog=catalog) as expected:
@@ -131,7 +134,12 @@ def test_acyclic_rank_evidence_replaces_only_native_graph_traversal(
 
         monkeypatch.setattr(OnlineDag, "_prepare_start", online)
         with open_session(
-            directory(tmp_path), source, certificates, catalog, create=True
+            directory(tmp_path),
+            source,
+            certificates,
+            catalog,
+            create=True,
+            journal_constructions=journal_constructions,
         ) as session:
             finish(session)
             with session.result() as result:
@@ -141,7 +149,7 @@ def test_acyclic_rank_evidence_replaces_only_native_graph_traversal(
 
 
 def test_uncertified_epoch_uses_native_online_graph_units(
-    tmp_path, journal, catalog, who, monkeypatch
+    tmp_path, journal, catalog, who, monkeypatch, *, journal_constructions
 ):
     raw, _ = related(journal, catalog, who)
     source = OwnedSource(raw, catalog)
@@ -154,7 +162,14 @@ def test_uncertified_epoch_uses_native_online_graph_units(
         return original(self, *args, **kwargs)
 
     monkeypatch.setattr(OnlineDag, "_prepare_start", online)
-    with open_session(directory(tmp_path), source, certificates, catalog, create=True) as session:
+    with open_session(
+        directory(tmp_path),
+        source,
+        certificates,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as session:
         finish(session)
         session.result().close()
     assert len(starts) == len(certificates.calls) == 1
@@ -173,12 +188,19 @@ def test_uncertified_epoch_uses_native_online_graph_units(
     ],
 )
 def test_missing_or_changed_rank_evidence_cannot_accept_the_frame(
-    tmp_path, journal, catalog, who, fault
+    tmp_path, journal, catalog, who, fault, *, journal_constructions
 ):
     raw, _ = related(journal, catalog, who)
     source = OwnedSource(raw, catalog)
     certificates = Certificates(source, fault=fault)
-    with open_session(directory(tmp_path), source, certificates, catalog, create=True) as session:
+    with open_session(
+        directory(tmp_path),
+        source,
+        certificates,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as session:
         with pytest.raises(InvalidJournalGraphCertificate):
             finish(session)
         assert session._ledger.load().checkpoint.frame_ordinal == 1
@@ -187,7 +209,7 @@ def test_missing_or_changed_rank_evidence_cannot_accept_the_frame(
 
 
 def test_reference_failure_retains_native_order_ahead_of_graph_evidence(
-    tmp_path, journal, catalog, who
+    tmp_path, journal, catalog, who, *, journal_constructions
 ):
     raw, _ = related(journal, catalog, who)
     frames = list(iter_journal_frames((raw,)))
@@ -198,28 +220,53 @@ def test_reference_failure_retains_native_order_ahead_of_graph_evidence(
         validate_journal(bad, catalog=catalog)
     source = OwnedSource(bad, catalog)
     certificates = Certificates(source)
-    with open_session(directory(tmp_path), source, certificates, catalog, create=True) as session:
+    with open_session(
+        directory(tmp_path),
+        source,
+        certificates,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as session:
         with pytest.raises(type(expected.value)) as actual:
             finish(session)
         assert str(actual.value) == str(expected.value)
         assert not certificates.calls
 
 
-def test_replacement_cannot_adopt_a_different_rank_manifest(tmp_path, journal, catalog, who):
+def test_replacement_cannot_adopt_a_different_rank_manifest(
+    tmp_path, journal, catalog, who, *, journal_constructions
+):
     raw, _ = related(journal, catalog, who)
     path = directory(tmp_path)
     source = OwnedSource(raw, catalog)
     certificates = Certificates(source)
-    with open_session(path, source, certificates, catalog, create=True) as session:
+    with open_session(
+        path,
+        source,
+        certificates,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as session:
         session.advance()
     certificates.binding = replace(certificates.binding, manifest_sha256="e" * 64)
     before = (path / "snapshot.sqlite3").read_bytes()
     with pytest.raises(StaleValidationCheckpoint):
-        open_session(path, source, certificates, catalog, epoch=1)
+        open_session(
+            path,
+            source,
+            certificates,
+            catalog,
+            epoch=1,
+            journal_constructions=journal_constructions,
+        )
     assert (path / "snapshot.sqlite3").read_bytes() == before
 
 
-def test_cyclic_union_fallback_retains_the_native_cycle_failure(tmp_path, journal, catalog, who):
+def test_cyclic_union_fallback_retains_the_native_cycle_failure(
+    tmp_path, journal, catalog, who, *, journal_constructions
+):
     raw, relation = related(journal, catalog, who)
     frames = list(iter_journal_frames((raw,)))
     document = frames[-1].document
@@ -235,7 +282,14 @@ def test_cyclic_union_fallback_retains_the_native_cycle_failure(tmp_path, journa
         validate_journal(bad, catalog=catalog)
     source = OwnedSource(bad, catalog)
     certificates = Certificates(source, disabled=True)
-    with open_session(directory(tmp_path), source, certificates, catalog, create=True) as session:
+    with open_session(
+        directory(tmp_path),
+        source,
+        certificates,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as session:
         with pytest.raises(type(expected.value)) as actual:
             finish(session)
         assert str(actual.value) == str(expected.value)
@@ -243,13 +297,20 @@ def test_cyclic_union_fallback_retains_the_native_cycle_failure(tmp_path, journa
 
 
 def test_reopening_after_a_committed_certificate_does_not_repeat_that_unit(
-    tmp_path, journal, catalog, who
+    tmp_path, journal, catalog, who, *, journal_constructions
 ):
     raw, _ = related(journal, catalog, who)
     path = directory(tmp_path)
     source = OwnedSource(raw, catalog)
     certificates = Certificates(source)
-    with open_session(path, source, certificates, catalog, create=True) as first:
+    with open_session(
+        path,
+        source,
+        certificates,
+        catalog,
+        create=True,
+        journal_constructions=journal_constructions,
+    ) as first:
         from riverhog_provenance.journal_session import JournalValidationBudget
 
         for _ in range(100000):
@@ -261,7 +322,9 @@ def test_reopening_after_a_committed_certificate_does_not_repeat_that_unit(
         before = first._ledger.load().checkpoint
         assert before.frame_ordinal == 1
     source.calls.clear()
-    with open_session(path, source, certificates, catalog, epoch=1) as resumed:
+    with open_session(
+        path, source, certificates, catalog, epoch=1, journal_constructions=journal_constructions
+    ) as resumed:
         assert resumed._ledger.load().checkpoint.version == before.version + 1
         finish(resumed)
         with resumed.result() as result:

@@ -58,6 +58,7 @@ def declare_retirement_growth(operation: Callable[..., Any]) -> None:
         "uuid_values": 1,
         "open_calls": 16,
         "close_calls": 16,
+        "dup_calls": 0,
         "stat_calls": 229,
         "uid_calls": 96,
         "flock_calls": 8,
@@ -159,7 +160,7 @@ def declare_retirement_growth(operation: Callable[..., Any]) -> None:
                             Expression("constant", value=15, unit=OCTETS),
                         ),
                     ),
-                    "Complete validation operands of the original native parent receiver.",
+                    "Complete native operands of original namespace, extent and parent receivers.",
                 ),
                 Bound(
                     "hashed_octets",

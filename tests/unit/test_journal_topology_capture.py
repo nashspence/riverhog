@@ -393,7 +393,7 @@ def test_native_replay_remains_authority_after_topology_capture(tmp_path, monkey
     ],
 )
 def test_late_topology_failure_never_outranks_an_earlier_native_error(
-    tmp_path, late, speculative_state
+    tmp_path, late, speculative_state, *, journal_constructions
 ):
     document = parse_journal(source(journal_id=JOURNAL))[0].document
     document["sequence"] = "7"
@@ -404,7 +404,9 @@ def test_late_topology_failure_never_outranks_an_earlier_native_error(
         work = ready(factory)
         finish(factory, work)
         assert progress(factory)[2] == speculative_state
-        assert native_outcome(factory, work).failure == str(expected.value)
+        assert native_outcome(
+            factory, work, journal_constructions=journal_constructions
+        ).failure == str(expected.value)
 
 
 @pytest.mark.growth_witness(

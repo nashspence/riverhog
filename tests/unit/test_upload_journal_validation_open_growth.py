@@ -856,14 +856,18 @@ def open_cases(tmp_path_factory):
     operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner._open",
 )
 def test_actual_opening_preserves_provider_costs_and_transferred_custody(
-    open_cases, record_property
+    open_cases, record_property, *, journal_constructions
 ):
     samples = []
     record_property("growth_samples", samples)
     for case in open_cases:
         root = case.path / "native"
-        current = owner.UploadJournalValidationOwner(case.factory, root)
-        second = owner.UploadJournalValidationOwner(case.factory, root)
+        current = owner.UploadJournalValidationOwner(
+            case.factory, root, construction_factory=journal_constructions.retain
+        )
+        second = owner.UploadJournalValidationOwner(
+            case.factory, root, construction_factory=journal_constructions.retain
+        )
         key = case.work.collection_id, case.work.journal_id, case.work.attempt_id
         slot = current._reserve(key)
         assert slot is not None
@@ -891,7 +895,9 @@ def test_actual_opening_preserves_provider_costs_and_transferred_custody(
                 busy.lock.release()
             slot.lock.release()
             current.close()
-            current = owner.UploadJournalValidationOwner(case.factory, root)
+            current = owner.UploadJournalValidationOwner(
+                case.factory, root, construction_factory=journal_constructions.retain
+            )
             slot = current._reserve(key)
             result, error, sample = Recorder(case).measure(current, slot, cold=False)
             samples.append(sample)
@@ -914,7 +920,9 @@ def test_actual_opening_preserves_provider_costs_and_transferred_custody(
                 assert accepted.accepted_frames > catalog_progress.accepted_frames
                 slot.lock.release()
                 current.close()
-                current = owner.UploadJournalValidationOwner(case.factory, root)
+                current = owner.UploadJournalValidationOwner(
+                    case.factory, root, construction_factory=journal_constructions.retain
+                )
                 slot = current._reserve(key)
                 result, error, sample = Recorder(case).measure(current, slot, cold=True)
                 samples.append(sample)

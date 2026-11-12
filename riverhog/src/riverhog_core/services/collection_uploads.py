@@ -365,6 +365,10 @@ from riverhog_core.services.operation_plans import (
 from riverhog_core.services.retrieval_cache import register_cache_ready
 from riverhog_core.services.upload_custody_growth import custody_readback_declaration
 from riverhog_core.services.upload_custody_projection import upload_custody_payload
+from riverhog_core.services.upload_journal_result_receiving import (
+    UploadJournalResultOpening,
+    UploadJournalResultResources,
+)
 from riverhog_core.services.upload_session_projection import upload_session_payload
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
@@ -505,12 +509,15 @@ class SqlAlchemyCollectionUploadService:
         self._cache_upload_candidates = cache_upload_candidates
         self._policy = policy or config.volume_policy
         self._session_factory = session_factory or make_session_factory(config.database_url)
+        from .journal_storage_resources import JournalStorageResources
         from .upload_journal_validation_owner import UploadJournalValidationOwner
 
+        self._journal_storage = JournalStorageResources(config.journal_storage)
         self._journal_validation_owner = UploadJournalValidationOwner(
             self._session_factory,
             config.journal_validation_workspace,
             concurrency=config.journal_validation_concurrency,
+            construction_factory=self._journal_storage.journal,
         )
         from .physical_execution import PhysicalExecutionOwner
 
@@ -599,7 +606,13 @@ class SqlAlchemyCollectionUploadService:
         from .upload_journal_validation_retirement import UploadJournalValidationRetirement
 
         self._journal_validation_retirement = UploadJournalValidationRetirement(
-            self._session_factory, config.journal_validation_workspace
+            self._session_factory,
+            config.journal_validation_workspace,
+            execution=self._archive_execution,
+            retention=self._archive_retention,
+            metadata_budget=config.registration.metadata_bytes_per_step,
+            receive_limit=config.archive_execution.retained_constructions,
+            retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
         )
         self._journal_validation_cleanup_turn = False
         self._checkpoints = SqlAlchemyArchiveUploadCheckpointStore(
@@ -623,12 +636,16 @@ class SqlAlchemyCollectionUploadService:
         }
 
     def close(self) -> None:
+        self._journal_validation_retirement.close()
         self._archive_terminals.close()
         if self._cache_cleanup is not None:
             self._cache_cleanup.close()
         self._archive_invocations.close()
         self._archive_finalizers.close()
+        if not self._journal_validation_retirement.receive_stopped():
+            raise Conflict("original Native retirement receiving remains unconfirmed")
         self._journal_validation_owner.close()
+        self._journal_storage.close()
 
     def create_or_resume(
         self,
@@ -3656,15 +3673,24 @@ class SqlAlchemyCollectionUploadService:
             "member-histories": self._stage_member_histories,
             "provenance-closure": self._validate_provenance_closure,
             "artifact-tree": self._commit_archive_tree,
-            "catalog-projection": self._commit_catalog_projection,
         }
-        return ArchiveCatalogFinalizer(
+
+        def advance(session: Session, upload: CollectionUploadRecord) -> bool:
+            if kind == "catalog-projection":
+                return self._commit_catalog_projection(
+                    session, upload, result_resources=owner.result_resources
+                )
+            return bodies[kind](session, upload)
+
+        owner = ArchiveCatalogFinalizer(
             self._session_factory,
             collection_id=claim.collection_id,
             claim_id=claim.claim_id,
             kind=kind,
-            advance=bodies[kind],
+            construction_factory=self._journal_storage.journal,
+            advance=advance,
         )
+        return owner
 
     def _submit_finalization_if_due(
         self, collection_id: int, *, now: str
@@ -4204,7 +4230,9 @@ class SqlAlchemyCollectionUploadService:
             select_source=partial(self._select_artifact_custody, collection_id, artifact_id),
         )
 
-    def _advance_catalog_projection(self, collection_id: int) -> bool:
+    def _advance_catalog_projection(
+        self, collection_id: int, *, result_resources: UploadJournalResultResources
+    ) -> bool:
         """Advance one bounded durable catalog-projection transaction."""
 
         with session_scope(self._session_factory) as session:
@@ -4217,9 +4245,17 @@ class SqlAlchemyCollectionUploadService:
             if upload is None:
                 return False
             require_open_upload_writes(session, upload)
-            return self._commit_catalog_projection(session, upload)
+            return self._commit_catalog_projection(
+                session, upload, result_resources=result_resources
+            )
 
-    def _commit_catalog_projection(self, session: Session, upload: CollectionUploadRecord) -> bool:
+    def _commit_catalog_projection(
+        self,
+        session: Session,
+        upload: CollectionUploadRecord,
+        *,
+        result_resources: UploadJournalResultResources,
+    ) -> bool:
         collection_id = upload.collection_id
         phase = upload.catalog_phase
         if phase == "complete":
@@ -4248,12 +4284,14 @@ class SqlAlchemyCollectionUploadService:
             _advance_catalog_canonical_index(
                 session,
                 upload,
-                open_summary=lambda journal_id: open_upload_journal_result(
+                result_resources=result_resources,
+                open_summary=lambda journal_id, receiver: open_upload_journal_result(
                     session,
                     self._journal_validation_owner.root,
                     collection_id,
                     journal_id,
                     catalog=admission_provenance_catalog(),
+                    receiver=receiver,
                 ),
             )
         elif phase == "terminal":
@@ -5883,43 +5921,52 @@ class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
         session: Session,
         collection_id: int,
         *,
-        open_summary: Callable[[str], JournalSummary],
+        open_summary: Callable[[str, UploadJournalResultOpening], JournalSummary],
+        result_resources: UploadJournalResultResources,
     ) -> None:
         self.session = session
         self.collection_id = collection_id
         self._open_summary = open_summary
-        self.cache: OrderedDict[str, JournalSummary] = OrderedDict()
+        self._result_resources = result_resources
+        self.cache: OrderedDict[str, UploadJournalResultOpening] = OrderedDict()
 
     def __enter__(self) -> _StagedCanonicalCorpus:
         return self
 
     def __exit__(self, *_exc: object) -> None:
-        for summary in self.cache.values():
-            summary.close()
+        self._result_resources.close()
         self.cache.clear()
 
+    def _receive_oldest(self) -> None:
+        key = next(iter(self.cache))
+        self._result_resources.receive(self.cache[key])
+        del self.cache[key]
+
     def __getitem__(self, journal_id: str) -> JournalSummary:
+        if len(self.cache) > 2:
+            self._receive_oldest()
         cached = self.cache.get(journal_id)
         if cached is not None:
             self.cache.move_to_end(journal_id)
-            return cached
+            assert cached.result is not None
+            return cached.result
         record = self.session.get(
             CollectionUploadProvenanceJournalRecord, (self.collection_id, journal_id)
         )
         if record is None or record.state != "sealed":
             raise KeyError(journal_id)
-        summary = self._open_summary(journal_id)
+        original = self._result_resources.retain()
+        summary = original.result = self._open_summary(journal_id, original)
         if (
             summary.journal_id != record.journal_id
             or summary.journal_sha256 != record.sha256
             or summary.journal_bytes != record.bytes
         ):
-            summary.close()
+            self._result_resources.receive(original)
             raise ProvenanceValidationError("staged canonical journal identity changed")
-        self.cache[journal_id] = summary
+        self.cache[journal_id] = original
         if len(self.cache) > 2:
-            _, removed = self.cache.popitem(last=False)
-            removed.close()
+            self._receive_oldest()
         return summary
 
     def __iter__(self) -> Iterator[str]:
@@ -5944,7 +5991,8 @@ def _advance_catalog_canonical_index(
     session: Session,
     upload: CollectionUploadRecord,
     *,
-    open_summary: Callable[[str], JournalSummary],
+    open_summary: Callable[[str, UploadJournalResultOpening], JournalSummary],
+    result_resources: UploadJournalResultResources,
 ) -> None:
     """Stage one member's exact canonical discovery support before publication."""
 
@@ -6017,7 +6065,12 @@ def _advance_catalog_canonical_index(
         _provenance_binding_row(binding_record)
     )
     with (
-        _StagedCanonicalCorpus(session, upload.collection_id, open_summary=open_summary) as corpus,
+        _StagedCanonicalCorpus(
+            session,
+            upload.collection_id,
+            open_summary=open_summary,
+            result_resources=result_resources,
+        ) as corpus,
         corpus[binding.journal.journal_id].borrow() as full_primary,
     ):
         expected_primary = binding.journal.model_dump(mode="json")

@@ -22,10 +22,15 @@ from tests.unit.test_discovery_validation_owner_growth import Recorder, Slots, d
     operation="riverhog_core.services.discovery_validation_owner.DiscoveryValidationOwner.close",
 )
 def test_actual_borrower_release_and_retry_preserve_composed_owner_close_bound(
-    case, qualified, retained, lost_reply, monkeypatch, record_property
+    case, qualified, retained, lost_reply, monkeypatch, record_property, *, journal_constructions
 ):
     samples, recorder = [], Recorder()
-    app = DiscoveryValidationOwner(case.factory, case.root)
+    app = DiscoveryValidationOwner(
+        case.factory,
+        case.root,
+        construction_factory=journal_constructions.retain,
+        corpus_construction_factory=journal_constructions.retain_corpus,
+    )
     app._slots = Slots(recorder)
     case.pool, case.rec, case.readers = app, recorder, []
     actual, failures = JournalSummary.close, 2

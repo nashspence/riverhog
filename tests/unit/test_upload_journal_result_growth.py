@@ -150,6 +150,9 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
     tmp_path,
     monkeypatch,
     record_property,
+    *,
+    journal_constructions,
+    upload_result_openings,
 ):
     binding = growth_binding(owner.open_upload_journal_result)
     native_binding = growth_binding(owner.open_retained_journal_result)
@@ -172,7 +175,9 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
     )
     for index, (journals, job_count, frames, payload) in enumerate(regimes):
         raw = history(source(payload, journal_id=JOURNAL), frames, catalog)
-        with sealed(tmp_path / str(index), raw=raw) as (engine, factory, root, job, _):
+        with sealed(
+            tmp_path / str(index), raw=raw, journal_constructions=journal_constructions
+        ) as (engine, factory, root, job, _):
             with factory() as session, session.begin():
                 if journals > 1:
                     session.execute(
@@ -420,7 +425,9 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                         patch.setattr(
                             fcntl, "flock", observer(fcntl.flock, "lease_lock_calls", is_lock=True)
                         )
-                        result = open_result(session, root)
+                        result = open_result(
+                            session, root, upload_result_openings=upload_result_openings
+                        )
                 finally:
                     event.remove(engine, "before_cursor_execute", statement)
                     catalog_db.set_progress_handler(None, 0)

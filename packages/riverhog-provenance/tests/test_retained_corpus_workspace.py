@@ -61,9 +61,14 @@ class OwnedCorpusSource:
         return anchor in self.selections
 
 
-def open_workspace(path, source, *, epoch=0, create=False, **kwargs):
+def open_workspace(path, source, *, journal_constructions, epoch=0, create=False, **kwargs):
     return RetainedCorpusValidator.open_retained(
-        path, source, worker_epoch=epoch, create=create, **kwargs
+        path,
+        source,
+        worker_epoch=epoch,
+        create=create,
+        **kwargs,
+        construction=journal_constructions.retain_corpus(),
     )
 
 
@@ -96,21 +101,27 @@ def finish(workspace):
 
 
 def test_retained_source_resumes_without_replaying_committed_entries(
-    tmp_path, journal, catalog, monkeypatch
+    journal_constructions, tmp_path, journal, catalog, monkeypatch
 ):
     raw = history(journal, 17, catalog)
     path = directory(tmp_path)
     with validate_journal(raw, catalog=catalog) as summary:
         source = OwnedCorpusSource(summary, catalog)
-        with open_workspace(path, source, create=True) as first:
+        with open_workspace(
+            path, source, create=True, journal_constructions=journal_constructions
+        ) as first:
             assert first.advance_source(summary, frame_budget=7).accepted_frames == 7
-        with open_workspace(path, source, epoch=1) as resumed:
+        with open_workspace(
+            path, source, epoch=1, journal_constructions=journal_constructions
+        ) as resumed:
             with source_reads(monkeypatch) as reads:
                 assert resumed.advance_source(summary, frame_budget=64).complete
             assert [position for position, _ in reads] == list(range(7, 17))
             resumed.select_source(next(iter(source.selections)))
             assert all(result.complete for result in finish(resumed))
-        with open_workspace(path, source, epoch=2) as warm:
+        with open_workspace(
+            path, source, epoch=2, journal_constructions=journal_constructions
+        ) as warm:
             with source_reads(monkeypatch) as reads:
                 assert warm.advance_semantics().complete
                 assert warm.advance_dependencies().complete
@@ -120,7 +131,9 @@ def test_retained_source_resumes_without_replaying_committed_entries(
 
 
 @pytest.mark.parametrize("phase", ["source", "semantics", "dependencies", "order"])
-def test_actual_process_exit_retains_each_native_phase(tmp_path, journal, who, catalog, phase):
+def test_actual_process_exit_retains_each_native_phase(
+    journal_constructions, tmp_path, journal, who, catalog, phase
+):
     raw, _ = edge_history(journal, who, catalog)
     path = directory(tmp_path)
     raw_path = tmp_path / "journal"
@@ -131,12 +144,14 @@ sys.path.insert(0,sys.argv[1])
 from riverhog_provenance import validate_journal
 from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_provenance_contracts import ContractCatalog
+from tests.support.native_construction import JournalConstructions
 from test_retained_corpus_workspace import OwnedCorpusSource,open_workspace,ingest
 catalog=ContractCatalog()
 with validate_journal(Path(sys.argv[3]).read_bytes(),catalog=catalog) as summary:
     selected=[HistoryJournalAnchor.from_mapping(summary.anchor_at(1))]
     source=OwnedCorpusSource(summary,catalog,selected)
-    workspace=open_workspace(Path(sys.argv[2]),source,create=True)
+    constructions=JournalConstructions()
+    workspace=open_workspace(Path(sys.argv[2]),source,journal_constructions=constructions,create=True)
     phase=sys.argv[4]
     if phase=='source':
         workspace.advance_source(summary)
@@ -166,7 +181,9 @@ with validate_journal(Path(sys.argv[3]).read_bytes(),catalog=catalog) as summary
     with validate_journal(raw, catalog=catalog) as summary:
         selected = [HistoryJournalAnchor.from_mapping(summary.anchor_at(1))]
         source = OwnedCorpusSource(summary, catalog, selected)
-        with open_workspace(path, source, epoch=1) as resumed:
+        with open_workspace(
+            path, source, epoch=1, journal_constructions=journal_constructions
+        ) as resumed:
             before = resumed._corpus
             if phase == "semantics":
                 assert before._semantic_phase == "walking" and before._semantic_processed == 1
@@ -196,30 +213,38 @@ with validate_journal(Path(sys.argv[3]).read_bytes(),catalog=catalog) as summary
         "selection_count",
     ],
 )
-def test_changed_independent_binding_cannot_adopt_progress(tmp_path, journal, catalog, field):
+def test_changed_independent_binding_cannot_adopt_progress(
+    journal_constructions, tmp_path, journal, catalog, field
+):
     path = directory(tmp_path)
     with validate_journal(journal, catalog=catalog) as summary:
         source = OwnedCorpusSource(summary, catalog)
-        with open_workspace(path, source, create=True) as first:
+        with open_workspace(
+            path, source, create=True, journal_constructions=journal_constructions
+        ) as first:
             first.advance_source(summary)
         before = (path / "corpus.sqlite3").read_bytes()
         old = getattr(source.binding, field)
         changed = old + 1 if type(old) is int else ("d" * len(old))
         source.binding = replace(source.binding, **{field: changed})
         with pytest.raises((StaleCorpusWorkspace, ValueError), match="binding|catalog"):
-            open_workspace(path, source, epoch=1)
+            open_workspace(path, source, epoch=1, journal_constructions=journal_constructions)
         assert (path / "corpus.sqlite3").read_bytes() == before
 
 
 def test_replacement_fences_old_worker_and_closed_source_before_native_work(
-    tmp_path, journal, catalog, monkeypatch
+    journal_constructions, tmp_path, journal, catalog, monkeypatch
 ):
     path = directory(tmp_path)
     with validate_journal(journal, catalog=catalog) as summary:
         source = OwnedCorpusSource(summary, catalog)
-        with open_workspace(path, source, create=True) as first:
+        with open_workspace(
+            path, source, create=True, journal_constructions=journal_constructions
+        ) as first:
             first.advance_source(summary)
-            with open_workspace(path, source, epoch=1) as newer:
+            with open_workspace(
+                path, source, epoch=1, journal_constructions=journal_constructions
+            ) as newer:
                 with source_reads(monkeypatch) as reads:
                     with pytest.raises(StaleCorpusWorkspace, match="worker"):
                         first.advance_source(summary)
@@ -229,13 +254,17 @@ def test_replacement_fences_old_worker_and_closed_source_before_native_work(
                     newer.advance_semantics()
 
 
-def test_exact_membership_and_independent_counts_are_both_required(tmp_path, journal, catalog):
+def test_exact_membership_and_independent_counts_are_both_required(
+    journal_constructions, tmp_path, journal, catalog
+):
     path = directory(tmp_path)
     with validate_journal(journal, catalog=catalog) as summary:
         source = OwnedCorpusSource(summary, catalog)
         source.binding = replace(source.binding, source_count=2, selection_count=2)
         anchor = next(iter(source.sources))
-        with open_workspace(path, source, create=True) as workspace:
+        with open_workspace(
+            path, source, create=True, journal_constructions=journal_constructions
+        ) as workspace:
             for _ in range(3):
                 workspace.advance_source(summary)
                 workspace.select_source(anchor)
@@ -249,11 +278,15 @@ def test_exact_membership_and_independent_counts_are_both_required(tmp_path, jou
                 workspace.select_source(anchor)
 
 
-def test_changed_currentness_before_commit_rolls_back_complete_atom(tmp_path, journal, catalog):
+def test_changed_currentness_before_commit_rolls_back_complete_atom(
+    journal_constructions, tmp_path, journal, catalog
+):
     path = directory(tmp_path)
     with validate_journal(journal, catalog=catalog) as summary:
         source = OwnedCorpusSource(summary, catalog)
-        with open_workspace(path, source, create=True) as workspace:
+        with open_workspace(
+            path, source, create=True, journal_constructions=journal_constructions
+        ) as workspace:
             original = source.admit_source
 
             def revoke(anchor):
@@ -271,22 +304,32 @@ def test_changed_currentness_before_commit_rolls_back_complete_atom(tmp_path, jo
             assert workspace.advance_source(summary).complete
 
 
-def test_creation_reopening_and_callback_ownership(tmp_path, journal, catalog):
+def test_creation_reopening_and_callback_ownership(
+    journal_constructions, tmp_path, journal, catalog
+):
     path = directory(tmp_path)
     callbacks = []
     with validate_journal(journal, catalog=catalog) as summary:
         source = OwnedCorpusSource(summary, catalog)
         with pytest.raises(StaleCorpusWorkspace, match="missing"):
-            open_workspace(path, source)
+            open_workspace(path, source, journal_constructions=journal_constructions)
         workspace = open_workspace(
-            path, source, create=True, on_storage_close=lambda: callbacks.append("closed")
+            path,
+            source,
+            create=True,
+            on_storage_close=lambda: callbacks.append("closed"),
+            journal_constructions=journal_constructions,
         )
         with pytest.raises(FileExistsError):
             open_workspace(
-                path, source, create=True, on_storage_close=lambda: callbacks.append("failed")
+                path,
+                source,
+                create=True,
+                on_storage_close=lambda: callbacks.append("failed"),
+                journal_constructions=journal_constructions,
             )
         with pytest.raises(ValueError, match="newer"):
-            open_workspace(path, source)
+            open_workspace(path, source, journal_constructions=journal_constructions)
         workspace.close()
         workspace.close()
         assert callbacks == ["closed"]
@@ -296,12 +339,14 @@ def test_creation_reopening_and_callback_ownership(tmp_path, journal, catalog):
 
 
 def test_metadata_capacity_rejects_before_checkpoint_payload(
-    tmp_path, journal, catalog, monkeypatch
+    journal_constructions, tmp_path, journal, catalog, monkeypatch
 ):
     path = directory(tmp_path)
     with validate_journal(journal, catalog=catalog) as summary:
         source = OwnedCorpusSource(summary, catalog)
-        with open_workspace(path, source, create=True) as workspace:
+        with open_workspace(
+            path, source, create=True, journal_constructions=journal_constructions
+        ) as workspace:
             workspace._metadata_budget = 1
             one = owner._one
 
@@ -318,7 +363,7 @@ def test_metadata_capacity_rejects_before_checkpoint_payload(
 
 
 def test_wide_original_counts_use_metadata_admission_without_implicit_python_limit(
-    tmp_path, journal, catalog
+    journal_constructions, tmp_path, journal, catalog
 ):
     from riverhog_canonical_json import parse_scalar, require_canonical_json
 
@@ -338,6 +383,7 @@ def test_wide_original_counts_use_metadata_admission_without_implicit_python_lim
                 create=True,
                 catalog=catalog,
                 metadata_byte_budget=len(encoded) - 1,
+                journal_constructions=journal_constructions,
             )
         assert not (path / "corpus.sqlite3").exists()
         with open_workspace(
@@ -346,6 +392,7 @@ def test_wide_original_counts_use_metadata_admission_without_implicit_python_lim
             create=True,
             catalog=catalog,
             metadata_byte_budget=len(encoded) + 65536,
+            journal_constructions=journal_constructions,
         ) as workspace:
             assert workspace.advance_source(summary, frame_budget=1).accepted_frames == 1
             with pytest.raises(IncompleteSourceError, match="manifests are incomplete"):

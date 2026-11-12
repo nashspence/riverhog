@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from riverhog_provenance import JournalValidationCapacity
 from state_schema import read_snapshot
 from workspace_reclamation import (
+    FileReclamationOwner,
     FileReclamationProgress,
     InvalidWorkspaceFiles,
     WorkspaceReclamationCapacity,
@@ -78,6 +79,7 @@ def reclaim_discovery_metadata(
     job: jobs.DiscoveryJob,
     retirement: RetiringJournalWorkspace,
     *,
+    receiver: FileReclamationOwner,
     octet_budget: int,
 ) -> DiscoveryMetadataReclamationProgress:
     """Dispose one original metadata extent without reopening its database.
@@ -108,7 +110,9 @@ def reclaim_discovery_metadata(
             "prior discovery files or root still require receiving"
         )
     try:
-        files = reclaim_retired_files(retirement.directory, names=_FILES, octet_budget=octet_budget)
+        files = reclaim_retired_files(
+            retirement.directory, receiver=receiver, names=_FILES, octet_budget=octet_budget
+        )
     except InvalidWorkspaceFiles as error:
         raise LostJournalValidationWorkspace(str(error)) from error
     except WorkspaceReclamationCapacity as error:

@@ -6,6 +6,7 @@ from contextlib import ExitStack
 from pathlib import Path
 
 from riverhog_provenance import (
+    JournalConstruction,
     JournalResultOpening,
     JournalSummary,
     open_retained_journal_result,
@@ -25,6 +26,7 @@ from riverhog_core.journal_validation_workspace import (
     ValidationWorkspaceCustody,
     lease_journal_validation_workspace,
 )
+from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
 from riverhog_core.journal_validation_workspace_reference import retain_validation_workspace
 from riverhog_core.journal_validation_workspace_references import JournalWorkspaceReferences
 from riverhog_core.services.discovery_journal_result_growth import (
@@ -103,8 +105,13 @@ class DiscoverySealedJournalOwner:
     """Keep actual partial Native storage before acquisition and through failed close."""
 
     def __init__(
-        self, source: ArchiveJournalSource, admission: SealedJournalResultAdmission
+        self,
+        source: ArchiveJournalSource,
+        admission: SealedJournalResultAdmission,
+        *,
+        construction: JournalConstruction,
     ) -> None:
+        self.construction = construction
         self.source, self.admission = source, admission
         self.native_source: DiscoverySealedJournalSource | None = None
         self.opening: JournalResultOpening | None = None
@@ -112,12 +119,18 @@ class DiscoverySealedJournalOwner:
         self.custody: ValidationWorkspaceCustody | None = None
         self.references = JournalWorkspaceReferences()
         self.resources = ExitStack()
+        self.lease = ValidationWorkspaceLease()
         self.transferred = False
         self.closing = False
 
     @classmethod
     def prepare(
-        cls, source: ArchiveJournalSource, collection_id: int, catalog: ContractCatalog
+        cls,
+        source: ArchiveJournalSource,
+        collection_id: int,
+        catalog: ContractCatalog,
+        *,
+        construction: JournalConstruction,
     ) -> DiscoverySealedJournalOwner:
         if type(collection_id) is not int or collection_id < 1:
             raise ValueError("sealed discovery needs an exact collection identity")
@@ -130,7 +143,7 @@ class DiscoverySealedJournalOwner:
                 session, collection_id, source.identity.journal_id, catalog=catalog
             )
         # The selected catalog transaction ends before any lease or Native I/O.
-        return cls(source, admission)
+        return cls(source, admission, construction=construction)
 
     def retain_opening(self, opening: JournalResultOpening) -> None:
         if self.opening is not None:
@@ -149,6 +162,7 @@ class DiscoverySealedJournalOwner:
                 self.admission.job.workspace_id,
                 shared=True,
                 on_custody=self.retain_custody,
+                receiver=self.lease,
             )
         )
         if directory is None:
@@ -159,11 +173,12 @@ class DiscoverySealedJournalOwner:
         self.result = open_retained_journal_result(
             directory,
             self.native_source,
+            construction=self.construction,
             confirmed=self.admission.confirmed,
             catalog=catalog,
             certificates=self.admission.certificates,
             on_storage_open=self.retain_opening,
-            on_storage_close=self.references.close,
+            on_storage_close=self.receive_references,
         )
         # Retain the returned result before inspecting its terminal commitment.
         self.transferred = True
@@ -181,17 +196,28 @@ class DiscoverySealedJournalOwner:
             raise StaleArchiveTask("sealed discovery result no longer has current custody")
         return self.result.borrow()
 
+    def receive_references(self) -> None:
+        if not self.construction.dependents_received:
+            raise BlockingIOError("original sealed construction dependents have not received")
+        self.references.close()
+
     def close(self) -> None:
         self.closing = True
         if self.result is not None:
             self.result.close()
-            self.result = None
+            if self.result.storage_received:
+                self.result = None
         if self.opening is not None:
             self.opening.close()
             self.opening = None
+        if not self.construction.close_step():
+            raise BlockingIOError("original sealed construction has not received")
         self.resources.close()
         if not self.transferred:
             self.references.close()
+        self.lease.close()
+        if self.result is not None:
+            raise BlockingIOError("final Native readers still retain the original storage")
 
 
 declare_growth_for_sealed_result(DiscoverySealedJournalOwner, DiscoverySealedJournalSource)

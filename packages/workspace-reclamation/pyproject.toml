@@ -18,7 +18,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
-dependencies = ["release-documentation-lib>=0.1,<0.2", "riverhog-growth-contracts>=0.1,<0.2"]
+dependencies = ["release-documentation-lib>=0.1,<0.2", "riverhog-growth-contracts>=0.1,<0.2", "retained-resource>=0.1,<0.2"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/workspace_reclamation"]
@@ -26,3 +26,4 @@ packages = ["src/workspace_reclamation"]
 [tool.uv.sources]
 release-documentation-lib = { workspace = true }
 riverhog-growth-contracts = { workspace = true }
+retained-resource = { workspace = true }

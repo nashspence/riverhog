@@ -39,7 +39,7 @@ from test_entry_replay import owned_summary
 from test_entry_replay_growth import REGIMES, observe_replay, owner
 from test_entry_replay_growth import admission_histories as admission_histories
 from test_entry_replay_publication_growth import restore
-from test_entry_replay_row_growth import RowConnection, RowCursor, node_inputs
+from test_entry_replay_row_growth import RowConnection, RowCursor, RowRows, node_inputs
 from test_generic_semantics import (
     code_tree,
     semantic_child_dimensions,
@@ -100,10 +100,7 @@ _STAGING_IDENTITY_LINK = (
 )
 
 
-class ChildCursor(RowCursor):
-    def __next__(self):
-        return self.record(sqlite3.Cursor.__next__(self))
-
+class ChildRows(RowRows):
     def record(self, row):
         result = super().record(row)
         if row is None:
@@ -136,6 +133,13 @@ class ChildCursor(RowCursor):
             db.metrics["returned_atom_octets"] += size
             db.metrics["payload_fetched_octets"] += size
         return result
+
+
+class ChildCursor(ChildRows, RowCursor):
+    _row_observer = ChildRows
+
+    def __next__(self):
+        return self.record(sqlite3.Cursor.__next__(self))
 
 
 class ChildConnection(RowConnection):
