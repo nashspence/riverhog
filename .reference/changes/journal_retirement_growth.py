@@ -66,7 +66,7 @@ def _binding(
     composition. Call caps are independently derived from the owning loops.
     """
     bindings = {tag: growth_binding(child) for tag, child, _ in children}
-    child_bounds = []
+    child_bounds: list[Bound] = []
     for tag, child, cap in children:
         binding = bindings[tag]
         arguments = {

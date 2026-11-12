@@ -3,7 +3,7 @@
   "files": {
     "riverhog/src/riverhog_core/services/journal_retirement_growth.py": {
       "before_sha256": null,
-      "after_sha256": "ac661d5d0b4ce63315b4e23b56a0735c792afcdb2e076c7b4af1d6a5c87e5677",
+      "after_sha256": "5c3dedcd5cc89f7def81826aa05c98ffb8e96c1efbef6e14eeb18938e622d3be",
       "replacement": "changes/journal_retirement_growth.py"
     },
     "riverhog/src/riverhog_core/services/journal_retirement_registry.py": {
