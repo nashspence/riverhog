@@ -287,3 +287,91 @@ def test_final_independent_native_readers_keep_the_original_slot_and_live_body(
             for reader in readers:
                 reader.close()
             owner.close()
+
+
+def test_retained_native_readers_do_not_block_independent_journal_advancement(
+    tmp_path, *, journal_constructions
+):
+    with build_cases(tmp_path, large=False) as cases:
+        case = cases[2]
+        with live_owner(case, journal_constructions=journal_constructions) as (
+            owner,
+            _recorder,
+            slots,
+            readers,
+        ):
+            first_key, first_slot, _storage = slots[0]
+            first_native = first_slot.session
+            for _ in range(10000):
+                if first_native.advance().complete:
+                    break
+            else:
+                pytest.fail("actual retained fixture did not reach its successful result")
+            original = first_slot.construction
+            assert original is not None and original.storage is first_native._store
+            readers.extend((first_native.result(), first_native.result()))
+            first_slot.closing = True
+            assert len(owner._slots) == owner.concurrency == 2
+            assert owner._reserve((9000, JOURNAL, "f" * 32)) is None
+            second_outcome = finish(owner, case.works[1])
+            assert second_outcome.failure is None
+            assert owner.active_keys() == ((first_key[0], first_key[1]),)
+            assert owner._slots[first_key] is first_slot
+            assert first_slot.construction is original and first_slot.session is first_native
+            assert not first_native.storage_received and not original.received
+            root = case.path / "native"
+            assert_lease(root, first_slot.job.workspace_id, busy=True)
+            readers[0].close()
+            with pytest.raises(BlockingIOError, match="original Native construction"):
+                owner.release_stale()
+            assert owner._slots[first_key] is first_slot and not original.received
+            assert_lease(root, first_slot.job.workspace_id, busy=True)
+            readers[1].close()
+            assert first_native.storage_received and first_slot.lease.received
+            assert not original.received
+            owner.release_stale()
+            assert owner.active_keys() == () and original.received
+            assert_lease(root, first_slot.job.workspace_id, busy=False)
+
+
+@pytest.mark.parametrize("pending_index", (0, 1))
+def test_pending_reader_cleanup_does_not_hide_an_independent_unknown_close(
+    tmp_path, pending_index, *, journal_constructions
+):
+    with build_cases(tmp_path, large=False) as cases:
+        case = cases[2]
+        with live_owner(case, journal_constructions=journal_constructions) as (
+            owner,
+            _recorder,
+            slots,
+            readers,
+        ):
+            pending_key, pending_slot, _storage = slots[pending_index]
+            native = pending_slot.session
+            for _ in range(10000):
+                if native.advance().complete:
+                    break
+            else:
+                pytest.fail("actual retained fixture did not reach its successful result")
+            readers.append(native.result())
+            original = pending_slot.construction
+            pending_slot.closing = True
+            other_index = 1 - pending_index
+            _, other_slot, other_storage = slots[other_index]
+            fault = UncertainClose(other_storage.connection)
+            other_storage.connection = fault
+            other_slot.closing = True
+            with pytest.raises(OSError, match="unconfirmed"):
+                owner.advance(case.works[other_index], catalog=case.catalog)
+            assert fault.calls == 1 and len(owner._slots) == owner.concurrency == 2
+            assert owner._slots[pending_key] is pending_slot
+            assert pending_slot.construction is original and not original.received
+            with pytest.raises(BlockingIOError, match="original Native construction"):
+                owner.release_stale()
+            assert fault.calls == 2
+            assert owner.active_keys() == ((pending_key[0], pending_key[1]),)
+            assert not native.storage_received and not original.received
+            assert_lease(case.path / "native", pending_slot.job.workspace_id, busy=True)
+            readers[0].close()
+            owner.release_stale()
+            assert owner.active_keys() == () and original.received

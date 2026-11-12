@@ -95,10 +95,11 @@ class Recorder(release.Recorder):
             self.drops.append(node)
             self.dropped.append(key)
 
-    def measure(self, case, current, selected, states, *, cold, busy):
+    def measure(self, case, current, selected, states, *, cold, busy, borrowed):
         self.values = {bound.metric: 0 for bound in growth_binding(SWEEP).declaration.bounds}
         self.sources, self.drops, self.checked, self.dropped = [], [], [], []
         self.delegates = {}
+        originals = {key: (slot.session, slot.construction) for key, slot, _storage in selected}
         for key, slot, _storage in selected:
             context = SimpleNamespace(engine=case.engine, factory=case.factory, work=slot.work)
             worker_good = states.get(key) not in {"worker", "missing"}
@@ -226,25 +227,39 @@ class Recorder(release.Recorder):
                 self.metadata[SWEEP][1], growth_binding(SWEEP).declaration.id, [sample]
             )
             blocked = {key for key, _slot in held}
-            if any(value == "binding" and key not in blocked for key, value in states.items()):
-                assert isinstance(caught, RuntimeError)
-            elif caught is not None:
-                raise caught
-            blocked = {key for key, _slot in held}
             expected = {
                 key
                 for key, value in states.items()
                 if value in {"worker", "missing", "source", "closing"} and key not in blocked
             }
+            pending = expected & {key for key, _slot, _storage in selected if borrowed}
+            received = expected - pending
+            if any(value == "binding" and key not in blocked for key, value in states.items()):
+                assert isinstance(caught, RuntimeError)
+            elif pending:
+                assert isinstance(caught, owner._NativeReceivingPending)
+            elif caught is not None:
+                raise caught
             assert set(self.dropped) == expected
-            assert set(current._slots) == set(keys) - expected
+            assert set(current._slots) == set(keys) - received
             assert not (set(self.checked) & blocked)
             assert not any(key in self.checked for key, kind in states.items() if kind == "closing")
             assert fences.snapshot(case.engine) == before
             for key, slot, storage in selected:
-                assert (slot.session is None) == (key in expected)
-                if key in expected and not case.readers:
-                    assert storage._closed
+                assert (slot.session is None) == (key in received)
+                native, original = originals[key]
+                if key in pending:
+                    assert current._slots[key] is slot and slot.closing
+                    assert slot.session is native and slot.construction is original
+                    assert original.storage is native._store
+                    assert not original.received and not original.scope.received
+                    assert not storage._closed
+                elif key in received:
+                    assert storage._closed and original.received
+            if pending:
+                release.verify_custody(
+                    current, [item for item in selected if item[0] in pending], borrowed
+                )
             assert not self.pool_held
             return sample
         finally:
@@ -324,7 +339,7 @@ def sweep_cases(tmp_path_factory):
     operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner.release_stale",
 )
 def test_actual_stale_sweeps_preserve_heterogeneous_inputs_and_nonblocking_slots(
-    sweep_cases, record_property
+    sweep_cases, record_property, *, journal_constructions
 ):
     samples = []
     record_property("growth_samples", samples)
@@ -333,13 +348,37 @@ def test_actual_stale_sweeps_preserve_heterogeneous_inputs_and_nonblocking_slots
             for busy in (False, True):
                 if busy and not case.works:
                     continue
-                with release.live_owner(case, recorder_type=Recorder) as (
+                with release.live_owner(
+                    case, recorder_type=Recorder, journal_constructions=journal_constructions
+                ) as (
                     current,
                     recorder,
                     selected,
-                    _borrowed,
+                    borrowed,
                 ):
                     with changes(case, selected, kind) as states:
                         samples.append(
-                            recorder.measure(case, current, selected, states, cold=busy, busy=busy)
+                            recorder.measure(
+                                case,
+                                current,
+                                selected,
+                                states,
+                                cold=busy,
+                                busy=busy,
+                                borrowed=borrowed,
+                            )
                         )
+                        if not busy and kind in {"worker", "missing", "source", "closing"}:
+                            while borrowed:
+                                borrowed.pop().close()
+                                samples.append(
+                                    recorder.measure(
+                                        case,
+                                        current,
+                                        selected,
+                                        states,
+                                        cold=busy,
+                                        busy=busy,
+                                        borrowed=borrowed,
+                                    )
+                                )

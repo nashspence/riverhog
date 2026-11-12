@@ -464,6 +464,10 @@ class _Slot:
         self.session = session
 
 
+class _NativeReceivingPending(BlockingIOError):
+    """A confirmed pending original, distinct from an unknown cleanup failure."""
+
+
 @dataclass(frozen=True, slots=True)
 class ValidationAdvance:
     progressed: bool
@@ -1793,6 +1797,10 @@ def _advance_declaration() -> Declaration:
                 "accepted progress."
             ),
             (
+                "Known pending receiving keeps the identical closing slot charged without "
+                "blocking an independent key. Unknown cleanup errors still propagate."
+            ),
+            (
                 "Native acceptance precedes catalog publication. A replacement "
                 "adopts exactly that accepted prefix without replaying or "
                 "recreating lost state."
@@ -1864,10 +1872,12 @@ class UploadJournalValidationOwner:
         if slot.session is not None:
             slot.session.close()
         if slot.construction is not None and not slot.construction.close_step():
-            raise BlockingIOError("original Native construction has not received")
+            raise _NativeReceivingPending("original Native construction has not received")
         if slot.session is not None:
             if not slot.session.storage_received:
-                raise BlockingIOError("final Native readers still retain the original storage")
+                raise _NativeReceivingPending(
+                    "final Native readers still retain the original storage"
+                )
             slot.session = None
         if not slot.transferred:
             slot.receive_workspace()
@@ -1884,7 +1894,8 @@ class UploadJournalValidationOwner:
     def release_stale(self) -> None:
         with self._lock:
             slots = tuple(self._slots.items())
-        errors = []
+        pending = None
+        unknown = None
         for key, slot in slots:
             if not slot.lock.acquire(blocking=False):
                 continue
@@ -1896,12 +1907,18 @@ class UploadJournalValidationOwner:
                         slot.source.verify_source()
                     except source_owner._StaleUploadJournalValidation:
                         self._drop(key, slot)
+            except _NativeReceivingPending as error:
+                if pending is None:
+                    pending = error
             except BaseException as error:
-                errors.append(error)
+                if unknown is None:
+                    unknown = error
             finally:
                 slot.lock.release()
-        if errors:
-            raise errors[0]
+        if unknown is not None:
+            raise unknown
+        if pending is not None:
+            raise pending
 
     def close(self) -> None:
         with self._lock:
@@ -1998,7 +2015,11 @@ class UploadJournalValidationOwner:
         catalog: ContractCatalog,
         budget: JournalValidationBudget = _DEFAULT_BUDGET,
     ) -> ValidationAdvance:
-        self.release_stale()
+        try:
+            self.release_stale()
+        except _NativeReceivingPending:
+            # Pending originals remain charged; a selected closing slot refuses below.
+            pass
         key = source.collection_id, source.journal_id, source.attempt_id
         slot = self._reserve(key)
         if slot is None:

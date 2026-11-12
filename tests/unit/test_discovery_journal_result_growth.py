@@ -99,13 +99,20 @@ def exercise(tmp_path, monkeypatch, record_property, operation, *, journal_const
                     for _ in range(2):
                         with observe(operation, monkeypatch) as metrics:
                             selected = PREPARE(
-                                owner.DiscoverySealedJournalOwner, source, 1, case.catalog
+                                owner.DiscoverySealedJournalOwner,
+                                source,
+                                1,
+                                case.catalog,
+                                construction=journal_constructions.retain(),
                             )
                         assert selected.result is None and selected.opening is None
                         assert case.engine.pool.checkedout() == 0
                         samples.append(sample(operation, values, metrics))
+                        selected.close()
                 elif operation is OPEN:
-                    selected = owner.DiscoverySealedJournalOwner.prepare(source, 1, case.catalog)
+                    selected = owner.DiscoverySealedJournalOwner.prepare(
+                        source, 1, case.catalog, construction=journal_constructions.retain()
+                    )
                     work._slot.sealed = selected
                     with observe(operation, monkeypatch) as metrics:
                         result = OPEN(selected, case.native_root, case.catalog)
@@ -369,6 +376,7 @@ def test_actual_sealed_and_warm_cleanup_in_composed_owner(
                         assert work.journal(task) is not None
                         helpers.append(work._slot.journal)
                         native_paths.append(work._slot.journal.directory / "snapshot.sqlite3")
+                    reference_closes = []
                     for helper in helpers:
                         store = (
                             helper.result._store
@@ -384,17 +392,9 @@ def test_actual_sealed_and_warm_cleanup_in_composed_owner(
 
                         store._storage.on_close = release
 
-                        class Stream:
-                            def __init__(self, actual):
-                                self.actual = actual
-
-                            def close(self, _recorder=recorder):
-                                if _recorder.active:
-                                    _recorder.metrics["stream_close_calls"] += 1
-                                return self.actual.close()
-
                         for reference in (helper.references.parent, helper.references.child):
-                            reference._stream = Stream(reference._stream)
+                            original = reference._resource.owner
+                            reference_closes.append((original, original.metrics["close_calls"]))
                 values = dimensions(case, retained=retained, width=17)
                 # Count the real application catalog and actual original Native
                 # databases, which are independently located in this fixture.
@@ -414,6 +414,10 @@ def test_actual_sealed_and_warm_cleanup_in_composed_owner(
                                 )
                 with recorder.observe(case, cold=False):
                     case.pool.close()
+                recorder.metrics["stream_close_calls"] += sum(
+                    original.metrics["close_calls"] - before
+                    for original, before in reference_closes
+                )
                 assert recorder.metrics["native_closed_connections"] == 1 + warm
                 assert recorder.metrics["stream_close_calls"] == 2 * (1 + warm)
                 samples.append(recorder.sample(type(case.pool).close, values))
