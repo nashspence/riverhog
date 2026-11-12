@@ -98,6 +98,10 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
     UV_LINK_MODE=copy \
     SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
@@ -118,6 +122,7 @@ COPY packages/sha256-continuation packages/sha256-continuation
 COPY some-implementations/riverhog/provenance/contracts/direct-relations some-implementations/riverhog/provenance/contracts/direct-relations
 COPY packages/riverhog-provenance packages/riverhog-provenance
 COPY packages/workspace-reclamation packages/workspace-reclamation
+COPY packages/retained-resource packages/retained-resource
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY some-implementations/stove0/targets/media-archive/contracts some-implementations/stove0/targets/media-archive/contracts
 COPY some-implementations/stove0/targets/media-archive/support some-implementations/stove0/targets/media-archive/support

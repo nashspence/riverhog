@@ -15,6 +15,7 @@ from types import SimpleNamespace
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
+from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_core.services import upload_journal_validation_owner as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import graph_certificates as certificate_codec
@@ -481,6 +482,7 @@ class Recorder(fences.Recorder):
     def kernel(self):
         recorder = self
         actual_lease = owner.lease_journal_validation_workspace
+        actual_acquire = RetainedWorkspaceResource.acquire
         groups = {
             "open": "open_calls",
             "close": "close_calls",
@@ -490,7 +492,31 @@ class Recorder(fences.Recorder):
             "mkdir": "mkdir_calls",
             "fsync": "fsync_calls",
         }
+
+        @contextmanager
+        def native_lease(receiver):
+            before = [record.owner.metrics for record in receiver.records]
+            try:
+                yield
+            finally:
+                for record, previous in zip(receiver.records, before, strict=True):
+                    after = record.owner.metrics
+                    for native, metric in (
+                        ("open_calls", "open_calls"),
+                        ("close_calls", "close_calls"),
+                        ("fstat_calls", "stat_calls"),
+                        ("dup_calls", "dup_calls"),
+                        ("control_octets", "native_control_octets"),
+                    ):
+                        recorder.lease_values[metric] += after[native] - previous[native]
+
+        def acquiring(resource, path, **options):
+            if recorder.active and recorder.lease_active:
+                recorder.lease_values["path_octets"] += len(os.fsencode(path))
+            return actual_acquire(resource, path, **options)
+
         with pytest.MonkeyPatch.context() as patch:
+            patch.setattr(RetainedWorkspaceResource, "acquire", acquiring)
             for name, metric in groups.items():
                 actual = getattr(os, name)
 
@@ -525,7 +551,8 @@ class Recorder(fences.Recorder):
                 context = actual_lease(*args, **kwargs)
                 recorder.lease_active = True
                 try:
-                    directory = context.__enter__()
+                    with native_lease(kwargs["receiver"]):
+                        directory = context.__enter__()
                 finally:
                     recorder.lease_active = False
                 try:
@@ -533,7 +560,8 @@ class Recorder(fences.Recorder):
                 finally:
                     recorder.lease_active = True
                     try:
-                        context.__exit__(*sys.exc_info())
+                        with native_lease(kwargs["receiver"]):
+                            context.__exit__(*sys.exc_info())
                     finally:
                         recorder.lease_active = False
 
@@ -659,6 +687,7 @@ class Recorder(fences.Recorder):
                 dimensions["source_checks"] = 1
                 dimensions["load_calls"] = 1
                 native.initializing = initializing
+                native.retain_construction(kwargs["construction"])
                 proxy = native.source(selected)
                 kwargs = dict(kwargs)
                 if kwargs.get("on_storage_open") is not None:
