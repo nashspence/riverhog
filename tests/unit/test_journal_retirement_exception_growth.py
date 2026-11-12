@@ -54,7 +54,7 @@ def shape(error):
 @pytest.mark.growth_witness(
     "native-retirement.original-exception-graph",
     gates=("unit",),
-    operation=OPERATION,
+    operation="riverhog_core.services.physical_execution.release_exception_graph",
 )
 def test_exception_graph_counts_cycles_shared_edges_and_depth(owned, monkeypatch, record_property):
     assert UploadJournalValidationRetirement.advance is not None
