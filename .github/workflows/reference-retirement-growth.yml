@@ -25,9 +25,11 @@ jobs:
       - name: Reproduce unchanged-source scheduling mismatch
         run: mise x python uv -- uv run --locked --all-packages --group dev python .reference/reproduce.py > reproduction-result.json
       - name: Apply explicit reference-only source overlay
-        run: mise x python uv -- uv run --locked --all-packages --group dev python .reference/apply.py
+        run: mise x python uv -- uv run --locked --all-packages --group dev python .reference/prepare.py
       - name: Maintained-owner phase and custody witnesses
         run: mise x python uv -- uv run --locked --all-packages --group dev python .reference/run_witness.py
+      - name: Check causal links and reject corrupted evidence
+        run: mise x python uv -- uv run --locked --all-packages --group dev python .reference/check_transcripts.py phase-samples.jsonl > causal-result.json
       - name: Retain failed and passing evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -37,5 +39,6 @@ jobs:
             reproduction-result.json
             reference-result.json
             phase-samples.jsonl
+            causal-result.json
           if-no-files-found: error
           retention-days: 14

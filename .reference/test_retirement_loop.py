@@ -174,7 +174,7 @@ def loop_samples(root, samples, cleanups, *, large=True):
                             later = current.advance(limit=max(1,limit),octet_budget=budget)
                             assert later <= 2*max(1,limit)
                         assert result <= 4*max(0,limit)
-                        
+
                         actual_workers = [row for op,row,_ in evidence.roots if op is REGISTRY["_run"]]
                         progress = [context for context in evidence.links]
                         if limit == 0 or kind in {"empty","linked"}:
