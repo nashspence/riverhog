@@ -1,0 +1,33 @@
+name: Reference retirement scope tooling
+on:
+  push:
+    branches: [reference/external/989-async-retirement-growth]
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
+        with:
+          install_args: python uv
+      - name: Retain exact locked research tooling
+        shell: bash
+        run: |
+          mise x python uv -- uv sync --locked --all-packages --group dev
+          mkdir -p reference-tools
+          cp .venv/bin/ruff reference-tools/ruff
+          mise x python uv -- uv run --locked --all-packages --group dev python -c "import pathlib,rfc8785,shutil; shutil.copytree(pathlib.Path(rfc8785.__file__).parent, 'reference-tools/rfc8785')"
+          sha256sum reference-tools/ruff > reference-tools/SHA256SUMS
+          .venv/bin/ruff --version > reference-tools/VERSION
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: reference-retirement-locked-tools
+          path: reference-tools/
+          retention-days: 14
+          if-no-files-found: error
