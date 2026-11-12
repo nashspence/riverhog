@@ -1,13 +1,17 @@
-name: Reference retirement scope tooling
+name: Reference asynchronous retirement scopes
 on:
   push:
     branches: [reference/external/989-async-retirement-growth]
 permissions:
   contents: read
 jobs:
-  tools:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
+  witness:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -16,18 +20,28 @@ jobs:
       - uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14
         with:
           install_args: python uv
-      - name: Retain exact locked research tooling
+      - name: Apply exact reference source proposal
         shell: bash
         run: |
           mise x python uv -- uv sync --locked --all-packages --group dev
-          mkdir -p reference-tools
-          cp .venv/bin/ruff reference-tools/ruff
-          mise x python uv -- uv run --locked --all-packages --group dev python -c "import pathlib,rfc8785,shutil; shutil.copytree(pathlib.Path(rfc8785.__file__).parent, 'reference-tools/rfc8785')"
-          sha256sum reference-tools/ruff > reference-tools/SHA256SUMS
-          .venv/bin/ruff --version > reference-tools/VERSION
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+          mise x python -- python .reference/apply.py
+          mkdir -p reference-results
+          git diff --binary > reference-results/applied.patch
+      - name: Scoped style and source typing
+        shell: bash
+        run: |
+          mise x python uv -- uv run --locked --all-packages --group dev python -c "import json,subprocess; p=json.load(open('.reference/PATCH.json')); paths=list(p['files'])+['.reference/apply.py','.reference/run_witness.py']; subprocess.run(['ruff','check',*paths],check=True);subprocess.run(['ruff','format','--check',*paths],check=True)"
+          mise x python uv -- uv run --locked --all-packages --group dev python scripts/run_mypy.py
+      - name: Actual asynchronous owner and growth witnesses
+        shell: bash
+        run: |
+          mise x python uv -- uv run --locked --all-packages --group dev python .reference/run_witness.py
+          mise x python -- python .reference/apply.py --verify
+      - name: Retain exact experiment evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: reference-retirement-locked-tools
-          path: reference-tools/
+          name: reference-retirement-${{ matrix.os }}-${{ github.sha }}
+          path: reference-results/
           retention-days: 14
           if-no-files-found: error

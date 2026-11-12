@@ -1,0 +1,47 @@
+{
+  "base": "dd09f4ab5e824935e680f26fba3d73d2484cb426",
+  "files": {
+    "riverhog/src/riverhog_core/services/journal_retirement_growth.py": {
+      "before_sha256": null,
+      "after_sha256": "ac661d5d0b4ce63315b4e23b56a0735c792afcdb2e076c7b4af1d6a5c87e5677",
+      "replacement": "changes/journal_retirement_growth.py"
+    },
+    "riverhog/src/riverhog_core/services/journal_retirement_registry.py": {
+      "before_sha256": "d1eaeb8957ec309008ac267077ed6f983eb8404ec7e02aff6dec2214dca01440",
+      "after_sha256": "02c4a6abb89327868b754fb7fcc2f0343833a68ffd4623eb9446688c52d45e5d"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_validation_retirement.py": {
+      "before_sha256": "b0ab10f34b949ab535c5a9d52d560b43c9a5c04aceb9fff7096ff77bd745819a",
+      "after_sha256": "9c597cbf2a1b141f99b293ccb75c877b9a578de7a64c24f5b532b60200fa9d04"
+    },
+    "tests/support/journal_retirement.py": {
+      "before_sha256": "6d40fbd6814eba256a4a51e4436a9ff491c03d7c62b2f1e86b0e784332740878",
+      "after_sha256": "0cdfcec7b62aced4119eead2d06ec50a030c55048b4ae39b332ef735cff6ea36"
+    },
+    "tests/support/journal_retirement_async.py": {
+      "before_sha256": null,
+      "after_sha256": "99627b13d7ee2fd622760c38671a14b7dc6d7d46175b1fe064d163ff560f8ff4",
+      "replacement": "changes/journal_retirement_async.py"
+    },
+    "tests/support/journal_retirement_unknown.py": {
+      "before_sha256": null,
+      "after_sha256": "206332e8aa91e7097d70c0f325f761b78c8238228ebedc70a3f047e9b2ab6564",
+      "replacement": "changes/journal_retirement_unknown.py"
+    },
+    "tests/unit/test_journal_retirement_async_scopes.py": {
+      "before_sha256": null,
+      "after_sha256": "cc67b00051db0b724f8886be3bb71694bf0e1b1b78626199e9e04ba39a2da3ae",
+      "replacement": "changes/test_journal_retirement_async_scopes.py"
+    },
+    "tests/unit/test_journal_retirement_exception_growth.py": {
+      "before_sha256": null,
+      "after_sha256": "8dd1f5f8343ff1595eda84024a8ba544a1202ba13b6f986eeb2bdbdad11f1d9e",
+      "replacement": "changes/test_journal_retirement_exception_growth.py"
+    },
+    "tests/unit/test_upload_journal_validation_retirement_loop_growth.py": {
+      "before_sha256": "c055a7a95aca74f6ee1c02a31de086517cd3c2bd4cd78873476556b1b48d9a82",
+      "after_sha256": "9791876ac16a9dfaaf59b43c4f377d26ca2b3aa141c73078de48c705b6346e54",
+      "replacement": "changes/test_upload_journal_validation_retirement_loop_growth.py"
+    }
+  }
+}
