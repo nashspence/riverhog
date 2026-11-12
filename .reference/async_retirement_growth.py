@@ -1,17 +1,13 @@
-"""Observe actual phase roots without attributing future work to a submission.
-
-Workers are event-gated only by the witness. Execution is always on the original
-PhysicalExecutionOwner thread; test joins happen outside every scheduling root.
-"""
+"""Observe actual asynchronous phase roots and original worker joins."""
 from __future__ import annotations
 
 import builtins
 import hashlib
 import inspect
-import os
 import threading
+import sys
 from collections import OrderedDict, defaultdict
-from contextlib import contextmanager
+from contextlib import contextmanager, ExitStack
 from dataclasses import asdict
 from functools import wraps
 from types import SimpleNamespace
@@ -29,7 +25,6 @@ from tests.unit import test_upload_journal_validation_retirement_growth as units
 from tests.unit import test_physical_workspace_execution_growth as execution
 from tests.unit import test_workspace_construction_retention_growth as retention
 
-
 SCHEDULE = UploadJournalValidationRetirement.advance
 REGISTRY = {name: getattr(journal.JournalRetirementRegistry, name) for name in
             ("collect", "resume_ready", "submit", "retained", "_scope", "_create", "_run", "_accept_progress")}
@@ -44,9 +39,37 @@ class PhaseEvidence:
         self.local = threading.local()
         self.roots, self.links, self.gates = [], [], []
         self.lock = threading.Lock()
+        self.gate_ready = threading.Condition(self.lock)
+        self.originals, self.workers, self.events = [], [], []
+        self.gate_threads = {}
         self.main_thread = threading.get_ident()
         self.projections = {}
-        self.worker_samples = []
+
+    def token(self, values, original):
+        for index, retained in enumerate(values):
+            if retained is original:
+                return index
+        values.append(original)
+        return len(values)-1
+
+    def event(self, kind, *, context=None, worker=None, **fields):
+        with self.lock:
+            if context is not None:
+                fields["original"] = self.token(self.originals,context)
+                fields["scope_sha256"] = context.reservation.key.scope_sha256
+            if worker is not None:
+                fields["attempt"] = self.token(self.workers,worker)
+            self.events.append({"event":kind,**fields})
+
+    def publish(self, record_property):
+        record_property("growth_samples",[s for op,s,_ in self.roots if op is not REGISTRY["_run"]])
+        record_property("separate_original_worker_samples",[s for op,s,_ in self.roots if op is REGISTRY["_run"]])
+        record_property("retirement_transcripts",[self.transcript()])
+
+    def transcript(self):
+        return {"events":self.events,"root_samples":[{"index":index,"declaration":sample["declaration"],
+            "sha256":hashlib.sha256(canonical_json_bytes(sample)).hexdigest(),"outcome":outcome}
+            for index,(_,sample,outcome) in enumerate(self.roots)]}
 
     @property
     def stack(self):
@@ -59,7 +82,9 @@ class PhaseEvidence:
 
     def emit(self, operation, inputs, metrics, children):
         binding = growth_binding(operation)
-        projection = self.projections.setdefault(operation, project_bindings((binding,)))
+        if operation not in self.projections:
+            self.projections[operation] = project_bindings((binding,))
+        projection = self.projections[operation]
         dimensions, values = dict(inputs), dict(metrics)
         for tag, child in binding.delegates:
             rows = children[tag]
@@ -79,13 +104,14 @@ class PhaseEvidence:
             "metrics": {b.metric: values.get(b.metric, 0) for b in binding.declaration.bounds},
             "delegates": children,
         }
-        # Explicitly check heterogeneous samples rather than manufacturing
-        # identical child dimensions for the framework's delegate expression.
         for tag, child in binding.delegates:
             for row in children[tag]:
                 assert all(row["dimensions"][k] <= dimensions[tag + "_" + k]
                            for k in row["dimensions"])
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        try:
+            validate_execution_samples(projection, binding.declaration.id, [sample])
+        except ValueError as error:
+            raise AssertionError((binding.declaration.id, str(error), dimensions, sample["metrics"])) from error
         return sample
 
     def append(self, operation, sample, outcome):
@@ -96,11 +122,19 @@ class PhaseEvidence:
             parent.children[tags[0]].append(sample)
         else:
             self.roots.append((operation, sample, outcome))
+            if operation is SCHEDULE:
+                self.event("schedule-return",sample=len(self.roots)-1,outcome=outcome,
+                           bookkeeping=sample["metrics"]["bookkeeping_events"])
+            elif operation is REGISTRY["_run"]:
+                self.event("worker-root",worker=threading.current_thread(),
+                           sample=len(self.roots)-1,outcome=outcome)
+            else:
+                self.event("phase-root",phase=operation.__name__,sample=len(self.roots)-1,outcome=outcome)
 
     def inputs(self, operation, args, kw):
-        name, obj = operation.__name__, args[0] if args else None
+        obj = args[0] if args else None
         q = kw.get("limit", 1)
-        n = len(self.original.registry._contexts)
+        n = OrderedDict.__len__(self.original.registry._contexts)
         if operation is SCHEDULE:
             return {"unit_limit": max(0, q), "octet_budget": kw.get("octet_budget", 4*1024*1024)}
         if operation in (REGISTRY["collect"], REGISTRY["resume_ready"]):
@@ -115,16 +149,13 @@ class PhaseEvidence:
             return {"control_octets": len(canonical_json_bytes(controls))}
         if operation is REGISTRY["_accept_progress"]:
             return {"outcomes": 1}
-        if operation in (REGISTRY["_create"], REGISTRY["_run"],
-                         TURN["close"]):
+        if operation in (REGISTRY["_create"], REGISTRY["_run"], TURN["close"]):
             return {"originals": 1}
         if operation is TURN["advance"]:
             return {"octet_budget": kw["octet_budget"]}
         if operation is TURN["_receive"]:
             return {"callbacks": len(obj._handles._callbacks), "resources": len(self.resources(obj))}
         if operation is FORMAT:
-            # The witness provides the exact original text independently; no
-            # second invocation of the exception's __str__ measures itself.
             return {"error_octets": len((self.text or "").encode())}
         raise AssertionError(operation)
 
@@ -140,8 +171,6 @@ class PhaseEvidence:
     def wrapper(self, actual):
         @wraps(actual)
         def call(*args, **kwargs):
-            if not self.stack and actual is not SCHEDULE and actual is not REGISTRY["_run"]:
-                return actual(*args, **kwargs)
             if actual in (TURN["advance"],TURN["close"],TURN["_receive"]):
                 assert threading.get_ident()!=self.main_thread, "coordinator entered original execution"
             inputs = self.inputs(actual, args, kwargs)
@@ -163,9 +192,21 @@ class PhaseEvidence:
                         return _method(*_arguments)
                     callback_originals[invoked] = entry
                     actor._handles._callbacks[index] = (invoked, ())
-            before_contexts = len(self.original.registry._contexts)
+            before_contexts = OrderedDict.__len__(self.original.registry._contexts)
             try:
-                result = actual(*args, **kwargs)
+                with ExitStack() as receiving_observers:
+                    if actual is TURN["_receive"]:
+                        import workspace_reclamation
+                        from riverhog_core.retained_workspace_handles import RetainedWorkspaceHandles
+                        one=receiving_observers.enter_context(pytest.MonkeyPatch.context())
+                        for cls,metric in ((workspace_reclamation.FileReclamationOwner,"file_close_entries"),
+                                           (RetainedWorkspaceHandles,"namespace_close_entries")):
+                            closing=cls.close
+                            def counted_close(obj,*a,_actual=closing,_metric=metric,**kw):
+                                frame.metrics[_metric]+=1
+                                return _actual(obj,*a,**kw)
+                            one.setattr(cls,"close",counted_close)
+                    result = actual(*args, **kwargs)
                 return result
             except BaseException as error:
                 caught = error
@@ -178,16 +219,14 @@ class PhaseEvidence:
                                                               for r,v in zip(resources,initial))
                     frame.metrics["resource_opens"] = sum(r.metrics["open_calls"]-v["open_calls"]
                                                           for r,v in zip(resources,initial))
-                if actual in (SCHEDULE, REGISTRY["collect"],
-                              REGISTRY["resume_ready"], REGISTRY["submit"]):
+                if actual in (SCHEDULE, REGISTRY["collect"], REGISTRY["resume_ready"], REGISTRY["submit"]):
                     frame.metrics["bookkeeping_events"] = 0 if result is None else result
                 if actual is REGISTRY["collect"]:
                     frame.metrics["completion_visits"] = sum(r["metrics"]["results_received"] for r in frame.children["physical"])
-                    physical_count = frame.metrics["completion_visits"]
                     withdrawals = sum(r["metrics"]["reservations_released"] for r in frame.children["retire"])
-                    assert result is None or result == physical_count + withdrawals
+                    assert result is None or result == frame.metrics["completion_visits"] + withdrawals
                 if actual is REGISTRY["submit"]:
-                    frame.metrics["context_creations"] = max(0, len(self.original.registry._contexts)-before_contexts)
+                    frame.metrics["context_creations"] = max(0, OrderedDict.__len__(self.original.registry._contexts)-before_contexts)
                 if actual is REGISTRY["_create"]:
                     frame.metrics["actors_created"] = int(result is not None)
                     if result is not None:
@@ -212,26 +251,26 @@ class PhaseEvidence:
         return call
 
     @contextmanager
-    def installed(self):
+    def installed(self, *, install_schedule=True):
         original = self.original
         with pytest.MonkeyPatch.context() as patch:
             operations = [
                 (UploadJournalValidationRetirement, "advance"),
-                *[(journal.JournalRetirementRegistry, name) for name in
-                  ("collect", "resume_ready", "retained", "submit", "_run", "_scope", "_create", "_accept_progress")],
-                *[(journal.JournalRetirementTurn, name) for name in ("advance", "close", "_receive")],
+                *[(journal.JournalRetirementRegistry, name) for name in REGISTRY],
+                *[(journal.JournalRetirementTurn, name) for name in TURN],
                 (journal, "format_retirement_blocker"),
             ]
-            # Capture originals before patching; exact declarations are bound to
-            # these source functions, not to instrumentation wrappers.
-            exact = {(obj,name): getattr(obj,name) for obj,name in operations}
+            exact = {
+                (obj,name): SCHEDULE if obj is UploadJournalValidationRetirement else
+                REGISTRY[name] if obj is journal.JournalRetirementRegistry else
+                TURN[name] if obj is journal.JournalRetirementTurn else FORMAT
+                for obj,name in operations
+            }
             for (obj,name), actual in exact.items():
+                if actual is SCHEDULE and not install_schedule:
+                    continue
                 patch.setattr(obj,name,self.wrapper(actual))
-
-            schedule = exact[UploadJournalValidationRetirement,"advance"]
-            collect = exact[journal.JournalRetirementRegistry,"collect"]
-            resume = exact[journal.JournalRetirementRegistry,"resume_ready"]
-            scope = exact[journal.JournalRetirementRegistry,"_scope"]
+            schedule,collect,resume,scope = SCHEDULE,REGISTRY["collect"],REGISTRY["resume_ready"],REGISTRY["_scope"]
             old_range = builtins.range
             def ranges(*args):
                 caller = inspect.currentframe().f_back
@@ -239,7 +278,6 @@ class PhaseEvidence:
                 if caller.f_code is schedule.__code__:
                     frame = self.active(schedule)
                     metric = "candidate_iterations" if args == (3,) else "outer_iterations"
-                    # With limit=3 disambiguate by source's local attempted list.
                     if args == (3,) and "attempted" not in caller.f_locals: metric="outer_iterations"
                 elif caller.f_code is shared.WorkspaceRetirementRegistry.collect.__code__:
                     frame=self.active(collect); metric="withdrawal_visits"
@@ -296,12 +334,22 @@ class PhaseEvidence:
                     count=len(pool._slots)
                     control=execution.width((args, {k:v for k,v in kw.items() if k not in {"work","owner","identity"}}))
                     control=max(control, max((execution.width((s.key,s.target_incarnation,id(s.owner),True)) for s in pool._slots.values()),default=0))
-                    with execution.observed(pool,patch) as metrics:
-                        result=_actual(pool,*args,**kw)
-                        if _actual.__name__=="collect_workspace":metrics["results_received"]=len(result)
-                    sample=self.emit(_actual,{"retained_slots":count,"quantum":kw.get("limit",1),
-                        "control_octets_per_step":control},metrics,{})
-                    self.append(_actual,sample,"returned")
+                    result=None
+                    try:
+                        with execution.observed(pool,patch) as metrics:
+                            result=_actual(pool,*args,**kw)
+                            if _actual.__name__=="collect_workspace":metrics["results_received"]=len(result)
+                    finally:
+                        sample=self.emit(_actual,{"retained_slots":count,"quantum":kw.get("limit",1),
+                            "control_octets_per_step":control},metrics,{})
+                        self.append(_actual,sample,"returned" if result is not None else "raised")
+                    if _actual.__name__=="try_submit_workspace" and result=="submitted":
+                        context=kw["identity"]
+                        self.event("submitted",context=context,worker=pool._slots[args[0]].worker,
+                                   close_only=context.closing)
+                    elif _actual.__name__=="collect_workspace":
+                        for outcome in result:
+                            self.event("physical-received",context=outcome.identity)
                     return result
                 patch.setattr(physical.PhysicalExecutionOwner,name,invoked)
             for name in ("try_retain_workspace","retire"):
@@ -312,10 +360,17 @@ class PhaseEvidence:
                     arg=args[0];key=getattr(arg,"key",arg)
                     target=getattr(arg,"target_incarnation",kw.get("target_incarnation",""))
                     control=execution.width((key,target,id(kw["owner"]),False))
-                    with retention.measured(ledger) as metrics:
-                        result=_actual(ledger,*args,**kw)
-                    sample=self.emit(_actual,{"retained_slots":count,"control_octets_per_step":control},metrics,{})
-                    self.append(_actual,sample,"returned")
+                    result=None
+                    try:
+                        with retention.measured(ledger) as metrics:
+                            result=_actual(ledger,*args,**kw)
+                    finally:
+                        sample=self.emit(_actual,{"retained_slots":count,"control_octets_per_step":control},metrics,{})
+                        self.append(_actual,sample,"returned" if result is not None else "raised")
+                    if _actual.__name__=="retire" and result:
+                        context=OrderedDict.get(original.registry._contexts,key.workspace_id)
+                        assert context is not None and context.reservation is arg
+                        self.event("ordinary-withdrawn",context=context)
                     return result
                 patch.setattr(ArchiveConstructionRetention,name,retained)
             actual_metadata=journal.metadata_row_bytes
@@ -339,16 +394,6 @@ class PhaseEvidence:
                     frame.metrics["hash_calls"]+=1;frame.metrics["hashed_octets"]+=len(value)
                 return hashing(value,*a,**kw)
             patch.setattr(journal.hashlib,"sha256",hashed)
-            import workspace_reclamation
-            from riverhog_core.retained_workspace_handles import RetainedWorkspaceHandles
-            for cls,metric in ((workspace_reclamation.FileReclamationOwner,"file_close_entries"),
-                               (RetainedWorkspaceHandles,"namespace_close_entries")):
-                closing=cls.close
-                def close_entry(obj,*a,_actual=closing,_metric=metric,**kw):
-                    frame=self.active(TURN["_receive"])
-                    if frame is not None:frame.metrics[_metric]+=1
-                    return _actual(obj,*a,**kw)
-                patch.setattr(cls,"close",close_entry)
             status=original.pool.status
             def checked_status(*a,**kw):
                 frame=self.active(REGISTRY["submit"])
@@ -357,10 +402,34 @@ class PhaseEvidence:
             patch.setattr(original.pool,"status",checked_status)
             evidence=self
             class Contexts(OrderedDict):
+                def counted(self,key=None):
+                    for name in ("collect","resume_ready","submit","retained"):
+                        frame=evidence.active(REGISTRY[name])
+                        if frame is not None:
+                            frame.metrics["context_mapping_steps"]+=1
+                            if key is not None:frame.metrics["context_key_octets"]+=len(key.encode("ascii"))
+                            return frame
+                    return None
                 def __contains__(self,key):
-                    frame=evidence.active(REGISTRY["retained"])
-                    if frame is not None:frame.metrics["lookups"]+=1
+                    frame=self.counted(key)
+                    if frame is not None and frame.op is REGISTRY["retained"]:frame.metrics["lookups"]+=1
                     return super().__contains__(key)
+                def __len__(self):
+                    self.counted();return super().__len__()
+                def __getitem__(self,key):
+                    self.counted(key);return super().__getitem__(key)
+                def get(self,key,default=None):
+                    self.counted(key);return super().get(key,default)
+                def __setitem__(self,key,value):
+                    self.counted(key);return super().__setitem__(key,value)
+                def __delitem__(self,key):
+                    self.counted(key);return super().__delitem__(key)
+                def popitem(self,*args,**kw):
+                    result=super().popitem(*args,**kw);self.counted(result[0]);return result
+                def __iter__(self):
+                    if any(evidence.active(REGISTRY[n]) for n in ("collect","resume_ready","submit","retained")):
+                        raise AssertionError("coordinator enumerated original contexts")
+                    return super().__iter__()
             original.registry._contexts=Contexts(original.registry._contexts)
             actual_warning=shared._LOG.warning
             def warning(*a,**kw):
@@ -390,14 +459,20 @@ class PhaseEvidence:
                     cursor=tb
                     while cursor is not None:metrics["traceback_frames"]+=1;cursor=cursor.tb_next
                     return clearing(tb)
-                # Enqueues are a conservative total for the exact source graph;
-                # partial failures still retain their actual clearing entries.
-                metrics["exception_visits"]=int(error is not None)+edges
+                lines,start=inspect.getsourcelines(actual_graph)
+                pop_line=start+next(i for i,line in enumerate(lines) if "current = pending.pop()" in line)
+                previous=sys.gettrace()
+                def traced(frame,event,arg):
+                    if frame.f_code is actual_graph.__code__ and event=="line" and frame.f_lineno==pop_line:
+                        metrics["exception_visits"]+=1
+                    return traced
                 try:
                     with pytest.MonkeyPatch.context() as one:
                         one.setattr(physical.traceback,"clear_frames",clear)
+                        sys.settrace(traced)
                         return actual_graph(error)
                 finally:
+                    sys.settrace(previous)
                     sample=self.emit(actual_graph,inputs,metrics,{})
                     self.append(actual_graph,sample,"observed")
             patch.setattr(physical,"release_exception_graph",graph)
@@ -415,9 +490,16 @@ class PhaseEvidence:
             patch.setattr(physical._PhysicalExecutionResult,"release_exception_frames",frames)
             actual_run=physical._run
             def gated(work,future):
+                if getattr(getattr(work,"func",None),"__self__",None) is not original.registry:
+                    return actual_run(work,future)
                 entered,release=threading.Event(),threading.Event()
                 context=work.args[0]
-                with self.lock:self.gates.append((context,entered,release))
+                worker=threading.current_thread()
+                with self.gate_ready:
+                    self.gates.append((context,entered,release))
+                    self.gate_threads[release]=worker
+                    self.gate_ready.notify_all()
+                self.event("worker-entered",context=context,worker=worker)
                 entered.set()
                 assert release.wait(30),"witness did not release original physical worker"
                 actual_run(work,future)
@@ -431,16 +513,26 @@ class PhaseEvidence:
                     assert not slot.worker.is_alive()
 
     def drain(self):
-        # Exact original slots, not Future.done, and outside observed scheduling.
+        # Exact originals, not Future.done. These joins are outside all roots.
         for slot in tuple(self.original.pool._slots.values()):
+            if slot.owner is not self.original.registry:
+                continue
             context=slot.identity
-            for candidate,entered,release in self.gates:
-                if candidate is context and not release.is_set():
-                    assert entered.wait(5)
-                    release.set()
-                    slot.worker.join(timeout=30)
-                    assert not slot.worker.is_alive()
-                    self.links.append((id(context),id(slot.worker),context.reservation.key.scope_sha256,
-                                       bool(context.actor and context.actor.received)))
-                    break
+            with self.gate_ready:
+                def candidate():
+                    return next(((entered,release) for original,entered,release in self.gates
+                        if original is context and self.gate_threads[release] is slot.worker),None)
+                assert self.gate_ready.wait_for(lambda:candidate() is not None,timeout=5)
+                entered,release=candidate()
+            assert entered.wait(5)
+            release.set()
+            slot.worker.join(timeout=30)
+            assert not slot.worker.is_alive()
+            if slot.future.exception() is not None:
+                import traceback
+                traceback.print_exception(slot.future.exception())
+            received=bool(context.actor and context.actor.received)
+            self.event("original-joined",context=context,worker=slot.worker,
+                       actor_received=received,ordinary_charged=context.reservation.key in self.original.ledger._reservations)
+            self.links.append((context,slot.worker,received))
         return self.links
