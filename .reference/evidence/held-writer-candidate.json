@@ -1,0 +1,29 @@
+{
+  "active_outcome": "authenticated",
+  "active_seconds": 0.0020143780000125844,
+  "authenticated_after_release": true,
+  "denied_while_writer_held": {
+    "deleted": true,
+    "expired": true,
+    "invalid": true,
+    "revoked": true
+  },
+  "expected_active_outcome": "authenticated",
+  "format": "riverhog-app-key-held-writer-reference/v1",
+  "original_writer_alive_after_authentication": true,
+  "original_writer_joined": true,
+  "passed": true,
+  "python_version": "3.12.3",
+  "service_source_sha256": "712fb096854884d2d16070837cdfdc04826ffb8248e099f6736f8bc440f2572d",
+  "source_clean": true,
+  "source_sha": "cad153b519dd4a7a17dba210b30cd84d12d3cafa",
+  "sqlalchemy_version": "2.0.51",
+  "sqlite_version": "3.45.1",
+  "timing_is_observation_only": true,
+  "usage_omitted_while_held": true,
+  "usage_recorded_after_release": true,
+  "witness_sha256": "49bb069c6a88eb227c4a83bc3c33ca013f7d695f399b1958eccaca95077d2a62",
+  "workspace_removed": true,
+  "writer_errors": [],
+  "writer_still_held_sqlite_errorcode": 5
+}

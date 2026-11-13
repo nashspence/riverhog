@@ -1,0 +1,15 @@
+{
+  "command": "TMPDIR=<external>/tmp make profile UV_RUN=\"mise x python uv -- uv run --locked --all-packages --group dev\" args=\"--scenario collection-publication --publication-workload .reference/experiments/publication-16.json --output <external>/publication-profile --finalization-timeout-seconds 900\"",
+  "format": "riverhog-publication-profile-reference-context/v1",
+  "make_exit_status": 0,
+  "make_original_process_received": true,
+  "no_further_workload_running": true,
+  "pinned_tool_selection": "mise-selected Python 3.12.3 and uv 0.11.24; uv --locked --all-packages --group dev. The Makefile entrypoint and assertions were unchanged.",
+  "profile_sha256": "e97ef6ed5138c378704ebd8029ea2fc588fe19599490a2319bacc3988b243800",
+  "profile_temporary_workspace_absent_after_completion": true,
+  "pytest_original_process_received": true,
+  "pytest_temporary_workspace_absent_after_completion": true,
+  "run_id": "607ec073-e45c-4c65-abb0-2a6d5c573e7f",
+  "source_sha": "cad153b519dd4a7a17dba210b30cd84d12d3cafa",
+  "timing_conditions": "The profile overlapped the tail of the independent seven-case publication/rebuild regression process, with distinct catalogs and disposable workspaces. No matching measured throughput reference exists. Durations and rates are diagnostic observations, not acceptance-speed thresholds."
+}

@@ -1,0 +1,99 @@
+{
+  "cases": [
+    {
+      "node": "tests/unit/test_catalog_transactions.py::test_sqlite_read_snapshot_keeps_controls_and_selected_rows_in_one_snapshot[catalog]",
+      "outcome": "passed",
+      "seconds": 0.025
+    },
+    {
+      "node": "tests/unit/test_catalog_transactions.py::test_sqlite_read_snapshot_keeps_controls_and_selected_rows_in_one_snapshot[shared]",
+      "outcome": "passed",
+      "seconds": 0.018
+    },
+    {
+      "node": "tests/unit/test_catalog_transactions.py::test_sqlite_read_snapshot_releases_failed_reader_before_reuse",
+      "outcome": "passed",
+      "seconds": 0.02
+    },
+    {
+      "node": "tests/unit/test_catalog_transactions.py::test_sqlite_immediate_writer_fences_before_reading_a_registration_cursor",
+      "outcome": "passed",
+      "seconds": 0.021
+    },
+    {
+      "node": "tests/unit/test_catalog_transactions.py::test_sqlite_deferred_writer_restores_connection_timeout[False]",
+      "outcome": "passed",
+      "seconds": 0.014
+    },
+    {
+      "node": "tests/unit/test_catalog_transactions.py::test_sqlite_deferred_writer_restores_connection_timeout[True]",
+      "outcome": "passed",
+      "seconds": 0.012
+    },
+    {
+      "node": "packages/http-api-contracts/tests/test_control_budget.py::test_control_calls_cannot_opt_out_of_finite_allowance[0]",
+      "outcome": "passed",
+      "seconds": 0.002
+    },
+    {
+      "node": "packages/http-api-contracts/tests/test_control_budget.py::test_control_calls_cannot_opt_out_of_finite_allowance[-1]",
+      "outcome": "passed",
+      "seconds": 0.002
+    },
+    {
+      "node": "packages/http-api-contracts/tests/test_control_budget.py::test_control_calls_cannot_opt_out_of_finite_allowance[True]",
+      "outcome": "passed",
+      "seconds": 0.002
+    },
+    {
+      "node": "packages/http-api-contracts/tests/test_control_budget.py::test_control_calls_cannot_opt_out_of_finite_allowance[nan]",
+      "outcome": "passed",
+      "seconds": 0.003
+    },
+    {
+      "node": "packages/http-api-contracts/tests/test_control_budget.py::test_control_calls_cannot_opt_out_of_finite_allowance[inf]",
+      "outcome": "passed",
+      "seconds": 0.002
+    },
+    {
+      "node": "packages/http-api-contracts/tests/test_control_budget.py::test_nested_work_cannot_reset_the_enclosing_contact_budget",
+      "outcome": "passed",
+      "seconds": 0.002
+    },
+    {
+      "node": "tests/unit/test_collection_registration_controls.py::test_pending_control_does_not_execute_or_expose_a_staged_summary",
+      "outcome": "passed",
+      "seconds": 1.929
+    },
+    {
+      "node": "tests/unit/test_collection_registration_controls.py::test_status_uses_one_snapshot_and_reuses_the_unchanged_tag_proof",
+      "outcome": "passed",
+      "seconds": 1.83
+    },
+    {
+      "node": "tests/unit/test_collection_registration_controls.py::test_control_rejects_revoked_or_replaced_authorization[False]",
+      "outcome": "passed",
+      "seconds": 0.909
+    },
+    {
+      "node": "tests/unit/test_collection_registration_controls.py::test_control_rejects_revoked_or_replaced_authorization[True]",
+      "outcome": "passed",
+      "seconds": 1.265
+    },
+    {
+      "node": "tests/unit/test_response_contract_exactness.py::test_operational_responses_reject_contradictory_state_evidence",
+      "outcome": "passed",
+      "seconds": 0.008
+    }
+  ],
+  "elapsed_seconds": 18.079,
+  "errors": 0,
+  "failures": 0,
+  "format": "riverhog-external-reference-pytest-summary/v1",
+  "raw_junit_sha256": "28c31fd51ab6c148bee5ca9ad92e6f1887ea4340aac08441f143e6bbeef757f0",
+  "skipped": 0,
+  "source_clean": true,
+  "source_relationship": "Executed on the clean experiment checkpoint, with unchanged source at completion.",
+  "source_sha": "cad153b519dd4a7a17dba210b30cd84d12d3cafa",
+  "tests": 17
+}
