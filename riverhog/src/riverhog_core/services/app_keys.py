@@ -20,7 +20,8 @@ from riverhog_protocol import (
     canonical_json_sha256,
 )
 from riverhog_protocol.errors import BadRequest, Conflict, Forbidden, NotFound
-from sqlalchemy import and_, asc, case, delete, desc, func, or_, select, tuple_
+from sqlalchemy import and_, asc, case, delete, desc, func, or_, select, text, tuple_, update
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 from state_schema import read_snapshot
@@ -34,7 +35,12 @@ from riverhog_core.app_permissions import (
     normalize_access,
 )
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
-from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
+from riverhog_core.catalog_db import (
+    SessionFactory,
+    catalog_write_contention,
+    make_session_factory,
+    session_scope,
+)
 from riverhog_core.catalog_models import (
     AppKeyAccessGrantRecord,
     AppKeyRecord,
@@ -235,16 +241,16 @@ class SqlAlchemyAppKeyService:
         if not token:
             return None
         digest = _token_sha256(token)
-        now = format_utc_timestamp(utc_now())
-        with session_scope(self._session_factory) as session:
+        with read_snapshot(self._session_factory) as session:
             record = session.scalar(select(AppKeyRecord).where(AppKeyRecord.token_sha256 == digest))
             if record is None or not secrets.compare_digest(record.token_sha256, digest):
                 return None
+            now = format_utc_timestamp(utc_now())
             if _status(record, now=now) != "active":
                 return None
-            record.last_used_at = now
+            key_id, generation = record.id, record.access_generation
             access = tuple(_record_access(session, record.id))
-            return Principal(
+            principal = Principal(
                 id=record.app,
                 key_id=record.id,
                 access=frozenset(access),
@@ -255,6 +261,67 @@ class SqlAlchemyAppKeyService:
                     access=access,
                 ),
             )
+            now = format_utc_timestamp(utc_now())
+            if _status(record, now=now) != "active":
+                return None
+        self._record_last_used(
+            key_id=key_id,
+            digest=digest,
+            generation=generation,
+            observed_at=now,
+        )
+        return principal
+
+    def _record_last_used(
+        self, *, key_id: str, digest: str, generation: str, observed_at: str
+    ) -> None:
+        """Attempt one usage observation, omitting only classified writer contention.
+
+        Authentication's read snapshot is already closed. No observation grants
+        authority, retries, queues work, or changes the authorization generation.
+        Lock admission does not wait; ordinary connection and storage I/O remain
+        owned by this synchronous request.
+        """
+        try:
+            with session_scope(self._session_factory) as session:
+                backend = session.get_bind().dialect.name
+                if backend == "sqlite":
+                    session.connection(
+                        execution_options={
+                            "sqlite_immediate_writer": True,
+                            "sqlite_defer_if_busy": True,
+                        }
+                    )
+                elif backend == "postgresql":
+                    # A row NOWAIT does not bound its prerequisite relation lock.
+                    session.execute(text("LOCK TABLE app_keys IN ROW EXCLUSIVE MODE NOWAIT"))
+                    if (
+                        session.scalar(
+                            select(AppKeyRecord.id)
+                            .where(AppKeyRecord.id == key_id)
+                            .with_for_update(nowait=True)
+                        )
+                        is None
+                    ):
+                        return
+                session.execute(
+                    update(AppKeyRecord)
+                    .where(
+                        AppKeyRecord.id == key_id,
+                        AppKeyRecord.token_sha256 == digest,
+                        AppKeyRecord.access_generation == generation,
+                        active_key_filter(format_utc_timestamp(utc_now())),
+                        or_(
+                            AppKeyRecord.last_used_at.is_(None),
+                            AppKeyRecord.last_used_at < observed_at,
+                        ),
+                    )
+                    .values(last_used_at=observed_at)
+                    .execution_options(synchronize_session=False)
+                )
+        except OperationalError as error:
+            if not catalog_write_contention(error):
+                raise
 
     def create(
         self,

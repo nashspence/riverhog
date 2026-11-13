@@ -39,6 +39,7 @@ compose up --detach --wait postgres
 database_url="postgresql+psycopg://$(compose_env_value POSTGRES_USER riverhog):$(compose_env_value POSTGRES_PASSWORD riverhog)@postgres:5432/$(compose_env_value POSTGRES_DB riverhog)"
 default_tests=(
   tests/integration/test_catalog_schema_postgres.py
+  tests/integration/test_app_key_usage_postgres.py
   tests/integration/test_immutable_archive_preparation_concurrency.py
     tests/integration/test_immutable_archive_admission_concurrency.py
   tests/integration/test_collection_deletion_concurrency.py
