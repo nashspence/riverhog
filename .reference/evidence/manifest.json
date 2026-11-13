@@ -1,0 +1,52 @@
+{
+  "format": "riverhog-991-evidence-manifest/v1",
+  "raw_diagnostic": {
+    "gzip_path": "one-member-attribution.json.gz",
+    "compressed_bytes": 77434,
+    "compressed_sha256": "446ec73a8de9bb9720f2d9452434366abb61f50022dbe6239d58af1dddc7703e",
+    "uncompressed_bytes": 1124966,
+    "uncompressed_sha256": "0c658bd8deb5f359ea59d845656c8398e46bb1f1c855e0bb6708ad156dc9a167"
+  },
+  "files": {
+    "conditions-after.json": {
+      "bytes": 457,
+      "sha256": "7cf2b96389790c1a3711b3022de113481e627ad1b5104df9127d680eaad3da90"
+    },
+    "conditions-before.json": {
+      "bytes": 1307,
+      "sha256": "2b997e72229a6928ad7677eec05982152a1fe72d4a38af7d80377b8d76e6837c"
+    },
+    "one-member-attribution.json.gz": {
+      "bytes": 77434,
+      "sha256": "446ec73a8de9bb9720f2d9452434366abb61f50022dbe6239d58af1dddc7703e"
+    },
+    "one-member-profile.json": {
+      "bytes": 5585,
+      "sha256": "d0fb698891b72f8333dbc817ed73522422e46a2b96ab1e8c448d84f3c3bf1435"
+    },
+    "one-member-summary.json": {
+      "bytes": 9409,
+      "sha256": "4d43cde0cd379ce4bc33246f3b49438ce7c626931ee08d5cd3efc30afa59bbd2"
+    },
+    "prior-observations.json": {
+      "bytes": 6912,
+      "sha256": "c3584d2d7c1c9cff751df6bec550072a5517c127d25093e752f9db423c0b43ca"
+    },
+    "probe-activation-check.json": {
+      "bytes": 597,
+      "sha256": "e553055d1e69557dc25bef42a9a58ec96b0725318f8bcfbef14718ff289127b8"
+    },
+    "probe-selfcheck.json": {
+      "bytes": 8477,
+      "sha256": "ca55b452350945095e0b609ebf4f94954ba5ed9bee77dcce6e16b69a4ee6324b"
+    },
+    "profile-make.json": {
+      "bytes": 1456,
+      "sha256": "04c14d88274954af190bafa55a9407ef2811b2487a2e3ea72940545dae8827b4"
+    },
+    "source-audit.json": {
+      "bytes": 1881,
+      "sha256": "f19ad981944d4cf688c707b9440afeba80c2b57edc01ae18b6247ae67398102d"
+    }
+  }
+}

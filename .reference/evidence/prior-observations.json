@@ -1,0 +1,171 @@
+{
+  "format": "riverhog-991-prior-observations/v1",
+  "not_new_executions": true,
+  "comparison": "unmatched sources/progress/load; no measured regression or speedup",
+  "source_relationship": {
+    "audit_source": "8ce49de94c32ae39562aab5ea4178b1dc8c75e77",
+    "prior_published_reference": "2eb7e48f7c9c648f58e27dd0ae4dd11d0cf54457",
+    "prior_profile_source": "cad153b519dd4a7a17dba210b30cd84d12d3cafa",
+    "runtime_product_diff": "none; only two PostgreSQL qualification paths differ outside .reference",
+    "qualification_differences": [
+      "scripts/test_postgres_concurrency.sh",
+      "tests/integration/test_app_key_usage_postgres.py"
+    ]
+  },
+  "observations": [
+    {
+      "source": "d4853961502d29634cadc90dd970e93efac97613",
+      "evidence_url": "https://github.com/nashspence/riverhog/issues/964#issuecomment-6839729402",
+      "evidence_access": "issue-reported summary; original raw profile not inspected here",
+      "members": 16,
+      "payload_bytes_per_member": 65536,
+      "F": 16,
+      "C": 1,
+      "K": 2,
+      "Q": 1,
+      "publication_seconds": 241.949,
+      "total_seconds": 357.032,
+      "condition_difference": "earlier source and test-owned joined worker progress; serial calibration"
+    },
+    {
+      "source": "cad153b519dd4a7a17dba210b30cd84d12d3cafa",
+      "published_reference": "2eb7e48f7c9c648f58e27dd0ae4dd11d0cf54457",
+      "evidence_url": "https://github.com/nashspence/riverhog/blob/2eb7e48f7c9c648f58e27dd0ae4dd11d0cf54457/.reference/evidence/publication-profile.json",
+      "evidence_access": "raw profile read and SHA256 checked in this task",
+      "raw_sha256": "e97ef6ed5138c378704ebd8029ea2fc588fe19599490a2319bacc3988b243800",
+      "members": 16,
+      "payload_bytes_per_member": 65536,
+      "F": 16,
+      "C": 1,
+      "K": 2,
+      "Q": 1,
+      "publication_seconds": 785.0286613570001,
+      "total_seconds": 1076.66871285,
+      "verification_seconds": [
+        103.61892790799993,
+        90.19017628200027,
+        87.73411190000024
+      ],
+      "reads": [
+        328,
+        236,
+        328
+      ],
+      "condition_difference": "bounded coordinator polling; overlaps tail of seven-case regression; no host normalization"
+    },
+    {
+      "source": "2eb7e48f7c9c648f58e27dd0ae4dd11d0cf54457",
+      "evidence_url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6853257215",
+      "evidence_access": "issue-reported summary; raw sampler/profile receipts not inspected here",
+      "members": 1,
+      "payload_bytes_per_member": 65536,
+      "F": 1,
+      "C": 1,
+      "K": 2,
+      "Q": 1,
+      "publication_seconds": 29.657,
+      "total_seconds": 39.014,
+      "process_cpu_seconds": 32.711,
+      "archive_objects": 21,
+      "reads": [
+        58,
+        41,
+        58
+      ],
+      "condition_difference": "serial isolated catalog; all-thread passive samples with observer overhead; finalization resource deadline300 seconds"
+    },
+    {
+      "source": "2eb7e48f7c9c648f58e27dd0ae4dd11d0cf54457",
+      "evidence_url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6853257215",
+      "evidence_access": "issue-reported summary; raw sampler/profile receipts not inspected here",
+      "members": 2,
+      "payload_bytes_per_member": 65536,
+      "F": 2,
+      "C": 1,
+      "K": 2,
+      "Q": 1,
+      "publication_seconds": 44.261,
+      "total_seconds": 59.761,
+      "process_cpu_seconds": 51.018,
+      "archive_objects": 28,
+      "reads": [
+        76,
+        54,
+        76
+      ],
+      "condition_difference": "serial isolated catalog; all-thread passive samples with observer overhead; finalization resource deadline300 seconds"
+    },
+    {
+      "source": "2eb7e48f7c9c648f58e27dd0ae4dd11d0cf54457",
+      "evidence_url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6853257215",
+      "evidence_access": "issue-reported summary; raw sampler/profile receipts not inspected here",
+      "members": 4,
+      "payload_bytes_per_member": 65536,
+      "F": 4,
+      "C": 1,
+      "K": 2,
+      "Q": 1,
+      "publication_seconds": 72.742,
+      "total_seconds": 101.198,
+      "process_cpu_seconds": 88.28,
+      "archive_objects": 42,
+      "reads": [
+        112,
+        80,
+        112
+      ],
+      "condition_difference": "serial isolated catalog; all-thread passive samples with observer overhead; finalization resource deadline300 seconds"
+    },
+    {
+      "source": "8ce49de94c32ae39562aab5ea4178b1dc8c75e77",
+      "evidence_url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6854556220",
+      "evidence_access": "new issue-reported checkpoint received while reference probe already in flight; raw observer receipt not supplied here",
+      "members": 1,
+      "payload_bytes_per_member": 65536,
+      "F": 1,
+      "C": 1,
+      "K": 2,
+      "Q": 1,
+      "publication_seconds": 32.097,
+      "total_seconds": 42.466,
+      "process_cpu_seconds": 35.799,
+      "selected_exclusive_thread_cpu_seconds": 31.917,
+      "journal_advances": 10241,
+      "checkpoint_reads": 30604,
+      "prefix_checks": 40751,
+      "server_validation_units": 400,
+      "catalog_executions": 47435,
+      "physical_invocations": 74,
+      "maximum_active_invocations": 1,
+      "physical_cumulative_wall_seconds": 11.14,
+      "physical_cpu_seconds": 8.617,
+      "available_logical_cpus": 12,
+      "readiness_transition_calls": 202,
+      "actual_readiness_checks": 1,
+      "limits": "different observer and execution conditions; physical-host equivalence not established; queue depths,refusal reasons,lock waits and independent critical path not measured; no speedup or waste established"
+    }
+  ],
+  "read_floor": {
+    "source_basis": "publication_evidence.verify_stored_publication and UploadedArchiveStore.iter_archive_object",
+    "whole_objects": 110,
+    "multipart_objects": 16,
+    "formula": "2*whole_objects + multipart_objects",
+    "predicted_required_observer_reads": 236,
+    "observed_warm_total_reads": 236,
+    "fresh_and_evicted_additional_reads": 92,
+    "limits": "Explains stored-read count floor only, not CPU cost or publication time; part_checks is not generally multipart object count."
+  },
+  "retained_failures": [
+    {
+      "evidence_url": "https://github.com/nashspence/riverhog/issues/964#issuecomment-6845680283",
+      "source": "d4853961502d29634cadc90dd970e93efac97613",
+      "members": 1000,
+      "outcome": "appended all inputs; finalization test-owned60-second join expired; three Native verification passes not reached; originals and scratch received",
+      "not_successful_qualification": true
+    },
+    {
+      "evidence_url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6853257215",
+      "outcome": "thread-entry profiler stalled before append; original and scratch received; invalid diagnostic attempt, not product failure or throughput datum"
+    }
+  ]
+}

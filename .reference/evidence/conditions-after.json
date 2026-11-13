@@ -1,0 +1,14 @@
+{
+  "finished_time_utc": "2026-11-13T13:40:41Z",
+  "load_average": [
+    0.541015625,
+    0.43798828125,
+    0.224609375
+  ],
+  "owned_tmp_entries": [
+    "uv-88c8abf167a08066.lock"
+  ],
+  "original_receiving": "maintained profile helper receipt exit0 and received=true, outer make process exit0 actually received",
+  "tool_residue_disposition": "one zero-byte uv lock file removed after profile/make receiving",
+  "owned_tmp_empty_after_receiving": true
+}

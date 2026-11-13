@@ -1,0 +1,16 @@
+{
+  "expected_exit": 2,
+  "actual_exit": 2,
+  "helper_original_received": true,
+  "publication_started": false,
+  "expected_invalid_attribution_reason": "incomplete-verification-count",
+  "source": {
+    "source_clean": true,
+    "source_sha": "8ce49de94c32ae39562aab5ea4178b1dc8c75e77"
+  },
+  "observer_sha256": {
+    "riverhog_991_probe.py": "99292b91c464310b40fbe05ad8635ca7113fc50e67edd965dea8806db60ab45d",
+    "selfcheck.py": "1057309d8470aedb7ba16eec61b024976217f27a3cfcd03e867a3436b6dcaa10",
+    "sitecustomize.py": "e2120fd0621c104fcd23faf135554236048d2163ab69f073822bba77d98049b4"
+  }
+}

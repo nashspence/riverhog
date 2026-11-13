@@ -1,0 +1,23 @@
+{
+  "source_sha": "8ce49de94c32ae39562aab5ea4178b1dc8c75e77",
+  "tree_sha": "e11191aca8bd2b32711e9e98818619c26cb00ccc",
+  "audited_source_authority": "https://github.com/nashspence/riverhog/issues/964#issuecomment-6854178345",
+  "source_clean": true,
+  "sha256": {
+    "tests/support/qualification/canonical_history_scale.py": "e9b111ea0ae9aa16182ff5ce29d32e105e83573827b0c47ae29d8f19a63ca48e",
+    "tests/support/qualification/publication_profile.py": "8d893cfbb319e10683d7de142a7cac85f713f305fb12e2281b349657449a4da4",
+    "tests/support/qualification/publication_evidence.py": "c18ce32bcd4f5799ad1eb9d167397d65ec902f1f4d2b07b6f82e95f5682a0b75",
+    "scripts/transfer_profile.py": "540b34088706a63e8acd5660f23627b8a4b99e5fd6c2e6b3fb3a98ff474b15c3",
+    "packages/riverhog-client/src/riverhog_client/producer.py": "d92fa6186abeee36ec2de028a548c4579ebb60b12cb796c20fe4bac1db638916",
+    "packages/riverhog-client/src/riverhog_client/uploads.py": "440733c07020cf0cedaba4c7734af1a6857086dcdfff24f03bc8d7025872daa0",
+    "riverhog/src/riverhog_core/services/collection_uploads.py": "3014df57c1c76c9497772ab7558bce9c16bb5f23d6d6f531c5ef319ed4c343da",
+    "packages/riverhog-provenance/src/riverhog_provenance/history.py": "129dca66626fb10fc1674768d5d049c004b5ca0546bf2b123463ade15470f659",
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+    "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py": "9fa6c4cccc78f867d685310a6b563b5264be6c22f65d159128a9b6b8505751e8",
+    "packages/sqlite-admission/src/sqlite_admission/__init__.py": "059495b6f92aff6a38dcb3fe282d8d3c0f8f2ad8120f89f408ac87c805a89d05"
+  },
+  "non_reference_delta_from_prior_reference": [
+    "M\tscripts/test_postgres_concurrency.sh",
+    "A\ttests/integration/test_app_key_usage_postgres.py"
+  ]
+}

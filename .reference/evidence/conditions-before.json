@@ -1,0 +1,47 @@
+{
+  "audited_source": {
+    "source_clean": true,
+    "source_sha": "8ce49de94c32ae39562aab5ea4178b1dc8c75e77"
+  },
+  "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpu_count": 9,
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "load_average": [
+    0.181640625,
+    0.14501953125,
+    0.0947265625
+  ],
+  "launch_time_utc": "2026-11-13T13:37:37Z",
+  "other_qualification_jobs_launched_by_this_producer": 0,
+  "host_idle_proven": false,
+  "workload_sha256": "66a85c8286e2514a40fb79003ae37bdc521fd881ba5becb51a1e2a459e7e8678",
+  "observer_sha256": {
+    "riverhog_991_probe.py": "99292b91c464310b40fbe05ad8635ca7113fc50e67edd965dea8806db60ab45d",
+    "selfcheck.py": "1057309d8470aedb7ba16eec61b024976217f27a3cfcd03e867a3436b6dcaa10",
+    "sitecustomize.py": "e2120fd0621c104fcd23faf135554236048d2163ab69f073822bba77d98049b4"
+  },
+  "parallelism": "one maintained profile helper with normal internal workers; no sibling profile/test workload",
+  "cpu.max": {
+    "unavailable": "FileNotFoundError"
+  },
+  "cpu.stat": {
+    "unavailable": "FileNotFoundError"
+  },
+  "memory.max": {
+    "unavailable": "FileNotFoundError"
+  },
+  "memory.current": {
+    "unavailable": "FileNotFoundError"
+  }
+}

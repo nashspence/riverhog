@@ -1,0 +1,280 @@
+{
+  "passed": true,
+  "actual_admitted_grants_received": true,
+  "actual_sqlite_and_sqlalchemy_errors_preserved": true,
+  "return_and_baseexception_identity_preserved": true,
+  "original_thread_joined": true,
+  "generator_consumed_once": true,
+  "micro_calibration": {
+    "rounds": [
+      {
+        "plain": {
+          "wall_ns": 153792,
+          "cpu_ns": 154155,
+          "calls": 2000
+        },
+        "observed": {
+          "wall_ns": 11050598,
+          "cpu_ns": 11051342,
+          "calls": 2000
+        }
+      },
+      {
+        "plain": {
+          "wall_ns": 71925,
+          "cpu_ns": 71983,
+          "calls": 2000
+        },
+        "observed": {
+          "wall_ns": 10110022,
+          "cpu_ns": 10110569,
+          "calls": 2000
+        }
+      },
+      {
+        "plain": {
+          "wall_ns": 70994,
+          "cpu_ns": 71149,
+          "calls": 2000
+        },
+        "observed": {
+          "wall_ns": 13957094,
+          "cpu_ns": 13957809,
+          "calls": 2000
+        }
+      }
+    ],
+    "scope": "same-thread empty call; no production correction"
+  },
+  "observation": {
+    "format": "riverhog-991-attribution/v1",
+    "attribution_valid": true,
+    "invalid_reasons": [],
+    "pid": 2,
+    "hooks": [
+      "native.admitted.cursor.execute",
+      "native.admitted.cursor.executemany",
+      "native.admitted.cursor.executescript",
+      "native.admitted.cursor.fetchone",
+      "native.admitted.cursor.fetchmany",
+      "native.admitted.cursor.fetchall",
+      "native.admitted.cursor.__next__",
+      "native.admitted.connection.commit",
+      "native.admitted.connection.rollback",
+      "sqlalchemy.Engine.before_cursor_execute",
+      "sqlalchemy.Engine.after_cursor_execute",
+      "sqlalchemy.Engine.handle_error"
+    ],
+    "phases": [
+      {
+        "phase": "bootstrap",
+        "wall_ns": 17511798,
+        "process_cpu_ns": 17504693
+      }
+    ],
+    "threads": [
+      {
+        "lifetime": 0,
+        "ident": 140183979805760,
+        "native_id": 2,
+        "role": "MainThread",
+        "observer_wall_ns": 170897,
+        "observer_cpu_ns": 165323,
+        "buckets": [
+          {
+            "phase": "bootstrap",
+            "operation": "catalog.cursor.execute",
+            "calls": 2,
+            "raised": 1,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 298767,
+            "cpu_ns": 299525,
+            "exclusive_wall_ns": 298767,
+            "exclusive_cpu_ns": 299525,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "native.admitted.connection.commit",
+            "calls": 1,
+            "raised": 0,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 11553,
+            "cpu_ns": 11644,
+            "exclusive_wall_ns": 11553,
+            "exclusive_cpu_ns": 11644,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "native.admitted.connection.rollback",
+            "calls": 1,
+            "raised": 0,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 5316,
+            "cpu_ns": 5385,
+            "exclusive_wall_ns": 5316,
+            "exclusive_cpu_ns": 5385,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "native.admitted.cursor.__next__",
+            "calls": 3,
+            "raised": 0,
+            "exhausted": 1,
+            "rows": 2,
+            "wall_ns": 29326,
+            "cpu_ns": 29461,
+            "exclusive_wall_ns": 29326,
+            "exclusive_cpu_ns": 29461,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "native.admitted.cursor.execute",
+            "calls": 3,
+            "raised": 1,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 317995,
+            "cpu_ns": 318465,
+            "exclusive_wall_ns": 317995,
+            "exclusive_cpu_ns": 318465,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "native.admitted.cursor.executemany",
+            "calls": 1,
+            "raised": 0,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 40500,
+            "cpu_ns": 40595,
+            "exclusive_wall_ns": 40500,
+            "exclusive_cpu_ns": 40595,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "synthetic.child",
+            "calls": 1,
+            "raised": 0,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 19829,
+            "cpu_ns": 19969,
+            "exclusive_wall_ns": 19829,
+            "exclusive_cpu_ns": 19969,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "synthetic.error",
+            "calls": 1,
+            "raised": 1,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 3109,
+            "cpu_ns": 3105,
+            "exclusive_wall_ns": 3109,
+            "exclusive_cpu_ns": 3105,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "synthetic.parent",
+            "calls": 1,
+            "raised": 0,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 33543,
+            "cpu_ns": 33508,
+            "exclusive_wall_ns": 13714,
+            "exclusive_cpu_ns": 13539,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "synthetic.return",
+            "calls": 1,
+            "raised": 0,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 2107,
+            "cpu_ns": 2088,
+            "exclusive_wall_ns": 2107,
+            "exclusive_cpu_ns": 2088,
+            "cross_phase_calls": 0
+          }
+        ],
+        "covered_exclusive_cpu_ns": 743776
+      },
+      {
+        "lifetime": 1,
+        "ident": 140183958222528,
+        "native_id": 43,
+        "role": "other",
+        "observer_wall_ns": 43509,
+        "observer_cpu_ns": 42900,
+        "buckets": [
+          {
+            "phase": "bootstrap",
+            "operation": "synthetic.child",
+            "calls": 1,
+            "raised": 0,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 58165,
+            "cpu_ns": 58267,
+            "exclusive_wall_ns": 58165,
+            "exclusive_cpu_ns": 58267,
+            "cross_phase_calls": 0
+          },
+          {
+            "phase": "bootstrap",
+            "operation": "synthetic.parent",
+            "calls": 1,
+            "raised": 0,
+            "exhausted": 0,
+            "rows": 0,
+            "wall_ns": 111921,
+            "cpu_ns": 111829,
+            "exclusive_wall_ns": 53756,
+            "exclusive_cpu_ns": 53562,
+            "cross_phase_calls": 0
+          }
+        ],
+        "covered_exclusive_cpu_ns": 111829
+      }
+    ],
+    "elapsed_ns": 17511798,
+    "process_cpu_ns": 17504693,
+    "covered_exclusive_cpu_ns": 855605,
+    "unattributed_process_cpu_ns": 16649088,
+    "budgets": {
+      "threads": 4096,
+      "buckets_per_thread": 1024,
+      "nesting": 128,
+      "phases": 128
+    },
+    "observation_window": "recorder construction after dependency imports through atexit receipt; excludes earlier helper startup",
+    "limitations": [
+      "Instrumented diagnostic; not a matching throughput baseline.",
+      "Thread CPU covers instrumented spans only, not complete thread lifetime.",
+      "Exclusive wall is same-thread nesting accounting, not concurrent critical path.",
+      "Cross-phase spans are attributed to start phase; phase CPU is process-wide.",
+      "Catalog cursor events omit fetch, commit and pool/connection work.",
+      "Native cursor counters cover sqlite_admission objects only; raw disposable JournalStore/closure/worklist SQLite is uncovered.",
+      "Session and ledger spans may include uncovered raw SQLite; their CPU cannot be assigned to measured admitted SQL.",
+      "Native rows are returned rows, not engine row visits or VM steps.",
+      "One executemany call may execute many statements; parameters are not consumed.",
+      "Observer bookkeeping overlaps parent spans and is not subtracted.",
+      "Elapsed minus CPU does not identify a lock, IO or scheduler wait."
+    ]
+  }
+}
