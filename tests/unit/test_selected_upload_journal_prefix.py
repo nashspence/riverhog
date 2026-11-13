@@ -293,6 +293,14 @@ def test_complete_finalization_reuses_selected_semantics_independently_of_fanout
             per_journal[primary.journal_id] = len(rows)
         assert {row["journal_id"] for row in validations} == set(per_journal)
         record_property(
+            "selected_prefix_profile",
+            {
+                "selected_proofs": selected,
+                "per_journal_validation_calls": per_journal,
+                "shared_validations": shared,
+            },
+        )
+        record_property(
             "growth_observations",
             {
                 "members": case.members,
@@ -302,13 +310,17 @@ def test_complete_finalization_reuses_selected_semantics_independently_of_fanout
                 "shared_source_octets": len(case.shared_raw),
                 "distinct_selected_anchors": 1,
                 "complete_units": len(owners),
-                "selected_proofs": selected,
+                "selected_proof_calls": len(selected),
+                "selected_result_openings": sum(row["opens"] for row in selected),
+                "selected_anchor_lookups": sum(row["anchor_lookups"] for row in selected),
+                "selected_source_payload_octets": sum(row["raw_octets"] for row in selected),
+                "selected_native_advances": sum(row["native_advances"] for row in selected),
                 "native_validation_calls": len(validations),
                 "unique_validated_journals": len(per_journal),
-                "per_journal_validation_calls": per_journal,
                 "native_advances": len(advances),
                 "validation_input_octets": sum(row["octets"] for row in validations),
-                "shared_validations": shared,
+                "shared_validation_calls": len(shared),
+                "shared_validation_input_octets": sum(row["octets"] for row in shared),
             },
         )
 
