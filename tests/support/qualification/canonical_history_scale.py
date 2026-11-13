@@ -131,11 +131,11 @@ def publish_shared_history(
     container = _container(directory, database_url=database_url)
     container.bootstrap_token = "shared-history-qualification"
     transport = TestClient(create_app(container=container))
-    bootstrap = _api(transport, container.bootstrap_token, workers=container)
+    bootstrap = _api(transport, container.bootstrap_token, workers=container, join_workers=False)
     key = bootstrap.create_app_key(
         "shared-history-qualification", access=[{"permission": "*", "resource": "*"}]
     )
-    api = _api(transport, key["token"], workers=container)
+    api = _api(transport, key["token"], workers=container, join_workers=False)
     sources = []
     payload_identities = {}
     for offset in range(members):

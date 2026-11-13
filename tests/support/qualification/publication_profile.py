@@ -145,6 +145,7 @@ def run_publication_profile(
                     "archive_scrypt_work_factor": 1,
                     "producer_cache": False,
                     "append_mode": "one-member-at-a-time",
+                    "archive_worker_progress": "bounded-coordinator-polls",
                     "finalization_poll_seconds": PUBLICATION_POLL_SECONDS,
                     "finalization_timeout_seconds": timeout,
                     "native_cache_byte_budget": _OBJECT_CACHE_BYTES,

@@ -237,14 +237,26 @@ class _LocalApi(ApiClient):
     transport: TestClient
     observer: OperationObserver | None
     workers: ServiceContainer | None
+    join_workers: bool
 
     def spawn(self):
-        return _api(self.transport, self.token, observer=self.observer, workers=self.workers)
+        return _api(
+            self.transport,
+            self.token,
+            observer=self.observer,
+            workers=self.workers,
+            join_workers=self.join_workers,
+        )
 
     def get_collection_upload_session(self, collection_id):
         if self.workers is not None:
-            drive_custody_turn(self.workers.collection_uploads)
-            drive_finalization_turn(self.workers.collection_uploads)
+            if self.join_workers:
+                drive_custody_turn(self.workers.collection_uploads)
+                drive_finalization_turn(self.workers.collection_uploads)
+            else:
+                # Polling producers own their deadline; receive only completed owner work.
+                self.workers.collection_uploads.process_due_custody_receipts()
+                self.workers.collection_uploads.process_due_finalizations()
         return super().get_collection_upload_session(collection_id)
 
     def seal_collection_upload_session_provenance_journal(self, collection_id, journal_id):
@@ -259,6 +271,7 @@ def _api(
     *,
     observer: OperationObserver | None = None,
     workers: ServiceContainer | None = None,
+    join_workers: bool = True,
 ) -> ApiClient:
     api = _LocalApi(
         base_url="http://testserver",
@@ -272,6 +285,7 @@ def _api(
     api.transport = test_client
     api.observer = observer
     api.workers = workers
+    api.join_workers = join_workers
     api._request_client = bound  # type: ignore[assignment]
     api._download_client = bound  # type: ignore[assignment]
     return api

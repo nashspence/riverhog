@@ -16,6 +16,7 @@ from tests.support.qualification.publication_geometry import (
     PublicationGeometry,
     read_workload,
 )
+from tests.unit import test_operation_lifecycle_api as local_api_fixture
 
 
 def document() -> dict[str, object]:
@@ -189,6 +190,20 @@ def test_real_native_profile_verifies_one_collection_through_explicit_reader_cac
     phases = []
     received_deadlines = []
     original_finish = canonical_history_scale.IncrementalCollectionProducer.finish
+    original_api = canonical_history_scale._api
+
+    def spawned_api(*args, **kwargs):
+        api = original_api(*args, **kwargs)
+        spawned = api.spawn()
+        api.close()
+        return spawned
+
+    def unexpected_worker_wait(*_args, **_kwargs):
+        raise AssertionError("publication status polling must not join archive workers")
+
+    monkeypatch.setattr(canonical_history_scale, "_api", spawned_api)
+    monkeypatch.setattr(local_api_fixture, "drive_custody_turn", unexpected_worker_wait)
+    monkeypatch.setattr(local_api_fixture, "drive_finalization_turn", unexpected_worker_wait)
 
     def finish(producer, *args, **kwargs):
         received_deadlines.append(kwargs["timeout_seconds"])
@@ -203,6 +218,7 @@ def test_real_native_profile_verifies_one_collection_through_explicit_reader_cac
     )
     assert received_deadlines == [3600]
     assert result["conditions"]["finalization_timeout_seconds"] == 3600
+    assert result["conditions"]["archive_worker_progress"] == "bounded-coordinator-polls"
     assert os.environ["RIVERHOG_CONFIG"] == sentinel
     assert result["completion_verified"] is True
     assert phases[-1]["phase"] == "cleanup-received"
