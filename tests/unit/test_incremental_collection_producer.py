@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from dataclasses import replace
 from pathlib import Path
 
@@ -18,6 +19,7 @@ from riverhog_core.app_permissions import (
     Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectUploadRecord,
@@ -41,6 +43,7 @@ from riverhog_protocol import (
 from riverhog_protocol.errors import NotFound
 from riverhog_protocol.manifest import artifact_set_identity_ordered
 from sqlalchemy import func, select
+from state_schema import read_snapshot
 
 from tests.support.finalization import drive_custody_turn
 from tests.support.upload_api import UploadServiceApi
@@ -415,6 +418,17 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
 ) -> None:
     monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
     api, store = _bounded_service_api(tmp_path)
+    submit = api.service._archive_finalizer_work._submit
+    deferred = False
+
+    def defer_one_custody_claim(collection_id, selection, *args, **kwargs):
+        nonlocal deferred
+        if selection.startswith("artifact-custody:") and not deferred:
+            deferred = True
+            return "busy"
+        return submit(collection_id, selection, *args, **kwargs)
+
+    monkeypatch.setattr(api.service._archive_finalizer_work, "_submit", defer_one_custody_claim)
     identities = {}
     producer = IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
@@ -443,14 +457,26 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
             receipts = producer.append_inputs(
                 (ProducerFile(source, artifact_id, allow_missing_materialization_hint=True),)
             )
-            # Each coordinator turn selects one member of this construction.
-            # Allow this four-member pack its dependency milestones and one
-            # no-progress probe, separately from the actual HTTP request path.
-            for _ in range(4 * 4 + 1):
-                if drive_custody_turn(api.service, limit=4) == 0:
+            # A claim may defer without progress while durable custody work remains.
+            # Wait for that work without consuming the pack's semantic turn allowance.
+            deadline = time.monotonic() + 300
+            progressed_turns = 0
+            while True:
+                with read_snapshot(api.service._session_factory) as session:
+                    pending = session.scalar(
+                        select(ArchiveWriteControlRecord.custody_due_count).where(
+                            ArchiveWriteControlRecord.collection_id == producer.collection_id
+                        )
+                    )
+                assert pending is not None
+                if pending == 0:
                     break
-            else:
-                raise AssertionError("the bounded pack custody window did not drain")
+                assert time.monotonic() < deadline, "the bounded pack custody window did not drain"
+                if drive_custody_turn(api.service, limit=4):
+                    progressed_turns += 1
+                    assert progressed_turns <= 4 * 4
+                else:
+                    time.sleep(0.01)
             receipts = (*receipts, *producer.reconcile_custody())
             for receipt in receipts:
                 owned = local.get(receipt.artifact.artifact_id)
@@ -471,6 +497,7 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
         producer.stop()
 
     assert result.receipt["state"] == "finalized"
+    assert deferred
     assert high_water <= 5  # four unsealed members plus the newly completed artifact
     assert not any(path.exists() for path in local.values())
     assert len([path for path in store.objects if "/volumes/" in path]) >= 7
