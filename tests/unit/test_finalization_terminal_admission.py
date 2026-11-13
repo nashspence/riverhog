@@ -100,7 +100,8 @@ def _closed_catalog_stage(tmp_path, stage, *, database_url=None):
             with pytest.raises(Conflict, match="archive write admission is closed"):
                 options = (
                     {"result_resources": resources}
-                    if stage == "_advance_catalog_projection"
+                    if stage
+                    in {"_advance_catalog_projection", "_advance_provenance_closure_validation"}
                     else {}
                 )
                 getattr(case.service, stage)(case.collection_id, **options)

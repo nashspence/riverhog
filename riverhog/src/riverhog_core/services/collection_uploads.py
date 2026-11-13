@@ -3671,13 +3671,16 @@ class SqlAlchemyCollectionUploadService:
 
         bodies = {
             "member-histories": self._stage_member_histories,
-            "provenance-closure": self._validate_provenance_closure,
             "artifact-tree": self._commit_archive_tree,
         }
 
         def advance(session: Session, upload: CollectionUploadRecord) -> bool:
             if kind == "catalog-projection":
                 return self._commit_catalog_projection(
+                    session, upload, result_resources=owner.result_resources
+                )
+            if kind == "provenance-closure":
+                return self._validate_provenance_closure(
                     session, upload, result_resources=owner.result_resources
                 )
             return bodies[kind](session, upload)
@@ -4962,7 +4965,9 @@ class SqlAlchemyCollectionUploadService:
                 row.receipt_json = _sealed_provenance_object_json(sealed)
         return True
 
-    def _advance_provenance_closure_validation(self, collection_id: int) -> bool:
+    def _advance_provenance_closure_validation(
+        self, collection_id: int, *, result_resources: UploadJournalResultResources
+    ) -> bool:
         """Resolve each member against its exact primary canonical snapshot."""
 
         with session_scope(self._session_factory) as session:
@@ -4975,11 +4980,19 @@ class SqlAlchemyCollectionUploadService:
             if upload is None:
                 return False
             require_open_upload_writes(session, upload)
-            return self._validate_provenance_closure(session, upload)
+            return self._validate_provenance_closure(
+                session, upload, result_resources=result_resources
+            )
 
     def _validate_provenance_closure(
-        self, session: Session, upload: CollectionUploadRecord
+        self,
+        session: Session,
+        upload: CollectionUploadRecord,
+        *,
+        result_resources: UploadJournalResultResources,
     ) -> bool:
+        from .upload_journal_prefix import verify_selected_upload_journal_prefix
+
         collection_id = upload.collection_id
         if upload.provenance_closure_validated:
             return False
@@ -5085,17 +5098,14 @@ class SqlAlchemyCollectionUploadService:
                             )
                             if selected_journal is None or selected_journal.state != "sealed":
                                 raise Conflict("selected member history root is absent or unsealed")
-                            validate_journal_chunks(
-                                _iter_upload_journal_chunks(
-                                    session,
-                                    selected_journal,
-                                    through_bytes=selected_anchor.prefix_bytes,
-                                ),
+                            verify_selected_upload_journal_prefix(
+                                session,
+                                self._journal_validation_owner.root,
+                                collection_id,
+                                selected_anchor,
                                 catalog=admission_provenance_catalog(),
-                                expected_anchor=selected_anchor.to_mapping(),
-                                require_exact_tail=True,
-                                require_profiles=False,
-                            ).close()
+                                result_resources=result_resources,
+                            )
                     validate_collection_production_records(
                         summary.graph_validation.view,
                         delivery_context_id=upload.delivery_context_id,
@@ -5137,6 +5147,8 @@ class SqlAlchemyCollectionUploadService:
             return True
         if upload.provenance_validation_next_artifact_order != upload.artifact_count:
             raise Conflict("canonical provenance bindings do not cover the artifact set")
+        # Member cursors retain provisional accepted-prefix facts. Resolve the
+        # complete current raw histories before recording closure success.
         _validate_staged_canonical_journal_set(session, upload)
         upload.provenance_closure_validated = True
         return True
