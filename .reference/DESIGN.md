@@ -176,7 +176,7 @@ The full caller still validates distinct snapshots and the physical corpus.
 For a fixed set of exact direct roots, increasing attachment fanout therefore
 adds membership/admission metadata work rather than multiplying shared-prefix
 semantic work. The maintained witness varies fanout and shared-prefix extent
-independently and counts real delegate work throughout the finalization
+independently and counts real delegate work throughout the complete provenance-closure owner
 sequence, including the terminal barrier.
 
 No new durable rows are added. The existing Native job/workspace stores evidence

@@ -1,0 +1,54 @@
+{
+  "compressed_record": {
+    "path": "initial-unit.json.gz",
+    "uncompressed_bytes": 1194820,
+    "uncompressed_sha256": "59efaa450747c140d03aa6d3294997d34e3debdc892b9148d1f857d23890dc35"
+  },
+  "files": [
+    {
+      "bytes": 70950,
+      "path": "final-unit-make.json",
+      "sha256": "310f62bc66ffc503c7deb51ca6ac2d5d4878218da6a3d99d982c4b54533f6a00"
+    },
+    {
+      "bytes": 13214,
+      "path": "final-unit.json",
+      "sha256": "0ca985000c7d06a77f22c392009d6199b5c7bf15873ae379653ee7703703657b"
+    },
+    {
+      "bytes": 2922,
+      "path": "final-unit.log",
+      "sha256": "f325076f5c9f403e78de302e3ba717af17377da547f94a09791bf4670b5cdaf2"
+    },
+    {
+      "bytes": 2537,
+      "path": "implementation-lint-make.json",
+      "sha256": "753fd4ceead75d66c17628fd7acf36beac6830f46af56f15d57d369f6c63de8c"
+    },
+    {
+      "bytes": 794,
+      "path": "implementation-lint.log",
+      "sha256": "59ad8494b705e4bc451b1283e4f8bf394439483743fc66b8b0fd300e56365aa9"
+    },
+    {
+      "bytes": 70946,
+      "path": "initial-unit-make.json",
+      "sha256": "684d0f0afbeb155a0e6af35b9a0cb7ffe38d203f4aa8cfcfe7aabd39ee8fe955"
+    },
+    {
+      "bytes": 27081,
+      "path": "initial-unit.json.gz",
+      "sha256": "518e4e08126aaee2e165bc2fe99222b4a1f45f1dc89a97509106ced5c437e167"
+    },
+    {
+      "bytes": 3656,
+      "path": "initial-unit.log",
+      "sha256": "2417703e098f4de4ce63f06d3be670d6220ad07587680c7efb0c60b825b2ed02"
+    },
+    {
+      "bytes": 6114,
+      "path": "results.json",
+      "sha256": "108780a93855e324aeabad0bc30791bf09ef9149d344c3a52cb9fc9b2a2176b6"
+    }
+  ]
+}

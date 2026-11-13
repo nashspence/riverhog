@@ -1,0 +1,30 @@
+make[1]: Entering directory '/workspace/scratch/320596a7d459/riverhog-964-g13'
+bringing up nodes...
+bringing up nodes...
+
+...............................................................          [100%]
+Machine-readable pytest timings: /workspace/scratch/320596a7d459/recovery964/qualification/pytest/unit/93b0686f84534de988768e1b7327a6b8/ffcde7ba9c644b09985ee8cbc02bc987
+============================= slowest 20 durations =============================
+219.15s call     tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-1]
+147.70s call     tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-4]
+124.88s call     tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-4]
+119.82s call     tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-1]
+70.63s call     tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_keeps_the_original_catalog_commit_outcome[True]
+65.54s call     tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_keeps_the_original_catalog_commit_outcome[False]
+61.93s call     packages/riverhog-provenance/tests/test_source_anchor_growth.py::test_actual_source_header_selection_preserves_every_original_prefix
+55.16s call     tests/unit/test_selected_upload_journal_prefix.py::test_changed_raw_selected_bytes_cannot_cross_the_complete_closure_barrier
+51.31s call     tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_reopens_after_service_restart_without_revalidation
+50.85s call     tests/unit/test_archive_catalog_finalizer.py::test_pending_original_cannot_advance_a_replacement_claim[provenance-closure]
+46.22s call     tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[True-provenance-closure]
+45.77s call     tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_retains_uncertain_original_native_receiving[False]
+45.66s call     tests/unit/test_archive_catalog_finalizer.py::test_original_transaction_failure_keeps_its_exact_cursor[provenance-closure]
+41.48s call     tests/unit/test_upload_journal_result_growth.py::test_sealed_result_admission_records_catalog_native_and_lease_work
+40.77s call     tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[False-provenance-closure]
+40.33s call     tests/unit/test_archive_catalog_finalizer.py::test_changed_pending_cursor_is_not_a_fresh_batch[provenance-closure]
+26.09s call     tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_retains_uncertain_original_native_receiving[True]
+20.50s call     tests/unit/test_upload_journal_result.py::test_independent_sealed_readers_can_reopen_while_an_evicted_borrow_remains_live
+18.26s call     tests/unit/test_selected_upload_journal_prefix.py::test_selected_prefix_identity_is_exact_and_capacity_retry_does_not_replay
+16.39s call     tests/unit/test_upload_journal_result.py::test_actual_sealed_result_reopens_inside_catalog_writer_without_replay_or_new_epoch
+63 passed in 797.27s (0:13:17)
+make[1]: Leaving directory '/workspace/scratch/320596a7d459/riverhog-964-g13'
+Make validation: 836.701s; receipt /workspace/scratch/320596a7d459/recovery964/qualification/make/93b0686f84534de988768e1b7327a6b8/99f568a4b20348769bb45f1beaaef603/manifest.json

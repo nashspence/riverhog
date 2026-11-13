@@ -1,0 +1,19 @@
+make[1]: Entering directory '/workspace/scratch/320596a7d459/riverhog-964-g13'
+# SUMMARY
+
+* Bad licenses: 0
+* Deprecated licenses: 0
+* Licenses without file extension: 0
+* Missing licenses: 0
+* Unused licenses: 0
+* Used licenses: Apache-2.0, CAL-1.0
+* Read errors: 0
+* Invalid SPDX License Expressions: 0
+* Files with copyright information: 2376 / 2376
+* Files with license information: 2376 / 2376
+
+Congratulations! Your project is compliant with version 3.3 of the REUSE Specification :-)
+2053 files already formatted
+All checks passed!
+make[1]: Leaving directory '/workspace/scratch/320596a7d459/riverhog-964-g13'
+Make validation: 10.461s; receipt /workspace/scratch/320596a7d459/recovery964/qualification/make/b9a874c8a2734d55b935323e5c19bb48/16f513655f7848478def3d58661aaab7/manifest.json

@@ -1,0 +1,134 @@
+{
+  "audited_base": "8ce49de94c32ae39562aab5ea4178b1dc8c75e77",
+  "canonical_unit_qualification": false,
+  "conditions": [
+    "Pinned repository environment; Linux x86_64, two pytest workers, load distribution.",
+    "Full lint ran concurrently during the early part of each focused test invocation.",
+    "Each regime constructed and admitted genuine journals and independently generated identities.",
+    "Selected helper timing excludes fixture admission, primary validation, and terminal corpus work.",
+    "No matched baseline throughput comparison or numerical speed gate.",
+    "Filtered maintained make unit commands are focused checks, not canonical full-unit qualification."
+  ],
+  "dependency_growth_samples": {
+    "packages/riverhog-provenance/tests/test_source_anchor_growth.py::test_actual_source_header_selection_preserves_every_original_prefix": {
+      "declaration": "riverhog-provenance.frozen-source-anchor.growth/v1",
+      "samples": 1180
+    },
+    "tests/unit/test_upload_journal_result_admission_growth.py::test_actual_detached_admission_work_is_independent_of_other_catalog_rows": {
+      "declaration": "riverhog.sealed-journal-result-metadata-admission.growth/v1",
+      "samples": 9
+    },
+    "tests/unit/test_upload_journal_result_admission_growth.py::test_actual_detached_currentness_is_one_indexed_join": {
+      "declaration": "riverhog.sealed-journal-result-admission-current.growth/v1",
+      "samples": 9
+    },
+    "tests/unit/test_upload_journal_result_growth.py::test_sealed_result_admission_records_catalog_native_and_lease_work": {
+      "declaration": "riverhog.sealed-journal-result-admission.growth/v1",
+      "samples": 6
+    }
+  },
+  "final_focused_tests": 15,
+  "final_make_elapsed_seconds": 502.03391620799994,
+  "final_pytest_elapsed_seconds": 454.21,
+  "fixture_member_payload_octets": 28,
+  "format": "riverhog-external-selected-prefix-reference/v1",
+  "github_implementation_tree_mirror": "e7e65990c2a92572ba00651126992eb2671f7f23",
+  "implementation_lint_elapsed_seconds": 10.46117329000117,
+  "implementation_tested_producer": "699d83d7ce78ed209a01f2c737803367d031275a",
+  "implementation_tree": "1cd96b726681bbb32d6c8b85c592f76126ab9c05",
+  "initial_focused_tests": 63,
+  "initial_make_elapsed_seconds": 836.701255902999,
+  "initial_pytest_elapsed_seconds": 797.27,
+  "initial_tested_producer": "3f6ca2fbf41b87c5b8b0713e5d8c1b13c1274078",
+  "measured_boundary": "Complete provenance-closure owner sequence: all member turns, terminal complete-history/corpus turn, and final no-progress turn; fixture admission/history staging and other publication phases excluded.",
+  "observations": [
+    {
+      "complete_units": 6,
+      "documentary_text_octets": 0,
+      "fanout": 1,
+      "members": 4,
+      "native_advances": 3207,
+      "native_validation_calls": 14,
+      "selected_elapsed_seconds": 0.01888783200047328,
+      "selected_native_advances": 0,
+      "selected_proof_calls": 1,
+      "selected_source_octets": 0,
+      "selected_thread_cpu_seconds": 0.016681386000001908,
+      "shared_prefix_octets": 5367,
+      "shared_source_octets": 6538,
+      "shared_terminal_input_octets": 11905,
+      "shared_terminal_validation_calls": 2,
+      "test": "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-1]",
+      "unique_validated_journals": 5,
+      "validation_input_octets": 146377
+    },
+    {
+      "complete_units": 6,
+      "documentary_text_octets": 0,
+      "fanout": 4,
+      "members": 4,
+      "native_advances": 3207,
+      "native_validation_calls": 14,
+      "selected_elapsed_seconds": 0.08443473000079393,
+      "selected_native_advances": 0,
+      "selected_proof_calls": 4,
+      "selected_source_octets": 0,
+      "selected_thread_cpu_seconds": 0.07555394899995349,
+      "shared_prefix_octets": 5367,
+      "shared_source_octets": 6538,
+      "shared_terminal_input_octets": 11905,
+      "shared_terminal_validation_calls": 2,
+      "test": "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-4]",
+      "unique_validated_journals": 5,
+      "validation_input_octets": 146377
+    },
+    {
+      "complete_units": 6,
+      "documentary_text_octets": 4096,
+      "fanout": 1,
+      "members": 4,
+      "native_advances": 3207,
+      "native_validation_calls": 14,
+      "selected_elapsed_seconds": 0.041701768001075834,
+      "selected_native_advances": 0,
+      "selected_proof_calls": 1,
+      "selected_source_octets": 0,
+      "selected_thread_cpu_seconds": 0.03938762799998585,
+      "shared_prefix_octets": 9463,
+      "shared_source_octets": 10634,
+      "shared_terminal_input_octets": 20097,
+      "shared_terminal_validation_calls": 2,
+      "test": "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-1]",
+      "unique_validated_journals": 5,
+      "validation_input_octets": 154569
+    },
+    {
+      "complete_units": 6,
+      "documentary_text_octets": 4096,
+      "fanout": 4,
+      "members": 4,
+      "native_advances": 3207,
+      "native_validation_calls": 14,
+      "selected_elapsed_seconds": 0.06141827999999805,
+      "selected_native_advances": 0,
+      "selected_proof_calls": 4,
+      "selected_source_octets": 0,
+      "selected_thread_cpu_seconds": 0.056607608999968306,
+      "shared_prefix_octets": 9463,
+      "shared_source_octets": 10634,
+      "shared_terminal_input_octets": 20097,
+      "shared_terminal_validation_calls": 2,
+      "test": "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-4]",
+      "unique_validated_journals": 5,
+      "validation_input_octets": 154569
+    }
+  ],
+  "owner_comment": "https://github.com/nashspence/riverhog/issues/964#issuecomment-6855786223",
+  "runtime": {
+    "machine": "x86_64",
+    "python": "3.12.3",
+    "sqlalchemy": "2.0.51",
+    "sqlite": "3.45.1",
+    "system": "Linux"
+  }
+}
