@@ -1,0 +1,11 @@
+starting focused-tests log /workspace/scratch/21c38f9cc56d/context-lookups-verification/focused-tests.log
+focused-tests wrapper_exit 0 original_exit 0
+starting ruff log /workspace/scratch/21c38f9cc56d/context-lookups-verification/ruff.log
+ruff wrapper_exit 0 original_exit 0
+starting format log /workspace/scratch/21c38f9cc56d/context-lookups-verification/format.log
+format wrapper_exit 0 original_exit 0
+starting reuse log /workspace/scratch/21c38f9cc56d/context-lookups-verification/reuse.log
+reuse wrapper_exit 0 original_exit 0
+starting mypy log /workspace/scratch/21c38f9cc56d/context-lookups-verification/mypy.log
+mypy wrapper_exit 0 original_exit 0
+verification final status 0 source {'source_sha': 'e4f6ccfc42d90cb69791ea1c507b6c79d21edc47', 'source_clean': True} temporary_removed True

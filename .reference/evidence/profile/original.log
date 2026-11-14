@@ -1,0 +1,17 @@
+begin full_projection:diagnostic:baseline-reader
+completed full_projection:diagnostic:baseline-reader
+begin full_projection:diagnostic:proposed-reader
+completed full_projection:diagnostic:proposed-reader
+begin full_projection:elapsed:baseline-reader
+completed full_projection:elapsed:baseline-reader
+begin full_projection:elapsed:proposed-reader
+completed full_projection:elapsed:proposed-reader
+begin execution_groups:diagnostic:baseline-reader
+completed execution_groups:diagnostic:baseline-reader
+begin execution_groups:diagnostic:proposed-reader
+completed execution_groups:diagnostic:proposed-reader
+begin execution_groups:elapsed:baseline-reader
+completed execution_groups:elapsed:baseline-reader
+begin execution_groups:elapsed:proposed-reader
+completed execution_groups:elapsed:proposed-reader
+original child final status 0 source {'source_sha': 'e4f6ccfc42d90cb69791ea1c507b6c79d21edc47', 'source_clean': True} cleanup {'profile_scratch_created': True, 'profile_scratch_removed': True, 'profile_scratch_path': '/workspace/scratch/21c38f9cc56d/context-lookup-reader-profile-tmp/context-reader-profile-cz60s539'}

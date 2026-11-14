@@ -1,0 +1,1398 @@
+{
+  "behavior_equivalence": {
+    "action_count": 124,
+    "all_exact_outcomes_equal": true,
+    "case_count": 67,
+    "case_document_sha256": "b7d78c0fd1338e1d5ddc985b90bc6bdb73fa02c0d76c865d21cfb19007879998",
+    "factory_path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_growth_context_lookups.py",
+    "factory_sha256": "2650d46fa1e23137bf1958adc8dffe4f02e3da83ffbb2e129b8b9984bb724870",
+    "format": "riverhog-context-lookup-behavior-equivalence/v1",
+    "inputs_unchanged_by_public_calls": true,
+    "mutable_projection_identity_retained_within_case": true,
+    "outside_performance_windows": true
+  },
+  "cleanup": {
+    "profile_scratch_created": true,
+    "profile_scratch_path": "/workspace/scratch/21c38f9cc56d/context-lookup-reader-profile-tmp/context-reader-profile-cz60s539",
+    "profile_scratch_removed": true
+  },
+  "conditions": {
+    "diagnostic_passes_per_reader_workload": 1,
+    "diagnostic_scope": "Temporary AST copies wrap actual lookup DictComp results and _Context constructor results, returning the identical objects. Original recursion, relation, stack and check code is retained. Ordered visit hashes are diagnostic only.",
+    "dictionary_accounting": "Executed dictionary-construction counts and sum of returned dictionary cardinalities at the selected lookup sites, for valid retained data. These are not bytes, RSS, peak-memory measurements or predictions.",
+    "elapsed_excluded": "Imports, module construction, input decoding/copying, adversarial cases, instrumentation, canonical equality checks, report writing, and product execution.",
+    "elapsed_observations_per_reader_workload": 1,
+    "executable": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+    "execution_scope": "All 46 ordered public validate_execution_samples calls, each parsing a fresh complete reachable projection and checking all original independent roots and nested observations.",
+    "full_projection_scope": "One complete public validate_projection call including parse, declaration construction, graph/ownership checks, and all unit traversals.",
+    "pass_order": [
+      "diagnostic:baseline-reader",
+      "diagnostic:proposed-reader",
+      "elapsed:baseline-reader",
+      "elapsed:proposed-reader"
+    ],
+    "product_fixtures": 0,
+    "product_operations": 0,
+    "python": "3.12.3",
+    "reader_labels": [
+      "baseline-reader",
+      "proposed-reader"
+    ],
+    "timing_lane": "context-lookup-reader-profile",
+    "timing_run_id": "1d27a34456a44c2d841e2582c466188c",
+    "timing_source": "Exact unmodified baseline/proposed source modules, separate from diagnostic module copies.",
+    "timing_target": null,
+    "uv": "uv 0.11.24 (x86_64-unknown-linux-gnu)",
+    "workload_order": [
+      "full_projection",
+      "execution_groups"
+    ]
+  },
+  "exit_status": 0,
+  "format": "external-context-lookup-profile-summary/v1",
+  "inputs": {
+    "expected_nodes_by_declaration": {
+      "riverhog-provenance.epoch-classification.growth/v1": 3,
+      "riverhog-provenance.journal-framing.growth/v1": 7,
+      "riverhog-provenance.native-journal-session-advance.growth/v1": 12,
+      "riverhog-provenance.native-journal-session-progress.growth/v1": 17,
+      "riverhog-provenance.native-session-checkpoint-progress.growth/v1": 29,
+      "riverhog-provenance.native-session-lifecycle-open_retained.growth/v1": 5,
+      "riverhog-provenance.sqlite-entry-preparation-admission-application.growth/v1": 4,
+      "riverhog-provenance.sqlite-entry-preparation-admission-plan.growth/v1": 4,
+      "riverhog-provenance.sqlite-entry-replay-admission.growth/v1": 4,
+      "riverhog-provenance.sqlite-entry-replay-advance.growth/v1": 4,
+      "riverhog-provenance.sqlite-entry-replay-child-step.growth/v1": 4,
+      "riverhog-provenance.sqlite-entry-replay-restoration.growth/v1": 4,
+      "riverhog-provenance.sqlite-journal-prefix-preparation.growth/v1": 4,
+      "riverhog-provenance.sqlite-validation-checkpoint-fence.growth/v1": 12,
+      "riverhog-provenance.sqlite-validation-checkpoint-initialization-application.growth/v1": 5,
+      "riverhog-provenance.sqlite-validation-checkpoint-load.growth/v1": 42,
+      "riverhog-provenance.sqlite-validation-checkpoint-publish.growth/v1": 12,
+      "riverhog-provenance.topology-advance.growth/v1": 3,
+      "riverhog-provenance.topology-plan.growth/v1": 3,
+      "riverhog-server.graph-certificate-init.growth/v1": 5,
+      "riverhog-server.graph-certificate-verify-current.growth/v1": 54,
+      "riverhog-server.owned-source-read-exact.growth/v1": 4,
+      "riverhog-server.owned-source-read-window.growth/v1": 4,
+      "riverhog-server.owned-source-verify-current.growth/v1": 44,
+      "riverhog-server.owned-source-verify-source.growth/v1": 64,
+      "riverhog-server.retained-source-construction.growth/v1": 5,
+      "riverhog-server.retained-source-current.growth/v1": 93,
+      "riverhog-server.retained-source-read-exact.growth/v1": 5,
+      "riverhog-server.retained-source-read-window.growth/v1": 5,
+      "riverhog-server.sqlite-journal-capture-segment.growth/v1": 6,
+      "riverhog-server.sqlite-journal-replay-binding.growth/v1": 108,
+      "riverhog-server.validation-job-claim-worker.growth/v1": 5,
+      "riverhog-server.validation-job-creation-current.growth/v1": 5,
+      "riverhog-server.validation-job-publish-progress.growth/v1": 17,
+      "riverhog-server.validation-job-select-job.growth/v1": 5,
+      "riverhog-server.validation-job-worker-current.growth/v1": 76,
+      "riverhog-server.validation-owner-advance.growth/v1": 9,
+      "riverhog-server.validation-owner-open.growth/v1": 4,
+      "riverhog-server.validation-owner-stale-sweep.growth/v1": 12,
+      "riverhog-server.validation-pool-reserve.growth/v1": 12,
+      "riverhog-server.validation-service-advance.growth/v1": 3,
+      "riverhog-server.validation-service-stamp.growth/v1": 12,
+      "riverhog-server.validation-service-unit.growth/v1": 6,
+      "sha256-continuation.sha256-compression.growth/v1": 333,
+      "sha256-continuation.sha256-continuation-update.growth/v1": 4
+    },
+    "group_projection_declaration_occurrences": 829,
+    "group_receipt_sha256": "b62367b740cf428e5c7d39f8233237e63ca7ed226f65951b926de9e91cb6a844",
+    "grouping": "Exact ordered 46 groups from the prior literal extended-route receipt, independent of observer-helper availability on this source.",
+    "groups": 46,
+    "input_manifest_sha256": "130e6074038cdfc95b064d5467fc93f58545d93e7489a9e3382647fc93f48341",
+    "nested_nodes": 1078,
+    "projection_bytes": 4512672,
+    "projection_sha256": "f8eae73e293eac5e9ed7dcf01d706d9176d4f198e13ef61203d06d0df41c0ef1",
+    "roots": 122,
+    "samples_sha256": "a9e69163ba9aac6c5cefd4f582c609997217421528840694449f24007f6c2b20",
+    "subprojections": "Complete reachable rows derived only from the frozen union; canonical bytes are identical across readers and all passes."
+  },
+  "measurements": {
+    "execution_groups:diagnostic:baseline-reader": {
+      "counts": {
+        "compilation_calls": 46,
+        "context_bound_entries": 24801,
+        "context_dimension_entries": 16574,
+        "delegate_edge_visits": 23113,
+        "distinct_delegate_edges": 1113,
+        "expression_unit_calls": 492075,
+        "expression_unit_returns": 492075,
+        "lookup_dict_constructors": {
+          "expression_child_bounds": {
+            "builds": 23113,
+            "entries": 413304
+          },
+          "expression_child_dimensions": {
+            "builds": 23113,
+            "entries": 199239
+          },
+          "expression_current_dimensions": {
+            "builds": 492075,
+            "entries": 100679251
+          },
+          "parsed_context_bounds": {
+            "builds": 0,
+            "entries": 0
+          },
+          "parsed_context_dimensions": {
+            "builds": 0,
+            "entries": 0
+          }
+        },
+        "ordered_unit_entries_sha256": "c4d5cc3d57bae5337ad15878ed4fd219d69f8b031c20a21ed16d6866730faaeb",
+        "ordered_unit_returns_sha256": "1488a4ed68023b8fcb30bbcdca226a7b24d9d03336797d2ccf5e0de93d631ff6",
+        "parsed_contexts": 829,
+        "public_reader_calls": 46,
+        "public_reader_root_occurrences": 122,
+        "successful_node_checks": 1078
+      },
+      "diagnostic_cpu_ns": 15905058824,
+      "diagnostic_wall_ns": 15914406204,
+      "fresh_projection_inputs": 46,
+      "inputs_unchanged": true,
+      "instrumentation": {
+        "archived_instrumented_source": "baseline-reader-instrumented.py.txt",
+        "context_constructor_sites": 1,
+        "dictionary_sites": [
+          {
+            "function": "_expression_unit",
+            "line": 289,
+            "original_expression": "{d.name: d.unit for d in declaration.dimensions}",
+            "site": "expression_current_dimensions"
+          },
+          {
+            "function": "_expression_unit",
+            "line": 313,
+            "original_expression": "{d.name: d.unit for d in child.declaration.dimensions}",
+            "site": "expression_child_dimensions"
+          },
+          {
+            "function": "_expression_unit",
+            "line": 319,
+            "original_expression": "{b.metric: b for b in child.declaration.bounds}",
+            "site": "expression_child_bounds"
+          }
+        ],
+        "instrumented_source_sha256": "cc5802ff920125da36ad4831a54041161c871991833b0efeb1c53a92af71af85",
+        "inverse_transform_matches_original_ast": true
+      },
+      "public_reader_receipts": [
+        {
+          "declaration": "riverhog-server.validation-service-stamp.growth/v1",
+          "group": 0,
+          "projection_declarations": 1,
+          "samples": [
+            0,
+            58,
+            60
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.journal-framing.growth/v1",
+          "group": 1,
+          "projection_declarations": 1,
+          "samples": [
+            1
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.epoch-classification.growth/v1",
+          "group": 2,
+          "projection_declarations": 1,
+          "samples": [
+            2
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.topology-plan.growth/v1",
+          "group": 3,
+          "projection_declarations": 1,
+          "samples": [
+            3
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.topology-advance.growth/v1",
+          "group": 4,
+          "projection_declarations": 1,
+          "samples": [
+            4
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-stale-sweep.growth/v1",
+          "group": 5,
+          "projection_declarations": 7,
+          "samples": [
+            5
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-pool-reserve.growth/v1",
+          "group": 6,
+          "projection_declarations": 1,
+          "samples": [
+            6
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-construction.growth/v1",
+          "group": 7,
+          "projection_declarations": 1,
+          "samples": [
+            7
+          ]
+        },
+        {
+          "declaration": "riverhog-server.sqlite-journal-replay-binding.growth/v1",
+          "group": 8,
+          "projection_declarations": 1,
+          "samples": [
+            8,
+            15,
+            22,
+            31,
+            38,
+            44,
+            49,
+            62
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-current.growth/v1",
+          "group": 9,
+          "projection_declarations": 2,
+          "samples": [
+            9,
+            16,
+            23,
+            32,
+            39,
+            45,
+            50,
+            63
+          ]
+        },
+        {
+          "declaration": "riverhog-server.graph-certificate-init.growth/v1",
+          "group": 10,
+          "projection_declarations": 1,
+          "samples": [
+            10
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-select-job.growth/v1",
+          "group": 11,
+          "projection_declarations": 1,
+          "samples": [
+            11
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-creation-current.growth/v1",
+          "group": 12,
+          "projection_declarations": 1,
+          "samples": [
+            12
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-claim-worker.growth/v1",
+          "group": 13,
+          "projection_declarations": 1,
+          "samples": [
+            13
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-worker-current.growth/v1",
+          "group": 14,
+          "projection_declarations": 1,
+          "samples": [
+            14,
+            21,
+            30,
+            37,
+            43,
+            61
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-verify-source.growth/v1",
+          "group": 15,
+          "projection_declarations": 4,
+          "samples": [
+            17,
+            24,
+            33,
+            40,
+            46
+          ]
+        },
+        {
+          "declaration": "riverhog-server.graph-certificate-verify-current.growth/v1",
+          "group": 16,
+          "projection_declarations": 1,
+          "samples": [
+            18,
+            25,
+            34,
+            41,
+            47
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-verify-current.growth/v1",
+          "group": 17,
+          "projection_declarations": 6,
+          "samples": [
+            19,
+            26,
+            35,
+            42,
+            48
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-session-lifecycle-open_retained.growth/v1",
+          "group": 18,
+          "projection_declarations": 5,
+          "samples": [
+            20
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-journal-session-progress.growth/v1",
+          "group": 19,
+          "projection_declarations": 4,
+          "samples": [
+            27,
+            36
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-publish-progress.growth/v1",
+          "group": 20,
+          "projection_declarations": 1,
+          "samples": [
+            28,
+            55
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-open.growth/v1",
+          "group": 21,
+          "projection_declarations": 22,
+          "samples": [
+            29
+          ]
+        },
+        {
+          "declaration": "riverhog-server.sqlite-journal-capture-segment.growth/v1",
+          "group": 22,
+          "projection_declarations": 1,
+          "samples": [
+            51
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-read-window.growth/v1",
+          "group": 23,
+          "projection_declarations": 4,
+          "samples": [
+            52
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-read-window.growth/v1",
+          "group": 24,
+          "projection_declarations": 9,
+          "samples": [
+            53
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-journal-session-advance.growth/v1",
+          "group": 25,
+          "projection_declarations": 62,
+          "samples": [
+            54
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-advance.growth/v1",
+          "group": 26,
+          "projection_declarations": 94,
+          "samples": [
+            56
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-unit.growth/v1",
+          "group": 27,
+          "projection_declarations": 98,
+          "samples": [
+            57
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-advance.growth/v1",
+          "group": 28,
+          "projection_declarations": 100,
+          "samples": [
+            59
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-verify-source.growth/v1",
+          "group": 29,
+          "projection_declarations": 4,
+          "samples": [
+            64,
+            70,
+            77,
+            83,
+            100,
+            106,
+            113
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-stale-sweep.growth/v1",
+          "group": 30,
+          "projection_declarations": 7,
+          "samples": [
+            65,
+            101
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-pool-reserve.growth/v1",
+          "group": 31,
+          "projection_declarations": 1,
+          "samples": [
+            66,
+            102
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-worker-current.growth/v1",
+          "group": 32,
+          "projection_declarations": 1,
+          "samples": [
+            67,
+            74,
+            80,
+            97,
+            103,
+            110
+          ]
+        },
+        {
+          "declaration": "riverhog-server.sqlite-journal-replay-binding.growth/v1",
+          "group": 33,
+          "projection_declarations": 1,
+          "samples": [
+            68,
+            75,
+            81,
+            86,
+            98,
+            104,
+            111
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-current.growth/v1",
+          "group": 34,
+          "projection_declarations": 2,
+          "samples": [
+            69,
+            76,
+            82,
+            87,
+            99,
+            105,
+            112
+          ]
+        },
+        {
+          "declaration": "riverhog-server.graph-certificate-verify-current.growth/v1",
+          "group": 35,
+          "projection_declarations": 1,
+          "samples": [
+            71,
+            78,
+            84,
+            107,
+            114
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-verify-current.growth/v1",
+          "group": 36,
+          "projection_declarations": 6,
+          "samples": [
+            72,
+            79,
+            85,
+            108,
+            115
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-journal-session-progress.growth/v1",
+          "group": 37,
+          "projection_declarations": 4,
+          "samples": [
+            73,
+            109
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-read-exact.growth/v1",
+          "group": 38,
+          "projection_declarations": 4,
+          "samples": [
+            88
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-read-exact.growth/v1",
+          "group": 39,
+          "projection_declarations": 9,
+          "samples": [
+            89
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-journal-session-advance.growth/v1",
+          "group": 40,
+          "projection_declarations": 62,
+          "samples": [
+            90,
+            116
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-publish-progress.growth/v1",
+          "group": 41,
+          "projection_declarations": 1,
+          "samples": [
+            91,
+            117
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-advance.growth/v1",
+          "group": 42,
+          "projection_declarations": 94,
+          "samples": [
+            92,
+            118
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-unit.growth/v1",
+          "group": 43,
+          "projection_declarations": 98,
+          "samples": [
+            93,
+            119
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-stamp.growth/v1",
+          "group": 44,
+          "projection_declarations": 1,
+          "samples": [
+            94,
+            96,
+            120
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-advance.growth/v1",
+          "group": 45,
+          "projection_declarations": 100,
+          "samples": [
+            95,
+            121
+          ]
+        }
+      ],
+      "reader": "baseline-reader",
+      "workload": "execution_groups"
+    },
+    "execution_groups:diagnostic:proposed-reader": {
+      "counts": {
+        "compilation_calls": 46,
+        "context_bound_entries": 24801,
+        "context_dimension_entries": 16574,
+        "delegate_edge_visits": 23113,
+        "distinct_delegate_edges": 1113,
+        "expression_unit_calls": 492075,
+        "expression_unit_returns": 492075,
+        "lookup_dict_constructors": {
+          "expression_child_bounds": {
+            "builds": 0,
+            "entries": 0
+          },
+          "expression_child_dimensions": {
+            "builds": 0,
+            "entries": 0
+          },
+          "expression_current_dimensions": {
+            "builds": 0,
+            "entries": 0
+          },
+          "parsed_context_bounds": {
+            "builds": 829,
+            "entries": 24801
+          },
+          "parsed_context_dimensions": {
+            "builds": 829,
+            "entries": 16574
+          }
+        },
+        "ordered_unit_entries_sha256": "c4d5cc3d57bae5337ad15878ed4fd219d69f8b031c20a21ed16d6866730faaeb",
+        "ordered_unit_returns_sha256": "1488a4ed68023b8fcb30bbcdca226a7b24d9d03336797d2ccf5e0de93d631ff6",
+        "parsed_contexts": 829,
+        "public_reader_calls": 46,
+        "public_reader_root_occurrences": 122,
+        "successful_node_checks": 1078
+      },
+      "diagnostic_cpu_ns": 10281680375,
+      "diagnostic_wall_ns": 10300368015,
+      "fresh_projection_inputs": 46,
+      "inputs_unchanged": true,
+      "instrumentation": {
+        "archived_instrumented_source": "proposed-reader-instrumented.py.txt",
+        "context_constructor_sites": 1,
+        "dictionary_sites": [
+          {
+            "function": "_expression_unit",
+            "line": 293,
+            "original_expression": "{d.name: d.unit for d in declaration.dimensions}",
+            "site": "expression_current_dimensions"
+          },
+          {
+            "function": "_expression_unit",
+            "line": 319,
+            "original_expression": "{d.name: d.unit for d in child.declaration.dimensions}",
+            "site": "expression_child_dimensions"
+          },
+          {
+            "function": "_expression_unit",
+            "line": 327,
+            "original_expression": "{b.metric: b for b in child.declaration.bounds}",
+            "site": "expression_child_bounds"
+          },
+          {
+            "function": "_projection_contexts",
+            "line": 530,
+            "original_expression": "{d.name: d.unit for d in declaration.dimensions}",
+            "site": "parsed_context_dimensions"
+          },
+          {
+            "function": "_projection_contexts",
+            "line": 531,
+            "original_expression": "{b.metric: b for b in declaration.bounds}",
+            "site": "parsed_context_bounds"
+          }
+        ],
+        "instrumented_source_sha256": "0566c0d448e08cad0e9db2c70af3973ac4b4531f79652d80ef1e429dc9b17f80",
+        "inverse_transform_matches_original_ast": true
+      },
+      "public_reader_receipts": [
+        {
+          "declaration": "riverhog-server.validation-service-stamp.growth/v1",
+          "group": 0,
+          "projection_declarations": 1,
+          "samples": [
+            0,
+            58,
+            60
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.journal-framing.growth/v1",
+          "group": 1,
+          "projection_declarations": 1,
+          "samples": [
+            1
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.epoch-classification.growth/v1",
+          "group": 2,
+          "projection_declarations": 1,
+          "samples": [
+            2
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.topology-plan.growth/v1",
+          "group": 3,
+          "projection_declarations": 1,
+          "samples": [
+            3
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.topology-advance.growth/v1",
+          "group": 4,
+          "projection_declarations": 1,
+          "samples": [
+            4
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-stale-sweep.growth/v1",
+          "group": 5,
+          "projection_declarations": 7,
+          "samples": [
+            5
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-pool-reserve.growth/v1",
+          "group": 6,
+          "projection_declarations": 1,
+          "samples": [
+            6
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-construction.growth/v1",
+          "group": 7,
+          "projection_declarations": 1,
+          "samples": [
+            7
+          ]
+        },
+        {
+          "declaration": "riverhog-server.sqlite-journal-replay-binding.growth/v1",
+          "group": 8,
+          "projection_declarations": 1,
+          "samples": [
+            8,
+            15,
+            22,
+            31,
+            38,
+            44,
+            49,
+            62
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-current.growth/v1",
+          "group": 9,
+          "projection_declarations": 2,
+          "samples": [
+            9,
+            16,
+            23,
+            32,
+            39,
+            45,
+            50,
+            63
+          ]
+        },
+        {
+          "declaration": "riverhog-server.graph-certificate-init.growth/v1",
+          "group": 10,
+          "projection_declarations": 1,
+          "samples": [
+            10
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-select-job.growth/v1",
+          "group": 11,
+          "projection_declarations": 1,
+          "samples": [
+            11
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-creation-current.growth/v1",
+          "group": 12,
+          "projection_declarations": 1,
+          "samples": [
+            12
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-claim-worker.growth/v1",
+          "group": 13,
+          "projection_declarations": 1,
+          "samples": [
+            13
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-worker-current.growth/v1",
+          "group": 14,
+          "projection_declarations": 1,
+          "samples": [
+            14,
+            21,
+            30,
+            37,
+            43,
+            61
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-verify-source.growth/v1",
+          "group": 15,
+          "projection_declarations": 4,
+          "samples": [
+            17,
+            24,
+            33,
+            40,
+            46
+          ]
+        },
+        {
+          "declaration": "riverhog-server.graph-certificate-verify-current.growth/v1",
+          "group": 16,
+          "projection_declarations": 1,
+          "samples": [
+            18,
+            25,
+            34,
+            41,
+            47
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-verify-current.growth/v1",
+          "group": 17,
+          "projection_declarations": 6,
+          "samples": [
+            19,
+            26,
+            35,
+            42,
+            48
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-session-lifecycle-open_retained.growth/v1",
+          "group": 18,
+          "projection_declarations": 5,
+          "samples": [
+            20
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-journal-session-progress.growth/v1",
+          "group": 19,
+          "projection_declarations": 4,
+          "samples": [
+            27,
+            36
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-publish-progress.growth/v1",
+          "group": 20,
+          "projection_declarations": 1,
+          "samples": [
+            28,
+            55
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-open.growth/v1",
+          "group": 21,
+          "projection_declarations": 22,
+          "samples": [
+            29
+          ]
+        },
+        {
+          "declaration": "riverhog-server.sqlite-journal-capture-segment.growth/v1",
+          "group": 22,
+          "projection_declarations": 1,
+          "samples": [
+            51
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-read-window.growth/v1",
+          "group": 23,
+          "projection_declarations": 4,
+          "samples": [
+            52
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-read-window.growth/v1",
+          "group": 24,
+          "projection_declarations": 9,
+          "samples": [
+            53
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-journal-session-advance.growth/v1",
+          "group": 25,
+          "projection_declarations": 62,
+          "samples": [
+            54
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-advance.growth/v1",
+          "group": 26,
+          "projection_declarations": 94,
+          "samples": [
+            56
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-unit.growth/v1",
+          "group": 27,
+          "projection_declarations": 98,
+          "samples": [
+            57
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-advance.growth/v1",
+          "group": 28,
+          "projection_declarations": 100,
+          "samples": [
+            59
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-verify-source.growth/v1",
+          "group": 29,
+          "projection_declarations": 4,
+          "samples": [
+            64,
+            70,
+            77,
+            83,
+            100,
+            106,
+            113
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-stale-sweep.growth/v1",
+          "group": 30,
+          "projection_declarations": 7,
+          "samples": [
+            65,
+            101
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-pool-reserve.growth/v1",
+          "group": 31,
+          "projection_declarations": 1,
+          "samples": [
+            66,
+            102
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-worker-current.growth/v1",
+          "group": 32,
+          "projection_declarations": 1,
+          "samples": [
+            67,
+            74,
+            80,
+            97,
+            103,
+            110
+          ]
+        },
+        {
+          "declaration": "riverhog-server.sqlite-journal-replay-binding.growth/v1",
+          "group": 33,
+          "projection_declarations": 1,
+          "samples": [
+            68,
+            75,
+            81,
+            86,
+            98,
+            104,
+            111
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-current.growth/v1",
+          "group": 34,
+          "projection_declarations": 2,
+          "samples": [
+            69,
+            76,
+            82,
+            87,
+            99,
+            105,
+            112
+          ]
+        },
+        {
+          "declaration": "riverhog-server.graph-certificate-verify-current.growth/v1",
+          "group": 35,
+          "projection_declarations": 1,
+          "samples": [
+            71,
+            78,
+            84,
+            107,
+            114
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-verify-current.growth/v1",
+          "group": 36,
+          "projection_declarations": 6,
+          "samples": [
+            72,
+            79,
+            85,
+            108,
+            115
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-journal-session-progress.growth/v1",
+          "group": 37,
+          "projection_declarations": 4,
+          "samples": [
+            73,
+            109
+          ]
+        },
+        {
+          "declaration": "riverhog-server.retained-source-read-exact.growth/v1",
+          "group": 38,
+          "projection_declarations": 4,
+          "samples": [
+            88
+          ]
+        },
+        {
+          "declaration": "riverhog-server.owned-source-read-exact.growth/v1",
+          "group": 39,
+          "projection_declarations": 9,
+          "samples": [
+            89
+          ]
+        },
+        {
+          "declaration": "riverhog-provenance.native-journal-session-advance.growth/v1",
+          "group": 40,
+          "projection_declarations": 62,
+          "samples": [
+            90,
+            116
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-job-publish-progress.growth/v1",
+          "group": 41,
+          "projection_declarations": 1,
+          "samples": [
+            91,
+            117
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-owner-advance.growth/v1",
+          "group": 42,
+          "projection_declarations": 94,
+          "samples": [
+            92,
+            118
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-unit.growth/v1",
+          "group": 43,
+          "projection_declarations": 98,
+          "samples": [
+            93,
+            119
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-stamp.growth/v1",
+          "group": 44,
+          "projection_declarations": 1,
+          "samples": [
+            94,
+            96,
+            120
+          ]
+        },
+        {
+          "declaration": "riverhog-server.validation-service-advance.growth/v1",
+          "group": 45,
+          "projection_declarations": 100,
+          "samples": [
+            95,
+            121
+          ]
+        }
+      ],
+      "reader": "proposed-reader",
+      "workload": "execution_groups"
+    },
+    "execution_groups:elapsed:baseline-reader": {
+      "cpu_ns": 13053293192,
+      "fresh_projection_inputs": 46,
+      "inputs_unchanged": true,
+      "reader": "baseline-reader",
+      "unmodified_reader_source": true,
+      "wall_ns": 13071331886,
+      "workload": "execution_groups"
+    },
+    "execution_groups:elapsed:proposed-reader": {
+      "cpu_ns": 8159329019,
+      "fresh_projection_inputs": 46,
+      "inputs_unchanged": true,
+      "reader": "proposed-reader",
+      "unmodified_reader_source": true,
+      "wall_ns": 8171519613,
+      "workload": "execution_groups"
+    },
+    "execution_groups:equivalence": {
+      "all_delegate_edge_visit_counts_equal": true,
+      "all_non_lookup_diagnostic_counts_equal": true,
+      "fresh_context_inventory_equal": true,
+      "ordered_unit_entries_and_returns_equal": true
+    },
+    "full_projection:diagnostic:baseline-reader": {
+      "counts": {
+        "compilation_calls": 1,
+        "context_bound_entries": 3383,
+        "context_dimension_entries": 2867,
+        "delegate_edge_visits": 2875,
+        "distinct_delegate_edges": 1113,
+        "expression_unit_calls": 68785,
+        "expression_unit_returns": 68785,
+        "lookup_dict_constructors": {
+          "expression_child_bounds": {
+            "builds": 2875,
+            "entries": 54483
+          },
+          "expression_child_dimensions": {
+            "builds": 2875,
+            "entries": 26308
+          },
+          "expression_current_dimensions": {
+            "builds": 68785,
+            "entries": 16135352
+          },
+          "parsed_context_bounds": {
+            "builds": 0,
+            "entries": 0
+          },
+          "parsed_context_dimensions": {
+            "builds": 0,
+            "entries": 0
+          }
+        },
+        "ordered_unit_entries_sha256": "a7846d4e3b4b399c153541652f4182c26372dbeac31dd92c5f99eedb1253885f",
+        "ordered_unit_returns_sha256": "6ae410da623442d26c29565ac025c32fba8c01cbf3869fb85d9237e56c3cddfd",
+        "parsed_contexts": 100,
+        "public_reader_calls": 0,
+        "public_reader_root_occurrences": 0,
+        "successful_node_checks": 0
+      },
+      "diagnostic_cpu_ns": 1555377517,
+      "diagnostic_wall_ns": 1559687647,
+      "fresh_projection_inputs": 1,
+      "inputs_unchanged": true,
+      "instrumentation": {
+        "archived_instrumented_source": "baseline-reader-instrumented.py.txt",
+        "context_constructor_sites": 1,
+        "dictionary_sites": [
+          {
+            "function": "_expression_unit",
+            "line": 289,
+            "original_expression": "{d.name: d.unit for d in declaration.dimensions}",
+            "site": "expression_current_dimensions"
+          },
+          {
+            "function": "_expression_unit",
+            "line": 313,
+            "original_expression": "{d.name: d.unit for d in child.declaration.dimensions}",
+            "site": "expression_child_dimensions"
+          },
+          {
+            "function": "_expression_unit",
+            "line": 319,
+            "original_expression": "{b.metric: b for b in child.declaration.bounds}",
+            "site": "expression_child_bounds"
+          }
+        ],
+        "instrumented_source_sha256": "cc5802ff920125da36ad4831a54041161c871991833b0efeb1c53a92af71af85",
+        "inverse_transform_matches_original_ast": true
+      },
+      "integration_entry_accounting": {
+        "actual": [
+          16135352,
+          26308,
+          54483
+        ],
+        "expected": [
+          16135352,
+          26308,
+          54483
+        ],
+        "matches": true
+      },
+      "reader": "baseline-reader",
+      "workload": "full_projection"
+    },
+    "full_projection:diagnostic:proposed-reader": {
+      "counts": {
+        "compilation_calls": 1,
+        "context_bound_entries": 3383,
+        "context_dimension_entries": 2867,
+        "delegate_edge_visits": 2875,
+        "distinct_delegate_edges": 1113,
+        "expression_unit_calls": 68785,
+        "expression_unit_returns": 68785,
+        "lookup_dict_constructors": {
+          "expression_child_bounds": {
+            "builds": 0,
+            "entries": 0
+          },
+          "expression_child_dimensions": {
+            "builds": 0,
+            "entries": 0
+          },
+          "expression_current_dimensions": {
+            "builds": 0,
+            "entries": 0
+          },
+          "parsed_context_bounds": {
+            "builds": 100,
+            "entries": 3383
+          },
+          "parsed_context_dimensions": {
+            "builds": 100,
+            "entries": 2867
+          }
+        },
+        "ordered_unit_entries_sha256": "a7846d4e3b4b399c153541652f4182c26372dbeac31dd92c5f99eedb1253885f",
+        "ordered_unit_returns_sha256": "6ae410da623442d26c29565ac025c32fba8c01cbf3869fb85d9237e56c3cddfd",
+        "parsed_contexts": 100,
+        "public_reader_calls": 0,
+        "public_reader_root_occurrences": 0,
+        "successful_node_checks": 0
+      },
+      "diagnostic_cpu_ns": 771961521,
+      "diagnostic_wall_ns": 772089659,
+      "fresh_projection_inputs": 1,
+      "inputs_unchanged": true,
+      "instrumentation": {
+        "archived_instrumented_source": "proposed-reader-instrumented.py.txt",
+        "context_constructor_sites": 1,
+        "dictionary_sites": [
+          {
+            "function": "_expression_unit",
+            "line": 293,
+            "original_expression": "{d.name: d.unit for d in declaration.dimensions}",
+            "site": "expression_current_dimensions"
+          },
+          {
+            "function": "_expression_unit",
+            "line": 319,
+            "original_expression": "{d.name: d.unit for d in child.declaration.dimensions}",
+            "site": "expression_child_dimensions"
+          },
+          {
+            "function": "_expression_unit",
+            "line": 327,
+            "original_expression": "{b.metric: b for b in child.declaration.bounds}",
+            "site": "expression_child_bounds"
+          },
+          {
+            "function": "_projection_contexts",
+            "line": 530,
+            "original_expression": "{d.name: d.unit for d in declaration.dimensions}",
+            "site": "parsed_context_dimensions"
+          },
+          {
+            "function": "_projection_contexts",
+            "line": 531,
+            "original_expression": "{b.metric: b for b in declaration.bounds}",
+            "site": "parsed_context_bounds"
+          }
+        ],
+        "instrumented_source_sha256": "0566c0d448e08cad0e9db2c70af3973ac4b4531f79652d80ef1e429dc9b17f80",
+        "inverse_transform_matches_original_ast": true
+      },
+      "reader": "proposed-reader",
+      "workload": "full_projection"
+    },
+    "full_projection:elapsed:baseline-reader": {
+      "cpu_ns": 1169467810,
+      "fresh_projection_inputs": 1,
+      "inputs_unchanged": true,
+      "reader": "baseline-reader",
+      "unmodified_reader_source": true,
+      "wall_ns": 1169515453,
+      "workload": "full_projection"
+    },
+    "full_projection:elapsed:proposed-reader": {
+      "cpu_ns": 525934672,
+      "fresh_projection_inputs": 1,
+      "inputs_unchanged": true,
+      "reader": "proposed-reader",
+      "unmodified_reader_source": true,
+      "wall_ns": 525936273,
+      "workload": "full_projection"
+    },
+    "full_projection:equivalence": {
+      "all_delegate_edge_visit_counts_equal": true,
+      "all_non_lookup_diagnostic_counts_equal": true,
+      "fresh_context_inventory_equal": true,
+      "ordered_unit_entries_and_returns_equal": true
+    }
+  },
+  "original_run_format": "riverhog-context-lookup-reader-profile/v1",
+  "original_run_sha256": "ae1984103663148a37e1b30f5f55faf49a708439811624df8a8c6b8003a38593",
+  "reader_sources": {
+    "baseline-reader": {
+      "bytes": 29901,
+      "sha256": "1adc9766c8d0c97cf97ce926695e6c38dc7d50458725e8947b57bfc94c90e376"
+    },
+    "proposed-reader": {
+      "bytes": 30407,
+      "sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424"
+    }
+  },
+  "source_end": {
+    "source_clean": true,
+    "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+  },
+  "source_start": {
+    "source_clean": true,
+    "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+  },
+  "state": "completed",
+  "summary_scope": "Derived navigation summary only; complete original inventories remain in the losslessly retained run.json."
+}

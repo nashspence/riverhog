@@ -1,0 +1,21 @@
+{
+  "append_policy": "Only .reference documentation/evidence may differ after tested implementation.",
+  "audited_base": "6e80898a793532beff7a1718effc0618e2472d58",
+  "changed_executable_files": [
+    {
+      "path": "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py",
+      "sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424",
+      "tested_blob": "ec861c42cf3e08569ffecf733e124701052e5e97"
+    },
+    {
+      "path": "tests/unit/test_growth_context_lookups.py",
+      "sha256": "2650d46fa1e23137bf1958adc8dffe4f02e3da83ffbb2e129b8b9984bb724870",
+      "tested_blob": "69343e9bdd5e906fedf4cd875c871a368113fd28"
+    }
+  ],
+  "format": "external-context-lookups-source-integrity/v1",
+  "later_inspected_integration_source": "824383a8a8143aac033f86dd1562a5979f6ec4da",
+  "source_clean_before_evidence_append": true,
+  "tested_implementation": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47",
+  "tested_tree": "29a84c2ecd5bfdd253ea5307ba3aa9ee3ef8ed1b"
+}

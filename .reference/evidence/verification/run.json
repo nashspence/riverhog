@@ -1,0 +1,334 @@
+{
+  "cleanup": {
+    "temporary_created": true,
+    "temporary_removed": true
+  },
+  "commands": [
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "scripts.ci_timing",
+        "--basetemp",
+        "/workspace/scratch/21c38f9cc56d/context-lookups-verification/temporary/pytest",
+        "-o",
+        "cache_dir=/workspace/scratch/21c38f9cc56d/context-lookups-verification/temporary/pytest-cache",
+        "tests/unit/test_growth_context_lookups.py",
+        "tests/unit/test_growth_declarations.py",
+        "tests/unit/test_growth_bounds.py",
+        "tests/unit/test_growth_observer_batch.py",
+        "tests/unit/test_validation_witnesses.py",
+        "tests/unit/test_private_growth_discovery.py",
+        "-k",
+        "not actual_caller_and_unit_turns_share_a_bounded_observer_batch"
+      ],
+      "driver_elapsed_seconds": 31.25009318299999,
+      "elapsed_seconds": 30.937784322999505,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/focused-tests-lane.json",
+      "lane_receipt_sha256": "252f26bb001a03b5217128268047c627f598e029be11ed06ec62337f8d49a45a",
+      "log": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/focused-tests.log",
+      "log_sha256": "68831e81c8f971a1e10470fd644cb5014264d1d19d92ac21302d1ca1b2049359",
+      "name": "focused-tests",
+      "original_exit_status": 0,
+      "pytest": {
+        "call_outcomes": {
+          "passed": 193
+        },
+        "elapsed_seconds": 28.711032441000498,
+        "excluded_test_executed": false,
+        "exit_status": 0,
+        "phase_outcomes": {
+          "call:passed": 193,
+          "setup:passed": 193,
+          "teardown:passed": 193
+        },
+        "receipt": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/pytest-receipts/pytest/context-lookups-focused-tests/e2ca7f63033b4ecf81cab5cea1df62bc/98c4c509383c413dbc377edd2bfa6793/controller.json",
+        "receipt_sha256": "58ba7278080284200916eeeb75e4305f2530a89fe449ff52d58e1bcf1e42bc8b",
+        "recorded_tests": 193
+      },
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "started_at": "2026-11-14T19:33:35.387885+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "context-lookups-focused-tests",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/context-lookups-verification/focused-tests-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "scripts.ci_timing",
+        "--basetemp",
+        "/workspace/scratch/21c38f9cc56d/context-lookups-verification/temporary/pytest",
+        "-o",
+        "cache_dir=/workspace/scratch/21c38f9cc56d/context-lookups-verification/temporary/pytest-cache",
+        "tests/unit/test_growth_context_lookups.py",
+        "tests/unit/test_growth_declarations.py",
+        "tests/unit/test_growth_bounds.py",
+        "tests/unit/test_growth_observer_batch.py",
+        "tests/unit/test_validation_witnesses.py",
+        "tests/unit/test_private_growth_discovery.py",
+        "-k",
+        "not actual_caller_and_unit_turns_share_a_bounded_observer_batch"
+      ],
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "driver_elapsed_seconds": 0.9198492870000337,
+      "elapsed_seconds": 0.6125052999996115,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/ruff-lane.json",
+      "lane_receipt_sha256": "3eea41a8ff4dcf0505c43851341140f315ff244bcd106ddcba7ce0ab52fb0311",
+      "log": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/ruff.log",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "name": "ruff",
+      "original_exit_status": 0,
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "started_at": "2026-11-14T19:34:06.685113+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "context-lookups-ruff",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/context-lookups-verification/ruff-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "driver_elapsed_seconds": 0.6699252500002331,
+      "elapsed_seconds": 0.4025234289983928,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/format-lane.json",
+      "lane_receipt_sha256": "c01c78dd9c2e13f1dda42ac23f2ab5b84df409daa032c7be63ff6f38206302f0",
+      "log": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/format.log",
+      "log_sha256": "5466e24d9b0ffacc5877a696ddedc03edf50046bf830c953f4895f8b59c8511a",
+      "name": "format",
+      "original_exit_status": 0,
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "started_at": "2026-11-14T19:34:07.635498+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "context-lookups-format",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/context-lookups-verification/format-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "reuse",
+        "lint"
+      ],
+      "driver_elapsed_seconds": 1.7709186020001653,
+      "elapsed_seconds": 1.543260189000648,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/reuse-lane.json",
+      "lane_receipt_sha256": "260bbc0f616242c8ebd3d155399a8491dd39cee6a2b99c4d9b09151fda221c4f",
+      "log": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/reuse.log",
+      "log_sha256": "d3c80af710ed88fc49557264d66c47e1202ed746710a9c379ef7ba5eab7af63f",
+      "name": "reuse",
+      "original_exit_status": 0,
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "started_at": "2026-11-14T19:34:08.343496+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "context-lookups-reuse",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/context-lookups-verification/reuse-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "reuse",
+        "lint"
+      ],
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/run_mypy.py"
+      ],
+      "driver_elapsed_seconds": 45.326670673999615,
+      "elapsed_seconds": 45.07838673200058,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/mypy-lane.json",
+      "lane_receipt_sha256": "485d17323ee01ac2318e45951b5e0e03e633cb76343826d9bc4cbd3841dd05b4",
+      "log": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/mypy.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "mypy",
+      "original_exit_status": 0,
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+      },
+      "started_at": "2026-11-14T19:34:10.147120+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "context-lookups-mypy",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/context-lookups-verification/mypy-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/run_mypy.py"
+      ],
+      "wrapper_exit_status": 0
+    }
+  ],
+  "conditions": {
+    "additional_product_fixture": false,
+    "attempts_per_command": 1,
+    "basetemp": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/temporary/pytest",
+    "excluded_test": "actual_caller_and_unit_turns_share_a_bounded_observer_batch",
+    "expected_test_count": null,
+    "focused_tests": [
+      "tests/unit/test_growth_context_lookups.py",
+      "tests/unit/test_growth_declarations.py",
+      "tests/unit/test_growth_bounds.py",
+      "tests/unit/test_growth_observer_batch.py",
+      "tests/unit/test_validation_witnesses.py",
+      "tests/unit/test_private_growth_discovery.py"
+    ],
+    "sequential": true,
+    "temporary_directory": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/temporary",
+    "timing_directory": "/workspace/scratch/21c38f9cc56d/context-lookups-verification/pytest-receipts",
+    "timing_target": null
+  },
+  "driver_sha256": "8b29716c41f4b9b56f25c08a30a9435e50efea107219f1e14f80a62a185ffc97",
+  "elapsed_seconds": 80.31567654699938,
+  "exit_status": 0,
+  "expected_source": {
+    "source_clean": true,
+    "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+  },
+  "format": "external-context-lookups-verification/v1",
+  "repository": "/workspace/scratch/21c38f9cc56d/riverhog",
+  "source": {
+    "source_clean": true,
+    "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+  },
+  "source_end": {
+    "source_clean": true,
+    "source_sha": "e4f6ccfc42d90cb69791ea1c507b6c79d21edc47"
+  },
+  "started_at": "2026-11-14T19:33:35.266781+00:00",
+  "state": "completed",
+  "tool_pins": {
+    "all_pins_match": true,
+    "checkout_venv": "/workspace/scratch/21c38f9cc56d/riverhog/.venv",
+    "checkout_venv_matches": true,
+    "expected": {
+      "mypy": "2.3.0",
+      "pytest": "9.1.1",
+      "pytest-cov": "7.1.0",
+      "pytest-instafail": "0.5.0",
+      "pytest-xdist": "3.8.0",
+      "python": "3.12.3",
+      "reuse": "6.2.0",
+      "ruff": "0.16.0",
+      "uv": "0.11.24"
+    },
+    "interpreter": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+    "interpreter_prefix": "/workspace/scratch/21c38f9cc56d/riverhog/.venv",
+    "mise_sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d",
+    "observed": {
+      "mypy": "2.3.0",
+      "pytest": "9.1.1",
+      "pytest-cov": "7.1.0",
+      "pytest-instafail": "0.5.0",
+      "pytest-xdist": "3.8.0",
+      "python": "3.12.3",
+      "reuse": "6.2.0",
+      "ruff": "0.16.0",
+      "uv": "0.11.24"
+    },
+    "uv_lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+    "uv_probe": {
+      "executable": "/workspace/scratch/21c38f9cc56d/bin/uv",
+      "exit_status": 0,
+      "stderr": "",
+      "stdout": "uv 0.11.24 (x86_64-unknown-linux-gnu)\n"
+    }
+  }
+}

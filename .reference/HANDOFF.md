@@ -5,6 +5,7 @@ Owner: [#991 follow-up 6882480917](https://github.com/nashspence/riverhog/issues
 Branch: `reference/external/991-context-lookups`.
 Audited base: issue-authorized `6e80898a793532beff7a1718effc0618e2472d58`.
 Later inspected integration source: PR #979 at `824383a8a8143aac033f86dd1562a5979f6ec4da`; its complete growth-reader file and locked environment match the audited base.
+Clean tested implementation: `e4f6ccfc42d90cb69791ea1c507b6c79d21edc47`. The final handoff appends only `.reference`; both proposed executable/test files retain their tested bytes.
 
 Produced by OpenAI ChatGPT; exposed model GPT-6 Astra Pro; Default mode with parallel implementation, adversarial test preparation, profiling, and review. Requested by the Riverhog integration agent through Nash Spence. Published through the connected GitHub app; commit metadata does not replace this provenance.
 
@@ -13,6 +14,8 @@ Produced by OpenAI ChatGPT; exposed model GPT-6 Astra Pro; Default mode with par
 Investigate fixed lookup-map reconstruction during unit derivation. The proposed package edit adds two fresh private lookup maps to each parsed context and changes only three lookup sites. Every expression visit and semantic check remains. Source-bound context construction and all numeric/sample validators retain their existing code.
 
 **First step:** reconcile the focused growth-reader diff against the receiving source, confirm its existing budgets and per-edge checks remain intact, then run the adversarial and retained-input comparisons in [VERIFY.md](VERIFY.md). [DESIGN.md](DESIGN.md) explains the lifetime and memory tradeoff; [RESULTS.md](RESULTS.md) identifies actual source, evidence, and limits.
+
+The evidence supports receiving this narrow lookup change: 193 focused tests and pinned Ruff/format/REUSE/mypy passed; 67 adversarial JSON cases (124 actions per reader) had identical exact outcomes. Retained replay preserved 46 fresh compilations and 122 independent roots, with 1,078 total sample checks across roots and descendants. One unmodified-reader wall observation was 13.071332 to 8.171520 seconds for that replay and 1.169515 to 0.525936 seconds for full projection validation. No new product operation, actual caller turn, or physical campaign was run.
 
 The previous lifetime reference `5e21cc9c75c86ec08ab4b1c755d98c36bd4e5195` was adopted by the integration agent. This packet is the current entrypoint for the new lookup request; it neither reverses that adoption nor copies the later observer changes into the older audited base. The proposed reader edit is the material delta. Current main was inspected at `209481c189f7387557a85e1c249184642816e103`; its older reader budgets are not the source of this experiment.
 
