@@ -2,30 +2,30 @@
 
 Owner: [#991](https://github.com/nashspence/riverhog/issues/991), under [#903](https://github.com/nashspence/riverhog/issues/903). Request: [6884822328](https://github.com/nashspence/riverhog/issues/991#issuecomment-6884822328).
 
-Audited base: `codex/964-session-owner` / PR #979 at `67b4ccd9419be86a60dece5c5c16bee43f7ce935`. This exact checkpoint is the receiving source specified in the request.
+Audited base: `codex/964-session-owner` / PR #979 at **`67b4ccd9419be86a60dece5c5c16bee43f7ce935`**, the exact checkpoint specified by the integration agent.
 
-Produced by: OpenAI ChatGPT. Model: GPT-6 Astra Pro. Configuration: Default mode with parallel implementation, test and evidence review. Requested by: Riverhog integration agent through Nash Spence. Published through: connected GitHub application on the maintainer's behalf.
+Produced by: OpenAI ChatGPT. Model: GPT-6 Astra Pro. Configuration: Default mode with parallel implementation, test and evidence review. Requested by: Riverhog integration agent, relayed by nashspence. Published through: connected GitHub application on the maintainer's behalf.
 
 ## Purpose and first receiving step
 
-This reference proposes one immutable admitted encoding per declaration and a small encoded projection header. Each operation group receives newly decoded, complete reachable rows. It removes the whole admitted snapshot decode and repeated per-group deep copy while retaining fresh public reader parsing and all existing source and sample checks.
+The two-file helper/test proposal replaces whole-snapshot decoding and per-group deep copies with one immutable row encoding per admitted declaration and fresh decoding of every complete reachable private input. Reader semantics, source/operation authority, full guards, exact seals, poisoning and release remain intact. Retained metadata remains linear in the admitted closure plus the existing pending-root state.
 
-First step: reconcile the two-file helper/test diff against the receiving source, verify the unchanged reader hash, and run the focused observer test selection with both actual caller fixture tests explicitly excluded as requested. The integration owner retains responsibility for subsequent complete qualification.
+**First step:** reconcile `tests/support/growth_batch.py` and `tests/unit/test_growth_observer_batch.py` against the receiving source, then validate the accepted helper/test change through the normal integration rail. The focused reference selection uses both observer modules with the two actual caller fixtures explicitly deselected. Full subsequent qualification remains with the integration owner.
 
-The accepted reader SHA-256 remains `a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40`. [Source audit](evidence/source-audit.json) identifies the five changed helper methods and the five unchanged guard/lifecycle methods.
+The exact clean implementation tested was **`7d2aebb21891bced44a703753040f91d9a351f0c`** (tree `f7db5c9f64f7a878339dea94761fe024c33ee990`). The final evidence commit changes only `.reference/` from that implementation. Its exact SHA is recorded in the owning #991 comment. Reader SHA-256 remains `a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40`.
 
-## Source relationship and prior references
+## Findings and evidence
 
-The proposal starts directly from the exact audited checkpoint. Only `tests/support/growth_batch.py` and its focused owner tests contain executable changes; the reader, canonical implementation, actual caller/product implementations and dependencies remain unchanged. `.reference/` holds non-authoritative handoff material.
+**82 selected tests passed**, with both actual caller fixture cases excluded; Ruff, formatting, REUSE and mypy passed using pinned tools. One uninstrumented retained helper pair observed **14.281960105 → 11.883021960 seconds wall** and **14.222222806 → 11.858247503 seconds CPU**. A separate diagnostic pair preserved all **122 independent roots, 1,078 total nodes, 46 private groups, 47 fresh compilations, 560,860 unit visits, 1,923 canonical encodings and 1,922 SHA constructions**. All private input bytes/order matched. Deep copies changed from 46 to zero; no reader work was removed.
 
-This is a new scoped follow-up to helper reference `5e21cc9c75c86ec08ab4b1c755d98c36bd4e5195`, whose helper is byte-identical to the receiving baseline. It changes that helper's private projection representation. It does not supersede the already consumed lookup reference `0e9bef9445213aadadb7218fc6e268cc324f35f3` or numeric reference `086dfaabe204d056afe8f2e4845fc42d8af6da65`; both accepted changes are present in the audited base. Prior reference history is preserved.
+See [RESULTS.md](RESULTS.md) for the measured comparison, remaining cost, adversarial coverage, source relationship, original process/cleanup receipts, and reproduction inputs. Encoded payload counts are separate from memory; no peak-memory or allocator measurement is claimed. These are single paired observations, not a performance gate or production throughput result.
 
-## Validation status at implementation checkpoint
+## Relationship and limits
 
-This initial checkpoint freezes the implementation for the requested focused tests and retained helper replay. Execution results will be appended in a separate evidence commit. Static source comparison confirms unchanged reader bytes and unchanged `source`, `_current`, `sample`, `receive`, and `__exit__` methods. No execution or performance result is claimed at this checkpoint.
+This starts directly from the audited receiving checkpoint and is a new focused follow-up to helper reference `5e21cc9c75c86ec08ab4b1c755d98c36bd4e5195`, whose helper is byte-identical to the baseline. It changes that helper's private projection representation. It does not supersede the already consumed lookup reference `0e9bef9445213aadadb7218fc6e268cc324f35f3` or numeric reference `086dfaabe204d056afe8f2e4845fc42d8af6da65`; both accepted changes and their tests are unchanged in the audited base. Prior reference history is preserved.
 
-The bounded replay uses previously retained samples/events from three actual turns, all 122 independent root occurrences and 1,078 node checks. It creates no new archive fixture, product operation, actual caller turn, journal advance or publication. The Native pause scope is empty. Broad unit qualification, the incomplete census, 1,000/10,000/100,000 campaigns, Native publication cost and parallelism remain outside this request.
+Only the helper and focused owner tests contain executable edits. The reader, canonical implementation, actual caller/product paths and dependencies remain unchanged. The replay creates no new product operation, archive fixture, actual caller turn, journal advance or publication; its Native pause scope is empty. Broad unit/full CI/merge qualification, the incomplete census, held 1,000/10,000/100,000 campaigns, Native publication cost and parallelism are outside this reference. No whole-path cost clearance is inferred.
 
 ## Authority
 
-This branch is externally produced reference material for #991. Its creation, testing, publication, request or issue link does not establish or extend an accepted design, contract, release requirement or authorization to integrate. Authority remains with the owning issue, subsequent maintainer decisions and the normal integration rail. Reconcile against then-current source and decisions. The exact final reference commit linked in #991 is the durable handoff identity; the branch name is navigation. No native Development association is requested or expected.
+This is externally produced reference material for #991. Its creation, testing, publication, request or issue link does not establish or extend an accepted design, contract, release requirement or authorization to integrate. Authority remains with the owning issue, subsequent maintainer decisions and the normal integration rail. Reconcile against then-current source and decisions. The exact final reference commit linked in #991 is the durable handoff identity; the branch name is navigation. No native Development association is requested or expected.

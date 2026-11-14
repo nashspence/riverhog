@@ -1,0 +1,56 @@
+"""Retain an original child status and owned temporary cleanup for a focused run."""
+from __future__ import annotations
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import sys
+import time
+import traceback
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--repo", type=Path, required=True)
+parser.add_argument("--expected-source", required=True)
+parser.add_argument("--prefix", type=Path, required=True)
+parser.add_argument("command", nargs=argparse.REMAINDER)
+a = parser.parse_args()
+repo, prefix = a.repo.resolve(), a.prefix.resolve()
+assert not prefix.is_relative_to(repo)
+sys.path.insert(0, str(repo))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from scripts.validation_identity import source_identity
+from scripts.validation_process import run_validation_child
+from private_projection_verify import child_log
+command = a.command[1:] if a.command[:1] == ["--"] else a.command
+expected = {"source_sha": a.expected_source, "source_clean": True}
+log, receipt, temporary = (Path(str(prefix) + suffix) for suffix in (".log", "-execution.json", "-temporary"))
+assert not any(p.exists() for p in (log, receipt, temporary))
+report = {"format": "external-private-projection-execution/v1", "launcher_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "command": command, "source_before": source_identity(repo), "original_child_exit_status": None, "cleanup": {"temporary_created": False, "temporary_removed": False}}
+started, status = time.monotonic(), 1
+try:
+    assert report["source_before"] == expected
+    temporary.mkdir()
+    report["cleanup"]["temporary_created"] = True
+    environment = {**os.environ, "TMPDIR": str(temporary), "PYTHONDONTWRITEBYTECODE": "1"}
+    with child_log(log):
+        report["original_child_exit_status"] = run_validation_child(command, cwd=repo, env=environment)
+    status = report["original_child_exit_status"]
+except BaseException as error:
+    report["error"] = {"type": type(error).__name__, "message": str(error)}
+    traceback.print_exc()
+finally:
+    if report["cleanup"]["temporary_created"]:
+        shutil.rmtree(temporary)
+        report["cleanup"]["temporary_removed"] = not temporary.exists()
+    report["source_after"] = source_identity(repo)
+    if report["source_after"] != expected:
+        status = 1
+    report["elapsed_seconds"] = time.monotonic() - started
+    report["launcher_exit_status"] = status
+    if log.exists():
+        report["log_sha256"] = hashlib.sha256(log.read_bytes()).hexdigest()
+    receipt.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+    print(json.dumps(report, sort_keys=True), flush=True)
+raise SystemExit(status)

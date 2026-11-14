@@ -1,0 +1,31 @@
+{
+  "cleanup": {
+    "temporary_created": true,
+    "temporary_removed": true
+  },
+  "command": [
+    "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+    "-B",
+    "/workspace/scratch/21c38f9cc56d/private_projection_verify.py",
+    "--repo",
+    "/workspace/scratch/21c38f9cc56d/riverhog",
+    "--expected-sha",
+    "7d2aebb21891bced44a703753040f91d9a351f0c",
+    "--out",
+    "/workspace/scratch/21c38f9cc56d/private-projection-verification"
+  ],
+  "elapsed_seconds": 64.10908178099999,
+  "format": "external-private-projection-execution/v1",
+  "launcher_exit_status": 0,
+  "launcher_sha256": "5f23a735faa1d43fa08cd186013a38f5b9d4e2c51a2651614892b098e232c327",
+  "log_sha256": "69ccce6e61c48e12628f248426506ae0b3f4840bb09d41a4b5029907de3f3465",
+  "original_child_exit_status": 0,
+  "source_after": {
+    "source_clean": true,
+    "source_sha": "7d2aebb21891bced44a703753040f91d9a351f0c"
+  },
+  "source_before": {
+    "source_clean": true,
+    "source_sha": "7d2aebb21891bced44a703753040f91d9a351f0c"
+  }
+}

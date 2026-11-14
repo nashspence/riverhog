@@ -1,0 +1,24 @@
+{
+  "audited_receiving_sha": "67b4ccd9419be86a60dece5c5c16bee43f7ce935",
+  "evidence_originals_byte_identical": true,
+  "executable_blobs_identical_to_tested_implementation": {
+    "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40",
+    "tests/support/growth_batch.py": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8",
+    "tests/unit/test_growth_observer_batch.py": "9a4c1b37b04b3b42507869677ce3abb5d89ca7abfee432efab1689adb49d1874"
+  },
+  "format": "external-private-projection-final-audit/v1",
+  "full_ci_or_merge_qualification_claimed": false,
+  "input_archives_losslessly_verified": true,
+  "main_ref_rechecked_before_publication": "209481c189f7387557a85e1c249184642816e103",
+  "partial_observer_selection": {
+    "batch_cases_passed": 37,
+    "deselected": 2,
+    "lifetime_cases_passed": 45,
+    "passed": 82
+  },
+  "publication_plan": "One non-forced child evidence commit of the tested implementation; only .reference changes. Exact final SHA is published in #991.",
+  "receiving_ref_rechecked_before_publication": "67b4ccd9419be86a60dece5c5c16bee43f7ce935",
+  "replay_and_verification_original_exits": 0,
+  "tested_implementation_sha": "7d2aebb21891bced44a703753040f91d9a351f0c",
+  "tested_implementation_tree": "f7db5c9f64f7a878339dea94761fe024c33ee990"
+}

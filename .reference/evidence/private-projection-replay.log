@@ -1,0 +1,9 @@
+begin instrumented:baseline literal retained observer work; no product fixture
+completed instrumented:baseline wall_ns 15665906212 cpu_ns 15648712424
+begin instrumented:proposed literal retained observer work; no product fixture
+completed instrumented:proposed wall_ns 11915328958 cpu_ns 11892104034
+begin elapsed:baseline literal retained observer work; no product fixture
+completed elapsed:baseline wall_ns 14281960105 cpu_ns 14222222806
+begin elapsed:proposed literal retained observer work; no product fixture
+completed elapsed:proposed wall_ns 11883021960 cpu_ns 11858247503
+original child final status 0 cleanup {"profile_scratch_created": true, "profile_scratch_path": "/workspace/scratch/21c38f9cc56d/private-projection-replay-temporary/private-projection-replay-4scic_u6", "profile_scratch_removed": true, "temporary_baseline_module_removed": true, "temporary_root": "/workspace/scratch/21c38f9cc56d/private-projection-replay-temporary", "temporary_root_finally_empty": true, "temporary_root_initially_empty": true}

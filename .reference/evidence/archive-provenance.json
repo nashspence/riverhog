@@ -1,0 +1,171 @@
+{
+  "format": "external-private-projection-evidence-archive/v1",
+  "implementation_sha": "7d2aebb21891bced44a703753040f91d9a351f0c",
+  "inputs": {
+    "events": {
+      "archive": ".reference/evidence/events.json.gz.b64",
+      "raw_bytes": 292741,
+      "raw_sha256": "5e559ea611938996d6b47df6588e4a9f2fb7c5f5623a0942b13cf1f144333a25",
+      "source_sha": "5e21cc9c75c86ec08ab4b1c755d98c36bd4e5195"
+    },
+    "samples": {
+      "archive": ".reference/evidence/samples.json.gz.b64",
+      "raw_bytes": 1989073,
+      "raw_sha256": "a9e69163ba9aac6c5cefd4f582c609997217421528840694449f24007f6c2b20",
+      "source_sha": "5e21cc9c75c86ec08ab4b1c755d98c36bd4e5195"
+    }
+  },
+  "original_files": [
+    {
+      "archived": ".reference/evidence/verification/focused-tests-lane.json",
+      "bytes": 254,
+      "sha256": "7bb674b5065601e7bd3e630b64021974a5ac9ce4f859cd69e7b331dc729ad7d4",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/focused-tests-lane.json"
+    },
+    {
+      "archived": ".reference/evidence/verification/focused-tests.log",
+      "bytes": 412,
+      "sha256": "1fe8a2e7bb74ad48156ca2992b641462b0927ae9aa42d7c5dd46466c310ffdf1",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/focused-tests.log"
+    },
+    {
+      "archived": ".reference/evidence/verification/format-lane.json",
+      "bytes": 248,
+      "sha256": "c481393436ba126a1349f8bacf49d384ed55074824f6f4626401369acdd7038d",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/format-lane.json"
+    },
+    {
+      "archived": ".reference/evidence/verification/format.log",
+      "bytes": 29,
+      "sha256": "7ac8a98abebb1ad161b75e65b09ff3c14fbf3aaf209b26b0b768f74b68c79c53",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/format.log"
+    },
+    {
+      "archived": ".reference/evidence/verification/mypy-lane.json",
+      "bytes": 244,
+      "sha256": "c537b7f02644435e783c69c1170e6ff8e3427821dffbaa9a75a98cc96e8c4117",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/mypy-lane.json"
+    },
+    {
+      "archived": ".reference/evidence/verification/mypy.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/mypy.log"
+    },
+    {
+      "archived": ".reference/evidence/verification/pytest-receipts/pytest/private-projection-focused-tests/2c02f202df70415f91d60ac90e5f5397/e0255de7e7814d58a47c84da31aa6f7d/controller.json",
+      "bytes": 32382,
+      "sha256": "abd53b0454a668bd7e8aebc47c0f092f18015524f64c6c8116b56632c9de3c46",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/pytest-receipts/pytest/private-projection-focused-tests/2c02f202df70415f91d60ac90e5f5397/e0255de7e7814d58a47c84da31aa6f7d/controller.json"
+    },
+    {
+      "archived": ".reference/evidence/verification/reuse-lane.json",
+      "bytes": 246,
+      "sha256": "2261e9e6993e2d7d8ffe527b3d523b9192e059f4b1fcf3f4ffafcbc9376b2c8c",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/reuse-lane.json"
+    },
+    {
+      "archived": ".reference/evidence/verification/reuse.log",
+      "bytes": 412,
+      "sha256": "1c3af5a2e68b81561686176f0497ef94753a2f1fbe83330f076075073f06b46d",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/reuse.log"
+    },
+    {
+      "archived": ".reference/evidence/verification/ruff-lane.json",
+      "bytes": 245,
+      "sha256": "e31eb6459cf848fe0cbc1d699a333f0d4bfb50922da31f33e5549f01b008c1a7",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/ruff-lane.json"
+    },
+    {
+      "archived": ".reference/evidence/verification/ruff.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/ruff.log"
+    },
+    {
+      "archived": ".reference/evidence/verification/run.json",
+      "bytes": 13036,
+      "sha256": "b1dbd6de29d7784996c67e2a9b09eba4292148caf8b5fb563078d779580cc53c",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/run.json"
+    },
+    {
+      "archived": ".reference/evidence/verification/verification-driver.py.txt",
+      "bytes": 16346,
+      "sha256": "316f167319bed3fd64df5b69b5610f5c249878d04eb433ea3cf3e32ec36eba2b",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification/verification-driver.py"
+    },
+    {
+      "archived": ".reference/evidence/replay/action-plan.json",
+      "bytes": 74367,
+      "sha256": "78055117b78e6eb58f1daa9f20721bc385e0c030509e0762d6b7b4012460f213",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-replay/action-plan.json"
+    },
+    {
+      "archived": ".reference/evidence/replay/baseline-helper.py.txt",
+      "bytes": 9678,
+      "sha256": "87ccc6657a2a3dbab1bf74652aea86a9495a316be2ded7808836f9bd4cf58b5f",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-replay/baseline-helper.py.txt"
+    },
+    {
+      "archived": ".reference/evidence/replay/proposed-helper.py.txt",
+      "bytes": 9777,
+      "sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-replay/proposed-helper.py.txt"
+    },
+    {
+      "archived": ".reference/evidence/replay/replay-script.py.txt",
+      "bytes": 60853,
+      "sha256": "e6fab865c0de6b3d02294be327639d5f6f498c72f659eda71b673abceeb4cbce",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-replay/replay-script.py"
+    },
+    {
+      "archived": ".reference/evidence/replay/run.json",
+      "bytes": 166298,
+      "sha256": "2742e5e19146b662a953621229a3296e6f5eadb9d6654bc5e5ad3a515a1e07eb",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-replay/run.json"
+    },
+    {
+      "archived": ".reference/evidence/private_projection_run.py.txt",
+      "bytes": 2690,
+      "sha256": "5f23a735faa1d43fa08cd186013a38f5b9d4e2c51a2651614892b098e232c327",
+      "source": "/workspace/scratch/21c38f9cc56d/private_projection_run.py"
+    },
+    {
+      "archived": ".reference/evidence/private-projection-verification-execution.json",
+      "bytes": 1020,
+      "sha256": "884f502ae35858ddcbc0f53b27efbf80f21c455a274c844283eb1cd1030f6bc4",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification-execution.json"
+    },
+    {
+      "archived": ".reference/evidence/private-projection-verification.log",
+      "bytes": 810,
+      "sha256": "69ccce6e61c48e12628f248426506ae0b3f4840bb09d41a4b5029907de3f3465",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-verification.log"
+    },
+    {
+      "archived": ".reference/evidence/private-projection-replay-execution.json",
+      "bytes": 1646,
+      "sha256": "885fbc3edd6cdfaca458898ec145a60ae3765d4b14943ae359ff3928bc4ff502",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-replay-execution.json"
+    },
+    {
+      "archived": ".reference/evidence/private-projection-replay.log",
+      "bytes": 1025,
+      "sha256": "beee3182497cba09e8045f160b5b64b06045f1e5ba9f6399ff1302b8c77c36a7",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-replay.log"
+    },
+    {
+      "archived": ".reference/evidence/replay-lane.json",
+      "bytes": 253,
+      "sha256": "37c66a6e16901a4bde8a028ae921e3423d711e25f65d667da0188b61605625cd",
+      "source": "/workspace/scratch/21c38f9cc56d/private-projection-replay-lane.json"
+    },
+    {
+      "archived": ".reference/evidence/prior-helper-replay-run.json",
+      "bytes": 37619,
+      "sha256": "b62367b740cf428e5c7d39f8233237e63ca7ed226f65951b926de9e91cb6a844",
+      "source": "/workspace/scratch/21c38f9cc56d/observer-lifetime-helper-replay/run.json"
+    }
+  ],
+  "transformation": "Original receipts and scripts copied byte-for-byte. Samples and events losslessly gzip/base64 encoded with a zero gzip timestamp."
+}
