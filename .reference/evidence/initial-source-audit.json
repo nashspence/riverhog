@@ -1,0 +1,34 @@
+{
+  "accepted_reader_sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424",
+  "accepted_reference": "0e9bef9445213aadadb7218fc6e268cc324f35f3",
+  "accepted_test_sha256": "2650d46fa1e23137bf1958adc8dffe4f02e3da83ffbb2e129b8b9984bb724870",
+  "audited_base": "824383a8a8143aac033f86dd1562a5979f6ec4da",
+  "format": "external-numeric-evaluation-initial-source-audit/v1",
+  "main_inspected_at_start": "209481c189f7387557a85e1c249184642816e103",
+  "owning_comment": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6883707193",
+  "policy_and_environment_equal": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3"
+    },
+    {
+      "path": "README.md",
+      "sha256": "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"
+    },
+    {
+      "path": "mise.toml",
+      "sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d"
+    },
+    {
+      "path": "uv.lock",
+      "sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "393c618205afb2234fa7518b4f4762112e09c1959b641fc1344e74bf285c2631"
+    }
+  ],
+  "private_commit_inspected": false,
+  "private_unpublished_integration_commit": "b47858a54fadd3f1ddcd7aeff39d920405c714ec",
+  "published_pr_head_at_start": "824383a8a8143aac033f86dd1562a5979f6ec4da"
+}

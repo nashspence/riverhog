@@ -1,0 +1,32 @@
+{
+  "accepted_overlay_reference": "0e9bef9445213aadadb7218fc6e268cc324f35f3",
+  "audited_base": "824383a8a8143aac033f86dd1562a5979f6ec4da",
+  "code_files": [
+    {
+      "git_blob": "75f8b5f8f57317e6a01cec1eec5dffad710149a6",
+      "path": "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py",
+      "role": "numeric proposal",
+      "sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40"
+    },
+    {
+      "git_blob": "69343e9bdd5e906fedf4cd875c871a368113fd28",
+      "path": "tests/unit/test_growth_context_lookups.py",
+      "role": "accepted lookup test input",
+      "sha256": "2650d46fa1e23137bf1958adc8dffe4f02e3da83ffbb2e129b8b9984bb724870"
+    },
+    {
+      "git_blob": "a8147de832787356df6035a6cf50b3359d8422cd",
+      "path": "tests/unit/test_growth_numeric_evaluation.py",
+      "role": "numeric proposal",
+      "sha256": "8e12500aeccd012920c8333a6fb4ae36359dc0ce99471ab60c6efb9c0aae0226"
+    }
+  ],
+  "format": "external-numeric-evaluation-proposal/v1",
+  "new_numeric_reader_delta": {
+    "added_lines": 26,
+    "removed_lines": 6
+  },
+  "numeric_delta_baseline_reader_sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424",
+  "source_structure_audit_sha256": "d5bbf35fd0d2eba99be66ddde5c0a109eb559c7a807c22850d25152b990a002e",
+  "validation_state": "initial source freeze; no execution claim"
+}

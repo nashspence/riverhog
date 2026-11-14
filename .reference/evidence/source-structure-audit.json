@@ -1,0 +1,460 @@
+{
+  "audit_interpreter": "3.12.3",
+  "baseline": {
+    "bytes": 30407,
+    "git_commit": "0e9bef9445213aadadb7218fc6e268cc324f35f3",
+    "lines": 749,
+    "sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424",
+    "whole_module_ast_sha256": "1505784809bd5fcc80b584b3cebb6210ce6e9dba544435aeca3ed3e0328e1cc4"
+  },
+  "changed_top_level_definitions": [
+    "_Context",
+    "_evaluate",
+    "_projection_contexts"
+  ],
+  "critical_structure": {
+    "actual_dimension_set_expression_exactly_unchanged": true,
+    "all_other_module_ast_after_inverse_equal": true,
+    "dimension_then_values_then_bound_order_preserved": true,
+    "full_graph_visit_ast_sha256": "f419f489b666aef4f1609b136de4e480810afd78c5f111857369ff3e76bc55b6",
+    "full_graph_visit_ast_unchanged": true,
+    "live_dimension_value_predicate_exactly_unchanged": true,
+    "sample_bound_and_delegate_evaluation_algorithms_exactly_unchanged": true
+  },
+  "format": "external-numeric-evaluation-source-structure-audit/v1",
+  "inherited_budgets": [
+    {
+      "meaning": "maximum declarations",
+      "owner": "_projection_contexts",
+      "predicate": "len(rows) > 4096",
+      "value": 4096
+    },
+    {
+      "initialization": "budget = [131072]",
+      "meaning": "shared expression-node parsing budget",
+      "owner": "_projection_contexts",
+      "value": 131072
+    },
+    {
+      "debit": "budget[0] -= 1 before shape/depth check",
+      "meaning": "expression depth; reject strictly above",
+      "owner": "_read_expression",
+      "predicate": "depth > 64",
+      "value": 64
+    },
+    {
+      "meaning": "graph depth guard",
+      "owner": "_projection_contexts.visit",
+      "predicate": "len(stack) >= 64",
+      "value": 64
+    },
+    {
+      "meaning": "cached height plus path-length guard",
+      "owner": "_projection_contexts.visit",
+      "predicate": "heights[identity] + len(stack) > 64",
+      "value": 64
+    },
+    {
+      "meaning": "sample depth; reject strictly above",
+      "owner": "validate_execution_samples.check",
+      "predicate": "depth > 64",
+      "value": 64
+    },
+    {
+      "initialization": "check(declaration_id, sample, 0, [65536])",
+      "meaning": "fresh node budget for every independent root",
+      "owner": "validate_execution_samples",
+      "value": 65536
+    }
+  ],
+  "inverse_structure_check": {
+    "equal": true,
+    "method": [
+      "Remove only the two optional numeric Context fields.",
+      "Inline the existing parsed metadata dictionary assignments back into their original Context keywords and remove the two new numeric keywords.",
+      "Replace only the numeric expected-name selection with its original set-comprehension fallback, and replace numeric-bound selection/None branch with its original dictionary-comprehension assignment.",
+      "Compare complete module AST dumps without line/column attributes."
+    ],
+    "normalized_proposed_ast_sha256": "1505784809bd5fcc80b584b3cebb6210ce6e9dba544435aeca3ed3e0328e1cc4"
+  },
+  "limitations": [
+    "Static identity does not replace execution of focused tests or the retained public replay.",
+    "Numeric result/acceptance reuse was excluded; mutable public Mapping observations still require each existing live check."
+  ],
+  "manual_review": {
+    "design": {
+      "blocking_findings": [],
+      "observations": [
+        "Scope matches two optional parsed metadata references; every live dimension scan remains.",
+        "Exact-str eligibility now inspects original Declaration tuples directly.",
+        "Frozen expected names retain set-family comparison, and source/custom-name fallbacks retain original evaluation points.",
+        "No once-per-sample acceptance hoist or expression/graph classification is claimed.",
+        "Memory/work accounting and single replay elapsed evidence are explicitly bounded; no whole-census performance claim."
+      ]
+    },
+    "new_tests": {
+      "blocking_findings": [],
+      "observations": [
+        "Fresh shared-child argument sets, reversed bound/delegate order, late invalid observations, literal integer/logarithm boundaries, and zero-multiplicity/domain cases have consistent expected outcomes.",
+        "Callback fixtures arm after parsing and retain metadata-hash/live-observation ordering controls.",
+        "Source replacement/removal and nested child replacement cases preserve original order; every source edit is restored in finally.",
+        "Review was static; no pass result is inferred."
+      ]
+    },
+    "verification_driver": {
+      "blocking_findings": [],
+      "observations": [
+        "Exact clean source and pinned checkout interpreter/tool versions are required before gates.",
+        "Five gates are sequential; maintained child handling joins each process, retains original lane exit/log, and checks source before/after.",
+        "Observed pytest receipts must belong to the exact source/lane and selected three owner files.",
+        "Only the newly created external temporary subtree is removed; retained logs and receipts remain outside it."
+      ]
+    }
+  },
+  "proposed": {
+    "bytes": 31352,
+    "identity_scope": "Exact working-tree reader bytes; this receipt makes no clean-commit or executed-qualification claim.",
+    "lines": 769,
+    "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py",
+    "sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40",
+    "whole_module_ast_sha256": "2d441dbf6dae6ce30ca4410ac10bd48942cf00322761bb58e057ef0e8c2ecf0e"
+  },
+  "public_exports": {
+    "exactly_unchanged": true,
+    "names": [
+      "Binding",
+      "Bound",
+      "COUNT",
+      "COST_MODEL",
+      "Declaration",
+      "Dimension",
+      "Expression",
+      "FORMAT",
+      "OCTETS",
+      "OCTETS_PER_COUNT",
+      "SCALAR",
+      "declare_growth",
+      "evaluate_bound",
+      "growth_binding",
+      "project_bindings",
+      "validate_execution_samples",
+      "validate_projection",
+      "validate_sample"
+    ]
+  },
+  "reader_relative_path": "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py",
+  "reviewed_files": {
+    "design": {
+      "lines": 42,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.reference/DESIGN.md",
+      "sha256": "57c4be086bfb89f65335016d0f8c990256e2c0a0b026fc1f182deec64af75d0d"
+    },
+    "new_tests": {
+      "lines": 587,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_growth_numeric_evaluation.py",
+      "sha256": "8e12500aeccd012920c8333a6fb4ae36359dc0ce99471ab60c6efb9c0aae0226"
+    },
+    "verification_driver": {
+      "lines": 395,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric_evaluation_verify.py",
+      "sha256": "3313bdf3e709533ebc65d8e8213dafb3fe8a45d3965f98f2b4650f4a17ab9bbf"
+    }
+  },
+  "scope": "Static source/AST comparison and manual read-only review. No product, fixture, test, profile, or verification-driver execution.",
+  "unchanged_top_level_definitions": [
+    {
+      "ast_sha256": "d7a658e397107aa8cfb2e2ba91a9023b5825d0c9058968e79a5bb198f3752a34",
+      "baseline_lines": [
+        242,
+        256
+      ],
+      "definition": "Binding",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        242,
+        256
+      ],
+      "source_fragment_sha256": "04e2bced715666ee0a40d0fd19ecf0000520843e7c1d477f18b88cdc99c96b44"
+    },
+    {
+      "ast_sha256": "bc528d3108f218612adb73575747cb7d7d42564e432976a79a6a6abe21296a28",
+      "baseline_lines": [
+        144,
+        161
+      ],
+      "definition": "Bound",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        144,
+        161
+      ],
+      "source_fragment_sha256": "703605acf581d5394b115d612e18ddcc73825fc4938b9a11212cbdcb68021b6c"
+    },
+    {
+      "ast_sha256": "5e9b1b6b0eee68764af34dc223c64d20755aa612057c0d90bf5728f09c6beadb",
+      "baseline_lines": [
+        165,
+        238
+      ],
+      "definition": "Declaration",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        165,
+        238
+      ],
+      "source_fragment_sha256": "e4bcc8bad9a5f0795d856e2b0c1c960c4d6659c8d182426989668d761916e262"
+    },
+    {
+      "ast_sha256": "966989722aca19dbcdb452eaf615bb28815272909201ec8aaa530bb766f9b4b2",
+      "baseline_lines": [
+        127,
+        140
+      ],
+      "definition": "Dimension",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        127,
+        140
+      ],
+      "source_fragment_sha256": "88d132659303975a452aff6dd3b8465a2b59b3bf7547f9e0e6a22308912ed147"
+    },
+    {
+      "ast_sha256": "08ee74410be80cd01c5cf52b6c3b3fbf95de0f9917480c9f73fc226ddcca6900",
+      "baseline_lines": [
+        52,
+        123
+      ],
+      "definition": "Expression",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        52,
+        123
+      ],
+      "source_fragment_sha256": "630737ac174120ff13e178a9644541cc6f8cc80d6dc0ab9184ed7365efa65652"
+    },
+    {
+      "ast_sha256": "7b54761569f120db8e5e82f8e2d77820b4db8dcfecb1d4aac05d3465527b2e29",
+      "baseline_lines": [
+        701,
+        727
+      ],
+      "definition": "_evaluate_expression",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        721,
+        747
+      ],
+      "source_fragment_sha256": "865994eb8bef85575aebc31a59b223f598ea4028bbd71cb55cef3de5648ef7ac"
+    },
+    {
+      "ast_sha256": "2c4d21a2e682c6fc26bba53533307d540c6bb37b5cf150e82d858612244602be",
+      "baseline_lines": [
+        287,
+        340
+      ],
+      "definition": "_expression_unit",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        289,
+        342
+      ],
+      "source_fragment_sha256": "60fc9900a9a9c2c05a34cd75e2bfbc193ad4e54c4b323a8599ad98e92fe46e73"
+    },
+    {
+      "ast_sha256": "a4ffb755ebf257bfe1fb9f119681ff349979d6e4c140bd8bb1354523a9cb2d14",
+      "baseline_lines": [
+        413,
+        416
+      ],
+      "definition": "_fields",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        415,
+        418
+      ],
+      "source_fragment_sha256": "a1b2f3c23108e3207636101816246b21de8234f2020a41d38b6467696381fd42"
+    },
+    {
+      "ast_sha256": "3c22f9bf88cca05ef5b9df32d88ad6f45e0859832cf3b47928a3295c533dd5bf",
+      "baseline_lines": [
+        43,
+        48
+      ],
+      "definition": "_product_units",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        43,
+        48
+      ],
+      "source_fragment_sha256": "9161c20082f0039292a9172e1aa939af2415e38bf9a4263ff0b31edf96ee566e"
+    },
+    {
+      "ast_sha256": "31974eec32a32d18f19c5abea72eb74121ef8259c8ce0b627411eda79d460824",
+      "baseline_lines": [
+        425,
+        458
+      ],
+      "definition": "_read_expression",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        427,
+        460
+      ],
+      "source_fragment_sha256": "604bfa237d73fcc54a4ef0ba539cd5f44f98af910d1081f535026b4437ad3216"
+    },
+    {
+      "ast_sha256": "17bd782e5560adc514ceeb4dac6fbe54308c999f895746a9b4c02ac9555f54be",
+      "baseline_lines": [
+        419,
+        422
+      ],
+      "definition": "_read_unit",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        421,
+        424
+      ],
+      "source_fragment_sha256": "221abe6b2d198079197de378911220911b846bc1d058f3575260c921353a3e51"
+    },
+    {
+      "ast_sha256": "7f608cf9b3d63c564256fa975f73cd6b1ce3904a54199cc17c1e0890cfbfcf63",
+      "baseline_lines": [
+        274,
+        284
+      ],
+      "definition": "_source_context",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        276,
+        286
+      ],
+      "source_fragment_sha256": "ab956302810fc2469074e806b4536b12bcbe5e405517a0bbb7f8c1f2685be549"
+    },
+    {
+      "ast_sha256": "8a4d643aaca174028ec04adcaf51f6b059e1b129db6dbed2f348bebe58688990",
+      "baseline_lines": [
+        24,
+        40
+      ],
+      "definition": "_unit",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        24,
+        40
+      ],
+      "source_fragment_sha256": "9153cffde9c70d0b41244c11a7af1e848136f13a95081bed86ba20f96919af4e"
+    },
+    {
+      "ast_sha256": "1e47a5a08b78cc6ffc16b0443eee6fb2e9d42fedc71a5c4aff1e5007e9bbfbc4",
+      "baseline_lines": [
+        604,
+        620
+      ],
+      "definition": "_validate_sample",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        619,
+        635
+      ],
+      "source_fragment_sha256": "230e0193453b74cf46a870fe42560860436051b9f97912fad56e8cc97af7fca4"
+    },
+    {
+      "ast_sha256": "6241b960b80e7b093d66ffab31acdf8075c037a8a4eb59549b88b96b87c88642",
+      "baseline_lines": [
+        343,
+        369
+      ],
+      "definition": "declare_growth",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        345,
+        371
+      ],
+      "source_fragment_sha256": "710ae66ae3a8ebfecaeeb7a94e42ae177527c37e4cadbe510d4bc9a41bcf72bc"
+    },
+    {
+      "ast_sha256": "006cf245a68e665b7cbc5bec55f68a4d57fb4950815a25812f4ea7b9ff14a5e3",
+      "baseline_lines": [
+        372,
+        385
+      ],
+      "definition": "evaluate_bound",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        374,
+        387
+      ],
+      "source_fragment_sha256": "9ad40b6b5cc213a1a33c8a297882f9949f03922cc151efe8c49f333d2c63a56f"
+    },
+    {
+      "ast_sha256": "3c282f56fcc1c9b28a75a24943923956da7404f579222d626ba67599b7f01caf",
+      "baseline_lines": [
+        259,
+        263
+      ],
+      "definition": "growth_binding",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        259,
+        263
+      ],
+      "source_fragment_sha256": "78f36ea42e9a9ec243ac802a3d19a0d48c5c7e043b617af72cc6e3064c6db49b"
+    },
+    {
+      "ast_sha256": "c642d246c1009a19597b2914d2a49c52a1f1612409513164f71455c3042b7bf4",
+      "baseline_lines": [
+        388,
+        410
+      ],
+      "definition": "project_bindings",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        390,
+        412
+      ],
+      "source_fragment_sha256": "1a447698d6f5684a3ed62447d619fc401bea62dc42c35a6d713288ac1350b3d5"
+    },
+    {
+      "ast_sha256": "f52f842db6623f3376eea59e0951d35e7a4b85ca1748b2a125f3748bc3c6d118",
+      "baseline_lines": [
+        623,
+        683
+      ],
+      "definition": "validate_execution_samples",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        638,
+        698
+      ],
+      "source_fragment_sha256": "15b01b3c5e890e92be3523c7d41b0209316482c16cad99221a42393bff717b30"
+    },
+    {
+      "ast_sha256": "d22ceac1fb024dfc994f8c2918ea9ffe29c7e0dca558961c61e7b4952b81c843",
+      "baseline_lines": [
+        584,
+        587
+      ],
+      "definition": "validate_projection",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        599,
+        602
+      ],
+      "source_fragment_sha256": "59c5ef1c1bea0ad818630f5d7b960f937ac3f7a2c54498abe1c031a4335733fa"
+    },
+    {
+      "ast_sha256": "93ca16cd57b75fee6556fdbbc162c3de33ef451fec6546d56ad0b36903ea8eae",
+      "baseline_lines": [
+        590,
+        601
+      ],
+      "definition": "validate_sample",
+      "exact_source_fragment_equal": true,
+      "proposed_lines": [
+        605,
+        616
+      ],
+      "source_fragment_sha256": "093198f9a13fff950ad2047601447948993f0326a9531be0ea617dcf983d9a1e"
+    }
+  ]
+}

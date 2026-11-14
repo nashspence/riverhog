@@ -1,0 +1,16 @@
+{
+  "projection.json": {
+    "sha256": "f8eae73e293eac5e9ed7dcf01d706d9176d4f198e13ef61203d06d0df41c0ef1",
+    "raw_bytes": 4512672,
+    "stored_bytes": 260405,
+    "stored_path": "projection.json.gz.b64",
+    "compression": "gzip mtime=0 then base64"
+  },
+  "samples.json": {
+    "sha256": "a9e69163ba9aac6c5cefd4f582c609997217421528840694449f24007f6c2b20",
+    "raw_bytes": 1989073,
+    "stored_bytes": 252301,
+    "stored_path": "samples.json.gz.b64",
+    "compression": "gzip mtime=0 then base64"
+  }
+}

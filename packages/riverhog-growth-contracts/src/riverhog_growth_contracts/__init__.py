@@ -267,6 +267,10 @@ def growth_binding(operation: Callable[..., Any]) -> Binding:
 class _Context:
     declaration: Declaration
     delegates: dict[str, _Context]
+    dimension_units: dict[str, Unit] | None = None
+    bounds_by_metric: dict[str, Bound] | None = None
+    numeric_dimension_names: frozenset[str] | None = None
+    numeric_bounds_by_metric: dict[str, Bound] | None = None
 
 
 def _source_context(binding: Binding, stack: tuple[str, ...] = ()) -> _Context:
@@ -286,7 +290,9 @@ def _expression_unit(
     expression: Expression, context: _Context, stack: tuple[str, ...], relation: str
 ) -> Unit:
     declaration = context.declaration
-    dimensions = {d.name: d.unit for d in declaration.dimensions}
+    dimensions = context.dimension_units
+    if dimensions is None:
+        dimensions = {d.name: d.unit for d in declaration.dimensions}
     if expression.op == "constant":
         return expression.unit
     if expression.op == "dimension":
@@ -310,13 +316,17 @@ def _expression_unit(
     if child.declaration.id in stack:
         raise ValueError("growth composition has cyclic delegates")
     arguments = dict(expression.arguments)
-    child_dimensions = {d.name: d.unit for d in child.declaration.dimensions}
+    child_dimensions = child.dimension_units
+    if child_dimensions is None:
+        child_dimensions = {d.name: d.unit for d in child.declaration.dimensions}
     if set(arguments) != set(child_dimensions) or any(
         _expression_unit(arguments[name], context, stack, "equal") != unit
         for name, unit in child_dimensions.items()
     ):
         raise ValueError("growth delegate dimension mapping is incomplete or incompatible")
-    bounds = {b.metric: b for b in child.declaration.bounds}
+    bounds = child.bounds_by_metric
+    if bounds is None:
+        bounds = {b.metric: b for b in child.declaration.bounds}
     if expression.metric not in bounds:
         raise ValueError("growth delegate metric is not declared")
     bound = bounds[expression.metric]
@@ -516,7 +526,25 @@ def _projection_contexts(projection: object) -> dict[str, _Context]:
             invariants=tuple(row["invariants"]),
             limitations=tuple(row["limitations"]),
         )
-        contexts[identity] = _Context(declaration, {})
+        dimension_units = {d.name: d.unit for d in declaration.dimensions}
+        bounds_by_metric = {b.metric: b for b in declaration.bounds}
+        # Custom names can observe hashing and equality during numeric checks.
+        contexts[identity] = _Context(
+            declaration,
+            {},
+            dimension_units=dimension_units,
+            bounds_by_metric=bounds_by_metric,
+            numeric_dimension_names=(
+                frozenset(dimension_units)
+                if all(type(dimension.name) is str for dimension in declaration.dimensions)
+                else None
+            ),
+            numeric_bounds_by_metric=(
+                bounds_by_metric
+                if all(type(bound.metric) is str for bound in declaration.bounds)
+                else None
+            ),
+        )
         if not isinstance(row["delegates"], Mapping):
             raise ValueError("growth delegates require exact named declarations")
         references = {}
@@ -671,11 +699,16 @@ def validate_execution_samples(projection: object, declaration_id: str, samples:
 
 
 def _evaluate(context: _Context, metric: str, dimensions: Mapping[str, int]) -> int:
-    if set(dimensions) != {d.name for d in context.declaration.dimensions} or any(
-        type(value) is not int or value < 0 for value in dimensions.values()
-    ):
+    # Observations may be mutable mappings, so every evaluation checks them.
+    if set(dimensions) != (
+        context.numeric_dimension_names
+        if context.numeric_dimension_names is not None
+        else {d.name for d in context.declaration.dimensions}
+    ) or any(type(value) is not int or value < 0 for value in dimensions.values()):
         raise ValueError("growth dimensions must be complete nonnegative integer observations")
-    bounds = {bound.metric: bound for bound in context.declaration.bounds}
+    bounds = context.numeric_bounds_by_metric
+    if bounds is None:
+        bounds = {bound.metric: bound for bound in context.declaration.bounds}
     if metric not in bounds:
         raise ValueError("growth metric is not declared")
     bound = bounds[metric]
