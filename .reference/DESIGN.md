@@ -1,22 +1,12 @@
-# Declaration compilation and recorder ownership
+# Bounded recorder ownership of sample validation
 
 ## The observed cost boundary
 
-The issue-authorized caller reaches 100 declarations and 142 delegate edges. The baseline traversed `_expression_unit` 68,785 times for each `project_bindings` and `validate_projection` call. A DAG can reach the same intrinsic child body repeatedly along different incoming paths. Repeating that structural work does not check another execution sample.
+The issue-authorized caller reaches 100 declarations and 142 delegate edges. The baseline traversed `_expression_unit` 68,785 times for each `project_bindings` and `validate_projection` call. The current delivered source leaves those compilation semantics unchanged.
 
-The maintained sample helper also calls `project_bindings` and then `validate_execution_samples` for each emission. Both compile the projection. The existing batch reader already compiles once for a list of roots and then checks every supplied root. These are distinct opportunities: avoid repeated body walks within a compilation, and amortize compilation across an explicitly owned group of samples.
+The maintained sample helper calls `project_bindings` and then `validate_execution_samples` for each emission. Both compile the projection. The existing batch reader already compiles once for a list of roots and then checks every supplied root. The selected approach amortizes that compilation across an explicitly owned group of samples.
 
-The earlier experimental expression-key memo is not included. This proposal does not hash recursive expression objects or retain a compiled plan across public calls.
-
-## One compilation owns checked bodies
-
-`_projection_contexts` still parses the supplied projection afresh, validates its metadata budgets, creates fresh contexts, checks the complete delegate graph for cycles and maximum depth, and rejects duplicate public subjects before constructing the new set.
-
-The set key is `(declaration_id, metric)`. A key is added only after that bound's own expression has returned its declared unit. That intrinsic result is stable within the fresh, validated context graph. Each incoming delegate edge still checks its multiplicity unit, exact child dimension mapping and argument units, selected metric, and relation strength before consulting the set. Argument expressions retain their existing `equal` requirement.
-
-The top-level declaration loop skips only bodies that were already successfully checked through a delegate. Source attachment and `evaluate_bound` continue to use the original uncached behavior. A later public reader invocation parses and checks everything again, including a projection mutated since an earlier successful call.
-
-This makes intrinsic body visits proportional to the source bodies and their expression occurrences instead of repeatedly expanding shared descendants. Parsing, graph traversal, each edge's obligations, and actual sample validation retain their costs. The change makes no claim that all reader work becomes constant or that numerical evaluation is cached.
+No expression memo or compiled-plan cache is included. An initial compilation-local body-set experiment is preserved at `7c78eb33fd310653468c1a2fa9dfac41417c5adf`; its counts fell but sample-validation timings were slower. [RESULTS.md](RESULTS.md) records the mixed observation and the decision to exclude it. The final growth-contract package is identical to the audited base.
 
 ## An explicit recorder scope owns pending work
 
@@ -43,9 +33,9 @@ The source checks detect bindings or metadata changed at a receiving boundary, i
 | Boundary | Preserved owner / behavior |
 | --- | --- |
 | Malformed declaration shape and expression metadata | Fresh `_projection_contexts` parsing and existing 4,096-declaration / 131,072-expression-node / depth-64 limits |
-| Whole graph cycles, depth, and duplicate subjects | Existing full graph checks before any body reuse |
+| Whole graph cycles, depth, and duplicate subjects | Unchanged full graph checks in every reader call |
 | Distinct operations claiming one declaration ID | Existing `project_bindings` source ownership checks |
-| Edge units, metric selection, relations, dimension mapping | Checked for every referring expression before body reuse |
+| Edge units, metric selection, relations, dimension mapping | Unchanged checking of every referring expression |
 | Sample digest and complete dimensions / metrics | Existing public execution reader, for every admitted root |
 | Actual delegates, invocation count, mapped child dimensions | Existing recursive sample and composition checks, for every nested node |
 | Per-root sample admission | Existing 65,536-node budget; a fresh budget for each root |

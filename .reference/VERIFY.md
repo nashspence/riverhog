@@ -1,6 +1,6 @@
 # Focused receiving and reproduction
 
-Reconcile against current authoritative source before integrating. The base is `8c80903818b386f50ddce8cd316cb3d93ec8cc51`; the proposed source changes the growth-contract reader and test support only. Do not transplant `.reference` evidence as qualification of a different source.
+Reconcile against current authoritative source before integrating. The base is `8c80903818b386f50ddce8cd316cb3d93ec8cc51`; the proposed source changes test support and recorder wiring only. The public growth-contract package is unchanged. Do not transplant `.reference` evidence as qualification of a different source.
 
 ## Pinned tools and external scratch
 
@@ -13,11 +13,10 @@ export TMPDIR=/absolute/external/observer-tmp
 mkdir -p "$TMPDIR"
 .venv/bin/python -m pytest -q \
   --basetemp "$TMPDIR/focused-pytest" \
-  tests/unit/test_growth_compilation_reuse.py \
   tests/unit/test_growth_observer_batch.py
 ```
 
-These two new modules include the small three-turn actual caller fixture. It uses zero unrelated rows and the existing real fixture, checks all six caller/unit roots, compares their sample bytes through the immediate reader, closes the generator, and checks zero catalog connections.
+The new module includes the small three-turn actual caller fixture. It uses zero unrelated rows and the existing real fixture, checks all six caller/unit roots, compares their sample bytes through the immediate reader, closes the generator, and checks zero catalog connections.
 
 The focused receiving suite additionally includes:
 
@@ -70,4 +69,4 @@ It writes the three inputs required by replay: `projection.json`, the archived `
 
 `run.json` binds the profile to exact clean source at start and end, exact script/projection/sample digests, tool versions, imports, workload counts, per-phase measurements, exit status, and cleanup. The lane receipt reports the original child status and total elapsed time. Preserve failed receipts separately.
 
-The recorded successful baseline created and removed its private fixture, closed the generator, and checked zero catalog connections. Replay creates no product fixture; its `fixture_created=false` / `fixture_removed=false` pair is expected and must not be reported as a fresh cleanup test. Remove only owned external test directories after the original child has exited. The batch tests assert release of retained projection/source/sample references on successful and failing exits.
+The recorded successful baseline created and removed its private fixture, closed the generator, and checked zero catalog connections. Replay creates no product fixture; its `fixture_created=false` / `fixture_removed=true` pair comes from the script's no-fixture replay marker and must not be reported as creation or removal of a fresh product fixture. Remove only owned external test directories after the original child has exited. The batch tests assert release of retained projection/source/sample references on successful and failing exits.

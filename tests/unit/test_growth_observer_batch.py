@@ -10,11 +10,56 @@ from dataclasses import replace
 import pytest
 import riverhog_growth_contracts as growth
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_growth_contracts import Expression, project_bindings, validate_execution_samples
+from riverhog_growth_contracts import (
+    COUNT,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+    growth_binding,
+    project_bindings,
+    validate_execution_samples,
+)
 
 from tests.support import growth_batch
 from tests.support.growth_batch import SampleBatch
-from tests.unit.test_growth_compilation_reuse import graph_binding, graph_bound, graph_call
+
+
+def graph_binding(name, *bounds, delegates=()):
+    declaration = Declaration(
+        id=f"fixture.{name}.growth/v1",
+        authority="fixture",
+        subjects=(f"fixture.{name}",),
+        scope="successful-call-primitive-work",
+        starts_at="accept actual input",
+        ends_at="return exact output",
+        dimensions=(Dimension("items", COUNT, "Actual input items."),),
+        bounds=bounds,
+        conditions=("Finite valid input.",),
+        invariants=("Complete exact output.",),
+        limitations=("No numerical elapsed-time promise.",),
+    )
+
+    def operation():
+        return "exact-output"
+
+    declare_growth(declaration, delegates=delegates)(operation)
+    return growth_binding(operation)
+
+
+def graph_bound(expression, *, metric="visits", relation="equal"):
+    return Bound(metric, COUNT, relation, expression, "Actually observed primitive work.")
+
+
+def graph_call(name, *, metric="visits", calls=1, argument=None):
+    return Expression(
+        "delegate",
+        name=name,
+        metric=metric,
+        terms=(Expression("constant", value=calls, unit=COUNT),),
+        arguments=(("items", argument or Expression("dimension", name="items")),),
+    )
 
 
 def leaf_binding():

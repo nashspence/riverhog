@@ -1,0 +1,5 @@
+project_bindings {"expression_unit_entries": 47743, "uninstrumented_cpu_seconds": 1.3585507529999994, "uninstrumented_wall_seconds": 1.3588543630000913}
+validate_projection {"expression_unit_entries": 47743, "uninstrumented_cpu_seconds": 0.9711732099999999, "uninstrumented_wall_seconds": 0.971383496000044}
+three_single_execution_validations {"expression_unit_entries": 143229, "uninstrumented_cpu_seconds": 6.741305847, "uninstrumented_wall_seconds": 6.772026765999954}
+one_three_root_execution_batch {"expression_unit_entries": 47743, "uninstrumented_cpu_seconds": 2.978158025999999, "uninstrumented_wall_seconds": 2.989521644999968}
+original child final status 0 cleanup {"fixture_created": false, "fixture_removed": true}

@@ -283,11 +283,7 @@ def _source_context(binding: Binding, stack: tuple[str, ...] = ()) -> _Context:
 
 
 def _expression_unit(
-    expression: Expression,
-    context: _Context,
-    stack: tuple[str, ...],
-    relation: str,
-    checked_bounds: set[tuple[str, str]] | None = None,
+    expression: Expression, context: _Context, stack: tuple[str, ...], relation: str
 ) -> Unit:
     declaration = context.declaration
     dimensions = {d.name: d.unit for d in declaration.dimensions}
@@ -297,10 +293,7 @@ def _expression_unit(
         if expression.name not in dimensions:
             raise ValueError("growth expression references an unknown dimension")
         return dimensions[expression.name]
-    units = tuple(
-        _expression_unit(term, context, stack, relation, checked_bounds)
-        for term in expression.terms
-    )
+    units = tuple(_expression_unit(term, context, stack, relation) for term in expression.terms)
     if expression.op == "product":
         return _product_units(units)
     if expression.op in {"sum", "maximum"}:
@@ -319,7 +312,7 @@ def _expression_unit(
     arguments = dict(expression.arguments)
     child_dimensions = {d.name: d.unit for d in child.declaration.dimensions}
     if set(arguments) != set(child_dimensions) or any(
-        _expression_unit(arguments[name], context, stack, "equal", checked_bounds) != unit
+        _expression_unit(arguments[name], context, stack, "equal") != unit
         for name, unit in child_dimensions.items()
     ):
         raise ValueError("growth delegate dimension mapping is incomplete or incompatible")
@@ -331,21 +324,11 @@ def _expression_unit(
         relation == "upper" and bound.relation == "big_o"
     ):
         raise ValueError("growth delegate cannot establish the stronger parent relation")
-    key = (child.declaration.id, bound.metric)
-    if checked_bounds is None or key not in checked_bounds:
-        if (
-            _expression_unit(
-                bound.expression,
-                child,
-                (*stack, child.declaration.id),
-                bound.relation,
-                checked_bounds,
-            )
-            != bound.unit
-        ):
-            raise ValueError("growth delegate expression contradicts its metric unit")
-        if checked_bounds is not None:
-            checked_bounds.add(key)
+    if (
+        _expression_unit(bound.expression, child, (*stack, child.declaration.id), bound.relation)
+        != bound.unit
+    ):
+        raise ValueError("growth delegate expression contradicts its metric unit")
     return bound.unit
 
 
@@ -573,25 +556,15 @@ def _projection_contexts(projection: object) -> dict[str, _Context]:
         if subjects.intersection(context.declaration.subjects):
             raise ValueError("growth public subject has multiple declaration owners")
         subjects.update(context.declaration.subjects)
-    # The complete graph is checked before reusing any bound's intrinsic unit check.
-    checked_bounds: set[tuple[str, str]] = set()
     for identity, context in contexts.items():
         for metric_bound in context.declaration.bounds:
-            key = (identity, metric_bound.metric)
-            if key in checked_bounds:
-                continue
             if (
                 _expression_unit(
-                    metric_bound.expression,
-                    context,
-                    (identity,),
-                    metric_bound.relation,
-                    checked_bounds,
+                    metric_bound.expression, context, (identity,), metric_bound.relation
                 )
                 != metric_bound.unit
             ):
                 raise ValueError("growth projected metric has incompatible units")
-            checked_bounds.add(key)
     return contexts
 
 

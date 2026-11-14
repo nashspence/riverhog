@@ -9,15 +9,17 @@ Produced by: OpenAI ChatGPT. Model: GPT-6 Astra Pro. Configuration: Default mode
 
 ## Purpose and first step
 
-Reduce repeated growth-declaration checking while preserving every actual sample check. The proposed source contains a compilation-local set of checked declaration/metric bodies and a test-owned, explicitly bounded recorder batch using the existing public reader. No public API or declaration schema changes.
+Reduce repeated growth-declaration checking while preserving every actual sample check. The proposed source is a test-owned, explicitly bounded recorder batch using the existing public reader. The entire growth-contract package remains byte-for-byte identical to the audited base.
 
-**First focused receiving step:** reconcile the small package diff with current authoritative source, then run the two new test modules using the pinned environment and an external temporary directory as shown in [VERIFY.md](VERIFY.md). The batching helper is an optional recorder integration point; assess it with the owning recorder before adoption.
+**First focused receiving step:** reconcile the caller/unit recorder diff with current authoritative source, then run `tests/unit/test_growth_observer_batch.py` using the pinned environment and an external temporary directory as shown in [VERIFY.md](VERIFY.md). The batching helper is an optional recorder integration point; assess it with the owning recorder before adoption.
 
 Read [DESIGN.md](DESIGN.md) for invariants and bounded lifetime, and [RESULTS.md](RESULTS.md) for exact source identities, measurements, receipts, and limits. The exact published handoff SHA in the owning issue is the durable identity; the branch name is navigation.
 
 ## Source relationship
 
-Product service, journal, and database paths match the audited base. Proposed edits are confined to the growth-contract reader, test support, and caller/unit recorder wiring. The `.reference` directory contains producer documentation and finite experiment evidence. Later source `931f01e65d8849835774a97ffbd2954ae6802ce5` was inspected for drift only: its changes from the audited base are the upload-certificate service and its unit tests, without overlapping this proposal. It was not absorbed or qualified.
+All product and growth-contract package paths match the audited base. Proposed edits are confined to test support and caller/unit recorder wiring. The `.reference` directory contains producer documentation and finite experiment evidence. Later source `931f01e65d8849835774a97ffbd2954ae6802ce5` was inspected for drift only: its changes from the audited base are the upload-certificate service and its unit tests, without overlapping this proposal. It was not absorbed or qualified.
+
+An initial compilation-memo experiment at `7c78eb33fd310653468c1a2fa9dfac41417c5adf` reduced expression traversals but produced mixed, slower sample-validation timings. Its proposed package changes and associated tests are absent from the current delivered diff; that append-only historical commit and its receipts remain available as research evidence. It is not a recommended optimization or an accepted integration result.
 
 This is a new request-specific reference, not a revision of the earlier #964 primary-member lifecycle handoff. It supersedes no previous published handoff.
 
