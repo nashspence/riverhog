@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
+from time import monotonic, sleep
 
 import pytest
 from riverhog_client._prepared_primary_documents import (
@@ -486,11 +487,11 @@ def test_authenticated_custody_survives_lost_decision_ack_and_damaged_local_jour
         # The service accepted all exact decisions despite the deliberately lost responses.
         api.complete_collection_upload_session(collection_id)
         producer._upload_available(reconcile=False)
-        for _ in range(100):
-            if api.get_collection_upload_session(collection_id)["state"] == "finalized":
-                break
-        else:
-            pytest.fail("the three-member remote finalization did not settle")
+        deadline = monotonic() + 30
+        while api.get_collection_upload_session(collection_id)["state"] != "finalized":
+            if monotonic() >= deadline:
+                pytest.fail("the three-member remote finalization did not settle")
+            sleep(0.01)
         pending = store.usage.pending_bytes
         for number, record in enumerate(originals):
             with store._member(str(record.prepared.member.artifact_id), create=False) as files:
