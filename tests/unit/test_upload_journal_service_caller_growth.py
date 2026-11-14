@@ -28,9 +28,10 @@ CHILDREN = dict(owner._service_validation_advance_children())
 
 
 class Recorder:
-    def __init__(self, case, current):
+    def __init__(self, case, current, *, batch=None):
         self.case, self.current = case, current
-        self.units = units.UnitRecorder(case, current)
+        self.batch = batch
+        self.units = units.UnitRecorder(case, current, batch=batch)
         self.active, self.depth = False, 0
 
     @contextmanager
@@ -182,7 +183,7 @@ class Recorder:
         self.own["unit_native_owner_sql_statements"] = sum(
             child["metrics"][("native_owner_sql_statements")] for child in self.children[("unit")]
         )
-        return result, stamps.sample(ROOT, dimensions, self.own, self.children)
+        return result, stamps.sample(ROOT, dimensions, self.own, self.children, batch=self.batch)
 
 
 def advance_fixture(current, count):
