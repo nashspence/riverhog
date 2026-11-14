@@ -8,7 +8,7 @@ from tests.unit.test_imported_history_finalization import (
     _source_material,
     _staged_imports,
 )
-from tests.unit.test_selected_upload_journal_prefix import _owner, _state
+from tests.unit.test_selected_upload_journal_prefix import _advance_member, _owner, _state
 
 
 @pytest.mark.parametrize("committed", [False, True])
@@ -17,7 +17,7 @@ def test_imported_terminal_receives_original_commit_or_rebuilds_rolled_back_atte
 ):
     material = _source_material()
     with _staged_imports(tmp_path, monkeypatch, material, fanout=1, members=1) as case:
-        assert _owner(case).advance()
+        _advance_member(case)
         assert _state(case) == (1, False, None)
         original = _owner(case)
         with _observe_terminal(case, monkeypatch) as first:

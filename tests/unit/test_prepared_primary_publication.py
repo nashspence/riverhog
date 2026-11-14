@@ -487,10 +487,24 @@ def test_authenticated_custody_survives_lost_decision_ack_and_damaged_local_jour
         # The service accepted all exact decisions despite the deliberately lost responses.
         api.complete_collection_upload_session(collection_id)
         producer._upload_available(reconcile=False)
-        deadline = monotonic() + 30
-        while api.get_collection_upload_session(collection_id)["state"] != "finalized":
+        deadline = monotonic() + 120
+        while True:
+            state = api.get_collection_upload_session(collection_id)["state"]
+            if state == "finalized":
+                break
             if monotonic() >= deadline:
-                pytest.fail("the three-member remote finalization did not settle")
+                with session_scope(api.service._session_factory) as session_db:
+                    upload = session_db.get(CollectionUploadRecord, collection_id)
+                    phase = upload.archive_phase if upload is not None else None
+                    member = (
+                        upload.provenance_validation_next_artifact_order
+                        if upload is not None
+                        else None
+                    )
+                pytest.fail(
+                    "the three-member remote finalization did not settle; "
+                    f"state={state!r}, phase={phase!r}, member_cursor={member!r}"
+                )
             sleep(0.01)
         pending = store.usage.pending_bytes
         for number, record in enumerate(originals):

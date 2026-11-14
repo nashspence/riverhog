@@ -11,6 +11,7 @@ from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionRecord
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
 from riverhog_core.services.archive_write_admission import _writer
+from riverhog_core.services.physical_execution import PhysicalExecutionKey
 from riverhog_protocol import CollectionUploadRawDigestBatchDocument
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 from sqlalchemy import select
@@ -221,7 +222,10 @@ def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
 
         def join_independent():
             for slot in tuple(service._archive_execution._slots.values()):
-                if slot.key.collection_id == case.collection_id:
+                if (
+                    isinstance(slot.key, PhysicalExecutionKey)
+                    and slot.key.collection_id == case.collection_id
+                ):
                     deadline = monotonic() + 10
                     while slot.worker.is_alive() and not entered.is_set():
                         slot.worker.join(timeout=0.01)

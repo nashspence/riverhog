@@ -280,9 +280,10 @@ def _execution_scope(case, monkeypatch):
     )
     assert not isinstance(reservation, str)
     actual = physical._run
-    published, release = threading.Event(), threading.Event()
+    submitted, published, release = threading.Event(), threading.Event(), threading.Event()
 
     def held(work, future):
+        assert submitted.wait(timeout=10)
         actual(work, future)
         published.set()
         assert release.wait(timeout=10)
@@ -300,11 +301,13 @@ def _execution_scope(case, monkeypatch):
             )
             == "submitted"
         )
+        submitted.set()
         assert published.wait(timeout=10)
         assert _retained(case) == 1 and service._archive_retention._counts == {False: 0, True: 1}
         assert service._archive_execution.collect(limit=1, owner=owner) == ()
         assert service._archive_retention._reservations[id(reservation)] is reservation
     finally:
+        submitted.set()
         release.set()
     for slot in tuple(service._archive_execution._slots.values()):
         slot.worker.join(timeout=10)

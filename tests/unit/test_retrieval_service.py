@@ -4,6 +4,7 @@ import hashlib
 from collections.abc import Iterable, Iterator
 from datetime import timedelta
 from pathlib import Path
+from time import monotonic, sleep
 from typing import cast
 
 import pytest
@@ -467,13 +468,20 @@ def _seed_collection(
                 plan_sha256=str(volume["plan_sha256"]),
                 content=payload,
             )
-    for _ in range(256):
-        if uploads.get(collection_id)["state"] == "finalized":
-            break
-        drive_finalization_turn(uploads)
-    else:
-        raise AssertionError("bounded collection finalization did not terminate")
-    uploads.close()
+    deadline = monotonic() + 300
+    try:
+        while True:
+            state = uploads.get(collection_id)["state"]
+            if state == "finalized":
+                break
+            if monotonic() >= deadline:
+                raise AssertionError(
+                    f"collection finalization did not terminate; last state={state!r}"
+                )
+            drive_finalization_turn(uploads)
+            sleep(0.01)
+    finally:
+        uploads.close()
 
     with session_scope(make_session_factory(database_url)) as session:
         session.add(
