@@ -23,7 +23,7 @@ from riverhog_provenance.graph_certificates import (
     JournalGraphCertificateBinding,
 )
 from riverhog_provenance_contracts import ContractCatalog, require_canonical_uuid_urn
-from sqlalchemy import and_, select
+from sqlalchemy import Select, and_, select
 from sqlalchemy.orm import aliased
 from state_schema import read_snapshot
 
@@ -709,6 +709,10 @@ class UploadJournalGraphCertificates:
         self._binding = JournalGraphCertificateBinding(
             source_binding, hashlib.sha256(encoded).hexdigest()
         )
+        self._current_key: (
+            tuple[source_owner._UploadJournalValidationWork, tuple[Any, ...]] | None
+        ) = None
+        self._current_query: Select[tuple[int]] | None = None
 
     @property
     def binding(self) -> JournalGraphCertificateBinding:
@@ -729,17 +733,21 @@ class UploadJournalGraphCertificates:
         )
 
     def verify_current(self) -> bool:
-        query = (
-            select(Scan.collection_id)
-            .join(
-                Journal,
-                (Scan.collection_id == Journal.collection_id)
-                & (Scan.journal_id == Journal.journal_id),
+        key = self.source, self._manifest
+        if self._current_query is None or self._current_key != key:
+            # Reuse source-bound SQL structure while each call reads a fresh snapshot.
+            self._current_query = (
+                select(Scan.collection_id)
+                .join(
+                    Journal,
+                    (Scan.collection_id == Journal.collection_id)
+                    & (Scan.journal_id == Journal.journal_id),
+                )
+                .where(*self._fence())
             )
-            .where(*self._fence())
-        )
+            self._current_key = key
         with read_snapshot(self.factory) as session:
-            with session.execute(query) as rows:
+            with session.execute(self._current_query) as rows:
                 return rows.one_or_none() is not None
 
     def _probe(

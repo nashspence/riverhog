@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+from dataclasses import replace
 
 import pytest
 from riverhog_core.services import collection_uploads as source_owner
@@ -141,4 +142,78 @@ def test_byte_capacity_rejects_before_opening_a_rank_reader(tmp_path, monkeypatc
                 target=uid(100),
                 byte_budget=1,
             )
+        assert engine.pool.checkedout() == 0
+
+
+def test_currentness_reuses_predicates_with_fresh_reader_receiving(tmp_path, monkeypatch):
+    with retained(tmp_path, raw_edges([edge(0)])) as (engine, factory):
+        _work, source = ready(factory)
+        original = source._fence
+        constructions = 0
+        queries = []
+
+        def fence():
+            nonlocal constructions
+            constructions += 1
+            return original()
+
+        def observed(_connection, _cursor, sql, _parameters, _context, _many):
+            queries.append(sql)
+
+        monkeypatch.setattr(source, "_fence", fence)
+        event.listen(engine, "before_cursor_execute", observed)
+        try:
+            for _ in range(4):
+                assert source.verify_current()
+                assert engine.pool.checkedout() == 0
+        finally:
+            event.remove(engine, "before_cursor_execute", observed)
+        assert constructions == 1
+        assert len(queries) == 8
+        assert all(sql.strip().upper() == "BEGIN" for sql in queries[::2])
+        assert all(sql.lstrip().upper().startswith("SELECT") for sql in queries[1::2])
+
+
+@pytest.mark.parametrize("fault", ["source", "manifest", "nullable-source"])
+def test_currentness_observes_changes_after_repeated_reads(tmp_path, fault):
+    with retained(tmp_path, raw_edges([edge(0)])) as (engine, factory):
+        _work, source = ready(factory)
+        assert source.verify_current()
+        assert source.verify_current()
+        model, field, value = (
+            (owner.Journal, "capture_source_sha256", "0" * 64)
+            if fault == "source"
+            else (owner.Journal, "capture_failure", "changed capture outcome")
+            if fault == "nullable-source"
+            else (owner.Scan, "version", source._manifest[0] + 1)
+        )
+        with factory() as session, session.begin():
+            row = session.get(model, (1, JOURNAL))
+            original = getattr(row, field)
+            setattr(row, field, value)
+        try:
+            assert not source.verify_current()
+            assert engine.pool.checkedout() == 0
+        finally:
+            with factory() as session, session.begin():
+                setattr(session.get(model, (1, JOURNAL)), field, original)
+        assert source.verify_current()
+        assert engine.pool.checkedout() == 0
+
+
+@pytest.mark.parametrize("selection", ["source", "manifest"])
+def test_currentness_rebinds_changed_in_memory_selection(tmp_path, selection):
+    with retained(tmp_path, raw_edges([edge(0)])) as (engine, factory):
+        work, source = ready(factory)
+        assert source.verify_current()
+        manifest = source._manifest
+        if selection == "source":
+            source.source = replace(work, source_sha256="0" * 64)
+        else:
+            source._manifest = (manifest[0] + 1, *manifest[1:])
+        try:
+            assert not source.verify_current()
+        finally:
+            source.source, source._manifest = work, manifest
+        assert source.verify_current()
         assert engine.pool.checkedout() == 0
