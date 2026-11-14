@@ -1,0 +1,1 @@
+{"elapsed_seconds":1.2663279039998088,"exit_status":0,"finished_at":"2026-11-14T01:35:27.560391+00:00","format":"riverhog-make-recipe/v1","id":"4032767b356d4242b82553de4e23513e","run_id":"76e7207a53704510a8caa2e538d6fccb","span":"2d623e87f78e42818577d07416603bb1","started_at":"2026-11-14T01:35:26.293700+00:00","state":"completed","target":"mypy"}

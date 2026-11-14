@@ -1,0 +1,818 @@
+"""Collect completed exact-source evidence without rerunning work or editing source."""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import gzip
+import hashlib
+import json
+import math
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+from collections import Counter
+from datetime import datetime
+from pathlib import Path
+from xml.etree import ElementTree
+
+ROOT = Path(__file__).resolve().parent
+SOURCE = "63843b479986486298d47e4347226a74ee197570"
+TREE = "00f68336b22d9862a42bdba39f530cd8cf2cc529"
+GATE_SUFFIX = "finalized"
+EXPECTED_TEST_CASES = 168
+BASE = "1ff0a9ce70c23f18aa94d5b52ed036376132021a"
+OWNER_COMMENT = "https://github.com/nashspence/riverhog/issues/964#issuecomment-6863269082"
+HELPER = (
+    "tests/unit/test_imported_history_growth.py::"
+    "test_current_imported_primary_composes_actual_catalog_and_historical_point_work"
+)
+ENDPOINT = (
+    "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py::"
+    "test_source_endpoint_work_depends_on_index_seeks_not_source_extent"
+)
+DECLARATIONS = {
+    HELPER: "riverhog.upload-imported-primary-state.growth/v1",
+    ENDPOINT: "riverhog-provenance.corpus-source-endpoint.growth/v1",
+}
+TERMINAL = "test_complete_terminal_import_work_depends_on_distinct_source_not_fanout"
+CAPACITY = "test_imported_primary_point_facts_survive_real_summary_capacity"
+
+
+class PacketError(RuntimeError):
+    pass
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise PacketError(message)
+
+
+def sha256(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def json_bytes(value: object) -> bytes:
+    return (json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+
+
+def read_json(path: Path) -> tuple[bytes, dict]:
+    require(path.is_file(), f"Missing evidence: {path}")
+    raw = path.read_bytes()
+    value = json.loads(raw)
+    require(isinstance(value, dict), f"Expected object receipt: {path}")
+    return raw, value
+
+
+def duration(value: object, label: str) -> int | float:
+    require(type(value) in (int, float) and math.isfinite(value) and value >= 0,
+            f"Invalid elapsed time: {label}")
+    return value
+
+
+def clean_source(record: dict, label: str) -> None:
+    require(record.get("source_sha") == SOURCE, f"Wrong producer source: {label}")
+    require(record.get("source_clean") is True, f"Dirty initial source: {label}")
+    require(record.get("source_end") == {"source_sha": SOURCE, "source_clean": True},
+            f"Missing, dirty or changed final source: {label}")
+
+
+def gate(goal: str) -> tuple[Path, dict, dict[str, tuple[Path, bytes]]]:
+    label = f"{goal}-{GATE_SUFFIX}"
+    root = ROOT / "qualification" / label
+    paths = list(root.glob("make/*/*/manifest.json"))
+    require(len(paths) == 1, f"Expected exactly one {label} manifest; found {len(paths)}")
+    path = paths[0]
+    raw, record = read_json(path)
+    require(record.get("format") == "riverhog-make-validation/v1", f"Unknown {goal} receipt")
+    require(record.get("goals") == [goal], f"Wrong {goal} command goals")
+    require(record.get("state") == "completed", f"{label} is not complete")
+    require(record.get("exit_status") == 0, f"{label} failed")
+    clean_source(record, str(path))
+    duration(record.get("elapsed_seconds"), str(path))
+    start, end = (datetime.fromisoformat(record[key]) for key in ("started_at", "finished_at"))
+    require(end >= start, f"Invalid {goal} receipt interval")
+    phases = record.get("phase_costs")
+    require(isinstance(phases, dict) and phases, f"Missing {goal} phase costs")
+    phase_total = sum(duration(value, key) for key, value in phases.items())
+    require(math.isclose(phase_total, record["elapsed_seconds"], abs_tol=0.00001, rel_tol=0.000001),
+            f"Inconsistent {goal} elapsed phase costs")
+    recipes = record.get("recipes")
+    require(isinstance(recipes, list) and recipes, f"Missing completed {goal} recipes")
+    require(Counter(row["target"] for row in recipes) == record.get("expected_recipes"),
+            f"Unexpected or missing {goal} recipes")
+    artifacts = {f"{goal}-make.json": (path, raw)}
+    seen = set()
+    for row in recipes:
+        require(row.get("state") == "completed" and row.get("exit_status") == 0,
+                f"Incomplete or failed {goal} recipe")
+        require(row.get("run_id") == record["run_id"] and row.get("span") == record["span"],
+                f"Recipe belongs to another {goal} execution")
+        identity = row.get("id")
+        require(isinstance(identity, str) and re.fullmatch(r"[0-9a-f]{32}", identity),
+                f"Invalid {goal} recipe identity")
+        require(identity not in seen, f"Duplicate {goal} recipe")
+        seen.add(identity)
+        recipe_path = path.parent / "recipes" / f"{identity}.json"
+        recipe_raw, receipt = read_json(recipe_path)
+        require(receipt == row, f"Embedded and original {goal} recipe differ")
+        duration(row.get("elapsed_seconds"), f"{goal} recipe {identity}")
+        artifacts[f"{goal}-recipes/{identity}.json"] = (recipe_path, recipe_raw)
+    log = ROOT / f"{label}.log"
+    require(log.is_file() and log.stat().st_size > 0, f"Missing {label} log")
+    artifacts[log.name] = (log, log.read_bytes())
+    return root, record, artifacts
+
+
+def test_phases(tests: dict, label: str, *, allow_empty: bool = False) -> None:
+    require(isinstance(tests, dict) and (tests or allow_empty), f"No complete tests: {label}")
+    for node, phases in tests.items():
+        require(set(phases) == {"setup", "call", "teardown"}, f"Incomplete test phases: {node}")
+        for phase, row in phases.items():
+            require(row.get("outcome") == "passed" and row.get("expected_failure") is False,
+                    f"Nonpassing or expected-failure phase: {node} {phase}")
+            duration(row.get("seconds"), f"{node} {phase}")
+
+
+def pytest_records(root: Path, make: dict) -> tuple[dict, dict, dict[str, tuple[Path, bytes]]]:
+    paths = list((root / "pytest" / "unit" / make["run_id"]).glob("*/controller.json"))
+    require(len(paths) == 1, f"Expected one completed unit controller; found {len(paths)}")
+    controller_path = paths[0]
+    controller = None
+    workers = []
+    artifacts = {}
+    for path in sorted(controller_path.parent.glob("*.json")):
+        raw, record = read_json(path)
+        require(record.get("format") == "riverhog-ci-pytest-timing/v3", f"Unknown pytest receipt: {path}")
+        clean_source(record, str(path))
+        require(record.get("exit_status") == 0, f"Failed pytest receipt: {path}")
+        require(record.get("run_id") == make["run_id"] and record.get("lane") == "unit",
+                f"Pytest receipt belongs to another run: {path}")
+        require(record.get("execution_span") == make["span"], f"Wrong pytest parent span: {path}")
+        require(record.get("session_id") == controller_path.parent.name, f"Wrong pytest session: {path}")
+        duration(record.get("elapsed_seconds"), str(path))
+        test_phases(record.get("tests"), str(path), allow_empty=path.name != "controller.json")
+        if path.name == "controller.json":
+            require(record.get("worker") == "controller", "Wrong controller worker identity")
+            controller = record
+        else:
+            workers.append(record)
+        artifacts[f"unit-{path.name}"] = (path, raw)
+    require(controller is not None, "Missing completed controller")
+    require({row["worker"] for row in workers} == {"gw0", "gw1", "gw2", "gw3"} and len(workers) == 4,
+            "Missing or duplicate finalized worker receipts")
+    inventory = workers[0].get("growth_witnesses")
+    require(isinstance(inventory, dict) and inventory and all(
+        row.get("growth_witnesses") == inventory for row in workers
+    ), "Growth witness collection differs between workers")
+    require(controller.get("growth_witnesses") in ({}, inventory),
+            "Controller inventory contradicts the worker collection")
+    executed = {}
+    for worker in workers:
+        for node, phases in worker["tests"].items():
+            require(node not in executed, f"Test executed by multiple workers: {node}")
+            require(controller["tests"].get(node) == phases, f"Worker/controller phases differ: {node}")
+            executed[node] = worker["worker"]
+        for group in ("growth_samples", "growth_observations"):
+            for node, value in worker.get(group, {}).items():
+                require(node in worker["tests"] and controller.get(group, {}).get(node) == value,
+                        f"Worker/controller {group} differ: {node}")
+    require(set(executed) == set(controller["tests"]), "Worker coverage differs from controller")
+    for group in ("growth_samples", "growth_observations"):
+        recorded = set().union(*(set(row.get(group, {})) for row in workers))
+        require(recorded == set(controller.get(group, {})), f"Missing worker {group} records")
+    return controller, inventory, artifacts
+
+
+def literal_property(raw: str, label: str) -> object:
+    """Read pytest's literal property representation without executing code."""
+    try:
+        value = ast.literal_eval(raw)
+    except (ValueError, SyntaxError) as error:
+        raise PacketError(f"Invalid literal JUnit property: {label}") from error
+
+    def json_value(item: object) -> None:
+        if isinstance(item, dict):
+            require(all(isinstance(key, str) for key in item), f"Nontext property key: {label}")
+            for child in item.values():
+                json_value(child)
+        elif isinstance(item, list):
+            for child in item:
+                json_value(child)
+        else:
+            require(type(item) in (str, int, float, bool, type(None)),
+                    f"Non-JSON literal property: {label}")
+            if type(item) is float:
+                require(math.isfinite(item), f"Nonfinite property number: {label}")
+
+    json_value(value)
+    return value
+
+
+def junit_records(root: Path, make: dict, controller: dict) -> tuple[dict, dict, tuple[Path, bytes]]:
+    path = root / "pytest.xml"
+    require(path.is_file(), f"Missing finalized JUnit XML: {path}")
+    raw = path.read_bytes()
+    require(b"<!DOCTYPE" not in raw and b"<!ENTITY" not in raw,
+            "JUnit evidence must not contain document type or entity declarations")
+    document = ElementTree.fromstring(raw)
+    suites = list(document.iter("testsuite"))
+    require(len(suites) == 1, "Expected one pytest JUnit suite")
+    suite = suites[0]
+    for kind in ("errors", "failures", "skipped"):
+        require(suite.get(kind) == "0", f"JUnit suite contains {kind}")
+    tests = controller["tests"]
+    cases = list(suite.iter("testcase"))
+    require(int(suite.get("tests", "-1")) == len(cases) == len(tests),
+            "JUnit and controller test counts differ")
+    elapsed = duration(float(suite.attrib["time"]), "JUnit suite")
+    timestamp = datetime.fromisoformat(suite.attrib["timestamp"])
+    require(datetime.fromisoformat(make["started_at"]) <= timestamp <=
+            datetime.fromisoformat(make["finished_at"]), "JUnit timestamp is outside its make run")
+    properties, timings = {}, {}
+    for case in cases:
+        require(not any(case.find(kind) is not None for kind in ("error", "failure", "skipped")),
+                "JUnit testcase contains a failure, error or skip")
+        filename, name, classname = (case.attrib[key] for key in ("file", "name", "classname"))
+        module = filename.removesuffix(".py").replace("/", ".")
+        matches = []
+        for node in tests:
+            if not node.startswith(filename + "::"):
+                continue
+            remainder = node[len(filename) + 2:]
+            if remainder == name:
+                expected_class = module
+            elif remainder.endswith("::" + name):
+                expected_class = module + "." + remainder[:-(len(name) + 2)].replace("::", ".")
+            else:
+                continue
+            if expected_class == classname:
+                matches.append(node)
+        require(len(matches) == 1, f"JUnit testcase has no unique controller owner: {filename} {name}")
+        node = matches[0]
+        require(node not in timings, f"Duplicate JUnit testcase: {node}")
+        seconds = duration(float(case.attrib["time"]), f"JUnit testcase {node}")
+        phases = sum(row["seconds"] for row in tests[node].values())
+        require(abs(seconds - phases) <= 0.0015,
+                f"JUnit testcase time differs from controller phases: {node}")
+        timings[node] = seconds
+        selected = {}
+        for prop in case.findall("./properties/property"):
+            key = prop.attrib["name"]
+            if key not in {"growth_samples", "growth_observations", "imported_primary_profile",
+                           "catalog_admission_samples"}:
+                continue
+            require(key not in selected, f"Duplicate JUnit property: {node} {key}")
+            selected[key] = literal_property(prop.attrib["value"], f"{node} {key}")
+        properties[node] = selected
+        for key in ("growth_samples", "growth_observations"):
+            expected = controller.get(key, {}).get(node)
+            if expected is not None:
+                require(selected.get(key) == expected,
+                        f"JUnit and controller growth data differ: {node} {key}")
+    require(set(timings) == set(tests), "JUnit coverage differs from the completed controller")
+    return {
+        "artifact": "unit-junit.xml", "tests": len(cases), "errors": 0, "failures": 0, "skipped": 0,
+        "elapsed_seconds": elapsed, "timestamp": suite.attrib["timestamp"],
+        "testcase_seconds": timings,
+    }, properties, (path, raw)
+
+
+def source_file(repo: Path, relative: str) -> bytes:
+    result = subprocess.run(["git", "-C", str(repo), "show", f"{SOURCE}:{relative}"],
+                            check=True, capture_output=True, timeout=10)
+    return result.stdout
+
+
+def producer_provenance(repo: Path, selection: bytes) -> tuple[dict, dict[str, tuple[Path, bytes]]]:
+    invocation_path = ROOT / "finalized-invocation.json"
+    invocation_raw, invocation = read_json(invocation_path)
+    argv = invocation.get("argv")
+    require(isinstance(argv, list) and argv[:2] == ["make", "unit"] and
+            all(isinstance(value, str) for value in argv), "Invalid actual unit producer argv")
+    require(Path(invocation["working_directory"]).resolve() == repo.resolve(),
+            "Actual unit producer invocation names another checkout")
+    assignments = {}
+    for value in argv[2:]:
+        require("=" in value, "Unexpected nonassignment unit producer argument")
+        name, selected = value.split("=", 1)
+        require(name not in assignments, f"Duplicate producer override: {name}")
+        assignments[name] = selected
+    require(set(assignments) == {"UV_RUN", "UNIT_PYTEST_ARGS", "TESTS"},
+            "Missing or unexpected actual make overrides")
+    require(assignments["UV_RUN"] == "mise x python uv -- uv run --locked --all-packages --group dev",
+            "Actual UV_RUN differs from the supplied pinned invocation")
+    require(assignments["TESTS"] == " ".join(selection.decode().splitlines()),
+            "Actual invocation differs from the unchanged focused selection")
+    expected_flags = [
+        "-n", "4", "--dist=load", "--instafail", "--durations=20", "--durations-min=0.25",
+        "-p", "scripts.ci_timing",
+        "--junitxml=" + str(ROOT / "qualification" / f"unit-{GATE_SUFFIX}" / "pytest.xml"),
+        "-o", "junit_family=xunit1",
+    ]
+    require(shlex.split(assignments["UNIT_PYTEST_ARGS"]) == expected_flags,
+            "Actual pytest invocation differs from the supplied four-worker finalized command")
+    require(invocation.get("environment_overrides") == {
+        "PYTHONUNBUFFERED": "1", "TMPDIR": str(ROOT / "tmp"),
+        "RIVERHOG_CI_TIMING_DIR": str(ROOT / "qualification" / f"unit-{GATE_SUFFIX}"),
+    }, "Actual producer environment differs from the recorded finalized invocation")
+    launcher_path = ROOT / "run_qualification.py"
+    require(launcher_path.is_file(), "Missing actual qualification launcher")
+    launcher_raw = launcher_path.read_bytes()
+    ast.parse(launcher_raw)
+    export_path = ROOT / "implementation-publication.json"
+    export_raw, export = read_json(export_path)
+    require(export.get("local_sha") == SOURCE and export.get("tree") == TREE and
+            export.get("base") == BASE, "Publication export names another producer source")
+    files = export.get("files")
+    require(isinstance(files, list) and files, "Publication export has no source files")
+    changes = subprocess.run(
+        ["git", "-C", str(repo), "diff", "--name-only", BASE, SOURCE],
+        check=True, capture_output=True, text=True, timeout=10,
+    ).stdout.splitlines()
+    require(len(files) == len(changes) and {row["path"] for row in files} == set(changes),
+            "Publication export differs from the exact producer change set")
+    exported_files = []
+    for row in files:
+        require(row.get("mode") == "100644" and row.get("type") == "blob" and
+                isinstance(row.get("content"), str), "Unexpected publication export entry")
+        content = row["content"].encode()
+        blob = hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
+        require(blob == row["sha"] and source_file(repo, row["path"]) == content,
+                f"Exported source blob differs from producer commit: {row['path']}")
+        exported_files.append({"path": row["path"], "git_blob": blob,
+                               "bytes": len(content), "sha256": sha256(content)})
+    return {
+        "unit_invocation": invocation,
+        "unit_make_overrides": assignments,
+        "unit_pytest_argv": expected_flags,
+        "invocation_artifact": "unit-invocation.json",
+        "launcher_artifact": "run_qualification.py.txt",
+        "collector_artifact": "collector.py.txt",
+        "receipt_distinction": "The invocation and launcher are producer provenance retained separately from the original make/pytest receipts. Empty receipt parameters are preserved, not replaced with inferred values.",
+        "source_export": {
+            "source_sha": SOURCE, "tree": TREE, "base": BASE,
+            "original_export_bytes": len(export_raw), "original_export_sha256": sha256(export_raw),
+            "files": exported_files, "change_set_exact": True,
+        },
+    }, {
+        "unit-invocation.json": (invocation_path, invocation_raw),
+        "run_qualification.py.txt": (launcher_path, launcher_raw),
+        "collector.py.txt": (Path(__file__).resolve(), Path(__file__).read_bytes()),
+    }
+
+
+def normative_evidence(repo: Path, unit: dict, inventory: dict, sample_groups: dict) -> dict:
+    """Use the pinned, source-owned readers on retained samples; execute no tests."""
+    witness_ids, projection_hashes = set(), {}
+    for work in unit["work_definitions"]:
+        witness_ids.update(work["growth_witnesses"])
+        projection_hashes.update(work["growth_declarations"])
+    payload = {
+        "source": SOURCE, "tree": TREE, "inventory": inventory,
+        "make_witness_ids": sorted(witness_ids), "make_projection_hashes": projection_hashes,
+        "sample_groups": sample_groups,
+    }
+    reader = r'''
+import hashlib
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+sys.dont_write_bytecode = True
+root = Path.cwd().resolve()
+sys.path.insert(0, str(root))
+request = json.load(sys.stdin)
+head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+assert head == request["source"], "Normative reader requires the frozen producer checkout"
+subprocess.run(["git", "diff", "--exit-code", request["source"], "--"],
+               check=True, capture_output=True)
+from riverhog_canonical_json import canonical_json_bytes
+from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+from scripts.growth_contract import resolve_operation
+from scripts.validation_witnesses import discover_test_witnesses, operation_projection
+
+owned = {row.id: row for row in discover_test_witnesses(root)}
+operations, verified = set(), {}
+root_bindings = {}
+for node, recorded in request["inventory"].items():
+    identity = recorded["id"]
+    assert identity in request["make_witness_ids"], "Worker witness is outside make inventory"
+    witness = owned[identity]
+    assert "unit" in witness.gates
+    assert node == witness.node_id or (node.startswith(witness.node_id + "[") and node.endswith("]"))
+    expected = {"id": identity, "source_sha256": witness.source_sha256}
+    if witness.operation is not None:
+        projection, declaration = operation_projection(witness.operation, root=root)
+        assert request["make_projection_hashes"][declaration["id"]] == declaration["projection_sha256"]
+        expected["declaration"] = declaration
+        operations.add(witness.operation)
+        root_bindings[declaration["id"]] = declaration
+    assert recorded == expected, "Worker witness differs from its exact source owner"
+    verified[node] = expected
+
+for subject in (
+    "riverhog_core.services.upload_journal_result.prepare_upload_journal_result",
+    "riverhog_core.services.upload_journal_result.SealedJournalResultAdmission.verify_current",
+):
+    projection, declaration = operation_projection(subject, root=root)
+    assert request["make_projection_hashes"][declaration["id"]] == declaration["projection_sha256"]
+    operations.add(subject)
+    root_bindings[declaration["id"]] = declaration
+
+projection = project_bindings(tuple(growth_binding(resolve_operation(subject)) for subject in sorted(operations)))
+declaration_hashes = {
+    identity: hashlib.sha256(canonical_json_bytes(value)).hexdigest()
+    for identity, value in projection["declarations"].items()
+}
+groups = {}
+for identity, samples in request["sample_groups"].items():
+    assert identity in root_bindings, "Sample group has no source-owned operation"
+    validate_execution_samples(projection, identity, samples)
+    groups[identity] = {
+        "samples": len(samples),
+        "samples_sha256": hashlib.sha256(canonical_json_bytes(samples)).hexdigest(),
+        "root_declaration_sha256": declaration_hashes[identity],
+        "reachable_projection_sha256": root_bindings[identity]["projection_sha256"],
+        "validation": "passed",
+    }
+print(json.dumps({
+    "format": "riverhog-reference-growth-verification/v1",
+    "source_sha": request["source"], "source_tree": request["tree"],
+    "reader": "scripts.validation_witnesses.operation_projection and riverhog_growth_contracts.validate_execution_samples",
+    "tests_executed": False, "bytecode_writes": False,
+    "worker_inventory_agrees_with_source_and_make": True,
+    "source_witness_bindings": verified, "root_bindings": root_bindings,
+    "declaration_hashes": declaration_hashes, "sample_groups": groups,
+    "normative_projection": projection,
+}, allow_nan=False))
+'''
+    result = subprocess.run(
+        [str(repo / ".venv" / "bin" / "python"), "-B", "-c", reader],
+        cwd=repo, input=json.dumps(payload), check=False, capture_output=True, text=True, timeout=60,
+    )
+    require(result.returncode == 0, "Source-owned growth verification failed: " + result.stderr.strip())
+    verified = json.loads(result.stdout)
+    require(verified.get("source_sha") == SOURCE and verified.get("source_tree") == TREE,
+            "Normative verification used another producer source")
+    return verified
+
+
+def sample_check(sample: dict, declared_hashes: dict) -> None:
+    require(set(sample) == {"declaration", "declaration_sha256", "dimensions", "metrics", "delegates"},
+            "Malformed persisted growth sample")
+    identity = sample["declaration"]
+    require(declared_hashes.get(identity) == sample["declaration_sha256"],
+            f"Sample does not match the source-owned declared operation: {identity}")
+    for group in ("dimensions", "metrics"):
+        require(isinstance(sample[group], dict) and sample[group], f"Missing growth {group}")
+        require(all(type(value) is int and value >= 0 for value in sample[group].values()),
+                f"Nonprimitive or negative growth {group}: {identity}")
+    require(isinstance(sample["delegates"], dict), "Invalid growth delegates")
+    for children in sample["delegates"].values():
+        require(isinstance(children, list), "Invalid growth delegate samples")
+        for child in children:
+            sample_check(child, declared_hashes)
+
+
+def terminal_profiles(terminal: dict, properties: dict, tests: dict) -> list[dict]:
+    rows = []
+    for node, counts in sorted(terminal.items()):
+        profiles = properties.get(node, {}).get("imported_primary_profile")
+        require(isinstance(profiles, list) and len(profiles) == 2,
+                f"Missing paired terminal JUnit profiles: {node}")
+        shared = set(row["journal_id"] for row in profiles[0]["corpus_sources"]) & set(
+            row["journal_id"] for row in profiles[1]["corpus_sources"]
+        )
+        require(len(shared) == 1, f"Fanout profiles do not share exactly one source: {node}")
+        shared_id = next(iter(shared))
+        for suffix, profile in zip(("small", "large"), profiles, strict=True):
+            require(isinstance(profile, dict), f"Invalid terminal profile: {node}")
+            wall = duration(profile["elapsed_seconds"], f"{node} terminal wall time")
+            cpu = duration(profile["thread_cpu_seconds"], f"{node} terminal thread CPU")
+            imports = profile["imports"]
+            sources = profile["corpus_sources"]
+            validations = profile["validations"]
+            admissions, postchecks = profile["raw_admissions"], profile["raw_current_checks"]
+            require(len(imports) == counts[f"fanout_{suffix}"], f"Wrong terminal profile fanout: {node}")
+            require(len(sources) == len({row["journal_id"] for row in sources}) == 5,
+                    f"Wrong distinct source coverage in terminal profile: {node}")
+            measured = {
+                "native_validation_calls": len(validations),
+                "native_advances": sum(row["native_advances"] for row in validations),
+                "corpus_source_frames": sum(row["frames"] for row in sources),
+                "corpus_source_octets": sum(row["octets"] for row in sources),
+                "raw_admissions": len(admissions),
+                "raw_postchecks": len(postchecks),
+                "raw_catalog_statements": sum(row["sql_statements"] for row in admissions + postchecks),
+                "import_sql_statements": sum(row["sql_statements"] for row in imports),
+                "import_native_metadata_queries": sum(row["native_metadata_queries"] for row in imports),
+                "import_native_metadata_octets": sum(row["metadata_octets"] for row in imports),
+            }
+            for metric, value in measured.items():
+                require(value == counts[f"{metric}_{suffix}"],
+                        f"Rich and primitive terminal measurements differ: {node} {metric}")
+            shared_source = next(row for row in sources if row["journal_id"] == shared_id)
+            require(shared_source["octets"] == counts["shared_source_octets"],
+                    f"Shared source extent differs between profiles and primitive evidence: {node}")
+            rows.append({
+                "test": node, "members": counts["members"], "fanout": len(imports),
+                "documentary_text_octets": counts["documentary_text_octets"],
+                "shared_journal_id": shared_id, "shared_prefix_octets": counts["shared_prefix_octets"],
+                "shared_source_octets": counts["shared_source_octets"],
+                "shared_provider_reads": counts[f"shared_reads_{suffix}"],
+                "shared_payload_octets": counts[f"shared_payload_octets_{suffix}"],
+                "terminal_elapsed_seconds": wall, "terminal_thread_cpu_seconds": cpu,
+                **measured, "profile": profile,
+            })
+        require(sum(profile["elapsed_seconds"] for profile in profiles) <= tests[node]["call"]["seconds"],
+                f"Terminal profile time exceeds its containing test call: {node}")
+    return rows
+
+
+def summarize(repo: Path, lint: dict, unit: dict, controller: dict, log: bytes,
+              selection: bytes, junit: dict, properties: dict, producer: dict,
+              worker_inventory: dict) -> tuple[dict, dict]:
+    tests = controller["tests"]
+    selected_paths = selection.decode().splitlines()
+    require(selected_paths and all(path and path == path.strip() for path in selected_paths),
+            "Invalid exact focused selection")
+    require(len(selected_paths) == len(set(selected_paths)), "Duplicate focused selections")
+
+    def selected(node: str, path: str) -> bool:
+        return node == path or node.startswith(path + "::") or node.startswith(path + "[")
+
+    require(all(any(selected(node, path) for path in selected_paths) for node in tests),
+            "Controller contains tests outside the retained selection")
+    require(all(any(selected(node, path) for node in tests) for path in selected_paths),
+            "A retained focused selection has no completed tests")
+    require(datetime.fromisoformat(lint["finished_at"]) <= datetime.fromisoformat(unit["started_at"]),
+            "Final lint and unit timing contradict the recorded nonoverlap condition")
+    matches = re.findall(r"(?m)(\d+) passed[^\n]*?\bin ([0-9.]+)s\b", log.decode())
+    require(len(matches) == 1, "Unit log has no unique completed pytest summary")
+    passed, reported_seconds = int(matches[0][0]), float(matches[0][1])
+    require(passed == len(tests), "Unit log and controller test counts differ")
+    require(passed == EXPECTED_TEST_CASES, "Finalized unit coverage differs from the unchanged 168-case selection")
+    projection_hashes = {}
+    for definition in unit["work_definitions"]:
+        for identity, digest in definition["growth_declarations"].items():
+            require(identity not in projection_hashes or projection_hashes[identity] == digest,
+                    f"Contradictory growth declaration: {identity}")
+            projection_hashes[identity] = digest
+    sample_groups = {}
+    for node, identity in DECLARATIONS.items():
+        samples = controller.get("growth_samples", {}).get(node)
+        require(isinstance(samples, list) and samples, f"Missing persisted growth samples: {node}")
+        sample_groups[identity] = samples
+    catalog_samples = properties.get(HELPER, {}).get("catalog_admission_samples")
+    require(isinstance(catalog_samples, list) and catalog_samples, "Missing JUnit catalog samples")
+    for sample in catalog_samples:
+        sample_groups.setdefault(sample["declaration"], []).append(sample)
+    normative = normative_evidence(repo, unit, worker_inventory, sample_groups)
+    declared_hashes = normative["declaration_hashes"]
+    selected_samples = {}
+    witnesses = worker_inventory
+    for node, identity in DECLARATIONS.items():
+        require(node in tests, f"Required declared witness did not run: {node}")
+        witness = witnesses.get(node, {})
+        declaration = witness.get("declaration", {})
+        require(declaration.get("id") == identity, f"Wrong witness operation: {node}")
+        require(declaration.get("projection_sha256") == projection_hashes.get(identity),
+                f"Witness projection differs from exact-source make inventory: {node}")
+        require(declaration.get("sha256") == declared_hashes.get(identity),
+                f"Witness root declaration differs from its source owner: {node}")
+        require(sha256(source_file(repo, node.split("::", 1)[0])) == witness.get("source_sha256"),
+                f"Witness file differs from the tested source commit: {node}")
+        samples = controller.get("growth_samples", {}).get(node)
+        require(isinstance(samples, list) and samples, f"Missing persisted growth samples: {node}")
+        require(all(sample.get("declaration") == identity for sample in samples),
+                f"Mixed root declarations: {node}")
+        for sample in samples:
+            sample_check(sample, declared_hashes)
+        selected_samples[node] = {"witness": witness, "samples": samples}
+    observations = controller.get("growth_observations", {})
+    require(isinstance(observations, dict), "Invalid primitive growth observations")
+    for node, values in observations.items():
+        require(node in tests and isinstance(values, dict), f"Invalid observation owner: {node}")
+        require(all(type(value) in (int, bool, str) or value is None for value in values.values()),
+                f"Nonprimitive growth observation: {node}")
+    terminal = {node: values for node, values in observations.items() if TERMINAL in node}
+    capacity = {node: values for node, values in observations.items() if CAPACITY in node}
+    require(len(terminal) == 2 and {v["documentary_text_octets"] for v in terminal.values()} == {0, 4096},
+            "Missing terminal documentary-prefix regimes")
+    require(len(capacity) == 2 and all(any(kind in node for node in capacity)
+            for kind in ("entry-count", "source-octets")), "Missing capacity/eviction regimes")
+    for node, values in terminal.items():
+        require(values["members"] == 4 and values["fanout_small"] == 1 and values["fanout_large"] == 4,
+                f"Wrong complete-caller fanout regime: {node}")
+        for metric in ("shared_reads", "shared_payload_octets", "native_advances",
+                       "native_validation_calls", "corpus_source_frames", "corpus_source_octets",
+                       "raw_admissions", "raw_postchecks", "raw_catalog_statements"):
+            require(values[f"{metric}_small"] == values[f"{metric}_large"],
+                    f"Fanout changed distinct-source work: {node} {metric}")
+    profiles = terminal_profiles(terminal, properties, tests)
+    catalog_samples = properties.get(HELPER, {}).get("catalog_admission_samples")
+    require(isinstance(catalog_samples, list) and len(catalog_samples) ==
+            2 * len(selected_samples[HELPER]["samples"]), "Missing JUnit catalog admission samples")
+    for sample in catalog_samples:
+        sample_check(sample, declared_hashes)
+    for ordinal, sample in enumerate(selected_samples[HELPER]["samples"]):
+        pair = catalog_samples[2 * ordinal:2 * ordinal + 2]
+        require([child["declaration"] for child in pair] == [
+            "riverhog.sealed-journal-result-metadata-admission.growth/v1",
+            "riverhog.sealed-journal-result-admission-current.growth/v1",
+        ], "Catalog JUnit samples do not preserve prepare/postcheck order")
+        require(all(child["dimensions"]["catalog_journals"] ==
+                    sample["dimensions"]["catalog_journals"] and
+                    child["dimensions"]["catalog_jobs"] == sample["dimensions"]["catalog_jobs"]
+                    for child in pair), "Catalog JUnit sample regime differs from helper evidence")
+        for aggregate, primitive in (
+            ("catalog_statements", "sql_statements"),
+            ("catalog_returned_rows", "returned_rows"),
+            ("catalog_metadata_octets", "returned_octets"),
+            ("catalog_parameter_octets", "parameter_octets"),
+            ("catalog_vm_instructions", "sqlite_vm_instructions"),
+            ("catalog_open_cursors", "open_cursors"),
+        ):
+            require(sample["metrics"][aggregate] == sum(child["metrics"][primitive] for child in pair),
+                    f"Catalog JUnit delegate values differ from helper totals: {aggregate}")
+    timings = {
+        node: {
+            "setup_seconds": phases["setup"]["seconds"],
+            "call_seconds": phases["call"]["seconds"],
+            "teardown_seconds": phases["teardown"]["seconds"],
+            "all_test_phases_seconds": sum(row["seconds"] for row in phases.values()),
+            "junit_all_test_phases_seconds": junit["testcase_seconds"][node],
+        }
+        for node, phases in sorted(tests.items())
+    }
+    summary = {
+        "format": "riverhog-external-imported-primary-reference/v1",
+        "owner_comment": OWNER_COMMENT,
+        "audited_base": BASE,
+        "implementation_tested_producer": SOURCE,
+        "implementation_tree": TREE,
+        "qualification": {
+            "lint": {key: lint[key] for key in (
+                "run_id", "span", "source_sha", "source_clean", "source_end", "state", "exit_status",
+                "started_at", "finished_at", "elapsed_seconds", "phase_costs", "qualification_eligible",
+                "selection_overrides", "observed_conditions", "goals", "parameters",
+            )},
+            "unit": {key: unit[key] for key in (
+                "run_id", "span", "source_sha", "source_clean", "source_end", "state", "exit_status",
+                "started_at", "finished_at", "elapsed_seconds", "phase_costs", "qualification_eligible",
+                "selection_overrides", "observed_conditions", "goals", "parameters",
+            )},
+            "recorded_command_definitions": {
+                goal: [{key: definition[key] for key in ("name", "command", "boundary", "conditions")}
+                       for definition in receipt["work_definitions"]]
+                for goal, receipt in (("lint", lint), ("unit", unit))
+            },
+            "focused_passed_tests": len(tests),
+            "pytest_elapsed_seconds": controller["elapsed_seconds"],
+            "pytest_log_elapsed_seconds": reported_seconds,
+            "junit": {key: value for key, value in junit.items() if key != "testcase_seconds"},
+            "canonical_full_unit_qualification": bool(unit["qualification_eligible"]),
+            "test_file_counts": dict(sorted(Counter(node.split("::", 1)[0] for node in tests).items())),
+            "selected_paths": selected_paths,
+            "reproduction_argv": producer["unit_invocation"]["argv"],
+            "reproduction_environment_overrides": producer["unit_invocation"]["environment_overrides"],
+        },
+        "producer_provenance": producer,
+        "runtime_configuration": {
+            "python": "3.12.3", "uv": "0.11.24", "ruff": "0.16.0",
+            "sqlalchemy": "2.0.51", "sqlite": "3.45.1", "platform": "linux",
+            "architecture": "x86_64", "pytest_workers": 4, "pytest_distribution": "load",
+            "junit_family": "xunit1",
+            "python_unbuffered": "1 (diagnostic output buffering only)",
+            "provenance": "Pinned installed versions and pytest worker arguments reported by the handoff owner; make receipts independently retain Python/platform/architecture conditions.",
+            "validation_overlap": "Final lint completed first. The handoff owner reports no overlapping validation activity during the final unit run.",
+        },
+        "merge_reconciliation": {
+            "integration_head": "fecde31e05fb166636cae06772bd519a9d6bb457",
+            "merge_tree": "bceb25315f74e475e38552f46da9648007754d27",
+            "status": "Successful read-only merge-tree reconciliation reported by the handoff owner; not a separate runtime test receipt.",
+            "descendant_difference": "The integration descendant changes only a retention-fixture test file; runtime implementation is identical according to the owner's source audit.",
+        },
+        "terminal_matrix": terminal,
+        "terminal_phase_observations": profiles,
+        "capacity_observations": capacity,
+        "primitive_growth_observations": observations,
+        "declared_helper_and_endpoint_growth": selected_samples,
+        "normative_growth_verification": {
+            "artifact": "normative-growth-verification.json",
+            **{key: value for key, value in normative.items()
+               if key not in {"normative_projection", "declaration_hashes"}},
+        },
+        "catalog_admission_growth_samples": catalog_samples,
+        "growth_sample_inventory": {
+            node: {"samples": len(samples), "root_declarations": sorted({s["declaration"] for s in samples})}
+            for node, samples in sorted(controller.get("growth_samples", {}).items())
+        },
+        "test_durations": timings,
+        "timing_scope": [
+            "Make elapsed time includes preparation, command execution, owned cleanup and evidence collection.",
+            "Test call durations include fixture construction performed inside test bodies; pytest setup and teardown are separate.",
+            "Parallel test phase durations are not additive elapsed wall time for the unit gate.",
+            "JUnit xunit1 was enabled for the required finalized source-qualification run, preserving imported_primary_profile and catalog_admission_samples. This run qualifies the corrected test source; no run was repeated solely to recover timing.",
+            "Primitive actual growth observations and declared helper/endpoint samples are preserved from this final successful run.",
+            "Terminal per-fanout elapsed and thread CPU times cover the observed terminal owner turn, including raw/history/corpus work and its current catalog transaction, after unmeasured fixture and member-turn preparation.",
+            "Terminal profile timing is separate from full test-case timing, pytest elapsed time and make gate elapsed time; phase figures are observations, not speed gates.",
+            "The earlier comment witness is not a matched throughput baseline. No elapsed-time speedup or throughput ratio is claimed.",
+            "The focused unit selection is distinct from full canonical unit or complete pull-request qualification.",
+        ],
+        "evidence_scope": "Only completed successful lint-finalized and unit-finalized gates for the exact producer source. Earlier failed or stopped runs are excluded; development corrections are documented separately.",
+    }
+    return summary, normative
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--implementation-mirror-sha", help="Actual published GitHub implementation commit")
+    parser.add_argument("--repo", type=Path, default=ROOT.parent / "riverhog-964-imports")
+    parser.add_argument("--check-only", action="store_true", help="Validate completed records without writing a packet")
+    args = parser.parse_args()
+    _lint_root, lint, artifacts = gate("lint")
+    unit_root, unit, unit_artifacts = gate("unit")
+    artifacts.update(unit_artifacts)
+    controller, worker_inventory, pytest_artifacts = pytest_records(unit_root, unit)
+    artifacts.update(pytest_artifacts)
+    junit, properties, junit_artifact = junit_records(unit_root, unit, controller)
+    artifacts["unit-junit.xml"] = junit_artifact
+    actual_tree = subprocess.run(
+        ["git", "-C", str(args.repo), "rev-parse", f"{SOURCE}^{{tree}}"],
+        check=True, capture_output=True, text=True, timeout=10,
+    ).stdout.strip()
+    require(actual_tree == TREE, "Tested source commit has another tree")
+    selection_path = ROOT / "focused-tests.txt"
+    require(selection_path.is_file(), "Missing exact focused test selection")
+    selection = selection_path.read_bytes()
+    artifacts["selection.txt"] = (selection_path, selection)
+    producer, producer_artifacts = producer_provenance(args.repo, selection)
+    artifacts.update(producer_artifacts)
+    summary, normative = summarize(
+        args.repo, lint, unit, controller, artifacts[f"unit-{GATE_SUFFIX}.log"][1], selection,
+        junit, properties, producer, worker_inventory,
+    )
+    if args.check_only:
+        print(json.dumps({"state": "ready", "source": SOURCE, "tree": TREE,
+                          "passed_tests": len(controller["tests"]), "writes": 0}))
+        return 0
+    mirror = args.implementation_mirror_sha
+    require(isinstance(mirror, str) and re.fullmatch(r"[0-9a-f]{40}", mirror) and mirror != "0" * 40,
+            "Supply the actual GitHub implementation commit with --implementation-mirror-sha")
+    summary["github_implementation_tree_mirror"] = mirror
+    summary["mirror_identity_source"] = "Explicit publication identity supplied by the handoff owner; no placeholder or inferred commit."
+    output = ROOT / "packet" / "evidence"
+    require(not output.exists(), f"Refusing to replace an existing packet: {output}")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    staging = Path(tempfile.mkdtemp(prefix="evidence-building-", dir=output.parent))
+    origins, compressed = {}, []
+    try:
+        for name, (original, raw) in sorted(artifacts.items()):
+            stored_name, stored = name, raw
+            if name.startswith("unit-") and name.endswith(".json") and len(raw) >= 1024 * 1024:
+                stored_name += ".gz"
+                stored = gzip.compress(raw, mtime=0)
+                compressed.append({"path": stored_name, "uncompressed_bytes": len(raw),
+                                   "uncompressed_sha256": sha256(raw)})
+            destination = staging / stored_name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(stored)
+            origins[stored_name] = str(original.relative_to(ROOT))
+        (staging / "results.json").write_bytes(json_bytes(summary))
+        (staging / "normative-growth-verification.json").write_bytes(json_bytes(normative))
+        index = {
+            "format": "riverhog-reference-evidence-index/v1",
+            "source_sha": SOURCE,
+            "source_tree": TREE,
+            "github_implementation_tree_mirror": mirror,
+            "files": [{"path": str(path.relative_to(staging)), "bytes": path.stat().st_size,
+                       "sha256": sha256(path.read_bytes())}
+                      for path in sorted(staging.rglob("*")) if path.is_file()],
+            "original_receipts": origins,
+            "compressed_records": compressed,
+            "self_excluded": True,
+        }
+        (staging / "index.json").write_bytes(json_bytes(index))
+        staging.rename(output)
+    except BaseException:
+        shutil.rmtree(staging)
+        raise
+    print(json.dumps({"state": "collected", "output": str(output), "source": SOURCE,
+                      "implementation_mirror": mirror, "passed_tests": len(controller["tests"]),
+                      "indexed_files": len(index["files"])}))
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except (PacketError, KeyError, TypeError, ValueError, OSError, ElementTree.ParseError,
+            subprocess.SubprocessError) as error:
+        print(f"Evidence collection refused: {error}", file=sys.stderr)
+        raise SystemExit(2) from error

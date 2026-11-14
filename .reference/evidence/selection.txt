@@ -1,0 +1,15 @@
+tests/unit/test_imported_history_finalization.py
+tests/unit/test_imported_history_growth.py
+tests/unit/test_imported_history_receiving.py
+tests/unit/test_selected_upload_journal_prefix.py
+packages/riverhog-provenance/tests/test_corpus_source_endpoint.py
+packages/riverhog-provenance/tests/test_corpus_historical_source.py
+packages/riverhog-provenance/tests/test_history.py
+packages/riverhog-provenance/tests/test_history_snapshot_admission.py
+packages/riverhog-provenance/tests/test_history_worklist_admission.py
+tests/unit/test_upload_journal_result.py
+tests/unit/test_archive_catalog_finalizer.py::test_pending_original_cannot_advance_a_replacement_claim[provenance-closure]
+tests/unit/test_archive_catalog_finalizer.py::test_changed_pending_cursor_is_not_a_fresh_batch[provenance-closure]
+tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[False-provenance-closure]
+tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[True-provenance-closure]
+tests/unit/test_workspace_boundaries.py

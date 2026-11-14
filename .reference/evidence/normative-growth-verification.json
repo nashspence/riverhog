@@ -1,0 +1,4654 @@
+{
+  "bytecode_writes": false,
+  "declaration_hashes": {
+    "riverhog-provenance.corpus-historical-assertion.growth/v1": "cc1775dffb20d7de7351b2f66e7f0c85640e2c380d83f346e99dba9310d403f0",
+    "riverhog-provenance.corpus-identity.growth/v1": "9547584d433cf6b72e95e9fc1d2bbe61182eabbe0479d737384ef9c5f8876a8e",
+    "riverhog-provenance.corpus-selected-delivery-support.growth/v1": "2d4918a624dc5f1c48919e092ab911c8a15f8034255636e1b5489bc0bfd1b021",
+    "riverhog-provenance.corpus-source-endpoint.growth/v1": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904",
+    "riverhog-provenance.corpus-source-extension.growth/v1": "a04dfa7e3c0a247ed5ee7fc602ba6f35b1c9fe4a94610c95ea093b1dff861557",
+    "riverhog-provenance.frozen-source-anchor.growth/v1": "0e63e55a5326886e675d97484cebae7952a551f084807afdd25b33796816ae46",
+    "riverhog.sealed-journal-result-admission-current.growth/v1": "cdb005d8e9fcbbd1638b7e9e45c355090abe49ac422208c7883a23d149e62a44",
+    "riverhog.sealed-journal-result-metadata-admission.growth/v1": "5f50e29e1eca1f8ab242b119ef792e13f3c51f8b146b15c6080433784567a61d",
+    "riverhog.upload-imported-primary-state.growth/v1": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341",
+    "sha256-continuation.sha256-compression.growth/v1": "d7499ff451170591cca86869893c4d2197f510bce788e60d8aa1cf0f4575f1c6"
+  },
+  "format": "riverhog-reference-growth-verification/v1",
+  "normative_projection": {
+    "cost_model": "riverhog-primitive-growth-costs/v1",
+    "declarations": {
+      "riverhog-provenance.corpus-historical-assertion.growth/v1": {
+        "authority": "riverhog-provenance",
+        "bounds": {
+          "closed_cursors": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 3
+            },
+            "meaning": "Every point cursor closes before subsequent work or return.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "decoded_octets": {
+            "expression": {
+              "name": "selected_octets",
+              "op": "dimension"
+            },
+            "meaning": "Only the selected original reference and assertion are decoded.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "json_decodes": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 2
+            },
+            "meaning": "No assertion decoding across absent, retired or unrelated rows.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "metadata_octets": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "name": "anchor_octets",
+                  "op": "dimension"
+                },
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "octets",
+                      1
+                    ]
+                  ],
+                  "value": 512
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "log2_ceil",
+                      "terms": [
+                        {
+                          "op": "sum",
+                          "terms": [
+                            {
+                              "name": "retained_assertions",
+                              "op": "dimension"
+                            },
+                            {
+                              "name": "retained_frames",
+                              "op": "dimension"
+                            },
+                            {
+                              "op": "constant",
+                              "unit": [
+                                [
+                                  "count",
+                                  1
+                                ]
+                              ],
+                              "value": 1
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "octets",
+                          1
+                        ]
+                      ],
+                      "value": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "Exact header, identity/type/size and decimal positions; future retirement width follows the retained frame extent, not the earlier selected anchor.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "parameter_octets": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [],
+                      "value": 4
+                    },
+                    {
+                      "name": "anchor_octets",
+                      "op": "dimension"
+                    }
+                  ]
+                },
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "octets",
+                      1
+                    ]
+                  ],
+                  "value": 512
+                }
+              ]
+            },
+            "meaning": "Full repeated source, object, assertion, sequence and admitted size keys.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "payload_octets": {
+            "expression": {
+              "name": "selected_octets",
+              "op": "dimension"
+            },
+            "meaning": "Only one admitted assertion and its original entry reference are fetched.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 3
+            },
+            "meaning": "The latest-birth range returns at most one row, including retired gaps.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_frame_reads": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "No journal replay or original frame load.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sql_statements": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 3
+            },
+            "meaning": "One exact header, one latest-birth seek, at most one admitted payload.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sqlite_vm_instructions": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 768
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "count",
+                          1
+                        ]
+                      ],
+                      "value": 128
+                    },
+                    {
+                      "op": "log2_ceil",
+                      "terms": [
+                        {
+                          "op": "sum",
+                          "terms": [
+                            {
+                              "name": "retained_assertions",
+                              "op": "dimension"
+                            },
+                            {
+                              "name": "retained_frames",
+                              "op": "dimension"
+                            },
+                            {
+                              "op": "constant",
+                              "unit": [
+                                [
+                                  "count",
+                                  1
+                                ]
+                              ],
+                              "value": 1
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "The stored-width tuple index seeks exact journal, object and numeric birth order.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "Native source admission and exact shared-prefix proof precede corpus indexing.",
+          "The owning index retains canonical decimal birth and retirement positions.",
+          "A positive caller byte admission precedes any selected assertion payload read."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {},
+        "dimensions": {
+          "anchor_octets": {
+            "meaning": "Complete canonical selected anchor octets.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "retained_assertions": {
+            "meaning": "All original corpus assertion index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "retained_frames": {
+            "meaning": "All exact corpus source entry index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "selected_octets": {
+            "meaning": "Admitted assertion and original entry reference octets, zero for absence.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "riverhog-provenance.corpus-historical-assertion.growth/v1",
+        "invariants": [
+          "Effective intervals are half open; replacement begins at the correction entry.",
+          "Retired gaps return absence without scanning for an earlier surviving assertion.",
+          "The original documentary assertion address is preserved in every selected result.",
+          "Independent journal sources do not substitute for the exact selected anchor."
+        ],
+        "limitations": [
+          "This bounds point source attribution, not whole historical semantic validation.",
+          "Source population, global corpus validity, custody and current access are separate.",
+          "Retained workspace admission and durable parent progress require composition.",
+          "VM constants depend on SQLite; physical I/O and elapsed time remain observations."
+        ],
+        "scope": {
+          "ends_at": "return absence or one detached effective assertion with original support",
+          "kind": "exact-native-source-prefix-effective-object-point-selection",
+          "starts_at": "receive one exact source anchor, object identity and explicit byte admission"
+        },
+        "subjects": [
+          "riverhog_provenance.corpus.CanonicalCorpusValidator.historical_assertion"
+        ]
+      },
+      "riverhog-provenance.corpus-identity.growth/v1": {
+        "authority": "riverhog-provenance",
+        "bounds": {
+          "comparison_input_octets": {
+            "expression": {
+              "name": "preimage_octets",
+              "op": "dimension"
+            },
+            "meaning": "The one exact SQLite BLOB comparison receives the complete candidate once.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "full_retained_preimage_reads": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "No stored preimage crosses the SQLite result boundary.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "parameter_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 2
+                },
+                {
+                  "op": "sum",
+                  "terms": [
+                    {
+                      "name": "identity_octets",
+                      "op": "dimension"
+                    },
+                    {
+                      "name": "domain_octets",
+                      "op": "dimension"
+                    },
+                    {
+                      "name": "preimage_octets",
+                      "op": "dimension"
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "The exact key, domain and complete candidate bytes are each bound at most twice.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "Return only zero or one; stored domain and preimage are not transferred.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "The exact identity key returns at most one comparison scalar.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_frame_reads": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Identity admission does not load source frames.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sql_statements": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 2
+            },
+            "meaning": "One indexed exact-match scalar and at most one insert-or-ignore.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sqlite_vm_instructions": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 256
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "count",
+                          1
+                        ]
+                      ],
+                      "value": 128
+                    },
+                    {
+                      "op": "log2_ceil",
+                      "terms": [
+                        {
+                          "op": "sum",
+                          "terms": [
+                            {
+                              "name": "retained_identities",
+                              "op": "dimension"
+                            },
+                            {
+                              "op": "constant",
+                              "unit": [
+                                [
+                                  "count",
+                                  1
+                                ]
+                              ],
+                              "value": 2
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "Exact unique-key comparison and insertion use the maintained B-tree allowance.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "written_parameter_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 2
+                },
+                {
+                  "op": "sum",
+                  "terms": [
+                    {
+                      "name": "identity_octets",
+                      "op": "dimension"
+                    },
+                    {
+                      "name": "domain_octets",
+                      "op": "dimension"
+                    },
+                    {
+                      "name": "preimage_octets",
+                      "op": "dimension"
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "A newly inserted row retains its full original domain, key and preimage.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "written_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "An immutable identity is inserted once; conflicts never rewrite it.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "Candidate bytes are owned by the caller; equality does not reinterpret their format.",
+          "Native identity values use the maintained exact BLOB schema and unique key.",
+          "The caller retains transaction ownership and source admission.",
+          "The independent retained extent includes any newly inserted key."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {},
+        "dimensions": {
+          "domain_octets": {
+            "meaning": "Complete candidate domain UTF-8 width.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "identity_octets": {
+            "meaning": "Complete candidate identity UTF-8 width.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "preimage_octets": {
+            "meaning": "Complete candidate BLOB preimage width.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "retained_identities": {
+            "meaning": "Independent upper extent of retained keys.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "riverhog-provenance.corpus-identity.growth/v1",
+        "invariants": [
+          "Both domain and every candidate preimage byte must match an existing identity.",
+          "A prefix, matching length, digest or reused identity is not an exact preimage match.",
+          "Failed equality preserves the old identity and all original preimage bytes.",
+          "Duplicate exact admission does not change the immutable row."
+        ],
+        "limitations": [
+          "BLOB comparison examines at most the shorter preimage; internal comparison steps are not directly observed by SQLite VM instruction counts.",
+          "Index-key comparisons, physical I/O, lock waiting and source codecs are separate.",
+          "Source ingestion and retained parent progress require composition."
+        ],
+        "scope": {
+          "ends_at": "preserve the identical row, insert one missing row or reject a conflict",
+          "kind": "one exact Native identity and immutable-preimage admission",
+          "starts_at": "receive one owned identity, domain and candidate BLOB preimage"
+        },
+        "subjects": [
+          "riverhog_provenance.corpus.CanonicalCorpusValidator._identity"
+        ]
+      },
+      "riverhog-provenance.corpus-selected-delivery-support.growth/v1": {
+        "authority": "riverhog-provenance",
+        "bounds": {
+          "closed_cursors": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 9
+            },
+            "meaning": "Each cursor closes before another query or return.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "decoded_octets": {
+            "expression": {
+              "name": "selected_octets",
+              "op": "dimension"
+            },
+            "meaning": "Exactly the admitted projection and entry-reference octets.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "full_assertion_reads": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Only Native-owned delivery semantic projections and original entry references.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "json_decodes": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 8
+            },
+            "meaning": "Decode only four admitted projections and original entry references.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "metadata_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 4
+                },
+                {
+                  "op": "sum",
+                  "terms": [
+                    {
+                      "name": "anchor_octets",
+                      "op": "dimension"
+                    },
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "octets",
+                          1
+                        ]
+                      ],
+                      "value": 512
+                    },
+                    {
+                      "op": "product",
+                      "terms": [
+                        {
+                          "op": "log2_ceil",
+                          "terms": [
+                            {
+                              "op": "sum",
+                              "terms": [
+                                {
+                                  "name": "retained_assertions",
+                                  "op": "dimension"
+                                },
+                                {
+                                  "name": "retained_frames",
+                                  "op": "dimension"
+                                },
+                                {
+                                  "op": "constant",
+                                  "unit": [
+                                    [
+                                      "count",
+                                      1
+                                    ]
+                                  ],
+                                  "value": 1
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "op": "constant",
+                          "unit": [
+                            [
+                              "octets",
+                              1
+                            ]
+                          ],
+                          "value": 1
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "Exact header, identity/type/size and decimal positions; future retirement width follows the retained frame extent, not the earlier selected anchor.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "parameter_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 4
+                },
+                {
+                  "op": "sum",
+                  "terms": [
+                    {
+                      "op": "product",
+                      "terms": [
+                        {
+                          "op": "constant",
+                          "unit": [],
+                          "value": 4
+                        },
+                        {
+                          "name": "anchor_octets",
+                          "op": "dimension"
+                        }
+                      ]
+                    },
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "octets",
+                          1
+                        ]
+                      ],
+                      "value": 512
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "Full repeated source, object, assertion, sequence and admitted size keys.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "payload_octets": {
+            "expression": {
+              "name": "selected_octets",
+              "op": "dimension"
+            },
+            "meaning": "Only the four selected projections and original entry references.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 9
+            },
+            "meaning": "Every exact point or range seek returns at most one row.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_frame_reads": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "No journal replay or original frame load.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sql_statements": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 9
+            },
+            "meaning": "One source header, four latest-birth seeks and four metadata reads.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sqlite_vm_instructions": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 4
+                },
+                {
+                  "op": "sum",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "count",
+                          1
+                        ]
+                      ],
+                      "value": 768
+                    },
+                    {
+                      "op": "product",
+                      "terms": [
+                        {
+                          "op": "constant",
+                          "unit": [
+                            [
+                              "count",
+                              1
+                            ]
+                          ],
+                          "value": 128
+                        },
+                        {
+                          "op": "log2_ceil",
+                          "terms": [
+                            {
+                              "op": "sum",
+                              "terms": [
+                                {
+                                  "name": "retained_assertions",
+                                  "op": "dimension"
+                                },
+                                {
+                                  "name": "retained_frames",
+                                  "op": "dimension"
+                                },
+                                {
+                                  "op": "constant",
+                                  "unit": [
+                                    [
+                                      "count",
+                                      1
+                                    ]
+                                  ],
+                                  "value": 1
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "The stored-width tuple index seeks exact journal, object and numeric birth order.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "Native source admission and exact shared-prefix proof precede corpus indexing.",
+          "The owning index retains canonical decimal birth and retirement positions.",
+          "A positive caller byte admission precedes any selected assertion payload read."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {},
+        "dimensions": {
+          "anchor_octets": {
+            "meaning": "Complete canonical selected anchor octets.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "retained_assertions": {
+            "meaning": "All original corpus assertion index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "retained_frames": {
+            "meaning": "All exact corpus source entry index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "selected_octets": {
+            "meaning": "Admitted semantic projections and their original entry references.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "riverhog-provenance.corpus-selected-delivery-support.growth/v1",
+        "invariants": [
+          "Effective intervals are half open; replacement begins at the correction entry.",
+          "Retired gaps return absence without scanning for an earlier surviving assertion.",
+          "The original documentary assertion address is preserved in every selected result.",
+          "Independent journal sources do not substitute for the exact selected anchor.",
+          "The same Native delivery predicate checks association, State, Occurrence and fixity.",
+          "No original assertion payload is loaded or substituted by a partial assertion result."
+        ],
+        "limitations": [
+          "This bounds point source attribution, not whole historical semantic validation.",
+          "Source population, global corpus validity, custody and current access are separate.",
+          "Retained workspace admission and durable parent progress require composition.",
+          "VM constants depend on SQLite; physical I/O and elapsed time remain observations.",
+          "Source ingestion derives each semantic projection once from accepted Native bytes.",
+          "Per-selection metadata includes matching role/slot/size widths, not opaque payloads."
+        ],
+        "scope": {
+          "ends_at": "return original State and Occurrence support after Native delivery checks",
+          "kind": "exact-historical-native-delivery-support-without-full-assertion-payloads",
+          "starts_at": "receive one exact member binding and explicit per-projection byte admission"
+        },
+        "subjects": [
+          "riverhog_provenance.corpus.CanonicalCorpusValidator.selected_delivery_support"
+        ]
+      },
+      "riverhog-provenance.corpus-source-endpoint.growth/v1": {
+        "authority": "riverhog-provenance",
+        "bounds": {
+          "closed_cursors": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "Close the exact point cursor.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "parameter_octets": {
+            "expression": {
+              "name": "anchor_octets",
+              "op": "dimension"
+            },
+            "meaning": "The complete endpoint coordinates are bound without any journal payload.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_metadata_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "Only the one-digit equality result crosses the SQLite boundary.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "One scalar equality or absence.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_frame_reads": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "No frame load or replay.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_payload_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "No journal bytes or assertion payloads are fetched or hashed.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "sql_statements": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "One indexed extent/header join.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sqlite_vm_instructions": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 512
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "count",
+                          1
+                        ]
+                      ],
+                      "value": 64
+                    },
+                    {
+                      "op": "log2_ceil",
+                      "terms": [
+                        {
+                          "op": "sum",
+                          "terms": [
+                            {
+                              "op": "constant",
+                              "unit": [
+                                [
+                                  "count",
+                                  1
+                                ]
+                              ],
+                              "value": 2
+                            },
+                            {
+                              "name": "retained_sources",
+                              "op": "dimension"
+                            },
+                            {
+                              "name": "retained_frames",
+                              "op": "dimension"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "Primary-key seeks select the source's maximum admitted entry and its header.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "Independent Native validation precedes source population."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {},
+        "dimensions": {
+          "anchor_octets": {
+            "meaning": "Complete canonical endpoint anchor octets.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "retained_frames": {
+            "meaning": "Exact corpus source entry index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "retained_sources": {
+            "meaning": "Distinct source extent index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+        "invariants": [
+          "An earlier exact prefix does not equal the indexed source endpoint.",
+          "Every journal, entry, sequence, digest and byte coordinate must agree."
+        ],
+        "limitations": [
+          "Current custody, source population and historical graph semantics belong to callers.",
+          "SQLite VM constants are maintained evidence; I/O and timing are observations."
+        ],
+        "scope": {
+          "ends_at": "accept the complete indexed endpoint or reject without fetching source payload",
+          "kind": "exact-indexed-native-source-endpoint-point-check",
+          "starts_at": "receive one exact endpoint for an independently admitted Native source"
+        },
+        "subjects": [
+          "riverhog_provenance.corpus.CanonicalCorpusValidator.require_source_endpoint"
+        ]
+      },
+      "riverhog-provenance.corpus-source-extension.growth/v1": {
+        "authority": "riverhog-provenance",
+        "bounds": {
+          "admitted_frame_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "name": "frame_budget",
+                  "op": "dimension"
+                },
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      -1
+                    ],
+                    [
+                      "octets",
+                      1
+                    ]
+                  ],
+                  "value": 8388610
+                }
+              ]
+            },
+            "meaning": "Each admitted Native JSON atom retains the existing wire envelope plus RS/LF.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "admitted_frames": {
+            "expression": {
+              "name": "frame_budget",
+              "op": "dimension"
+            },
+            "meaning": "Every actual Native source frame load is charged to the caller's quantum.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "hashed_entry_octets": {
+            "expression": {
+              "name": "entry_octets",
+              "op": "dimension"
+            },
+            "meaning": "Each new original entry preimage matches its accepted Native header hash.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "native_anchor_calls": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "name": "new_frames",
+                  "op": "dimension"
+                },
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 2
+                }
+              ]
+            },
+            "meaning": "One optional exact source endpoint, one shared cut and one header per new frame.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "native_identity_calls": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 1
+                },
+                {
+                  "name": "new_frames",
+                  "op": "dimension"
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [],
+                      "value": 2
+                    },
+                    {
+                      "name": "new_assertions",
+                      "op": "dimension"
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "One journal key, one original entry key per frame and assertion/referent keys.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_frame_octets": {
+            "expression": {
+              "name": "frame_octets",
+              "op": "dimension"
+            },
+            "meaning": "Only original missing frame payloads are loaded.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "source_frame_reads": {
+            "expression": {
+              "name": "new_frames",
+              "op": "dimension"
+            },
+            "meaning": "Completed source frames are not fetched again, including shorter snapshots.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sql_statements": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 4
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [],
+                      "value": 8
+                    },
+                    {
+                      "name": "new_frames",
+                      "op": "dimension"
+                    }
+                  ]
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [],
+                      "value": 8
+                    },
+                    {
+                      "name": "new_assertions",
+                      "op": "dimension"
+                    }
+                  ]
+                },
+                {
+                  "name": "new_references",
+                  "op": "dimension"
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [],
+                      "value": 2
+                    },
+                    {
+                      "name": "new_retractions",
+                      "op": "dimension"
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "Includes corpus source/identity seeks, entry savepoints and all raw obligations.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "Every input owns an open independently accepted frozen Native projection.",
+          "An explicit through selects only an accepted prefix of that same projection.",
+          "Original journal identity, exact reference, prefix bytes and SHA agree at overlap.",
+          "The caller retains admission and current authority for the selected source union."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {
+          "anchor": {
+            "declaration": "riverhog-provenance.frozen-source-anchor.growth/v1"
+          },
+          "identity": {
+            "declaration": "riverhog-provenance.corpus-identity.growth/v1"
+          }
+        },
+        "dimensions": {
+          "entry_octets": {
+            "meaning": "Original JSON octets in the newly loaded frames.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "frame_budget": {
+            "meaning": "Maximum bounded Native entry atoms admitted by the call.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "frame_octets": {
+            "meaning": "Complete newly loaded RFC 7464 frame octets.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "new_assertions": {
+            "meaning": "Raw assertions in those source frames.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "new_frames": {
+            "meaning": "Missing source frames admitted by this call.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "new_references": {
+            "meaning": "Raw external references in those source frames.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "new_retractions": {
+            "meaning": "Original assertion retirements in new frames.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "riverhog-provenance.corpus-source-extension.growth/v1",
+        "invariants": [
+          "An entry's assertions, retirements, references, fork and continuation are atomic.",
+          "Retry unfinished entries while retaining each completed exact source terminal.",
+          "Raw reuse never discharges the selected effective-snapshot semantic obligations.",
+          "A shared prefix never makes a documentary dependency an effective selected root.",
+          "Source identity/domain conflicts and divergent writers fail closed."
+        ],
+        "limitations": [
+          "Native indexed headers and their SHA padding have separate delegate evidence.",
+          "This profile counts payload reads, entry hashing and corpus SQL statement visits.",
+          "Canonical encoding, index/metadata bytes and storage-engine work require composition.",
+          "Effective snapshot traversal, corpus references, comparisons and cycles are separate.",
+          "Source indexing does not admit retained ownership or durable parent progress."
+        ],
+        "scope": {
+          "ends_at": "record only its missing complete source frames and the last atomic raw terminal",
+          "kind": "native-corpus-raw-source-extension-after-exact-shared-prefix-proof",
+          "starts_at": "receive one independently accepted immutable Native snapshot"
+        },
+        "subjects": [
+          "riverhog_provenance.corpus.CanonicalCorpusValidator._add_source"
+        ]
+      },
+      "riverhog-provenance.frozen-source-anchor.growth/v1": {
+        "authority": "riverhog-provenance",
+        "bounds": {
+          "bound_parameter_octets": {
+            "expression": {
+              "name": "sequence_octets",
+              "op": "dimension"
+            },
+            "meaning": "The complete source ordinal is bound once.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "closed_cursors": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "Metadata cursors close before digest finalization.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "compression_calls": {
+            "expression": {
+              "name": "padding_blocks",
+              "op": "dimension"
+            },
+            "meaning": "Finalize a copy of the selected exact prefix continuation.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "decoded_octets": {
+            "expression": {
+              "name": "header_octets",
+              "op": "dimension"
+            },
+            "meaning": "Complete header codec inputs, never frame payload.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "encoded_octets": {
+            "expression": {
+              "name": "header_octets",
+              "op": "dimension"
+            },
+            "meaning": "Round trips reproduce the complete canonical header bytes.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "json_decodes": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 2
+            },
+            "meaning": "The exact reference and trusted SHA codec.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "json_encodes": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 2
+            },
+            "meaning": "Verify each owning canonical header codec.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "metadata_octets": {
+            "expression": {
+              "name": "header_octets",
+              "op": "dimension"
+            },
+            "meaning": "Both indexed header fields are read completely.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "padding_block_input_octets": {
+            "expression": {
+              "arguments": {
+                "block_octets": {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "octets",
+                      1
+                    ]
+                  ],
+                  "value": 64
+                }
+              },
+              "metric": "block_input_octets",
+              "multiplicity": {
+                "name": "padding_blocks",
+                "op": "dimension"
+              },
+              "name": "padding",
+              "op": "delegate"
+            },
+            "meaning": "Actual mandatory native SHA padding costs.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "padding_returned_words": {
+            "expression": {
+              "arguments": {
+                "block_octets": {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "octets",
+                      1
+                    ]
+                  ],
+                  "value": 64
+                }
+              },
+              "metric": "returned_words",
+              "multiplicity": {
+                "name": "padding_blocks",
+                "op": "dimension"
+              },
+              "name": "padding",
+              "op": "delegate"
+            },
+            "meaning": "Actual mandatory native SHA padding costs.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "padding_rotate_calls": {
+            "expression": {
+              "arguments": {
+                "block_octets": {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "octets",
+                      1
+                    ]
+                  ],
+                  "value": 64
+                }
+              },
+              "metric": "rotate_calls",
+              "multiplicity": {
+                "name": "padding_blocks",
+                "op": "dimension"
+              },
+              "name": "padding",
+              "op": "delegate"
+            },
+            "meaning": "Actual mandatory native SHA padding costs.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "returned_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "Exactly the selected accepted source header.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_read_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "No journal frame or source range is read.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "source_update_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "No source update is supplied to the SHA continuation.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "sql_statements": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "One primary-key header selection.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sqlite_vm_instructions": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 512
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "count",
+                          1
+                        ]
+                      ],
+                      "value": 128
+                    },
+                    {
+                      "op": "log2_ceil",
+                      "terms": [
+                        {
+                          "op": "sum",
+                          "terms": [
+                            {
+                              "name": "retained_frames",
+                              "op": "dimension"
+                            },
+                            {
+                              "op": "constant",
+                              "unit": [
+                                [
+                                  "count",
+                                  1
+                                ]
+                              ],
+                              "value": 2
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "Indexed metadata lookup growth under the maintained native SQLite engine.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "The source summary owns an open frozen native projection of a fully accepted journal.",
+          "Header and source progress commit together under the native validation fence.",
+          "Padding count derives from the exact input continuation before the call.",
+          "The caller retains source admission and current access policy."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {
+          "padding": {
+            "declaration": "sha256-continuation.sha256-compression.growth/v1"
+          }
+        },
+        "dimensions": {
+          "header_octets": {
+            "meaning": "Complete indexed reference and SHA continuation octets.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "padding_blocks": {
+            "meaning": "One for a source SHA tail below 56 octets; otherwise two.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "retained_frames": {
+            "meaning": "Accepted frames in the frozen source.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sequence_octets": {
+            "meaning": "Full UTF-8 decimal lookup ordinal width.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "riverhog-provenance.frozen-source-anchor.growth/v1",
+        "invariants": [
+          "Return the original flat journal-prefix SHA-256, bytes and exact entry reference.",
+          "No historical semantic view or current-tail substitution is returned.",
+          "The selected prefix and owning frozen summary remain unchanged."
+        ],
+        "limitations": [
+          "Validation, custody, authorization and historical fact traversal have separate costs.",
+          "Codec and padding inputs have the existing bounded native header shapes.",
+          "VM constants depend on SQLite; elapsed time, I/O and lock waits remain observations."
+        ],
+        "scope": {
+          "ends_at": "return its exact flat SHA-256 prefix anchor after closing metadata cursors",
+          "kind": "frozen-native-source-prefix-header-selection",
+          "starts_at": "select an accepted frame sequence from an owned frozen source summary"
+        },
+        "subjects": [
+          "riverhog_provenance.journal.JournalSummary.anchor_at"
+        ]
+      },
+      "riverhog.sealed-journal-result-admission-current.growth/v1": {
+        "authority": "riverhog",
+        "bounds": {
+          "detached_controls": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "hashed_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "json_decoded_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "json_decodes": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "json_encoded_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "json_encodes": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "native_storage_calls": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "open_cursors": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "parameter_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 2
+                },
+                {
+                  "name": "control_octets",
+                  "op": "dimension"
+                }
+              ]
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 1
+                },
+                {
+                  "name": "control_octets",
+                  "op": "dimension"
+                }
+              ]
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_payload_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "sql_statements": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sqlite_vm_instructions": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 1024
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "count",
+                          1
+                        ]
+                      ],
+                      "value": 256
+                    },
+                    {
+                      "op": "sum",
+                      "terms": [
+                        {
+                          "op": "log2_ceil",
+                          "terms": [
+                            {
+                              "op": "sum",
+                              "terms": [
+                                {
+                                  "op": "constant",
+                                  "unit": [
+                                    [
+                                      "count",
+                                      1
+                                    ]
+                                  ],
+                                  "value": 2
+                                },
+                                {
+                                  "name": "catalog_journals",
+                                  "op": "dimension"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "op": "log2_ceil",
+                          "terms": [
+                            {
+                              "op": "sum",
+                              "terms": [
+                                {
+                                  "op": "constant",
+                                  "unit": [
+                                    [
+                                      "count",
+                                      1
+                                    ]
+                                  ],
+                                  "value": 2
+                                },
+                                {
+                                  "name": "catalog_jobs",
+                                  "op": "dimension"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "The current sealed catalog supplies its already cached checkpoint identity.",
+          "Selected metadata widths include full canonical JSON and decimal quantities.",
+          "The pinned SQLite backend uses the maintained composite and unique indexes.",
+          "The caller owns the brief catalog transaction and its row-lock policy."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {},
+        "dimensions": {
+          "catalog_jobs": {
+            "meaning": "All independent retained Native job rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "catalog_journals": {
+            "meaning": "All independent retained journal rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "control_octets": {
+            "meaning": "Complete incoming keys plus selected original source and job row values.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "riverhog.sealed-journal-result-admission-current.growth/v1",
+        "invariants": [
+          "The original sealed Native binding and complete checkpoint remain unchanged.",
+          "No Native file, workspace lease, replay or source payload is accessed.",
+          "The admission retains no session, cursor, connection or database row lock.",
+          "Currentness compares the exact selected source and Native job atomically.",
+          "Missing or mismatched confirmation is rejected without repairing stored data."
+        ],
+        "limitations": [
+          "Driver locking waits and internal comparisons/page I/O are excluded.",
+          "Native workspace custody, result opening and final borrower closure are separate.",
+          "Logical header codecs exclude internal key comparisons and allocation latency."
+        ],
+        "scope": {
+          "ends_at": "close all query cursors and return detached metadata or currentness",
+          "kind": "catalog-only exact sealed metadata and immutable Native control validation",
+          "starts_at": "receive the caller's short catalog transaction and full original controls"
+        },
+        "subjects": [
+          "riverhog_core.services.upload_journal_result.SealedJournalResultAdmission.verify_current"
+        ]
+      },
+      "riverhog.sealed-journal-result-metadata-admission.growth/v1": {
+        "authority": "riverhog",
+        "bounds": {
+          "detached_controls": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 1
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "hashed_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "json_decoded_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 8
+                },
+                {
+                  "name": "control_octets",
+                  "op": "dimension"
+                }
+              ]
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "json_decodes": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 8
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "json_encoded_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 12
+                },
+                {
+                  "name": "control_octets",
+                  "op": "dimension"
+                }
+              ]
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "json_encodes": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 12
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "native_storage_calls": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "open_cursors": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "parameter_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 2
+                },
+                {
+                  "name": "control_octets",
+                  "op": "dimension"
+                }
+              ]
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 1
+                },
+                {
+                  "name": "control_octets",
+                  "op": "dimension"
+                }
+              ]
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 2
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_payload_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "sql_statements": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 2
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "sqlite_vm_instructions": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 1024
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "count",
+                          1
+                        ]
+                      ],
+                      "value": 256
+                    },
+                    {
+                      "op": "sum",
+                      "terms": [
+                        {
+                          "op": "log2_ceil",
+                          "terms": [
+                            {
+                              "op": "sum",
+                              "terms": [
+                                {
+                                  "op": "constant",
+                                  "unit": [
+                                    [
+                                      "count",
+                                      1
+                                    ]
+                                  ],
+                                  "value": 2
+                                },
+                                {
+                                  "name": "catalog_journals",
+                                  "op": "dimension"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "op": "log2_ceil",
+                          "terms": [
+                            {
+                              "op": "sum",
+                              "terms": [
+                                {
+                                  "op": "constant",
+                                  "unit": [
+                                    [
+                                      "count",
+                                      1
+                                    ]
+                                  ],
+                                  "value": 2
+                                },
+                                {
+                                  "name": "catalog_jobs",
+                                  "op": "dimension"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "Fixed indexed control reads and a fixed number of complete header codecs.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "The current sealed catalog supplies its already cached checkpoint identity.",
+          "Selected metadata widths include full canonical JSON and decimal quantities.",
+          "The pinned SQLite backend uses the maintained composite and unique indexes.",
+          "The caller owns the brief catalog transaction and its row-lock policy."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {},
+        "dimensions": {
+          "catalog_jobs": {
+            "meaning": "All independent retained Native job rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "catalog_journals": {
+            "meaning": "All independent retained journal rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "control_octets": {
+            "meaning": "Complete incoming keys plus selected original source and job row values.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "riverhog.sealed-journal-result-metadata-admission.growth/v1",
+        "invariants": [
+          "The original sealed Native binding and complete checkpoint remain unchanged.",
+          "No Native file, workspace lease, replay or source payload is accessed.",
+          "The admission retains no session, cursor, connection or database row lock.",
+          "Currentness compares the exact selected source and Native job atomically.",
+          "Missing or mismatched confirmation is rejected without repairing stored data."
+        ],
+        "limitations": [
+          "Driver locking waits and internal comparisons/page I/O are excluded.",
+          "Native workspace custody, result opening and final borrower closure are separate.",
+          "Logical header codecs exclude internal key comparisons and allocation latency."
+        ],
+        "scope": {
+          "ends_at": "close all query cursors and return detached metadata or currentness",
+          "kind": "catalog-only exact sealed metadata and immutable Native control validation",
+          "starts_at": "receive the caller's short catalog transaction and full original controls"
+        },
+        "subjects": [
+          "riverhog_core.services.upload_journal_result.prepare_upload_journal_result"
+        ]
+      },
+      "riverhog.upload-imported-primary-state.growth/v1": {
+        "authority": "riverhog",
+        "bounds": {
+          "catalog_changed_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Admission performs no catalog mutation or unrelated autoflush.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "catalog_metadata_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 3
+                },
+                {
+                  "name": "catalog_row_octets",
+                  "op": "dimension"
+                }
+              ]
+            },
+            "meaning": "Two complete metadata rows and the final workspace identity.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "catalog_open_cursors": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Every catalog result closes before return.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "catalog_parameter_octets": {
+            "expression": {
+              "op": "product",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [],
+                  "value": 6
+                },
+                {
+                  "name": "catalog_row_octets",
+                  "op": "dimension"
+                }
+              ]
+            },
+            "meaning": "Exact source/job predicates and selected primary keys.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "catalog_payload_reads": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "No original or captured source payload column is read.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "catalog_returned_rows": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 3
+            },
+            "meaning": "Each successful admission and final check returns one metadata row.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "catalog_statements": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 3
+            },
+            "meaning": "Two current locked admission rows and one final exact source/job check.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "catalog_vm_instructions": {
+            "expression": {
+              "op": "sum",
+              "terms": [
+                {
+                  "op": "constant",
+                  "unit": [
+                    [
+                      "count",
+                      1
+                    ]
+                  ],
+                  "value": 4096
+                },
+                {
+                  "op": "product",
+                  "terms": [
+                    {
+                      "op": "constant",
+                      "unit": [
+                        [
+                          "count",
+                          1
+                        ]
+                      ],
+                      "value": 1024
+                    },
+                    {
+                      "op": "sum",
+                      "terms": [
+                        {
+                          "op": "log2_ceil",
+                          "terms": [
+                            {
+                              "op": "sum",
+                              "terms": [
+                                {
+                                  "op": "constant",
+                                  "unit": [
+                                    [
+                                      "count",
+                                      1
+                                    ]
+                                  ],
+                                  "value": 2
+                                },
+                                {
+                                  "name": "catalog_journals",
+                                  "op": "dimension"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "op": "log2_ceil",
+                          "terms": [
+                            {
+                              "op": "sum",
+                              "terms": [
+                                {
+                                  "op": "constant",
+                                  "unit": [
+                                    [
+                                      "count",
+                                      1
+                                    ]
+                                  ],
+                                  "value": 2
+                                },
+                                {
+                                  "name": "catalog_jobs",
+                                  "op": "dimension"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "meaning": "SQLite primary-key and unique-source seeks avoid scans and temporary sorts.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "delivery_closed_cursors": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "closed_cursors",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "delivery_decoded_octets": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "decoded_octets",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "delivery_full_assertion_reads": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "full_assertion_reads",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "delivery_json_decodes": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "json_decodes",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "delivery_metadata_octets": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "metadata_octets",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "delivery_parameter_octets": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "parameter_octets",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "delivery_payload_octets": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "payload_octets",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "delivery_returned_rows": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "returned_rows",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "delivery_source_frame_reads": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "source_frame_reads",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "delivery_sql_statements": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "sql_statements",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "delivery_sqlite_vm_instructions": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "delivery_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_assertions": {
+                  "name": "delivery_retained_assertions",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "delivery_retained_frames",
+                  "op": "dimension"
+                },
+                "selected_octets": {
+                  "name": "delivery_selected_octets",
+                  "op": "dimension"
+                }
+              },
+              "metric": "sqlite_vm_instructions",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "delivery",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "endpoint_closed_cursors": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "endpoint_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "endpoint_retained_frames",
+                  "op": "dimension"
+                },
+                "retained_sources": {
+                  "name": "endpoint_retained_sources",
+                  "op": "dimension"
+                }
+              },
+              "metric": "closed_cursors",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "endpoint",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "endpoint_parameter_octets": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "endpoint_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "endpoint_retained_frames",
+                  "op": "dimension"
+                },
+                "retained_sources": {
+                  "name": "endpoint_retained_sources",
+                  "op": "dimension"
+                }
+              },
+              "metric": "parameter_octets",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "endpoint",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "endpoint_returned_metadata_octets": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "endpoint_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "endpoint_retained_frames",
+                  "op": "dimension"
+                },
+                "retained_sources": {
+                  "name": "endpoint_retained_sources",
+                  "op": "dimension"
+                }
+              },
+              "metric": "returned_metadata_octets",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "endpoint",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "endpoint_returned_rows": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "endpoint_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "endpoint_retained_frames",
+                  "op": "dimension"
+                },
+                "retained_sources": {
+                  "name": "endpoint_retained_sources",
+                  "op": "dimension"
+                }
+              },
+              "metric": "returned_rows",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "endpoint",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "endpoint_source_frame_reads": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "endpoint_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "endpoint_retained_frames",
+                  "op": "dimension"
+                },
+                "retained_sources": {
+                  "name": "endpoint_retained_sources",
+                  "op": "dimension"
+                }
+              },
+              "metric": "source_frame_reads",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "endpoint",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "endpoint_source_payload_octets": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "endpoint_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "endpoint_retained_frames",
+                  "op": "dimension"
+                },
+                "retained_sources": {
+                  "name": "endpoint_retained_sources",
+                  "op": "dimension"
+                }
+              },
+              "metric": "source_payload_octets",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "endpoint",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "endpoint_sql_statements": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "endpoint_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "endpoint_retained_frames",
+                  "op": "dimension"
+                },
+                "retained_sources": {
+                  "name": "endpoint_retained_sources",
+                  "op": "dimension"
+                }
+              },
+              "metric": "sql_statements",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "endpoint",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "endpoint_sqlite_vm_instructions": {
+            "expression": {
+              "arguments": {
+                "anchor_octets": {
+                  "name": "endpoint_anchor_octets",
+                  "op": "dimension"
+                },
+                "retained_frames": {
+                  "name": "endpoint_retained_frames",
+                  "op": "dimension"
+                },
+                "retained_sources": {
+                  "name": "endpoint_retained_sources",
+                  "op": "dimension"
+                }
+              },
+              "metric": "sqlite_vm_instructions",
+              "multiplicity": {
+                "op": "constant",
+                "unit": [
+                  [
+                    "count",
+                    1
+                  ]
+                ],
+                "value": 1
+              },
+              "name": "endpoint",
+              "op": "delegate"
+            },
+            "meaning": "One exact current source endpoint and one historical delivery selection.",
+            "mode": "worst-case",
+            "relation": "upper",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "native_result_openings": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "No retained Native reader, construction or workspace lease is acquired.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "native_validation_advances": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "Import fanout never replays accepted journal semantics.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "source_payload_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 0
+            },
+            "meaning": "The import consumes only indexed delivery metadata, never source bytes.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "The current finalizer owns the catalog transaction, claim and epoch.",
+          "The same transaction populated the corpus from complete current sealed raw bytes.",
+          "Source proof, artifact identity, requested extent and input State stay with history."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {
+          "delivery": {
+            "declaration": "riverhog-provenance.corpus-selected-delivery-support.growth/v1"
+          },
+          "endpoint": {
+            "declaration": "riverhog-provenance.corpus-source-endpoint.growth/v1"
+          }
+        },
+        "dimensions": {
+          "catalog_jobs": {
+            "meaning": "All catalog Native validation jobs.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "catalog_journals": {
+            "meaning": "All catalog journal rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "catalog_row_octets": {
+            "meaning": "Largest complete source or job metadata row, in UTF-8 and decimal scalars.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "delivery_anchor_octets": {
+            "meaning": "Complete canonical selected anchor octets.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "delivery_retained_assertions": {
+            "meaning": "All original corpus assertion index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "delivery_retained_frames": {
+            "meaning": "All exact corpus source entry index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "delivery_selected_octets": {
+            "meaning": "Admitted semantic projections and their original entry references.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "endpoint_anchor_octets": {
+            "meaning": "Complete canonical endpoint anchor octets.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "endpoint_retained_frames": {
+            "meaning": "Exact corpus source entry index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "endpoint_retained_sources": {
+            "meaning": "Distinct source extent index rows.",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "riverhog.upload-imported-primary-state.growth/v1",
+        "invariants": [
+          "The current complete source endpoint must equal the raw-validated corpus endpoint.",
+          "Delivery lookup uses the historical primary anchor, including correction intervals.",
+          "The callback and its disposable corpus never outlive the current transaction.",
+          "Missing or changed source/job/catalog metadata cannot fall back to unchecked reuse."
+        ],
+        "limitations": [
+          "Current raw validation, source indexing and complete history/corpus work are separate. The terminal attempt remains synchronous; failures restart with fresh raw reads.",
+          "This bounds import-dependent work, not all finalization or total archive extent.",
+          "Lock waits, physical I/O and elapsed time remain observations."
+        ],
+        "scope": {
+          "ends_at": "return its exact historical State after current sealed source and job checks",
+          "kind": "current-terminal-imported-primary-historical-support",
+          "starts_at": "receive one verified source descriptor in the current finalizer transaction"
+        },
+        "subjects": [
+          "riverhog_core.services.upload_imported_history.selected_upload_imported_primary_state"
+        ]
+      },
+      "sha256-continuation.sha256-compression.growth/v1": {
+        "authority": "sha256-continuation",
+        "bounds": {
+          "block_input_octets": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "octets",
+                  1
+                ]
+              ],
+              "value": 64
+            },
+            "meaning": "Block octets processed by this compression transition.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          },
+          "returned_words": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 8
+            },
+            "meaning": "Returned 32-bit chaining words.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          },
+          "rotate_calls": {
+            "expression": {
+              "op": "constant",
+              "unit": [
+                [
+                  "count",
+                  1
+                ]
+              ],
+              "value": 576
+            },
+            "meaning": "Fixed-width rotate primitive calls in schedule expansion and compression rounds.",
+            "mode": "worst-case",
+            "relation": "equal",
+            "unit": [
+              [
+                "count",
+                1
+              ]
+            ]
+          }
+        },
+        "conditions": [
+          "One immutable 64-octet block and exactly eight unsigned 32-bit Python integer words."
+        ],
+        "cost_model": "riverhog-primitive-growth-costs/v1",
+        "delegates": {},
+        "dimensions": {
+          "block_octets": {
+            "meaning": "Octets in the one accepted 64-octet block.",
+            "unit": [
+              [
+                "octets",
+                1
+              ]
+            ]
+          }
+        },
+        "id": "sha256-continuation.sha256-compression.growth/v1",
+        "invariants": [
+          "Preserve standard SHA-256 compression and return all eight words."
+        ],
+        "limitations": [
+          "These primitive counts do not bound elapsed time, physical RAM or caller preparation."
+        ],
+        "scope": {
+          "ends_at": "return the eight advanced SHA-256 chaining words",
+          "kind": "successful-call-primitive-work",
+          "starts_at": "accept one SHA-256 block and eight valid chaining words"
+        },
+        "subjects": [
+          "sha256_continuation.sha256_compress"
+        ]
+      }
+    },
+    "format": "riverhog-growth-declarations/v1"
+  },
+  "reader": "scripts.validation_witnesses.operation_projection and riverhog_growth_contracts.validate_execution_samples",
+  "root_bindings": {
+    "riverhog-provenance.corpus-historical-assertion.growth/v1": {
+      "id": "riverhog-provenance.corpus-historical-assertion.growth/v1",
+      "projection_sha256": "b1fabe3efb55254f45dd02f1043fb5d5347dacad9aee72a5523ce1e5f28a8b20",
+      "sha256": "cc1775dffb20d7de7351b2f66e7f0c85640e2c380d83f346e99dba9310d403f0"
+    },
+    "riverhog-provenance.corpus-source-endpoint.growth/v1": {
+      "id": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+      "projection_sha256": "892ba96b31faa5f3491e70a656517ce0f3b9b6db04c3ab4a346731c359a5a87e",
+      "sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904"
+    },
+    "riverhog-provenance.corpus-source-extension.growth/v1": {
+      "id": "riverhog-provenance.corpus-source-extension.growth/v1",
+      "projection_sha256": "5d54c0b18d938718861d05e5af9102144088172aff3e87447ac359ee462c699d",
+      "sha256": "a04dfa7e3c0a247ed5ee7fc602ba6f35b1c9fe4a94610c95ea093b1dff861557"
+    },
+    "riverhog.sealed-journal-result-admission-current.growth/v1": {
+      "id": "riverhog.sealed-journal-result-admission-current.growth/v1",
+      "projection_sha256": "d8abd841271c5c731c1c93bbf2f9b0ec85f8107e020772b990952e80e64b39c0",
+      "sha256": "cdb005d8e9fcbbd1638b7e9e45c355090abe49ac422208c7883a23d149e62a44"
+    },
+    "riverhog.sealed-journal-result-metadata-admission.growth/v1": {
+      "id": "riverhog.sealed-journal-result-metadata-admission.growth/v1",
+      "projection_sha256": "43702326f402d93890af2b5ccf2bd5380f841d008a1d1873eab02e7a130811ea",
+      "sha256": "5f50e29e1eca1f8ab242b119ef792e13f3c51f8b146b15c6080433784567a61d"
+    },
+    "riverhog.upload-imported-primary-state.growth/v1": {
+      "id": "riverhog.upload-imported-primary-state.growth/v1",
+      "projection_sha256": "bb6159bc4ef0f8779be8d128a9e52b52a9a88e317218af641ec1830e28afb5a5",
+      "sha256": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341"
+    }
+  },
+  "sample_groups": {
+    "riverhog-provenance.corpus-source-endpoint.growth/v1": {
+      "reachable_projection_sha256": "892ba96b31faa5f3491e70a656517ce0f3b9b6db04c3ab4a346731c359a5a87e",
+      "root_declaration_sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904",
+      "samples": 4,
+      "samples_sha256": "d4996653980769a16844809888e940e53e6999b464ec7c54f708c1fb80d7c06f",
+      "validation": "passed"
+    },
+    "riverhog.sealed-journal-result-admission-current.growth/v1": {
+      "reachable_projection_sha256": "d8abd841271c5c731c1c93bbf2f9b0ec85f8107e020772b990952e80e64b39c0",
+      "root_declaration_sha256": "cdb005d8e9fcbbd1638b7e9e45c355090abe49ac422208c7883a23d149e62a44",
+      "samples": 2,
+      "samples_sha256": "43109d3833caead068f695f5b2119331a7210ae45b0558992574e02415b4eb90",
+      "validation": "passed"
+    },
+    "riverhog.sealed-journal-result-metadata-admission.growth/v1": {
+      "reachable_projection_sha256": "43702326f402d93890af2b5ccf2bd5380f841d008a1d1873eab02e7a130811ea",
+      "root_declaration_sha256": "5f50e29e1eca1f8ab242b119ef792e13f3c51f8b146b15c6080433784567a61d",
+      "samples": 2,
+      "samples_sha256": "5163e39c466ff817b9d44849d75d13aa3dd2eadf39829af5ea4fb970021713c6",
+      "validation": "passed"
+    },
+    "riverhog.upload-imported-primary-state.growth/v1": {
+      "reachable_projection_sha256": "bb6159bc4ef0f8779be8d128a9e52b52a9a88e317218af641ec1830e28afb5a5",
+      "root_declaration_sha256": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341",
+      "samples": 2,
+      "samples_sha256": "6dae5fd813d295dde76485b089ce9b461b4063d555ff8b48c1d42ab30c0ecb26",
+      "validation": "passed"
+    }
+  },
+  "source_sha": "63843b479986486298d47e4347226a74ee197570",
+  "source_tree": "00f68336b22d9862a42bdba39f530cd8cf2cc529",
+  "source_witness_bindings": {
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_historical_gap_growth": {
+      "declaration": {
+        "id": "riverhog-provenance.corpus-historical-assertion.growth/v1",
+        "projection_sha256": "b1fabe3efb55254f45dd02f1043fb5d5347dacad9aee72a5523ce1e5f28a8b20",
+        "sha256": "cc1775dffb20d7de7351b2f66e7f0c85640e2c380d83f346e99dba9310d403f0"
+      },
+      "id": "native-corpus-historical-gap-selection-work/v1",
+      "source_sha256": "819a154f3f9fb21f571654908801e17a779b9dfd5afdcf6ae436e7b8517578ad"
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_historical_point_reads_seek_exact_source_and_admit_only_one_payload": {
+      "declaration": {
+        "id": "riverhog-provenance.corpus-historical-assertion.growth/v1",
+        "projection_sha256": "b1fabe3efb55254f45dd02f1043fb5d5347dacad9aee72a5523ce1e5f28a8b20",
+        "sha256": "cc1775dffb20d7de7351b2f66e7f0c85640e2c380d83f346e99dba9310d403f0"
+      },
+      "id": "native-corpus-historical-assertion-work/v1",
+      "source_sha256": "819a154f3f9fb21f571654908801e17a779b9dfd5afdcf6ae436e7b8517578ad"
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_retirement_source_growth": {
+      "declaration": {
+        "id": "riverhog-provenance.corpus-source-extension.growth/v1",
+        "projection_sha256": "5d54c0b18d938718861d05e5af9102144088172aff3e87447ac359ee462c699d",
+        "sha256": "a04dfa7e3c0a247ed5ee7fc602ba6f35b1c9fe4a94610c95ea093b1dff861557"
+      },
+      "id": "native-corpus-retirement-source-work/v1",
+      "source_sha256": "819a154f3f9fb21f571654908801e17a779b9dfd5afdcf6ae436e7b8517578ad"
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_retired_gap_uses_one_indexed_birth_seek_across_replacement_ladders": {
+      "declaration": {
+        "id": "riverhog-provenance.corpus-historical-assertion.growth/v1",
+        "projection_sha256": "b1fabe3efb55254f45dd02f1043fb5d5347dacad9aee72a5523ce1e5f28a8b20",
+        "sha256": "cc1775dffb20d7de7351b2f66e7f0c85640e2c380d83f346e99dba9310d403f0"
+      },
+      "id": "native-corpus-retired-gap-point-seek-work/v1",
+      "source_sha256": "819a154f3f9fb21f571654908801e17a779b9dfd5afdcf6ae436e7b8517578ad"
+    },
+    "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py::test_source_endpoint_work_depends_on_index_seeks_not_source_extent": {
+      "declaration": {
+        "id": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+        "projection_sha256": "892ba96b31faa5f3491e70a656517ce0f3b9b6db04c3ab4a346731c359a5a87e",
+        "sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904"
+      },
+      "id": "native-corpus-source-endpoint-work/v1",
+      "source_sha256": "d0db7a72422f23072634842866b54ce1242b452c08bb38ae03486efff1b5ce30"
+    },
+    "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[0]": {
+      "id": "riverhog-imported-primary-terminal-work/v1",
+      "source_sha256": "88ea7987ad4247281b01b3d297b6b27edf1f566395934848b5689fbf637ab6d6"
+    },
+    "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[4096]": {
+      "id": "riverhog-imported-primary-terminal-work/v1",
+      "source_sha256": "88ea7987ad4247281b01b3d297b6b27edf1f566395934848b5689fbf637ab6d6"
+    },
+    "tests/unit/test_imported_history_growth.py::test_current_imported_primary_composes_actual_catalog_and_historical_point_work": {
+      "declaration": {
+        "id": "riverhog.upload-imported-primary-state.growth/v1",
+        "projection_sha256": "bb6159bc4ef0f8779be8d128a9e52b52a9a88e317218af641ec1830e28afb5a5",
+        "sha256": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341"
+      },
+      "id": "riverhog-terminal-imported-primary-work/v1",
+      "source_sha256": "a73a1e2236bea547bafb9d3caa7dc10990a7d9c037c9af5f4022abee86c30e80"
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-1]": {
+      "id": "riverhog-selected-prefix-finalization-work/v1",
+      "source_sha256": "db2c4d3b29bf6d57bb0c9dc36a7822b4da0009cb7f443edc31893f8159599ee8"
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-4]": {
+      "id": "riverhog-selected-prefix-finalization-work/v1",
+      "source_sha256": "db2c4d3b29bf6d57bb0c9dc36a7822b4da0009cb7f443edc31893f8159599ee8"
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-1]": {
+      "id": "riverhog-selected-prefix-finalization-work/v1",
+      "source_sha256": "db2c4d3b29bf6d57bb0c9dc36a7822b4da0009cb7f443edc31893f8159599ee8"
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-4]": {
+      "id": "riverhog-selected-prefix-finalization-work/v1",
+      "source_sha256": "db2c4d3b29bf6d57bb0c9dc36a7822b4da0009cb7f443edc31893f8159599ee8"
+    }
+  },
+  "tests_executed": false,
+  "worker_inventory_agrees_with_source_and_make": true
+}

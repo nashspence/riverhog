@@ -1,0 +1,32 @@
+make[1]: Entering directory '/workspace/scratch/320596a7d459/riverhog-964-imports'
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [ 42%]
+........................................................................ [ 85%]
+........................                                                 [100%]
+Machine-readable pytest timings: /workspace/scratch/320596a7d459/imports964/qualification/unit-finalized/pytest/unit/6c979b8930514eaaad546f19f8dbde08/ccc15c1cc16349f982a6bdaad936a5b5
+============================= slowest 20 durations =============================
+648.00s setup    tests/unit/test_workspace_boundaries.py::test_projects_declare_their_exact_direct_runtime_dependencies
+173.61s call     packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_retired_gap_uses_one_indexed_birth_seek_across_replacement_ladders
+150.92s call     tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[4096]
+150.27s call     tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[0]
+103.39s call     tests/unit/test_imported_history_finalization.py::test_imported_primary_point_facts_survive_real_summary_capacity[source-octets]
+94.99s call     packages/riverhog-provenance/tests/test_history.py::test_journals_larger_than_history_validation_cache_remain_accepted
+66.99s call     tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-1]
+66.17s call     tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-4]
+65.79s call     tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-1]
+65.13s call     tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-4]
+38.01s call     tests/unit/test_selected_upload_journal_prefix.py::test_changed_raw_selected_bytes_cannot_cross_the_complete_closure_barrier
+37.81s call     tests/unit/test_imported_history_finalization.py::test_terminal_import_rechecks_current_source_and_job_after_raw_validation
+36.65s call     tests/unit/test_imported_history_finalization.py::test_finalizer_checks_current_tail_after_the_selected_imported_primary
+36.24s call     tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_keeps_the_original_catalog_commit_outcome[True]
+36.04s call     tests/unit/test_imported_history_receiving.py::test_imported_terminal_receives_original_commit_or_rebuilds_rolled_back_attempt[False]
+35.81s call     tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_keeps_the_original_catalog_commit_outcome[False]
+35.20s call     tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_reopens_after_service_restart_without_revalidation
+34.81s call     tests/unit/test_imported_history_receiving.py::test_imported_terminal_receives_original_commit_or_rebuilds_rolled_back_attempt[True]
+28.42s call     tests/unit/test_archive_catalog_finalizer.py::test_pending_original_cannot_advance_a_replacement_claim[provenance-closure]
+26.53s call     tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[False-provenance-closure]
+168 passed in 950.80s (0:15:50)
+make[1]: Leaving directory '/workspace/scratch/320596a7d459/riverhog-964-imports'
+Make validation: 975.719s; receipt /workspace/scratch/320596a7d459/imports964/qualification/unit-finalized/make/6c979b8930514eaaad546f19f8dbde08/e508b452180c46debff974e85f5640ac/manifest.json

@@ -1,0 +1,16 @@
+{
+  "working_directory": "/workspace/scratch/320596a7d459/riverhog-964-imports",
+  "argv": [
+    "make",
+    "unit",
+    "UV_RUN=mise x python uv -- uv run --locked --all-packages --group dev",
+    "UNIT_PYTEST_ARGS=-n 4 --dist=load --instafail --durations=20 --durations-min=0.25 -p scripts.ci_timing --junitxml=/workspace/scratch/320596a7d459/imports964/qualification/unit-finalized/pytest.xml -o junit_family=xunit1",
+    "TESTS=tests/unit/test_imported_history_finalization.py tests/unit/test_imported_history_growth.py tests/unit/test_imported_history_receiving.py tests/unit/test_selected_upload_journal_prefix.py packages/riverhog-provenance/tests/test_corpus_source_endpoint.py packages/riverhog-provenance/tests/test_corpus_historical_source.py packages/riverhog-provenance/tests/test_history.py packages/riverhog-provenance/tests/test_history_snapshot_admission.py packages/riverhog-provenance/tests/test_history_worklist_admission.py tests/unit/test_upload_journal_result.py tests/unit/test_archive_catalog_finalizer.py::test_pending_original_cannot_advance_a_replacement_claim[provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_changed_pending_cursor_is_not_a_fresh_batch[provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[False-provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[True-provenance-closure] tests/unit/test_workspace_boundaries.py"
+  ],
+  "environment_overrides": {
+    "PYTHONUNBUFFERED": "1",
+    "TMPDIR": "/workspace/scratch/320596a7d459/imports964/tmp",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/320596a7d459/imports964/qualification/unit-finalized"
+  },
+  "provenance": "Exact command and overrides constructed by imports964/run_qualification.py for the unit-finalized execution; runner retained alongside this record."
+}

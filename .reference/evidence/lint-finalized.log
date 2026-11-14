@@ -1,0 +1,19 @@
+make[1]: Entering directory '/workspace/scratch/320596a7d459/riverhog-964-imports'
+# SUMMARY
+
+* Bad licenses: 0
+* Deprecated licenses: 0
+* Licenses without file extension: 0
+* Missing licenses: 0
+* Unused licenses: 0
+* Used licenses: Apache-2.0, CAL-1.0
+* Read errors: 0
+* Invalid SPDX License Expressions: 0
+* Files with copyright information: 2380 / 2380
+* Files with license information: 2380 / 2380
+
+Congratulations! Your project is compliant with version 3.3 of the REUSE Specification :-)
+2057 files already formatted
+All checks passed!
+make[1]: Leaving directory '/workspace/scratch/320596a7d459/riverhog-964-imports'
+Make validation: 4.074s; receipt /workspace/scratch/320596a7d459/imports964/qualification/lint-finalized/make/76e7207a53704510a8caa2e538d6fccb/2d623e87f78e42818577d07416603bb1/manifest.json

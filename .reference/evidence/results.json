@@ -1,0 +1,3501 @@
+{
+  "audited_base": "1ff0a9ce70c23f18aa94d5b52ed036376132021a",
+  "capacity_observations": {
+    "tests/unit/test_imported_history_finalization.py::test_imported_primary_point_facts_survive_real_summary_capacity[entry-count]": {
+      "imports": 4,
+      "shared_payload_octets": 14306,
+      "shared_prefix_octets": 6404,
+      "shared_provider_reads": 2,
+      "shared_semantic_validations": 2,
+      "unrelated_summary_validations": 32
+    },
+    "tests/unit/test_imported_history_finalization.py::test_imported_primary_point_facts_survive_real_summary_capacity[source-octets]": {
+      "imports": 4,
+      "shared_payload_octets": 8402914,
+      "shared_prefix_octets": 4200708,
+      "shared_provider_reads": 2,
+      "shared_semantic_validations": 2,
+      "unrelated_summary_validations": 0
+    }
+  },
+  "catalog_admission_growth_samples": [
+    {
+      "declaration": "riverhog.sealed-journal-result-metadata-admission.growth/v1",
+      "declaration_sha256": "5f50e29e1eca1f8ab242b119ef792e13f3c51f8b146b15c6080433784567a61d",
+      "delegates": {},
+      "dimensions": {
+        "catalog_jobs": 1,
+        "catalog_journals": 1,
+        "control_octets": 2497
+      },
+      "metrics": {
+        "detached_controls": 1,
+        "hashed_octets": 0,
+        "json_decoded_octets": 2279,
+        "json_decodes": 5,
+        "json_encoded_octets": 2783,
+        "json_encodes": 6,
+        "native_storage_calls": 0,
+        "open_cursors": 0,
+        "parameter_octets": 92,
+        "returned_octets": 2387,
+        "returned_rows": 2,
+        "source_payload_octets": 0,
+        "sql_statements": 2,
+        "sqlite_vm_instructions": 69
+      }
+    },
+    {
+      "declaration": "riverhog.sealed-journal-result-admission-current.growth/v1",
+      "declaration_sha256": "cdb005d8e9fcbbd1638b7e9e45c355090abe49ac422208c7883a23d149e62a44",
+      "delegates": {},
+      "dimensions": {
+        "catalog_jobs": 1,
+        "catalog_journals": 1,
+        "control_octets": 2497
+      },
+      "metrics": {
+        "detached_controls": 0,
+        "hashed_octets": 0,
+        "json_decoded_octets": 0,
+        "json_decodes": 0,
+        "json_encoded_octets": 0,
+        "json_encodes": 0,
+        "native_storage_calls": 0,
+        "open_cursors": 0,
+        "parameter_octets": 2513,
+        "returned_octets": 32,
+        "returned_rows": 1,
+        "source_payload_octets": 0,
+        "sql_statements": 1,
+        "sqlite_vm_instructions": 382
+      }
+    },
+    {
+      "declaration": "riverhog.sealed-journal-result-metadata-admission.growth/v1",
+      "declaration_sha256": "5f50e29e1eca1f8ab242b119ef792e13f3c51f8b146b15c6080433784567a61d",
+      "delegates": {},
+      "dimensions": {
+        "catalog_jobs": 18,
+        "catalog_journals": 18,
+        "control_octets": 2497
+      },
+      "metrics": {
+        "detached_controls": 1,
+        "hashed_octets": 0,
+        "json_decoded_octets": 2279,
+        "json_decodes": 5,
+        "json_encoded_octets": 2783,
+        "json_encodes": 6,
+        "native_storage_calls": 0,
+        "open_cursors": 0,
+        "parameter_octets": 92,
+        "returned_octets": 2387,
+        "returned_rows": 2,
+        "source_payload_octets": 0,
+        "sql_statements": 2,
+        "sqlite_vm_instructions": 69
+      }
+    },
+    {
+      "declaration": "riverhog.sealed-journal-result-admission-current.growth/v1",
+      "declaration_sha256": "cdb005d8e9fcbbd1638b7e9e45c355090abe49ac422208c7883a23d149e62a44",
+      "delegates": {},
+      "dimensions": {
+        "catalog_jobs": 18,
+        "catalog_journals": 18,
+        "control_octets": 2497
+      },
+      "metrics": {
+        "detached_controls": 0,
+        "hashed_octets": 0,
+        "json_decoded_octets": 0,
+        "json_decodes": 0,
+        "json_encoded_octets": 0,
+        "json_encodes": 0,
+        "native_storage_calls": 0,
+        "open_cursors": 0,
+        "parameter_octets": 2513,
+        "returned_octets": 32,
+        "returned_rows": 1,
+        "source_payload_octets": 0,
+        "sql_statements": 1,
+        "sqlite_vm_instructions": 382
+      }
+    }
+  ],
+  "declared_helper_and_endpoint_growth": {
+    "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py::test_source_endpoint_work_depends_on_index_seeks_not_source_extent": {
+      "samples": [
+        {
+          "declaration": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+          "declaration_sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904",
+          "delegates": {},
+          "dimensions": {
+            "anchor_octets": 334,
+            "retained_frames": 1,
+            "retained_sources": 1
+          },
+          "metrics": {
+            "closed_cursors": 1,
+            "parameter_octets": 269,
+            "returned_metadata_octets": 1,
+            "returned_rows": 1,
+            "source_frame_reads": 0,
+            "source_payload_octets": 0,
+            "sql_statements": 1,
+            "sqlite_vm_instructions": 37
+          }
+        },
+        {
+          "declaration": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+          "declaration_sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904",
+          "delegates": {},
+          "dimensions": {
+            "anchor_octets": 334,
+            "retained_frames": 4,
+            "retained_sources": 4
+          },
+          "metrics": {
+            "closed_cursors": 1,
+            "parameter_octets": 269,
+            "returned_metadata_octets": 1,
+            "returned_rows": 1,
+            "source_frame_reads": 0,
+            "source_payload_octets": 0,
+            "sql_statements": 1,
+            "sqlite_vm_instructions": 38
+          }
+        },
+        {
+          "declaration": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+          "declaration_sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904",
+          "delegates": {},
+          "dimensions": {
+            "anchor_octets": 336,
+            "retained_frames": 17,
+            "retained_sources": 1
+          },
+          "metrics": {
+            "closed_cursors": 1,
+            "parameter_octets": 271,
+            "returned_metadata_octets": 1,
+            "returned_rows": 1,
+            "source_frame_reads": 0,
+            "source_payload_octets": 0,
+            "sql_statements": 1,
+            "sqlite_vm_instructions": 38
+          }
+        },
+        {
+          "declaration": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+          "declaration_sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904",
+          "delegates": {},
+          "dimensions": {
+            "anchor_octets": 336,
+            "retained_frames": 68,
+            "retained_sources": 4
+          },
+          "metrics": {
+            "closed_cursors": 1,
+            "parameter_octets": 271,
+            "returned_metadata_octets": 1,
+            "returned_rows": 1,
+            "source_frame_reads": 0,
+            "source_payload_octets": 0,
+            "sql_statements": 1,
+            "sqlite_vm_instructions": 38
+          }
+        }
+      ],
+      "witness": {
+        "declaration": {
+          "id": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+          "projection_sha256": "892ba96b31faa5f3491e70a656517ce0f3b9b6db04c3ab4a346731c359a5a87e",
+          "sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904"
+        },
+        "id": "native-corpus-source-endpoint-work/v1",
+        "source_sha256": "d0db7a72422f23072634842866b54ce1242b452c08bb38ae03486efff1b5ce30"
+      }
+    },
+    "tests/unit/test_imported_history_growth.py::test_current_imported_primary_composes_actual_catalog_and_historical_point_work": {
+      "samples": [
+        {
+          "declaration": "riverhog.upload-imported-primary-state.growth/v1",
+          "declaration_sha256": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341",
+          "delegates": {
+            "delivery": [
+              {
+                "declaration": "riverhog-provenance.corpus-selected-delivery-support.growth/v1",
+                "declaration_sha256": "2d4918a624dc5f1c48919e092ab911c8a15f8034255636e1b5489bc0bfd1b021",
+                "delegates": {},
+                "dimensions": {
+                  "anchor_octets": 335,
+                  "retained_assertions": 10,
+                  "retained_frames": 2,
+                  "selected_octets": 1873
+                },
+                "metrics": {
+                  "closed_cursors": 9,
+                  "decoded_octets": 1873,
+                  "full_assertion_reads": 0,
+                  "json_decodes": 8,
+                  "metadata_octets": 480,
+                  "parameter_octets": 822,
+                  "payload_octets": 1873,
+                  "returned_rows": 9,
+                  "source_frame_reads": 0,
+                  "sql_statements": 9,
+                  "sqlite_vm_instructions": 368
+                }
+              }
+            ],
+            "endpoint": [
+              {
+                "declaration": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+                "declaration_sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904",
+                "delegates": {},
+                "dimensions": {
+                  "anchor_octets": 335,
+                  "retained_frames": 2,
+                  "retained_sources": 1
+                },
+                "metrics": {
+                  "closed_cursors": 1,
+                  "parameter_octets": 270,
+                  "returned_metadata_octets": 1,
+                  "returned_rows": 1,
+                  "source_frame_reads": 0,
+                  "source_payload_octets": 0,
+                  "sql_statements": 1,
+                  "sqlite_vm_instructions": 37
+                }
+              }
+            ]
+          },
+          "dimensions": {
+            "catalog_jobs": 1,
+            "catalog_journals": 1,
+            "catalog_row_octets": 1962,
+            "delivery_anchor_octets": 335,
+            "delivery_retained_assertions": 10,
+            "delivery_retained_frames": 2,
+            "delivery_selected_octets": 1873,
+            "endpoint_anchor_octets": 335,
+            "endpoint_retained_frames": 2,
+            "endpoint_retained_sources": 1
+          },
+          "metrics": {
+            "catalog_changed_rows": 0,
+            "catalog_metadata_octets": 2419,
+            "catalog_open_cursors": 0,
+            "catalog_parameter_octets": 2605,
+            "catalog_payload_reads": 0,
+            "catalog_returned_rows": 3,
+            "catalog_statements": 3,
+            "catalog_vm_instructions": 451,
+            "delivery_closed_cursors": 9,
+            "delivery_decoded_octets": 1873,
+            "delivery_full_assertion_reads": 0,
+            "delivery_json_decodes": 8,
+            "delivery_metadata_octets": 480,
+            "delivery_parameter_octets": 822,
+            "delivery_payload_octets": 1873,
+            "delivery_returned_rows": 9,
+            "delivery_source_frame_reads": 0,
+            "delivery_sql_statements": 9,
+            "delivery_sqlite_vm_instructions": 368,
+            "endpoint_closed_cursors": 1,
+            "endpoint_parameter_octets": 270,
+            "endpoint_returned_metadata_octets": 1,
+            "endpoint_returned_rows": 1,
+            "endpoint_source_frame_reads": 0,
+            "endpoint_source_payload_octets": 0,
+            "endpoint_sql_statements": 1,
+            "endpoint_sqlite_vm_instructions": 37,
+            "native_result_openings": 0,
+            "native_validation_advances": 0,
+            "source_payload_octets": 0
+          }
+        },
+        {
+          "declaration": "riverhog.upload-imported-primary-state.growth/v1",
+          "declaration_sha256": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341",
+          "delegates": {
+            "delivery": [
+              {
+                "declaration": "riverhog-provenance.corpus-selected-delivery-support.growth/v1",
+                "declaration_sha256": "2d4918a624dc5f1c48919e092ab911c8a15f8034255636e1b5489bc0bfd1b021",
+                "delegates": {},
+                "dimensions": {
+                  "anchor_octets": 335,
+                  "retained_assertions": 10,
+                  "retained_frames": 2,
+                  "selected_octets": 1873
+                },
+                "metrics": {
+                  "closed_cursors": 9,
+                  "decoded_octets": 1873,
+                  "full_assertion_reads": 0,
+                  "json_decodes": 8,
+                  "metadata_octets": 480,
+                  "parameter_octets": 822,
+                  "payload_octets": 1873,
+                  "returned_rows": 9,
+                  "source_frame_reads": 0,
+                  "sql_statements": 9,
+                  "sqlite_vm_instructions": 368
+                }
+              }
+            ],
+            "endpoint": [
+              {
+                "declaration": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+                "declaration_sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904",
+                "delegates": {},
+                "dimensions": {
+                  "anchor_octets": 335,
+                  "retained_frames": 2,
+                  "retained_sources": 1
+                },
+                "metrics": {
+                  "closed_cursors": 1,
+                  "parameter_octets": 270,
+                  "returned_metadata_octets": 1,
+                  "returned_rows": 1,
+                  "source_frame_reads": 0,
+                  "source_payload_octets": 0,
+                  "sql_statements": 1,
+                  "sqlite_vm_instructions": 37
+                }
+              }
+            ]
+          },
+          "dimensions": {
+            "catalog_jobs": 18,
+            "catalog_journals": 18,
+            "catalog_row_octets": 1962,
+            "delivery_anchor_octets": 335,
+            "delivery_retained_assertions": 10,
+            "delivery_retained_frames": 2,
+            "delivery_selected_octets": 1873,
+            "endpoint_anchor_octets": 335,
+            "endpoint_retained_frames": 2,
+            "endpoint_retained_sources": 1
+          },
+          "metrics": {
+            "catalog_changed_rows": 0,
+            "catalog_metadata_octets": 2419,
+            "catalog_open_cursors": 0,
+            "catalog_parameter_octets": 2605,
+            "catalog_payload_reads": 0,
+            "catalog_returned_rows": 3,
+            "catalog_statements": 3,
+            "catalog_vm_instructions": 451,
+            "delivery_closed_cursors": 9,
+            "delivery_decoded_octets": 1873,
+            "delivery_full_assertion_reads": 0,
+            "delivery_json_decodes": 8,
+            "delivery_metadata_octets": 480,
+            "delivery_parameter_octets": 822,
+            "delivery_payload_octets": 1873,
+            "delivery_returned_rows": 9,
+            "delivery_source_frame_reads": 0,
+            "delivery_sql_statements": 9,
+            "delivery_sqlite_vm_instructions": 368,
+            "endpoint_closed_cursors": 1,
+            "endpoint_parameter_octets": 270,
+            "endpoint_returned_metadata_octets": 1,
+            "endpoint_returned_rows": 1,
+            "endpoint_source_frame_reads": 0,
+            "endpoint_source_payload_octets": 0,
+            "endpoint_sql_statements": 1,
+            "endpoint_sqlite_vm_instructions": 37,
+            "native_result_openings": 0,
+            "native_validation_advances": 0,
+            "source_payload_octets": 0
+          }
+        }
+      ],
+      "witness": {
+        "declaration": {
+          "id": "riverhog.upload-imported-primary-state.growth/v1",
+          "projection_sha256": "bb6159bc4ef0f8779be8d128a9e52b52a9a88e317218af641ec1830e28afb5a5",
+          "sha256": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341"
+        },
+        "id": "riverhog-terminal-imported-primary-work/v1",
+        "source_sha256": "a73a1e2236bea547bafb9d3caa7dc10990a7d9c037c9af5f4022abee86c30e80"
+      }
+    }
+  },
+  "evidence_scope": "Only completed successful lint-finalized and unit-finalized gates for the exact producer source. Earlier failed or stopped runs are excluded; development corrections are documented separately.",
+  "format": "riverhog-external-imported-primary-reference/v1",
+  "github_implementation_tree_mirror": "4987c777c0005e65d5acdb30d4e2dbb47f7091ff",
+  "growth_sample_inventory": {
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_historical_gap_growth": {
+      "root_declarations": [
+        "riverhog-provenance.corpus-historical-assertion.growth/v1"
+      ],
+      "samples": 6
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_historical_point_reads_seek_exact_source_and_admit_only_one_payload": {
+      "root_declarations": [
+        "riverhog-provenance.corpus-historical-assertion.growth/v1"
+      ],
+      "samples": 12
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_retirement_source_growth": {
+      "root_declarations": [
+        "riverhog-provenance.corpus-source-extension.growth/v1"
+      ],
+      "samples": 2
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_retired_gap_uses_one_indexed_birth_seek_across_replacement_ladders": {
+      "root_declarations": [
+        "riverhog-provenance.corpus-historical-assertion.growth/v1"
+      ],
+      "samples": 9
+    },
+    "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py::test_source_endpoint_work_depends_on_index_seeks_not_source_extent": {
+      "root_declarations": [
+        "riverhog-provenance.corpus-source-endpoint.growth/v1"
+      ],
+      "samples": 4
+    },
+    "tests/unit/test_imported_history_growth.py::test_current_imported_primary_composes_actual_catalog_and_historical_point_work": {
+      "root_declarations": [
+        "riverhog.upload-imported-primary-state.growth/v1"
+      ],
+      "samples": 2
+    }
+  },
+  "implementation_tested_producer": "63843b479986486298d47e4347226a74ee197570",
+  "implementation_tree": "00f68336b22d9862a42bdba39f530cd8cf2cc529",
+  "merge_reconciliation": {
+    "descendant_difference": "The integration descendant changes only a retention-fixture test file; runtime implementation is identical according to the owner's source audit.",
+    "integration_head": "fecde31e05fb166636cae06772bd519a9d6bb457",
+    "merge_tree": "bceb25315f74e475e38552f46da9648007754d27",
+    "status": "Successful read-only merge-tree reconciliation reported by the handoff owner; not a separate runtime test receipt."
+  },
+  "mirror_identity_source": "Explicit publication identity supplied by the handoff owner; no placeholder or inferred commit.",
+  "normative_growth_verification": {
+    "artifact": "normative-growth-verification.json",
+    "bytecode_writes": false,
+    "format": "riverhog-reference-growth-verification/v1",
+    "reader": "scripts.validation_witnesses.operation_projection and riverhog_growth_contracts.validate_execution_samples",
+    "root_bindings": {
+      "riverhog-provenance.corpus-historical-assertion.growth/v1": {
+        "id": "riverhog-provenance.corpus-historical-assertion.growth/v1",
+        "projection_sha256": "b1fabe3efb55254f45dd02f1043fb5d5347dacad9aee72a5523ce1e5f28a8b20",
+        "sha256": "cc1775dffb20d7de7351b2f66e7f0c85640e2c380d83f346e99dba9310d403f0"
+      },
+      "riverhog-provenance.corpus-source-endpoint.growth/v1": {
+        "id": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+        "projection_sha256": "892ba96b31faa5f3491e70a656517ce0f3b9b6db04c3ab4a346731c359a5a87e",
+        "sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904"
+      },
+      "riverhog-provenance.corpus-source-extension.growth/v1": {
+        "id": "riverhog-provenance.corpus-source-extension.growth/v1",
+        "projection_sha256": "5d54c0b18d938718861d05e5af9102144088172aff3e87447ac359ee462c699d",
+        "sha256": "a04dfa7e3c0a247ed5ee7fc602ba6f35b1c9fe4a94610c95ea093b1dff861557"
+      },
+      "riverhog.sealed-journal-result-admission-current.growth/v1": {
+        "id": "riverhog.sealed-journal-result-admission-current.growth/v1",
+        "projection_sha256": "d8abd841271c5c731c1c93bbf2f9b0ec85f8107e020772b990952e80e64b39c0",
+        "sha256": "cdb005d8e9fcbbd1638b7e9e45c355090abe49ac422208c7883a23d149e62a44"
+      },
+      "riverhog.sealed-journal-result-metadata-admission.growth/v1": {
+        "id": "riverhog.sealed-journal-result-metadata-admission.growth/v1",
+        "projection_sha256": "43702326f402d93890af2b5ccf2bd5380f841d008a1d1873eab02e7a130811ea",
+        "sha256": "5f50e29e1eca1f8ab242b119ef792e13f3c51f8b146b15c6080433784567a61d"
+      },
+      "riverhog.upload-imported-primary-state.growth/v1": {
+        "id": "riverhog.upload-imported-primary-state.growth/v1",
+        "projection_sha256": "bb6159bc4ef0f8779be8d128a9e52b52a9a88e317218af641ec1830e28afb5a5",
+        "sha256": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341"
+      }
+    },
+    "sample_groups": {
+      "riverhog-provenance.corpus-source-endpoint.growth/v1": {
+        "reachable_projection_sha256": "892ba96b31faa5f3491e70a656517ce0f3b9b6db04c3ab4a346731c359a5a87e",
+        "root_declaration_sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904",
+        "samples": 4,
+        "samples_sha256": "d4996653980769a16844809888e940e53e6999b464ec7c54f708c1fb80d7c06f",
+        "validation": "passed"
+      },
+      "riverhog.sealed-journal-result-admission-current.growth/v1": {
+        "reachable_projection_sha256": "d8abd841271c5c731c1c93bbf2f9b0ec85f8107e020772b990952e80e64b39c0",
+        "root_declaration_sha256": "cdb005d8e9fcbbd1638b7e9e45c355090abe49ac422208c7883a23d149e62a44",
+        "samples": 2,
+        "samples_sha256": "43109d3833caead068f695f5b2119331a7210ae45b0558992574e02415b4eb90",
+        "validation": "passed"
+      },
+      "riverhog.sealed-journal-result-metadata-admission.growth/v1": {
+        "reachable_projection_sha256": "43702326f402d93890af2b5ccf2bd5380f841d008a1d1873eab02e7a130811ea",
+        "root_declaration_sha256": "5f50e29e1eca1f8ab242b119ef792e13f3c51f8b146b15c6080433784567a61d",
+        "samples": 2,
+        "samples_sha256": "5163e39c466ff817b9d44849d75d13aa3dd2eadf39829af5ea4fb970021713c6",
+        "validation": "passed"
+      },
+      "riverhog.upload-imported-primary-state.growth/v1": {
+        "reachable_projection_sha256": "bb6159bc4ef0f8779be8d128a9e52b52a9a88e317218af641ec1830e28afb5a5",
+        "root_declaration_sha256": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341",
+        "samples": 2,
+        "samples_sha256": "6dae5fd813d295dde76485b089ce9b461b4063d555ff8b48c1d42ab30c0ecb26",
+        "validation": "passed"
+      }
+    },
+    "source_sha": "63843b479986486298d47e4347226a74ee197570",
+    "source_tree": "00f68336b22d9862a42bdba39f530cd8cf2cc529",
+    "source_witness_bindings": {
+      "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_historical_gap_growth": {
+        "declaration": {
+          "id": "riverhog-provenance.corpus-historical-assertion.growth/v1",
+          "projection_sha256": "b1fabe3efb55254f45dd02f1043fb5d5347dacad9aee72a5523ce1e5f28a8b20",
+          "sha256": "cc1775dffb20d7de7351b2f66e7f0c85640e2c380d83f346e99dba9310d403f0"
+        },
+        "id": "native-corpus-historical-gap-selection-work/v1",
+        "source_sha256": "819a154f3f9fb21f571654908801e17a779b9dfd5afdcf6ae436e7b8517578ad"
+      },
+      "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_historical_point_reads_seek_exact_source_and_admit_only_one_payload": {
+        "declaration": {
+          "id": "riverhog-provenance.corpus-historical-assertion.growth/v1",
+          "projection_sha256": "b1fabe3efb55254f45dd02f1043fb5d5347dacad9aee72a5523ce1e5f28a8b20",
+          "sha256": "cc1775dffb20d7de7351b2f66e7f0c85640e2c380d83f346e99dba9310d403f0"
+        },
+        "id": "native-corpus-historical-assertion-work/v1",
+        "source_sha256": "819a154f3f9fb21f571654908801e17a779b9dfd5afdcf6ae436e7b8517578ad"
+      },
+      "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_retirement_source_growth": {
+        "declaration": {
+          "id": "riverhog-provenance.corpus-source-extension.growth/v1",
+          "projection_sha256": "5d54c0b18d938718861d05e5af9102144088172aff3e87447ac359ee462c699d",
+          "sha256": "a04dfa7e3c0a247ed5ee7fc602ba6f35b1c9fe4a94610c95ea093b1dff861557"
+        },
+        "id": "native-corpus-retirement-source-work/v1",
+        "source_sha256": "819a154f3f9fb21f571654908801e17a779b9dfd5afdcf6ae436e7b8517578ad"
+      },
+      "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_retired_gap_uses_one_indexed_birth_seek_across_replacement_ladders": {
+        "declaration": {
+          "id": "riverhog-provenance.corpus-historical-assertion.growth/v1",
+          "projection_sha256": "b1fabe3efb55254f45dd02f1043fb5d5347dacad9aee72a5523ce1e5f28a8b20",
+          "sha256": "cc1775dffb20d7de7351b2f66e7f0c85640e2c380d83f346e99dba9310d403f0"
+        },
+        "id": "native-corpus-retired-gap-point-seek-work/v1",
+        "source_sha256": "819a154f3f9fb21f571654908801e17a779b9dfd5afdcf6ae436e7b8517578ad"
+      },
+      "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py::test_source_endpoint_work_depends_on_index_seeks_not_source_extent": {
+        "declaration": {
+          "id": "riverhog-provenance.corpus-source-endpoint.growth/v1",
+          "projection_sha256": "892ba96b31faa5f3491e70a656517ce0f3b9b6db04c3ab4a346731c359a5a87e",
+          "sha256": "b60e03d73c0baa40f2819cd9d8e01d007a8695333ca3f3b2ead6e8a23cffa904"
+        },
+        "id": "native-corpus-source-endpoint-work/v1",
+        "source_sha256": "d0db7a72422f23072634842866b54ce1242b452c08bb38ae03486efff1b5ce30"
+      },
+      "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[0]": {
+        "id": "riverhog-imported-primary-terminal-work/v1",
+        "source_sha256": "88ea7987ad4247281b01b3d297b6b27edf1f566395934848b5689fbf637ab6d6"
+      },
+      "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[4096]": {
+        "id": "riverhog-imported-primary-terminal-work/v1",
+        "source_sha256": "88ea7987ad4247281b01b3d297b6b27edf1f566395934848b5689fbf637ab6d6"
+      },
+      "tests/unit/test_imported_history_growth.py::test_current_imported_primary_composes_actual_catalog_and_historical_point_work": {
+        "declaration": {
+          "id": "riverhog.upload-imported-primary-state.growth/v1",
+          "projection_sha256": "bb6159bc4ef0f8779be8d128a9e52b52a9a88e317218af641ec1830e28afb5a5",
+          "sha256": "a4a5a76317395e532d99b8043c2fd1ce5905db5fa9412b43d50b61203b53c341"
+        },
+        "id": "riverhog-terminal-imported-primary-work/v1",
+        "source_sha256": "a73a1e2236bea547bafb9d3caa7dc10990a7d9c037c9af5f4022abee86c30e80"
+      },
+      "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-1]": {
+        "id": "riverhog-selected-prefix-finalization-work/v1",
+        "source_sha256": "db2c4d3b29bf6d57bb0c9dc36a7822b4da0009cb7f443edc31893f8159599ee8"
+      },
+      "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-4]": {
+        "id": "riverhog-selected-prefix-finalization-work/v1",
+        "source_sha256": "db2c4d3b29bf6d57bb0c9dc36a7822b4da0009cb7f443edc31893f8159599ee8"
+      },
+      "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-1]": {
+        "id": "riverhog-selected-prefix-finalization-work/v1",
+        "source_sha256": "db2c4d3b29bf6d57bb0c9dc36a7822b4da0009cb7f443edc31893f8159599ee8"
+      },
+      "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-4]": {
+        "id": "riverhog-selected-prefix-finalization-work/v1",
+        "source_sha256": "db2c4d3b29bf6d57bb0c9dc36a7822b4da0009cb7f443edc31893f8159599ee8"
+      }
+    },
+    "tests_executed": false,
+    "worker_inventory_agrees_with_source_and_make": true
+  },
+  "owner_comment": "https://github.com/nashspence/riverhog/issues/964#issuecomment-6863269082",
+  "primitive_growth_observations": {
+    "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[0]": {
+      "corpus_source_frames_large": 10,
+      "corpus_source_frames_small": 10,
+      "corpus_source_octets_large": 52726,
+      "corpus_source_octets_small": 52726,
+      "documentary_text_octets": 0,
+      "fanout_large": 4,
+      "fanout_small": 1,
+      "import_native_metadata_octets_large": 13776,
+      "import_native_metadata_octets_small": 3444,
+      "import_native_metadata_queries_large": 40,
+      "import_native_metadata_queries_small": 10,
+      "import_sql_statements_large": 12,
+      "import_sql_statements_small": 3,
+      "members": 4,
+      "native_advances_large": 2766,
+      "native_advances_small": 2766,
+      "native_validation_calls_large": 11,
+      "native_validation_calls_small": 11,
+      "other_catalog_statements_large": 170,
+      "other_catalog_statements_small": 128,
+      "raw_admissions_large": 5,
+      "raw_admissions_small": 5,
+      "raw_catalog_statements_large": 15,
+      "raw_catalog_statements_small": 15,
+      "raw_postchecks_large": 5,
+      "raw_postchecks_small": 5,
+      "shared_payload_octets_large": 22208,
+      "shared_payload_octets_small": 22208,
+      "shared_prefix_octets": 6404,
+      "shared_reads_large": 3,
+      "shared_reads_small": 3,
+      "shared_source_octets": 7902,
+      "terminal_catalog_statements_large": 197,
+      "terminal_catalog_statements_small": 146
+    },
+    "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[4096]": {
+      "corpus_source_frames_large": 10,
+      "corpus_source_frames_small": 10,
+      "corpus_source_octets_large": 56822,
+      "corpus_source_octets_small": 56822,
+      "documentary_text_octets": 4096,
+      "fanout_large": 4,
+      "fanout_small": 1,
+      "import_native_metadata_octets_large": 13784,
+      "import_native_metadata_octets_small": 3446,
+      "import_native_metadata_queries_large": 40,
+      "import_native_metadata_queries_small": 10,
+      "import_sql_statements_large": 12,
+      "import_sql_statements_small": 3,
+      "members": 4,
+      "native_advances_large": 2766,
+      "native_advances_small": 2766,
+      "native_validation_calls_large": 11,
+      "native_validation_calls_small": 11,
+      "other_catalog_statements_large": 170,
+      "other_catalog_statements_small": 128,
+      "raw_admissions_large": 5,
+      "raw_admissions_small": 5,
+      "raw_catalog_statements_large": 15,
+      "raw_catalog_statements_small": 15,
+      "raw_postchecks_large": 5,
+      "raw_postchecks_small": 5,
+      "shared_payload_octets_large": 34496,
+      "shared_payload_octets_small": 34496,
+      "shared_prefix_octets": 10500,
+      "shared_reads_large": 3,
+      "shared_reads_small": 3,
+      "shared_source_octets": 11998,
+      "terminal_catalog_statements_large": 197,
+      "terminal_catalog_statements_small": 146
+    },
+    "tests/unit/test_imported_history_finalization.py::test_imported_primary_point_facts_survive_real_summary_capacity[entry-count]": {
+      "imports": 4,
+      "shared_payload_octets": 14306,
+      "shared_prefix_octets": 6404,
+      "shared_provider_reads": 2,
+      "shared_semantic_validations": 2,
+      "unrelated_summary_validations": 32
+    },
+    "tests/unit/test_imported_history_finalization.py::test_imported_primary_point_facts_survive_real_summary_capacity[source-octets]": {
+      "imports": 4,
+      "shared_payload_octets": 8402914,
+      "shared_prefix_octets": 4200708,
+      "shared_provider_reads": 2,
+      "shared_semantic_validations": 2,
+      "unrelated_summary_validations": 0
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-1]": {
+      "complete_units": 6,
+      "distinct_selected_anchors": 1,
+      "documentary_text_octets": 0,
+      "fanout": 1,
+      "members": 4,
+      "native_advances": 3207,
+      "native_validation_calls": 14,
+      "selected_anchor_lookups": 1,
+      "selected_native_advances": 0,
+      "selected_proof_calls": 1,
+      "selected_result_openings": 1,
+      "selected_source_payload_octets": 0,
+      "shared_prefix_octets": 5367,
+      "shared_source_octets": 6538,
+      "shared_validation_calls": 2,
+      "shared_validation_input_octets": 11905,
+      "unique_validated_journals": 5,
+      "validation_input_octets": 146377
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-4]": {
+      "complete_units": 6,
+      "distinct_selected_anchors": 1,
+      "documentary_text_octets": 0,
+      "fanout": 4,
+      "members": 4,
+      "native_advances": 3207,
+      "native_validation_calls": 14,
+      "selected_anchor_lookups": 4,
+      "selected_native_advances": 0,
+      "selected_proof_calls": 4,
+      "selected_result_openings": 4,
+      "selected_source_payload_octets": 0,
+      "shared_prefix_octets": 5367,
+      "shared_source_octets": 6538,
+      "shared_validation_calls": 2,
+      "shared_validation_input_octets": 11905,
+      "unique_validated_journals": 5,
+      "validation_input_octets": 146377
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-1]": {
+      "complete_units": 6,
+      "distinct_selected_anchors": 1,
+      "documentary_text_octets": 4096,
+      "fanout": 1,
+      "members": 4,
+      "native_advances": 3207,
+      "native_validation_calls": 14,
+      "selected_anchor_lookups": 1,
+      "selected_native_advances": 0,
+      "selected_proof_calls": 1,
+      "selected_result_openings": 1,
+      "selected_source_payload_octets": 0,
+      "shared_prefix_octets": 9463,
+      "shared_source_octets": 10634,
+      "shared_validation_calls": 2,
+      "shared_validation_input_octets": 20097,
+      "unique_validated_journals": 5,
+      "validation_input_octets": 154569
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-4]": {
+      "complete_units": 6,
+      "distinct_selected_anchors": 1,
+      "documentary_text_octets": 4096,
+      "fanout": 4,
+      "members": 4,
+      "native_advances": 3207,
+      "native_validation_calls": 14,
+      "selected_anchor_lookups": 4,
+      "selected_native_advances": 0,
+      "selected_proof_calls": 4,
+      "selected_result_openings": 4,
+      "selected_source_payload_octets": 0,
+      "shared_prefix_octets": 9463,
+      "shared_source_octets": 10634,
+      "shared_validation_calls": 2,
+      "shared_validation_input_octets": 20097,
+      "unique_validated_journals": 5,
+      "validation_input_octets": 154569
+    }
+  },
+  "producer_provenance": {
+    "collector_artifact": "collector.py.txt",
+    "invocation_artifact": "unit-invocation.json",
+    "launcher_artifact": "run_qualification.py.txt",
+    "receipt_distinction": "The invocation and launcher are producer provenance retained separately from the original make/pytest receipts. Empty receipt parameters are preserved, not replaced with inferred values.",
+    "source_export": {
+      "base": "1ff0a9ce70c23f18aa94d5b52ed036376132021a",
+      "change_set_exact": true,
+      "files": [
+        {
+          "bytes": 86187,
+          "git_blob": "5a01559b4522e9074a59ae3453e467991b8fa838",
+          "path": "packages/riverhog-provenance/src/riverhog_provenance/corpus.py",
+          "sha256": "2a62b3d29aa1eda9e439264e2bfb5552b8f55cb76f37573637a6bde7740841f7"
+        },
+        {
+          "bytes": 38180,
+          "git_blob": "5b6c91faf816cd0e5c37d2cf752dd30c8c05d05f",
+          "path": "packages/riverhog-provenance/src/riverhog_provenance/history.py",
+          "sha256": "508b1c77b2941453317f2cac2acce8f30b3c63adb3e5da766520de830b881442"
+        },
+        {
+          "bytes": 5408,
+          "git_blob": "e8e6ff7d6f3350e5cecad1b61b0ad1a1652cac6e",
+          "path": "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py",
+          "sha256": "d0db7a72422f23072634842866b54ce1242b452c08bb38ae03486efff1b5ce30"
+        },
+        {
+          "bytes": 444164,
+          "git_blob": "4821e7efd3ac1f71c674b1dc7c8ccf4598338ded",
+          "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+          "sha256": "cec6d8c327049bf9d283882b790f9bd91fcb4ff213ec545951d52c48100cbf77"
+        },
+        {
+          "bytes": 9767,
+          "git_blob": "176860e8fea521539207c6ae562c81e0748166de",
+          "path": "riverhog/src/riverhog_core/services/upload_imported_history.py",
+          "sha256": "49c12ac9769b9fc7bc379ce0ae00e9978448e92b651366fd8cd98e4d766d6a16"
+        },
+        {
+          "bytes": 37778,
+          "git_blob": "3b81a379a11cb31ec64847a32ee2ca3d005f0728",
+          "path": "tests/unit/test_imported_history_finalization.py",
+          "sha256": "88ea7987ad4247281b01b3d297b6b27edf1f566395934848b5689fbf637ab6d6"
+        },
+        {
+          "bytes": 12952,
+          "git_blob": "be908f87fc975ae4c1c215726cf9eaa3fb5bffb0",
+          "path": "tests/unit/test_imported_history_growth.py",
+          "sha256": "a73a1e2236bea547bafb9d3caa7dc10990a7d9c037c9af5f4022abee86c30e80"
+        },
+        {
+          "bytes": 2675,
+          "git_blob": "e0b7c2a247b67b6404c2062dbd15cfad8be2a5dc",
+          "path": "tests/unit/test_imported_history_receiving.py",
+          "sha256": "68143c96d1d5659f1eb1a1cde1b18fae7f3fe3b7368d31c79e498db192a923e0"
+        },
+        {
+          "bytes": 24008,
+          "git_blob": "3cd07a7893fd64dc320aa52b48000cc162abaf7a",
+          "path": "tests/unit/test_selected_upload_journal_prefix.py",
+          "sha256": "db2c4d3b29bf6d57bb0c9dc36a7822b4da0009cb7f443edc31893f8159599ee8"
+        }
+      ],
+      "original_export_bytes": 686544,
+      "original_export_sha256": "727ea5876285b1894fa230ea3a87bd51c83ecde3e93cf9770f48e77a10f0c696",
+      "source_sha": "63843b479986486298d47e4347226a74ee197570",
+      "tree": "00f68336b22d9862a42bdba39f530cd8cf2cc529"
+    },
+    "unit_invocation": {
+      "argv": [
+        "make",
+        "unit",
+        "UV_RUN=mise x python uv -- uv run --locked --all-packages --group dev",
+        "UNIT_PYTEST_ARGS=-n 4 --dist=load --instafail --durations=20 --durations-min=0.25 -p scripts.ci_timing --junitxml=/workspace/scratch/320596a7d459/imports964/qualification/unit-finalized/pytest.xml -o junit_family=xunit1",
+        "TESTS=tests/unit/test_imported_history_finalization.py tests/unit/test_imported_history_growth.py tests/unit/test_imported_history_receiving.py tests/unit/test_selected_upload_journal_prefix.py packages/riverhog-provenance/tests/test_corpus_source_endpoint.py packages/riverhog-provenance/tests/test_corpus_historical_source.py packages/riverhog-provenance/tests/test_history.py packages/riverhog-provenance/tests/test_history_snapshot_admission.py packages/riverhog-provenance/tests/test_history_worklist_admission.py tests/unit/test_upload_journal_result.py tests/unit/test_archive_catalog_finalizer.py::test_pending_original_cannot_advance_a_replacement_claim[provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_changed_pending_cursor_is_not_a_fresh_batch[provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[False-provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[True-provenance-closure] tests/unit/test_workspace_boundaries.py"
+      ],
+      "environment_overrides": {
+        "PYTHONUNBUFFERED": "1",
+        "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/320596a7d459/imports964/qualification/unit-finalized",
+        "TMPDIR": "/workspace/scratch/320596a7d459/imports964/tmp"
+      },
+      "provenance": "Exact command and overrides constructed by imports964/run_qualification.py for the unit-finalized execution; runner retained alongside this record.",
+      "working_directory": "/workspace/scratch/320596a7d459/riverhog-964-imports"
+    },
+    "unit_make_overrides": {
+      "TESTS": "tests/unit/test_imported_history_finalization.py tests/unit/test_imported_history_growth.py tests/unit/test_imported_history_receiving.py tests/unit/test_selected_upload_journal_prefix.py packages/riverhog-provenance/tests/test_corpus_source_endpoint.py packages/riverhog-provenance/tests/test_corpus_historical_source.py packages/riverhog-provenance/tests/test_history.py packages/riverhog-provenance/tests/test_history_snapshot_admission.py packages/riverhog-provenance/tests/test_history_worklist_admission.py tests/unit/test_upload_journal_result.py tests/unit/test_archive_catalog_finalizer.py::test_pending_original_cannot_advance_a_replacement_claim[provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_changed_pending_cursor_is_not_a_fresh_batch[provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[False-provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[True-provenance-closure] tests/unit/test_workspace_boundaries.py",
+      "UNIT_PYTEST_ARGS": "-n 4 --dist=load --instafail --durations=20 --durations-min=0.25 -p scripts.ci_timing --junitxml=/workspace/scratch/320596a7d459/imports964/qualification/unit-finalized/pytest.xml -o junit_family=xunit1",
+      "UV_RUN": "mise x python uv -- uv run --locked --all-packages --group dev"
+    },
+    "unit_pytest_argv": [
+      "-n",
+      "4",
+      "--dist=load",
+      "--instafail",
+      "--durations=20",
+      "--durations-min=0.25",
+      "-p",
+      "scripts.ci_timing",
+      "--junitxml=/workspace/scratch/320596a7d459/imports964/qualification/unit-finalized/pytest.xml",
+      "-o",
+      "junit_family=xunit1"
+    ]
+  },
+  "qualification": {
+    "canonical_full_unit_qualification": false,
+    "focused_passed_tests": 168,
+    "junit": {
+      "artifact": "unit-junit.xml",
+      "elapsed_seconds": 950.777,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 168,
+      "timestamp": "2026-11-13T17:36:10.665891-08:00"
+    },
+    "lint": {
+      "elapsed_seconds": 4.073614403000647,
+      "exit_status": 0,
+      "finished_at": "2026-11-14T01:35:27.609749+00:00",
+      "goals": [
+        "lint"
+      ],
+      "observed_conditions": {
+        "architecture": "x86_64",
+        "cpu_affinity_count": 9,
+        "cpu_count": 9,
+        "platform": "linux",
+        "python": "3.12.3"
+      },
+      "parameters": {},
+      "phase_costs": {
+        "command-including-owner-cleanup": 3.307652493000205,
+        "evidence-collection": 0.014537462000589585,
+        "preparation": 0.7514244479998524
+      },
+      "qualification_eligible": true,
+      "run_id": "76e7207a53704510a8caa2e538d6fccb",
+      "selection_overrides": [],
+      "source_clean": true,
+      "source_end": {
+        "source_clean": true,
+        "source_sha": "63843b479986486298d47e4347226a74ee197570"
+      },
+      "source_sha": "63843b479986486298d47e4347226a74ee197570",
+      "span": "2d623e87f78e42818577d07416603bb1",
+      "started_at": "2026-11-14T01:35:24.286281+00:00",
+      "state": "completed"
+    },
+    "pytest_elapsed_seconds": 950.8097410419996,
+    "pytest_log_elapsed_seconds": 950.8,
+    "recorded_command_definitions": {
+      "lint": [
+        {
+          "boundary": "command-including-owned-preparation-and-cleanup",
+          "command": [
+            "make",
+            "lint"
+          ],
+          "conditions": {},
+          "name": "lint"
+        }
+      ],
+      "unit": [
+        {
+          "boundary": "command-including-owned-preparation-and-cleanup",
+          "command": [
+            "make",
+            "unit"
+          ],
+          "conditions": {},
+          "name": "unit"
+        }
+      ]
+    },
+    "reproduction_argv": [
+      "make",
+      "unit",
+      "UV_RUN=mise x python uv -- uv run --locked --all-packages --group dev",
+      "UNIT_PYTEST_ARGS=-n 4 --dist=load --instafail --durations=20 --durations-min=0.25 -p scripts.ci_timing --junitxml=/workspace/scratch/320596a7d459/imports964/qualification/unit-finalized/pytest.xml -o junit_family=xunit1",
+      "TESTS=tests/unit/test_imported_history_finalization.py tests/unit/test_imported_history_growth.py tests/unit/test_imported_history_receiving.py tests/unit/test_selected_upload_journal_prefix.py packages/riverhog-provenance/tests/test_corpus_source_endpoint.py packages/riverhog-provenance/tests/test_corpus_historical_source.py packages/riverhog-provenance/tests/test_history.py packages/riverhog-provenance/tests/test_history_snapshot_admission.py packages/riverhog-provenance/tests/test_history_worklist_admission.py tests/unit/test_upload_journal_result.py tests/unit/test_archive_catalog_finalizer.py::test_pending_original_cannot_advance_a_replacement_claim[provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_changed_pending_cursor_is_not_a_fresh_batch[provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[False-provenance-closure] tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[True-provenance-closure] tests/unit/test_workspace_boundaries.py"
+    ],
+    "reproduction_environment_overrides": {
+      "PYTHONUNBUFFERED": "1",
+      "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/320596a7d459/imports964/qualification/unit-finalized",
+      "TMPDIR": "/workspace/scratch/320596a7d459/imports964/tmp"
+    },
+    "selected_paths": [
+      "tests/unit/test_imported_history_finalization.py",
+      "tests/unit/test_imported_history_growth.py",
+      "tests/unit/test_imported_history_receiving.py",
+      "tests/unit/test_selected_upload_journal_prefix.py",
+      "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py",
+      "packages/riverhog-provenance/tests/test_corpus_historical_source.py",
+      "packages/riverhog-provenance/tests/test_history.py",
+      "packages/riverhog-provenance/tests/test_history_snapshot_admission.py",
+      "packages/riverhog-provenance/tests/test_history_worklist_admission.py",
+      "tests/unit/test_upload_journal_result.py",
+      "tests/unit/test_archive_catalog_finalizer.py::test_pending_original_cannot_advance_a_replacement_claim[provenance-closure]",
+      "tests/unit/test_archive_catalog_finalizer.py::test_changed_pending_cursor_is_not_a_fresh_batch[provenance-closure]",
+      "tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[False-provenance-closure]",
+      "tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[True-provenance-closure]",
+      "tests/unit/test_workspace_boundaries.py"
+    ],
+    "test_file_counts": {
+      "packages/riverhog-provenance/tests/test_corpus_historical_source.py": 28,
+      "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py": 3,
+      "packages/riverhog-provenance/tests/test_history.py": 14,
+      "packages/riverhog-provenance/tests/test_history_snapshot_admission.py": 19,
+      "packages/riverhog-provenance/tests/test_history_worklist_admission.py": 33,
+      "tests/unit/test_archive_catalog_finalizer.py": 4,
+      "tests/unit/test_imported_history_finalization.py": 8,
+      "tests/unit/test_imported_history_growth.py": 1,
+      "tests/unit/test_imported_history_receiving.py": 2,
+      "tests/unit/test_selected_upload_journal_prefix.py": 15,
+      "tests/unit/test_upload_journal_result.py": 17,
+      "tests/unit/test_workspace_boundaries.py": 24
+    },
+    "unit": {
+      "elapsed_seconds": 975.7185681850005,
+      "exit_status": 0,
+      "finished_at": "2026-11-14T01:52:01.669579+00:00",
+      "goals": [
+        "unit"
+      ],
+      "observed_conditions": {
+        "architecture": "x86_64",
+        "cpu_affinity_count": 9,
+        "cpu_count": 9,
+        "platform": "linux",
+        "python": "3.12.3"
+      },
+      "parameters": {},
+      "phase_costs": {
+        "command-including-owner-cleanup": 952.0874420280006,
+        "evidence-collection": 0.013291031999870029,
+        "preparation": 23.617835125000056
+      },
+      "qualification_eligible": false,
+      "run_id": "6c979b8930514eaaad546f19f8dbde08",
+      "selection_overrides": [
+        "TESTS",
+        "UNIT_PYTEST_ARGS"
+      ],
+      "source_clean": true,
+      "source_end": {
+        "source_clean": true,
+        "source_sha": "63843b479986486298d47e4347226a74ee197570"
+      },
+      "source_sha": "63843b479986486298d47e4347226a74ee197570",
+      "span": "e508b452180c46debff974e85f5640ac",
+      "started_at": "2026-11-14T01:36:09.565786+00:00",
+      "state": "completed"
+    }
+  },
+  "runtime_configuration": {
+    "architecture": "x86_64",
+    "junit_family": "xunit1",
+    "platform": "linux",
+    "provenance": "Pinned installed versions and pytest worker arguments reported by the handoff owner; make receipts independently retain Python/platform/architecture conditions.",
+    "pytest_distribution": "load",
+    "pytest_workers": 4,
+    "python": "3.12.3",
+    "python_unbuffered": "1 (diagnostic output buffering only)",
+    "ruff": "0.16.0",
+    "sqlalchemy": "2.0.51",
+    "sqlite": "3.45.1",
+    "uv": "0.11.24",
+    "validation_overlap": "Final lint completed first. The handoff owner reports no overlapping validation activity during the final unit run."
+  },
+  "terminal_matrix": {
+    "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[0]": {
+      "corpus_source_frames_large": 10,
+      "corpus_source_frames_small": 10,
+      "corpus_source_octets_large": 52726,
+      "corpus_source_octets_small": 52726,
+      "documentary_text_octets": 0,
+      "fanout_large": 4,
+      "fanout_small": 1,
+      "import_native_metadata_octets_large": 13776,
+      "import_native_metadata_octets_small": 3444,
+      "import_native_metadata_queries_large": 40,
+      "import_native_metadata_queries_small": 10,
+      "import_sql_statements_large": 12,
+      "import_sql_statements_small": 3,
+      "members": 4,
+      "native_advances_large": 2766,
+      "native_advances_small": 2766,
+      "native_validation_calls_large": 11,
+      "native_validation_calls_small": 11,
+      "other_catalog_statements_large": 170,
+      "other_catalog_statements_small": 128,
+      "raw_admissions_large": 5,
+      "raw_admissions_small": 5,
+      "raw_catalog_statements_large": 15,
+      "raw_catalog_statements_small": 15,
+      "raw_postchecks_large": 5,
+      "raw_postchecks_small": 5,
+      "shared_payload_octets_large": 22208,
+      "shared_payload_octets_small": 22208,
+      "shared_prefix_octets": 6404,
+      "shared_reads_large": 3,
+      "shared_reads_small": 3,
+      "shared_source_octets": 7902,
+      "terminal_catalog_statements_large": 197,
+      "terminal_catalog_statements_small": 146
+    },
+    "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[4096]": {
+      "corpus_source_frames_large": 10,
+      "corpus_source_frames_small": 10,
+      "corpus_source_octets_large": 56822,
+      "corpus_source_octets_small": 56822,
+      "documentary_text_octets": 4096,
+      "fanout_large": 4,
+      "fanout_small": 1,
+      "import_native_metadata_octets_large": 13784,
+      "import_native_metadata_octets_small": 3446,
+      "import_native_metadata_queries_large": 40,
+      "import_native_metadata_queries_small": 10,
+      "import_sql_statements_large": 12,
+      "import_sql_statements_small": 3,
+      "members": 4,
+      "native_advances_large": 2766,
+      "native_advances_small": 2766,
+      "native_validation_calls_large": 11,
+      "native_validation_calls_small": 11,
+      "other_catalog_statements_large": 170,
+      "other_catalog_statements_small": 128,
+      "raw_admissions_large": 5,
+      "raw_admissions_small": 5,
+      "raw_catalog_statements_large": 15,
+      "raw_catalog_statements_small": 15,
+      "raw_postchecks_large": 5,
+      "raw_postchecks_small": 5,
+      "shared_payload_octets_large": 34496,
+      "shared_payload_octets_small": 34496,
+      "shared_prefix_octets": 10500,
+      "shared_reads_large": 3,
+      "shared_reads_small": 3,
+      "shared_source_octets": 11998,
+      "terminal_catalog_statements_large": 197,
+      "terminal_catalog_statements_small": 146
+    }
+  },
+  "terminal_phase_observations": [
+    {
+      "corpus_source_frames": 10,
+      "corpus_source_octets": 52726,
+      "documentary_text_octets": 0,
+      "fanout": 1,
+      "import_native_metadata_octets": 3444,
+      "import_native_metadata_queries": 10,
+      "import_sql_statements": 3,
+      "members": 4,
+      "native_advances": 2766,
+      "native_validation_calls": 11,
+      "profile": {
+        "corpus_sources": [
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "octets": 7902
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:c867a7f4-0e7a-41ea-af6f-51d37db89260",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:c93d37a9-6caf-4750-8af3-56c5867844b8",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:df553e01-5070-4292-8529-8b388f125c0b",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:f54dd9ec-d8f2-4e77-a507-c3c96dab499a",
+            "octets": 11206
+          }
+        ],
+        "elapsed_seconds": 6.451793311000074,
+        "imports": [
+          {
+            "metadata_octets": 3444,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          }
+        ],
+        "raw_admissions": [
+          {
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:c867a7f4-0e7a-41ea-af6f-51d37db89260",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:c93d37a9-6caf-4750-8af3-56c5867844b8",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:df553e01-5070-4292-8529-8b388f125c0b",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:f54dd9ec-d8f2-4e77-a507-c3c96dab499a",
+            "sql_statements": 2
+          }
+        ],
+        "raw_current_checks": [
+          {
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:c867a7f4-0e7a-41ea-af6f-51d37db89260",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:c93d37a9-6caf-4750-8af3-56c5867844b8",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:df553e01-5070-4292-8529-8b388f125c0b",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:f54dd9ec-d8f2-4e77-a507-c3c96dab499a",
+            "sql_statements": 1
+          }
+        ],
+        "thread_cpu_seconds": 6.365717705999998,
+        "validations": [
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+              "prefix_bytes": "7902",
+              "prefix_sha256": "89ac3470ac65923a9bcd2ba73c83684e8c6c39e497ad4c86be79b321ea45dbfb",
+              "through": {
+                "entry_id": "urn:uuid:00f96232-44de-4eb9-8012-c1538bd45395",
+                "json_sha256": "640ef94f5df71cbb56df09c66f946564804c0f3615efe2cc984c687531003785",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "native_advances": 332,
+            "octets": 7902,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:c867a7f4-0e7a-41ea-af6f-51d37db89260",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "c8f485fb487fd5b3c5ccdee3cad731f0751e11b025b93b99c28c0fe3a6c6d7d1",
+              "through": {
+                "entry_id": "urn:uuid:f02b5f1d-1419-46c6-a319-d7d3f5c1ef8e",
+                "json_sha256": "92728200edab536e8b492d5f72643cdd6ba08191e45f71b39fc1c2f98fc6eafd",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:c867a7f4-0e7a-41ea-af6f-51d37db89260",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:c93d37a9-6caf-4750-8af3-56c5867844b8",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "234ebe2b7d103cae6743d43462c456cdcda618aded77216f05dad6285e87afc3",
+              "through": {
+                "entry_id": "urn:uuid:7d42637f-3097-4610-bf17-32f5237407f9",
+                "json_sha256": "0e8a9a24708e22a4c85012644e4185d298ec071a66011179ef56531d1ebbd75a",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:c93d37a9-6caf-4750-8af3-56c5867844b8",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:df553e01-5070-4292-8529-8b388f125c0b",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "8f321f8450e7defe3d2a0f0f5d484208ca10989f66d2bfa19b5a8891bde92f03",
+              "through": {
+                "entry_id": "urn:uuid:474b2fa7-d4a8-494a-9ce7-b2e533ba3191",
+                "json_sha256": "2ae9a93ec530ea9b26a8f74bddd6ff6a0c3133a4564d33f0f23bb9d39f4e9920",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:df553e01-5070-4292-8529-8b388f125c0b",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:f54dd9ec-d8f2-4e77-a507-c3c96dab499a",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "62b055d9490540b6df0af6ac1601c23043a1df3b01106f4e050f2bd64016ffb1",
+              "through": {
+                "entry_id": "urn:uuid:bd6e7a48-d897-4aaa-aa3e-550e7a0ee753",
+                "json_sha256": "5340c232b079bddd8f14b27959d31efb8e1dbf444896650402d419b859b576aa",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:f54dd9ec-d8f2-4e77-a507-c3c96dab499a",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:df553e01-5070-4292-8529-8b388f125c0b",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "8f321f8450e7defe3d2a0f0f5d484208ca10989f66d2bfa19b5a8891bde92f03",
+              "through": {
+                "entry_id": "urn:uuid:474b2fa7-d4a8-494a-9ce7-b2e533ba3191",
+                "json_sha256": "2ae9a93ec530ea9b26a8f74bddd6ff6a0c3133a4564d33f0f23bb9d39f4e9920",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:df553e01-5070-4292-8529-8b388f125c0b",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+              "prefix_bytes": "7902",
+              "prefix_sha256": "89ac3470ac65923a9bcd2ba73c83684e8c6c39e497ad4c86be79b321ea45dbfb",
+              "through": {
+                "entry_id": "urn:uuid:00f96232-44de-4eb9-8012-c1538bd45395",
+                "json_sha256": "640ef94f5df71cbb56df09c66f946564804c0f3615efe2cc984c687531003785",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "native_advances": 332,
+            "octets": 7902,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+              "prefix_bytes": "6404",
+              "prefix_sha256": "8f682919d691bfbab03306eefeaed6390afc2a15bac4977e9585a8463e0a4688",
+              "through": {
+                "entry_id": "urn:uuid:d816303f-ce1c-40e2-afd7-7ee650445c71",
+                "json_sha256": "50f2fe52e41aa5eb7eb962e4156c3944a3b2e44aa0c3e2a14632cb9df9849907",
+                "sequence": "0"
+              }
+            },
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "native_advances": 150,
+            "octets": 6404,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:f54dd9ec-d8f2-4e77-a507-c3c96dab499a",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "62b055d9490540b6df0af6ac1601c23043a1df3b01106f4e050f2bd64016ffb1",
+              "through": {
+                "entry_id": "urn:uuid:bd6e7a48-d897-4aaa-aa3e-550e7a0ee753",
+                "json_sha256": "5340c232b079bddd8f14b27959d31efb8e1dbf444896650402d419b859b576aa",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:f54dd9ec-d8f2-4e77-a507-c3c96dab499a",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:c93d37a9-6caf-4750-8af3-56c5867844b8",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "234ebe2b7d103cae6743d43462c456cdcda618aded77216f05dad6285e87afc3",
+              "through": {
+                "entry_id": "urn:uuid:7d42637f-3097-4610-bf17-32f5237407f9",
+                "json_sha256": "0e8a9a24708e22a4c85012644e4185d298ec071a66011179ef56531d1ebbd75a",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:c93d37a9-6caf-4750-8af3-56c5867844b8",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:c867a7f4-0e7a-41ea-af6f-51d37db89260",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "c8f485fb487fd5b3c5ccdee3cad731f0751e11b025b93b99c28c0fe3a6c6d7d1",
+              "through": {
+                "entry_id": "urn:uuid:f02b5f1d-1419-46c6-a319-d7d3f5c1ef8e",
+                "json_sha256": "92728200edab536e8b492d5f72643cdd6ba08191e45f71b39fc1c2f98fc6eafd",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:c867a7f4-0e7a-41ea-af6f-51d37db89260",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          }
+        ]
+      },
+      "raw_admissions": 5,
+      "raw_catalog_statements": 15,
+      "raw_postchecks": 5,
+      "shared_journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+      "shared_payload_octets": 22208,
+      "shared_prefix_octets": 6404,
+      "shared_provider_reads": 3,
+      "shared_source_octets": 7902,
+      "terminal_elapsed_seconds": 6.451793311000074,
+      "terminal_thread_cpu_seconds": 6.365717705999998,
+      "test": "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[0]"
+    },
+    {
+      "corpus_source_frames": 10,
+      "corpus_source_octets": 52726,
+      "documentary_text_octets": 0,
+      "fanout": 4,
+      "import_native_metadata_octets": 13776,
+      "import_native_metadata_queries": 40,
+      "import_sql_statements": 12,
+      "members": 4,
+      "native_advances": 2766,
+      "native_validation_calls": 11,
+      "profile": {
+        "corpus_sources": [
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:252a3fd3-a56b-4a4c-9944-7093f13eef0a",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:4dd36235-a286-4bfd-ad8d-82880246c53d",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "octets": 7902
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:d5f5c145-75ce-4fe6-9656-bd4c1a02b90f",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:fb15cc33-6372-42b4-aa19-4c2dbe9411ce",
+            "octets": 11206
+          }
+        ],
+        "elapsed_seconds": 7.454459560999567,
+        "imports": [
+          {
+            "metadata_octets": 3444,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          },
+          {
+            "metadata_octets": 3444,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          },
+          {
+            "metadata_octets": 3444,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          },
+          {
+            "metadata_octets": 3444,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          }
+        ],
+        "raw_admissions": [
+          {
+            "journal_id": "urn:uuid:252a3fd3-a56b-4a4c-9944-7093f13eef0a",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:4dd36235-a286-4bfd-ad8d-82880246c53d",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:d5f5c145-75ce-4fe6-9656-bd4c1a02b90f",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:fb15cc33-6372-42b4-aa19-4c2dbe9411ce",
+            "sql_statements": 2
+          }
+        ],
+        "raw_current_checks": [
+          {
+            "journal_id": "urn:uuid:252a3fd3-a56b-4a4c-9944-7093f13eef0a",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:4dd36235-a286-4bfd-ad8d-82880246c53d",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:d5f5c145-75ce-4fe6-9656-bd4c1a02b90f",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:fb15cc33-6372-42b4-aa19-4c2dbe9411ce",
+            "sql_statements": 1
+          }
+        ],
+        "thread_cpu_seconds": 7.328058806999991,
+        "validations": [
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:252a3fd3-a56b-4a4c-9944-7093f13eef0a",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "81e737f0bbeb7b429ba7781a877bc689fe386943e283db2b57ab2033175933eb",
+              "through": {
+                "entry_id": "urn:uuid:56337f9a-a403-458e-8b30-f95192133b66",
+                "json_sha256": "e24100bf9dda5936055e4e7d4b0d6dce4df6c1e9261c531e97090fc56d1cb67e",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:252a3fd3-a56b-4a4c-9944-7093f13eef0a",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:4dd36235-a286-4bfd-ad8d-82880246c53d",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "2fcd7f3889cb705d090a1100a4c733725ffb47c53d14a87791387028948d3854",
+              "through": {
+                "entry_id": "urn:uuid:0cab31f9-0cd6-4d0e-b6d7-a5d901a19a75",
+                "json_sha256": "f3194cdca62c2e2a890d52fa0e3f84357d26059102a40e3a9fd8b4480abd68b4",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:4dd36235-a286-4bfd-ad8d-82880246c53d",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+              "prefix_bytes": "7902",
+              "prefix_sha256": "89ac3470ac65923a9bcd2ba73c83684e8c6c39e497ad4c86be79b321ea45dbfb",
+              "through": {
+                "entry_id": "urn:uuid:00f96232-44de-4eb9-8012-c1538bd45395",
+                "json_sha256": "640ef94f5df71cbb56df09c66f946564804c0f3615efe2cc984c687531003785",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "native_advances": 332,
+            "octets": 7902,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:d5f5c145-75ce-4fe6-9656-bd4c1a02b90f",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "b83648ccd4b0c0f0ab6896134bb6e3e2b3ca1d67c33c80bedee0cd99ded9bfd5",
+              "through": {
+                "entry_id": "urn:uuid:d73f4263-6e59-41c2-a1a0-b9908da78e68",
+                "json_sha256": "74e5ebbbfbc18fdbbb9966cef19ac752a2ad44df8bb9d673dd61f62ae061c1a0",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:d5f5c145-75ce-4fe6-9656-bd4c1a02b90f",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:fb15cc33-6372-42b4-aa19-4c2dbe9411ce",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "309d26674dd1ddc9c392f79db91a3c4f5a26c6ab65ada78d997566643bfa3152",
+              "through": {
+                "entry_id": "urn:uuid:376f89b1-4cae-4ea8-8230-0a5628e32271",
+                "json_sha256": "eaee1106d581f32ab00aaa2b7db46f673acc75f904b6dd0cc00fcf861545ff4c",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:fb15cc33-6372-42b4-aa19-4c2dbe9411ce",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:fb15cc33-6372-42b4-aa19-4c2dbe9411ce",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "309d26674dd1ddc9c392f79db91a3c4f5a26c6ab65ada78d997566643bfa3152",
+              "through": {
+                "entry_id": "urn:uuid:376f89b1-4cae-4ea8-8230-0a5628e32271",
+                "json_sha256": "eaee1106d581f32ab00aaa2b7db46f673acc75f904b6dd0cc00fcf861545ff4c",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:fb15cc33-6372-42b4-aa19-4c2dbe9411ce",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+              "prefix_bytes": "7902",
+              "prefix_sha256": "89ac3470ac65923a9bcd2ba73c83684e8c6c39e497ad4c86be79b321ea45dbfb",
+              "through": {
+                "entry_id": "urn:uuid:00f96232-44de-4eb9-8012-c1538bd45395",
+                "json_sha256": "640ef94f5df71cbb56df09c66f946564804c0f3615efe2cc984c687531003785",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "native_advances": 332,
+            "octets": 7902,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+              "prefix_bytes": "6404",
+              "prefix_sha256": "8f682919d691bfbab03306eefeaed6390afc2a15bac4977e9585a8463e0a4688",
+              "through": {
+                "entry_id": "urn:uuid:d816303f-ce1c-40e2-afd7-7ee650445c71",
+                "json_sha256": "50f2fe52e41aa5eb7eb962e4156c3944a3b2e44aa0c3e2a14632cb9df9849907",
+                "sequence": "0"
+              }
+            },
+            "journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+            "native_advances": 150,
+            "octets": 6404,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:252a3fd3-a56b-4a4c-9944-7093f13eef0a",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "81e737f0bbeb7b429ba7781a877bc689fe386943e283db2b57ab2033175933eb",
+              "through": {
+                "entry_id": "urn:uuid:56337f9a-a403-458e-8b30-f95192133b66",
+                "json_sha256": "e24100bf9dda5936055e4e7d4b0d6dce4df6c1e9261c531e97090fc56d1cb67e",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:252a3fd3-a56b-4a4c-9944-7093f13eef0a",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:4dd36235-a286-4bfd-ad8d-82880246c53d",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "2fcd7f3889cb705d090a1100a4c733725ffb47c53d14a87791387028948d3854",
+              "through": {
+                "entry_id": "urn:uuid:0cab31f9-0cd6-4d0e-b6d7-a5d901a19a75",
+                "json_sha256": "f3194cdca62c2e2a890d52fa0e3f84357d26059102a40e3a9fd8b4480abd68b4",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:4dd36235-a286-4bfd-ad8d-82880246c53d",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:d5f5c145-75ce-4fe6-9656-bd4c1a02b90f",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "b83648ccd4b0c0f0ab6896134bb6e3e2b3ca1d67c33c80bedee0cd99ded9bfd5",
+              "through": {
+                "entry_id": "urn:uuid:d73f4263-6e59-41c2-a1a0-b9908da78e68",
+                "json_sha256": "74e5ebbbfbc18fdbbb9966cef19ac752a2ad44df8bb9d673dd61f62ae061c1a0",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:d5f5c145-75ce-4fe6-9656-bd4c1a02b90f",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          }
+        ]
+      },
+      "raw_admissions": 5,
+      "raw_catalog_statements": 15,
+      "raw_postchecks": 5,
+      "shared_journal_id": "urn:uuid:79339005-e193-4f7e-a0f0-6195ca005095",
+      "shared_payload_octets": 22208,
+      "shared_prefix_octets": 6404,
+      "shared_provider_reads": 3,
+      "shared_source_octets": 7902,
+      "terminal_elapsed_seconds": 7.454459560999567,
+      "terminal_thread_cpu_seconds": 7.328058806999991,
+      "test": "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[0]"
+    },
+    {
+      "corpus_source_frames": 10,
+      "corpus_source_octets": 56822,
+      "documentary_text_octets": 4096,
+      "fanout": 1,
+      "import_native_metadata_octets": 3446,
+      "import_native_metadata_queries": 10,
+      "import_sql_statements": 3,
+      "members": 4,
+      "native_advances": 2766,
+      "native_validation_calls": 11,
+      "profile": {
+        "corpus_sources": [
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:03648f39-d911-463c-b52e-6a56c7bcfa8d",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "octets": 11998
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:4c749da8-eb1c-4e09-9a19-d2558582ad9a",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:4ca842ac-abcc-44de-a2c3-583e89ca6f5d",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:96a865e7-5048-48ef-9bfc-d2b854b7abd8",
+            "octets": 11206
+          }
+        ],
+        "elapsed_seconds": 6.664549138999973,
+        "imports": [
+          {
+            "metadata_octets": 3446,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          }
+        ],
+        "raw_admissions": [
+          {
+            "journal_id": "urn:uuid:03648f39-d911-463c-b52e-6a56c7bcfa8d",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:4c749da8-eb1c-4e09-9a19-d2558582ad9a",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:4ca842ac-abcc-44de-a2c3-583e89ca6f5d",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:96a865e7-5048-48ef-9bfc-d2b854b7abd8",
+            "sql_statements": 2
+          }
+        ],
+        "raw_current_checks": [
+          {
+            "journal_id": "urn:uuid:03648f39-d911-463c-b52e-6a56c7bcfa8d",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:4c749da8-eb1c-4e09-9a19-d2558582ad9a",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:4ca842ac-abcc-44de-a2c3-583e89ca6f5d",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:96a865e7-5048-48ef-9bfc-d2b854b7abd8",
+            "sql_statements": 1
+          }
+        ],
+        "thread_cpu_seconds": 6.573413835999986,
+        "validations": [
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:03648f39-d911-463c-b52e-6a56c7bcfa8d",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "91ea580daa0fd659732a95e4d7b300f3bf45cd5eec21c1c3fc5703f4da2ca807",
+              "through": {
+                "entry_id": "urn:uuid:3eaf7a95-4d6f-4ec8-8536-0c1ff0466c63",
+                "json_sha256": "0878d10142a997287df4652d87338b9374410c946a332ec394c500c48d83f7f7",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:03648f39-d911-463c-b52e-6a56c7bcfa8d",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+              "prefix_bytes": "11998",
+              "prefix_sha256": "2f7bb7d0bc844d670f23b2ca2d9abf096441cc32e034579f7561717f67bed055",
+              "through": {
+                "entry_id": "urn:uuid:64ab1393-368e-4333-8daa-cc6f21f1afa3",
+                "json_sha256": "958aecc16622bdd8edcd035e7a7348c89c00bb0faf66409a287dc2b261c0d2ea",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "native_advances": 332,
+            "octets": 11998,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:4c749da8-eb1c-4e09-9a19-d2558582ad9a",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "c756ea94f73e6797c9824edbc7ee84f481f4ad35501924a91bad4827aef69a63",
+              "through": {
+                "entry_id": "urn:uuid:8bcd7d26-ee92-4d55-9a0e-fadabb67a1d3",
+                "json_sha256": "43b1085460991cb06902641a3e99371bb724d5b18f555ed72cab5a3d2c806ee9",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:4c749da8-eb1c-4e09-9a19-d2558582ad9a",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:4ca842ac-abcc-44de-a2c3-583e89ca6f5d",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "27ee6622af91730fbbf0e46ff6f17058e0ea692d0a8260ee8966c40f3cd1a74e",
+              "through": {
+                "entry_id": "urn:uuid:83b4fa22-e1be-48f9-b7eb-10fd9b976535",
+                "json_sha256": "6fe830ec61beeb152f9220e54d5eb2a4f88e1b87c1c78210dcceb007bb0a598b",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:4ca842ac-abcc-44de-a2c3-583e89ca6f5d",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:96a865e7-5048-48ef-9bfc-d2b854b7abd8",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "63d4f98ba398680ac7f46a706dc39f491dcd0f1564ee34bb54e9377ade2ba354",
+              "through": {
+                "entry_id": "urn:uuid:202167b7-605e-4af0-bd72-cff502df8ffa",
+                "json_sha256": "47f0b05a39ee59facfb159ec882c2cd56e2251174feac707e1b99b1a314dca2b",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:96a865e7-5048-48ef-9bfc-d2b854b7abd8",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:4c749da8-eb1c-4e09-9a19-d2558582ad9a",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "c756ea94f73e6797c9824edbc7ee84f481f4ad35501924a91bad4827aef69a63",
+              "through": {
+                "entry_id": "urn:uuid:8bcd7d26-ee92-4d55-9a0e-fadabb67a1d3",
+                "json_sha256": "43b1085460991cb06902641a3e99371bb724d5b18f555ed72cab5a3d2c806ee9",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:4c749da8-eb1c-4e09-9a19-d2558582ad9a",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+              "prefix_bytes": "11998",
+              "prefix_sha256": "2f7bb7d0bc844d670f23b2ca2d9abf096441cc32e034579f7561717f67bed055",
+              "through": {
+                "entry_id": "urn:uuid:64ab1393-368e-4333-8daa-cc6f21f1afa3",
+                "json_sha256": "958aecc16622bdd8edcd035e7a7348c89c00bb0faf66409a287dc2b261c0d2ea",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "native_advances": 332,
+            "octets": 11998,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+              "prefix_bytes": "10500",
+              "prefix_sha256": "85971d95c0e258840f62060fa5156e83233c013b07a3faf9e8671718c69fbc3e",
+              "through": {
+                "entry_id": "urn:uuid:28ccb0a4-6ec0-461c-bac9-b0bd81cedeb1",
+                "json_sha256": "bef57a2fbb9671ff5c2dc98315c9ec3c172458b8ef99386a527f8ca60a940017",
+                "sequence": "0"
+              }
+            },
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "native_advances": 150,
+            "octets": 10500,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:4ca842ac-abcc-44de-a2c3-583e89ca6f5d",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "27ee6622af91730fbbf0e46ff6f17058e0ea692d0a8260ee8966c40f3cd1a74e",
+              "through": {
+                "entry_id": "urn:uuid:83b4fa22-e1be-48f9-b7eb-10fd9b976535",
+                "json_sha256": "6fe830ec61beeb152f9220e54d5eb2a4f88e1b87c1c78210dcceb007bb0a598b",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:4ca842ac-abcc-44de-a2c3-583e89ca6f5d",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:03648f39-d911-463c-b52e-6a56c7bcfa8d",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "91ea580daa0fd659732a95e4d7b300f3bf45cd5eec21c1c3fc5703f4da2ca807",
+              "through": {
+                "entry_id": "urn:uuid:3eaf7a95-4d6f-4ec8-8536-0c1ff0466c63",
+                "json_sha256": "0878d10142a997287df4652d87338b9374410c946a332ec394c500c48d83f7f7",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:03648f39-d911-463c-b52e-6a56c7bcfa8d",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:96a865e7-5048-48ef-9bfc-d2b854b7abd8",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "63d4f98ba398680ac7f46a706dc39f491dcd0f1564ee34bb54e9377ade2ba354",
+              "through": {
+                "entry_id": "urn:uuid:202167b7-605e-4af0-bd72-cff502df8ffa",
+                "json_sha256": "47f0b05a39ee59facfb159ec882c2cd56e2251174feac707e1b99b1a314dca2b",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:96a865e7-5048-48ef-9bfc-d2b854b7abd8",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          }
+        ]
+      },
+      "raw_admissions": 5,
+      "raw_catalog_statements": 15,
+      "raw_postchecks": 5,
+      "shared_journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+      "shared_payload_octets": 34496,
+      "shared_prefix_octets": 10500,
+      "shared_provider_reads": 3,
+      "shared_source_octets": 11998,
+      "terminal_elapsed_seconds": 6.664549138999973,
+      "terminal_thread_cpu_seconds": 6.573413835999986,
+      "test": "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[4096]"
+    },
+    {
+      "corpus_source_frames": 10,
+      "corpus_source_octets": 56822,
+      "documentary_text_octets": 4096,
+      "fanout": 4,
+      "import_native_metadata_octets": 13784,
+      "import_native_metadata_queries": 40,
+      "import_sql_statements": 12,
+      "members": 4,
+      "native_advances": 2766,
+      "native_validation_calls": 11,
+      "profile": {
+        "corpus_sources": [
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "octets": 11998
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:3c9e9c13-afa0-4b07-ab75-bbe5506e196e",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:9a3de84f-65e9-42e0-97e9-80beec5b6982",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:af55c60d-f981-4142-95ff-8a3b9bf05345",
+            "octets": 11206
+          },
+          {
+            "frames": 2,
+            "journal_id": "urn:uuid:f17b2361-ae53-4c61-b58a-5981c02ad543",
+            "octets": 11206
+          }
+        ],
+        "elapsed_seconds": 6.519238138000219,
+        "imports": [
+          {
+            "metadata_octets": 3446,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          },
+          {
+            "metadata_octets": 3446,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          },
+          {
+            "metadata_octets": 3446,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          },
+          {
+            "metadata_octets": 3446,
+            "native_metadata_queries": 10,
+            "sql_statements": 3
+          }
+        ],
+        "raw_admissions": [
+          {
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:3c9e9c13-afa0-4b07-ab75-bbe5506e196e",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:9a3de84f-65e9-42e0-97e9-80beec5b6982",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:af55c60d-f981-4142-95ff-8a3b9bf05345",
+            "sql_statements": 2
+          },
+          {
+            "journal_id": "urn:uuid:f17b2361-ae53-4c61-b58a-5981c02ad543",
+            "sql_statements": 2
+          }
+        ],
+        "raw_current_checks": [
+          {
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:3c9e9c13-afa0-4b07-ab75-bbe5506e196e",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:9a3de84f-65e9-42e0-97e9-80beec5b6982",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:af55c60d-f981-4142-95ff-8a3b9bf05345",
+            "sql_statements": 1
+          },
+          {
+            "journal_id": "urn:uuid:f17b2361-ae53-4c61-b58a-5981c02ad543",
+            "sql_statements": 1
+          }
+        ],
+        "thread_cpu_seconds": 6.439154651000024,
+        "validations": [
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+              "prefix_bytes": "11998",
+              "prefix_sha256": "2f7bb7d0bc844d670f23b2ca2d9abf096441cc32e034579f7561717f67bed055",
+              "through": {
+                "entry_id": "urn:uuid:64ab1393-368e-4333-8daa-cc6f21f1afa3",
+                "json_sha256": "958aecc16622bdd8edcd035e7a7348c89c00bb0faf66409a287dc2b261c0d2ea",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "native_advances": 332,
+            "octets": 11998,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:3c9e9c13-afa0-4b07-ab75-bbe5506e196e",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "cdc17d69c7680a615b73b8704921e4eeac822dc57f89c706996ba596b3aeb201",
+              "through": {
+                "entry_id": "urn:uuid:66e866fe-c3de-4e62-bc86-4e6b4c7b43d4",
+                "json_sha256": "fce1c402c7c7f8cd49d90dec2163e24f62845c5632fbd1429616ba2958e3155c",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:3c9e9c13-afa0-4b07-ab75-bbe5506e196e",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:9a3de84f-65e9-42e0-97e9-80beec5b6982",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "56a9490f70a06a49e82f3ba977a447f7dd1be7f0d32caedeeb1cd1bf13b97b88",
+              "through": {
+                "entry_id": "urn:uuid:ca2f6b9a-b64b-4def-813f-ea5fe217dbc1",
+                "json_sha256": "a8dd5f1781ee08f766af82723f40492fca85b7568c2b18c55c2f654889b59b44",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:9a3de84f-65e9-42e0-97e9-80beec5b6982",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:af55c60d-f981-4142-95ff-8a3b9bf05345",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "7aaeedbf3a08f02a53a93346a7d847391afde9f52316a6e1bd86789b28c356b4",
+              "through": {
+                "entry_id": "urn:uuid:0d84ed98-05df-426c-8418-072556814734",
+                "json_sha256": "950656e5f0cf14c25a2dd5f5c83281d9e7ad435e4c5bc39a371cc1ca03bfde59",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:af55c60d-f981-4142-95ff-8a3b9bf05345",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:f17b2361-ae53-4c61-b58a-5981c02ad543",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "e16649a207c05b64c457ffc68fc25b4d7814697f4bcea640da256ec880a2c5bb",
+              "through": {
+                "entry_id": "urn:uuid:5d844eb7-a325-4b2c-b70f-a5a064a770e2",
+                "json_sha256": "98944e3312c7315b7ed7f8a786d680b3bf2fdae31483b1984fdc14239b2679e4",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:f17b2361-ae53-4c61-b58a-5981c02ad543",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "terminal"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:af55c60d-f981-4142-95ff-8a3b9bf05345",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "7aaeedbf3a08f02a53a93346a7d847391afde9f52316a6e1bd86789b28c356b4",
+              "through": {
+                "entry_id": "urn:uuid:0d84ed98-05df-426c-8418-072556814734",
+                "json_sha256": "950656e5f0cf14c25a2dd5f5c83281d9e7ad435e4c5bc39a371cc1ca03bfde59",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:af55c60d-f981-4142-95ff-8a3b9bf05345",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+              "prefix_bytes": "11998",
+              "prefix_sha256": "2f7bb7d0bc844d670f23b2ca2d9abf096441cc32e034579f7561717f67bed055",
+              "through": {
+                "entry_id": "urn:uuid:64ab1393-368e-4333-8daa-cc6f21f1afa3",
+                "json_sha256": "958aecc16622bdd8edcd035e7a7348c89c00bb0faf66409a287dc2b261c0d2ea",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "native_advances": 332,
+            "octets": 11998,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+              "prefix_bytes": "10500",
+              "prefix_sha256": "85971d95c0e258840f62060fa5156e83233c013b07a3faf9e8671718c69fbc3e",
+              "through": {
+                "entry_id": "urn:uuid:28ccb0a4-6ec0-461c-bac9-b0bd81cedeb1",
+                "json_sha256": "bef57a2fbb9671ff5c2dc98315c9ec3c172458b8ef99386a527f8ca60a940017",
+                "sequence": "0"
+              }
+            },
+            "journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+            "native_advances": 150,
+            "octets": 10500,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:3c9e9c13-afa0-4b07-ab75-bbe5506e196e",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "cdc17d69c7680a615b73b8704921e4eeac822dc57f89c706996ba596b3aeb201",
+              "through": {
+                "entry_id": "urn:uuid:66e866fe-c3de-4e62-bc86-4e6b4c7b43d4",
+                "json_sha256": "fce1c402c7c7f8cd49d90dec2163e24f62845c5632fbd1429616ba2958e3155c",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:3c9e9c13-afa0-4b07-ab75-bbe5506e196e",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:9a3de84f-65e9-42e0-97e9-80beec5b6982",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "56a9490f70a06a49e82f3ba977a447f7dd1be7f0d32caedeeb1cd1bf13b97b88",
+              "through": {
+                "entry_id": "urn:uuid:ca2f6b9a-b64b-4def-813f-ea5fe217dbc1",
+                "json_sha256": "a8dd5f1781ee08f766af82723f40492fca85b7568c2b18c55c2f654889b59b44",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:9a3de84f-65e9-42e0-97e9-80beec5b6982",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          },
+          {
+            "anchor": {
+              "journal_id": "urn:uuid:f17b2361-ae53-4c61-b58a-5981c02ad543",
+              "prefix_bytes": "11206",
+              "prefix_sha256": "e16649a207c05b64c457ffc68fc25b4d7814697f4bcea640da256ec880a2c5bb",
+              "through": {
+                "entry_id": "urn:uuid:5d844eb7-a325-4b2c-b70f-a5a064a770e2",
+                "json_sha256": "98944e3312c7315b7ed7f8a786d680b3bf2fdae31483b1984fdc14239b2679e4",
+                "sequence": "1"
+              }
+            },
+            "journal_id": "urn:uuid:f17b2361-ae53-4c61-b58a-5981c02ad543",
+            "native_advances": 244,
+            "octets": 11206,
+            "owner": "history"
+          }
+        ]
+      },
+      "raw_admissions": 5,
+      "raw_catalog_statements": 15,
+      "raw_postchecks": 5,
+      "shared_journal_id": "urn:uuid:06e23370-a567-430a-b8f5-0b41bba8bfe2",
+      "shared_payload_octets": 34496,
+      "shared_prefix_octets": 10500,
+      "shared_provider_reads": 3,
+      "shared_source_octets": 11998,
+      "terminal_elapsed_seconds": 6.519238138000219,
+      "terminal_thread_cpu_seconds": 6.439154651000024,
+      "test": "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[4096]"
+    }
+  ],
+  "test_durations": {
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_historical_gap_growth": {
+      "all_test_phases_seconds": 8.23245205100011,
+      "call_seconds": 8.013522958000067,
+      "junit_all_test_phases_seconds": 8.232,
+      "setup_seconds": 0.21863021300032415,
+      "teardown_seconds": 0.0002988799997183378
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_historical_point_reads_seek_exact_source_and_admit_only_one_payload": {
+      "all_test_phases_seconds": 6.934452032999616,
+      "call_seconds": 6.63281225999981,
+      "junit_all_test_phases_seconds": 6.934,
+      "setup_seconds": 0.30142179199992825,
+      "teardown_seconds": 0.0002179809998779092
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_actual_retirement_source_growth": {
+      "all_test_phases_seconds": 9.323387457000536,
+      "call_seconds": 9.037017487999947,
+      "junit_all_test_phases_seconds": 9.323,
+      "setup_seconds": 0.2861530099999072,
+      "teardown_seconds": 0.00021695900068152696
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_assertion_matches_independent_native_prefix_oracles": {
+      "all_test_phases_seconds": 12.442561565000688,
+      "call_seconds": 12.202566421000483,
+      "junit_all_test_phases_seconds": 12.443,
+      "setup_seconds": 0.23977291800019884,
+      "teardown_seconds": 0.0002222260000053211
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_delivery_reuses_native_policy_and_exact_selected_prefix[anchor]": {
+      "all_test_phases_seconds": 3.700008988001173,
+      "call_seconds": 3.4413024120003683,
+      "junit_all_test_phases_seconds": 3.7,
+      "setup_seconds": 0.25842093600022054,
+      "teardown_seconds": 0.0002856400005839532
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_delivery_reuses_native_policy_and_exact_selected_prefix[artifact]": {
+      "all_test_phases_seconds": 3.377760923999631,
+      "call_seconds": 3.123553462000018,
+      "junit_all_test_phases_seconds": 3.378,
+      "setup_seconds": 0.2540077879993987,
+      "teardown_seconds": 0.00019967400021414505
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_delivery_reuses_native_policy_and_exact_selected_prefix[association]": {
+      "all_test_phases_seconds": 4.668084681000437,
+      "call_seconds": 4.298459354999977,
+      "junit_all_test_phases_seconds": 4.668,
+      "setup_seconds": 0.3693388350002351,
+      "teardown_seconds": 0.0002864910002244869
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_delivery_reuses_native_policy_and_exact_selected_prefix[digest]": {
+      "all_test_phases_seconds": 3.436788793999767,
+      "call_seconds": 3.1632476320000933,
+      "junit_all_test_phases_seconds": 3.437,
+      "setup_seconds": 0.2733201269993515,
+      "teardown_seconds": 0.00022103500032244483
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_delivery_reuses_native_policy_and_exact_selected_prefix[role]": {
+      "all_test_phases_seconds": 3.5256252799999857,
+      "call_seconds": 3.249775125999804,
+      "junit_all_test_phases_seconds": 3.526,
+      "setup_seconds": 0.27555702300014673,
+      "teardown_seconds": 0.00029313100003491854
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_delivery_reuses_native_policy_and_exact_selected_prefix[size]": {
+      "all_test_phases_seconds": 3.520790692000446,
+      "call_seconds": 3.2229044440000507,
+      "junit_all_test_phases_seconds": 3.521,
+      "setup_seconds": 0.2975628419999339,
+      "teardown_seconds": 0.00032340600046154577
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_delivery_reuses_native_policy_and_exact_selected_prefix[slot]": {
+      "all_test_phases_seconds": 3.842448839998724,
+      "call_seconds": 3.6038576869996177,
+      "junit_all_test_phases_seconds": 3.842,
+      "setup_seconds": 0.23826822799946967,
+      "teardown_seconds": 0.00032292499963659793
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_delivery_reuses_native_policy_and_exact_selected_prefix[valid]": {
+      "all_test_phases_seconds": 3.559654112001226,
+      "call_seconds": 3.2447324090007896,
+      "junit_all_test_phases_seconds": 3.56,
+      "setup_seconds": 0.31460107200018683,
+      "teardown_seconds": 0.0003206310002497048
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_payload_admission_precedes_blob_fetch_and_is_not_a_validity_limit": {
+      "all_test_phases_seconds": 1.7083835929997804,
+      "call_seconds": 1.4253531980002663,
+      "junit_all_test_phases_seconds": 1.708,
+      "setup_seconds": 0.28275469899926975,
+      "teardown_seconds": 0.00027569600024435204
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_every_original_anchor_coordinate[journal_id-urn:uuid:00000000-0000-4000-8000-000000000000]": {
+      "all_test_phases_seconds": 0.6458069070013153,
+      "call_seconds": 0.2426941510002507,
+      "junit_all_test_phases_seconds": 0.646,
+      "setup_seconds": 0.40288344800046616,
+      "teardown_seconds": 0.00022930800059839385
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_every_original_anchor_coordinate[prefix_bytes-1]": {
+      "all_test_phases_seconds": 0.4838938639995831,
+      "call_seconds": 0.2561975529997653,
+      "junit_all_test_phases_seconds": 0.484,
+      "setup_seconds": 0.2274777090005955,
+      "teardown_seconds": 0.00021860199922230095
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_every_original_anchor_coordinate[prefix_sha256-0000000000000000000000000000000000000000000000000000000000000000]": {
+      "all_test_phases_seconds": 0.48792782799955603,
+      "call_seconds": 0.26796440899943264,
+      "junit_all_test_phases_seconds": 0.488,
+      "setup_seconds": 0.21965559599993867,
+      "teardown_seconds": 0.00030782300018472597
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_every_original_anchor_coordinate[through_entry_id-urn:uuid:00000000-0000-4000-8000-000000000000]": {
+      "all_test_phases_seconds": 0.4994861919994946,
+      "call_seconds": 0.2696616379998886,
+      "junit_all_test_phases_seconds": 0.499,
+      "setup_seconds": 0.22946060899994336,
+      "teardown_seconds": 0.0003639449996626354
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_every_original_anchor_coordinate[through_json_sha256-0000000000000000000000000000000000000000000000000000000000000000]": {
+      "all_test_phases_seconds": 0.5234755100000257,
+      "call_seconds": 0.2579705420002938,
+      "junit_all_test_phases_seconds": 0.523,
+      "setup_seconds": 0.26529962600034196,
+      "teardown_seconds": 0.0002053419993899297
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_every_original_anchor_coordinate[through_sequence-1]": {
+      "all_test_phases_seconds": 0.47938587500084395,
+      "call_seconds": 0.24790851200032193,
+      "junit_all_test_phases_seconds": 0.479,
+      "setup_seconds": 0.23119190400029765,
+      "teardown_seconds": 0.000285459000224364
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_explicit_positive_admission[-1]": {
+      "all_test_phases_seconds": 0.4807767190004597,
+      "call_seconds": 0.25445196100008616,
+      "junit_all_test_phases_seconds": 0.481,
+      "setup_seconds": 0.22613119400011783,
+      "teardown_seconds": 0.0001935640002557193
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_explicit_positive_admission[0]": {
+      "all_test_phases_seconds": 0.46309150799970666,
+      "call_seconds": 0.23441376099981426,
+      "junit_all_test_phases_seconds": 0.463,
+      "setup_seconds": 0.22848883000006026,
+      "teardown_seconds": 0.00018891699983214494
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_explicit_positive_admission[65536]": {
+      "all_test_phases_seconds": 0.4625090770005045,
+      "call_seconds": 0.23176194799998484,
+      "junit_all_test_phases_seconds": 0.463,
+      "setup_seconds": 0.23052397100036615,
+      "teardown_seconds": 0.0002231580001534894
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_explicit_positive_admission[None]": {
+      "all_test_phases_seconds": 0.4844959780011777,
+      "call_seconds": 0.23111402900030953,
+      "junit_all_test_phases_seconds": 0.484,
+      "setup_seconds": 0.2530948170006013,
+      "teardown_seconds": 0.00028713200026686536
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_explicit_positive_admission[True]": {
+      "all_test_phases_seconds": 0.4333039219991406,
+      "call_seconds": 0.22204654100005428,
+      "junit_all_test_phases_seconds": 0.433,
+      "setup_seconds": 0.2110682429993176,
+      "teardown_seconds": 0.00018913799976871815
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_historical_selection_requires_open_context_exact_anchor_and_canonical_identity": {
+      "all_test_phases_seconds": 0.6088637309994738,
+      "call_seconds": 0.2917987789996914,
+      "junit_all_test_phases_seconds": 0.609,
+      "setup_seconds": 0.3168739920001826,
+      "teardown_seconds": 0.00019095999959972687
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_interrupted_retirement_and_replacement_roll_back_with_the_source_terminal": {
+      "all_test_phases_seconds": 9.406844815001023,
+      "call_seconds": 9.17377434500031,
+      "junit_all_test_phases_seconds": 9.407,
+      "setup_seconds": 0.23280960700049036,
+      "teardown_seconds": 0.00026086300022143405
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_retired_gap_uses_one_indexed_birth_seek_across_replacement_ladders": {
+      "all_test_phases_seconds": 173.85683339500065,
+      "call_seconds": 173.60904134200064,
+      "junit_all_test_phases_seconds": 173.857,
+      "setup_seconds": 0.24755479499981448,
+      "teardown_seconds": 0.00023725800019747112
+    },
+    "packages/riverhog-provenance/tests/test_corpus_historical_source.py::test_same_object_identity_in_distinct_journals_retains_its_selected_source": {
+      "all_test_phases_seconds": 1.0484641019993433,
+      "call_seconds": 0.7934156920000532,
+      "junit_all_test_phases_seconds": 1.048,
+      "setup_seconds": 0.2547434409998459,
+      "teardown_seconds": 0.0003049689994440996
+    },
+    "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py::test_source_endpoint_rejects_earlier_prefix_and_every_changed_coordinate": {
+      "all_test_phases_seconds": 0.7476956629998313,
+      "call_seconds": 0.4522834250001324,
+      "junit_all_test_phases_seconds": 0.748,
+      "setup_seconds": 0.29510909199962043,
+      "teardown_seconds": 0.00030314600007841364
+    },
+    "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py::test_source_endpoint_requires_complete_indexing_before_current_source_acceptance": {
+      "all_test_phases_seconds": 0.6726587450002626,
+      "call_seconds": 0.33196773100007704,
+      "junit_all_test_phases_seconds": 0.673,
+      "setup_seconds": 0.34029231800013804,
+      "teardown_seconds": 0.0003986960000474937
+    },
+    "packages/riverhog-provenance/tests/test_corpus_source_endpoint.py::test_source_endpoint_work_depends_on_index_seeks_not_source_extent": {
+      "all_test_phases_seconds": 7.800196060999951,
+      "call_seconds": 7.786815199000557,
+      "junit_all_test_phases_seconds": 7.8,
+      "setup_seconds": 0.013152134999472764,
+      "teardown_seconds": 0.00022872699992149137
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_documentary_reference_index_reuses_parsing_with_complete_fenced_reads": {
+      "all_test_phases_seconds": 0.4631557860011526,
+      "call_seconds": 0.2310528370007887,
+      "junit_all_test_phases_seconds": 0.463,
+      "setup_seconds": 0.23189633600031812,
+      "teardown_seconds": 0.00020661300004576333
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[assertion]": {
+      "all_test_phases_seconds": 0.4479156059996967,
+      "call_seconds": 0.21805054099968402,
+      "junit_all_test_phases_seconds": 0.448,
+      "setup_seconds": 0.22966263699981937,
+      "teardown_seconds": 0.00020242800019332208
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[bytes]": {
+      "all_test_phases_seconds": 0.4803628040008334,
+      "call_seconds": 0.2495099220004704,
+      "junit_all_test_phases_seconds": 0.48,
+      "setup_seconds": 0.23055678699984128,
+      "teardown_seconds": 0.00029609500052174553
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[entry]": {
+      "all_test_phases_seconds": 0.45593484900018666,
+      "call_seconds": 0.22630204199958825,
+      "junit_all_test_phases_seconds": 0.456,
+      "setup_seconds": 0.22934390200043708,
+      "teardown_seconds": 0.00028890500016132137
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[object]": {
+      "all_test_phases_seconds": 0.45500015300058294,
+      "call_seconds": 0.22803469300015422,
+      "junit_all_test_phases_seconds": 0.455,
+      "setup_seconds": 0.226714321000145,
+      "teardown_seconds": 0.0002511390002837288
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[read_fence]": {
+      "all_test_phases_seconds": 0.5875951469997744,
+      "call_seconds": 0.2580811010002435,
+      "junit_all_test_phases_seconds": 0.588,
+      "setup_seconds": 0.3292664020000302,
+      "teardown_seconds": 0.000247643999500724
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[short]": {
+      "all_test_phases_seconds": 0.4692081759994835,
+      "call_seconds": 0.23051510599998437,
+      "junit_all_test_phases_seconds": 0.469,
+      "setup_seconds": 0.23846712799968373,
+      "teardown_seconds": 0.00022594199981540442
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_history_reuses_validation_with_fresh_reads_and_isolated_views": {
+      "all_test_phases_seconds": 0.7596666030003689,
+      "call_seconds": 0.5249760420001621,
+      "junit_all_test_phases_seconds": 0.76,
+      "setup_seconds": 0.23444593099975464,
+      "teardown_seconds": 0.00024463000045216177
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_history_validation_reuse_rejects_changed_bytes_fences_and_anchors[anchor]": {
+      "all_test_phases_seconds": 0.9391757289995439,
+      "call_seconds": 0.7046980919994894,
+      "junit_all_test_phases_seconds": 0.939,
+      "setup_seconds": 0.23426182999992307,
+      "teardown_seconds": 0.0002158070001314627
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_history_validation_reuse_rejects_changed_bytes_fences_and_anchors[bytes]": {
+      "all_test_phases_seconds": 0.7187104419990646,
+      "call_seconds": 0.47398513499956607,
+      "junit_all_test_phases_seconds": 0.719,
+      "setup_seconds": 0.244510249999621,
+      "teardown_seconds": 0.00021505699987756088
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_history_validation_reuse_rejects_changed_bytes_fences_and_anchors[read_fence]": {
+      "all_test_phases_seconds": 0.7665733069998169,
+      "call_seconds": 0.5243302030003179,
+      "junit_all_test_phases_seconds": 0.767,
+      "setup_seconds": 0.24200649599970347,
+      "teardown_seconds": 0.00023660799979552394
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_history_validation_reuse_rejects_changed_bytes_fences_and_anchors[short]": {
+      "all_test_phases_seconds": 0.8062129659992934,
+      "call_seconds": 0.5457525009996971,
+      "junit_all_test_phases_seconds": 0.806,
+      "setup_seconds": 0.2602154149999478,
+      "teardown_seconds": 0.0002450499996484723
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_invalid_cold_reference_closes_its_provider_and_does_not_poison_retry": {
+      "all_test_phases_seconds": 0.46761086900096416,
+      "call_seconds": 0.23645746400052303,
+      "junit_all_test_phases_seconds": 0.468,
+      "setup_seconds": 0.23090604099979828,
+      "teardown_seconds": 0.0002473640006428468
+    },
+    "packages/riverhog-provenance/tests/test_history.py::test_journals_larger_than_history_validation_cache_remain_accepted": {
+      "all_test_phases_seconds": 95.24017230000027,
+      "call_seconds": 94.98957410099956,
+      "junit_all_test_phases_seconds": 95.24,
+      "setup_seconds": 0.2503132400006507,
+      "teardown_seconds": 0.0002849590000550961
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[anchor-False]": {
+      "all_test_phases_seconds": 0.6512001539995254,
+      "call_seconds": 0.220354314999895,
+      "junit_all_test_phases_seconds": 0.651,
+      "setup_seconds": 0.4306363509995208,
+      "teardown_seconds": 0.00020948800010955893
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[anchor-True]": {
+      "all_test_phases_seconds": 0.9917384659993331,
+      "call_seconds": 0.5201605669999481,
+      "junit_all_test_phases_seconds": 0.992,
+      "setup_seconds": 0.47136343399961333,
+      "teardown_seconds": 0.00021446499977173517
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[bytes-False]": {
+      "all_test_phases_seconds": 0.48255450899978314,
+      "call_seconds": 0.024991976999444887,
+      "junit_all_test_phases_seconds": 0.483,
+      "setup_seconds": 0.4573266750003313,
+      "teardown_seconds": 0.00023585700000694487
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[bytes-True]": {
+      "all_test_phases_seconds": 0.712326316999679,
+      "call_seconds": 0.2704080069997872,
+      "junit_all_test_phases_seconds": 0.712,
+      "setup_seconds": 0.4416700749998199,
+      "teardown_seconds": 0.0002482350000718725
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[fence-False]": {
+      "all_test_phases_seconds": 0.9204249960002926,
+      "call_seconds": 0.34056134000002203,
+      "junit_all_test_phases_seconds": 0.92,
+      "setup_seconds": 0.5796403280000959,
+      "teardown_seconds": 0.0002233280001746607
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[fence-True]": {
+      "all_test_phases_seconds": 1.0100492339988705,
+      "call_seconds": 0.38290504999986297,
+      "junit_all_test_phases_seconds": 1.01,
+      "setup_seconds": 0.6267408509993402,
+      "teardown_seconds": 0.0004033329996673274
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[short-False]": {
+      "all_test_phases_seconds": 0.45608347700090235,
+      "call_seconds": 0.020833483000387787,
+      "junit_all_test_phases_seconds": 0.456,
+      "setup_seconds": 0.4350628689999212,
+      "teardown_seconds": 0.0001871250005933689
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[short-True]": {
+      "all_test_phases_seconds": 0.6631144619996121,
+      "call_seconds": 0.2303704120004113,
+      "junit_all_test_phases_seconds": 0.663,
+      "setup_seconds": 0.4325169959993218,
+      "teardown_seconds": 0.00022705399987899
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_admits_and_retains_each_actual_reader_without_reopening": {
+      "all_test_phases_seconds": 0.6555661009997493,
+      "call_seconds": 0.22324363799998537,
+      "junit_all_test_phases_seconds": 0.656,
+      "setup_seconds": 0.4320979829999487,
+      "teardown_seconds": 0.00022447999981523026
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_borrow_handoff_retains_uncertain_reader_close[False]": {
+      "all_test_phases_seconds": 0.7766760809990956,
+      "call_seconds": 0.26222640599917213,
+      "junit_all_test_phases_seconds": 0.777,
+      "setup_seconds": 0.5142231419995369,
+      "teardown_seconds": 0.00022653300038655289
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_borrow_handoff_retains_uncertain_reader_close[True]": {
+      "all_test_phases_seconds": 0.7703796009991493,
+      "call_seconds": 0.26062801199987007,
+      "junit_all_test_phases_seconds": 0.77,
+      "setup_seconds": 0.5095095429996945,
+      "teardown_seconds": 0.00024204599958466133
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_final_cache_close_retains_real_connection_for_explicit_retry[False]": {
+      "all_test_phases_seconds": 0.8889872469999318,
+      "call_seconds": 0.4167154360002314,
+      "junit_all_test_phases_seconds": 0.889,
+      "setup_seconds": 0.47202506799931143,
+      "teardown_seconds": 0.00024674300038896035
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_final_cache_close_retains_real_connection_for_explicit_retry[True]": {
+      "all_test_phases_seconds": 0.8662801020018378,
+      "call_seconds": 0.4103421910003817,
+      "junit_all_test_phases_seconds": 0.866,
+      "setup_seconds": 0.4556066640006975,
+      "teardown_seconds": 0.00033124700075859437
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_initialization_and_handoff_failure_release_confirmed_storage[borrow]": {
+      "all_test_phases_seconds": 0.6803602179998052,
+      "call_seconds": 0.23150021499986906,
+      "junit_all_test_phases_seconds": 0.68,
+      "setup_seconds": 0.44859730700045475,
+      "teardown_seconds": 0.000262695999481366
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_initialization_and_handoff_failure_release_confirmed_storage[constructor]": {
+      "all_test_phases_seconds": 0.483797462999064,
+      "call_seconds": 0.018442050999510684,
+      "junit_all_test_phases_seconds": 0.484,
+      "setup_seconds": 0.4650960399994801,
+      "teardown_seconds": 0.00025937200007319916
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_initialization_and_handoff_failure_release_confirmed_storage[result]": {
+      "all_test_phases_seconds": 0.6686580139994476,
+      "call_seconds": 0.23366886399981013,
+      "junit_all_test_phases_seconds": 0.669,
+      "setup_seconds": 0.434766381999907,
+      "teardown_seconds": 0.00022276799973042216
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_initialization_and_handoff_failure_release_confirmed_storage[schema]": {
+      "all_test_phases_seconds": 0.44743097300033696,
+      "call_seconds": 0.016021080999962578,
+      "junit_all_test_phases_seconds": 0.447,
+      "setup_seconds": 0.43117826100024104,
+      "teardown_seconds": 0.0002316310001333477
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_refusal_precedes_source_iteration_and_preserves_factory_files[False]": {
+      "all_test_phases_seconds": 0.6624733640001068,
+      "call_seconds": 0.1670006550002654,
+      "junit_all_test_phases_seconds": 0.662,
+      "setup_seconds": 0.4952775219999239,
+      "teardown_seconds": 0.000195186999917496
+    },
+    "packages/riverhog-provenance/tests/test_history_snapshot_admission.py::test_history_snapshot_refusal_precedes_source_iteration_and_preserves_factory_files[True]": {
+      "all_test_phases_seconds": 0.6186878770004114,
+      "call_seconds": 0.16399428400018223,
+      "junit_all_test_phases_seconds": 0.619,
+      "setup_seconds": 0.45448589700026787,
+      "teardown_seconds": 0.00020769599996128818
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_cache_eviction_retains_failed_and_new_summary[False]": {
+      "all_test_phases_seconds": 23.728334021999217,
+      "call_seconds": 23.713519649999398,
+      "junit_all_test_phases_seconds": 23.728,
+      "setup_seconds": 0.014563492999513983,
+      "teardown_seconds": 0.0002508790003048489
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_cache_eviction_retains_failed_and_new_summary[True]": {
+      "all_test_phases_seconds": 23.30970105600045,
+      "call_seconds": 23.29899838900019,
+      "junit_all_test_phases_seconds": 23.31,
+      "setup_seconds": 0.010155622000638687,
+      "teardown_seconds": 0.0005470449996209936
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_copy_backup_failure_discards_returned_copy_before_retry[False]": {
+      "all_test_phases_seconds": 0.030450833999566385,
+      "call_seconds": 0.02882835799937311,
+      "junit_all_test_phases_seconds": 0.03,
+      "setup_seconds": 0.0012737229999402189,
+      "teardown_seconds": 0.0003487530002530548
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_copy_backup_failure_discards_returned_copy_before_retry[True]": {
+      "all_test_phases_seconds": 0.03045216500049719,
+      "call_seconds": 0.028769049999937124,
+      "junit_all_test_phases_seconds": 0.03,
+      "setup_seconds": 0.0013900140002078842,
+      "teardown_seconds": 0.00029310100035218056
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_default_connection_failure_removes_only_its_directory[copy]": {
+      "all_test_phases_seconds": 0.023725001999991946,
+      "call_seconds": 0.022754665999855206,
+      "junit_all_test_phases_seconds": 0.024,
+      "setup_seconds": 0.0006770350000806502,
+      "teardown_seconds": 0.00029330100005608983
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_default_connection_failure_removes_only_its_directory[worklist]": {
+      "all_test_phases_seconds": 0.0017527779991723946,
+      "call_seconds": 0.0005609449999610661,
+      "junit_all_test_phases_seconds": 0.002,
+      "setup_seconds": 0.0010334899998269975,
+      "teardown_seconds": 0.00015834299938433105
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_directory_retry_does_not_repeat_confirmed_connection_close[False-copy]": {
+      "all_test_phases_seconds": 0.05110391099970002,
+      "call_seconds": 0.04941527800019685,
+      "junit_all_test_phases_seconds": 0.051,
+      "setup_seconds": 0.0013591779998023412,
+      "teardown_seconds": 0.0003294549997008289
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_directory_retry_does_not_repeat_confirmed_connection_close[False-worklist]": {
+      "all_test_phases_seconds": 0.02675597000052221,
+      "call_seconds": 0.02500774999953137,
+      "junit_all_test_phases_seconds": 0.027,
+      "setup_seconds": 0.0013387680000960245,
+      "teardown_seconds": 0.0004094520008948166
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_directory_retry_does_not_repeat_confirmed_connection_close[True-copy]": {
+      "all_test_phases_seconds": 0.027668863000144484,
+      "call_seconds": 0.026090090999787208,
+      "junit_all_test_phases_seconds": 0.028,
+      "setup_seconds": 0.0012633280002773972,
+      "teardown_seconds": 0.0003154440000798786
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_directory_retry_does_not_repeat_confirmed_connection_close[True-worklist]": {
+      "all_test_phases_seconds": 0.020987728999898536,
+      "call_seconds": 0.019335549000061292,
+      "junit_all_test_phases_seconds": 0.021,
+      "setup_seconds": 0.0013921569998274208,
+      "teardown_seconds": 0.0002600230000098236
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_factory_refusal_preserves_independent_unreturned_custody[copy-False]": {
+      "all_test_phases_seconds": 0.21191287900001043,
+      "call_seconds": 0.2099218209996252,
+      "junit_all_test_phases_seconds": 0.212,
+      "setup_seconds": 0.0012514710006144014,
+      "teardown_seconds": 0.000739586999770836
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_factory_refusal_preserves_independent_unreturned_custody[copy-True]": {
+      "all_test_phases_seconds": 0.2393798789998982,
+      "call_seconds": 0.23767002499971568,
+      "junit_all_test_phases_seconds": 0.239,
+      "setup_seconds": 0.0014301030005299253,
+      "teardown_seconds": 0.00027975099965260597
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_factory_refusal_preserves_independent_unreturned_custody[worklist-False]": {
+      "all_test_phases_seconds": 0.17950785699940752,
+      "call_seconds": 0.17802786199990805,
+      "junit_all_test_phases_seconds": 0.18,
+      "setup_seconds": 0.001142209000136063,
+      "teardown_seconds": 0.0003377859993634047
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_factory_refusal_preserves_independent_unreturned_custody[worklist-True]": {
+      "all_test_phases_seconds": 0.20329057600065426,
+      "call_seconds": 0.20127369000056206,
+      "junit_all_test_phases_seconds": 0.203,
+      "setup_seconds": 0.0017172950001622667,
+      "teardown_seconds": 0.0002995909999299329
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_initialization_failure_retains_close_ready_owner[False-retention]": {
+      "all_test_phases_seconds": 0.0012296180002522306,
+      "call_seconds": 0.0004621190000761999,
+      "junit_all_test_phases_seconds": 0.001,
+      "setup_seconds": 0.0006160860002637492,
+      "teardown_seconds": 0.00015141299991228152
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_initialization_failure_retains_close_ready_owner[False-schema]": {
+      "all_test_phases_seconds": 0.0013701039997613407,
+      "call_seconds": 0.0005772790000264649,
+      "junit_all_test_phases_seconds": 0.001,
+      "setup_seconds": 0.0006656479999946896,
+      "teardown_seconds": 0.00012717699974018615
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_initialization_failure_retains_close_ready_owner[None-retention]": {
+      "all_test_phases_seconds": 0.0014064080005482538,
+      "call_seconds": 0.0005883750000066357,
+      "junit_all_test_phases_seconds": 0.001,
+      "setup_seconds": 0.0006906750004418427,
+      "teardown_seconds": 0.00012735800009977538
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_initialization_failure_retains_close_ready_owner[None-schema]": {
+      "all_test_phases_seconds": 0.001620643000023847,
+      "call_seconds": 0.0006720379997204873,
+      "junit_all_test_phases_seconds": 0.002,
+      "setup_seconds": 0.0008082989998001722,
+      "teardown_seconds": 0.00014030600050318753
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_initialization_failure_retains_close_ready_owner[True-retention]": {
+      "all_test_phases_seconds": 0.0013721069999519386,
+      "call_seconds": 0.0005029290005040821,
+      "junit_all_test_phases_seconds": 0.001,
+      "setup_seconds": 0.0006295859993770136,
+      "teardown_seconds": 0.00023959200007084291
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_initialization_failure_retains_close_ready_owner[True-schema]": {
+      "all_test_phases_seconds": 0.00146978100110573,
+      "call_seconds": 0.0006478630002675345,
+      "junit_all_test_phases_seconds": 0.001,
+      "setup_seconds": 0.0006835150006736512,
+      "teardown_seconds": 0.0001384030001645442
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_pending_selection_retains_uncertain_cursor_close[history-False]": {
+      "all_test_phases_seconds": 0.018125049001355364,
+      "call_seconds": 0.017013454000334605,
+      "junit_all_test_phases_seconds": 0.018,
+      "setup_seconds": 0.000852924000355415,
+      "teardown_seconds": 0.00025867100066534476
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_pending_selection_retains_uncertain_cursor_close[history-True]": {
+      "all_test_phases_seconds": 0.0185367550002411,
+      "call_seconds": 0.01721540200014715,
+      "junit_all_test_phases_seconds": 0.019,
+      "setup_seconds": 0.001077224000255228,
+      "teardown_seconds": 0.00024412899983872194
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_pending_selection_retains_uncertain_cursor_close[snapshot-False]": {
+      "all_test_phases_seconds": 0.01807929300048272,
+      "call_seconds": 0.016731880999941495,
+      "junit_all_test_phases_seconds": 0.018,
+      "setup_seconds": 0.0011199569999007508,
+      "teardown_seconds": 0.0002274550006404752
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_pending_selection_retains_uncertain_cursor_close[snapshot-True]": {
+      "all_test_phases_seconds": 0.025984995000726485,
+      "call_seconds": 0.024640839000312553,
+      "junit_all_test_phases_seconds": 0.026,
+      "setup_seconds": 0.0011750379999284633,
+      "teardown_seconds": 0.00016911800048546866
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_suspended_rows_stop_before_another_step[False-journal_anchors]": {
+      "all_test_phases_seconds": 0.02609230599955481,
+      "call_seconds": 0.023889826999948127,
+      "junit_all_test_phases_seconds": 0.026,
+      "setup_seconds": 0.0018985220003742143,
+      "teardown_seconds": 0.00030395699923246866
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_suspended_rows_stop_before_another_step[False-snapshots]": {
+      "all_test_phases_seconds": 0.04917967100027454,
+      "call_seconds": 0.047505890000138606,
+      "junit_all_test_phases_seconds": 0.049,
+      "setup_seconds": 0.001359429000331147,
+      "teardown_seconds": 0.000314351999804785
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_suspended_rows_stop_before_another_step[True-journal_anchors]": {
+      "all_test_phases_seconds": 0.021389108998846496,
+      "call_seconds": 0.019918536999284697,
+      "junit_all_test_phases_seconds": 0.021,
+      "setup_seconds": 0.001198412000121607,
+      "teardown_seconds": 0.0002721599994401913
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_suspended_rows_stop_before_another_step[True-snapshots]": {
+      "all_test_phases_seconds": 0.0236255979998532,
+      "call_seconds": 0.022119933999420027,
+      "junit_all_test_phases_seconds": 0.024,
+      "setup_seconds": 0.0012093180002921144,
+      "teardown_seconds": 0.0002963460001410567
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_uncertain_close_freezes_execution_without_context_retry[False-copy]": {
+      "all_test_phases_seconds": 0.21953136500087567,
+      "call_seconds": 0.21837791899997683,
+      "junit_all_test_phases_seconds": 0.22,
+      "setup_seconds": 0.0009039790002134396,
+      "teardown_seconds": 0.0002494670006853994
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_uncertain_close_freezes_execution_without_context_retry[False-worklist]": {
+      "all_test_phases_seconds": 0.18582886199965287,
+      "call_seconds": 0.18489421699996456,
+      "junit_all_test_phases_seconds": 0.186,
+      "setup_seconds": 0.0006554339997819625,
+      "teardown_seconds": 0.0002792109999063541
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_uncertain_close_freezes_execution_without_context_retry[True-copy]": {
+      "all_test_phases_seconds": 0.1952738660002069,
+      "call_seconds": 0.19390318900059356,
+      "junit_all_test_phases_seconds": 0.195,
+      "setup_seconds": 0.0010074519996123854,
+      "teardown_seconds": 0.00036322500000096625
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_uncertain_close_freezes_execution_without_context_retry[True-worklist]": {
+      "all_test_phases_seconds": 0.24381749900112482,
+      "call_seconds": 0.23507781900025293,
+      "junit_all_test_phases_seconds": 0.244,
+      "setup_seconds": 0.008517533000485855,
+      "teardown_seconds": 0.0002221470003860304
+    },
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py::test_history_worklist_admits_before_schema_and_copies_exact_membership": {
+      "all_test_phases_seconds": 0.038526195999111224,
+      "call_seconds": 0.03693928299981053,
+      "junit_all_test_phases_seconds": 0.039,
+      "setup_seconds": 0.0013278119995447923,
+      "teardown_seconds": 0.0002591009997559013
+    },
+    "tests/unit/test_archive_catalog_finalizer.py::test_changed_pending_cursor_is_not_a_fresh_batch[provenance-closure]": {
+      "all_test_phases_seconds": 24.803064334999362,
+      "call_seconds": 24.800999339000555,
+      "junit_all_test_phases_seconds": 24.803,
+      "setup_seconds": 0.001843980999183259,
+      "teardown_seconds": 0.00022101499962445814
+    },
+    "tests/unit/test_archive_catalog_finalizer.py::test_pending_original_cannot_advance_a_replacement_claim[provenance-closure]": {
+      "all_test_phases_seconds": 28.42869427200003,
+      "call_seconds": 28.42459769800007,
+      "junit_all_test_phases_seconds": 28.429,
+      "setup_seconds": 0.0038919130001886515,
+      "teardown_seconds": 0.0002046609997705673
+    },
+    "tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[False-provenance-closure]": {
+      "all_test_phases_seconds": 26.529302865999853,
+      "call_seconds": 26.52654767400054,
+      "junit_all_test_phases_seconds": 26.529,
+      "setup_seconds": 0.002501968999240489,
+      "teardown_seconds": 0.0002532230000724667
+    },
+    "tests/unit/test_archive_catalog_finalizer.py::test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch[True-provenance-closure]": {
+      "all_test_phases_seconds": 25.448636715000248,
+      "call_seconds": 25.445780054000352,
+      "junit_all_test_phases_seconds": 25.449,
+      "setup_seconds": 0.0025859929992293473,
+      "teardown_seconds": 0.0002706680006667739
+    },
+    "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[0]": {
+      "all_test_phases_seconds": 150.27628182900025,
+      "call_seconds": 150.27300576200014,
+      "junit_all_test_phases_seconds": 150.276,
+      "setup_seconds": 0.0029632169998876634,
+      "teardown_seconds": 0.0003128500002276269
+    },
+    "tests/unit/test_imported_history_finalization.py::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[4096]": {
+      "all_test_phases_seconds": 150.9232762619995,
+      "call_seconds": 150.91999957400003,
+      "junit_all_test_phases_seconds": 150.923,
+      "setup_seconds": 0.003004217999659886,
+      "teardown_seconds": 0.0002724699997997959
+    },
+    "tests/unit/test_imported_history_finalization.py::test_finalizer_checks_current_tail_after_the_selected_imported_primary": {
+      "all_test_phases_seconds": 36.65327508300015,
+      "call_seconds": 36.649782626999695,
+      "junit_all_test_phases_seconds": 36.653,
+      "setup_seconds": 0.0032850810002855724,
+      "teardown_seconds": 0.00020737500017276034
+    },
+    "tests/unit/test_imported_history_finalization.py::test_imported_primary_point_facts_survive_real_summary_capacity[entry-count]": {
+      "all_test_phases_seconds": 8.547642008999901,
+      "call_seconds": 8.54537312299999,
+      "junit_all_test_phases_seconds": 8.548,
+      "setup_seconds": 0.002042162999714492,
+      "teardown_seconds": 0.00022672300019621616
+    },
+    "tests/unit/test_imported_history_finalization.py::test_imported_primary_point_facts_survive_real_summary_capacity[source-octets]": {
+      "all_test_phases_seconds": 103.39237044800029,
+      "call_seconds": 103.39008055100021,
+      "junit_all_test_phases_seconds": 103.392,
+      "setup_seconds": 0.0020272310002837912,
+      "teardown_seconds": 0.00026266599979862804
+    },
+    "tests/unit/test_imported_history_finalization.py::test_imported_primary_resolver_keeps_exact_proof_state_and_requested_extent[bound-and-required-history]": {
+      "all_test_phases_seconds": 4.112170501999572,
+      "call_seconds": 4.1096470729999055,
+      "junit_all_test_phases_seconds": 4.112,
+      "setup_seconds": 0.0023202409993245965,
+      "teardown_seconds": 0.0002031880003414699
+    },
+    "tests/unit/test_imported_history_finalization.py::test_imported_primary_resolver_keeps_exact_proof_state_and_requested_extent[complete-retained-history]": {
+      "all_test_phases_seconds": 4.9132315619999645,
+      "call_seconds": 4.911004184999911,
+      "junit_all_test_phases_seconds": 4.913,
+      "setup_seconds": 0.0019986609995612525,
+      "teardown_seconds": 0.00022871600049256813
+    },
+    "tests/unit/test_imported_history_finalization.py::test_terminal_import_rechecks_current_source_and_job_after_raw_validation": {
+      "all_test_phases_seconds": 37.80864735100022,
+      "call_seconds": 37.80650641200009,
+      "junit_all_test_phases_seconds": 37.809,
+      "setup_seconds": 0.0018421089998810203,
+      "teardown_seconds": 0.0002988300002471078
+    },
+    "tests/unit/test_imported_history_growth.py::test_current_imported_primary_composes_actual_catalog_and_historical_point_work": {
+      "all_test_phases_seconds": 10.103744835000725,
+      "call_seconds": 10.101491261000774,
+      "junit_all_test_phases_seconds": 10.104,
+      "setup_seconds": 0.0019052620000366005,
+      "teardown_seconds": 0.0003483119999145856
+    },
+    "tests/unit/test_imported_history_receiving.py::test_imported_terminal_receives_original_commit_or_rebuilds_rolled_back_attempt[False]": {
+      "all_test_phases_seconds": 36.04179722599929,
+      "call_seconds": 36.03952927099999,
+      "junit_all_test_phases_seconds": 36.042,
+      "setup_seconds": 0.0019204840000384138,
+      "teardown_seconds": 0.0003474709992588032
+    },
+    "tests/unit/test_imported_history_receiving.py::test_imported_terminal_receives_original_commit_or_rebuilds_rolled_back_attempt[True]": {
+      "all_test_phases_seconds": 34.817157734999455,
+      "call_seconds": 34.813901157000146,
+      "junit_all_test_phases_seconds": 34.817,
+      "setup_seconds": 0.0030488229995171423,
+      "teardown_seconds": 0.0002077549997920869
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_changed_raw_selected_bytes_cannot_cross_the_complete_closure_barrier": {
+      "all_test_phases_seconds": 38.01177866300077,
+      "call_seconds": 38.00901767300002,
+      "junit_all_test_phases_seconds": 38.012,
+      "setup_seconds": 0.002553074000388733,
+      "teardown_seconds": 0.00020791600036318414
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-1]": {
+      "all_test_phases_seconds": 65.79451189199881,
+      "call_seconds": 65.79234082999938,
+      "junit_all_test_phases_seconds": 65.795,
+      "setup_seconds": 0.00193502499951137,
+      "teardown_seconds": 0.00023603699992236216
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[0-4]": {
+      "all_test_phases_seconds": 66.16814020000038,
+      "call_seconds": 66.16587790300036,
+      "junit_all_test_phases_seconds": 66.168,
+      "setup_seconds": 0.0020252379999874393,
+      "teardown_seconds": 0.0002370590000282391
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-1]": {
+      "all_test_phases_seconds": 66.99050306299978,
+      "call_seconds": 66.98756069599949,
+      "junit_all_test_phases_seconds": 66.991,
+      "setup_seconds": 0.002727821999542357,
+      "teardown_seconds": 0.00021454500074469252
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_complete_finalization_reuses_selected_semantics_independently_of_fanout_and_extent[4096-4]": {
+      "all_test_phases_seconds": 65.13713240400011,
+      "call_seconds": 65.13478995900005,
+      "junit_all_test_phases_seconds": 65.137,
+      "setup_seconds": 0.0019775179998759995,
+      "teardown_seconds": 0.00036492700019152835
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_prefix_identity_is_exact_and_capacity_retry_does_not_replay": {
+      "all_test_phases_seconds": 4.6524606789989775,
+      "call_seconds": 4.650287243999628,
+      "junit_all_test_phases_seconds": 4.652,
+      "setup_seconds": 0.0017599969996808795,
+      "teardown_seconds": 0.0004134379996685311
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_keeps_the_original_catalog_commit_outcome[False]": {
+      "all_test_phases_seconds": 35.814726001000054,
+      "call_seconds": 35.81217528900015,
+      "junit_all_test_phases_seconds": 35.815,
+      "setup_seconds": 0.0022968779994698707,
+      "teardown_seconds": 0.00025383400043210713
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_keeps_the_original_catalog_commit_outcome[True]": {
+      "all_test_phases_seconds": 36.2406826159995,
+      "call_seconds": 36.238608184999975,
+      "junit_all_test_phases_seconds": 36.241,
+      "setup_seconds": 0.0018279989999427926,
+      "teardown_seconds": 0.0002464319995851838
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_rejects_changed_current_authority[capture-attempt]": {
+      "all_test_phases_seconds": 4.390171375999671,
+      "call_seconds": 4.386480146000395,
+      "junit_all_test_phases_seconds": 4.39,
+      "setup_seconds": 0.0018239619994346867,
+      "teardown_seconds": 0.0018672679998417152
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_rejects_changed_current_authority[capture-version]": {
+      "all_test_phases_seconds": 4.9174419840001065,
+      "call_seconds": 4.914306843999839,
+      "junit_all_test_phases_seconds": 4.917,
+      "setup_seconds": 0.0027735379999285215,
+      "teardown_seconds": 0.00036160200033918954
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_rejects_changed_current_authority[catalog]": {
+      "all_test_phases_seconds": 4.580305390000831,
+      "call_seconds": 4.577814638000746,
+      "junit_all_test_phases_seconds": 4.58,
+      "setup_seconds": 0.002149269999790704,
+      "teardown_seconds": 0.0003414820002944907
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_rejects_changed_current_authority[missing-job]": {
+      "all_test_phases_seconds": 4.605143607001082,
+      "call_seconds": 4.602876294000453,
+      "junit_all_test_phases_seconds": 4.605,
+      "setup_seconds": 0.0020168650007690303,
+      "teardown_seconds": 0.0002504479998606257
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_reopens_after_service_restart_without_revalidation": {
+      "all_test_phases_seconds": 35.203512138000406,
+      "call_seconds": 35.20086462499967,
+      "junit_all_test_phases_seconds": 35.204,
+      "setup_seconds": 0.00245472900041932,
+      "teardown_seconds": 0.0001927840003190795
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_retains_uncertain_original_native_receiving[False]": {
+      "all_test_phases_seconds": 5.138038506000157,
+      "call_seconds": 5.13509363600042,
+      "junit_all_test_phases_seconds": 5.138,
+      "setup_seconds": 0.002688823000426055,
+      "teardown_seconds": 0.00025604699931136565
+    },
+    "tests/unit/test_selected_upload_journal_prefix.py::test_selected_proof_retains_uncertain_original_native_receiving[True]": {
+      "all_test_phases_seconds": 4.964662372999555,
+      "call_seconds": 4.962511690999236,
+      "junit_all_test_phases_seconds": 4.965,
+      "setup_seconds": 0.0017814590000853059,
+      "teardown_seconds": 0.0003692230002343422
+    },
+    "tests/unit/test_upload_journal_result.py::test_actual_sealed_result_reopens_inside_catalog_writer_without_replay_or_new_epoch": {
+      "all_test_phases_seconds": 3.1585117860004175,
+      "call_seconds": 3.1558299819998865,
+      "junit_all_test_phases_seconds": 3.159,
+      "setup_seconds": 0.0024168039999494795,
+      "teardown_seconds": 0.00026500000058149453
+    },
+    "tests/unit/test_upload_journal_result.py::test_busy_sealed_result_leaves_the_same_completed_job_pending_for_retry": {
+      "all_test_phases_seconds": 2.862526399998387,
+      "call_seconds": 2.859099111999967,
+      "junit_all_test_phases_seconds": 2.863,
+      "setup_seconds": 0.0030754309991607442,
+      "teardown_seconds": 0.0003518569992593257
+    },
+    "tests/unit/test_upload_journal_result.py::test_changed_source_during_readonly_admission_releases_the_untransferred_lease": {
+      "all_test_phases_seconds": 3.097834819000127,
+      "call_seconds": 3.094065516000228,
+      "junit_all_test_phases_seconds": 3.098,
+      "setup_seconds": 0.0033291859999735607,
+      "teardown_seconds": 0.00044011699992552167
+    },
+    "tests/unit/test_upload_journal_result.py::test_independent_sealed_readers_can_reopen_while_an_evicted_borrow_remains_live": {
+      "all_test_phases_seconds": 2.640766879999319,
+      "call_seconds": 2.638461100999848,
+      "junit_all_test_phases_seconds": 2.641,
+      "setup_seconds": 0.0020312059996285825,
+      "teardown_seconds": 0.0002745729998423485
+    },
+    "tests/unit/test_upload_journal_result.py::test_retired_sealed_reader_keeps_its_original_grant_until_last_borrow_receives": {
+      "all_test_phases_seconds": 2.9502800749996823,
+      "call_seconds": 2.9480287449996467,
+      "junit_all_test_phases_seconds": 2.95,
+      "setup_seconds": 0.0018989220006915275,
+      "teardown_seconds": 0.00035240799934399547
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_does_not_autoflush_unrelated_pending_catalog_work": {
+      "all_test_phases_seconds": 2.997023726999032,
+      "call_seconds": 2.994794940999782,
+      "junit_all_test_phases_seconds": 2.997,
+      "setup_seconds": 0.001966800999980478,
+      "teardown_seconds": 0.0002619849992697709
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[capture-attempt]": {
+      "all_test_phases_seconds": 3.2219210449993625,
+      "call_seconds": 3.218217548999746,
+      "junit_all_test_phases_seconds": 3.222,
+      "setup_seconds": 0.00338328499947238,
+      "teardown_seconds": 0.0003202110001438996
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[capture-directory]": {
+      "all_test_phases_seconds": 2.8582666860002064,
+      "call_seconds": 2.8553808529995877,
+      "junit_all_test_phases_seconds": 2.858,
+      "setup_seconds": 0.0024819899999783956,
+      "teardown_seconds": 0.00040384300064033596
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[capture-version]": {
+      "all_test_phases_seconds": 2.9608924610010945,
+      "call_seconds": 2.958374369000012,
+      "junit_all_test_phases_seconds": 2.961,
+      "setup_seconds": 0.0021602860006169067,
+      "teardown_seconds": 0.0003578060004656436
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[job-certificate]": {
+      "all_test_phases_seconds": 3.0241218760002084,
+      "call_seconds": 3.0209595759997683,
+      "junit_all_test_phases_seconds": 3.024,
+      "setup_seconds": 0.0026909770003840094,
+      "teardown_seconds": 0.00047132300005614525
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[job-progress]": {
+      "all_test_phases_seconds": 2.846131864999734,
+      "call_seconds": 2.8433446959998037,
+      "junit_all_test_phases_seconds": 2.846,
+      "setup_seconds": 0.002406438999969396,
+      "teardown_seconds": 0.0003807299999607494
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[job-state]": {
+      "all_test_phases_seconds": 3.2456135480006196,
+      "call_seconds": 3.242951484000514,
+      "junit_all_test_phases_seconds": 3.246,
+      "setup_seconds": 0.0023645370001759147,
+      "teardown_seconds": 0.000297526999929687
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[job-worker]": {
+      "all_test_phases_seconds": 2.858914638999522,
+      "call_seconds": 2.856272514000011,
+      "junit_all_test_phases_seconds": 2.859,
+      "setup_seconds": 0.0023041679996822495,
+      "teardown_seconds": 0.00033795699982874794
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[missing-coordinator]": {
+      "all_test_phases_seconds": 3.119966745999591,
+      "call_seconds": 3.117433680999966,
+      "junit_all_test_phases_seconds": 3.12,
+      "setup_seconds": 0.0021135079996383865,
+      "teardown_seconds": 0.0004195569999865256
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[missing-database]": {
+      "all_test_phases_seconds": 2.644612875999883,
+      "call_seconds": 2.641771556999629,
+      "junit_all_test_phases_seconds": 2.645,
+      "setup_seconds": 0.002559925000241492,
+      "teardown_seconds": 0.00028139400001236936
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[missing-job]": {
+      "all_test_phases_seconds": 3.024464588000228,
+      "call_seconds": 3.020963168999515,
+      "junit_all_test_phases_seconds": 3.024,
+      "setup_seconds": 0.003221437000320293,
+      "teardown_seconds": 0.00027998200039291987
+    },
+    "tests/unit/test_upload_journal_result.py::test_sealed_result_never_repairs_or_revalidates_changed_authority[terminal-anchor]": {
+      "all_test_phases_seconds": 2.7357800230001885,
+      "call_seconds": 2.7322980429999006,
+      "junit_all_test_phases_seconds": 2.736,
+      "setup_seconds": 0.0032133140002770233,
+      "teardown_seconds": 0.00026866600001085317
+    },
+    "tests/unit/test_workspace_boundaries.py::test_a_riverhog_cli_consumes_only_the_declared_riverhog_client_root": {
+      "all_test_phases_seconds": 0.0854613400015296,
+      "call_seconds": 0.08317703100055951,
+      "junit_all_test_phases_seconds": 0.085,
+      "setup_seconds": 0.0021085900007165037,
+      "teardown_seconds": 0.00017571900025359355
+    },
+    "tests/unit/test_workspace_boundaries.py::test_compose_timezone_defaults_are_configurable_utc": {
+      "all_test_phases_seconds": 0.115869231999568,
+      "call_seconds": 0.11356645599971671,
+      "junit_all_test_phases_seconds": 0.116,
+      "setup_seconds": 0.0021069280001029256,
+      "teardown_seconds": 0.00019584799974836642
+    },
+    "tests/unit/test_workspace_boundaries.py::test_core_dependency_graphs_are_acyclic": {
+      "all_test_phases_seconds": 1.652358359999198,
+      "call_seconds": 1.650153116999718,
+      "junit_all_test_phases_seconds": 1.652,
+      "setup_seconds": 0.0020104169998376165,
+      "teardown_seconds": 0.00019482599964248948
+    },
+    "tests/unit/test_workspace_boundaries.py::test_core_domain_and_ports_are_dependency_roots": {
+      "all_test_phases_seconds": 0.00880557799973758,
+      "call_seconds": 0.006753740999556612,
+      "junit_all_test_phases_seconds": 0.009,
+      "setup_seconds": 0.0019070739999733632,
+      "teardown_seconds": 0.0001447630002076039
+    },
+    "tests/unit/test_workspace_boundaries.py::test_every_implementation_project_and_module_has_exactly_one_owner": {
+      "all_test_phases_seconds": 0.031346294000286434,
+      "call_seconds": 0.02870553100001416,
+      "junit_all_test_phases_seconds": 0.031,
+      "setup_seconds": 0.0024786950007182895,
+      "teardown_seconds": 0.0001620679995539831
+    },
+    "tests/unit/test_workspace_boundaries.py::test_images_copy_only_their_owned_implementation_project": {
+      "all_test_phases_seconds": 0.009734934999869438,
+      "call_seconds": 0.0075740080001196475,
+      "junit_all_test_phases_seconds": 0.01,
+      "setup_seconds": 0.0019567669996831683,
+      "teardown_seconds": 0.00020416000006662216
+    },
+    "tests/unit/test_workspace_boundaries.py::test_images_copy_their_complete_internal_dependency_closure": {
+      "all_test_phases_seconds": 0.05424070000026404,
+      "call_seconds": 0.05084529699979612,
+      "junit_all_test_phases_seconds": 0.054,
+      "setup_seconds": 0.002431486000205041,
+      "teardown_seconds": 0.0009639170002628816
+    },
+    "tests/unit/test_workspace_boundaries.py::test_implementation_projects_do_not_cross_owner_boundaries": {
+      "all_test_phases_seconds": 2.1136019639998267,
+      "call_seconds": 2.111290927000482,
+      "junit_all_test_phases_seconds": 2.114,
+      "setup_seconds": 0.002102560999446723,
+      "teardown_seconds": 0.00020847599989792798
+    },
+    "tests/unit/test_workspace_boundaries.py::test_locally_built_compose_services_use_development_image_tags": {
+      "all_test_phases_seconds": 0.35252209800091805,
+      "call_seconds": 0.35023895100039226,
+      "junit_all_test_phases_seconds": 0.353,
+      "setup_seconds": 0.0020774049999090494,
+      "teardown_seconds": 0.00020574200061673764
+    },
+    "tests/unit/test_workspace_boundaries.py::test_maintained_observer_distributions_do_not_pull_target_authority": {
+      "all_test_phases_seconds": 0.028327063000688213,
+      "call_seconds": 0.02628584200010664,
+      "junit_all_test_phases_seconds": 0.028,
+      "setup_seconds": 0.0018708510006035795,
+      "teardown_seconds": 0.00017036999997799285
+    },
+    "tests/unit/test_workspace_boundaries.py::test_media_archive_target_contracts_do_not_pull_observer_authority": {
+      "all_test_phases_seconds": 0.027822791999824403,
+      "call_seconds": 0.025765497999600484,
+      "junit_all_test_phases_seconds": 0.028,
+      "setup_seconds": 0.0018706999999267282,
+      "teardown_seconds": 0.0001865940002971911
+    },
+    "tests/unit/test_workspace_boundaries.py::test_paired_target_and_review_sampler_distributions_do_not_import_each_other": {
+      "all_test_phases_seconds": 0.07336581300023681,
+      "call_seconds": 0.07128504299998895,
+      "junit_all_test_phases_seconds": 0.073,
+      "setup_seconds": 0.001891792000606074,
+      "teardown_seconds": 0.00018897799964179285
+    },
+    "tests/unit/test_workspace_boundaries.py::test_portable_core_listener_runtime_and_platform_dependency_direction_is_exact": {
+      "all_test_phases_seconds": 0.2855800770003043,
+      "call_seconds": 0.2831831220000822,
+      "junit_all_test_phases_seconds": 0.286,
+      "setup_seconds": 0.002210190000369039,
+      "teardown_seconds": 0.00018676499985303963
+    },
+    "tests/unit/test_workspace_boundaries.py::test_portable_products_do_not_select_provider_implementations": {
+      "all_test_phases_seconds": 0.14640119200066692,
+      "call_seconds": 0.010925983000561246,
+      "junit_all_test_phases_seconds": 0.146,
+      "setup_seconds": 0.0020728489998873556,
+      "teardown_seconds": 0.13340236000021832
+    },
+    "tests/unit/test_workspace_boundaries.py::test_projects_declare_their_exact_direct_runtime_dependencies": {
+      "all_test_phases_seconds": 651.0644788769996,
+      "call_seconds": 3.0636467229996924,
+      "junit_all_test_phases_seconds": 651.064,
+      "setup_seconds": 648.0004618399998,
+      "teardown_seconds": 0.0003703140000652638
+    },
+    "tests/unit/test_workspace_boundaries.py::test_riverhog_collection_workflows_use_application_agnostic_outcomes": {
+      "all_test_phases_seconds": 0.005744525999944017,
+      "call_seconds": 0.0029580790005638846,
+      "junit_all_test_phases_seconds": 0.006,
+      "setup_seconds": 0.002624909999212832,
+      "teardown_seconds": 0.0001615370001673
+    },
+    "tests/unit/test_workspace_boundaries.py::test_riverhog_production_surfaces_are_stove0_agnostic": {
+      "all_test_phases_seconds": 0.02800566199948662,
+      "call_seconds": 0.02580155099985859,
+      "junit_all_test_phases_seconds": 0.028,
+      "setup_seconds": 0.001981113000510959,
+      "teardown_seconds": 0.0002229979991170694
+    },
+    "tests/unit/test_workspace_boundaries.py::test_semantic_contract_distributions_do_not_pull_runtime_support": {
+      "all_test_phases_seconds": 0.02836294699955033,
+      "call_seconds": 0.026191393999397405,
+      "junit_all_test_phases_seconds": 0.028,
+      "setup_seconds": 0.0020151429998804815,
+      "teardown_seconds": 0.00015641000027244445
+    },
+    "tests/unit/test_workspace_boundaries.py::test_shared_packages_are_product_owned_or_implementation_neutral": {
+      "all_test_phases_seconds": 0.006630870999288163,
+      "call_seconds": 0.004525264000221796,
+      "junit_all_test_phases_seconds": 0.007,
+      "setup_seconds": 0.0019098889997621882,
+      "teardown_seconds": 0.0001957179993041791
+    },
+    "tests/unit/test_workspace_boundaries.py::test_shared_packages_do_not_import_implementation_projects": {
+      "all_test_phases_seconds": 1.7904119289996743,
+      "call_seconds": 1.7881857559996206,
+      "junit_all_test_phases_seconds": 1.79,
+      "setup_seconds": 0.0019186609997632331,
+      "teardown_seconds": 0.0003075120002904441
+    },
+    "tests/unit/test_workspace_boundaries.py::test_stove0_control_plane_does_not_import_riverhog_transform_runtime": {
+      "all_test_phases_seconds": 0.22604488799970568,
+      "call_seconds": 0.2238948359999995,
+      "junit_all_test_phases_seconds": 0.226,
+      "setup_seconds": 0.0019640179998532403,
+      "teardown_seconds": 0.00018603399985295255
+    },
+    "tests/unit/test_workspace_boundaries.py::test_stove0_server_has_only_protocol_and_caller_side_extension_dependencies": {
+      "all_test_phases_seconds": 0.03285781699923973,
+      "call_seconds": 0.030627796999397106,
+      "junit_all_test_phases_seconds": 0.033,
+      "setup_seconds": 0.0020444270003281417,
+      "teardown_seconds": 0.00018559299951448338
+    },
+    "tests/unit/test_workspace_boundaries.py::test_supplied_extension_distributions_each_own_one_selectable_capability": {
+      "all_test_phases_seconds": 0.12636499699965498,
+      "call_seconds": 0.12419070999931137,
+      "junit_all_test_phases_seconds": 0.126,
+      "setup_seconds": 0.0018744860008155229,
+      "teardown_seconds": 0.00029980099952808814
+    },
+    "tests/unit/test_workspace_boundaries.py::test_supplied_implementation_paths_have_structural_roles_and_clear_descriptions": {
+      "all_test_phases_seconds": 0.03538658999877953,
+      "call_seconds": 0.03253906299960363,
+      "junit_all_test_phases_seconds": 0.035,
+      "setup_seconds": 0.00265955099985149,
+      "teardown_seconds": 0.0001879759993244079
+    }
+  },
+  "timing_scope": [
+    "Make elapsed time includes preparation, command execution, owned cleanup and evidence collection.",
+    "Test call durations include fixture construction performed inside test bodies; pytest setup and teardown are separate.",
+    "Parallel test phase durations are not additive elapsed wall time for the unit gate.",
+    "JUnit xunit1 was enabled for the required finalized source-qualification run, preserving imported_primary_profile and catalog_admission_samples. This run qualifies the corrected test source; no run was repeated solely to recover timing.",
+    "Primitive actual growth observations and declared helper/endpoint samples are preserved from this final successful run.",
+    "Terminal per-fanout elapsed and thread CPU times cover the observed terminal owner turn, including raw/history/corpus work and its current catalog transaction, after unmeasured fixture and member-turn preparation.",
+    "Terminal profile timing is separate from full test-case timing, pytest elapsed time and make gate elapsed time; phase figures are observations, not speed gates.",
+    "The earlier comment witness is not a matched throughput baseline. No elapsed-time speedup or throughput ratio is claimed.",
+    "The focused unit selection is distinct from full canonical unit or complete pull-request qualification."
+  ]
+}

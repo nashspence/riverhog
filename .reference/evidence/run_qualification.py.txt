@@ -1,0 +1,28 @@
+from pathlib import Path
+import os
+import subprocess
+import sys
+
+root = Path('/workspace/scratch/320596a7d459')
+task = root / 'imports964'
+work = root / 'riverhog-964-imports'
+gate = sys.argv[1]
+name = sys.argv[2] if len(sys.argv) > 2 else gate
+timing = task / 'qualification' / name
+timing.mkdir(parents=True, exist_ok=True)
+(task / 'tmp').mkdir(exist_ok=True)
+environment = dict(os.environ)
+environment['PYTHONUNBUFFERED'] = '1'
+environment['TMPDIR'] = str(task / 'tmp')
+environment['RIVERHOG_CI_TIMING_DIR'] = str(timing)
+command = ['make', gate, 'UV_RUN=mise x python uv -- uv run --locked --all-packages --group dev']
+if gate == 'unit':
+    selectors = (task / 'focused-tests.txt').read_text().splitlines()
+    command.extend([
+        'UNIT_PYTEST_ARGS=-n 4 --dist=load --instafail --durations=20 --durations-min=0.25 -p scripts.ci_timing '
+        + f'--junitxml={timing / "pytest.xml"} -o junit_family=xunit1',
+        'TESTS=' + ' '.join(selectors),
+    ])
+with (task / (name + '.log')).open('w') as output:
+    result = subprocess.run(command, cwd=work, env=environment, stdout=output, stderr=subprocess.STDOUT)
+raise SystemExit(result.returncode)

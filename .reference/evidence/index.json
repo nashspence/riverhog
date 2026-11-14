@@ -1,0 +1,136 @@
+{
+  "compressed_records": [],
+  "files": [
+    {
+      "bytes": 46540,
+      "path": "collector.py.txt",
+      "sha256": "05cc631e8df7d236f4b93c0ac5f63df435a9dbea094a81532df549fdafc9b1ca"
+    },
+    {
+      "bytes": 815,
+      "path": "lint-finalized.log",
+      "sha256": "482944cccfa92d9953fc969557bcb198ae9575833c33f2cd7fa055ac662a80d4"
+    },
+    {
+      "bytes": 2539,
+      "path": "lint-make.json",
+      "sha256": "b98d82a583cfadcd736be463a391a4a8c7f221d971d929dcbb896baca6a8d24b"
+    },
+    {
+      "bytes": 348,
+      "path": "lint-recipes/4032767b356d4242b82553de4e23513e.json",
+      "sha256": "8ad37f7400443d6f923c38e61b9066b98a99525898c20b9eb3a5dabe81f4e6e3"
+    },
+    {
+      "bytes": 349,
+      "path": "lint-recipes/5c36faa2a71041e7b32320c137e44caa.json",
+      "sha256": "f211941f3d8b062f58c65e9c6c8b2aa7260dcdbac2211bfde4b501eb610a6c8e"
+    },
+    {
+      "bytes": 351,
+      "path": "lint-recipes/852f32355c294f509e5dfbb41d5f0a5c.json",
+      "sha256": "fe9eb3410416ca327dc5865a6b0a1783fb1d399221ebd5f7e01814ca4331e440"
+    },
+    {
+      "bytes": 356,
+      "path": "lint-recipes/8c0c41671c804cccb2565becb76056e4.json",
+      "sha256": "e59fcded22f0407f64c81af618ff72846a51b17b049dd6e57b56e110e83ccf03"
+    },
+    {
+      "bytes": 145919,
+      "path": "normative-growth-verification.json",
+      "sha256": "83b58a2198c5a2f9f90d1ae680743e7260fc54c3900d60bd2136fa9bc77cdf22"
+    },
+    {
+      "bytes": 165461,
+      "path": "results.json",
+      "sha256": "4936b85d17f64daf719fea42c5bb75708b636e5e0702823d97c65fccdf8347fe"
+    },
+    {
+      "bytes": 1158,
+      "path": "run_qualification.py.txt",
+      "sha256": "40699189ddfd6a596928ad6da3be8d880791579a782bd9edeb575601a4706692"
+    },
+    {
+      "bytes": 1131,
+      "path": "selection.txt",
+      "sha256": "e8c1417a843d37a2e285040b72be6b405cf53ee3add7e154bca02c013a7d6222"
+    },
+    {
+      "bytes": 114985,
+      "path": "unit-controller.json",
+      "sha256": "1a356788005144dd1d78c1bd7f5bffba19742cb24c8a46e0aea42cfb1c0d1d63"
+    },
+    {
+      "bytes": 3861,
+      "path": "unit-finalized.log",
+      "sha256": "08a1170ab79771b34352ee06b1823b0062f6545086fa9d790197e09e201208cb"
+    },
+    {
+      "bytes": 17768,
+      "path": "unit-gw0.json",
+      "sha256": "00f731a1236b01b66878c4401dd66441890341611a29704859b76cc844c0a81d"
+    },
+    {
+      "bytes": 12422,
+      "path": "unit-gw1.json",
+      "sha256": "fd4abaaf2114bde80fa45b79e8300052feb391922a410e8b5c3568055f9dc750"
+    },
+    {
+      "bytes": 27628,
+      "path": "unit-gw2.json",
+      "sha256": "6af31f52501edfcd2585d32497fc09680ab76bc7e856f116362b0ffa95f3d4ac"
+    },
+    {
+      "bytes": 81640,
+      "path": "unit-gw3.json",
+      "sha256": "30017354dcf870eeaa7f17e4a69ba4a6b96c63d6e85fc2908d80b99463d41000"
+    },
+    {
+      "bytes": 1968,
+      "path": "unit-invocation.json",
+      "sha256": "237ad6d02cb91df23d17f35e208096347226f1d1754326fed7a257aa0c350751"
+    },
+    {
+      "bytes": 130402,
+      "path": "unit-junit.xml",
+      "sha256": "9fe1cf89c6bdc80f44f94d34e64b0863d6e99c7e0624c6d9d272438e7340cbed"
+    },
+    {
+      "bytes": 71319,
+      "path": "unit-make.json",
+      "sha256": "3569b66ba45ec1c5e4517ded8490729d99a413f2985f089da3fbd29a24b1c23b"
+    },
+    {
+      "bytes": 347,
+      "path": "unit-recipes/1e9865cb87784c83bb0d9d0b65b4e787.json",
+      "sha256": "ce10722820dd2a9e1110dfd2be4cecc2a91ef3e818250073a2ddc92f24b233e0"
+    }
+  ],
+  "format": "riverhog-reference-evidence-index/v1",
+  "github_implementation_tree_mirror": "4987c777c0005e65d5acdb30d4e2dbb47f7091ff",
+  "original_receipts": {
+    "collector.py.txt": "build_packet.py",
+    "lint-finalized.log": "lint-finalized.log",
+    "lint-make.json": "qualification/lint-finalized/make/76e7207a53704510a8caa2e538d6fccb/2d623e87f78e42818577d07416603bb1/manifest.json",
+    "lint-recipes/4032767b356d4242b82553de4e23513e.json": "qualification/lint-finalized/make/76e7207a53704510a8caa2e538d6fccb/2d623e87f78e42818577d07416603bb1/recipes/4032767b356d4242b82553de4e23513e.json",
+    "lint-recipes/5c36faa2a71041e7b32320c137e44caa.json": "qualification/lint-finalized/make/76e7207a53704510a8caa2e538d6fccb/2d623e87f78e42818577d07416603bb1/recipes/5c36faa2a71041e7b32320c137e44caa.json",
+    "lint-recipes/852f32355c294f509e5dfbb41d5f0a5c.json": "qualification/lint-finalized/make/76e7207a53704510a8caa2e538d6fccb/2d623e87f78e42818577d07416603bb1/recipes/852f32355c294f509e5dfbb41d5f0a5c.json",
+    "lint-recipes/8c0c41671c804cccb2565becb76056e4.json": "qualification/lint-finalized/make/76e7207a53704510a8caa2e538d6fccb/2d623e87f78e42818577d07416603bb1/recipes/8c0c41671c804cccb2565becb76056e4.json",
+    "run_qualification.py.txt": "run_qualification.py",
+    "selection.txt": "focused-tests.txt",
+    "unit-controller.json": "qualification/unit-finalized/pytest/unit/6c979b8930514eaaad546f19f8dbde08/ccc15c1cc16349f982a6bdaad936a5b5/controller.json",
+    "unit-finalized.log": "unit-finalized.log",
+    "unit-gw0.json": "qualification/unit-finalized/pytest/unit/6c979b8930514eaaad546f19f8dbde08/ccc15c1cc16349f982a6bdaad936a5b5/gw0.json",
+    "unit-gw1.json": "qualification/unit-finalized/pytest/unit/6c979b8930514eaaad546f19f8dbde08/ccc15c1cc16349f982a6bdaad936a5b5/gw1.json",
+    "unit-gw2.json": "qualification/unit-finalized/pytest/unit/6c979b8930514eaaad546f19f8dbde08/ccc15c1cc16349f982a6bdaad936a5b5/gw2.json",
+    "unit-gw3.json": "qualification/unit-finalized/pytest/unit/6c979b8930514eaaad546f19f8dbde08/ccc15c1cc16349f982a6bdaad936a5b5/gw3.json",
+    "unit-invocation.json": "finalized-invocation.json",
+    "unit-junit.xml": "qualification/unit-finalized/pytest.xml",
+    "unit-make.json": "qualification/unit-finalized/make/6c979b8930514eaaad546f19f8dbde08/e508b452180c46debff974e85f5640ac/manifest.json",
+    "unit-recipes/1e9865cb87784c83bb0d9d0b65b4e787.json": "qualification/unit-finalized/make/6c979b8930514eaaad546f19f8dbde08/e508b452180c46debff974e85f5640ac/recipes/1e9865cb87784c83bb0d9d0b65b4e787.json"
+  },
+  "self_excluded": true,
+  "source_sha": "63843b479986486298d47e4347226a74ee197570",
+  "source_tree": "00f68336b22d9862a42bdba39f530cd8cf2cc529"
+}
