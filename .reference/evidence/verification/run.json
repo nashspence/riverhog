@@ -1,0 +1,116 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-focused-tests",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-reference-verification/focused-tests-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "scripts.ci_timing",
+        "--basetemp",
+        "/workspace/scratch/21c38f9cc56d/observer-reference-verification/temporary/pytest",
+        "tests/unit/test_growth_observer_batch.py",
+        "tests/unit/test_growth_declarations.py",
+        "tests/unit/test_validation_witnesses.py",
+        "tests/unit/test_private_growth_discovery.py"
+      ],
+      "name": "focused-tests",
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-ruff",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-reference-verification/ruff-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "name": "ruff",
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-format",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-reference-verification/format-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "name": "format",
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-reuse",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-reference-verification/reuse-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "reuse",
+        "lint"
+      ],
+      "name": "reuse",
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-mypy",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-reference-verification/mypy-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/run_mypy.py"
+      ],
+      "name": "mypy",
+      "wrapper_exit_status": 0
+    }
+  ],
+  "exit_status": 0,
+  "format": "external-reference-verification/v1",
+  "source": {
+    "source_clean": true,
+    "source_sha": "af68d203f93765bddf9ad89a233a582266f10ce2"
+  },
+  "source_end": {
+    "source_clean": true,
+    "source_sha": "af68d203f93765bddf9ad89a233a582266f10ce2"
+  },
+  "state": "completed",
+  "temporary_directory": "/workspace/scratch/21c38f9cc56d/observer-reference-verification/temporary",
+  "temporary_removed": true
+}

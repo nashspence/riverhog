@@ -15,6 +15,8 @@ Reduce repeated growth-declaration checking while preserving every actual sample
 
 Read [DESIGN.md](DESIGN.md) for invariants and bounded lifetime, and [RESULTS.md](RESULTS.md) for exact source identities, measurements, receipts, and limits. The exact published handoff SHA in the owning issue is the durable identity; the branch name is navigation.
 
+The selected implementation was profiled and verified at clean published `af68d203f93765bddf9ad89a233a582266f10ce2`. The final handoff appends only `.reference` documentation and evidence to that commit; all implementation/test blobs are identical. Receive the final diff relative to the audited base; intermediate commits retain the research history.
+
 ## Source relationship
 
 All product and growth-contract package paths match the audited base. Proposed edits are confined to test support and caller/unit recorder wiring. The `.reference` directory contains producer documentation and finite experiment evidence. Later source `931f01e65d8849835774a97ffbd2954ae6802ce5` was inspected for drift only: its changes from the audited base are the upload-certificate service and its unit tests, without overlapping this proposal. It was not absorbed or qualified.
@@ -25,6 +27,8 @@ This is a new request-specific reference, not a revision of the earlier #964 pri
 
 ## Authority and validation boundary
 
-Validation actually performed and omitted is recorded in [RESULTS.md](RESULTS.md). This reference does not qualify current `main`, the full caller census, the previous interrupted run, a distribution, or a release. Integration must independently reconcile and qualify accepted material.
+At the exact selected implementation: **118 focused tests passed**, including the actual three-turn caller fixture and independent serialized-reader checks; repo-wide Ruff, formatting, REUSE, and strict mypy passed using the locked environment. The bounded helper reduced compilation calls from **12 to 5**, preserving all **6 emitted roots and 435 nested sample checks**. One matched replay observed **19.287943 to 12.564396 seconds wall**; it is not an end-to-end product or statistical speedup claim. Original exits, clean start/end identities, and cleanup receipts are retained.
+
+Validation actually performed and omitted is detailed in [RESULTS.md](RESULTS.md). This reference does not qualify current `main`, the full caller census, the previous interrupted run, a distribution, or a release. Integration must independently reconcile and qualify accepted material.
 
 Creation, testing, publication, and the integration agent's request do not establish or extend an accepted design, contract, release requirement, or permission to integrate. Authority remains with the owning issue, subsequent maintainer decisions, and the normal implementation/integration rail. No native Development association is required.

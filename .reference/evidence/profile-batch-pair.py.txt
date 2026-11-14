@@ -1,0 +1,251 @@
+"""Compare immediate and bounded emissions of one retained actual unit/caller pair."""
+
+from __future__ import annotations
+
+import argparse
+import copy
+import hashlib
+import json
+import os
+import platform
+import subprocess
+import sys
+import tempfile
+import time
+import traceback
+from collections import Counter
+from contextlib import ExitStack
+from pathlib import Path
+from unittest.mock import patch
+
+SAMPLE_SHA256 = "bb2a6cc9702d15c805fdb32d84ed14ea864162a31a623a7f412fcb011ff9f37f"
+READER_SHA256 = "1adc9766c8d0c97cf97ce926695e6c38dc7d50458725e8947b57bfc94c90e376"
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--checkout", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--expected-source", required=True)
+    parser.add_argument("--uv", type=Path, required=True)
+    args = parser.parse_args()
+    checkout, output = args.checkout.resolve(), args.output.resolve()
+    assert not output.is_relative_to(checkout)
+    output.mkdir(parents=True, exist_ok=False)
+    sys.path.insert(0, str(checkout))
+
+    from riverhog_canonical_json import canonical_json_bytes
+    from scripts.validation_identity import source_identity
+
+    def sha(value):
+        return hashlib.sha256(canonical_json_bytes(value)).hexdigest()
+
+    def write():
+        (output / "run.json").write_bytes(canonical_json_bytes(report))
+
+    report = {
+        "format": "riverhog-observer-pair-reference/v1",
+        "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "source": source_identity(checkout),
+        "conditions": {
+            "python": platform.python_version(),
+            "executable": sys.executable,
+            "platform": platform.platform(),
+            "uv": subprocess.check_output([str(args.uv), "--version"], text=True).strip(),
+            "timing_run_id": os.environ.get("RIVERHOG_CI_RUN_ID"),
+            "timing_lane": os.environ.get("RIVERHOG_CI_LANE"),
+            "pair_copies": 3,
+            "batch_root_limit": 4,
+            "elapsed_observation_repetitions": 1,
+            "timing_target": None,
+            "workload": "Three copies of one retained actual unit/caller pair; no product runs.",
+            "fresh_product_fixture": False,
+        },
+        "measurements": {},
+        "cleanup": {"profile_scratch_created": False, "profile_scratch_removed": False},
+        "state": "running",
+    }
+    write()
+    status, scratch = 1, None
+    try:
+        assert report["source"] == {"source_sha": args.expected_source, "source_clean": True}
+        assert platform.python_version() == "3.12.3"
+        assert report["conditions"]["uv"].split()[:2] == ["uv", "0.11.24"]
+
+        import riverhog_growth_contracts as growth
+        from tests.support import growth_batch
+        from tests.unit import test_upload_journal_service_caller_growth as callers
+        from tests.unit import test_upload_journal_service_coordination_growth as coordination
+        from tests.unit import test_upload_journal_service_unit_growth as units
+
+        report["imports"] = {
+            name: str(Path(module.__file__).resolve())
+            for name, module in (
+                ("growth", growth),
+                ("batch", growth_batch),
+                ("caller", callers),
+                ("coordination", coordination),
+                ("unit", units),
+            )
+        }
+        assert all(Path(path).is_relative_to(checkout) for path in report["imports"].values())
+        reader_hash = hashlib.sha256(Path(growth.__file__).read_bytes()).hexdigest()
+        assert reader_hash == READER_SHA256, "public growth reader differs from original base"
+        report["public_reader_sha256"] = reader_hash
+
+        sample_bytes = (checkout / ".reference/evidence/sample.json").read_bytes()
+        assert hashlib.sha256(sample_bytes).hexdigest() == SAMPLE_SHA256
+        caller_sample = json.loads(sample_bytes)
+        assert canonical_json_bytes(caller_sample) == sample_bytes
+        assert len(caller_sample["delegates"]["unit"]) == 1
+        unit_sample = caller_sample["delegates"]["unit"][0]
+        caller_id = growth.growth_binding(callers.ROOT).declaration.id
+        unit_id = growth.growth_binding(units.ROOT).declaration.id
+        assert caller_sample["declaration"] == caller_id
+        assert unit_sample["declaration"] == unit_id
+
+        def nodes(sample):
+            return 1 + sum(
+                nodes(child) for rows in sample["delegates"].values() for child in rows
+            )
+
+        expected_nodes = 3 * (nodes(unit_sample) + nodes(caller_sample))
+        expected_bytes = [canonical_json_bytes(unit_sample), sample_bytes] * 3
+        report["input"] = {
+            "caller_sha256": SAMPLE_SHA256,
+            "unit_sha256": sha(unit_sample),
+            "caller_nodes": nodes(caller_sample),
+            "unit_nodes": nodes(unit_sample),
+            "expected_root_occurrences": 6,
+            "expected_sample_node_checks": expected_nodes,
+        }
+
+        def emit(pairs, batch=None):
+            emitted = []
+            for parent in pairs:
+                child = parent["delegates"]["unit"][0]
+                observed_child = coordination.sample(
+                    units.ROOT, child["dimensions"], child["metrics"], child["delegates"],
+                    batch=batch,
+                )
+                children = {**parent["delegates"], "unit": [observed_child]}
+                observed_parent = coordination.sample(
+                    callers.ROOT, parent["dimensions"], parent["metrics"], children,
+                    batch=batch,
+                )
+                emitted.extend((observed_child, observed_parent))
+            return emitted
+
+        def action(mode, pairs):
+            if mode == "immediate":
+                return emit(pairs), None
+            with growth_batch.SampleBatch((callers.ROOT, units.ROOT), limit=4) as batch:
+                emitted = emit(pairs, batch)
+            assert batch.validated_samples == 6 and batch.validation_calls == 4
+            assert batch.state == "closed"
+            assert not any((batch._pending, batch._source, batch._roots, batch._digests))
+            assert batch._projection_bytes is None
+            return emitted, {
+                "validated_samples": batch.validated_samples,
+                "validation_calls": batch.validation_calls,
+                "scope_closed_and_released": True,
+            }
+
+        def check_emissions(emitted):
+            assert len(emitted) == len({id(row) for row in emitted}) == 6
+            assert [canonical_json_bytes(row) for row in emitted] == expected_bytes
+
+        original_compile = growth._projection_contexts
+        original_sample_check = growth._validate_sample
+        original_reader = growth.validate_execution_samples
+        assert coordination.validate_execution_samples is original_reader
+        assert growth_batch.validate_execution_samples is original_reader
+        with tempfile.TemporaryDirectory(prefix="observer-pair-profile-") as temporary:
+            scratch = Path(temporary)
+            assert not scratch.is_relative_to(checkout)
+            report["cleanup"].update(profile_scratch_created=True, profile_scratch_path=str(scratch))
+            for mode in ("immediate", "bounded_batch"):
+                counts = {"projection_compilations": 0, "sample_node_checks": 0}
+                public_calls, received_roots = [], []
+
+                def compile_projection(projection):
+                    counts["projection_compilations"] += 1
+                    return original_compile(projection)
+
+                def check_sample(context, dimensions, metrics):
+                    result = original_sample_check(context, dimensions, metrics)
+                    counts["sample_node_checks"] += 1
+                    return result
+
+                def read_samples(projection, identity, samples):
+                    result = original_reader(projection, identity, samples)
+                    public_calls.append({"declaration": identity, "roots": len(samples)})
+                    received_roots.extend(samples)
+                    return result
+
+                pairs = [copy.deepcopy(caller_sample) for _ in range(3)]
+                with ExitStack() as patches:
+                    for module, name, replacement in (
+                        (growth, "_projection_contexts", compile_projection),
+                        (growth, "_validate_sample", check_sample),
+                        (growth, "validate_execution_samples", read_samples),
+                        (coordination, "validate_execution_samples", read_samples),
+                        (growth_batch, "validate_execution_samples", read_samples),
+                    ):
+                        patches.enter_context(patch.object(module, name, replacement))
+                    emitted, batch_receipt = action(mode, pairs)
+                check_emissions(emitted)
+                assert Counter(map(id, received_roots)) == Counter(map(id, emitted))
+                assert Counter(row["declaration"] for row in received_roots) == {
+                    unit_id: 3, caller_id: 3,
+                }
+                expected_calls = [1] * 6 if mode == "immediate" else [2, 2, 1, 1]
+                assert [row["roots"] for row in public_calls] == expected_calls
+                assert counts["projection_compilations"] == (12 if mode == "immediate" else 5)
+                assert counts["sample_node_checks"] == expected_nodes
+                assert growth._projection_contexts is original_compile
+                assert growth._validate_sample is original_sample_check
+                assert growth.validate_execution_samples is original_reader
+                assert coordination.validate_execution_samples is original_reader
+                assert growth_batch.validate_execution_samples is original_reader
+
+                pairs = [copy.deepcopy(caller_sample) for _ in range(3)]
+                wall_start, cpu_start = time.perf_counter(), time.process_time()
+                timed_emitted, timed_batch_receipt = action(mode, pairs)
+                cpu_seconds = time.process_time() - cpu_start
+                wall_seconds = time.perf_counter() - wall_start
+                check_emissions(timed_emitted)
+                assert timed_batch_receipt == batch_receipt
+                report["measurements"][mode] = {
+                    "instrumented_counts": {**counts, "public_reader_calls": public_calls},
+                    "all_six_emitted_roots_independently_received": True,
+                    "canonical_emissions_equal_retained_pair": True,
+                    "batch_receipt": batch_receipt,
+                    "uninstrumented_cpu_seconds": cpu_seconds,
+                    "uninstrumented_wall_seconds": wall_seconds,
+                }
+                write()
+                print(mode, json.dumps(report["measurements"][mode], sort_keys=True), flush=True)
+        report["cleanup"]["profile_scratch_removed"] = not scratch.exists()
+        assert report["cleanup"]["profile_scratch_removed"]
+        report["state"] = "completed"
+        status = 0
+    except BaseException as error:
+        report["state"] = "failed"
+        report["error"] = {"type": type(error).__name__, "message": str(error)}
+        traceback.print_exc()
+    finally:
+        if scratch is not None:
+            report["cleanup"]["profile_scratch_removed"] = not scratch.exists()
+        report["source_end"] = source_identity(checkout)
+        if report["source_end"] != report["source"]:
+            report["state"] = "source-changed"
+            status = 1
+        report["exit_status"] = status
+        write()
+        print("original child final status", status, "cleanup", json.dumps(report["cleanup"], sort_keys=True), flush=True)
+    return status
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

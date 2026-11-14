@@ -2,7 +2,50 @@
 
 ## Source identities
 
-Baseline: clean issue-authorized source `8c80903818b386f50ddce8cd316cb3d93ec8cc51`, before any proposed edit. Initial compilation experiment: clean published `7c78eb33fd310653468c1a2fa9dfac41417c5adf`. The selected proposal removes that experiment's package edit and uses only bounded observer ownership with the original public reader. Its exact clean source identity and direct helper measurements will be appended after the narrower implementation is frozen. No dirty working-tree measurement is presented as clean-source qualification.
+Baseline: clean issue-authorized source `8c80903818b386f50ddce8cd316cb3d93ec8cc51`, before any proposed edit. Initial compilation experiment: clean published `7c78eb33fd310653468c1a2fa9dfac41417c5adf`. Selected implementation: clean published **`af68d203f93765bddf9ad89a233a582266f10ce2`**, tree `3a031767fa41b4392855ee273d94d0fa5937c9d9`. The final handoff appends only `.reference` documents and evidence to that selected implementation; its package, product, support, and test blobs are unchanged. No dirty working-tree measurement is presented as clean-source qualification.
+
+The selected proposal removes the experiment's package edit and uses only bounded observer ownership with the original public reader. The entire `packages/` and `riverhog/` trees match the audited base. The growth-reader file SHA-256 is `1adc9766c8d0c97cf97ce926695e6c38dc7d50458725e8947b57bfc94c90e376`.
+
+## Selected bounded-helper result
+
+The exact helper comparison ran both paths on clean `af68d203f93765bddf9ad89a233a582266f10ce2`, using three copies of one archived actual unit/caller pair. Each copy emitted the unit first and then the caller containing that newly emitted unit. Primitive metrics came from the actual retained observations, never from a bound formula. No fresh product operation was executed in this replay.
+
+| Observed work | Immediate helper | `SampleBatch`, limit 4 |
+| --- | ---: | ---: |
+| Projection compilations | **12** | **5** |
+| Public execution-reader calls | 6 | 4 |
+| Roots in each public call | 1, 1, 1, 1, 1, 1 | 2, 2, 1, 1 |
+| Distinct emitted roots independently received | **6** | **6** |
+| Actual nested sample-node checks | **435** | **435** |
+| Canonical equality with retained input | Passed | Passed |
+| Uninstrumented wall seconds | 19.287943 | 12.564396 |
+| Uninstrumented process CPU seconds | 19.256510 | 12.530675 |
+
+The measured wall reduction was **34.86%** for this fixed replay. Counts were collected in an instrumented pass; all five monkeypatches were restored and checked before a separate single uninstrumented timing observation. The order was immediate first, then batched. Both modes prepared input copies outside timing. Timed batching includes entry, source admission, sample construction and sealing, source checks, automatic and final flushes, reference release, and receipt assertions. Single fixed-order observations do not establish statistical significance, full-census attribution, or product throughput improvement.
+
+The instrumented receiver proved that every emitted root object was independently received exactly once. The unit has 71 nodes and the caller 74, so three pairs retain **435 actual recursive checks**. The batched scope reported six validated roots and four public reader calls, then closed with empty pending/source/root/digest collections and released projection bytes.
+
+The original profile child and maintained lane both exited **0**, with clean source at start/end. The complete lane elapsed **68.320798 seconds**, including imports, both count passes, both timing observations, assertions, and scratch cleanup. Only profile scratch was created and removed; no new product fixture was used, and the external TMPDIR was empty after completion.
+
+Exact successful script: [evidence/profile-batch-pair.py.txt](evidence/profile-batch-pair.py.txt), SHA-256 `f20fd77d592e5af2df137f7b13a3451846d854a453c54b899e845c3ec74413fb`. Original [run receipt](evidence/batch-pair-run.json), [lane receipt](evidence/batch-pair-lane.json), and [child output](evidence/batch-pair.log) are retained unchanged. The run receipt SHA-256 is `e36c3980687e436a27b83ffa7794272f01fecf88a856316289ad06a3050924f1`.
+
+## Clean-source correctness and quality checks
+
+All checks below ran on clean `af68d203f93765bddf9ad89a233a582266f10ce2`, after profiling ended. The verification driver and every maintained lane returned 0. Exact clean source matched at start and end, and the owned external pytest temporary tree was removed after original child completion.
+
+| Check | Actual result | Maintained lane elapsed s |
+| --- | --- | ---: |
+| Four focused test modules | **118 passed in 95.35 s** | 98.092975 |
+| Repository-wide Ruff | Passed | 0.171612 |
+| Repository-wide format check | 2,080 files already formatted | 0.098312 |
+| REUSE | Passed; 2,417/2,417 covered files | 1.838251 |
+| Strict repository mypy entry point | Passed | 4.326937 |
+
+The focused modules were `test_growth_observer_batch.py`, `test_growth_declarations.py`, `test_validation_witnesses.py`, and `test_private_growth_discovery.py`. They cover 34 new batch cases, including one actual three-turn caller fixture, and existing standalone declaration/serialized-evidence/source-owner regressions. The actual fixture checks all six caller/unit roots, independent canonical equality through the immediate helper, explicit generator closure, and zero checked-out catalog connections before and after closure. Invalid samples, later failures, orphaned units, caught admission errors, stale bindings, same-ID callable substitution, mutated metadata/samples, malformed mappings, and closed/reentered scopes are exercised.
+
+Existing reader regressions cover units, numerical rejection of asymptotic bounds, exact delegate multiplicities/mappings, complete sample fields/digests, cyclic edges, duplicate ownership, and the 65,536-sample-node / 131,072-expression-node budgets. They are metadata correctness tests, not a 1,000+ product publication trial. Graph-depth and delegate relation-strength validation also remain byte-for-byte unchanged in the public reader; no new compilation shortcut is delivered.
+
+Original commands, exits, source identities, all lane logs, and the machine-readable pytest record are in [evidence/verification/](evidence/verification/). [The driver record](evidence/verify-driver.py.txt) preserves the actual producer orchestration. These are focused producer receipts, not full integration qualification.
 
 The successful baseline profile script is preserved byte-for-byte in [evidence/profile-script.py.txt](evidence/profile-script.py.txt). The initial compilation experiment used that exact script on the exact retained projection/sample. It is an experiment record, not a new maintained profiling entry point. It runs under the existing `scripts/ci_timing.py run` recorder. [VERIFY.md](VERIFY.md) records reproduction and receiving commands.
 
@@ -52,4 +95,4 @@ The first baseline preflight exited 1 before fixture creation because the produc
 
 Before freezing the initial experiment, 52 new compilation tests and 33 new small batch tests passed. One actual three-turn caller test passed in 86.64 seconds: six caller/unit roots were received in four public batch calls, all six matched the immediate helper's canonical output, the fixture generator closed, and catalog checkout count was zero. These exploratory runs were on the edited working tree with the experimental memo. They do not qualify the final narrower source. Their temporary test directories were removed after their original children exited. The compilation-specific test module was removed with the excluded package edit; the batch test module now owns its small fixtures directly.
 
-The clean-source verification result belongs in the subsequent appended record. The reference does not run full repository unit shards, distribution/image/release qualification, the complete caller census, or 1,000+ product executions. The 65,536-node and 131,072-expression existing reader-budget tests are metadata correctness tests, not a publication campaign. `mise` is unavailable; direct pinned-environment equivalents must be named rather than claiming that the `make lint` frontend ran.
+The selected implementation's clean-source verification is recorded above. The reference did not run full repository unit shards, distribution/image/release qualification, the complete caller census, or 1,000+ product executions. It establishes no explanation for all of the earlier 470.50-second interrupted census. `mise` is unavailable; the direct pinned-environment Ruff/format/REUSE/mypy commands were run, and the `make lint` frontend was not. The reference branch does not trigger the repository's main/release push CI; no PR or manual full qualification was requested or represented as passing.

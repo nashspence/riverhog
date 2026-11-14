@@ -34,7 +34,27 @@ The focused receiving suite additionally includes:
 
 Use the existing `scripts/ci_timing.py run --lane <name> --output <external-file> -- <command>` wrapper to retain actual original-child exits and elapsed receipts. A receipt output must not dirty the source under test. These commands do not substitute for broader qualification required by the integration rail.
 
-## Finite baseline and proposed-source profile
+## Selected bounded-helper replay
+
+The selected implementation was tested and profiled at clean `af68d203f93765bddf9ad89a233a582266f10ce2`. The final handoff adds only `.reference` evidence/documents; the tested implementation and test blobs remain identical. Review the final diff relative to the audited base, because intermediate commits preserve the excluded compilation experiment.
+
+Run the exact retained helper profile on a clean receiving checkout, using the receiving commit as `--expected-source` and new external paths:
+
+```bash
+.venv/bin/python scripts/ci_timing.py run \
+  --lane observer-owned-batch --output /absolute/external/pair-lane.json -- \
+  .venv/bin/python .reference/evidence/profile-batch-pair.py.txt \
+  --checkout /absolute/receiving-checkout \
+  --output /absolute/external/pair-profile \
+  --expected-source <exact-clean-receiving-sha> \
+  --uv /absolute/pinned/uv
+```
+
+The script pins the exact original public-reader bytes and archived actual sample. It compares immediate helper emissions with one bounded scope, each repeating the same actual unit/caller pair three times. It measures all admission, integrity, flush, and scope-release work. An instrumentation pass checks compilation counts, every emitted root identity, and every recursive sample-node check. A separate uninstrumented pass measures CPU/wall time with no timing target. Both paths must retain canonical sample equality. This is an observer replay, not fresh product execution.
+
+The clean-source four-module suite and quality checks in [RESULTS.md](RESULTS.md) used the maintained lane recorder, with original receipts under `evidence/verification`. Integration remains responsible for qualifying its actual adopted source.
+
+## Historical baseline and compilation experiment
 
 The exact successful script is `evidence/profile-script.py.txt`; Python can execute that filename directly. For a fresh baseline, use a clean checkout of the audited base and a pinned environment importing that checkout. Supply a new external output directory:
 

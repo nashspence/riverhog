@@ -1,0 +1,62 @@
+"""Finite reference verification using the maintained timing wrapper."""
+import json
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+repo=Path('/workspace/scratch/21c38f9cc56d/riverhog')
+expected=sys.argv[1]
+output=Path(sys.argv[2])
+output.mkdir(exist_ok=False)
+temporary=output/'temporary'
+temporary.mkdir()
+python=repo/'.venv/bin/python'
+env={**os.environ,'TMPDIR':str(temporary),'RIVERHOG_CI_TIMING_DIR':str(output/'pytest-receipts')}
+sys.path.insert(0,str(repo))
+from scripts.validation_identity import source_identity
+source=source_identity(repo)
+assert source=={'source_sha':expected,'source_clean':True},source
+checks=[
+    ('focused-tests',[str(python),'-m','pytest','-q','-p','scripts.ci_timing','--basetemp',str(temporary/'pytest'),
+       'tests/unit/test_growth_observer_batch.py',
+       'tests/unit/test_growth_declarations.py','tests/unit/test_validation_witnesses.py',
+       'tests/unit/test_private_growth_discovery.py']),
+    ('ruff',[str(python),'-m','ruff','check','.']),
+    ('format',[str(python),'-m','ruff','format','--check','.']),
+    ('reuse',[str(python),'-m','reuse','lint']),
+    ('mypy',[str(python),'scripts/run_mypy.py']),
+]
+report={'format':'external-reference-verification/v1','source':source,'commands':[],
+        'temporary_directory':str(temporary),'state':'running'}
+path=output/'run.json'
+def write():
+    path.write_text(json.dumps(report,sort_keys=True,indent=2)+'\n')
+write()
+status=0
+try:
+    for name,command in checks:
+        print('starting',name,flush=True)
+        wrapped=[str(python),'scripts/ci_timing.py','run','--lane','observer-'+name,
+                 '--output',str(output/(name+'-lane.json')),'--',*command]
+        with (output/(name+'.log')).open('w') as log:
+            result=subprocess.run(wrapped,cwd=repo,env=env,stdout=log,stderr=subprocess.STDOUT)
+        report['commands'].append({'name':name,'command':wrapped,'wrapper_exit_status':result.returncode})
+        write()
+        print(name,'exit',result.returncode,flush=True)
+        print((output/(name+'.log')).read_text()[-3500:],flush=True)
+        if result.returncode:
+            status=1
+    report['state']='completed' if not status else 'failed'
+finally:
+    shutil.rmtree(temporary)
+    report['temporary_removed']=not temporary.exists()
+    report['source_end']=source_identity(repo)
+    if report['source_end']!=source:
+        status=1
+        report['state']='source-changed'
+    report['exit_status']=status
+    write()
+    print('verification final status',status,'source',report['source_end'],'temporary_removed',report['temporary_removed'],flush=True)
+sys.exit(status)
