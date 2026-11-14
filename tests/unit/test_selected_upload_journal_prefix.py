@@ -385,6 +385,12 @@ def test_changed_raw_selected_bytes_cannot_cross_the_complete_closure_barrier(
 
 
 def test_selected_proof_reopens_after_service_restart_without_revalidation(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    from riverhog_core.services import primary_facts_jobs
+
+    from tests.unit.test_primary_facts_lifecycle import finish_scheduled
+
     with _shared_finalization(tmp_path, monkeypatch, members=2, fanout=2) as case:
         _advance_member(case)
         previous = case.service
@@ -409,6 +415,17 @@ def test_selected_proof_reopens_after_service_restart_without_revalidation(tmp_p
                 return actual_proof(*args, **kwargs)
 
         try:
+            with session_scope(case.factory) as session:
+                job = primary_facts_jobs.find_pending(session, case.collection_id)
+            assert job is not None and job.owner_id != current._primary_facts.owner_id
+            cleanup = current._primary_facts_retirement
+            finish_scheduled(
+                SimpleNamespace(factory=case.factory, root=cleanup.root),
+                cleanup,
+                current._archive_execution,
+                (job.workspace_id,),
+            )
+            assert _state(case) == (1, False, None)
             with monkeypatch.context() as patch:
                 patch.setattr(prefix_owner, "verify_selected_upload_journal_prefix", observed)
                 _finish(case)
