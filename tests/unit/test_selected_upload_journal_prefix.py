@@ -134,6 +134,9 @@ def _shared_finalization(tmp_path, monkeypatch, *, members=4, fanout=4, text_oct
         else:
             pytest.fail("bounded member history staging did not terminate")
         case.claim, case.shared_anchor, case.shared_raw = claim, anchor, raw
+        with session_scope(case.factory) as session:
+            shared = session.get(Journal, (case.collection_id, anchor.journal_id))
+            case.shared_terminal_anchor = service_owner._sealed_journal_history_anchor(shared)
         case.members, case.fanout = members, fanout
         case.primaries = primaries
         yield case
@@ -275,8 +278,8 @@ def test_complete_finalization_reuses_selected_semantics_independently_of_fanout
         shared = [row for row in validations if row["journal_id"] == case.shared_anchor.journal_id]
         assert len(shared) == 2
         assert [(row["owner"], row["anchor"], row["octets"]) for row in shared] == [
+            ("finalizer", case.shared_terminal_anchor.to_mapping(), len(case.shared_raw)),
             ("closure", case.shared_anchor.to_mapping(), case.shared_anchor.prefix_bytes),
-            ("finalizer", None, len(case.shared_raw)),
         ]
         assert all(row["native_advances"] > 0 for row in validations)
         assert sum(row["native_advances"] for row in validations) == len(advances)
@@ -287,8 +290,8 @@ def test_complete_finalization_reuses_selected_semantics_independently_of_fanout
             expected = primary.binding.journal.model_dump(mode="json")
             assert [(row["owner"], row["anchor"]) for row in rows] == [
                 ("finalizer", expected),
+                ("finalizer", expected),
                 ("closure", expected),
-                ("finalizer", None),
             ]
             per_journal[primary.journal_id] = len(rows)
         assert {row["journal_id"] for row in validations} == set(per_journal)
@@ -351,8 +354,9 @@ def test_changed_raw_selected_bytes_cannot_cross_the_complete_closure_barrier(
         # Frozen semantic evidence does not authorize current raw archive bytes.
         assert _owner(case).advance()
         assert _state(case) == (2, False, None)
+        # The full raw pass rejects the broken tail link before prefix selection.
         with pytest.raises(
-            ProvenanceValidationError, match="externally supplied prefix anchor mismatch"
+            ProvenanceValidationError, match="predecessor does not match exact previous JSON text"
         ):
             _owner(case).advance()
         assert _state(case) == (2, False, None)

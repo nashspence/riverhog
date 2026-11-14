@@ -514,6 +514,95 @@ def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
     )
 
 
+def _source_endpoint_declaration() -> Declaration:
+    def number(value: int, unit: Unit = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    return Declaration(
+        id="riverhog-provenance.corpus-source-endpoint.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator.require_source_endpoint",),
+        scope="exact-indexed-native-source-endpoint-point-check",
+        starts_at="receive one exact endpoint for an independently admitted Native source",
+        ends_at="accept the complete indexed endpoint or reject without fetching source payload",
+        dimensions=(
+            Dimension("retained_sources", COUNT, "Distinct source extent index rows."),
+            Dimension("retained_frames", COUNT, "Exact corpus source entry index rows."),
+            Dimension("anchor_octets", OCTETS, "Complete canonical endpoint anchor octets."),
+        ),
+        bounds=(
+            Bound("sql_statements", COUNT, "equal", number(1), "One indexed extent/header join."),
+            Bound("returned_rows", COUNT, "upper", number(1), "One scalar equality or absence."),
+            Bound("closed_cursors", COUNT, "equal", number(1), "Close the exact point cursor."),
+            Bound(
+                "returned_metadata_octets",
+                OCTETS,
+                "upper",
+                number(1, OCTETS),
+                "Only the one-digit equality result crosses the SQLite boundary.",
+            ),
+            Bound(
+                "parameter_octets",
+                OCTETS,
+                "upper",
+                dimension("anchor_octets"),
+                "The complete endpoint coordinates are bound without any journal payload.",
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "sum",
+                    terms=(
+                        number(512),
+                        Expression(
+                            "product",
+                            terms=(
+                                number(64),
+                                Expression(
+                                    "log2_ceil",
+                                    terms=(
+                                        Expression(
+                                            "sum",
+                                            terms=(
+                                                number(2),
+                                                dimension("retained_sources"),
+                                                dimension("retained_frames"),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Primary-key seeks select the source's maximum admitted entry and its header.",
+            ),
+            Bound("source_frame_reads", COUNT, "equal", number(0), "No frame load or replay."),
+            Bound(
+                "source_payload_octets",
+                OCTETS,
+                "equal",
+                number(0, OCTETS),
+                "No journal bytes or assertion payloads are fetched or hashed.",
+            ),
+        ),
+        conditions=("Independent Native validation precedes source population.",),
+        invariants=(
+            "An earlier exact prefix does not equal the indexed source endpoint.",
+            "Every journal, entry, sequence, digest and byte coordinate must agree.",
+        ),
+        limitations=(
+            "Current custody, source population and historical graph semantics belong to callers.",
+            "SQLite VM constants are maintained evidence; I/O and timing are observations.",
+        ),
+    )
+
+
 def _historical_assertion_declaration() -> Declaration:
     def constant(value: int, unit: Unit = COUNT) -> Expression:
         return Expression("constant", value=value, unit=unit)
@@ -1352,6 +1441,32 @@ class CanonicalCorpusValidator:
         if type(frame_budget) is not int or frame_budget < 1:
             raise ValueError("corpus source frame budget must be positive")
         return self._add_source(summary, frame_budget=frame_budget, through=through)
+
+    @declare_growth(_source_endpoint_declaration())
+    def require_source_endpoint(self, anchor: HistoryJournalAnchor) -> None:
+        """Require the complete indexed source endpoint, rather than any known prefix.
+
+        The caller separately admits its current source. This exact equality
+        prevents a replacement by a shorter, otherwise valid indexed prefix from
+        borrowing facts retained from a different complete source.
+        """
+        self._require_open()
+        if not isinstance(anchor, HistoryJournalAnchor):
+            raise TypeError("source endpoint requires an exact history journal anchor")
+        selected = cast(dict[str, Any], anchor.to_mapping())
+        found = self._source_read(
+            "SELECT e.reference=? AND e.prefix=? AND e.bytes=? "
+            "FROM source_extents s JOIN entries e "
+            "ON e.journal=s.journal AND e.sequence=s.sequence WHERE s.journal=?",
+            (
+                canonical_document(selected["through"]),
+                anchor.prefix_sha256,
+                str(anchor.prefix_bytes),
+                anchor.journal_id,
+            ),
+        )
+        if found != (1,):
+            raise ProvenanceValidationError("current source differs from the indexed endpoint")
 
     @declare_growth(_historical_assertion_declaration())
     def historical_assertion(
