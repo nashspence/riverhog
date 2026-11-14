@@ -135,6 +135,7 @@ from riverhog_provenance import (
     external_reference,
     validate_journal_chunks,
 )
+from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import (
     Select,
     asc,
@@ -6538,7 +6539,13 @@ def _iter_staged_history_pages(
     raise Conflict("member history set has no terminal")
 
 
-def _staged_history_closure(session: Session, collection_id: int) -> MemberHistoryClosure:
+def _staged_history_closure(
+    session: Session,
+    collection_id: int,
+    *,
+    catalog: ContractCatalog | None = None,
+    imported_primary_state: Callable[[MemberHistoryDocument], Mapping[str, Any]] | None = None,
+) -> MemberHistoryClosure:
     def read_structure(path: str) -> Iterator[bytes]:
         row = session.get(
             CollectionUploadProvenanceStructureRecord,
@@ -6558,19 +6565,65 @@ def _staged_history_closure(session: Session, collection_id: int) -> MemberHisto
         MemberHistoryStore(read_structure),
         read_journal,
         member_role=COLLECTION_MEMBER_ROLE,
-        catalog=admission_provenance_catalog(),
+        catalog=admission_provenance_catalog() if catalog is None else catalog,
+        imported_primary_state=imported_primary_state,
     )
 
 
 def _validate_staged_canonical_journal_set(
     session: Session, upload: CollectionUploadRecord
 ) -> None:
-    """Resolve explicit member roots/imports and exact documentary dependencies."""
+    """Resolve complete current history in one existing terminal transaction.
+
+    Raw source admission and indexing precede imported-primary point selection.
+    This disposable corpus belongs only to this synchronous terminal attempt;
+    interruption restarts its current-byte checks, never a cached success.
+    """
+    from .upload_imported_history import selected_upload_imported_primary_state
+    from .upload_journal_result import prepare_upload_journal_result
+
     collection_id = upload.collection_id
+    catalog = admission_provenance_catalog()
     with (
-        _staged_history_closure(session, collection_id) as closure,
         CanonicalCorpusValidator() as corpus,
+        _staged_history_closure(
+            session,
+            collection_id,
+            catalog=catalog,
+            imported_primary_state=partial(
+                selected_upload_imported_primary_state,
+                session,
+                collection_id,
+                catalog=catalog,
+                corpus=corpus,
+            ),
+        ) as closure,
     ):
+        count = 0
+        for record in session.scalars(
+            select(CollectionUploadProvenanceJournalRecord)
+            .where(CollectionUploadProvenanceJournalRecord.collection_id == collection_id)
+            .order_by(CollectionUploadProvenanceJournalRecord.journal_id)
+            .execution_options(yield_per=_FINALIZATION_FILE_BATCH, populate_existing=True)
+        ):
+            if record.state != "sealed":
+                raise Conflict("canonical provenance corpus contains an unsealed journal")
+            admission = prepare_upload_journal_result(
+                session, collection_id, record.journal_id, catalog=catalog
+            )
+            with validate_journal_chunks(
+                _iter_upload_journal_chunks(session, record),
+                catalog=catalog,
+                expected_anchor=admission.anchor,
+                require_exact_tail=True,
+                require_profiles=False,
+            ) as summary:
+                corpus.add(summary)
+            if not admission.verify_current(session):
+                raise Conflict("canonical provenance source or validation job changed")
+            count += 1
+        if count == 0:
+            raise Conflict("canonical provenance corpus is absent")
         for final in session.scalars(
             select(CollectionUploadMemberHistoryRecord)
             .where(CollectionUploadMemberHistoryRecord.collection_id == collection_id)
@@ -6583,26 +6636,14 @@ def _validate_staged_canonical_journal_set(
                 provenance_volume_source.member_history_binding_row(final),
                 extent=RETAINED_HISTORY_EXTENT,
             )
-        count = 0
-        for record in session.scalars(
-            select(CollectionUploadProvenanceJournalRecord)
+        for journal_id in session.scalars(
+            select(CollectionUploadProvenanceJournalRecord.journal_id)
             .where(CollectionUploadProvenanceJournalRecord.collection_id == collection_id)
             .order_by(CollectionUploadProvenanceJournalRecord.journal_id)
             .execution_options(yield_per=_FINALIZATION_FILE_BATCH)
         ):
-            if record.state != "sealed":
-                raise Conflict("canonical provenance corpus contains an unsealed journal")
-            if not closure.contains_journal(record.journal_id):
+            if not closure.contains_journal(journal_id):
                 raise Conflict("canonical provenance corpus contains unrelated journals")
-            with validate_journal_chunks(
-                _iter_upload_journal_chunks(session, record),
-                catalog=admission_provenance_catalog(),
-                require_profiles=False,
-            ) as summary:
-                corpus.add(summary)
-            count += 1
-        if count == 0:
-            raise Conflict("canonical provenance corpus is absent")
         corpus.validate()
         _validate_staged_execution_completion(session, upload, closure)
 

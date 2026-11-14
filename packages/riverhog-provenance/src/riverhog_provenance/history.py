@@ -17,6 +17,7 @@ from riverhog_archive_contracts import (
     RETAINED_HISTORY_EXTENT,
     HistoryJournalAnchor,
     MemberHistoryBinding,
+    MemberHistoryDocument,
     MemberHistoryImport,
     MemberHistoryStore,
     history_record_page_object_path,
@@ -364,6 +365,13 @@ class MemberHistoryClosure:
     and retain both validation storage and each actual returned reader before
     handoff. Borrowed readers share their snapshot connection and outlive cache
     eviction or closure close. Membership-image loading has its own owner.
+
+    An imported-primary resolver may supply the exact external State selected by
+    the source descriptor's historical primary delivery. Its caller owns current
+    source admission and independently checked historical delivery facts for the
+    resolver's entire lifetime. Source binding proofs, requested extents, exact
+    State comparison and complete history traversal remain here. Without that
+    resolver every import retains the authenticated provider read fence.
     """
 
     def __init__(
@@ -377,11 +385,13 @@ class MemberHistoryClosure:
         on_storage_open: Callable[[Self], None] | None = None,
         journal_connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_journal_storage_open: Callable[[JournalStore], None] | None = None,
+        imported_primary_state: Callable[[MemberHistoryDocument], Mapping[str, Any]] | None = None,
     ) -> None:
         self.store = store
         self.read_journal = read_journal
         self.member_role = member_role
         self.catalog = catalog
+        self._imported_primary_state = imported_primary_state
         self._summaries: OrderedDict[bytes, JournalSummary] = OrderedDict()
         self._summary_bytes = 0
         self._connection_factory = connection_factory
@@ -724,6 +734,17 @@ class MemberHistoryClosure:
         self._require_open()
         proof = self.store.source_proof(imported)
         source = self.store.descriptor(proof.binding)
+        if self._imported_primary_state is None:
+            state = self._read_imported_primary_state(source)
+        else:
+            state = self._imported_primary_state(source)
+        if state != imported.input_state:
+            raise ProvenanceValidationError("imported State differs from the source primary")
+        self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
+        self._history(proof.binding, imported.extent)
+        return proof.binding
+
+    def _read_imported_primary_state(self, source: MemberHistoryDocument) -> Mapping[str, Any]:
         with self.summary_at(source.primary.journal) as primary:
             state, _ = selected_delivery_occurrence(
                 primary,
@@ -733,11 +754,7 @@ class MemberHistoryClosure:
                 sha256=source.sha256,
                 member_role=self.member_role,
             )
-            if external_reference(primary, state["id"]) != imported.input_state:
-                raise ProvenanceValidationError("imported State differs from the source primary")
-            self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
-            self._history(proof.binding, imported.extent)
-            return proof.binding
+            return external_reference(primary, state["id"])
 
     def resolve_import(self, imported: MemberHistoryImport) -> None:
         """Validate an accepted early input selection, before output H can be sealed."""
