@@ -1,0 +1,33 @@
+{
+  "accepted_test_hashes": {
+    "tests/unit/test_growth_context_lookups.py": "2650d46fa1e23137bf1958adc8dffe4f02e3da83ffbb2e129b8b9984bb724870",
+    "tests/unit/test_growth_numeric_evaluation.py": "8e12500aeccd012920c8333a6fb4ae36359dc0ce99471ab60c6efb9c0aae0226"
+  },
+  "audited_base_sha": "67b4ccd9419be86a60dece5c5c16bee43f7ce935",
+  "changed_helper_methods_ast": [
+    "__init__",
+    "__enter__",
+    "_projection",
+    "flush",
+    "_release"
+  ],
+  "format": "external-private-projection-source-audit/v1",
+  "helper_base_sha256": "87ccc6657a2a3dbab1bf74652aea86a9495a316be2ded7808836f9bd4cf58b5f",
+  "helper_proposal_sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8",
+  "limits": "This static audit is not execution evidence or qualification of current main.",
+  "main_head_observed": "209481c189f7387557a85e1c249184642816e103",
+  "owner_test_proposal_sha256": "9a4c1b37b04b3b42507869677ce3abb5d89ca7abfee432efab1689adb49d1874",
+  "prior_helper_equals_base": true,
+  "prior_helper_reference_sha": "5e21cc9c75c86ec08ab4b1c755d98c36bd4e5195",
+  "reader_byte_identical_to_base": true,
+  "reader_sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40",
+  "receiving_head_observed": "67b4ccd9419be86a60dece5c5c16bee43f7ce935",
+  "receiving_ref_observed": "codex/964-session-owner",
+  "unchanged_helper_methods_ast": [
+    "source",
+    "_current",
+    "sample",
+    "receive",
+    "__exit__"
+  ]
+}
