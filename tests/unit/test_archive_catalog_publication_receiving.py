@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from time import monotonic, sleep
 
 import pytest
 from riverhog_core.catalog_db import session_scope
@@ -21,10 +22,19 @@ def _publication_case(tmp_path, monkeypatch, phase="terminal", *, database_url=N
     with _case(tmp_path, "segment", artifact_count=1, database_url=database_url) as case:
         _bind_primary(case.service, case.collection_id, format(1, "064x"), case.content)
         _seal(case)
-        for _ in range(256):
+        deadline = monotonic() + 30
+        last = None
+        while True:
             with session_scope(case.factory) as session:
                 upload = session.get(Upload, case.collection_id)
                 assert upload is not None
+                last = {
+                    "state": upload.state,
+                    "catalog_phase": upload.catalog_phase,
+                    "authority_ready": upload.final_authority_json is not None,
+                    "description_ready": upload.description_revision is not None,
+                    "tags_ready": upload.tag_head_identity is not None,
+                }
                 ready = (
                     upload.final_authority_json is not None
                     and upload.description_revision is not None
@@ -37,8 +47,14 @@ def _publication_case(tmp_path, monkeypatch, phase="terminal", *, database_url=N
                 owner = case.service._catalog_finalization_owner(claim, kind="catalog-projection")
                 yield case, claim, owner
                 return
+            if monotonic() >= deadline:
+                break
             drive_finalization_turn(case.service)
-        pytest.fail("maintained finalization did not reach the selected catalog phase")
+            sleep(0.01)
+        pytest.fail(
+            "maintained finalization did not reach the selected catalog phase; "
+            f"expected={phase!r}, last={last!r}"
+        )
 
 
 @pytest.mark.parametrize("phase", ("artifact-set-identity", "artifacts", "terminal"))
