@@ -132,7 +132,6 @@ from riverhog_provenance import (
     MemberHistoryClosure,
     ProvenanceValidationError,
     advance_journal_framing,
-    external_reference,
     validate_journal_chunks,
 )
 from riverhog_provenance_contracts import ContractCatalog
@@ -6594,8 +6593,8 @@ def _validate_staged_canonical_journal_set(
     This disposable corpus belongs only to this synchronous terminal attempt;
     interruption restarts its current-byte checks, never a cached success.
     """
-    from .upload_imported_history import selected_upload_imported_primary_state
     from .upload_journal_result import prepare_upload_journal_result
+    from .upload_terminal_primary import selected_upload_terminal_primary_state
 
     collection_id = upload.collection_id
     catalog = admission_provenance_catalog()
@@ -6606,7 +6605,7 @@ def _validate_staged_canonical_journal_set(
             collection_id,
             catalog=catalog,
             imported_primary_state=partial(
-                selected_upload_imported_primary_state,
+                selected_upload_terminal_primary_state,
                 session,
                 collection_id,
                 catalog=catalog,
@@ -6660,12 +6659,21 @@ def _validate_staged_canonical_journal_set(
             if not closure.contains_journal(journal_id):
                 raise Conflict("canonical provenance corpus contains unrelated journals")
         corpus.validate()
-        _validate_staged_execution_completion(session, upload, closure)
+        _validate_staged_execution_completion(
+            session, upload, closure, catalog=catalog, corpus=corpus
+        )
 
 
 def _validate_staged_execution_completion(
-    session: Session, upload: CollectionUploadRecord, closure: MemberHistoryClosure
+    session: Session,
+    upload: CollectionUploadRecord,
+    closure: MemberHistoryClosure,
+    *,
+    catalog: ContractCatalog,
+    corpus: CanonicalCorpusValidator,
 ) -> None:
+    from .upload_terminal_primary import selected_upload_terminal_primary_state
+
     if upload.completion_requirement_json is None:
         if upload.completion_journal_id is not None:
             raise Conflict("completion selection lacks an accepted requirement")
@@ -6768,6 +6776,14 @@ def _validate_staged_execution_completion(
                 history = closure.store.descriptor(
                     provenance_volume_source.member_history_binding_row(final)
                 )
+                current_primary = MemberHistoryPrimary.from_mapping(
+                    {
+                        "journal": _provenance_binding_row(binding)["journal"],
+                        "delivery_association_id": binding.delivery_association_id,
+                    }
+                )
+                if history.primary != current_primary:
+                    raise Conflict("completion history differs from the current member primary")
                 if not any(
                     root.journal == completion_anchor
                     for root in closure.store.roots(
@@ -6776,16 +6792,17 @@ def _validate_staged_execution_completion(
                     )
                 ):
                     raise Conflict("member history omits its required exact completion snapshot")
-                with closure.summary_at(history.primary.journal) as primary:
-                    association = primary.graph_validation.objects[binding.delivery_association_id]
-                    yield {
-                        "output_id": binding.completion_output_id,
-                        "artifact_id": binding.artifact_id,
-                        "bytes": str(member.bytes),
-                        "sha256": member.sha256,
-                        "primary": history.primary.to_mapping(),
-                        "state": external_reference(primary, association["state"]["object_id"]),
-                    }
+                state = selected_upload_terminal_primary_state(
+                    session, upload.collection_id, history, catalog=catalog, corpus=corpus
+                )
+                yield {
+                    "output_id": binding.completion_output_id,
+                    "artifact_id": binding.artifact_id,
+                    "bytes": str(member.bytes),
+                    "sha256": member.sha256,
+                    "primary": history.primary.to_mapping(),
+                    "state": state,
+                }
 
         def imports() -> Iterator[Mapping[str, Any]]:
             for final in session.scalars(

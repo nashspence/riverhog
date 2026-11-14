@@ -1,4 +1,4 @@
-"""Select imported primary facts from the current terminal corpus attempt."""
+"""Select primary facts from the current terminal corpus attempt."""
 
 from __future__ import annotations
 
@@ -71,12 +71,12 @@ def _declaration() -> Declaration:
             for bound in declaration.bounds
         )
     return Declaration(
-        id="riverhog.upload-imported-primary-state.growth/v1",
+        id="riverhog.upload-terminal-primary-state.growth/v1",
         authority="riverhog",
         subjects=(
-            "riverhog_core.services.upload_imported_history.selected_upload_imported_primary_state",
+            "riverhog_core.services.upload_terminal_primary.selected_upload_terminal_primary_state",
         ),
-        scope="current-terminal-imported-primary-historical-support",
+        scope="current-terminal-primary-historical-support",
         starts_at="receive one verified source descriptor in the current finalizer transaction",
         ends_at="return its exact historical State after current sealed source and job checks",
         dimensions=(
@@ -170,14 +170,15 @@ def _declaration() -> Declaration:
                 COUNT,
                 "equal",
                 Expression("constant", value=0, unit=COUNT),
-                "Import fanout never replays accepted journal semantics.",
+                "Primary-reference fanout never replays accepted journal semantics.",
             ),
             Bound(
                 "source_payload_octets",
                 OCTETS,
                 "equal",
                 Expression("constant", value=0, unit=OCTETS),
-                "The import consumes only indexed delivery metadata, never source bytes.",
+                "The primary selection consumes only indexed delivery metadata, never source "
+                "bytes.",
             ),
             Bound(
                 "native_result_openings",
@@ -201,7 +202,7 @@ def _declaration() -> Declaration:
         limitations=(
             "Current raw validation, source indexing and complete history/corpus work are separate."
             " The terminal attempt remains synchronous; failures restart with fresh raw reads.",
-            "This bounds import-dependent work, not all finalization or total archive extent.",
+            "This bounds primary-selection work, not all finalization or total archive extent.",
             "Lock waits, physical I/O and elapsed time remain observations.",
         ),
     )
@@ -214,7 +215,7 @@ def _declaration() -> Declaration:
         ("delivery", CanonicalCorpusValidator.selected_delivery_support),
     ),
 )
-def selected_upload_imported_primary_state(
+def selected_upload_terminal_primary_state(
     session: Session,
     collection_id: int,
     source: MemberHistoryDocument,
@@ -242,5 +243,5 @@ def selected_upload_imported_primary_state(
         metadata_byte_budget=PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
     )
     if not admission.verify_current(session):
-        raise Conflict("imported primary source or validation job changed")
+        raise Conflict("terminal primary source or validation job changed")
     return support.state_reference

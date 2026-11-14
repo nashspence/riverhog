@@ -10,8 +10,8 @@ from types import SimpleNamespace
 import pytest
 from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_core.services import upload_imported_history as owner
 from riverhog_core.services import upload_journal_result as admission_owner
+from riverhog_core.services import upload_terminal_primary as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import (
     CanonicalCorpusValidator,
@@ -32,7 +32,7 @@ from tests.unit.test_upload_journal_result_admission_growth import (
     seed,
 )
 
-ROOT = owner.selected_upload_imported_primary_state
+ROOT = owner.selected_upload_terminal_primary_state
 ENDPOINT = CanonicalCorpusValidator.require_source_endpoint
 DELIVERY = CanonicalCorpusValidator.selected_delivery_support
 
@@ -155,7 +155,7 @@ def _catalog_guard(connection, metrics):
         connection.set_authorizer(None)
 
 
-def _measure(session, corpus, source, catalog, monkeypatch):
+def _measure(session, corpus, source, catalog, monkeypatch, *, collection_id=1):
     dimensions = {
         "catalog_journals": session.scalar(select(func.count()).select_from(Journal)),
         "catalog_jobs": session.scalar(select(func.count()).select_from(Job)),
@@ -178,7 +178,13 @@ def _measure(session, corpus, source, catalog, monkeypatch):
         source_width = octets(tuple(value for _name, value in admitted._source))
         job_width = octets(tuple(asdict(admitted.job).values()))
         dimensions["catalog_row_octets"] = max(source_width, job_width)
-        controls = source_width + job_width + octets((1, JOURNAL, catalog.checkpoint_sha256()))
+        controls = (
+            source_width
+            + job_width
+            + octets(
+                (collection_id, source.primary.journal.journal_id, catalog.checkpoint_sha256())
+            )
+        )
         metadata.append(
             _sample(
                 PREPARE,
@@ -254,7 +260,7 @@ def _measure(session, corpus, source, catalog, monkeypatch):
         patch.setattr(JournalValidationSession, "advance", forbidden_advance)
         patch.setattr(admission_owner, "open_retained_journal_result", forbidden_open)
         patch.setattr(admission_owner, "lease_journal_validation_workspace", forbidden_open)
-        result = ROOT(session, 1, source, catalog=catalog, corpus=corpus)
+        result = ROOT(session, collection_id, source, catalog=catalog, corpus=corpus)
     metrics["catalog_changed_rows"] = actual.total_changes - changes
     for child in metadata:
         for destination, origin in (
@@ -277,7 +283,7 @@ def _measure(session, corpus, source, catalog, monkeypatch):
 @pytest.mark.growth_witness(
     "riverhog-terminal-imported-primary-work/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.services.upload_imported_history.selected_upload_imported_primary_state",
+    operation="riverhog_core.services.upload_terminal_primary.selected_upload_terminal_primary_state",
 )
 def test_current_imported_primary_composes_actual_catalog_and_historical_point_work(
     tmp_path, monkeypatch, record_property, journal_constructions

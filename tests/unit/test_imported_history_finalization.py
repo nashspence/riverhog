@@ -33,8 +33,8 @@ from riverhog_core.catalog_models import CollectionUploadProvenanceJournalChunkR
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalRecord as Journal
 from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
 from riverhog_core.services import collection_uploads as service_owner
-from riverhog_core.services import upload_imported_history as import_owner
 from riverhog_core.services import upload_journal_result as result_owner
+from riverhog_core.services import upload_terminal_primary as import_owner
 from riverhog_protocol import MemberHistoryBindingBatchDocument
 from riverhog_protocol.collection_production_provenance import COLLECTION_MEMBER_ROLE
 from riverhog_protocol.errors import Conflict
@@ -268,7 +268,7 @@ def _observe_terminal(case, monkeypatch):
     active_validation, active_import, active_source, active_raw_admission = [], [], [], []
     original_read = service_owner._iter_upload_journal_chunks
     original_advance = JournalValidationSession.advance
-    original_import = import_owner.selected_upload_imported_primary_state
+    original_import = import_owner.selected_upload_terminal_primary_state
     original_source = CanonicalCorpusValidator._add_source
     original_metadata = CanonicalCorpusValidator._source_read
     original_frame = journal_store._Frames.__getitem__
@@ -422,7 +422,7 @@ def _observe_terminal(case, monkeypatch):
     with monkeypatch.context() as patch:
         patch.setattr(service_owner, "_iter_upload_journal_chunks", read)
         patch.setattr(JournalValidationSession, "advance", advance)
-        patch.setattr(import_owner, "selected_upload_imported_primary_state", imported)
+        patch.setattr(import_owner, "selected_upload_terminal_primary_state", imported)
         patch.setattr(CanonicalCorpusValidator, "_add_source", source)
         patch.setattr(CanonicalCorpusValidator, "_source_read", metadata)
         patch.setattr(journal_store._Frames, "__getitem__", frame)
@@ -825,7 +825,7 @@ def test_terminal_import_rechecks_current_source_and_job_after_raw_validation(
     tmp_path, monkeypatch
 ):
     material = _source_material()
-    original = import_owner.selected_upload_imported_primary_state
+    original = import_owner.selected_upload_terminal_primary_state
     with _staged_imports(tmp_path, monkeypatch, material, fanout=1, members=1) as case:
         _prepare_terminal(case)
         for fault, after in (("source", False), ("job", False), ("source", True), ("job", True)):
@@ -876,7 +876,7 @@ def test_terminal_import_rechecks_current_source_and_job_after_raw_validation(
                     return original(session, collection_id, source, **options)
 
             with monkeypatch.context() as patch:
-                patch.setattr(import_owner, "selected_upload_imported_primary_state", changed)
+                patch.setattr(import_owner, "selected_upload_terminal_primary_state", changed)
                 with pytest.raises(Conflict if after else LostJournalValidationWorkspace):
                     _terminal(case)
             assert calls == [material.descriptor]
