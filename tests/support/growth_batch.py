@@ -6,7 +6,6 @@ import hashlib
 import json
 from collections import defaultdict
 from collections.abc import Mapping
-from copy import deepcopy
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
@@ -40,7 +39,8 @@ class SampleBatch:
         self._pending, self._source = [], []
         self._roots, self._digests = {}, {}
         self._sources = {}
-        self._projection_bytes = None
+        self._projection_header_bytes = None
+        self._declaration_bytes = {}
 
     def __enter__(self):
         if self.state != "new":
@@ -49,16 +49,18 @@ class SampleBatch:
         try:
             roots = tuple(growth_binding(operation) for operation in self.operations)
             projection = project_bindings(roots)
-            self._projection_bytes = canonical_json_bytes(projection)
+            self._projection_header_bytes = canonical_json_bytes({**projection, "declarations": {}})
+            self._declaration_bytes = {
+                identity: canonical_json_bytes(row)
+                for identity, row in projection["declarations"].items()
+            }
             pending, seen = list(roots), set()
             while pending:
                 binding = pending.pop()
                 if binding.operation in seen:
                     continue
                 seen.add(binding.operation)
-                expected = hashlib.sha256(
-                    canonical_json_bytes(projection["declarations"][binding.declaration.id])
-                ).digest()
+                expected = hashlib.sha256(self._declaration_bytes[binding.declaration.id]).digest()
                 entry = binding, binding.operation, binding.declaration, binding.delegates, expected
                 self._source.append(entry)
                 self._sources[binding.operation] = entry
@@ -155,18 +157,19 @@ class SampleBatch:
             self.state = "failed"
             raise
 
-    def _projection(self, operation, snapshot):
+    def _projection(self, operation):
+        snapshot = json.loads(self._projection_header_bytes)
         # Include every declared edge, even when no bound evaluates that edge.
-        pending, declarations = [operation], {}
+        pending, declarations = [operation], snapshot["declarations"]
         while pending:
             _binding, _operation, declaration, delegates, _expected = self._sources[pending.pop()]
             if declaration.id in declarations:
                 continue
-            declarations[declaration.id] = snapshot["declarations"][declaration.id]
+            declarations[declaration.id] = json.loads(self._declaration_bytes[declaration.id])
             pending.extend(child for _tag, child in delegates)
         # Readers get private nested mappings; mutations cannot leak between
         # groups or flushes. No compiled contexts or per-owner copies are kept.
-        return deepcopy({**snapshot, "declarations": declarations})
+        return snapshot
 
     def flush(self):
         if self.state != "active":
@@ -179,11 +182,9 @@ class SampleBatch:
                     raise ValueError("completed growth sample changed before batch receiving")
                 groups[operation].append(sample)
             if groups:
-                # Read a new private mapping from the immutable admitted bytes.
-                snapshot = json.loads(self._projection_bytes)
                 for operation, samples in groups.items():
                     validate_execution_samples(
-                        self._projection(operation, snapshot),
+                        self._projection(operation),
                         self._roots[operation].declaration.id,
                         samples,
                     )
@@ -201,7 +202,8 @@ class SampleBatch:
         self._roots.clear()
         self._digests.clear()
         self._sources.clear()
-        self._projection_bytes = None
+        self._declaration_bytes.clear()
+        self._projection_header_bytes = None
         self.state = "closed"
 
     def __exit__(self, _kind, _error, _traceback):

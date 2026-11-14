@@ -76,6 +76,17 @@ def parent_bindings():
     return parent, child
 
 
+def projection_bindings():
+    child = leaf_binding()
+    unused = graph_binding("batch_unused", graph_bound(Expression("dimension", name="items")))
+    parent = graph_binding(
+        "batch_projection",
+        graph_bound(graph_call("leaf")),
+        delegates=(("leaf", child.operation), ("unused", unused.operation)),
+    )
+    return parent, child, unused
+
+
 def literal_sample(binding, *, items=3, visits=3, children=None):
     return {
         "declaration": binding.declaration.id,
@@ -93,7 +104,8 @@ def assert_released(batch):
     assert not batch._sources
     assert not batch._roots
     assert not batch._digests
-    assert batch._projection_bytes is None
+    assert not batch._declaration_bytes
+    assert batch._projection_header_bytes is None
 
 
 def observed_validations(monkeypatch):
@@ -135,24 +147,122 @@ def test_bounded_batch_checks_every_root_without_compiling_each_emission(monkeyp
     assert_released(batch)
 
 
-def test_each_flush_uses_a_fresh_projection_from_admitted_bytes(monkeypatch):
-    binding = leaf_binding()
+@pytest.mark.parametrize("parent_first", [False, True])
+def test_each_group_and_flush_uses_fresh_nested_projection_from_admitted_bytes(
+    monkeypatch, parent_first
+):
+    parent, child, unused = projection_bindings()
+    expected = {
+        binding.declaration.id: canonical_json_bytes(project_bindings((binding,)))
+        for binding in (parent, child)
+    }
     original = growth_batch.validate_execution_samples
-    received = []
+    compile_original = growth._projection_contexts
+    compilations, received = [], []
+
+    def compile_projection(projection):
+        compilations.append(projection)
+        return compile_original(projection)
+
+    def containers(value):
+        if isinstance(value, dict):
+            yield value
+            for item in value.values():
+                yield from containers(item)
+        elif isinstance(value, list):
+            yield value
+            for item in value:
+                yield from containers(item)
 
     def validate(projection, identity, samples):
-        assert all(projection is not previous for previous in received)
+        assert canonical_json_bytes(projection) == expected[identity]
+        current = tuple(containers(projection))
+        assert {id(item) for item in current}.isdisjoint(
+            id(item) for previous in received for item in previous
+        )
+        before = len(compilations)
         original(projection, identity, samples)
-        received.append(projection)
+        assert len(compilations) == before + 1
+        assert compilations[-1] is projection
+        received.append(current)
+        # Retain and mutate every nested mapping/list, including unused metadata.
+        for item in current:
+            if isinstance(item, dict):
+                item["reader_mutation"] = True
+            else:
+                item.append("changed after this reader call")
         projection["format"] = "changed after this reader call"
 
+    monkeypatch.setattr(growth, "_projection_contexts", compile_projection)
     monkeypatch.setattr(growth_batch, "validate_execution_samples", validate)
-    with SampleBatch((binding.operation,), limit=1) as batch:
-        assert isinstance(batch._projection_bytes, bytes)
-        batch.sample(binding.operation, {"items": 2}, {"visits": 2})
-        batch.sample(binding.operation, {"items": 3}, {"visits": 3})
-    assert len(received) == 2
-    assert batch.validated_samples == 2
+    with SampleBatch((parent.operation,), limit=2, include_descendants=True) as batch:
+        assert isinstance(batch._projection_header_bytes, bytes)
+        assert set(batch._declaration_bytes) == {
+            binding.declaration.id for binding in (parent, child, unused)
+        }
+        assert all(isinstance(row, bytes) for row in batch._declaration_bytes.values())
+        for items in (2, 3):
+            leaf = literal_sample(child, items=items, visits=items)
+            root = literal_sample(
+                parent, items=items, visits=items, children={"leaf": [leaf], "unused": []}
+            )
+            pending = [(child, leaf), (parent, root)]
+            if parent_first:
+                pending.reverse()
+            for binding, sample in pending:
+                batch.receive(binding.operation, sample)
+            assert not batch._pending
+    assert len(compilations) == 5
+    assert len(received) == batch.validated_samples == batch.validation_calls == 4
+    assert_released(batch)
+
+
+def test_equal_projected_rows_still_require_separate_source_admissions(monkeypatch):
+    first, second = leaf_binding(), leaf_binding()
+    assert first.operation is not second.operation
+    assert first.project() == second.project()
+    expected = canonical_json_bytes(project_bindings((first,)))
+    original_project = growth_batch.project_bindings
+    original_validate = growth_batch.validate_execution_samples
+    admissions, projections = [], []
+
+    def project(bindings):
+        admissions.append(bindings)
+        return original_project(bindings)
+
+    def validate(projection, identity, samples):
+        assert canonical_json_bytes(projection) == expected
+        original_validate(projection, identity, samples)
+        projections.append(projection)
+        projection["declarations"][identity]["invariants"].append("Changed private reader row.")
+
+    monkeypatch.setattr(growth_batch, "project_bindings", project)
+    monkeypatch.setattr(growth_batch, "validate_execution_samples", validate)
+    for binding in (first, second):
+        with SampleBatch((binding.operation,), limit=1) as batch:
+            assert batch.source(binding.operation)[0] is binding
+            batch.receive(binding.operation, literal_sample(binding))
+        assert batch.validated_samples == batch.validation_calls == 1
+        assert_released(batch)
+    assert len(admissions) == len(projections) == 2
+    assert admissions[0][0] is first and admissions[1][0] is second
+    assert projections[0] is not projections[1]
+
+
+@pytest.mark.parametrize("after_flush", [False, True])
+def test_empty_exit_checks_unused_source_metadata_and_releases_projection(after_flush):
+    parent, child, unused = projection_bindings()
+    previous = unused.declaration.invariants
+    try:
+        with pytest.raises(ValueError, match="source binding"):
+            with SampleBatch((parent.operation,), limit=1, include_descendants=True) as batch:
+                if after_flush:
+                    batch.receive(child.operation, literal_sample(child))
+                assert not batch._pending
+                object.__setattr__(unused.declaration, "invariants", ("Changed unused scope.",))
+    finally:
+        object.__setattr__(unused.declaration, "invariants", previous)
+    assert batch.validated_samples == batch.validation_calls == int(after_flush)
     assert_released(batch)
 
 
