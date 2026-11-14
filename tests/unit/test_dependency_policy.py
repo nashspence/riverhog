@@ -85,8 +85,11 @@ def test_repo_owns_toolchain_python_lock_and_runtime_exports() -> None:
     locked = tomllib.loads((REPO_ROOT / "mise.lock").read_text(encoding="utf-8"))
     for tool, versions in locked["tools"].items():
         for version in versions:
-            assert version["platforms"], tool
-            for platform, download in version["platforms"].items():
+            platforms = {
+                key: download for key, download in version.items() if key.startswith("platforms.")
+            }
+            assert platforms, tool
+            for platform, download in platforms.items():
                 assert re.fullmatch(r"sha256:[0-9a-f]{64}", download.get("checksum", "")), (
                     tool,
                     platform,
