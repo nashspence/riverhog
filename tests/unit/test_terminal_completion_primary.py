@@ -365,6 +365,7 @@ def _exercise_completion(
         _runtime_work(monkeypatch) as work,
         _case(tmp_path, "segment", artifact_count=members) as case,
     ):
+        work.phase = "fixture_preparation"
         case.service.set_completion_requirement(case.collection_id, requirement)
         raw, anchor, bindings, states = primary(case, requirement, members, text_octets)
         _upload_provenance_journal(
@@ -503,6 +504,7 @@ def _exercise_completion(
                 upload = session.get(CollectionUploadRecord, case.collection_id)
                 assert not upload.provenance_closure_validated
                 assert upload.completion_receipt_json is None
+                assert case.service._primary_facts.retire(session, case.collection_id)
             _reclaim_primary(case)
             return
         _finish(case)
