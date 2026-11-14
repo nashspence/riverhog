@@ -1,0 +1,133 @@
+{
+  "attempt": 1,
+  "combined_stdout_stderr": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile.log",
+  "cwd": "/workspace/scratch/21c38f9cc56d/riverhog",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-tmp"
+  },
+  "files": [
+    {
+      "bytes": 575517,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile/adversarial-cases.json",
+      "sha256": "89cd7224552256b42c1768baac8eeb87a8f101ab2bd3feef150f6c53f0f51fbf"
+    },
+    {
+      "bytes": 28670,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile/baseline-reader-instrumented.py.txt",
+      "sha256": "f07adb2bede38f2f2f82d62ca2572c26a2eadd9915423b4a758fc9e1d2968754"
+    },
+    {
+      "bytes": 30407,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile/baseline-reader.py.txt",
+      "sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424"
+    },
+    {
+      "bytes": 34994,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile/behavior-equivalence.json",
+      "sha256": "f55a1b560867ae913bd1957c55c25f1cbc6bc271d9cbcfecb6f4a30aa1b67009"
+    },
+    {
+      "bytes": 13961,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile/input-manifest.json",
+      "sha256": "fdecfbd5a4262d8f64e866ebeb2103fafe71db16efbd1055d2875d9bafbf0c9b"
+    },
+    {
+      "bytes": 64792,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile/profile-script.py",
+      "sha256": "76c0bf8282daf4315132c807de5807879231b3aeae47c4bd7650ec5e7df1f3d5"
+    },
+    {
+      "bytes": 29732,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile/proposed-reader-instrumented.py.txt",
+      "sha256": "0aa13e4c6370cbf2d205eb2046c83abaaa8de184cc7af7b758747508f359c297"
+    },
+    {
+      "bytes": 31352,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile/proposed-reader.py.txt",
+      "sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40"
+    },
+    {
+      "bytes": 1971894,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile/run.json",
+      "sha256": "994f1e49a1c2802c97f741323276879d344b784894f4741e95abf61a9f684494"
+    },
+    {
+      "bytes": 247,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-lane.json",
+      "sha256": "a77a94d95252b21bd457e8ac8a65132499f04f4d5f6b48bf1a19ec4cc8207fe3"
+    },
+    {
+      "bytes": 833,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile.log",
+      "sha256": "c538c3edd6e0b2552e657bfe99b138f51cdbb8477dc27cce34706e329a51572c"
+    },
+    {
+      "bytes": 2035,
+      "path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-invocation.json",
+      "sha256": "775038102a1d9a7de5fe69c8b3fe38b82260f9b197a0a27f357ec122150895c8"
+    }
+  ],
+  "format": "external-numeric-evaluation-execution-receipt/v1",
+  "lane_exit_status": 0,
+  "lane_run_id": "8673aaa3514d46c0b6047c5383ab2e19",
+  "observed_original_wrapper_exit_status": 0,
+  "original_child_reported_exit_status": 0,
+  "product_execution": false,
+  "received_at": "2026-11-14T21:04:38.152655+00:00",
+  "scratch_cleanup": {
+    "profile_scratch_created": true,
+    "profile_scratch_path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-tmp/numeric-reader-profile-aafl6iro",
+    "profile_scratch_removed": true,
+    "temporary_root": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-tmp",
+    "temporary_root_finally_empty": true,
+    "temporary_root_initially_empty": true
+  },
+  "source_end": {
+    "source_clean": true,
+    "source_sha": "c4bf7532b7a0e91ac9ec384ff5893e81eae7bf01"
+  },
+  "source_start": {
+    "source_clean": true,
+    "source_sha": "c4bf7532b7a0e91ac9ec384ff5893e81eae7bf01"
+  },
+  "temporary_root_empty_at_original_exit": true,
+  "temporary_root_removed_after_wrapper_join": true,
+  "whole_unit_suite": false,
+  "wrapper_argv": [
+    ".venv/bin/python",
+    "-B",
+    "scripts/ci_timing.py",
+    "run",
+    "--lane",
+    "numeric-evaluation-reader",
+    "--output",
+    "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-lane.json",
+    "--",
+    ".venv/bin/python",
+    "-B",
+    "/workspace/scratch/21c38f9cc56d/numeric_evaluation_profile.py",
+    "--checkout",
+    "/workspace/scratch/21c38f9cc56d/riverhog",
+    "--baseline-reader",
+    "/workspace/scratch/21c38f9cc56d/numeric-evaluation-audit/baseline-reader.py.txt",
+    "--projection",
+    "/workspace/scratch/21c38f9cc56d/observer-reference-replay-input/projection.json",
+    "--samples",
+    "/workspace/scratch/21c38f9cc56d/observer-lifetime-baseline-received/samples.json",
+    "--groups-receipt",
+    "/workspace/scratch/21c38f9cc56d/observer-lifetime-helper-replay/run.json",
+    "--output",
+    "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile",
+    "--expected-source",
+    "c4bf7532b7a0e91ac9ec384ff5893e81eae7bf01",
+    "--expected-reader-sha",
+    "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40",
+    "--expected-context-tests-sha",
+    "2650d46fa1e23137bf1958adc8dffe4f02e3da83ffbb2e129b8b9984bb724870",
+    "--expected-numeric-tests-sha",
+    "8e12500aeccd012920c8333a6fb4ae36359dc0ce99471ab60c6efb9c0aae0226",
+    "--uv",
+    "/workspace/scratch/21c38f9cc56d/tools/uv/bin/uv"
+  ]
+}

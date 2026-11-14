@@ -33,6 +33,8 @@ Each eligible parsed context retains one additional frozen set of dimension name
 
 This exchanges repeated transient declaration collections for bounded metadata associated with each independently parsed context. Construction counts and cumulative entries are work accounting, not allocator measurements, bytes allocated, peak memory, or RSS. A live-observation scan remains separate from a declaration-metadata construction.
 
+Eligible names are indexed even when a parsed context receives no numeric evaluation. Pure projection validation therefore gains some metadata construction work. That work is included in the complete retained execution-reader comparison, but no separate projection-only or source-bound timing experiment is claimed. Existing admissions and limits remain unchanged; there is no new aggregate metadata cap.
+
 ## Evidence boundary
 
 The experiment uses the exact accepted public reader as baseline and the proposed reader as separate modules on one clean proposal checkout. The retained workload has 46 ordered groups from the prior helper-replay receipt and samples from the prior actual three-turn capture: 122 independent roots and 1,078 total sample nodes across roots and descendants.

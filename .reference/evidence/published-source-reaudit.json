@@ -1,0 +1,93 @@
+{
+  "accepted_overlay_reference": "0e9bef9445213aadadb7218fc6e268cc324f35f3",
+  "audited_integration_base": "824383a8a8143aac033f86dd1562a5979f6ec4da",
+  "checked_at": "2026-11-14T21:05:35.668707+00:00",
+  "findings": "The latest published integration branch and PR head remain at the explicitly requested 824383a base; no later public checkpoint is available for source audit. The accepted public reader/test overlay remains the comparison baseline. This is an audit of available published source, not the unpushed local checkpoint.",
+  "format": "external-numeric-evaluation-published-source-reaudit/v1",
+  "integration_branch": "codex/964-session-owner",
+  "owning_comment": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6883707193",
+  "paths": [
+    {
+      "equal_to_accepted_reference": false,
+      "equal_to_audited_integration_base": true,
+      "path": "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py",
+      "published_checkpoint_sha256": "1adc9766c8d0c97cf97ce926695e6c38dc7d50458725e8947b57bfc94c90e376"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py",
+      "published_checkpoint_sha256": "c457953e788b1e47b743ace9997c4774e04ce058e69dbe6897f6fdb7e495d3fb"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "AGENTS.md",
+      "published_checkpoint_sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "README.md",
+      "published_checkpoint_sha256": "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "mise.toml",
+      "published_checkpoint_sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "uv.lock",
+      "published_checkpoint_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "pyproject.toml",
+      "published_checkpoint_sha256": "393c618205afb2234fa7518b4f4762112e09c1959b641fc1344e74bf285c2631"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "scripts/ci_timing.py",
+      "published_checkpoint_sha256": "094484571186e28601ed7da51511d4bd59182dd5bd98c138868e82bd216c8895"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "scripts/validation_identity.py",
+      "published_checkpoint_sha256": "4bdf7f5161b1557f025d98c958140c8b7184ce7c81ae5d2304029fcd0beaf3de"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "scripts/validation_process.py",
+      "published_checkpoint_sha256": "93eb45cb32341ff14ec6375d201d867fcad3c680aef8a17952c429b5f161660d"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "tests/unit/test_growth_declarations.py",
+      "published_checkpoint_sha256": "551462985bd4be8d150ba514c8ae8af359c8ad304c6c1871909e55de9bbb4b4c"
+    },
+    {
+      "equal_to_accepted_reference": true,
+      "equal_to_audited_integration_base": true,
+      "path": "tests/unit/test_growth_bounds.py",
+      "published_checkpoint_sha256": "f97f4507f10ad50532dd61853faa85e08c0c409bcb9d4f4f72c773df165e6a26"
+    }
+  ],
+  "pre_publication_remote_checked_at": "2026-11-14T21:14:17.753717+00:00",
+  "pre_publication_remote_refs": {
+    "refs/heads/codex/964-session-owner": "824383a8a8143aac033f86dd1562a5979f6ec4da",
+    "refs/pull/979/head": "824383a8a8143aac033f86dd1562a5979f6ec4da"
+  },
+  "published_checkpoint": "824383a8a8143aac033f86dd1562a5979f6ec4da",
+  "reader_baseline_sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424",
+  "reported_local_checkpoint": "b47858a54fadd3f1ddcd7aeff39d920405c714ec",
+  "reported_local_checkpoint_inspected": false,
+  "requested_next_checkpoint_published": false
+}

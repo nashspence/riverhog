@@ -1,0 +1,1494 @@
+"""Finite numeric-reader comparison over one frozen 46-group sample replay.
+
+The exact accepted baseline and checkout proposal are loaded as isolated modules.
+Temporary, reversible AST copies provide work counts and ordered transcripts;
+separate unmodified modules provide one elapsed observation per reader. No product
+operation, fixture, declaration projection, warm-up, or statistical trial runs.
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import hashlib
+import importlib
+import json
+import os
+import platform
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import traceback
+from collections import Counter
+from copy import deepcopy
+from pathlib import Path
+from types import ModuleType
+
+BASE_SOURCE = "0e9bef9445213aadadb7218fc6e268cc324f35f3"
+BASE_READER_SHA = "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424"
+PROJECTION_SHA = "f8eae73e293eac5e9ed7dcf01d706d9176d4f198e13ef61203d06d0df41c0ef1"
+SAMPLES_SHA = "a9e69163ba9aac6c5cefd4f582c609997217421528840694449f24007f6c2b20"
+GROUPS_RECEIPT_SHA = "b62367b740cf428e5c7d39f8233237e63ca7ed226f65951b926de9e91cb6a844"
+PREFIX = "_external_numeric_profile_"
+VALUE = PREFIX + "value"
+CONTEXT = PREFIX + "context"
+EXPRESSION = PREFIX + "expression"
+PREDICATE = PREFIX + "predicate"
+GENERATOR = PREFIX + "generator"
+BOUND = PREFIX + "bound"
+NODE = PREFIX + "node"
+NUMERIC = PREFIX + "numeric"
+COMPOSITION = PREFIX + "composition"
+HELPERS = (VALUE, CONTEXT, EXPRESSION, PREDICATE, GENERATOR, BOUND, NODE, NUMERIC, COMPOSITION)
+
+CONSTRUCTORS = {
+    "live_dimension_keyset": set,
+    "declared_dimension_set": set,
+    "numeric_bounds_map": dict,
+    "parsed_dimension_map": dict,
+    "parsed_bound_map": dict,
+    "parsed_numeric_dimension_frozenset": frozenset,
+    "live_metric_keyset": set,
+    "declared_metric_set": set,
+    "numeric_delegate_arguments": dict,
+    "composition_delegate_arguments": dict,
+}
+CHANGED_CONSTRUCTORS = {
+    "declared_dimension_set",
+    "numeric_bounds_map",
+    "parsed_numeric_dimension_frozenset",
+}
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def json_bytes(value):
+    # Adversarial 3.0 must remain a float; canonical JSON intentionally normalizes it.
+    return json.dumps(
+        value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
+    ).encode("utf-8")
+
+
+def walk(sample):
+    yield sample
+    for children in sample["delegates"].values():
+        for child in children:
+            yield from walk(child)
+
+
+class Transcript:
+    def __init__(self):
+        self.count = 0
+        self.digest = hashlib.sha256()
+
+    def add(self, *event):
+        self.count += 1
+        self.digest.update(repr(event).encode("utf-8") + b"\n")
+
+    def result(self):
+        return {"events": self.count, "sha256": self.digest.hexdigest()}
+
+
+class NumericTransform(ast.NodeTransformer):
+    """Observe actual results once; retain every original expression and branch."""
+
+    def __init__(self):
+        self.path = ()
+        self.sites = []
+        specs = (
+            (("_evaluate",), "set(dimensions)", "live_dimension_keyset"),
+            (
+                ("_evaluate",),
+                "{d.name for d in context.declaration.dimensions}",
+                "declared_dimension_set",
+            ),
+            (
+                ("_evaluate",),
+                "{bound.metric: bound for bound in context.declaration.bounds}",
+                "numeric_bounds_map",
+            ),
+            (
+                ("_evaluate",),
+                "any(type(value) is not int or value < 0 for value in dimensions.values())",
+                "dimension_values_any",
+            ),
+            (
+                ("_projection_contexts",),
+                "{d.name: d.unit for d in declaration.dimensions}",
+                "parsed_dimension_map",
+            ),
+            (
+                ("_projection_contexts",),
+                "{b.metric: b for b in declaration.bounds}",
+                "parsed_bound_map",
+            ),
+            (
+                ("_projection_contexts",),
+                "frozenset(dimension_units)",
+                "parsed_numeric_dimension_frozenset",
+            ),
+            (("_validate_sample",), "set(metrics)", "live_metric_keyset"),
+            (
+                ("_validate_sample",),
+                "{b.metric for b in context.declaration.bounds}",
+                "declared_metric_set",
+            ),
+            (
+                ("_validate_sample",),
+                "any(type(value) is not int or value < 0 for value in metrics.values())",
+                "metric_values_any",
+            ),
+            (
+                ("_evaluate_expression", "evaluate"),
+                "{name: evaluate(term) for name, term in expression.arguments}",
+                "numeric_delegate_arguments",
+            ),
+            (
+                ("validate_execution_samples", "check", "composition"),
+                "{name: _evaluate_expression(term, context, row['dimensions']) "
+                "for name, term in expression.arguments}",
+                "composition_delegate_arguments",
+            ),
+            (
+                ("validate_execution_samples", "check"),
+                "canonical_json_bytes(rows[identity])",
+                "canonical_bytes",
+            ),
+        )
+        self.patterns = {
+            (path, ast.dump(ast.parse(expression, mode="eval").body)): site
+            for path, expression, site in specs
+        }
+        generators = (
+            (
+                ("_evaluate",),
+                "(type(value) is not int or value < 0 for value in dimensions.values())",
+                "dimension_values",
+            ),
+            (
+                ("_validate_sample",),
+                "(type(value) is not int or value < 0 for value in metrics.values())",
+                "metric_values",
+            ),
+            (
+                ("_projection_contexts",),
+                "(type(dimension.name) is str for dimension in declaration.dimensions)",
+                "dimension_eligibility",
+            ),
+            (
+                ("_projection_contexts",),
+                "(type(bound.metric) is str for bound in declaration.bounds)",
+                "bound_eligibility",
+            ),
+        )
+        self.generators = {
+            (path, ast.dump(ast.parse(expression, mode="eval").body)): site
+            for path, expression, site in generators
+        }
+
+    def site(self, name, node):
+        original = RemoveInstrumentation().visit(deepcopy(node))
+        self.sites.append(
+            {
+                "site": name,
+                "function": ".".join(self.path),
+                "line": node.lineno,
+                "original": ast.unparse(original),
+            }
+        )
+
+    @staticmethod
+    def call(name, args, node):
+        return ast.copy_location(
+            ast.Call(func=ast.Name(id=name, ctx=ast.Load()), args=args, keywords=[]), node
+        )
+
+    def visit_FunctionDef(self, node):
+        previous = self.path
+        self.path = (*self.path, node.name)
+        self.generic_visit(node)
+        decorator = None
+        if self.path == ("validate_execution_samples", "check"):
+            decorator = ast.Name(id=NODE, ctx=ast.Load())
+        elif self.path == ("_evaluate_expression", "evaluate"):
+            decorator = self.call(
+                NUMERIC,
+                [ast.Name(id="context", ctx=ast.Load()), ast.Name(id="dimensions", ctx=ast.Load())],
+                node,
+            )
+        elif self.path == ("validate_execution_samples", "check", "composition"):
+            decorator = self.call(COMPOSITION, [ast.Name(id="context", ctx=ast.Load())], node)
+        if decorator is not None:
+            assert not node.decorator_list
+            self.site("decorator:" + node.name, node)
+            node.decorator_list.append(ast.copy_location(decorator, node))
+        self.path = previous
+        return node
+
+    def visit(self, node):
+        # Save the original shape before instrumenting any child expression.
+        key = (self.path, ast.dump(node)) if isinstance(node, ast.expr) else None
+        site = self.patterns.get(key)
+        result = super().visit(node)
+        if site is not None:
+            self.site(site, node)
+            result = self.call(VALUE, [ast.Constant(value=site), result], node)
+        return result
+
+    def visit_GeneratorExp(self, node):
+        site = self.generators.get((self.path, ast.dump(node)))
+        self.generic_visit(node)
+        if site is not None:
+            self.site(site + "_generator", node)
+            node.elt = self.call(PREDICATE, [ast.Constant(value=site), node.elt], node.elt)
+            return self.call(GENERATOR, [ast.Constant(value=site), node], node)
+        return node
+
+    def visit_Call(self, node):
+        self.generic_visit(node)
+        if isinstance(node.func, ast.Name):
+            if self.path == ("_projection_contexts",) and node.func.id == "_Context":
+                self.site("parsed_context", node)
+                return self.call(CONTEXT, [node], node)
+            if self.path == ("_read_expression",) and node.func.id == "Expression":
+                self.site("parsed_expression", node)
+                return self.call(EXPRESSION, [node], node)
+        return node
+
+    def visit_Assign(self, node):
+        original_value = ast.dump(node.value)
+        self.generic_visit(node)
+        if self.path == ("_validate_sample",) and original_value == ast.dump(
+            ast.parse("_evaluate(context, bound.metric, dimensions)", mode="eval").body
+        ):
+            self.site("metric_obligation", node)
+            node.value = self.call(
+                BOUND,
+                [
+                    node.value,
+                    ast.Name(id="context", ctx=ast.Load()),
+                    ast.Name(id="bound", ctx=ast.Load()),
+                    ast.Name(id="metrics", ctx=ast.Load()),
+                ],
+                node.value,
+            )
+        if self.path == ("_evaluate",) and original_value == ast.dump(
+            ast.parse("context.numeric_bounds_by_metric", mode="eval").body
+        ):
+            self.site("numeric_bounds_alias_read", node)
+            node.value = self.call(
+                VALUE, [ast.Constant(value="numeric_bounds_alias_read"), node.value], node.value
+            )
+        return node
+
+    def visit_IfExp(self, node):
+        selected = self.path == ("_evaluate",) and ast.dump(node.body) == ast.dump(
+            ast.parse("context.numeric_dimension_names", mode="eval").body
+        )
+        self.generic_visit(node)
+        if selected:
+            self.site("numeric_dimension_names_use", node)
+            node.body = self.call(
+                VALUE, [ast.Constant(value="numeric_dimension_names_use"), node.body], node.body
+            )
+        return node
+
+
+class RemoveInstrumentation(ast.NodeTransformer):
+    def visit_FunctionDef(self, node):
+        self.generic_visit(node)
+        node.decorator_list = [
+            item
+            for item in node.decorator_list
+            if not (isinstance(item, ast.Name) and item.id == NODE)
+            and not (
+                isinstance(item, ast.Call)
+                and isinstance(item.func, ast.Name)
+                and item.func.id in (NUMERIC, COMPOSITION)
+            )
+        ]
+        return node
+
+    def visit_Call(self, node):
+        self.generic_visit(node)
+        if isinstance(node.func, ast.Name):
+            if node.func.id in (VALUE, PREDICATE, GENERATOR):
+                return node.args[1]
+            if node.func.id in (CONTEXT, EXPRESSION, BOUND):
+                return node.args[0]
+        return node
+
+
+class Diagnostic:
+    """Diagnostic-only counters. No callback changes a value or acceptance decision."""
+
+    def __init__(self, node_paths):
+        self.node_paths = node_paths
+        self.current_node = None
+        self.current_group = None
+        self.active_compile = None
+        self.compilations = []
+        self.contexts = Counter()
+        self.nodes = Counter()
+        self.units = Counter()
+        self.unit_edges = Counter()
+        self.numeric_edges = Counter()
+        self.composition_edges = Counter()
+        self.numeric_metrics = Counter()
+        self.numeric_operators = Counter()
+        self.parsed_operators = Counter()
+        self.expression_tokens = {}
+        self.reader_receipts = []
+        self.counts = Counter()
+        self.metadata = Counter()
+        self.predicates = {
+            name: {"generators": 0, "inspections": 0, "true": 0, "false": 0}
+            for name in (
+                "dimension_values",
+                "metric_values",
+                "dimension_eligibility",
+                "bound_eligibility",
+            )
+        }
+        self.constructors = {site: {"builds": 0, "entries": 0} for site in CONSTRUCTORS}
+        self.streams = {
+            name: Transcript()
+            for name in (
+                "parsed_expressions",
+                "unit_entries",
+                "unit_returns",
+                "node_entries",
+                "node_returns",
+                "metric_obligations",
+                "numeric_entries",
+                "numeric_returns",
+                "numeric_sessions",
+                "expression_entries",
+                "expression_returns",
+                "composition_entries",
+                "composition_returns",
+                "canonical_calls",
+            )
+        }
+        self.numeric_depth = 0
+
+    def value(self, site, actual):
+        if site in CONSTRUCTORS:
+            assert type(actual) is CONSTRUCTORS[site]
+            self.constructors[site]["builds"] += 1
+            self.constructors[site]["entries"] += len(actual)
+        elif site in ("dimension_values_any", "metric_values_any"):
+            assert type(actual) is bool
+            self.counts[site + "_calls"] += 1
+            self.counts[site + ("_true" if actual else "_false_exhaustions")] += 1
+        elif site == "canonical_bytes":
+            assert type(actual) is bytes and self.current_node is not None
+            self.counts["canonical_json_calls"] += 1
+            self.counts["canonical_json_bytes_returned"] += len(actual)
+            self.streams["canonical_calls"].add(self.current_node, len(actual))
+        elif site == "numeric_bounds_alias_read":
+            self.metadata[site] += 1
+            self.metadata[
+                "numeric_bounds_alias_uses" if actual is not None else "numeric_bounds_alias_none"
+            ] += 1
+        elif site == "numeric_dimension_names_use":
+            assert type(actual) is frozenset
+            self.metadata[site] += 1
+        else:
+            raise AssertionError(site)
+        return actual
+
+    def predicate(self, site, actual):
+        assert type(actual) is bool
+        row = self.predicates[site]
+        row["inspections"] += 1
+        row["true" if actual else "false"] += 1
+        return actual
+
+    def generator(self, site, actual):
+        self.predicates[site]["generators"] += 1
+        return actual
+
+    def context(self, actual):
+        assert self.active_compile is not None
+        declaration = actual.declaration
+        self.contexts[declaration.id] += 1
+        self.counts["context_dimension_entries"] += len(declaration.dimensions)
+        self.counts["context_bound_entries"] += len(declaration.bounds)
+        self.compilations[self.active_compile]["contexts"] += 1
+        names = getattr(actual, "numeric_dimension_names", None)
+        bounds = getattr(actual, "numeric_bounds_by_metric", None)
+        if names is not None:
+            assert type(names) is frozenset and len(names) == len(actual.dimension_units)
+            self.metadata["contexts_with_numeric_names"] += 1
+            self.metadata["numeric_name_entries_retained"] += len(names)
+        if bounds is not None:
+            assert bounds is actual.bounds_by_metric
+            self.metadata["contexts_with_numeric_bound_alias"] += 1
+        return actual
+
+    def expression(self, actual):
+        assert self.active_compile is not None
+        token = self.counts["parsed_expressions"]
+        self.counts["parsed_expressions"] += 1
+        self.expression_tokens[id(actual)] = token
+        self.parsed_operators[actual.op] += 1
+        self.streams["parsed_expressions"].add(
+            self.active_compile,
+            token,
+            actual.op,
+            actual.name,
+            actual.metric,
+            actual.value,
+            actual.unit,
+            tuple(self.expression_tokens[id(term)] for term in actual.terms),
+            tuple((name, self.expression_tokens[id(term)]) for name, term in actual.arguments),
+        )
+        return actual
+
+    def bound(self, actual, context, bound, metrics):
+        self.counts["metric_obligations"] += 1
+        self.streams["metric_obligations"].add(
+            self.current_node,
+            context.declaration.id,
+            bound.metric,
+            bound.relation,
+            metrics[bound.metric],
+            actual,
+        )
+        return actual
+
+    def node(self, original):
+        def check(identity, sample, depth, budget):
+            path = self.node_paths[id(sample)]
+            previous, self.current_node = self.current_node, path
+            self.streams["node_entries"].add(path, identity, depth, budget[0])
+            try:
+                result = original(identity, sample, depth, budget)
+                self.streams["node_returns"].add(path, identity, depth, budget[0], result)
+                return result
+            finally:
+                self.current_node = previous
+
+        return check
+
+    def numeric(self, context, dimensions):
+        session = self.counts["numeric_expression_sessions"]
+        self.counts["numeric_expression_sessions"] += 1
+        self.streams["numeric_sessions"].add(
+            session,
+            self.current_node,
+            context.declaration.id,
+            tuple(dimensions.items()),
+        )
+
+        def decorate(original):
+            depth = 0
+
+            def evaluate(expression):
+                nonlocal depth
+                token = self.expression_tokens[id(expression)]
+                event = (session, depth, token)
+                self.counts["numeric_expression_calls"] += 1
+                self.numeric_operators[expression.op] += 1
+                self.streams["expression_entries"].add(*event)
+                if expression.op == "delegate":
+                    child = context.delegates[expression.name]
+                    self.numeric_edges[
+                        (
+                            context.declaration.id,
+                            expression.name,
+                            child.declaration.id,
+                            expression.metric,
+                        )
+                    ] += 1
+                depth += 1
+                try:
+                    result = original(expression)
+                    self.counts["numeric_expression_returns"] += 1
+                    self.streams["expression_returns"].add(*event, result)
+                    return result
+                finally:
+                    depth -= 1
+
+            return evaluate
+
+        return decorate
+
+    def composition(self, context):
+        def decorate(original):
+            depth = 0
+
+            def compose(expression):
+                nonlocal depth
+                event = (self.current_node, depth, self.expression_tokens[id(expression)])
+                self.counts["composition_calls"] += 1
+                self.streams["composition_entries"].add(*event)
+                if expression.op == "delegate":
+                    child = context.delegates[expression.name]
+                    self.composition_edges[
+                        (
+                            context.declaration.id,
+                            expression.name,
+                            child.declaration.id,
+                            expression.metric,
+                        )
+                    ] += 1
+                depth += 1
+                try:
+                    result = original(expression)
+                    self.counts["composition_returns"] += 1
+                    self.streams["composition_returns"].add(*event, result)
+                    return result
+                finally:
+                    depth -= 1
+
+            return compose
+
+        return decorate
+
+    def attach(self, module):
+        original_compile, original_unit = module._projection_contexts, module._expression_unit
+        original_node, original_reader = module._validate_sample, module.validate_execution_samples
+        original_evaluate = module._evaluate
+
+        def compile_projection(projection):
+            assert self.active_compile is None
+            self.active_compile = len(self.compilations)
+            self.compilations.append(
+                {"declarations": len(projection["declarations"]), "contexts": 0}
+            )
+            try:
+                result = original_compile(projection)
+                row = self.compilations[self.active_compile]
+                assert row["contexts"] == row["declarations"] == len(result)
+                return result
+            finally:
+                self.active_compile = None
+
+        def expression_unit(expression, context, stack, relation):
+            assert self.active_compile is not None
+            identity = context.declaration.id
+            event = (
+                self.active_compile,
+                identity,
+                stack,
+                relation,
+                self.expression_tokens[id(expression)],
+            )
+            self.counts["expression_unit_calls"] += 1
+            self.units[identity] += 1
+            self.streams["unit_entries"].add(*event)
+            if expression.op == "delegate":
+                child = context.delegates[expression.name]
+                self.unit_edges[
+                    (identity, expression.name, child.declaration.id, expression.metric, relation)
+                ] += 1
+            result = original_unit(expression, context, stack, relation)
+            self.counts["expression_unit_returns"] += 1
+            self.streams["unit_returns"].add(*event, result)
+            return result
+
+        def evaluate(context, metric, dimensions):
+            event = (
+                self.current_node,
+                self.numeric_depth,
+                context.declaration.id,
+                metric,
+                tuple(dimensions.items()),
+            )
+            self.counts["numeric_evaluate_calls"] += 1
+            self.counts["numeric_evaluate_nonrecursive_calls"] += self.numeric_depth == 0
+            self.numeric_metrics[(context.declaration.id, metric)] += 1
+            self.streams["numeric_entries"].add(*event)
+            self.numeric_depth += 1
+            try:
+                result = original_evaluate(context, metric, dimensions)
+                self.counts["numeric_evaluate_returns"] += 1
+                self.streams["numeric_returns"].add(*event, result)
+                return result
+            finally:
+                self.numeric_depth -= 1
+
+        def validate_node(context, dimensions, metrics):
+            result = original_node(context, dimensions, metrics)
+            self.nodes[context.declaration.id] += 1
+            return result
+
+        def reader(projection, declaration, samples):
+            assert self.current_group is None
+            self.current_group = len(self.reader_receipts)
+            try:
+                result = original_reader(projection, declaration, samples)
+                self.reader_receipts.append(
+                    (declaration, len(projection["declarations"]), tuple(samples))
+                )
+                return result
+            finally:
+                self.current_group = None
+
+        module._projection_contexts = compile_projection
+        module._expression_unit = expression_unit
+        module._evaluate = evaluate
+        module._validate_sample = validate_node
+        module.validate_execution_samples = reader
+
+    def result(self):
+        assert self.numeric_depth == 0 and self.current_node is None
+        assert self.active_compile is None and self.current_group is None
+        for name in ("expression_unit", "numeric_evaluate", "numeric_expression", "composition"):
+            assert self.counts[name + "_calls"] == self.counts[name + "_returns"]
+
+        def edges(counter, *, relation=False):
+            return [
+                {
+                    "parent": key[0],
+                    "tag": key[1],
+                    "child": key[2],
+                    "metric": key[3],
+                    **({"relation": key[4]} if relation else {}),
+                    "visits": count,
+                }
+                for key, count in sorted(counter.items())
+            ]
+
+        required = {
+            **dict(self.counts),
+            "compilation_calls": len(self.compilations),
+            "compilations": self.compilations,
+            "parsed_contexts": sum(self.contexts.values()),
+            "contexts_by_declaration": dict(self.contexts),
+            "parsed_expression_operators": dict(self.parsed_operators),
+            "unit_visits_by_declaration": dict(self.units),
+            "unit_delegate_edges": edges(self.unit_edges, relation=True),
+            "numeric_delegate_edges": edges(self.numeric_edges),
+            "composition_delegate_edges": edges(self.composition_edges),
+            "numeric_calls_by_metric": [
+                {"declaration": key[0], "metric": key[1], "calls": value}
+                for key, value in sorted(self.numeric_metrics.items())
+            ],
+            "numeric_expression_operators": dict(self.numeric_operators),
+            "public_reader_calls": len(self.reader_receipts),
+            "public_reader_root_occurrences": sum(len(row[2]) for row in self.reader_receipts),
+            "successful_node_checks": sum(self.nodes.values()),
+            "nodes_by_declaration": dict(self.nodes),
+            "constructors": {
+                site: value
+                for site, value in self.constructors.items()
+                if site not in CHANGED_CONSTRUCTORS
+            },
+            "live_predicates": {
+                site: self.predicates[site] for site in ("dimension_values", "metric_values")
+            },
+            "ordered_transcripts": {name: value.result() for name, value in self.streams.items()},
+        }
+        metadata = {
+            "constructors": {
+                site: value
+                for site, value in self.constructors.items()
+                if site in CHANGED_CONSTRUCTORS
+            },
+            "eligibility_predicates": {
+                site: self.predicates[site]
+                for site in ("dimension_eligibility", "bound_eligibility")
+            },
+            "counts": dict(self.metadata),
+        }
+        return {"required_work": required, "numeric_metadata": metadata}
+
+
+def make_module(name, source, filename, *, diagnostic=None, proposal=False):
+    module = ModuleType(name)
+    module.__file__ = str(filename)
+    module.__package__ = ""
+    sys.modules[name] = module
+    manifest = None
+    if diagnostic is None:
+        code = compile(source, str(filename), "exec")
+    else:
+        original = ast.parse(source, filename=str(filename))
+        assert all(
+            not isinstance(node, ast.Name) or node.id not in HELPERS for node in ast.walk(original)
+        )
+        transformer = NumericTransform()
+        transformed = transformer.visit(deepcopy(original))
+        ast.fix_missing_locations(transformed)
+        restored = RemoveInstrumentation().visit(deepcopy(transformed))
+        assert ast.dump(restored) == ast.dump(original)
+        expected = Counter(
+            {site: 1 for site in CONSTRUCTORS if site != "parsed_numeric_dimension_frozenset"}
+        )
+        expected.update(
+            {
+                "dimension_values_any": 1,
+                "metric_values_any": 1,
+                "canonical_bytes": 1,
+                "dimension_values_generator": 1,
+                "metric_values_generator": 1,
+                "parsed_context": 1,
+                "parsed_expression": 4,
+                "metric_obligation": 1,
+                "decorator:check": 1,
+                "decorator:evaluate": 1,
+                "decorator:composition": 1,
+            }
+        )
+        if proposal:
+            expected.update(
+                {
+                    "parsed_numeric_dimension_frozenset": 1,
+                    "dimension_eligibility_generator": 1,
+                    "bound_eligibility_generator": 1,
+                    "numeric_bounds_alias_read": 1,
+                    "numeric_dimension_names_use": 1,
+                }
+            )
+        assert Counter(site["site"] for site in transformer.sites) == expected
+        callbacks = {
+            VALUE: diagnostic.value,
+            CONTEXT: diagnostic.context,
+            EXPRESSION: diagnostic.expression,
+            PREDICATE: diagnostic.predicate,
+            GENERATOR: diagnostic.generator,
+            BOUND: diagnostic.bound,
+            NODE: diagnostic.node,
+            NUMERIC: diagnostic.numeric,
+            COMPOSITION: diagnostic.composition,
+        }
+        module.__dict__.update(callbacks)
+        code = compile(transformed, str(filename), "exec")
+        instrumented = ast.unparse(transformed) + "\n"
+        manifest = {
+            "sites": transformer.sites,
+            "inverse_transform_matches_original_ast": True,
+            "instrumented_source": instrumented,
+            "instrumented_source_sha256": sha(instrumented.encode()),
+        }
+    exec(code, module.__dict__)
+    assert Path(module.__file__).resolve() == Path(filename).resolve()
+    if diagnostic is not None:
+        diagnostic.attach(module)
+    return module, manifest
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in (
+        "checkout",
+        "baseline-reader",
+        "projection",
+        "samples",
+        "groups-receipt",
+        "output",
+        "uv",
+    ):
+        parser.add_argument("--" + name, type=Path, required=True)
+    for name in (
+        "expected-source",
+        "expected-reader-sha",
+        "expected-context-tests-sha",
+        "expected-numeric-tests-sha",
+    ):
+        parser.add_argument("--" + name, required=True)
+    args = parser.parse_args()
+    checkout, output = args.checkout.resolve(), args.output.resolve()
+    assert not output.is_relative_to(checkout)
+    output.mkdir(parents=True, exist_ok=False)
+    shutil.copyfile(__file__, output / "profile-script.py")
+    sys.path.insert(0, str(checkout))
+
+    import riverhog_canonical_json as canonical_owner
+    import riverhog_growth_contracts as installed_reader
+
+    from scripts import validation_identity as identity_owner
+
+    canonical_json_bytes = canonical_owner.canonical_json_bytes
+    source_identity = identity_owner.source_identity
+
+    def write(name, value):
+        (output / name).write_bytes(canonical_json_bytes(value))
+
+    report = {
+        "format": "riverhog-numeric-evaluation-reader-profile/v1",
+        "script_sha256": sha(Path(__file__).read_bytes()),
+        "source_start": source_identity(checkout),
+        "baseline_reader_origin_source": BASE_SOURCE,
+        "conditions": {
+            "python": platform.python_version(),
+            "executable": sys.executable,
+            "uv": subprocess.check_output([str(args.uv), "--version"], text=True).strip(),
+            "timing_run_id": os.environ.get("RIVERHOG_CI_RUN_ID"),
+            "timing_lane": os.environ.get("RIVERHOG_CI_LANE"),
+            "product_operations": 0,
+            "product_fixtures": 0,
+            "fresh_source_projection_calls": 0,
+            "elapsed_observations_per_reader": 1,
+            "diagnostic_passes_per_reader": 1,
+            "timing_target": None,
+            "statistical_speed_claim": False,
+            "execution_scope": (
+                "All 46 ordered public validate_execution_samples calls, including each fresh "
+                "parse, typed construction, graph/unit checks, canonical digest verification, "
+                "live numeric checks, and every root/descendant composition check."
+            ),
+            "elapsed_excluded": (
+                "Imports, module construction, input decoding/copying, behavior comparisons, "
+                "diagnostics, canonical input-preservation checks, report writing, and product "
+                "execution."
+            ),
+            "diagnostic_scope": (
+                "Temporary AST copies wrap actual constructor/predicate/results and decorate "
+                "recursive local functions. Every original expression is evaluated once in its "
+                "original branch. Separate wrappers trace the original unit/numeric/node "
+                "functions. Diagnostic callbacks inspect only valid retained plain JSON; "
+                "arbitrary Mapping controls use unmodified readers."
+            ),
+            "diagnostic_transcripts": (
+                "Ordered expression-construction identities, numeric entries/returns, per-bound "
+                "observations, and unit/composition/node events are hashed from small Python "
+                "tuples. Numeric argument snapshots are diagnostic-only. No second canonical "
+                "serialization is performed per visited sample node."
+            ),
+            "construction_accounting": (
+                "Executed collection-construction counts and cumulative cardinalities at named "
+                "sites. These are not allocation bytes, RSS, peak-memory measurements, or "
+                "predictions. Bound aliases do not construct entry copies."
+            ),
+            "generator_accounting": (
+                "Inspections count actual predicate evaluations; generators count actual "
+                "generator creation; false any() results count completed exhaustive scans on "
+                "this valid workload. Generator resume attempts, including final StopIteration, "
+                "are not measured as value inspections."
+            ),
+            "timing_source": (
+                "Exact unmodified isolated reader modules sharing the unchanged canonical owner. "
+                "Each reader receives independently decoded copies of identical bytes."
+            ),
+            "reader_labels": ["baseline-reader", "proposed-reader"],
+            "pass_order": [
+                "diagnostic:baseline-reader",
+                "diagnostic:proposed-reader",
+                "elapsed:baseline-reader",
+                "elapsed:proposed-reader",
+            ],
+            "order_effects": (
+                "One observation per reader in fixed order; interpreter/allocator/cache and host "
+                "scheduling effects remain possible. Diagnostic elapsed values are overhead "
+                "receipts, not speed comparisons."
+            ),
+        },
+        "measurements": {},
+        "cleanup": {"profile_scratch_created": False, "profile_scratch_removed": False},
+        "state": "running",
+    }
+    write("run.json", report)
+    status, scratch = 1, None
+    pinned_files = {}
+    try:
+        assert report["source_start"] == {"source_sha": args.expected_source, "source_clean": True}
+        assert report["conditions"]["python"] == "3.12.3"
+        assert report["conditions"]["uv"].split()[:2] == ["uv", "0.11.24"]
+        assert os.environ.get("TMPDIR")
+        temporary_root = Path(os.environ["TMPDIR"]).resolve()
+        assert temporary_root.is_dir() and not temporary_root.is_relative_to(checkout)
+        assert not tuple(temporary_root.iterdir())
+        report["cleanup"].update(
+            temporary_root=str(temporary_root), temporary_root_initially_empty=True
+        )
+        reader_path = (
+            checkout
+            / "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py"
+        )
+        canonical_path = (
+            checkout / "packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py"
+        )
+        identity_path = checkout / "scripts/validation_identity.py"
+        assert Path(installed_reader.__file__).resolve() == reader_path
+        assert Path(canonical_owner.__file__).resolve() == canonical_path
+        assert Path(identity_owner.__file__).resolve() == identity_path
+        canonical_source = canonical_path.read_bytes()
+        baseline_canonical = subprocess.check_output(
+            ["git", "show", BASE_SOURCE + ":" + str(canonical_path.relative_to(checkout))],
+            cwd=checkout,
+        )
+        assert baseline_canonical == canonical_source
+        report["shared_owners"] = {
+            "canonical": {
+                "path": str(canonical_path),
+                "sha256": sha(canonical_source),
+                "identical_to_baseline_origin": True,
+            },
+            "source_identity": {
+                "path": str(identity_path),
+                "sha256": sha(identity_path.read_bytes()),
+            },
+            "ci_timing": {
+                "path": str(checkout / "scripts/ci_timing.py"),
+                "sha256": sha((checkout / "scripts/ci_timing.py").read_bytes()),
+            },
+        }
+        source_bytes = {
+            "baseline-reader": args.baseline_reader.read_bytes(),
+            "proposed-reader": reader_path.read_bytes(),
+        }
+        assert sha(source_bytes["baseline-reader"]) == BASE_READER_SHA
+        assert sha(source_bytes["proposed-reader"]) == args.expected_reader_sha
+        for label, data in source_bytes.items():
+            (output / (label + ".py.txt")).write_bytes(data)
+        report["reader_sources"] = {
+            label: {"sha256": sha(data), "bytes": len(data)} for label, data in source_bytes.items()
+        }
+        report["workspace_pins"] = {
+            relative: sha((checkout / relative).read_bytes())
+            for relative in ("pyproject.toml", "uv.lock")
+        }
+        context_path = checkout / "tests/unit/test_growth_context_lookups.py"
+        numeric_path = checkout / "tests/unit/test_growth_numeric_evaluation.py"
+        assert sha(context_path.read_bytes()) == args.expected_context_tests_sha
+        assert sha(numeric_path.read_bytes()) == args.expected_numeric_tests_sha
+        for path in (
+            reader_path,
+            args.baseline_reader.resolve(),
+            canonical_path,
+            identity_path,
+            context_path,
+            numeric_path,
+            checkout / "scripts/ci_timing.py",
+            checkout / "pyproject.toml",
+            checkout / "uv.lock",
+            Path(__file__).resolve(),
+            args.projection.resolve(),
+            args.samples.resolve(),
+            args.groups_receipt.resolve(),
+        ):
+            pinned_files[path] = sha(path.read_bytes())
+
+        projection_bytes = args.projection.read_bytes()
+        sample_bytes = args.samples.read_bytes()
+        groups_bytes = args.groups_receipt.read_bytes()
+        assert sha(projection_bytes) == PROJECTION_SHA
+        assert sha(sample_bytes) == SAMPLES_SHA
+        assert sha(groups_bytes) == GROUPS_RECEIPT_SHA
+        projection, samples_document, group_document = map(
+            json.loads, (projection_bytes, sample_bytes, groups_bytes)
+        )
+        assert canonical_json_bytes(projection) == projection_bytes
+        assert canonical_json_bytes(samples_document) == sample_bytes
+        declarations = projection["declarations"]
+        assert len(declarations) == 100
+        assert sum(len(row["dimensions"]) for row in declarations.values()) == 2867
+        assert sum(len(row["bounds"]) for row in declarations.values()) == 3383
+        sample_rows = samples_document["samples"]
+        assert [row["sample"] for row in sample_rows] == list(range(122))
+        declaration_digests = {
+            identity: sha(canonical_json_bytes(row)) for identity, row in declarations.items()
+        }
+        expected_nodes = Counter()
+        dimension_fields = metric_fields = 0
+        for row in sample_rows:
+            assert sha(canonical_json_bytes(row["value"])) == row["sha256"]
+            assert row["nodes"] == sum(1 for _ in walk(row["value"]))
+            for node in walk(row["value"]):
+                assert node["declaration_sha256"] == declaration_digests[node["declaration"]]
+                expected_nodes[node["declaration"]] += 1
+                dimension_fields += len(node["dimensions"])
+                metric_fields += len(node["metrics"])
+        assert sum(expected_nodes.values()) == 1078
+        assert (dimension_fields, metric_fields) == (19024, 30745)
+        groups = group_document["measurements"]["instrumented:extended"]["public_reader_receipts"]
+        assert len(groups) == 46
+        assert Counter(token for group in groups for token in group["samples"]) == Counter(
+            range(122)
+        )
+        prepared_groups, group_manifest = [], []
+        for index, group in enumerate(groups):
+            pending, rows = [group["declaration"]], {}
+            while pending:
+                identity = pending.pop()
+                if identity in rows:
+                    continue
+                rows[identity] = declarations[identity]
+                pending.extend(
+                    child["declaration"] for child in declarations[identity]["delegates"].values()
+                )
+            assert len(rows) == group["projection_declarations"]
+            group_projection = canonical_json_bytes({**projection, "declarations": rows})
+            observations = [sample_rows[token]["value"] for token in group["samples"]]
+            assert all(value["declaration"] == group["declaration"] for value in observations)
+            group_samples = canonical_json_bytes(observations)
+            prepared_groups.append((group_projection, group["declaration"], group_samples))
+            group_manifest.append(
+                {
+                    "group": index,
+                    "declaration": group["declaration"],
+                    "samples": group["samples"],
+                    "projection_declarations": len(rows),
+                    "projection_sha256": sha(group_projection),
+                    "samples_sha256": sha(group_samples),
+                }
+            )
+        assert sum(group["projection_declarations"] for group in groups) == 829
+        write(
+            "input-manifest.json",
+            {"format": "riverhog-retained-numeric-reader-inputs/v1", "groups": group_manifest},
+        )
+        report["inputs"] = {
+            "projection_sha256": PROJECTION_SHA,
+            "projection_bytes": len(projection_bytes),
+            "samples_sha256": SAMPLES_SHA,
+            "group_receipt_sha256": GROUPS_RECEIPT_SHA,
+            "grouping": (
+                "Exact 46-group order from the prior retained helper-replay receipt. These are "
+                "samples captured during three original actual caller turns; this run makes no "
+                "fresh product turn."
+            ),
+            "subprojections": (
+                "Complete reachable rows derived only from the frozen 100-declaration union. "
+                "Identical canonical projection/sample bytes are decoded independently before "
+                "each pass; each of the 46 public calls parses afresh."
+            ),
+            "input_manifest_sha256": sha((output / "input-manifest.json").read_bytes()),
+            "groups": 46,
+            "independent_roots": 122,
+            "total_sample_nodes_including_roots": 1078,
+            "group_projection_declaration_occurrences": 829,
+            "literal_dimension_fields": dimension_fields,
+            "literal_metric_fields": metric_fields,
+            "inventory_scope": "Literal retained fields, not repeated runtime scan counts.",
+            "expected_nodes_by_declaration": dict(expected_nodes),
+        }
+
+        plain_modules = {}
+        for label in ("baseline-reader", "proposed-reader"):
+            filename = args.baseline_reader if label == "baseline-reader" else reader_path
+            name = "_external_numeric_plain_" + label.replace("-", "_")
+            plain_modules[label], _ = make_module(name, source_bytes[label], filename)
+            assert plain_modules[label].canonical_json_bytes is canonical_json_bytes
+        assert (
+            plain_modules["baseline-reader"].__all__
+            == plain_modules["proposed-reader"].__all__
+            == installed_reader.__all__
+        )
+        report["public_export_names_unchanged"] = True
+        original_functions = {
+            label: {
+                name: getattr(module, name)
+                for name in (
+                    "_projection_contexts",
+                    "_expression_unit",
+                    "_evaluate",
+                    "_evaluate_expression",
+                    "_validate_sample",
+                    "validate_projection",
+                    "validate_sample",
+                    "validate_execution_samples",
+                )
+            }
+            for label, module in {**plain_modules, "installed-reader": installed_reader}.items()
+        }
+
+        print("begin untimed behavior equivalence", flush=True)
+        context_cases = importlib.import_module("tests.unit.test_growth_context_lookups")
+        numeric_cases = importlib.import_module("tests.unit.test_growth_numeric_evaluation")
+        assert Path(context_cases.__file__).resolve() == context_path
+        assert Path(numeric_cases.__file__).resolve() == numeric_path
+        cases = [("context", case) for case in context_cases.context_lookup_cases()]
+        cases += [("numeric", case) for case in numeric_cases.numeric_evaluation_cases()]
+        case_document = {
+            "format": "riverhog-numeric-reader-adversarial-json/v1",
+            "cases": [{"factory": factory, **case} for factory, case in cases],
+        }
+        case_bytes = json_bytes(case_document)
+        assert json_bytes(json.loads(case_bytes)) == case_bytes
+        (output / "adversarial-cases.json").write_bytes(case_bytes)
+        behavior = []
+        for factory, case in cases:
+            outcomes = {}
+            for label, module in plain_modules.items():
+                value = deepcopy(case)
+                original_projection = value["projection"]
+                rows = []
+                for action in value["actions"]:
+                    context_cases.apply_context_changes(original_projection, action)
+                    before = json_bytes({"projection": original_projection, "action": action})
+                    try:
+                        result = context_cases.invoke_context_action(
+                            module, original_projection, action
+                        )
+                        assert result is None
+                        outcome = {"accepted": True, "result": None}
+                    except ValueError as error:
+                        outcome = {
+                            "accepted": False,
+                            "error_class": type(error).__name__,
+                            "message": str(error),
+                        }
+                    assert (
+                        json_bytes({"projection": original_projection, "action": action}) == before
+                    )
+                    assert original_projection is value["projection"]
+                    assert outcome["accepted"] == (action["expected"] == "accept"), (
+                        label,
+                        case["name"],
+                        action,
+                        outcome,
+                    )
+                    if "expected_error" in action:
+                        assert outcome["message"] == action["expected_error"]
+                    rows.append({"entrypoint": action["entrypoint"], "outcome": outcome})
+                outcomes[label] = rows
+            assert outcomes["baseline-reader"] == outcomes["proposed-reader"], (
+                factory,
+                case["name"],
+                outcomes,
+            )
+            behavior.append(
+                {"factory": factory, "case": case["name"], "actions": outcomes["baseline-reader"]}
+            )
+        callbacks = []
+        for name, expected in numeric_cases.NUMERIC_CALLBACK_EXPECTATIONS:
+            outcomes = {
+                label: numeric_cases.numeric_callback_outcome(module, name)
+                for label, module in plain_modules.items()
+            }
+            literal = (
+                {
+                    "kind": "error",
+                    "type": "ValueError",
+                    "message": expected,
+                    "source_restored": True,
+                }
+                if isinstance(expected, str)
+                else {"kind": "return", "value": expected, "source_restored": True}
+            )
+            assert outcomes["baseline-reader"] == outcomes["proposed-reader"] == literal, (
+                name,
+                outcomes,
+            )
+            callbacks.append({"case": name, "outcome": literal})
+        assert len(cases) == 96 and sum(len(row["actions"]) for row in behavior) == 174
+        assert len(callbacks) == 15
+        behavior_document = {
+            "format": "riverhog-numeric-reader-behavior-equivalence/v1",
+            "factories": [
+                {"path": str(path), "sha256": sha(path.read_bytes())}
+                for path in (context_path, numeric_path)
+            ],
+            "case_document_sha256": sha(case_bytes),
+            "case_count": len(cases),
+            "action_count_per_reader": sum(len(row["actions"]) for row in behavior),
+            "callback_count_per_reader": len(callbacks),
+            "all_exact_outcomes_equal": True,
+            "json_inputs_unchanged_by_public_calls": True,
+            "mutable_projection_identity_retained_within_json_case": True,
+            "callback_scope": (
+                "Typed callbacks intentionally mutate observations or source bounds during public "
+                "calls; compare exact return/error and require source_restored, not observation "
+                "immutability."
+            ),
+            "outside_performance_windows": True,
+            "results": behavior,
+            "callbacks": callbacks,
+        }
+        write("behavior-equivalence.json", behavior_document)
+        report["behavior_equivalence"] = {
+            key: value
+            for key, value in behavior_document.items()
+            if key not in ("results", "callbacks")
+        }
+        write("run.json", report)
+        print("completed untimed behavior equivalence", flush=True)
+
+        def run_workload(label, diagnostic):
+            # All decoding and indexing is outside both diagnostic and elapsed clocks.
+            payload = [
+                (json.loads(projected), declaration, json.loads(observed))
+                for projected, declaration, observed in prepared_groups
+            ]
+            collector, manifest = None, None
+            module = plain_modules[label]
+            if diagnostic:
+                paths = {}
+
+                def index_node(sample, path):
+                    assert id(sample) not in paths
+                    paths[id(sample)] = path
+                    for tag, children in sample["delegates"].items():
+                        for child_index, child in enumerate(children):
+                            index_node(child, (*path, (tag, child_index)))
+
+                for group_index, (_, _, observations) in enumerate(payload):
+                    for token, sample in zip(
+                        groups[group_index]["samples"], observations, strict=True
+                    ):
+                        index_node(sample, (group_index, token))
+                assert len(paths) == 1078
+                collector = Diagnostic(paths)
+                name = "_external_numeric_diagnostic_" + label.replace("-", "_")
+                filename = args.baseline_reader if label == "baseline-reader" else reader_path
+                module, manifest = make_module(
+                    name,
+                    source_bytes[label],
+                    filename,
+                    diagnostic=collector,
+                    proposal=label == "proposed-reader",
+                )
+                assert module.canonical_json_bytes is canonical_json_bytes
+                instrumented_filename = label + "-instrumented.py.txt"
+                (output / instrumented_filename).write_text(manifest.pop("instrumented_source"))
+                manifest["archived_instrumented_source"] = instrumented_filename
+            phase = ("diagnostic:" if diagnostic else "elapsed:") + label
+            public_results = []
+            cpu_start, wall_start = time.process_time_ns(), time.perf_counter_ns()
+            try:
+                for projected, declaration, observations in payload:
+                    public_results.append(
+                        module.validate_execution_samples(projected, declaration, observations)
+                    )
+            except BaseException as error:
+                report["measurements"][phase] = {
+                    "reader": label,
+                    "verification_status": "public-call-failed",
+                    "completed_public_results": public_results,
+                    "partial_wall_ns": time.perf_counter_ns() - wall_start,
+                    "partial_cpu_ns": time.process_time_ns() - cpu_start,
+                    "partial_diagnostic_counts": dict(collector.counts) if diagnostic else None,
+                    "error": {"type": type(error).__name__, "message": str(error)},
+                }
+                write("run.json", report)
+                raise
+            wall_ns, cpu_ns = (
+                time.perf_counter_ns() - wall_start,
+                time.process_time_ns() - cpu_start,
+            )
+            answer = {
+                "reader": label,
+                "workload": "retained_execution_groups",
+                "verification_status": "pending",
+                "inputs_unchanged": None,
+                "fresh_projection_inputs": len(payload),
+                "public_results": public_results,
+            }
+            if diagnostic:
+                answer.update(
+                    diagnostic_wall_ns=wall_ns,
+                    diagnostic_cpu_ns=cpu_ns,
+                    instrumentation=manifest,
+                    counts=collector.result(),
+                )
+            else:
+                answer.update(wall_ns=wall_ns, cpu_ns=cpu_ns, unmodified_reader_source=True)
+            # Retain actual observations even if a post-call evidence assertion fails.
+            report["measurements"][phase] = answer
+            write("run.json", report)
+            assert len(public_results) == 46 and all(value is None for value in public_results)
+            for values, original in zip(payload, prepared_groups, strict=True):
+                projected, declaration, observations = values
+                assert declaration == original[1]
+                assert canonical_json_bytes(projected) == original[0]
+                assert canonical_json_bytes(observations) == original[2]
+            answer["inputs_unchanged"] = True
+            if not diagnostic:
+                answer["verification_status"] = "passed"
+                return answer
+            required, metadata = (
+                answer["counts"]["required_work"],
+                answer["counts"]["numeric_metadata"],
+            )
+            assert required["compilation_calls"] == required["public_reader_calls"] == 46
+            assert required["parsed_contexts"] == 829 and required["parsed_expressions"] == 333837
+            assert required["expression_unit_calls"] == 492075
+            assert required["public_reader_root_occurrences"] == 122
+            assert required["successful_node_checks"] == required["canonical_json_calls"] == 1078
+            assert Counter(required["nodes_by_declaration"]) == expected_nodes
+            assert required["numeric_evaluate_calls"] == 56955
+            assert (
+                required["numeric_evaluate_nonrecursive_calls"]
+                == required["metric_obligations"]
+                == metric_fields
+            )
+            assert (
+                required["dimension_values_any_calls"]
+                == required["dimension_values_any_false_exhaustions"]
+                == 56955
+            )
+            assert required["live_predicates"]["dimension_values"]["generators"] == 56955
+            assert required["live_predicates"]["dimension_values"]["true"] == 0
+            assert required["constructors"]["live_dimension_keyset"]["builds"] == 56955
+            assert (
+                required["constructors"]["live_dimension_keyset"]["entries"]
+                == required["live_predicates"]["dimension_values"]["inspections"]
+            )
+            assert required["live_predicates"]["metric_values"]["inspections"] == metric_fields
+            assert required["constructors"]["parsed_dimension_map"] == {
+                "builds": 829,
+                "entries": 16574,
+            }
+            assert required["constructors"]["parsed_bound_map"] == {"builds": 829, "entries": 24801}
+            constructors = metadata["constructors"]
+            if label == "baseline-reader":
+                assert (
+                    constructors["declared_dimension_set"]["builds"]
+                    == constructors["numeric_bounds_map"]["builds"]
+                    == 56955
+                )
+                assert (
+                    constructors["declared_dimension_set"]["entries"]
+                    == required["live_predicates"]["dimension_values"]["inspections"]
+                )
+                assert constructors["parsed_numeric_dimension_frozenset"] == {
+                    "builds": 0,
+                    "entries": 0,
+                }
+                assert not metadata["counts"]
+                assert all(
+                    row == {"generators": 0, "inspections": 0, "true": 0, "false": 0}
+                    for row in metadata["eligibility_predicates"].values()
+                )
+            else:
+                assert (
+                    constructors["declared_dimension_set"]
+                    == constructors["numeric_bounds_map"]
+                    == {"builds": 0, "entries": 0}
+                )
+                assert constructors["parsed_numeric_dimension_frozenset"] == {
+                    "builds": 829,
+                    "entries": 16574,
+                }
+                assert (
+                    metadata["counts"]["numeric_dimension_names_use"]
+                    == metadata["counts"]["numeric_bounds_alias_uses"]
+                    == 56955
+                )
+                assert metadata["counts"].get("numeric_bounds_alias_none", 0) == 0
+                assert (
+                    metadata["counts"]["contexts_with_numeric_names"]
+                    == metadata["counts"]["contexts_with_numeric_bound_alias"]
+                    == 829
+                )
+                assert metadata["eligibility_predicates"]["dimension_eligibility"] == {
+                    "generators": 829,
+                    "inspections": 16574,
+                    "true": 16574,
+                    "false": 0,
+                }
+                assert metadata["eligibility_predicates"]["bound_eligibility"] == {
+                    "generators": 829,
+                    "inspections": 24801,
+                    "true": 24801,
+                    "false": 0,
+                }
+            receipts = []
+            for index, (receipt, original) in enumerate(
+                zip(collector.reader_receipts, payload, strict=True)
+            ):
+                declaration, size, observations = receipt
+                assert declaration == original[1] == groups[index]["declaration"]
+                assert size == groups[index]["projection_declarations"]
+                assert all(
+                    actual is supplied
+                    for actual, supplied in zip(observations, original[2], strict=True)
+                )
+                receipts.append(
+                    {
+                        "group": index,
+                        "declaration": declaration,
+                        "projection_declarations": size,
+                        "samples": groups[index]["samples"],
+                    }
+                )
+            answer["public_reader_receipts"] = receipts
+            answer["verification_status"] = "passed"
+            return answer
+
+        with tempfile.TemporaryDirectory(prefix="numeric-reader-profile-") as directory:
+            scratch = Path(directory)
+            assert not scratch.is_relative_to(checkout)
+            (scratch / "scope.json").write_bytes(json_bytes({"groups": 46, "product_fixtures": 0}))
+            report["cleanup"].update(
+                profile_scratch_created=True, profile_scratch_path=str(scratch)
+            )
+            for diagnostic in (True, False):
+                for label in ("baseline-reader", "proposed-reader"):
+                    name = ("diagnostic:" if diagnostic else "elapsed:") + label
+                    print("begin", name, flush=True)
+                    report["measurements"][name] = run_workload(label, diagnostic)
+                    write("run.json", report)
+                    print("completed", name, flush=True)
+                if diagnostic:
+                    baseline = report["measurements"]["diagnostic:baseline-reader"]
+                    proposed = report["measurements"]["diagnostic:proposed-reader"]
+                    assert (
+                        baseline["counts"]["required_work"] == proposed["counts"]["required_work"]
+                    )
+                    assert baseline["public_reader_receipts"] == proposed["public_reader_receipts"]
+                    report["diagnostic_equivalence"] = {
+                        "all_required_counts_equal": True,
+                        "all_ordered_transcripts_equal": True,
+                        "all_unit_numeric_and_composition_edge_counts_equal": True,
+                        "exact_groups_root_tokens_and_total_node_inventory_equal": True,
+                        "changed_accounting_only": (
+                            "Numeric declaration metadata construction, guarded eligibility "
+                            "checks, and reuse of parsed metadata references."
+                        ),
+                    }
+                    write("run.json", report)
+        report["cleanup"]["profile_scratch_removed"] = not scratch.exists()
+        report["cleanup"]["temporary_root_finally_empty"] = not tuple(temporary_root.iterdir())
+        assert (
+            report["cleanup"]["profile_scratch_removed"]
+            and report["cleanup"]["temporary_root_finally_empty"]
+        )
+        for label, module in {**plain_modules, "installed-reader": installed_reader}.items():
+            assert all(
+                getattr(module, name) is original
+                for name, original in original_functions[label].items()
+            )
+        assert canonical_owner.canonical_json_bytes is canonical_json_bytes
+        assert identity_owner.source_identity is source_identity
+        assert all(sha(path.read_bytes()) == digest for path, digest in pinned_files.items())
+        report["unmodified_modules_and_pinned_files_preserved"] = True
+        report["state"] = "completed"
+        status = 0
+    except BaseException as error:
+        report["state"] = "failed"
+        report["error"] = {"type": type(error).__name__, "message": str(error)}
+        traceback.print_exc()
+    finally:
+        if scratch is not None:
+            report["cleanup"]["profile_scratch_removed"] = not scratch.exists()
+        if os.environ.get("TMPDIR") and Path(os.environ["TMPDIR"]).is_dir():
+            report["cleanup"]["temporary_root_finally_empty"] = not tuple(
+                Path(os.environ["TMPDIR"]).iterdir()
+            )
+        report["source_end"] = source_identity(checkout)
+        if report["source_end"] != report["source_start"]:
+            report["state"] = "source-changed"
+            status = 1
+        report["pinned_files_unchanged_at_exit"] = all(
+            path.exists() and sha(path.read_bytes()) == digest
+            for path, digest in pinned_files.items()
+        )
+        if not report["pinned_files_unchanged_at_exit"]:
+            report["state"] = "pinned-file-changed"
+            status = 1
+        report["exit_status"] = status
+        write("run.json", report)
+        print(
+            "original child final status",
+            status,
+            "source",
+            report["source_end"],
+            "cleanup",
+            report["cleanup"],
+            flush=True,
+        )
+    return status
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

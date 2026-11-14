@@ -1,0 +1,18 @@
+{
+  "adversarial-cases.json": {
+    "compression": "gzip mtime=0 then base64",
+    "raw_bytes": 575517,
+    "sha256": "89cd7224552256b42c1768baac8eeb87a8f101ab2bd3feef150f6c53f0f51fbf",
+    "stored_bytes": 16596,
+    "stored_path": "adversarial-cases.json.gz.b64",
+    "stored_sha256": "0d6d6eade3b628b0466ef880c694252c8dfcd2c87bcbea20115fa23298d5b3b8"
+  },
+  "run.json": {
+    "compression": "gzip mtime=0 then base64",
+    "raw_bytes": 1971894,
+    "sha256": "994f1e49a1c2802c97f741323276879d344b784894f4741e95abf61a9f684494",
+    "stored_bytes": 108113,
+    "stored_path": "run.json.gz.b64",
+    "stored_sha256": "b0c8a8f8384518b4d387fb88a1ecddf0563c28cf348c65afe4125443ca6c55c4"
+  }
+}

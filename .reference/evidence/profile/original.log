@@ -1,0 +1,11 @@
+begin untimed behavior equivalence
+completed untimed behavior equivalence
+begin diagnostic:baseline-reader
+completed diagnostic:baseline-reader
+begin diagnostic:proposed-reader
+completed diagnostic:proposed-reader
+begin elapsed:baseline-reader
+completed elapsed:baseline-reader
+begin elapsed:proposed-reader
+completed elapsed:proposed-reader
+original child final status 0 source {'source_sha': 'c4bf7532b7a0e91ac9ec384ff5893e81eae7bf01', 'source_clean': True} cleanup {'profile_scratch_created': True, 'profile_scratch_removed': True, 'temporary_root': '/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-tmp', 'temporary_root_initially_empty': True, 'profile_scratch_path': '/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-tmp/numeric-reader-profile-aafl6iro', 'temporary_root_finally_empty': True}

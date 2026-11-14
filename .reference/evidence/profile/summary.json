@@ -1,0 +1,543 @@
+{
+  "behavior_equivalence": {
+    "action_count_per_reader": 174,
+    "all_exact_outcomes_equal": true,
+    "callback_count_per_reader": 15,
+    "callback_scope": "Typed callbacks intentionally mutate observations or source bounds during public calls; compare exact return/error and require source_restored, not observation immutability.",
+    "case_count": 96,
+    "case_document_sha256": "89cd7224552256b42c1768baac8eeb87a8f101ab2bd3feef150f6c53f0f51fbf",
+    "factories": [
+      {
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_growth_context_lookups.py",
+        "sha256": "2650d46fa1e23137bf1958adc8dffe4f02e3da83ffbb2e129b8b9984bb724870"
+      },
+      {
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_growth_numeric_evaluation.py",
+        "sha256": "8e12500aeccd012920c8333a6fb4ae36359dc0ce99471ab60c6efb9c0aae0226"
+      }
+    ],
+    "format": "riverhog-numeric-reader-behavior-equivalence/v1",
+    "json_inputs_unchanged_by_public_calls": true,
+    "mutable_projection_identity_retained_within_json_case": true,
+    "outside_performance_windows": true
+  },
+  "cleanup": {
+    "profile_scratch_created": true,
+    "profile_scratch_path": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-tmp/numeric-reader-profile-aafl6iro",
+    "profile_scratch_removed": true,
+    "temporary_root": "/workspace/scratch/21c38f9cc56d/numeric-evaluation-reader-profile-tmp",
+    "temporary_root_finally_empty": true,
+    "temporary_root_initially_empty": true
+  },
+  "conditions": {
+    "construction_accounting": "Executed collection-construction counts and cumulative cardinalities at named sites. These are not allocation bytes, RSS, peak-memory measurements, or predictions. Bound aliases do not construct entry copies.",
+    "diagnostic_passes_per_reader": 1,
+    "diagnostic_scope": "Temporary AST copies wrap actual constructor/predicate/results and decorate recursive local functions. Every original expression is evaluated once in its original branch. Separate wrappers trace the original unit/numeric/node functions. Diagnostic callbacks inspect only valid retained plain JSON; arbitrary Mapping controls use unmodified readers.",
+    "diagnostic_transcripts": "Ordered expression-construction identities, numeric entries/returns, per-bound observations, and unit/composition/node events are hashed from small Python tuples. Numeric argument snapshots are diagnostic-only. No second canonical serialization is performed per visited sample node.",
+    "elapsed_excluded": "Imports, module construction, input decoding/copying, behavior comparisons, diagnostics, canonical input-preservation checks, report writing, and product execution.",
+    "elapsed_observations_per_reader": 1,
+    "executable": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+    "execution_scope": "All 46 ordered public validate_execution_samples calls, including each fresh parse, typed construction, graph/unit checks, canonical digest verification, live numeric checks, and every root/descendant composition check.",
+    "fresh_source_projection_calls": 0,
+    "generator_accounting": "Inspections count actual predicate evaluations; generators count actual generator creation; false any() results count completed exhaustive scans on this valid workload. Generator resume attempts, including final StopIteration, are not measured as value inspections.",
+    "order_effects": "One observation per reader in fixed order; interpreter/allocator/cache and host scheduling effects remain possible. Diagnostic elapsed values are overhead receipts, not speed comparisons.",
+    "pass_order": [
+      "diagnostic:baseline-reader",
+      "diagnostic:proposed-reader",
+      "elapsed:baseline-reader",
+      "elapsed:proposed-reader"
+    ],
+    "product_fixtures": 0,
+    "product_operations": 0,
+    "python": "3.12.3",
+    "reader_labels": [
+      "baseline-reader",
+      "proposed-reader"
+    ],
+    "statistical_speed_claim": false,
+    "timing_lane": "numeric-evaluation-reader",
+    "timing_run_id": "8673aaa3514d46c0b6047c5383ab2e19",
+    "timing_source": "Exact unmodified isolated reader modules sharing the unchanged canonical owner. Each reader receives independently decoded copies of identical bytes.",
+    "timing_target": null,
+    "uv": "uv 0.11.24 (x86_64-unknown-linux-gnu)"
+  },
+  "diagnostic_equivalence": {
+    "all_ordered_transcripts_equal": true,
+    "all_required_counts_equal": true,
+    "all_unit_numeric_and_composition_edge_counts_equal": true,
+    "changed_accounting_only": "Numeric declaration metadata construction, guarded eligibility checks, and reuse of parsed metadata references.",
+    "exact_groups_root_tokens_and_total_node_inventory_equal": true
+  },
+  "exit_status": 0,
+  "format": "external-numeric-evaluation-profile-summary/v1",
+  "inputs": {
+    "group_projection_declaration_occurrences": 829,
+    "group_receipt_sha256": "b62367b740cf428e5c7d39f8233237e63ca7ed226f65951b926de9e91cb6a844",
+    "grouping": "Exact 46-group order from the prior retained helper-replay receipt. These are samples captured during three original actual caller turns; this run makes no fresh product turn.",
+    "groups": 46,
+    "independent_roots": 122,
+    "input_manifest_sha256": "fdecfbd5a4262d8f64e866ebeb2103fafe71db16efbd1055d2875d9bafbf0c9b",
+    "inventory_scope": "Literal retained fields, not repeated runtime scan counts.",
+    "literal_dimension_fields": 19024,
+    "literal_metric_fields": 30745,
+    "projection_bytes": 4512672,
+    "projection_sha256": "f8eae73e293eac5e9ed7dcf01d706d9176d4f198e13ef61203d06d0df41c0ef1",
+    "samples_sha256": "a9e69163ba9aac6c5cefd4f582c609997217421528840694449f24007f6c2b20",
+    "subprojections": "Complete reachable rows derived only from the frozen 100-declaration union. Identical canonical projection/sample bytes are decoded independently before each pass; each of the 46 public calls parses afresh.",
+    "total_sample_nodes_including_roots": 1078
+  },
+  "measurements": {
+    "diagnostic:baseline-reader": {
+      "all_public_results_none": true,
+      "constructors": {
+        "composition_delegate_arguments": {
+          "builds": 11685,
+          "entries": 136293
+        },
+        "declared_metric_set": {
+          "builds": 1078,
+          "entries": 30745
+        },
+        "live_dimension_keyset": {
+          "builds": 56955,
+          "entries": 6271005
+        },
+        "live_metric_keyset": {
+          "builds": 1078,
+          "entries": 30745
+        },
+        "numeric_delegate_arguments": {
+          "builds": 26210,
+          "entries": 223694
+        },
+        "parsed_bound_map": {
+          "builds": 829,
+          "entries": 24801
+        },
+        "parsed_dimension_map": {
+          "builds": 829,
+          "entries": 16574
+        }
+      },
+      "diagnostic_cpu_ns": 41806171967,
+      "diagnostic_wall_ns": 41917870341,
+      "distinct_edge_keys": {
+        "composition_delegate_edges": 796,
+        "numeric_delegate_edges": 900,
+        "unit_delegate_edges": 1113
+      },
+      "fresh_projection_inputs": 46,
+      "inputs_unchanged": true,
+      "live_predicates": {
+        "dimension_values": {
+          "false": 6271005,
+          "generators": 56955,
+          "inspections": 6271005,
+          "true": 0
+        },
+        "metric_values": {
+          "false": 30745,
+          "generators": 1078,
+          "inspections": 30745,
+          "true": 0
+        }
+      },
+      "numeric_expression_operators": {
+        "constant": 111172,
+        "delegate": 26210,
+        "dimension": 481351,
+        "log2_ceil": 5231,
+        "product": 71475,
+        "sum": 32065
+      },
+      "numeric_metadata": {
+        "constructors": {
+          "declared_dimension_set": {
+            "builds": 56955,
+            "entries": 6271005
+          },
+          "numeric_bounds_map": {
+            "builds": 56955,
+            "entries": 14867376
+          },
+          "parsed_numeric_dimension_frozenset": {
+            "builds": 0,
+            "entries": 0
+          }
+        },
+        "counts": {},
+        "eligibility_predicates": {
+          "bound_eligibility": {
+            "false": 0,
+            "generators": 0,
+            "inspections": 0,
+            "true": 0
+          },
+          "dimension_eligibility": {
+            "false": 0,
+            "generators": 0,
+            "inspections": 0,
+            "true": 0
+          }
+        }
+      },
+      "ordered_transcripts": {
+        "canonical_calls": {
+          "events": 1078,
+          "sha256": "feae8759730ffeab035e9788d72a9406031250527c7bb399ace319ef066f4bf7"
+        },
+        "composition_entries": {
+          "events": 398336,
+          "sha256": "bb83086855db4165103bde24b06f3a5665ae0730ce4bc402e986d35ab669d11d"
+        },
+        "composition_returns": {
+          "events": 398336,
+          "sha256": "1738cdc8bb67051c1a7df2f228f2cadcf3ebbf1cd6f9623fde24ba35bb87bc38"
+        },
+        "expression_entries": {
+          "events": 727504,
+          "sha256": "c0dac3d84d4f2bfa2c2b0f11f48d874190682c7530726bddb400b5effa2859cf"
+        },
+        "expression_returns": {
+          "events": 727504,
+          "sha256": "3f1ac5b55824bb407d3e1a93568864ab49295297080f9e3374eafaf0ed097b84"
+        },
+        "metric_obligations": {
+          "events": 30745,
+          "sha256": "c1607a4baa6ab4e9bdcc9060c679e1beaab2b7520201e740c96beefc567f3b24"
+        },
+        "node_entries": {
+          "events": 1078,
+          "sha256": "e7b7f5337bc3c23362070bfcf66ea20469e938ff544f0027bec63de8b6733e2d"
+        },
+        "node_returns": {
+          "events": 1078,
+          "sha256": "a9c8c02cb5b65b523ebbe9dadca112717e0facbbe84475370a5c24e2285a8e1d"
+        },
+        "numeric_entries": {
+          "events": 56955,
+          "sha256": "7a9f345ec409ba2f8b30bc0f585ad551a5e1e9ac1df3f61930165f19755941d0"
+        },
+        "numeric_returns": {
+          "events": 56955,
+          "sha256": "2ff1f5f1cd578b76282a0db85cf6d72d2b89c565ea70eea17540a7cb7ed2dc81"
+        },
+        "numeric_sessions": {
+          "events": 204933,
+          "sha256": "3da39dad8910ef9fd6666477ac4db0e02a86d0659ec129c61ad67f26d41ac4d1"
+        },
+        "parsed_expressions": {
+          "events": 333837,
+          "sha256": "c325306f02c110525488f146a9fb3cbbe0bc140e93a2fafb8f31e81d5b5c64e8"
+        },
+        "unit_entries": {
+          "events": 492075,
+          "sha256": "4749a827117613e4ce6c20ec937c07f17b4881baff45da0de2badb6f0857d587"
+        },
+        "unit_returns": {
+          "events": 492075,
+          "sha256": "83248bdc7e27d3d823eba36042256449e7793cce2bd6fd12ee74d220dc61d05f"
+        }
+      },
+      "parsed_expression_operators": {
+        "constant": 68217,
+        "delegate": 10974,
+        "dimension": 188683,
+        "log2_ceil": 2581,
+        "product": 45390,
+        "sum": 17992
+      },
+      "public_results_count": 46,
+      "reader": "baseline-reader",
+      "required_counts": {
+        "canonical_json_bytes_returned": 36289880,
+        "canonical_json_calls": 1078,
+        "compilation_calls": 46,
+        "composition_calls": 398336,
+        "composition_returns": 398336,
+        "context_bound_entries": 24801,
+        "context_dimension_entries": 16574,
+        "dimension_values_any_calls": 56955,
+        "dimension_values_any_false_exhaustions": 56955,
+        "expression_unit_calls": 492075,
+        "expression_unit_returns": 492075,
+        "metric_obligations": 30745,
+        "metric_values_any_calls": 1078,
+        "metric_values_any_false_exhaustions": 1078,
+        "numeric_evaluate_calls": 56955,
+        "numeric_evaluate_nonrecursive_calls": 30745,
+        "numeric_evaluate_returns": 56955,
+        "numeric_expression_calls": 727504,
+        "numeric_expression_returns": 727504,
+        "numeric_expression_sessions": 204933,
+        "parsed_contexts": 829,
+        "parsed_expressions": 333837,
+        "public_reader_calls": 46,
+        "public_reader_root_occurrences": 122,
+        "successful_node_checks": 1078
+      },
+      "verification_status": "passed",
+      "workload": "retained_execution_groups"
+    },
+    "diagnostic:proposed-reader": {
+      "all_public_results_none": true,
+      "constructors": {
+        "composition_delegate_arguments": {
+          "builds": 11685,
+          "entries": 136293
+        },
+        "declared_metric_set": {
+          "builds": 1078,
+          "entries": 30745
+        },
+        "live_dimension_keyset": {
+          "builds": 56955,
+          "entries": 6271005
+        },
+        "live_metric_keyset": {
+          "builds": 1078,
+          "entries": 30745
+        },
+        "numeric_delegate_arguments": {
+          "builds": 26210,
+          "entries": 223694
+        },
+        "parsed_bound_map": {
+          "builds": 829,
+          "entries": 24801
+        },
+        "parsed_dimension_map": {
+          "builds": 829,
+          "entries": 16574
+        }
+      },
+      "diagnostic_cpu_ns": 41511901294,
+      "diagnostic_wall_ns": 41585308732,
+      "distinct_edge_keys": {
+        "composition_delegate_edges": 796,
+        "numeric_delegate_edges": 900,
+        "unit_delegate_edges": 1113
+      },
+      "fresh_projection_inputs": 46,
+      "inputs_unchanged": true,
+      "live_predicates": {
+        "dimension_values": {
+          "false": 6271005,
+          "generators": 56955,
+          "inspections": 6271005,
+          "true": 0
+        },
+        "metric_values": {
+          "false": 30745,
+          "generators": 1078,
+          "inspections": 30745,
+          "true": 0
+        }
+      },
+      "numeric_expression_operators": {
+        "constant": 111172,
+        "delegate": 26210,
+        "dimension": 481351,
+        "log2_ceil": 5231,
+        "product": 71475,
+        "sum": 32065
+      },
+      "numeric_metadata": {
+        "constructors": {
+          "declared_dimension_set": {
+            "builds": 0,
+            "entries": 0
+          },
+          "numeric_bounds_map": {
+            "builds": 0,
+            "entries": 0
+          },
+          "parsed_numeric_dimension_frozenset": {
+            "builds": 829,
+            "entries": 16574
+          }
+        },
+        "counts": {
+          "contexts_with_numeric_bound_alias": 829,
+          "contexts_with_numeric_names": 829,
+          "numeric_bounds_alias_read": 56955,
+          "numeric_bounds_alias_uses": 56955,
+          "numeric_dimension_names_use": 56955,
+          "numeric_name_entries_retained": 16574
+        },
+        "eligibility_predicates": {
+          "bound_eligibility": {
+            "false": 0,
+            "generators": 829,
+            "inspections": 24801,
+            "true": 24801
+          },
+          "dimension_eligibility": {
+            "false": 0,
+            "generators": 829,
+            "inspections": 16574,
+            "true": 16574
+          }
+        }
+      },
+      "ordered_transcripts": {
+        "canonical_calls": {
+          "events": 1078,
+          "sha256": "feae8759730ffeab035e9788d72a9406031250527c7bb399ace319ef066f4bf7"
+        },
+        "composition_entries": {
+          "events": 398336,
+          "sha256": "bb83086855db4165103bde24b06f3a5665ae0730ce4bc402e986d35ab669d11d"
+        },
+        "composition_returns": {
+          "events": 398336,
+          "sha256": "1738cdc8bb67051c1a7df2f228f2cadcf3ebbf1cd6f9623fde24ba35bb87bc38"
+        },
+        "expression_entries": {
+          "events": 727504,
+          "sha256": "c0dac3d84d4f2bfa2c2b0f11f48d874190682c7530726bddb400b5effa2859cf"
+        },
+        "expression_returns": {
+          "events": 727504,
+          "sha256": "3f1ac5b55824bb407d3e1a93568864ab49295297080f9e3374eafaf0ed097b84"
+        },
+        "metric_obligations": {
+          "events": 30745,
+          "sha256": "c1607a4baa6ab4e9bdcc9060c679e1beaab2b7520201e740c96beefc567f3b24"
+        },
+        "node_entries": {
+          "events": 1078,
+          "sha256": "e7b7f5337bc3c23362070bfcf66ea20469e938ff544f0027bec63de8b6733e2d"
+        },
+        "node_returns": {
+          "events": 1078,
+          "sha256": "a9c8c02cb5b65b523ebbe9dadca112717e0facbbe84475370a5c24e2285a8e1d"
+        },
+        "numeric_entries": {
+          "events": 56955,
+          "sha256": "7a9f345ec409ba2f8b30bc0f585ad551a5e1e9ac1df3f61930165f19755941d0"
+        },
+        "numeric_returns": {
+          "events": 56955,
+          "sha256": "2ff1f5f1cd578b76282a0db85cf6d72d2b89c565ea70eea17540a7cb7ed2dc81"
+        },
+        "numeric_sessions": {
+          "events": 204933,
+          "sha256": "3da39dad8910ef9fd6666477ac4db0e02a86d0659ec129c61ad67f26d41ac4d1"
+        },
+        "parsed_expressions": {
+          "events": 333837,
+          "sha256": "c325306f02c110525488f146a9fb3cbbe0bc140e93a2fafb8f31e81d5b5c64e8"
+        },
+        "unit_entries": {
+          "events": 492075,
+          "sha256": "4749a827117613e4ce6c20ec937c07f17b4881baff45da0de2badb6f0857d587"
+        },
+        "unit_returns": {
+          "events": 492075,
+          "sha256": "83248bdc7e27d3d823eba36042256449e7793cce2bd6fd12ee74d220dc61d05f"
+        }
+      },
+      "parsed_expression_operators": {
+        "constant": 68217,
+        "delegate": 10974,
+        "dimension": 188683,
+        "log2_ceil": 2581,
+        "product": 45390,
+        "sum": 17992
+      },
+      "public_results_count": 46,
+      "reader": "proposed-reader",
+      "required_counts": {
+        "canonical_json_bytes_returned": 36289880,
+        "canonical_json_calls": 1078,
+        "compilation_calls": 46,
+        "composition_calls": 398336,
+        "composition_returns": 398336,
+        "context_bound_entries": 24801,
+        "context_dimension_entries": 16574,
+        "dimension_values_any_calls": 56955,
+        "dimension_values_any_false_exhaustions": 56955,
+        "expression_unit_calls": 492075,
+        "expression_unit_returns": 492075,
+        "metric_obligations": 30745,
+        "metric_values_any_calls": 1078,
+        "metric_values_any_false_exhaustions": 1078,
+        "numeric_evaluate_calls": 56955,
+        "numeric_evaluate_nonrecursive_calls": 30745,
+        "numeric_evaluate_returns": 56955,
+        "numeric_expression_calls": 727504,
+        "numeric_expression_returns": 727504,
+        "numeric_expression_sessions": 204933,
+        "parsed_contexts": 829,
+        "parsed_expressions": 333837,
+        "public_reader_calls": 46,
+        "public_reader_root_occurrences": 122,
+        "successful_node_checks": 1078
+      },
+      "verification_status": "passed",
+      "workload": "retained_execution_groups"
+    },
+    "elapsed:baseline-reader": {
+      "all_public_results_none": true,
+      "cpu_ns": 11198141663,
+      "fresh_projection_inputs": 46,
+      "inputs_unchanged": true,
+      "public_results_count": 46,
+      "reader": "baseline-reader",
+      "unmodified_reader_source": true,
+      "verification_status": "passed",
+      "wall_ns": 11226256326,
+      "workload": "retained_execution_groups"
+    },
+    "elapsed:proposed-reader": {
+      "all_public_results_none": true,
+      "cpu_ns": 8089405463,
+      "fresh_projection_inputs": 46,
+      "inputs_unchanged": true,
+      "public_results_count": 46,
+      "reader": "proposed-reader",
+      "unmodified_reader_source": true,
+      "verification_status": "passed",
+      "wall_ns": 8105117364,
+      "workload": "retained_execution_groups"
+    }
+  },
+  "original_run_format": "riverhog-numeric-evaluation-reader-profile/v1",
+  "original_run_sha256": "994f1e49a1c2802c97f741323276879d344b784894f4741e95abf61a9f684494",
+  "reader_sources": {
+    "baseline-reader": {
+      "bytes": 30407,
+      "sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424"
+    },
+    "proposed-reader": {
+      "bytes": 31352,
+      "sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40"
+    }
+  },
+  "shared_owners": {
+    "canonical": {
+      "identical_to_baseline_origin": true,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py",
+      "sha256": "c457953e788b1e47b743ace9997c4774e04ce058e69dbe6897f6fdb7e495d3fb"
+    },
+    "ci_timing": {
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/scripts/ci_timing.py",
+      "sha256": "094484571186e28601ed7da51511d4bd59182dd5bd98c138868e82bd216c8895"
+    },
+    "source_identity": {
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/scripts/validation_identity.py",
+      "sha256": "4bdf7f5161b1557f025d98c958140c8b7184ce7c81ae5d2304029fcd0beaf3de"
+    }
+  },
+  "source_end": {
+    "source_clean": true,
+    "source_sha": "c4bf7532b7a0e91ac9ec384ff5893e81eae7bf01"
+  },
+  "source_start": {
+    "source_clean": true,
+    "source_sha": "c4bf7532b7a0e91ac9ec384ff5893e81eae7bf01"
+  },
+  "state": "completed",
+  "summary_scope": "Derived navigation summary only; the complete original counters, inventories and transcripts remain in the losslessly retained run.json."
+}
