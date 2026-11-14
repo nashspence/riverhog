@@ -31,6 +31,7 @@ class Recorder:
     def __init__(self, case, current, *, batch=None):
         self.case, self.current = case, current
         self.batch = batch
+        self.inline_batch = batch if batch is not None and batch.include_descendants else None
         self.units = units.UnitRecorder(case, current, batch=batch)
         self.active, self.depth = False, 0
 
@@ -61,6 +62,7 @@ class Recorder:
                 (collection_id, journal_id),
                 0,
                 False,
+                batch=self.inline_batch,
             )
             self.children["stamp"].append(observed)
             if value is None:
@@ -95,6 +97,8 @@ class Recorder:
             return None
 
     def measure(self, collection_id=1, journal_id=JOURNAL, *, interrupt=False, expected_error=None):
+        if self.batch is not None:
+            self.batch.source(ROOT)
         self.own = defaultdict(int)
         self.children = {tag: [] for tag in CHILDREN}
         self.operand_octets = 0

@@ -152,7 +152,7 @@ def catalog_cases(root, *, large=True):
             )
 
 
-def catalog_measure(case, operation, action, controls, excluded, cold):
+def catalog_measure(case, operation, action, controls, excluded, cold, *, batch=None):
     before = rows(case.engine, Journal, Scan, Job)
     dimensions = {
         "retained_rows": sum(map(len, before.values())),
@@ -166,7 +166,7 @@ def catalog_measure(case, operation, action, controls, excluded, cold):
     with recorder.observe(case.engine, cold=cold), codecs(recorder):
         value = action()
     assert rows(case.engine, Journal, Scan, Job) == before
-    return value, sample(operation, dimensions, recorder.metrics)
+    return value, sample(operation, dimensions, recorder.metrics, batch=batch)
 
 
 def stamp_samples(case, samples):

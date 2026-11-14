@@ -11,7 +11,7 @@ from dataclasses import replace
 from types import SimpleNamespace
 
 import pytest
-from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+from riverhog_growth_contracts import growth_binding
 from riverhog_provenance import _entry_replay as replay_owner
 from riverhog_provenance import validate_journal
 from riverhog_provenance._entry_replay import EntryReplay, ReplayBudget
@@ -46,6 +46,8 @@ from test_entry_replay_transitions_growth import (
 from test_generic_semantics import semantic_child_input_dimensions
 from test_semantic_edge import observed_work
 from test_semantic_owner import snapshot
+
+from tests.support.growth_batch import SampleBatch
 
 
 class AdvanceRows(ChildRows):
@@ -165,6 +167,7 @@ def advance_observer(
     kernel_hook=None,
     primitive_hook=None,
     failed_operations=(),
+    batch=None,
 ):
     db = current.db
     root_operation = EntryReplay.advance if root_operation is None else root_operation
@@ -362,6 +365,7 @@ def advance_observer(
                 delegate_selector=selector,
                 validation_policy=lambda _schema, _value: None,
                 primitive_adapter=primitive,
+                batch=batch,
                 inclusive_operation=lambda parent, operation: (
                     parent.declaration.id
                     == "riverhog-provenance.sqlite-online-graph-retirement-application.growth/v1"
@@ -543,7 +547,20 @@ def advance_fixture(case, catalog, budget, *, cold, measured=False):
 
 
 def advance_samples(root, catalog, build, graphs, *, samples, early=False, checkpoints=None):
-    projection = project_bindings((growth_binding(EntryReplay.advance),))
+    with SampleBatch((EntryReplay.advance,), limit=4) as batch:
+        _advance_samples(
+            root,
+            catalog,
+            build,
+            graphs,
+            samples=samples,
+            early=early,
+            checkpoints=checkpoints,
+            batch=batch,
+        )
+
+
+def _advance_samples(root, catalog, build, graphs, *, samples, early, checkpoints, batch):
     cases = (
         advance_cases(root, catalog, build, graphs, early=early)
         if checkpoints is None
@@ -569,7 +586,10 @@ def advance_samples(root, catalog, build, graphs, *, samples, early=False, check
                         expected_runs = dict(oracle.store._dag_runs)
                     with pytest.MonkeyPatch.context() as patch:
                         patch.setattr(replay_owner, "uuid4", lambda: SimpleNamespace(hex="f" * 32))
-                        with advance_observer(current, dimensions) as (observed, complete):
+                        with advance_observer(current, dimensions, batch=batch) as (
+                            observed,
+                            complete,
+                        ):
                             with current.db.observe():
                                 result = current.advance(budget)
                     work = observed_work(current.db, {key: 0 for key in current.db.metrics}, 0, 0)
@@ -579,9 +599,7 @@ def advance_samples(root, catalog, build, graphs, *, samples, early=False, check
                         index_python_opcode_events=current.db.all_node_opcodes,
                     )
                     sample = complete(observed, work)
-                    validate_execution_samples(
-                        projection, growth_binding(EntryReplay.advance).declaration.id, [sample]
-                    )
+                    batch.receive(EntryReplay.advance, sample)
                     samples.append(sample)
                     if len(samples) == 1 or len(samples) % 32 == 0:
                         (root / "whole-advance-progress.json").write_text(
