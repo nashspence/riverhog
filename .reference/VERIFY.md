@@ -2,10 +2,18 @@
 
 Start with [HANDOFF.md](HANDOFF.md). Use a separate reference checkout at the exact
 SHA published in #964. Do not run this in the integration agent's active worktree.
-The source baseline is `8707cdfaf776b1005ecf8e465a9a7a51fee489de`; product paths here
+The source baseline is `f35123c4dcb79de171627257c72633b9d72378f0`; product paths here
 contain proposed edits relative to that exact commit.
 
 ## First useful check
+
+The focused follow-up starts with real process-death and exact original receiving:
+
+```sh
+mise x -- uv run --locked --all-packages --group dev python -m pytest -q \
+  tests/unit/test_primary_facts_lifecycle.py \
+  tests/unit/test_primary_facts_lifecycle_work.py
+```
 
 Use the repository-pinned toolchain (`mise.toml`, `mise.lock`, `uv.lock`):
 
@@ -27,10 +35,15 @@ qualification.
 
 ```sh
 mise x -- uv run --locked --all-packages --group dev python -m pytest -q -n 4 --dist=load \
+  packages/riverhog-provenance/tests/test_corpus_owned_placement.py \
   packages/riverhog-provenance/tests/test_corpus_primary_selection.py \
+  packages/riverhog-provenance/tests/test_corpus_reclamation.py \
+  packages/workspace-reclamation/tests/test_reclamation.py \
   tests/unit/test_primary_production_work.py \
   tests/unit/test_shared_primary_admission.py \
   tests/unit/test_primary_facts_capacity_retirement.py \
+  tests/unit/test_primary_facts_lifecycle.py \
+  tests/unit/test_primary_facts_lifecycle_work.py \
   tests/unit/test_provenance_binding.py \
   tests/unit/test_archive_catalog_finalizer.py \
   tests/unit/test_archive_upload_terminal_retirement.py \
@@ -52,6 +65,12 @@ workspace contention, uncertain original receiving, restart and retirement.
 The capacity regression drives two real uploads through the physical worker and
 finalizer registry with a single retained construction and with saturated SQLite
 grants, proving a received no-effect refusal does not strand a prepared owner.
+The focused lifecycle suite sends real SIGKILL at controlled creation and
+reclamation boundaries and restarts from the committed catalog. It also checks
+current identity, exclusive live-owner protection, unknown entries, actual
+close receiving and bounded peer progress. The work witness varies retained
+catalog population and file extents independently and records source-owned
+observations; no directory enumeration or source replay supplies cleanup.
 The existing selected-prefix and imported-history witnesses remain in the
 focused regression suite; they drain real preparation turns before asserting
 member cursor progress or injecting a member-commit acknowledgement failure.
@@ -70,8 +89,11 @@ mise x -- uv run --locked --all-packages --group dev python -m pytest -q \
   --basetemp=/absolute/path/to/pytest-scratch \
   --junitxml=/absolute/path/to/evidence/results.xml -o junit_family=xunit1 \
   packages/riverhog-provenance/tests/test_corpus_primary_selection.py \
+  packages/riverhog-provenance/tests/test_corpus_reclamation.py \
+  packages/workspace-reclamation/tests/test_reclamation.py \
   tests/unit/test_primary_production_work.py \
-  tests/unit/test_shared_primary_admission.py
+  tests/unit/test_shared_primary_admission.py \
+  tests/unit/test_primary_facts_lifecycle_work.py
 ```
 
 Collect and save the actual declaration evidence with the small reference wrapper:
@@ -83,7 +105,7 @@ mise x -- uv run --locked --all-packages --group dev python .reference/collect.p
   --output /absolute/path/to/evidence/growth-verified.json
 ```
 
-The wrapper discovers only the witnesses owned by the three files above and calls
+The wrapper discovers only the witnesses owned by the six files above and calls
 `collect_test_witnesses`. The maintained collector validates source cleanliness at
 both ends, complete test outcomes, owner digests, declarations, operation
 projections and actual samples. It rejects stale, incomplete or partial evidence.

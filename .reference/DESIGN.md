@@ -2,7 +2,8 @@
 
 This is a finite executable design for
 [#964's primary-member request](https://github.com/nashspence/riverhog/issues/964#issuecomment-6870475991),
-audited at `8707cdfaf776b1005ecf8e465a9a7a51fee489de`. The accepted nonprimary-prefix
+extended by the [focused lifecycle request](https://github.com/nashspence/riverhog/issues/964#issuecomment-6871280583)
+and audited at `f35123c4dcb79de171627257c72633b9d72378f0`. The accepted nonprimary-prefix
 and terminal imported-primary work stays separate. This reference changes the
 member preparation boundary, not the outer finalizer architecture.
 
@@ -30,9 +31,10 @@ represents one original turn, so neither is an adequate cross-turn cache key.
 | Producer/context memo | Completed checks for an exact effective selected context revision and accepted obligation | Permission to use another source or skip member checks |
 | Member cursor | Provisional progress after all current member checks | Successful closure or root publication |
 
-Every preparation/member call still enters the existing catalog finalizer.
+Every lifecycle/preparation/member call still enters the existing catalog finalizer.
 The finalizer checks the current claim and write gate and preserves its original
-preimage/postimage/result. The primary owner obtains fresh sealed metadata,
+preimage/postimage/result. In source-bearing preparation and member turns, the
+primary owner obtains fresh sealed metadata,
 compares the entire admitted identity with its pinned source, and opens a fresh
 accepted Native result using `UploadJournalResultResources`. The exact selected
 prefix must equal `anchor_at` in every coordinate. A final exact source/job probe
@@ -42,7 +44,9 @@ permit, copied final graph or terminal imported-history corpus is reused.
 Each Native opening is received through its original resource frame before the
 turn returns. This deliberately makes cold handle reopening ordinary behavior:
 there are no warm Native handles whose eviction can trigger source replay. The
-only cross-turn state is a private disk projection and application memo metadata.
+cross-turn semantic state consists of the private disk projection and application
+memo metadata. Their original construction scopes and exclusive namespace lease
+remain with the live owner until receiving completes.
 Missing accepted workspaces, changed catalog identity or changed job metadata
 fail explicitly; they do not silently trigger new Native validation.
 
@@ -196,7 +200,7 @@ history-set work already owned by the caller. These dimensions are independent.
 | Member semantic selection | Indexed selected facts and required M, including sparse negative results |
 | Current final descriptor/history-set checks | Existing exact caller work S, retained and counted separately |
 | Raw terminal barrier | Existing complete raw/corpus/history work, outside this improvement |
-| Cleanup | Actual original close receipts and private index disposal, with no source payload replay |
+| Cleanup | Indexed application discovery, exact exclusive custody, one admitted file extent or phase per worker turn, and actual original receiving; no source replay |
 
 This is not a claim of constant-time SQLite I/O. B-tree depth, metadata widths,
 source-index expansion, SHA work, capacity failures, reopening, actual receiving
@@ -248,12 +252,84 @@ hook runs in the existing terminal worker only after current authority, committe
 terminal decision and original forward receiving have been established. It
 receives derived preparation before reporting local execution stopped.
 
-Graceful restart reconstructs the private index from fresh admission and accepted
-Native frames, at most once for each needed distinct source in that new owner
-attempt. Durable member cursors remain in the existing catalog. Rebuilding work
-is explicitly charged to the restarted attempt; it is not counted as warm reuse.
-Ordinary per-turn Native handle eviction does not discard the source index and
-does not create this reconstruction cost.
+## Registered lifecycle and crash recovery
+
+`PrimaryFactsJobRecord` belongs to the Riverhog application catalog. Its immutable
+allocation binds the exact workspace ID, original collection/construction/epoch,
+process owner, and private root identity. The namespace pin records the actual
+directory and lease identities. A version and irreversible phase fence every
+mutation. No foreign key can cascade this disposal ownership away with upload
+or content rows. The unique collection index permits one unfinished allocation,
+including retired namespaces, so repeated capacity refusals cannot accumulate
+unbounded disposable directories for one collection.
+
+Both indexes live in **one** registered flat namespace. Native owns only
+`corpus.sqlite3` and its `-journal`, `-wal`, and `-shm` files. The application owns
+`checks.sqlite3` and the same sidecars. The application owns the exclusive
+`.lease`, the directory, and final catalog receiving. Neither source metadata nor
+archive authority moves into this lifecycle record.
+
+The real catalog caller separates three turns:
+
+| Turn | Committed prerequisite | Permitted effects and result |
+|---|---|---|
+| Allocate | Current upload construction and epoch | Register exact workspace/root identity; return pending with no namespace or database effect |
+| Pin | Freshly read committed allocation | Create/acquire the exact namespace and exclusive lease, synchronize it, record actual directory/lease identities; return pending with neither database created |
+| Prepare | Freshly read committed namespace pin | Exclusively create the two private databases through their retained construction scopes, then perform the existing bounded accepted-fact preparation |
+
+The owner remembers a weak identity of the metadata turn's transaction only to
+exclude another call inside that same uncommitted transaction. It retains no
+Session or transaction permission. A fresh read determines whether an uncertain
+allocation/pin commit happened. A pin rollback reuses the still-held original
+namespace; it cannot recreate the databases or mistake an in-memory successor
+for a committed pin. A failed construction retains its actual partial original
+until receiving, then retires its registered allocation. No `mkdtemp`, recursive
+deletion, pathname prefix search, or directory enumeration participates here.
+
+On restart, a new process does not open either old index as accepted facts.
+`UploadPrimaryFactsRetirement` discovers rows with indexed state/workspace seeks,
+including bounded wraparound. The process token is only a candidate hint. The
+physical original checks the current complete catalog fence, the actual retained
+root and pinned namespace, and acquires the original exclusive kernel lease.
+A live owner, uncertain close, replaced root/directory/lease, or stale catalog
+identity cannot authorize disposal. A registered creation prefix without a
+committed namespace pin permits only empty-prefix receiving: every exact owned
+data name must be absent. Unknown children remain untouched and prevent final
+`rmdir`.
+
+Retirement commits before any byte mutation. Each physical turn advances at most one phase and removes at most one admitted
+extent from one exact named file.
+The phases are `corpus`, `memo`, and `directory`, with separate committed
+transitions. The Native corpus facade and neutral file primitive receive the
+held directory identity; a replacement selected between the application's check
+and the primitive's open is rejected before any file mutation. No SQLite parser,
+Native validation, source payload accessor, or whole-source replay runs during
+reclamation. Data-sidecar removal and the final directory removal are synchronized.
+
+The directory phase commits before lease unlink and `rmdir`. A restart after
+lease unlink still requires the pinned directory identity; a restart after
+`rmdir` proves synchronized absence under the pinned root. The catalog record is
+forgotten only after final namespace receiving and all original native handles
+and file-reclamation resources have actually closed. A lost acknowledgement or
+unconfirmed close retains the same original and its resource charge for receiving;
+it does not repeat an uncertain worker mutation.
+
+The existing `WorkspaceRetirementRegistry` supplies bounded ordinary retention,
+terminal physical execution, original worker joining, and close retry. Receiving
+runs before ordinary archive maintenance, so a received empty capacity refusal
+can release the sole construction slot and allow its cleanup to progress. New
+cleanup admission alternates before and after actual finalization selection; a
+long retired extent cannot repeatedly capture that sole slot ahead of independent uploads. Busy
+candidates advance only volatile seek hints; independent eligible namespaces can
+continue. Shutdown stops dispatch, joins workers, and receives their actual
+originals before storage dependencies close. It leaves unfinished durable records
+for restart instead of draining an arbitrarily large archive synchronously.
+
+The schema addition is a deliberate pre-v1 baseline replacement with both checked-in
+dialects and the exact PostgreSQL fixture updated. Startup still validates its
+expected schema; this reference adds no implicit upgrade or erasure path. Rebuilding
+derived facts after cleanup is charged to a new attempt. Ordinary per-turn Native
+result reopening does not discard the prepared index and causes no replay.
 
 ## Remaining integration boundaries
 
@@ -261,19 +337,16 @@ This branch is an executable design, not delivered production qualification.
 The integration owner must reconcile it with current source and decide what to
 adopt, reproduce or reject, recording a finite disposition in #964.
 
-The most concrete remaining lifecycle boundary is **unclean-process scratch
-reclamation**. This prototype follows the existing disposable corpus storage
-model and proves original receiving, graceful restart and explicit retirement.
-It does not establish that a killed process's two private index directories are
-registered with restart-safe bounded orphan reclamation. Before production
-adoption, allocate/register those original paths through the existing application
-reclamation ownership rail, before file effects, and qualify killed-constructor,
-lost-close and retry cases. Do not treat a `finally` block or clean restart test as
-that evidence, and do not move the original archive state into this derived cache.
+The focused lifecycle extension exercises actual killed processes at registration,
+partial namespace/index construction, extent mutation, and final namespace
+receiving boundaries. Source-owned catalog, physical and caller observations
+remain separate from elapsed-time measurements; [VERIFY.md](VERIFY.md) identifies
+the exact small suites and evidence collection. This qualifies the stated finite
+reference path on its tested platform, not an entire delivered deployment.
 
 The synchronous outer terminal transaction and its reconstruction after an
 interrupted attempt remain separate recorded limits. No broad finalizer redesign,
-archive schema migration, archive-format change, relaxed encryption, revised
+archive-format change, relaxed encryption, revised
 contract gate, whole-path G13 closure or downstream release acceptance is claimed.
 Backend, delivered/built service and independent exact-final-source GitHub checks
 remain with normal integration. #991 retains attribution and actual parallelism

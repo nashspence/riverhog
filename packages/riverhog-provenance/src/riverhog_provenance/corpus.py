@@ -1113,6 +1113,7 @@ class CanonicalCorpusValidator:
     def __init__(
         self,
         *,
+        directory: Path | None = None,
         connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
     ) -> None:
@@ -1121,11 +1122,26 @@ class CanonicalCorpusValidator:
         A supplied factory owns any connection it does not return and the private
         directory named by its database path. The early callback retains this
         owner before schema work, including when a later close is unconfirmed.
+
+        Explicit placement requires the caller's factory, already registered
+        private namespace and original construction custody. The caller creates
+        the exact database exclusively and keeps its lease until storage has
+        received. Native creates no directory and never removes that namespace.
         """
+        if directory is not None and (
+            connection_factory is None or not Path(directory).is_absolute()
+        ):
+            raise ValueError(
+                "caller-owned corpus placement requires an absolute directory and factory"
+            )
         self._initialize_state()
         self._connection_factory = connection_factory
-        self._owns_directory = True
-        self._directory = Path(mkdtemp(prefix="riverhog-canonical-corpus-"))
+        self._owns_directory = directory is None
+        self._directory = (
+            Path(mkdtemp(prefix="riverhog-canonical-corpus-"))
+            if directory is None
+            else Path(directory)
+        )
         connect = sqlite3.connect if connection_factory is None else connection_factory
         try:
             self._db = connect(self._directory / "corpus.sqlite3")

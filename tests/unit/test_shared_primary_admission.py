@@ -28,8 +28,10 @@ from riverhog_core.catalog_models import CollectionUploadArtifactRecord as Artif
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalChunkRecord as Chunk
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalRecord as Journal
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
+from riverhog_core.catalog_primary_facts_models import PrimaryFactsJobRecord as PrimaryJob
 from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
 from riverhog_core.services import collection_uploads as service_owner
+from riverhog_core.services import primary_facts_jobs
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_protocol import (
     ArtifactMemberIdentityDocument,
@@ -63,6 +65,7 @@ from riverhog_provenance import (
 from riverhog_provenance import history as history_owner
 from riverhog_provenance.corpus_selection import HistoricalSelection
 from sqlalchemy import event, select
+from workspace_reclamation import FileReclamationOwner
 
 from tests.support.catalog_work import octets
 from tests.support.validation_workspace import leased_workspace
@@ -427,6 +430,7 @@ def _runtime_work(monkeypatch):
     actual_production_read = production_owner.PrimaryProductionWork._read
     actual_production_write = production_owner.PrimaryProductionWork._write
     actual_hash = production_owner.CheckpointSHA256.update
+    actual_reclaim = FileReclamationOwner.reclaim
     active = []
     active_object = []
     active_production = []
@@ -436,14 +440,28 @@ def _runtime_work(monkeypatch):
         measured.phase = "primary_receiving"
         values = measured.metrics[measured.phase]
         values["index_close_calls"] += 1
-        paths = [path for path in (self.corpus_directory, self.memo_directory) if path is not None]
+        paths = {self.corpus_directory, self.memo_directory}
         try:
             result = actual_index_close(self)
-            assert all(not path.exists() for path in paths)
-            values["scratch_directories_received"] += len(paths)
+            assert self.corpus_scope.received and self.memo_scope.received
+            assert self.workspace.received
+            assert all(path.is_dir() for path in paths)
+            values["database_constructions_received"] += 2
+            values["namespace_leases_received"] += len(paths)
             return result
         finally:
             measured.phase = previous
+
+    def reclaim(self, directory, *, names, octet_budget, **options):
+        result = actual_reclaim(self, directory, names=names, octet_budget=octet_budget, **options)
+        assert self.received and result.removed_octets <= octet_budget
+        assert result.removed_files <= 1
+        if measured.phase is not None:
+            values = measured.metrics[measured.phase]
+            values["file_reclamation_calls"] += 1
+            values["reclaimed_octets"] += result.removed_octets
+            values["reclaimed_files"] += result.removed_files
+        return result
 
     def production(self, row=None):
         active_production.append(True)
@@ -674,6 +692,7 @@ def _runtime_work(monkeypatch):
         patch.setattr(production_owner.PrimaryProductionWork, "_read", production_read)
         patch.setattr(production_owner.PrimaryProductionWork, "_write", production_write)
         patch.setattr(production_owner.CheckpointSHA256, "update", record_hash)
+        patch.setattr(FileReclamationOwner, "reclaim", reclaim)
         patch.setattr(
             primary_owner,
             "open_upload_journal_result",
@@ -726,6 +745,26 @@ def _finish(case):
     return owners
 
 
+def _reclaim_primary(case):
+    """Intentionally drain this exact registered namespace through actual workers."""
+    from tests.unit.test_primary_facts_lifecycle import finish_scheduled
+
+    with session_scope(case.factory) as session:
+        job = primary_facts_jobs.find_pending(session, case.collection_id)
+    assert job is not None
+    assert job.state in primary_facts_jobs.RETIRED_STATES or (
+        job.owner_id != case.service._primary_facts.owner_id
+    )
+    root = case.service._journal_validation_owner.root
+    finish_scheduled(
+        SimpleNamespace(factory=case.factory, root=root),
+        case.service._primary_facts_retirement,
+        case.service._archive_execution,
+        (job.workspace_id,),
+    )
+    assert not (root / job.workspace_id).exists()
+
+
 @pytest.mark.parametrize("fanout", [1, 4])
 @pytest.mark.parametrize(
     "text_octets,opaque_octets", [(0, 0), (4096, 0), (0, 4096)], ids=["base", "producer", "opaque"]
@@ -754,12 +793,13 @@ def test_real_member_turns_share_primary_admission_with_independent_record_exten
             owners.extend(_next_member(case))
         assert _state(case) == (case.members, False, None)
         primary_owner = case.service._primary_facts
-        preparation_paths = [
+        preparation_paths = {
             path
             for index in primary_owner._owners.values()
             for path in (index.corpus_directory, index.memo_directory)
-        ]
-        assert preparation_paths and all(path.is_dir() for path in preparation_paths)
+        }
+        assert len(preparation_paths) == 1
+        assert all(path.is_dir() for path in preparation_paths)
         member_work = work.metrics["member"]
         assert member_work["native_advances"] == member_work["catalog_source_octets"] == 0
         assert member_work["accepted_frame_reads"] == sum(
@@ -789,12 +829,21 @@ def test_real_member_turns_share_primary_admission_with_independent_record_exten
         work.phase = "terminal"
         owners.extend(_finish(case))
         assert not primary_owner.pending
-        assert all(not path.exists() for path in preparation_paths)
+        assert all(path.is_dir() for path in preparation_paths)
         receiving = work.metrics["primary_receiving"]
         assert receiving["index_close_calls"] == 1
-        assert receiving["scratch_directories_received"] == len(preparation_paths)
+        assert receiving["database_constructions_received"] == 2
+        assert receiving["namespace_leases_received"] == len(preparation_paths)
         assert receiving["accepted_frame_reads"] == receiving["catalog_source_octets"] == 0
         assert receiving["native_advances"] == 0
+        work.phase = "primary_reclamation"
+        _reclaim_primary(case)
+        assert all(not path.exists() for path in preparation_paths)
+        reclamation = work.metrics["primary_reclamation"]
+        assert reclamation["file_reclamation_calls"] >= 2
+        assert reclamation["reclaimed_files"] == 2 and reclamation["reclaimed_octets"] > 0
+        assert reclamation["accepted_frame_reads"] == reclamation["catalog_source_octets"] == 0
+        assert reclamation["native_advances"] == 0
         assert all(not owner.has_pending and not owner.result_resources.pending for owner in owners)
         shared = [row for row in work.calls if row["journal_id"] == case.material.anchor.journal_id]
         terminal = [row for row in shared if row["phase"] == "terminal"]
@@ -985,6 +1034,52 @@ def test_shared_primary_rechecks_current_source_and_job_after_a_previous_member(
         assert _state(case) == (1, False, None)
 
 
+def test_shared_primary_rejects_substitution_of_its_registered_namespace_original(
+    tmp_path, monkeypatch
+):
+    from riverhog_core.primary_facts_workspace import DATA_FILES
+
+    with shared_primary_finalization(tmp_path, monkeypatch, members=2, fanout=2) as case:
+        _next_member(case)
+        preparation = case.service._primary_facts
+        original = preparation._owners[case.collection_id]
+        path = original.workspace.path
+        assert original.ready and original.workspace.custody.verify_current()
+
+        def contents():
+            return {
+                name: (path / name).read_bytes() for name in DATA_FILES if (path / name).exists()
+            }
+
+        before = contents()
+        with session_scope(case.factory) as session:
+            job = primary_facts_jobs.find_pending(session, case.collection_id)
+            row = session.get(PrimaryJob, job.workspace_id)
+            row.epoch = "f" * 64
+            row.construction = job.construction + " "
+        turn = _owner(case)
+        try:
+            with pytest.raises(Conflict, match="registered original identity"):
+                turn.advance()
+            assert _state(case) == (1, False, None)
+            assert preparation._owners[case.collection_id] is original
+            assert original.ready and not original.closing
+            assert not original.workspace.received
+            assert original.workspace.custody.verify_current()
+            assert original.corpus_scope.borrow.active
+            assert case.service._journal_storage.status.connections == 2
+            assert contents() == before
+        finally:
+            with session_scope(case.factory) as session:
+                row = session.get(PrimaryJob, job.workspace_id)
+                row.epoch, row.construction = job.epoch, job.construction
+        assert turn.advance()
+        assert not turn.has_pending and not turn.result_resources.pending
+        assert _state(case) == (2, False, None)
+        _finish(case)
+        _reclaim_primary(case)
+
+
 def test_shared_primary_restart_uses_current_identity_and_complete_terminal_barrier(
     tmp_path, monkeypatch
 ):
@@ -1000,6 +1095,7 @@ def test_shared_primary_restart_uses_current_identity_and_complete_terminal_barr
         )
         case.service = current
         try:
+            _reclaim_primary(case)
             _finish(case)
         finally:
             current.close()
@@ -1059,6 +1155,15 @@ def test_refused_first_primary_open_returns_empty_index_capacity_before_retry(
     with shared_primary_finalization(tmp_path, monkeypatch, members=2, fanout=2) as case:
         storage = case.service._journal_storage
         assert storage.status.connections == 0
+        # Registration and actual namespace pinning each commit without either
+        # database. The next fresh catalog turn exercises real SQLite pressure.
+        for _ in range(2):
+            metadata = _owner(case)
+            assert metadata.advance()
+            assert not metadata.has_pending and not metadata.result_resources.pending
+            assert storage.status.connections == 0 and _state(case) == (0, False, None)
+        with session_scope(case.factory) as session:
+            assert primary_facts_jobs.find_pending(session, case.collection_id).state == "pinned"
         originals = [storage.journal() for _ in range(storage.status.connection_limit - 2)]
         closed_paths = []
         actual_close = primary_owner._PrimaryIndex.close
@@ -1080,6 +1185,8 @@ def test_refused_first_primary_open_returns_empty_index_capacity_before_retry(
             assert not case.service._primary_facts.pending
             assert not owner.has_pending and not owner.result_resources.pending
             assert storage.status.connections == len(originals)
+            assert closed_paths and all(path.is_dir() for path in closed_paths)
+            _reclaim_primary(case)
             assert closed_paths and all(not path.exists() for path in closed_paths)
         finally:
             for original in reversed(originals):
@@ -1151,11 +1258,11 @@ def test_decided_terminal_receives_primary_preparation_after_original_writers(
     with shared_primary_finalization(tmp_path, monkeypatch, members=2, fanout=2) as case:
         _next_member(case)
         primary = case.service._primary_facts
-        paths = [
+        paths = {
             path
             for index in primary._owners.values()
             for path in (index.corpus_directory, index.memo_directory)
-        ]
+        }
         assert primary.pending and all(path.is_dir() for path in paths)
         retirement = case.service._archive_terminal_retirement
         receive = retirement._retire_preparation
@@ -1163,7 +1270,7 @@ def test_decided_terminal_receives_primary_preparation_after_original_writers(
         operation = _operation(case)
         calls = []
 
-        def receive_preparation(collection_id):
+        def receive_preparation(session, collection_id):
             assert collection_id == case.collection_id
             for registry in (case.service._archive_finalizers, case.service._archive_invocations):
                 assert (
@@ -1173,7 +1280,7 @@ def test_decided_terminal_receives_primary_preparation_after_original_writers(
                     == "untracked"
                 )
             calls.append(primary.pending)
-            return receive(collection_id)
+            return receive(session, collection_id)
 
         monkeypatch.setattr(retirement, "_retire_preparation", receive_preparation)
         _result(case, operation)
@@ -1189,6 +1296,8 @@ def test_decided_terminal_receives_primary_preparation_after_original_writers(
             decision.phase in {"refused-sealed", "needs-reconfirmation"}
         )
         assert calls == [True] and not primary.pending
+        assert all(path.is_dir() for path in paths)
+        _reclaim_primary(case)
         assert all(not path.exists() for path in paths)
         assert _state(case) == (1, False, None)
 

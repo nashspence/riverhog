@@ -60,7 +60,7 @@ class ArchiveUploadTerminalRetirement:
         finalizers: ArchiveFinalizerRegistry,
         invocations: ArchiveUploadInvocationRegistry,
         *,
-        retire_preparation: Callable[[int], bool] | None = None,
+        retire_preparation: Callable[[Session, int], bool] | None = None,
     ) -> None:
         self._factory = factory
         self._observation = observation
@@ -129,7 +129,7 @@ class ArchiveUploadTerminalRetirement:
                     # This runs inside the joined terminal worker, after exact
                     # forward originals have received. A failed close retains
                     # the same preparation owner and its capacity for retry.
-                    pending = not self._retire_preparation(collection_id)
+                    pending = not self._retire_preparation(session, collection_id)
                 stopped = not pending and terminal.phase in {
                     "refused-sealed",
                     "needs-reconfirmation",

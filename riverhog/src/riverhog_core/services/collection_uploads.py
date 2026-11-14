@@ -623,6 +623,19 @@ class SqlAlchemyCollectionUploadService:
             receive_limit=config.archive_execution.retained_constructions,
             retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
         )
+        from .upload_primary_facts_retirement import UploadPrimaryFactsRetirement
+
+        self._primary_facts_retirement = UploadPrimaryFactsRetirement(
+            self._session_factory,
+            config.journal_validation_workspace,
+            owner_id=self._primary_facts.owner_id,
+            execution=self._archive_execution,
+            retention=self._archive_retention,
+            metadata_budget=config.registration.metadata_bytes_per_step,
+            receive_limit=config.archive_execution.retained_constructions,
+            retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
+        )
+        self._primary_facts_cleanup_turn = False
         self._journal_validation_cleanup_turn = False
         self._checkpoints = SqlAlchemyArchiveUploadCheckpointStore(
             config,
@@ -645,6 +658,7 @@ class SqlAlchemyCollectionUploadService:
         }
 
     def close(self) -> None:
+        self._primary_facts_retirement.close()
         self._journal_validation_retirement.close()
         self._archive_terminals.close()
         if self._cache_cleanup is not None:
@@ -652,6 +666,8 @@ class SqlAlchemyCollectionUploadService:
         self._archive_invocations.close()
         self._archive_finalizers.close()
         self._primary_facts.close()
+        if not self._primary_facts_retirement.receive_stopped():
+            raise Conflict("original primary preparation retirement receiving remains unconfirmed")
         if not self._journal_validation_retirement.receive_stopped():
             raise Conflict("original Native retirement receiving remains unconfirmed")
         self._journal_validation_owner.close()
@@ -3505,7 +3521,10 @@ class SqlAlchemyCollectionUploadService:
     def process_due_archive_uploads(self, *, limit: int = 1) -> int:
         if limit < 1:
             return 0
-        return self._archive_upload_maintenance.process_due(limit=limit)
+        # Shared maintenance receives originals without capturing a fresh slot
+        # ahead of whichever forward scheduler called it.
+        progressed = self._primary_facts_retirement.advance(limit=limit, admit=False)
+        return progressed + self._archive_upload_maintenance.process_due(limit=limit)
 
     def has_unreceived_archive_work(self) -> bool:
         """A local poll hint; this grants no provider closure or global quiescence."""
@@ -3517,6 +3536,10 @@ class SqlAlchemyCollectionUploadService:
         # Receive joined physical results and original workflow feedback before
         # any fresh candidate can acquire another durable claim.
         progressed = self.process_due_archive_uploads(limit=limit)
+        self._primary_facts_cleanup_turn = not self._primary_facts_cleanup_turn
+        cleanup_first = self._primary_facts_cleanup_turn
+        if cleanup_first:
+            progressed += self._primary_facts_retirement.advance(limit=limit)
         try:
             progressed += self._schedule_ready_finalizations(limit=max(100, limit))
         except OperationalError as error:
@@ -3527,6 +3550,11 @@ class SqlAlchemyCollectionUploadService:
         for collection_id in self._finalization_due.select(now, limit=limit):
             if self._submit_finalization_if_due(collection_id, now=now) == "submitted":
                 progressed += 1
+        if not cleanup_first:
+            # Alternate actual admission opportunities, not arbitrary maintenance
+            # polls: a long retired extent cannot monopolize the sole ordinary
+            # slot, even when custody and finalization poll in the same cycle.
+            progressed += self._primary_facts_retirement.advance(limit=limit)
         return progressed
 
     def _schedule_ready_finalizations(self, *, limit: int) -> int:
@@ -5133,7 +5161,8 @@ class SqlAlchemyCollectionUploadService:
             raise Conflict("canonical provenance bindings do not cover the artifact set")
         # Derived preparation owns no publication authority. Receive its actual
         # resources before the separate complete current raw terminal barrier.
-        self._primary_facts.retire(collection_id)
+        if not self._primary_facts.retire(session, collection_id):
+            return True
         # Member cursors retain provisional accepted-prefix facts. Resolve the
         # complete current raw histories before recording closure success.
         _validate_staged_canonical_journal_set(session, upload)

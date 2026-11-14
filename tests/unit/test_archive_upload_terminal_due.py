@@ -152,8 +152,9 @@ def _lost_stop(case, monkeypatch):
 
     with monkeypatch.context() as patch:
         patch.setattr(retirement_module, "session_scope", lose)
-        assert due.submit_due(limit=1, retry_after=timedelta(seconds=1)) == 1
-        _join(case.service)
+        with _published_due(case, due, monkeypatch) as future:
+            with pytest.raises(OSError, match="stopping commit reply lost"):
+                future.result()
     assert _record(case)[1] is None
     assert registry.collect(limit=1) == 1
     context = next(iter(registry._contexts.values()))
@@ -161,8 +162,11 @@ def _lost_stop(case, monkeypatch):
     assert case.service._archive_retention._counts == {False: 0, True: 1}
     original_actor = context.actor
     advance()
-    assert due.submit_due(limit=1, retry_after=timedelta(seconds=1)) == 1
-    _join(case.service)
+    # Run the intended positive reply after submission releases its physical lock.
+    with _published_due(case, due, monkeypatch) as future:
+        assert future.result().execution_stopped
+        assert registry.collect(limit=1) == 0
+        assert case.service._archive_retention._counts == {False: 0, True: 1}
     assert registry.collect(limit=1) == 2
     assert context.actor is original_actor and len(calls) == 1
     assert not registry._contexts and not case.service._archive_retention._reservations

@@ -19,8 +19,11 @@ from scripts.validation_witnesses import (  # noqa: E402
 
 FILES = {
     "packages/riverhog-provenance/tests/test_corpus_primary_selection.py",
+    "packages/riverhog-provenance/tests/test_corpus_reclamation.py",
+    "packages/workspace-reclamation/tests/test_reclamation.py",
     "tests/unit/test_primary_production_work.py",
     "tests/unit/test_shared_primary_admission.py",
+    "tests/unit/test_primary_facts_lifecycle_work.py",
 }
 
 

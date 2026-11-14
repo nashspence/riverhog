@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 import json
-import shutil
 import sqlite3
 from collections.abc import Iterator
 from contextlib import closing
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from tempfile import mkdtemp
 from threading import Lock
 from typing import Any
+from uuid import uuid4
+from weakref import ReferenceType, ref
 
 from riverhog_archive_contracts import HistoryJournalAnchor
 from riverhog_canonical_json import canonical_json_bytes
@@ -44,16 +44,22 @@ from riverhog_provenance.corpus_selection import (
     source_extent,
 )
 from riverhog_provenance_contracts import ContractCatalog
-from sqlalchemy.orm import Session
-from sqlite_admission import SqliteCapacity
+from sqlalchemy.orm import Session, SessionTransaction
+from sqlite_admission import SqliteCapacity, SqliteCleanupPending
 
 from riverhog_core.catalog_models import CollectionUploadRecord
+from riverhog_core.primary_facts_workspace import (
+    PrimaryFactsWorkspace,
+    capture_root_identity,
+)
 from riverhog_core.provenance_binding import (
     VerifiedMemberBinding,
     verify_selected_member_binding,
 )
+from riverhog_core.services import primary_facts_jobs as jobs
 from riverhog_core.services.collection_upload_authority import require_open_upload_writes
 from riverhog_core.services.journal_storage_resources import JournalStorageResources
+from riverhog_core.services.primary_facts_jobs import PrimaryFactsJob
 from riverhog_core.services.primary_production import PrimaryProductionWork, install
 from riverhog_core.services.upload_journal_result import (
     SealedJournalResultAdmission,
@@ -180,21 +186,63 @@ class VerifiedPrimaryFacts:
 
 
 class _PrimaryIndex:
-    """Two exact original storage scopes; source extent stays in indexed files."""
+    """Two original storage scopes beneath one registered, exclusively leased namespace."""
 
-    def __init__(self, storage: JournalStorageResources, construction: str, epoch: str) -> None:
-        self.construction, self.epoch = construction, epoch
-        self.corpus_scope = storage.journal()
+    def __init__(
+        self,
+        storage: JournalStorageResources,
+        job: PrimaryFactsJob,
+        workspace: PrimaryFactsWorkspace,
+    ) -> None:
+        self.job, self.workspace = job, workspace
+        self.construction, self.epoch = job.construction, job.epoch
+        self.corpus_scope = storage.corpus()
         self.memo_scope = storage.journal()
         self.corpus: CanonicalCorpusValidator | None = None
         self.corpus_connection: sqlite3.Connection | None = None
         self.memo: sqlite3.Connection | None = None
-        self.corpus_directory: Path | None = None
-        self.memo_directory: Path | None = None
+        self.corpus_directory = self.memo_directory = workspace.path
         self.started = self.ready = self.closing = False
         self.source_admission_started = False
+        self.namespace_started = False
+        self._pending_transaction: ReferenceType[SessionTransaction] | None = None
+
+    def await_commit(self, session: Session) -> None:
+        transaction = session.get_transaction()
+        if transaction is None:
+            raise RuntimeError("primary allocation requires its original catalog transaction")
+        # A weak identity excludes repeated calls in the same transaction while
+        # retaining neither its Session nor its authority across catalog turns.
+        self._pending_transaction = ref(transaction)
+
+    def awaiting_commit(self, session: Session) -> bool:
+        previous = None if self._pending_transaction is None else self._pending_transaction()
+        return previous is not None and previous is session.get_transaction()
+
+    def require_original_job(self, job: PrimaryFactsJob) -> None:
+        if any(
+            getattr(self.job, field) != getattr(job, field)
+            for field in (
+                "workspace_id",
+                "collection_id",
+                "construction",
+                "epoch",
+                "owner_id",
+                "root_identity",
+            )
+        ):
+            raise Conflict("primary preparation changed its registered original identity")
+        if self.started and job.namespace_identity != self.job.namespace_identity:
+            raise Conflict("primary preparation changed its committed namespace pin")
+        if (
+            job.namespace_identity is not None
+            and self.workspace.custody is not None
+            and job.namespace_identity != self.workspace.namespace_identity
+        ):
+            raise Conflict("primary preparation namespace pin names another original")
 
     def open(self) -> None:
+        self.workspace.require_current(self.job)
         if self.started:
             if not self.ready or self.closing:
                 raise JournalValidationCapacity("original primary preparation needs receiving")
@@ -205,31 +253,63 @@ class _PrimaryIndex:
         self.memo_scope.scope.reserve()
 
         def connect(database: Path) -> sqlite3.Connection:
-            self.corpus_directory = Path(database).parent
-            connection = self.corpus_scope.scope.connect(database, check_same_thread=False)
+            if database != self.workspace.path / "corpus.sqlite3":
+                raise Conflict("primary corpus selected another registered database path")
+            self.corpus_scope.acquire_guard(database, create=True)
+            connection = self.corpus_scope.scope.connect(
+                database.as_uri() + "?mode=rw", uri=True, check_same_thread=False
+            )
             self.corpus_connection = connection
+            self._storage_profile(connection)
             return connection
 
         def retain(corpus: CanonicalCorpusValidator) -> None:
             self.corpus = corpus
 
-        self.corpus = CanonicalCorpusValidator(connection_factory=connect, on_storage_open=retain)
-        enable_selection(self.corpus)
-        self.memo_directory = Path(mkdtemp(prefix="riverhog-primary-facts-"))
-        self.memo = self.memo_scope.scope.connect(
-            self.memo_directory / "checks.sqlite3", check_same_thread=False
-        )
-        for statement in (
-            "CREATE TABLE sources(journal TEXT PRIMARY KEY, admission BLOB NOT NULL, "
-            "frames INTEGER NOT NULL, prefix_bytes TEXT NOT NULL, complete INTEGER NOT NULL)",
-            "CREATE TABLE checks(selection BLOB PRIMARY KEY, cursor TEXT, context BLOB)",
-            "CREATE TABLE outputs(selection BLOB, state TEXT, revision BLOB, output TEXT, "
-            "PRIMARY KEY(selection,state,revision)) WITHOUT ROWID",
-        ):
-            _write(self.memo, statement)
-        install(self.memo)
-        self.memo.commit()
+        self.corpus_scope.begin()
+        try:
+            self.corpus = CanonicalCorpusValidator(
+                directory=self.workspace.path,
+                connection_factory=connect,
+                on_storage_open=retain,
+            )
+            enable_selection(self.corpus)
+            assert self.corpus_connection is not None
+            self.corpus_connection.commit()
+            self.corpus_scope.sync_directory(self.workspace.path)
+            self.corpus_scope.ready()
+        finally:
+            self.corpus_scope.end()
+        self.memo_scope.begin()
+        try:
+            database = self.workspace.path / "checks.sqlite3"
+            self.memo_scope.create_exclusive(database)
+            self.memo = self.memo_scope.scope.connect(
+                database.as_uri() + "?mode=rw", uri=True, check_same_thread=False
+            )
+            self._storage_profile(self.memo)
+            for statement in (
+                "CREATE TABLE sources(journal TEXT PRIMARY KEY, admission BLOB NOT NULL, "
+                "frames INTEGER NOT NULL, prefix_bytes TEXT NOT NULL, complete INTEGER NOT NULL)",
+                "CREATE TABLE checks(selection BLOB PRIMARY KEY, cursor TEXT, context BLOB)",
+                "CREATE TABLE outputs(selection BLOB, state TEXT, revision BLOB, output TEXT, "
+                "PRIMARY KEY(selection,state,revision)) WITHOUT ROWID",
+            ):
+                _write(self.memo, statement)
+            install(self.memo)
+            self.memo.commit()
+            self.memo_scope.sync_directory(self.workspace.path)
+            self.memo_scope.ready()
+        finally:
+            self.memo_scope.end()
         self.ready = True
+
+    @staticmethod
+    def _storage_profile(connection: sqlite3.Connection) -> None:
+        if _one(connection, "PRAGMA journal_mode=DELETE") != ("delete",):
+            raise Conflict("primary preparation SQLite journal profile changed")
+        _write(connection, "PRAGMA synchronous=FULL")
+        _write(connection, "PRAGMA fullfsync=ON")
 
     def close(self) -> None:
         """Do not release a slot until both original connection receipts exist."""
@@ -238,26 +318,15 @@ class _PrimaryIndex:
             self.corpus.close()
         if not self.corpus_scope.close_step():
             raise BlockingIOError("original primary source index has not received")
-        # Constructor failure before Native's callback still leaves the exact
-        # admitted connection and its private directory reachable above.
-        if self.corpus_directory is not None:
-            self._remove(self.corpus_directory)
-            self.corpus_directory = None
         if self.memo is not None:
             self.memo.close()
         if not self.memo_scope.close_step():
             raise BlockingIOError("original primary memo index has not received")
-        if self.memo_directory is not None:
-            self._remove(self.memo_directory)
-            self.memo_directory = None
-
-    @staticmethod
-    def _remove(directory: Path) -> None:
-        try:
-            shutil.rmtree(directory)
-        except FileNotFoundError:
-            if directory.exists():
-                raise
+        # Namespace receiving is strictly after both actual database/file
+        # constructions. Registered bytes belong to separate bounded retirement.
+        self.workspace.close()
+        if not self.workspace.received:
+            raise BlockingIOError("original primary namespace lease has not received")
 
 
 class UploadPrimaryFactsOwner:
@@ -278,6 +347,7 @@ class UploadPrimaryFactsOwner:
         if type(max_owners) is not int or max_owners < 1:
             raise ValueError("primary preparation requires positive owner admission")
         self._storage, self._root, self._max_owners = storage, Path(root), max_owners
+        self._owner_id = uuid4().hex
         self._owners: dict[int, _PrimaryIndex] = {}
         self._lock = Lock()
         self._closing = False
@@ -300,6 +370,123 @@ class UploadPrimaryFactsOwner:
     @property
     def pending(self) -> bool:
         return bool(self._owners)
+
+    @property
+    def owner_id(self) -> str:
+        return self._owner_id
+
+    def _registered_index(
+        self, session: Session, upload: CollectionUploadRecord
+    ) -> _PrimaryIndex | None:
+        """Read committed allocation and pin stages before either database effect."""
+        control = require_open_upload_writes(session, upload)
+        collection_id = upload.collection_id
+        index = self._owners.get(collection_id)
+        job = jobs.find_pending(session, collection_id)
+        if job is None:
+            if index is not None:
+                if index.namespace_started:
+                    raise Conflict("primary preparation lost its registered namespace")
+                # An unacknowledged registration can roll back. No filesystem
+                # work was permitted in that original metadata-only turn.
+                index.close()
+                del self._owners[collection_id]
+            if len(self._owners) >= self._max_owners:
+                self.metrics["capacity_deferrals"] += 1
+                return None
+            job = jobs.register(
+                session,
+                collection_id=collection_id,
+                construction=control.construction_json,
+                epoch=control.epoch,
+                owner_id=self._owner_id,
+                root_identity=capture_root_identity(self._root),
+            )
+            index = _PrimaryIndex(self._storage, job, PrimaryFactsWorkspace(self._root, job))
+            index.await_commit(session)
+            self._owners[collection_id] = index
+            return None
+        if index is not None:
+            if index.job.workspace_id == job.workspace_id:
+                index.require_original_job(job)
+            elif not index.namespace_started:
+                # A foreign owner may finish a passive allocation before this
+                # process next acquires it. No namespace original remains here.
+                index.close()
+                del self._owners[collection_id]
+                index = None
+            else:
+                raise Conflict("primary preparation registration changed its original namespace")
+        if job.owner_id != self._owner_id:
+            # Restart retirement must prove exclusive quiescence; a foreign
+            # live allocation is never adopted as a fresh preparation cache.
+            return None
+        if job.state not in jobs.LIVE_STATES:
+            if index is not None:
+                index.close()
+                del self._owners[collection_id]
+            return None
+        if (job.construction, job.epoch) != (control.construction_json, control.epoch):
+            if index is not None:
+                index.close()
+                del self._owners[collection_id]
+            self._retire_job(session, job)
+            return None
+        if index is None:
+            if job.state == "pinned":
+                # This process removes an original only after positive receipt.
+                # A lost catalog retirement acknowledgement leaves the pinned
+                # row, not permission to reconstruct its disposed handles.
+                self._retire_job(session, job)
+                return None
+            if len(self._owners) >= self._max_owners:
+                self.metrics["capacity_deferrals"] += 1
+                return None
+            index = _PrimaryIndex(self._storage, job, PrimaryFactsWorkspace(self._root, job))
+            index.await_commit(session)
+            self._owners[collection_id] = index
+            return None
+        if index.closing:
+            index.close()
+            self._retire_job(session, job)
+            del self._owners[collection_id]
+            return None
+        if index.awaiting_commit(session):
+            return None
+        if job.state == "allocated":
+            if index.started:
+                raise Conflict("primary preparation lost its committed namespace pin")
+            index.namespace_started = True
+            try:
+                opened = index.workspace.open(lambda: jobs.current(session, job))
+            except BaseException:
+                # An uncertain namespace constructor is a receiving-only
+                # original. A retry cannot execute its acquisition again.
+                index.closing = True
+                raise
+            if not opened:
+                if not index.workspace.received:
+                    raise BlockingIOError("deferred primary namespace has not received")
+                index.namespace_started = False
+                index.workspace = PrimaryFactsWorkspace(self._root, job)
+                self.metrics["capacity_deferrals"] += 1
+                return None
+            successor = jobs.pin(session, job, index.workspace.namespace_identity)
+            if successor is None:
+                raise Conflict("primary preparation namespace pin lost its original allocation")
+            index.job = successor
+            index.await_commit(session)
+            return None
+        # This is a fresh read after the pin turn. Neither the flushed successor
+        # nor the retained local identity is treated as catalog commit evidence.
+        index.workspace.require_current(job)
+        index.job = job
+        return index
+
+    @staticmethod
+    def _retire_job(session: Session, job: PrimaryFactsJob) -> None:
+        if jobs.retire(session, job) is None:
+            raise Conflict("primary preparation retirement lost its original catalog state")
 
     @declare_growth(_turn_declaration())
     def verify(
@@ -326,26 +513,20 @@ class UploadPrimaryFactsOwner:
         try:
             if self._closing:
                 raise JournalValidationCapacity("primary preparation owner is closing")
-            control = require_open_upload_writes(session, upload)
-            index = self._owners.get(upload.collection_id)
-            fresh = index is None
+            index = self._registered_index(session, upload)
             if index is None:
-                if len(self._owners) >= self._max_owners:
-                    self.metrics["capacity_deferrals"] += 1
-                    return None
-                index = _PrimaryIndex(self._storage, control.construction_json, control.epoch)
-                self._owners[upload.collection_id] = index
-            elif (index.construction, index.epoch) != (control.construction_json, control.epoch):
-                raise Conflict("primary preparation construction or epoch changed")
+                return None
+            opening = not index.started
             try:
                 index.open()
             except BaseException as error:
                 # No preparation facts exist until opening is ready. A refused
                 # reservation can retry only after these exact originals receive.
                 index.close()
+                self._retire_job(session, index.job)
                 del self._owners[upload.collection_id]
                 if (
-                    fresh
+                    opening
                     and isinstance(error, (SqliteCapacity, JournalValidationCapacity))
                     and not result_resources.pending
                 ):
@@ -354,15 +535,16 @@ class UploadPrimaryFactsOwner:
                 raise
             self.metrics["turns"] += 1
             try:
-                return self._verify(
-                    index,
-                    session,
-                    upload,
-                    member=member,
-                    binding=binding,
-                    result_resources=result_resources,
-                    catalog=catalog,
-                )
+                with index.corpus_scope.execution():
+                    return self._verify(
+                        index,
+                        session,
+                        upload,
+                        member=member,
+                        binding=binding,
+                        result_resources=result_resources,
+                        catalog=catalog,
+                    )
             except BaseException as error:
                 # A refused first Native opening must not let two empty index
                 # connections consume the headroom needed by prepared owners.
@@ -372,10 +554,10 @@ class UploadPrimaryFactsOwner:
                 # source pin starts, even its uncertain outcome stays retained.
                 if not index.source_admission_started:
                     index.close()
+                    self._retire_job(session, index.job)
                     del self._owners[upload.collection_id]
                     if (
-                        fresh
-                        and isinstance(error, (SqliteCapacity, JournalValidationCapacity))
+                        isinstance(error, (SqliteCapacity, JournalValidationCapacity))
                         and not result_resources.pending
                     ):
                         self.metrics["capacity_deferrals"] += 1
@@ -438,7 +620,7 @@ class UploadPrimaryFactsOwner:
                     "INSERT INTO sources VALUES(?,?,0,'0',0)",
                     (binding.journal.journal_id, identity),
                 )
-                self._current(admission, session)
+                self._current(admission, session, index)
                 db.commit()
                 source = (identity, 0, "0", 0)
             if not source[3]:
@@ -463,7 +645,7 @@ class UploadPrimaryFactsOwner:
                         int(progress.complete),
                     ),
                 )
-                self._current(admission, session)
+                self._current(admission, session, index)
                 index.corpus_connection.commit()
                 db.commit()
                 # Preparation progress is separate from a member acceptance,
@@ -515,7 +697,7 @@ class UploadPrimaryFactsOwner:
                         "UPDATE checks SET cursor=? WHERE selection=?",
                         (row["assertion_id"], key),
                     )
-                self._current(admission, session)
+                self._current(admission, session, index)
                 db.commit()
                 return None
             if check[1] is None:
@@ -548,7 +730,7 @@ class UploadPrimaryFactsOwner:
             association = selected.objects[binding.delivery_association_id]
             state_id = association["state"]["object_id"]
             output = self._completion_output(db, key, selected, state_id, context)
-            self._current(admission, session)
+            self._current(admission, session, index)
             db.commit()
             self.metrics["member_checks"] += 1
             return VerifiedPrimaryFacts(verified, output)
@@ -560,8 +742,11 @@ class UploadPrimaryFactsOwner:
             result_resources.receive(original)
 
     @staticmethod
-    def _current(admission: SealedJournalResultAdmission, session: Session) -> None:
-        if not admission.verify_current(session):
+    def _current(
+        admission: SealedJournalResultAdmission, session: Session, index: _PrimaryIndex
+    ) -> None:
+        index.workspace.require_current(index.job)
+        if not jobs.current(session, index.job) or not admission.verify_current(session):
             raise Conflict("primary member source or validation job changed")
 
     @staticmethod
@@ -663,15 +848,27 @@ class UploadPrimaryFactsOwner:
         _write(db, "INSERT INTO outputs VALUES(?,?,?,?)", (key, state_id, revision, result))
         return result
 
-    def retire(self, collection_id: int) -> bool:
+    def retire(self, session: Session, collection_id: int) -> bool:
+        """Receive local originals, then stage irreversible bounded namespace retirement."""
         if not self._lock.acquire(blocking=False):
-            raise JournalValidationCapacity("primary preparation is still executing")
+            return False
         try:
             original = self._owners.get(collection_id)
-            if original is None:
+            job = jobs.find_pending(session, collection_id)
+            if original is not None:
+                if job is None or job.workspace_id != original.job.workspace_id:
+                    raise Conflict("primary retirement lost its registered original namespace")
+                original.require_original_job(job)
+                try:
+                    original.close()
+                except (OSError, SqliteCleanupPending, JournalValidationCapacity):
+                    return False
+                del self._owners[collection_id]
+            if job is None or job.state in jobs.RETIRED_STATES:
                 return True
-            original.close()
-            del self._owners[collection_id]
+            if job.owner_id != self._owner_id:
+                return False
+            self._retire_job(session, job)
             return True
         finally:
             self._lock.release()

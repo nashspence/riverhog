@@ -1,20 +1,35 @@
 from __future__ import annotations
 
 import hashlib
+from datetime import timedelta
 from types import SimpleNamespace
 
 import pytest
 from riverhog_age import CHUNK_SIZE
 from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
+from riverhog_core.primary_facts_workspace import capture_root_identity
 from riverhog_core.services.archive_construction_retention import ArchiveConstructionRetention
 from riverhog_core.services.archive_finalizer_registry import ArchiveFinalizerRegistry
+from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_core.services.physical_execution import PhysicalExecutionOwner
+from riverhog_core.services.upload_primary_facts_retirement import UploadPrimaryFactsRetirement
 from riverhog_protocol import CollectionUploadRawDigestBatchDocument
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 
 from tests.unit.archive_object_fixtures import MemoryArchiveStore
 from tests.unit.test_archive_finalizer_registry import _receive, _scope
+from tests.unit.test_archive_upload_execution import _joined
 from tests.unit.test_collection_uploads import _CREATOR
+from tests.unit.test_primary_facts_lifecycle import (
+    Cleanup,
+    current,
+    finish_scheduled,
+    pinned,
+    populate,
+    registered,
+    retired,
+    schedule_step,
+)
 from tests.unit.test_selected_upload_journal_prefix import _owner, _state
 from tests.unit.test_shared_primary_admission import shared_primary_finalization
 
@@ -88,13 +103,87 @@ def _turn(registry, execution, case):
     return turn.progressed
 
 
-def _finish(registry, execution, case):
+def _finish(registry, execution, case, cleanup):
     for _ in range(128):
+        schedule_step(cleanup, execution)
         if not _turn(registry, execution, case):
             break
     else:
         pytest.fail("received admission yields did not permit closure completion")
     assert _state(case) == (1, True, None)
+
+
+def _forward_progress_while_cleanup_remains(case, registry, execution, cleanup):
+    """The public poll admits real competing originals with one shared slot."""
+    preparation = case.service._primary_facts
+    fixture = SimpleNamespace(
+        factory=case.factory,
+        root=preparation._root,
+        root_identity=capture_root_identity(preparation._root),
+        originals=[],
+        cleanup=Cleanup(case.factory, preparation._root),
+    )
+    job, workspace = pinned(fixture, registered(fixture, collection_id=1000000))
+    populate(workspace.path, extent=65537, sidecars=False)
+    workspace.close()
+    job = retired(fixture, job)
+    key, target = _scope(case)
+    outcomes, originals, received = [], [], []
+
+    def maintenance(*, limit):
+        progressed = cleanup.advance(limit=limit, octet_budget=1, admit=False)
+        for completion in registry.collect(limit=16):
+            received.append(completion.result().progressed)
+            assert registry.retire_idle(key, target_incarnation=target)
+            progressed += 1
+        return progressed
+
+    def submit(collection_id, *, now):
+        assert collection_id == case.collection_id and now
+
+        def create():
+            original = _owner(case)
+            originals.append(original)
+            return original
+
+        outcome = registry.submit(
+            key,
+            target_incarnation=target,
+            selection="primary-admission",
+            create=create,
+            advance=lambda original: original.advance(),
+            resume_original=False,
+        )
+        outcomes.append(outcome)
+        return outcome
+
+    poll = SimpleNamespace(
+        process_due_archive_uploads=maintenance,
+        _primary_facts_cleanup_turn=False,
+        _primary_facts_retirement=SimpleNamespace(
+            advance=lambda **kwargs: cleanup.advance(octet_budget=1, **kwargs)
+        ),
+        _schedule_ready_finalizations=lambda **kwargs: 0,
+        _finalization_due=SimpleNamespace(select=lambda now, **kwargs: [case.collection_id]),
+        _submit_finalization_if_due=submit,
+    )
+    before = preparation.metrics["source_frame_reads"]
+    for _ in range(2):
+        # Other maintenance callers can poll between finalization polls without
+        # consuming the next forward admission opportunity.
+        maintenance(limit=1)
+        SqlAlchemyCollectionUploadService.process_due_finalizations(poll, limit=1)
+        _joined(execution)
+    maintenance(limit=1)
+    assert "retention-capacity" in outcomes and "submitted" in outcomes
+    assert received == [True]
+    assert all(
+        not original.has_pending and not original.result_resources.pending for original in originals
+    )
+    assert preparation.metrics["source_frame_reads"] > before
+    assert current(fixture, job.workspace_id) is not None
+    assert 0 < (workspace.path / "corpus.sqlite3").stat().st_size < 65537
+    finish_scheduled(fixture, cleanup, execution, [job.workspace_id])
 
 
 @pytest.mark.parametrize("capacity", ["owners", "storage"])
@@ -117,16 +206,30 @@ def test_received_primary_capacity_defer_releases_its_real_finalizer_reservation
                 retained_constructions=slots, retained_constructions_per_target=slots
             )
             execution = PhysicalExecutionOwner(tuning)
-            registry = ArchiveFinalizerRegistry(
-                first.factory, execution, ArchiveConstructionRetention(tuning)
-            )
+            retention = ArchiveConstructionRetention(tuning)
+            registry = ArchiveFinalizerRegistry(first.factory, execution, retention)
             preparation = first.service._primary_facts
+            cleanup = UploadPrimaryFactsRetirement(
+                first.factory,
+                preparation._root,
+                owner_id=preparation.owner_id,
+                execution=execution,
+                retention=retention,
+                metadata_budget=1024 * 1024,
+                receive_limit=16,
+                retry_after=timedelta(microseconds=1),
+            )
             monkeypatch.setattr(preparation, "_max_owners", slots)
             storage = first.service._journal_storage
             fillers = []
             try:
-                assert _turn(registry, execution, first)
-                assert _state(first) == (0, False, None)
+                for _ in range(4):
+                    assert _turn(registry, execution, first)
+                    assert _state(first) == (0, False, None)
+                    if storage.status.connections == 2:
+                        break
+                else:
+                    pytest.fail("registration and pin turns did not reach admitted index work")
                 assert set(preparation._owners) == {first.collection_id}
                 assert storage.status.connections == 2
                 if capacity == "storage":
@@ -139,20 +242,40 @@ def test_received_primary_capacity_defer_releases_its_real_finalizer_reservation
                     for original in fillers:
                         original.scope.reserve()
                 charged = storage.status.connections
-                assert _turn(registry, execution, second)
-                assert _state(second) == (0, False, None)
+                for _ in range(4):
+                    assert _turn(registry, execution, second)
+                    assert _state(second) == (0, False, None)
+                    if preparation.metrics["capacity_deferrals"]:
+                        break
+                else:
+                    pytest.fail("bounded second construction never reached its capacity refusal")
                 assert preparation.metrics["capacity_deferrals"] == 1
                 assert set(preparation._owners) == {first.collection_id}
                 assert storage.status.connections == charged
                 assert registry._contexts == {}
+                if capacity == "owners":
+                    _forward_progress_while_cleanup_remains(first, registry, execution, cleanup)
                 # In the single-slot case an unreceived B would now prevent
                 # A's registry admission, stranding the source that blocks B.
-                _finish(registry, execution, first)
+                _finish(registry, execution, first, cleanup)
                 assert not preparation.pending
-                _finish(registry, execution, second)
+                _finish(registry, execution, second, cleanup)
                 assert not preparation.pending
                 assert storage.status.connections == len(fillers)
+                from riverhog_core.services import primary_facts_jobs as jobs
+
+                with first.factory() as session:
+                    final = jobs.find_pending(session, second.collection_id)
+                if final is not None:
+                    finish_scheduled(
+                        SimpleNamespace(factory=first.factory, root=preparation._root),
+                        cleanup,
+                        execution,
+                        [final.workspace_id],
+                    )
             finally:
+                cleanup.close()
                 registry.close()
+                assert cleanup.receive_stopped()
                 for original in reversed(fillers):
                     assert original.close_step()

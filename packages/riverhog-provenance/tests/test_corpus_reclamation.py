@@ -80,6 +80,29 @@ def test_corpus_custody_fault_preserves_foreign_bytes(tmp_path, fault, retained_
     assert foreign.stat().st_size == 17 and target.exists()
 
 
+def test_native_corpus_disposal_preserves_a_replaced_directory(tmp_path, retained_file_receivers):
+    path = tmp_path / "retired"
+    path.mkdir(mode=0o700)
+    private_file(path, "corpus.sqlite3", 17)
+    held = path.stat()
+    path.rename(tmp_path / "original")
+    path.mkdir(mode=0o700)
+    replacement = private_file(path, "corpus.sqlite3", 19)
+    original = retained_file_receivers()
+    with pytest.raises(StaleCorpusWorkspace, match="directory was replaced"):
+        reclaim(
+            path,
+            octet_budget=3,
+            receiver=original,
+            expected_directory_identity=(held.st_dev, held.st_ino),
+        )
+    assert not original.received
+    original.close()
+    assert original.received
+    assert replacement.stat().st_size == 19
+    assert (tmp_path / "original" / "corpus.sqlite3").stat().st_size == 17
+
+
 @pytest.mark.parametrize("code", [errno.ENOSPC, errno.EDQUOT])
 def test_uncertain_corpus_tail_is_reconciled_under_existing_capacity_error(
     tmp_path, monkeypatch, code, retained_file_receivers
