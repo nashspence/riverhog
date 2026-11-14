@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/unit/test_growth_context_lookups.py",
+    "tests/unit/test_growth_declarations.py",
+    "--basetemp",
+    "/workspace/scratch/21c38f9cc56d/context-lookup-focused-hr2veg64/temporary/pytest"
+  ],
+  "TMPDIR": "/workspace/scratch/21c38f9cc56d/context-lookup-focused-hr2veg64/temporary",
+  "log": "/workspace/scratch/21c38f9cc56d/context-lookup-focused-hr2veg64/pytest.log",
+  "state": "failed",
+  "original_exit_status": 2,
+  "elapsed_seconds": 3.5787146170005144,
+  "temporary_removed": true,
+  "test_file_sha256": "e17f1873f60317913df10e8bdcf9df3102883c88ea8cc05424a791e53c854ccc",
+  "reader_sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424",
+  "log_sha256": "166c1788857e06adf66a73d0f5be8e9e5502e7903f3993e7aae654c33d656b8e"
+}

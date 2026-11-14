@@ -1,0 +1,2 @@
+begin one public metadata projection after imports; no product operations
+original child final status 0 source {'source_sha': '6e80898a793532beff7a1718effc0618e2472d58', 'source_clean': True} cleanup {'metadata_scratch_created': True, 'metadata_scratch_removed': True, 'metadata_scratch_path': '/workspace/scratch/21c38f9cc56d/context-lookup-metadata-tmp/context-lookup-metadata-le7e3mz_'}

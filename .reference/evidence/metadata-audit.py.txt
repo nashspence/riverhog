@@ -1,0 +1,191 @@
+"""Audit retained projection provenance without invoking product operations."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import platform
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import traceback
+from collections import Counter
+from pathlib import Path
+
+
+EXPECTED_SOURCE = "6e80898a793532beff7a1718effc0618e2472d58"
+EXPECTED_READER = "1adc9766c8d0c97cf97ce926695e6c38dc7d50458725e8947b57bfc94c90e376"
+EXPECTED_PROJECTION = "f8eae73e293eac5e9ed7dcf01d706d9176d4f198e13ef61203d06d0df41c0ef1"
+EXPECTED_SAMPLES = "a9e69163ba9aac6c5cefd4f582c609997217421528840694449f24007f6c2b20"
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--checkout", type=Path, required=True)
+    parser.add_argument("--projection", type=Path, required=True)
+    parser.add_argument("--samples", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--uv", type=Path, required=True)
+    args = parser.parse_args()
+    checkout, output = args.checkout.resolve(), args.output.resolve()
+    assert not output.is_relative_to(checkout)
+    output.mkdir(parents=True, exist_ok=False)
+    shutil.copyfile(__file__, output / "audit-script.py")
+    sys.path.insert(0, str(checkout))
+
+    from riverhog_canonical_json import canonical_json_bytes
+    from scripts.validation_identity import source_identity
+
+    def write():
+        (output / "run.json").write_bytes(canonical_json_bytes(report))
+
+    report = {
+        "format": "riverhog-context-lookup-metadata-audit/v1",
+        "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "source_start": source_identity(checkout),
+        "conditions": {
+            "python": platform.python_version(),
+            "executable": sys.executable,
+            "uv": subprocess.check_output([str(args.uv), "--version"], text=True).strip(),
+            "timing_run_id": os.environ.get("RIVERHOG_CI_RUN_ID"),
+            "timing_lane": os.environ.get("RIVERHOG_CI_LANE"),
+            "product_operations": 0,
+            "product_fixtures": 0,
+            "public_projection_calls_after_imports": 1,
+            "execution_reader_replays": 0,
+            "instrumentation": "None; source imports and metadata projection/digest checks only.",
+            "project_elapsed_scope": "The complete existing public project_bindings call, including its validate_projection call; imports, canonical encoding and equality checks excluded.",
+        },
+        "cleanup": {"metadata_scratch_created": False, "metadata_scratch_removed": False},
+        "state": "running",
+    }
+    status, scratch = 1, None
+    write()
+    try:
+        assert report["source_start"] == {"source_sha": EXPECTED_SOURCE, "source_clean": True}
+        assert report["conditions"]["python"] == "3.12.3"
+        assert report["conditions"]["uv"].split()[:2] == ["uv", "0.11.24"]
+        assert os.environ.get("TMPDIR")
+        assert not Path(os.environ["TMPDIR"]).resolve().is_relative_to(checkout)
+        source_path = checkout / "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py"
+        reader_bytes = source_path.read_bytes()
+        assert hashlib.sha256(reader_bytes).hexdigest() == EXPECTED_READER
+        (output / "reader-base.py").write_bytes(reader_bytes)
+        projection_bytes = args.projection.read_bytes()
+        sample_bytes = args.samples.read_bytes()
+        assert hashlib.sha256(projection_bytes).hexdigest() == EXPECTED_PROJECTION
+        assert hashlib.sha256(sample_bytes).hexdigest() == EXPECTED_SAMPLES
+        sample_document = json.loads(sample_bytes)
+        assert canonical_json_bytes(sample_document) == sample_bytes
+
+        import riverhog_growth_contracts as growth
+        from tests.unit import test_upload_journal_service_caller_growth as callers
+        from tests.unit import test_upload_journal_service_unit_growth as units
+
+        assert Path(growth.__file__).resolve() == source_path.resolve()
+        assert Path(callers.__file__).resolve().is_relative_to(checkout)
+        assert Path(units.__file__).resolve().is_relative_to(checkout)
+        roots = tuple(growth.growth_binding(operation) for operation in (callers.ROOT, units.ROOT))
+        pending, captured = list(roots), {}
+        while pending:
+            binding = pending.pop()
+            if binding.operation in captured:
+                continue
+            captured[binding.operation] = binding, binding.declaration, binding.delegates
+            pending.extend(growth.growth_binding(operation) for _, operation in binding.delegates)
+        assert len(captured) == 100
+        print("begin one public metadata projection after imports; no product operations", flush=True)
+        wall_start, cpu_start = time.perf_counter_ns(), time.process_time_ns()
+        projection = growth.project_bindings(roots)
+        cpu_ns = time.process_time_ns() - cpu_start
+        wall_ns = time.perf_counter_ns() - wall_start
+        actual_bytes = canonical_json_bytes(projection)
+        assert actual_bytes == projection_bytes
+        assert len(actual_bytes) == 4512672
+        assert len(projection["declarations"]) == 100
+        digests = {
+            identity: hashlib.sha256(canonical_json_bytes(value)).hexdigest()
+            for identity, value in projection["declarations"].items()
+        }
+        root_inventory, node_inventory = Counter(), Counter()
+
+        def check_tree(sample):
+            identity = sample["declaration"]
+            assert sample["declaration_sha256"] == digests[identity]
+            node_inventory[identity] += 1
+            for rows in sample["delegates"].values():
+                for child in rows:
+                    check_tree(child)
+
+        assert len(sample_document["samples"]) == 122
+        for token, sample in enumerate(sample_document["samples"]):
+            assert sample["sample"] == token
+            assert hashlib.sha256(canonical_json_bytes(sample["value"])).hexdigest() == sample["sha256"]
+            root_inventory[sample["value"]["declaration"]] += 1
+            check_tree(sample["value"])
+        assert sum(node_inventory.values()) == 1078
+        for operation, (binding, declaration, delegates) in captured.items():
+            assert growth.growth_binding(operation) is binding
+            assert binding.operation is operation
+            assert binding.declaration is declaration and binding.delegates is delegates
+            assert canonical_json_bytes(binding.project()) == canonical_json_bytes(
+                projection["declarations"][declaration.id]
+            )
+        assert source_path.read_bytes() == reader_bytes
+        with tempfile.TemporaryDirectory(prefix="context-lookup-metadata-") as directory:
+            scratch = Path(directory)
+            assert not scratch.is_relative_to(checkout)
+            report["cleanup"].update(metadata_scratch_created=True, metadata_scratch_path=str(scratch))
+            # This is an actual metadata-only temporary artifact, never a product fixture.
+            (scratch / "projection.sha256").write_text(EXPECTED_PROJECTION + "\n")
+        report["cleanup"]["metadata_scratch_removed"] = not scratch.exists()
+        assert report["cleanup"]["metadata_scratch_removed"]
+        report["projection"] = {
+            "retained_path": str(args.projection.resolve()),
+            "sha256": hashlib.sha256(actual_bytes).hexdigest(),
+            "canonical_bytes": len(actual_bytes),
+            "canonical_bytes_equal_retained": True,
+            "source_root_operations": [binding.operation.__module__ + "." + binding.operation.__qualname__ for binding in roots],
+            "source_root_declarations": [binding.declaration.id for binding in roots],
+            "declarations": len(projection["declarations"]),
+            "dimension_entries": sum(len(value["dimensions"]) for value in projection["declarations"].values()),
+            "bound_entries": sum(len(value["bounds"]) for value in projection["declarations"].values()),
+            "whole_public_project_wall_ns": wall_ns,
+            "whole_public_project_cpu_ns": cpu_ns,
+        }
+        report["samples"] = {
+            "path": str(args.samples.resolve()),
+            "sha256": EXPECTED_SAMPLES,
+            "root_digest_checks": sum(root_inventory.values()),
+            "root_and_nested_digest_checks": sum(node_inventory.values()),
+            "root_inventory": dict(root_inventory),
+            "node_inventory": dict(node_inventory),
+            "numeric_or_composition_revalidation": False,
+        }
+        report["baseline_reader"] = {"source_path": str(source_path), "archived_path": str(output / "reader-base.py"), "sha256": EXPECTED_READER, "bytes": len(reader_bytes)}
+        report["source_binding_checks"] = {"exact_callable_binding_declaration_delegate_identities_unchanged": True, "count": len(captured), "source_declaration_bytes_match_projection": True}
+        report["state"] = "completed"
+        status = 0
+    except BaseException as error:
+        report["state"] = "failed"
+        report["error"] = {"type": type(error).__name__, "message": str(error)}
+        traceback.print_exc()
+    finally:
+        if scratch is not None:
+            report["cleanup"]["metadata_scratch_removed"] = not scratch.exists()
+        report["source_end"] = source_identity(checkout)
+        if report["source_end"] != report["source_start"]:
+            report["state"] = "source-changed"
+            status = 1
+        report["exit_status"] = status
+        write()
+        print("original child final status", status, "source", report["source_end"], "cleanup", report["cleanup"], flush=True)
+    return status
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

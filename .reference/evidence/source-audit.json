@@ -1,0 +1,33 @@
+{
+  "baseline_reader_sha256": "1adc9766c8d0c97cf97ce926695e6c38dc7d50458725e8947b57bfc94c90e376",
+  "proposed_reader_sha256": "3929511343a7817e435427ef935a5f85b2c7ee85d9ee1baed51c217da3fe0424",
+  "changed_definitions": [
+    "_Context",
+    "_expression_unit",
+    "_projection_contexts"
+  ],
+  "unchanged_definitions": [
+    "_unit",
+    "_product_units",
+    "Expression",
+    "Dimension",
+    "Bound",
+    "Declaration",
+    "Binding",
+    "growth_binding",
+    "_source_context",
+    "declare_growth",
+    "evaluate_bound",
+    "project_bindings",
+    "_fields",
+    "_read_unit",
+    "_read_expression",
+    "validate_projection",
+    "validate_sample",
+    "_validate_sample",
+    "validate_execution_samples",
+    "_evaluate",
+    "_evaluate_expression"
+  ],
+  "current_integration_reader_identical_to_base": true
+}
