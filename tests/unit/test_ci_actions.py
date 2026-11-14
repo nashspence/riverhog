@@ -193,6 +193,11 @@ def artifact_record(archive):
     }
 
 
+def require_fixture_work(work, names):
+    assert tuple(names) == (work.name,)
+    return (work,)
+
+
 @pytest.fixture(scope="module")
 def actual_execution(tmp_path_factory):
     root = tmp_path_factory.mktemp("actions-execution")
@@ -228,6 +233,11 @@ def actual_execution(tmp_path_factory):
     with pytest.MonkeyPatch.context() as patch:
         patch.setattr(ci_qualification, "ROOT", source)
         patch.setattr(ci_qualification, "validation_work", lambda name: work)
+        patch.setattr(
+            ci_qualification,
+            "require_validation_work",
+            lambda names: require_fixture_work(work, names),
+        )
         patch.setenv("RIVERHOG_CI_TIMING_DIR", str(root / "timings"))
         for name in ("MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES", "RIVERHOG_VALIDATION_SCOPE"):
             patch.delenv(name, raising=False)
@@ -278,6 +288,11 @@ def actual_make_execution(tmp_path_factory):
         patch.setattr(ci_make, "ROOT", source)
         patch.setattr(ci_qualification, "ROOT", source)
         patch.setattr(ci_qualification, "validation_work", lambda name: work)
+        patch.setattr(
+            ci_qualification,
+            "require_validation_work",
+            lambda names: require_fixture_work(work, names),
+        )
         patch.setattr(
             ci_make, "make_work_definitions", lambda goals, parameters: [work.definition()]
         )
@@ -406,6 +421,45 @@ def test_artifact_paths_cannot_escape_the_data_only_destination(tmp_path, path):
         ci_actions.extract_artifact(remote, remote.artifacts[0], remote.run, tmp_path / "contents")
 
 
+@pytest.mark.parametrize("capacity", ["compressed", "expanded", "exact-expanded"])
+def test_artifact_capacity_covers_verified_compressed_and_expanded_bytes(
+    tmp_path, monkeypatch, capacity
+):
+    payload = b"complete-evidence" * 1024
+    output = BytesIO()
+    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as stream:
+        stream.writestr("evidence.json", payload)
+    archive = output.getvalue()
+    remote = Remote(artifact=artifact_record(archive), archive=archive)
+    budget = len(archive) - 1 if capacity == "compressed" else len(payload)
+    if capacity == "expanded":
+        budget -= 1
+    monkeypatch.setenv("RIVERHOG_VALIDATION_MAX_BYTES", str(budget))
+    destination = tmp_path / "contents"
+    if capacity == "exact-expanded":
+        assert ci_actions.extract_artifact(
+            remote, remote.artifacts[0], remote.run, destination
+        ) == len(payload)
+        assert (destination / "evidence.json").read_bytes() == payload
+    else:
+        message = "trusted execution" if capacity == "compressed" else "evidence budget"
+        with pytest.raises(ValueError, match=message):
+            ci_actions.extract_artifact(remote, remote.artifacts[0], remote.run, destination)
+        assert not (destination / "evidence.json").exists()
+    assert remote.downloads == (0 if capacity == "compressed" else 1)
+
+
+@pytest.mark.parametrize("budget", ["0", "-1", "", "invalid", "1.5"])
+def test_invalid_evidence_capacity_rejects_before_downloading(tmp_path, monkeypatch, budget):
+    archive = zipped([("evidence.json", b"complete evidence")])
+    remote = Remote(artifact=artifact_record(archive), archive=archive)
+    monkeypatch.setenv("RIVERHOG_VALIDATION_MAX_BYTES", budget)
+    with pytest.raises(ValueError, match="storage budget.*positive integer"):
+        ci_actions.extract_artifact(remote, remote.artifacts[0], remote.run, tmp_path / "contents")
+    assert remote.downloads == 0
+    assert not (tmp_path / "contents").exists()
+
+
 def test_parallel_aggregate_uses_actual_wall_and_includes_setup_and_cleanup():
     jobs = [job_record(30, 1, 20), job_record(31, 5, 15)]
     result = ci_actions.measure_jobs(jobs, run_record())
@@ -414,6 +468,40 @@ def test_parallel_aggregate_uses_actual_wall_and_includes_setup_and_cleanup():
     assert result["jobs"][0]["steps"][0]["name"] == "Set up job"
     assert result["jobs"][0]["steps"][-1]["name"].startswith("Post ")
     assert result["timestamp_resolution_seconds"] == 1
+
+
+@pytest.mark.parametrize("boundary", ["setup", "cleanup"])
+def test_step_clock_boundary_preserves_reported_resolution_and_raw_measurement(boundary):
+    job = job_record(start=5, finish=15)
+    step = job["steps"][0 if boundary == "setup" else -1]
+    field = "started_at" if boundary == "setup" else "completed_at"
+    reported = "2026-10-13T00:00:04Z" if boundary == "setup" else "2026-10-13T00:00:16Z"
+    step[field] = reported
+
+    result = ci_actions.measure_jobs([job], run_record())
+
+    assert result["elapsed_seconds"] == 10
+    assert result["timestamp_resolution_seconds"] == 1
+    assert result["timestamp_boundary_tolerance_seconds"] == 1
+    measured = result["jobs"][0]["steps"][0 if boundary == "setup" else -1]
+    assert measured["started_at" if boundary == "setup" else "finished_at"] == reported
+    assert measured["elapsed_seconds"] == 2
+    assert job["started_at"] == "2026-10-13T00:00:05Z"
+    assert job["completed_at"] == "2026-10-13T00:00:15Z"
+
+
+@pytest.mark.parametrize("defect", ["early-setup", "late-cleanup", "reversed-step"])
+def test_step_clock_rejects_larger_boundary_error_and_reversed_duration(defect):
+    job = job_record(start=5, finish=15)
+    if defect == "early-setup":
+        job["steps"][0]["started_at"] = "2026-10-13T00:00:03Z"
+    elif defect == "late-cleanup":
+        job["steps"][-1]["completed_at"] = "2026-10-13T00:00:17Z"
+    else:
+        job["steps"][0]["completed_at"] = "2026-10-13T00:00:04Z"
+
+    with pytest.raises(ValueError, match="step is outside"):
+        ci_actions.measure_jobs([job], run_record())
 
 
 @pytest.mark.parametrize(
@@ -449,10 +537,18 @@ def test_failed_completed_workflow_remains_failure_with_truthful_elapsed():
 
 def test_matrix_coverage_comes_from_the_existing_execution_owners():
     work = ci_actions.ci_execution_work()
-    assert len(work) == 23
-    assert len({value.name for value in work.values()}) == 23
+    assert len(work) == 26
+    assert len({value.name for value in work.values()}) == 26
     assert work["client platform (windows-2025)"].command[-1] == "native"
-    assert work["unit unit"].growth_witnesses
+    partitions = [work[f"unit unit-{part}"] for part in ci_actions.UNIT_PARTITIONS]
+    observed = [identity for part in partitions for identity in part.growth_witnesses]
+    assert all(part.growth_witnesses for part in partitions)
+    assert len(observed) == len(set(observed))
+    assert set(observed) == set(
+        next(
+            item for item in ci_actions.validation_workloads() if item.name == "unit-unit"
+        ).growth_witnesses
+    )
 
 
 def test_unstarted_and_skipped_jobs_are_preserved_without_fabricated_elapsed():
@@ -837,3 +933,202 @@ def test_codeql_retry_binds_retained_checkout_to_its_actual_origin():
     assert records["Analyze (python)"]["origin_attempt"] == 2
     assert records["Analyze (python)"]["reused_completion"] is False
     assert [row["job_id"] for row in result["measurement"]["jobs"]] == [30]
+
+
+@pytest.mark.parametrize("defect", ["missing", "duplicate"])
+def test_ci_partition_growth_coverage_cannot_omit_or_repeat_required_work(monkeypatch, defect):
+    from dataclasses import replace
+
+    definitions = list(ci_actions.validation_workloads())
+    source = next(work for work in definitions if work.name == "unit-unit-1")
+    target = (
+        source
+        if defect == "missing"
+        else next(work for work in definitions if work.name == "unit-unit-2")
+    )
+    witnesses = (
+        target.growth_witnesses[1:]
+        if defect == "missing"
+        else (*target.growth_witnesses, source.growth_witnesses[0])
+    )
+    definitions[definitions.index(target)] = replace(target, growth_witnesses=witnesses)
+    monkeypatch.setattr(ci_actions, "validation_workloads", lambda: tuple(definitions))
+    with pytest.raises(ValueError, match="omit or duplicate required growth"):
+        ci_actions.ci_execution_work()
+
+
+@pytest.mark.parametrize(
+    ("stage", "phase", "work_name", "category"),
+    [
+        ("history", "execution-history", None, "validation"),
+        ("archive", "artifact-extraction", "fixture", "archive"),
+        ("receipt", "receipt-validation", "fixture", "validation"),
+        ("make", "make-validation", "fixture", "validation"),
+    ],
+)
+def test_failed_gate_retains_bounded_owner_stage_without_exception_payload(
+    actual_make_execution, tmp_path, monkeypatch, capsys, stage, phase, work_name, category
+):
+    work, receipt, manifest, source = actual_make_execution
+    sentinel = "synthetic-private-error-value"
+    selected_manifest = copy.deepcopy(manifest)
+    if stage == "make":
+        selected_manifest["work_definitions"] = []
+    files = [
+        ("receipt.json", receipt if stage != "receipt" else sentinel.encode()),
+        (
+            f"make/23-2/{manifest['span']}/manifest.json",
+            json.dumps(selected_manifest, sort_keys=True, separators=(",", ":")).encode(),
+        ),
+    ]
+    archive = b"invalid archive " + sentinel.encode() if stage == "archive" else zipped(files)
+    remote = Remote(artifact=artifact_record(archive), archive=archive)
+    remote.run["path"] = ".github/workflows/ci.yml"
+    if stage == "history":
+        remote.jobs.append(copy.deepcopy(remote.jobs[0]))
+    monkeypatch.setattr(ci_actions, "ROOT", source)
+    monkeypatch.setattr(
+        ci_actions,
+        "source_identity",
+        lambda root: {"source_sha": manifest["source_sha"], "source_clean": True},
+    )
+    monkeypatch.setattr(ci_actions, "GitHubPublication", lambda repository: remote)
+    monkeypatch.setattr(ci_actions, "ci_execution_work", lambda: {"actual fixture": work})
+    monkeypatch.setattr(
+        ci_make, "make_work_definitions", lambda goals, parameters: [work.definition()]
+    )
+    output = tmp_path / "gate.json"
+    assert (
+        ci_actions.main(
+            (
+                "gate",
+                "--repository",
+                "owner/repo",
+                "--run-id",
+                "23",
+                "--attempt",
+                "2",
+                "--output",
+                str(output),
+            )
+        )
+        == 2
+    )
+    record = require_canonical_json(output.read_bytes())
+    assert record["state"] == "evidence-failed" and record["exit_status"] == 2
+    assert record["failure_context"] == {
+        "phase": phase,
+        "work": work_name,
+        "category": category,
+    }
+    assert sentinel not in output.read_text()
+    assert sentinel not in capsys.readouterr().out
+    assert record["elapsed_seconds"] >= 0
+
+
+def test_gate_diagnostics_do_not_publish_command_stderr_or_exception_text(
+    tmp_path, monkeypatch, capsys
+):
+    sentinel = "synthetic-private-command-output"
+    monkeypatch.setattr(ci_actions, "GitHubPublication", lambda repository: object())
+    monkeypatch.setattr(
+        ci_actions, "source_identity", lambda root: {"source_sha": "a" * 40, "source_clean": True}
+    )
+
+    def refused(remote, run_id, attempt, *, progress):
+        progress("artifact-extraction", "unit-unit-2")
+        raise subprocess.CalledProcessError(
+            1, ["fixture"], output=sentinel.encode(), stderr=sentinel.encode()
+        )
+
+    monkeypatch.setattr(ci_actions, "collect_gate", refused)
+    output = tmp_path / "gate.json"
+    assert (
+        ci_actions.main(
+            (
+                "gate",
+                "--repository",
+                "owner/repo",
+                "--run-id",
+                "23",
+                "--attempt",
+                "2",
+                "--output",
+                str(output),
+            )
+        )
+        == 2
+    )
+    record = require_canonical_json(output.read_bytes())
+    assert record["failure_context"] == {
+        "phase": "artifact-extraction",
+        "work": "unit-unit-2",
+        "category": "command",
+    }
+    assert sentinel not in output.read_text() and sentinel not in capsys.readouterr().out
+
+
+def test_actual_evidence_progress_observes_same_single_consumption(
+    actual_execution, tmp_path, monkeypatch
+):
+    work, receipt, source_sha = actual_execution
+    archive = zipped([("receipt.json", receipt)])
+    remote = Remote(artifact=artifact_record(archive), archive=archive)
+    monkeypatch.setattr(ci_actions, "ci_execution_work", lambda: {"actual fixture": work})
+    observed = []
+    result = ci_actions.verify_ci_artifacts(
+        remote,
+        remote.run,
+        source_sha,
+        tmp_path,
+        progress=lambda phase, work_name: observed.append((phase, work_name)),
+    )
+    assert result["actual fixture"]["result"]["qualification_exit_status"] == 0
+    assert remote.downloads == 1
+    assert observed == [
+        ("artifact-list", None),
+        ("execution-history", None),
+        ("job-measurement", "fixture"),
+        ("artifact-selection", "fixture"),
+        ("artifact-extraction", "fixture"),
+        ("receipt-validation", "fixture"),
+    ]
+
+
+def test_original_job_provenance_survives_small_page_execution_history():
+    from urllib.parse import parse_qs, urlsplit
+
+    original = []
+    for index in range(27):
+        job = job_record(100 + index)
+        job.update(name=f"unit fixture-{index}", run_attempt=1)
+        original.append(job)
+    failed = job_record(200)
+    failed.update(name="make compile", run_attempt=1, conclusion="failure")
+    original.append(failed)
+    shadows = [
+        {**copy.deepcopy(job), "id": job["id"] + 1000, "run_attempt": 2} for job in original[:-1]
+    ]
+    compiled = job_record(1200, start=31, finish=40)
+    compiled["name"] = "make compile"
+    history = original + shadows + [compiled]
+
+    class SmallPageRemote(Remote):
+        def api(self, endpoint):
+            self.calls.append(endpoint)
+            assert endpoint.startswith("actions/runs/23/jobs?filter=all")
+            query = parse_qs(urlsplit(endpoint).query)
+            size, page = int(query["per_page"][0]), int(query["page"][0])
+            if size > 10:
+                raise subprocess.CalledProcessError(1, ["fixture-actions-history"])
+            return {
+                "total_count": len(history),
+                "jobs": copy.deepcopy(history[(page - 1) * size : page * size]),
+            }
+
+    remote = SmallPageRemote()
+    remote.run["run_started_at"] = "2026-10-13T00:00:30Z"
+    selected = ci_actions.latest_execution_jobs(remote, remote.run)
+    assert len(selected) == 28
+    assert selected[:-1] == original[:-1] and selected[-1] == compiled
+    assert len(remote.calls) == 6

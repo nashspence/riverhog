@@ -105,8 +105,9 @@ def prepare_upload_journal_replay(
                 "sql_statements",
                 COUNT,
                 "equal",
-                Expression("constant", value=1, unit=COUNT),
-                "One source-fenced primary-key lookup with a primary-key scan join.",
+                Expression("constant", value=2, unit=COUNT),
+                "One explicit snapshot start and one source-fenced primary-key lookup "
+                "with a primary-key scan join.",
             ),
             Bound(
                 "returned_rows",

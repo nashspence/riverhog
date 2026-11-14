@@ -32,6 +32,73 @@ def _recipe():
     )[0]
 
 
+@pytest.mark.parametrize("binding_time", ("before-read", "before-advance"))
+@pytest.mark.parametrize("different_scope", (False, True))
+def test_stale_inventory_binding_retries_without_replacing_the_sealed_scope(
+    tmp_path, monkeypatch, binding_time, different_scope
+):
+    from stove0_core.work_state import ConcurrentWorkUpdate
+
+    url = f"sqlite:///{tmp_path / 'state.db'}"
+    first = SqlAlchemyStateStore(url)
+    second = SqlAlchemyStateStore(url)
+    recipe, work_id = _recipe(), "d" * 64
+    original = ArtifactSelection.seal(())
+    other = ArtifactSelection.seal(
+        (
+            WorkArtifactSubject(
+                id="member",
+                role="stove0.source/v1",
+                collection=CollectionRootIdentityRef(
+                    collection_id="1",
+                    archive_root_sha256="a" * 64,
+                    artifact_set_identity="b" * 64,
+                ),
+                artifact_id="c" * 64,
+                bytes="1",
+                sha256="e" * 64,
+            ),
+        )
+    )
+    for selection in (original, other):
+        first.retain_selection(selection)
+    row = first.compiled_planning.ensure(work_id, recipe)
+    winner = other if different_scope else original
+
+    def bind_winner():
+        second.compiled_planning.bind_inventory(
+            work_id, expected_revision=row["revision"], scope=winner.ref()
+        )
+
+    if binding_time == "before-read":
+        bind_winner()
+    else:
+        advance = first.compiled_planning.advance
+
+        def interleaved_advance(*args, **kwargs):
+            bind_winner()
+            return advance(*args, **kwargs)
+
+        monkeypatch.setattr(first.compiled_planning, "advance", interleaved_advance)
+    with pytest.raises(ConcurrentWorkUpdate, match="changed concurrently"):
+        first.compiled_planning.bind_inventory(
+            work_id, expected_revision=row["revision"], scope=original.ref()
+        )
+    first.engine.dispose()
+    second.engine.dispose()
+    reopened = SqlAlchemyStateStore(url)
+    retained = reopened.compiled_planning.ensure(work_id, recipe)
+    assert retained["revision"] == row["revision"] + 1
+    assert retained["phase"] == "observations"
+    assert reopened.compiled_planning.inventory_ref(work_id) == winner.ref()
+    with pytest.raises(ValueError, match="cannot be rebound"):
+        reopened.compiled_planning.bind_inventory(
+            work_id, expected_revision=retained["revision"], scope=original.ref()
+        )
+    assert reopened.compiled_planning.ensure(work_id, recipe) == retained
+    reopened.engine.dispose()
+
+
 def test_classification_resumes_and_role_ports_cannot_use_a_partial_inventory(tmp_path):
     url = f"sqlite:///{tmp_path / 'state.db'}"
     recipe = _recipe()

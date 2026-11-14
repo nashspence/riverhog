@@ -355,3 +355,296 @@ def test_metered_download_source_cannot_be_bypassed_through_store_alias(tmp_path
 def test_retrieval_max_lease_covers_default_lease(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="retrieval_max_lease must be at least"):
         _config(tmp_path, retrieval_default_lease=timedelta(days=8))
+
+
+@pytest.mark.parametrize("value", [0, -1, True, 1.5])
+def test_validation_session_capacity_is_explicit_positive_configuration(tmp_path, value):
+    with pytest.raises(ValueError, match="journal_validation_concurrency"):
+        _config(tmp_path, journal_validation_concurrency=value)
+
+
+def test_validation_workspace_is_persistent_explicit_and_separate_from_test_database(tmp_path):
+    config = _config(tmp_path)
+    assert config.journal_validation_workspace == tmp_path / "state.sqlite3.journal-validation"
+    assert not config.journal_validation_workspace.exists()
+    assert config.journal_validation_concurrency == 2
+    with pytest.raises(ValueError, match="absolute retained"):
+        _config(tmp_path, journal_validation_workspace=Path("relative"))
+    selected = tmp_path / "retained-validation"
+    assert (
+        _config(tmp_path, journal_validation_workspace=selected).journal_validation_workspace
+        == selected
+    )
+
+
+def test_yaml_selects_retained_validation_resources(tmp_path, monkeypatch):
+    path, document = _document(tmp_path, monkeypatch)
+    selected = tmp_path / "retained-validation"
+    document.update(journal_validation_workspace=str(selected), journal_validation_concurrency=7)
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.journal_validation_workspace == selected
+    assert config.journal_validation_concurrency == 7
+    assert not selected.exists()
+
+
+def test_registration_operator_grants_round_trip_and_reject_invalid_capacity(tmp_path, monkeypatch):
+    path, document = _document(tmp_path, monkeypatch)
+    document["registration"] = {
+        "candidates_per_step": 2,
+        "plans_per_step": 3,
+        "coverage_rows_per_step": 16,
+        "metadata_bytes_per_step": "100KiB",
+        "input_transitions_per_step": 4,
+        "summary_page_bytes": "1KiB",
+        "execution_quantum": "2s",
+        "retry_delay": "10s",
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    grant = config.registration
+    assert grant.candidates_per_step == 2
+    assert grant.emission_limits().plans == 3
+    assert grant.emission_limits().metadata_bytes == 102400
+    assert grant.summary_page_bytes == 1024
+    assert grant.execution_quantum == timedelta(seconds=2)
+    for key, value in (
+        ("candidates_per_step", 0),
+        ("candidates_per_step", True),
+        ("plans_per_step", 0),
+        ("plans_per_step", True),
+        ("metadata_bytes_per_step", "0B"),
+        ("summary_page_bytes", "0B"),
+        ("retry_delay", "0s"),
+        ("execution_quantum", "0s"),
+    ):
+        invalid = dict(document["registration"])
+        invalid[key] = value
+        _write(path, {**document, "registration": invalid})
+        with pytest.raises(ValueError):
+            load_runtime_config()
+
+
+def test_archive_write_operator_grants_round_trip_and_reject_invalid_capacity(
+    tmp_path, monkeypatch
+):
+    path, document = _document(tmp_path, monkeypatch)
+    document["archive_write"] = {
+        "calls": 3,
+        "control_bytes": "2MiB",
+        "preparation_bytes": "4KiB",
+        "metadata_preparation_bytes": "3MiB",
+        "native_receipt_bytes": "5MiB",
+        "terminal_bytes": "8KiB",
+        "result_bytes": "16KiB",
+    }
+    _write(path, document)
+    grant = load_runtime_config().archive_write
+    assert (
+        grant.calls,
+        grant.control_bytes,
+        grant.preparation_bytes,
+        grant.metadata_preparation_bytes,
+        grant.native_receipt_bytes,
+        grant.terminal_bytes,
+        grant.result_bytes,
+    ) == (
+        3,
+        2 * 1024 * 1024,
+        4 * 1024,
+        3 * 1024 * 1024,
+        5 * 1024 * 1024,
+        8 * 1024,
+        16 * 1024,
+    )
+    for key, value in (
+        ("calls", 0),
+        ("calls", True),
+        ("control_bytes", "0B"),
+        ("preparation_bytes", "0B"),
+        ("metadata_preparation_bytes", "0B"),
+        ("native_receipt_bytes", "0B"),
+        ("terminal_bytes", "0B"),
+        ("result_bytes", "0B"),
+    ):
+        invalid = {**document["archive_write"], key: value}
+        _write(path, {**document, "archive_write": invalid})
+        with pytest.raises(ValueError):
+            load_runtime_config()
+
+
+def test_archive_execution_configuration_reserves_physical_terminal_headroom(tmp_path, monkeypatch):
+    from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
+
+    path, document = _document(tmp_path, monkeypatch)
+    document["archive_execution"] = {
+        "forward_workers": 6,
+        "terminal_workers": 3,
+        "forward_workers_per_target": 2,
+        "terminal_workers_per_target": 1,
+        "retained_constructions": 9,
+        "retained_constructions_per_target": 3,
+        "retained_terminals": 5,
+        "retained_terminals_per_target": 2,
+        "receive_poll_interval_ms": 25,
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.archive_execution == ArchiveExecutionTuning(
+        forward_workers=6,
+        terminal_workers=3,
+        forward_workers_per_target=2,
+        terminal_workers_per_target=1,
+        retained_constructions=9,
+        retained_constructions_per_target=3,
+        retained_terminals=5,
+        retained_terminals_per_target=2,
+        receive_poll_interval_ms=25,
+    )
+    for field in tuple(document["archive_execution"]):
+        original = document["archive_execution"][field]
+        for invalid in (0, -1, True, 1.5, "2"):
+            document["archive_execution"][field] = invalid
+            _write(path, document)
+            with pytest.raises(ValueError):
+                load_runtime_config()
+        document["archive_execution"][field] = original
+
+
+def test_archive_input_grants_are_separate_operator_owned_plaintext_capacity(tmp_path, monkeypatch):
+    from riverhog_core.archive_input_grants import ArchiveInputGrants
+
+    path, document = _document(tmp_path, monkeypatch)
+    document["archive_input"] = {
+        "inputs": 7,
+        "inputs_per_target": 2,
+        "plaintext_bytes": "12MiB",
+        "plaintext_bytes_per_target": "4MiB",
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.archive_input == ArchiveInputGrants(
+        inputs=7,
+        inputs_per_target=2,
+        plaintext_bytes=12 * 1024**2,
+        plaintext_bytes_per_target=4 * 1024**2,
+    )
+    assert (
+        config.throughput_tuning.upload_max_inflight_bytes != config.archive_input.plaintext_bytes
+    )
+    for name in ("inputs", "inputs_per_target"):
+        for value in (0, -1, True, 1.5, "2"):
+            _write(path, {**document, "archive_input": {**document["archive_input"], name: value}})
+            with pytest.raises(ValueError):
+                load_runtime_config()
+    for name in ("plaintext_bytes", "plaintext_bytes_per_target"):
+        for value in ("0B", "-1B", True):
+            _write(path, {**document, "archive_input": {**document["archive_input"], name: value}})
+            with pytest.raises(ValueError):
+                load_runtime_config()
+
+
+def test_cache_write_operator_grants_are_independent_and_round_trip(tmp_path, monkeypatch):
+    from riverhog_core.cache_write_grants import CacheWriteGrants
+
+    path, document = _document(tmp_path, monkeypatch)
+    assert load_runtime_config().cache_write == CacheWriteGrants()
+    document["cache_write"] = {
+        "calls": 2,
+        "control_bytes": "3MiB",
+        "result_bytes": "12KiB",
+        "cleanup_bytes": "6KiB",
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.cache_write == CacheWriteGrants(
+        calls=2,
+        control_bytes=3 * 1024**2,
+        result_bytes=12 * 1024,
+        cleanup_bytes=6 * 1024,
+    )
+    assert config.archive_write.calls == 64
+    assert config.cache_write.control_bytes != config.archive_write.control_bytes
+
+    for name, value in (
+        ("calls", 0),
+        ("calls", True),
+        ("control_bytes", "0B"),
+        ("result_bytes", "0B"),
+        ("cleanup_bytes", "0B"),
+        ("unknown", "1B"),
+    ):
+        _write(path, {**document, "cache_write": {**document["cache_write"], name: value}})
+        with pytest.raises(ValueError):
+            load_runtime_config()
+
+
+def test_terminal_cleanup_operator_grants_preserve_independent_outstanding_budgets(
+    tmp_path, monkeypatch
+):
+    from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
+
+    path, document = _document(tmp_path, monkeypatch)
+    assert load_runtime_config().archive_cleanup == ArchiveCleanupGrants(4, 65536, 16, 8)
+    document["archive_cleanup"] = {
+        "calls": 2,
+        "control_bytes": "192KiB",
+        "provider_requests": 3,
+        "in_flight": 1,
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.archive_cleanup == ArchiveCleanupGrants(2, 192 * 1024, 3, 1)
+    assert config.archive_write.calls == config.cache_write.calls == 64
+
+    for name, value in (
+        ("calls", 0),
+        ("calls", True),
+        ("control_bytes", "0B"),
+        ("provider_requests", 0),
+        ("provider_requests", True),
+        ("in_flight", 0),
+        ("in_flight", True),
+        ("unknown", "1B"),
+    ):
+        _write(path, {**document, "archive_cleanup": {**document["archive_cleanup"], name: value}})
+        with pytest.raises(ValueError):
+            load_runtime_config()
+
+
+def test_cleanup_execution_operator_bounds_are_separate_from_outstanding_retention(
+    tmp_path, monkeypatch
+):
+    from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
+
+    path, document = _document(tmp_path, monkeypatch)
+    assert load_runtime_config().cleanup_execution == CleanupExecutionTuning()
+    document["cleanup_execution"] = {
+        "inventory_items": 3,
+        "inventory_bytes": "8KiB",
+        "provider_requests": 5,
+        "control_bytes": "32KiB",
+        "in_flight": 2,
+    }
+    _write(path, document)
+    config = load_runtime_config()
+    assert config.cleanup_execution == CleanupExecutionTuning(3, 8192, 5, 32768, 2)
+    assert config.archive_cleanup.control_bytes == 65536
+
+    for name, value in (
+        ("inventory_items", 0),
+        ("inventory_items", 129),
+        ("inventory_items", True),
+        ("inventory_bytes", "0B"),
+        ("control_bytes", "0B"),
+        ("provider_requests", 0),
+        ("provider_requests", True),
+        ("in_flight", 0),
+        ("in_flight", True),
+        ("unknown", "1B"),
+    ):
+        _write(
+            path, {**document, "cleanup_execution": {**document["cleanup_execution"], name: value}}
+        )
+        with pytest.raises(ValueError):
+            load_runtime_config()

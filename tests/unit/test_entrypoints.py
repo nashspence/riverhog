@@ -109,7 +109,7 @@ def test_onboarding_routes_directly_between_the_two_root_documents() -> None:
     ("relative", "expected_sha256"),
     [
         ("README.md", "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"),
-        ("AGENTS.md", "d2cf10da13a9b4976911b5abd101c5ecfe609b1598a5c9c1bb57232160e7302e"),
+        ("AGENTS.md", "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3"),
     ],
 )
 def test_onboarding_document_requires_explicit_revision(
@@ -141,7 +141,7 @@ def test_readme_routes_product_context_licensing_and_security_reporting() -> Non
     assert "https://nashspence.github.io/riverhog/" in readme_path.read_text(encoding="utf-8")
 
 
-def test_agents_requires_precommit_gates_and_exhaustive_integration_qualification() -> None:
+def test_agents_requires_main_gates_and_pr_checkpoint_qualification() -> None:
     agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
     validation = _guide_section("Validate the change you actually deliver")
 
@@ -149,8 +149,17 @@ def test_agents_requires_precommit_gates_and_exhaustive_integration_qualificatio
         "make lint\nmake unit\nmake dist-smoke\nmake build"
     ]
     assert "`make linux-qualification`" in validation
-    assert "substantial integration or handoff validation and release-related work" in validation
-    assert "exhaustive local qualification path" in validation
+    assert "Before pushing directly to `main`, run:" in validation
+    assert (
+        "run `make lint` and focused tests of the changed owners before checkpoint pushes"
+        in validation
+    )
+    assert "Use the pull request’s required CI suites for complete qualification." in validation
+    assert "Work may continue while CI runs" in validation
+    assert "cancel superseded runs as needed" in validation
+    assert "Before merging or handing work back, require complete passing checks" in validation
+    assert "exact final source and its tested merge checkout" in validation
+    assert "When exhaustive local qualification is needed" in validation
 
 
 def test_agents_requires_post_push_github_validation() -> None:
@@ -167,8 +176,10 @@ def test_agents_keeps_release_authorization_separate_from_validation() -> None:
     authorization = _guide_section("Keep authorization separate from validation")
     links = _local_links(REPO / "AGENTS.md")
     assert {REPO / "release.toml", REPO / ".github/workflows"} <= links
-    assert "Direct maintainer commits to `main`" in authorization
-    assert "required checks for every pushed commit" in authorization
+    assert "Main remains the pre-v1 development authority" in authorization
+    assert "required checks for delivered changes" in authorization
+    assert "Maintainers may commit directly or use pull requests" in authorization
+    assert "validate integration branches before merging" in authorization
     assert "explicit approval of a fully green commit" in authorization
     assert "This does not select a *release candidate*" in authorization
     assert "Provider qualification remains disabled until separately authorized" in authorization

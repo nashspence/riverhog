@@ -1,6 +1,6 @@
 FROM riverhog-test:dev AS wheels
 
-RUN uv build --all-packages --clear --no-create-gitignore --out-dir /wheels \
+RUN uv build --all-packages --no-create-gitignore --out-dir /wheels \
     && uv export --frozen --all-packages --no-dev --no-emit-workspace --no-hashes \
       --output-file /constraints.txt
 

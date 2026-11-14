@@ -14,6 +14,8 @@ from riverhog_core.app_permissions import Principal
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_protocol import CollectionUploadWorkBatchDocument
 
+from tests.support.finalization import drive_finalization_turn
+
 
 class _SyncASGITransport(httpx.BaseTransport):
     def __init__(self, app: FastAPI) -> None:
@@ -90,5 +92,5 @@ class UploadServiceApi(ApiClient):
         return super().acquire_collection_upload_session_work(collection_id, limit=limit)
 
     def get_collection_upload_session(self, collection_id: int) -> dict[str, object]:
-        self.service.process_due_finalizations(limit=1)
+        drive_finalization_turn(self.service)
         return super().get_collection_upload_session(collection_id)

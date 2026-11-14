@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sqlite-admission"
+version = "0.1.0"
+description = "Application-owned SQLite connection and cursor admission."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Application-owned SQLite connection and cursor admission.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = ["release-documentation-lib>=0.1,<0.2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sqlite_admission"]
+
+[tool.uv.sources]
+release-documentation-lib = { workspace = true }

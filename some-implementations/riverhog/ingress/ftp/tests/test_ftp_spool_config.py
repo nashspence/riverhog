@@ -26,6 +26,9 @@ def _write_config(path: Path, root: Path, *, host_id: str) -> None:
     path.write_text(
         yaml.safe_dump(
             {
+                "primary_state": {
+                    "scope": {"service": "fixture-service", "account": "fixture-account"}
+                },
                 "host_id": host_id,
                 "riverhog_base_url": "https://riverhog.invalid",
                 "riverhog_token_file": str(path.parent / "riverhog.token"),
@@ -159,6 +162,7 @@ def test_supplied_compose_is_ftp_only_bounded_and_unprivileged() -> None:
 
 def test_completion_failure_work_and_capacity_are_explicit(tmp_path: Path) -> None:
     config = FtpSpoolConfig(
+        primary_state={"scope": {"service": "fixture-service", "account": "fixture-account"}},
         host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",
@@ -261,6 +265,7 @@ def test_capture_requires_one_explicit_connected_observer_provider(tmp_path: Pat
         ingest_source="ftp:fixture",
     )
     values = {
+        "primary_state": {"scope": {"service": "fixture-service", "account": "fixture-account"}},
         "host_id": "urn:uuid:00000000-0000-4000-8000-000000000675",
         "riverhog_base_url": "https://riverhog.invalid",
         "riverhog_token": "riverhog-token",

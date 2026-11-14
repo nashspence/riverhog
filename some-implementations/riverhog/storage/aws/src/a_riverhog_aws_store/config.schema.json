@@ -94,13 +94,6 @@
       "default": null,
       "title": "Immediate Storage Class"
     },
-    "max_attempts": {
-      "default": 8,
-      "maximum": 100,
-      "minimum": 1,
-      "title": "Max Attempts",
-      "type": "integer"
-    },
     "max_pool_connections": {
       "default": 32,
       "maximum": 4096,
@@ -148,15 +141,6 @@
         "Expedited"
       ],
       "title": "Restore Tier",
-      "type": "string"
-    },
-    "retry_mode": {
-      "default": "standard",
-      "enum": [
-        "standard",
-        "adaptive"
-      ],
-      "title": "Retry Mode",
       "type": "string"
     },
     "root_prefix": {

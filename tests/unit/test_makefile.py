@@ -36,6 +36,14 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     '"$*" == *" up --detach --wait state api "* ]]; then',
                     '  cp "${STOVE0_CONFIG_HOST_PATH}" "${FAKE_DOCKER_CONFIG_CAPTURE}"',
                     "fi",
+                    'if [[ -n "${FAKE_DOCKER_PUBLICATION_CONFIG_CAPTURE:-}" && '
+                    '-f "${A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH:-}" && '
+                    '-f "${REVIEW0_CONFIG_HOST_PATH:-}" ]]; then',
+                    '  cp "${A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH}" '
+                    '"${FAKE_DOCKER_PUBLICATION_CONFIG_CAPTURE}/ftp-spool.yaml"',
+                    '  cp "${REVIEW0_CONFIG_HOST_PATH}" '
+                    '"${FAKE_DOCKER_PUBLICATION_CONFIG_CAPTURE}/review0.yaml"',
+                    "fi",
                     'if [[ "$1" == "image" && "$2" == "inspect" ]]; then',
                     '  if [[ "$*" == *"{{.Id}}"* ]]; then',
                     "    printf 'sha256:'; printf 'a%.0s' {1..64}; printf '\\n'; exit 0",
@@ -108,6 +116,10 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     "fi",
                     'if [[ "$*" == *"RIVERHOG_SMOKE_SETTLEMENT_OUTPUT=1"* ]]; then',
                     "  printf '2\\n'",
+                    "fi",
+                    'if [[ "$*" == *"a-review0-opus-sampler python"* && '
+                    '"$*" == *"/v1/sampler"* ]]; then',
+                    "  printf 'd%.0s' {1..64}; printf '\\n'",
                     "fi",
                     'if [[ "${@: -1}" == "review" ]]; then',
                     "  printf '%s\\n' '{\"collection_id\":4,\"source_collection_id\":3}'",
@@ -264,9 +276,14 @@ def test_bundled_s3_fixture_is_development_only_and_not_an_application_dependenc
 
 
 def test_filesystem_recovery_qualification_owns_run_local_images() -> None:
+    from riverhog_client import PrimaryStatePolicy
+
     qualification = (REPO_ROOT / "scripts" / "test_filesystem_recovery_qualification.sh").read_text(
         encoding="utf-8"
     )
+    policy = re.search(r"--env 'A_RIVERHOG_CLI_PRIMARY_STATE=(\{[^'\n]+\})'", qualification)
+    assert policy is not None
+    PrimaryStatePolicy.model_validate_json(policy.group(1))
 
     assert (
         'client_image="riverhog-filesystem-recovery-client:'
@@ -662,15 +679,38 @@ def test_stove0_scale_qualification_reuses_the_final_image_lifecycle(
     ),
 )
 def test_compose_shard_executes_only_its_owned_lifecycle(tmp_path: Path, lane: str) -> None:
+    from a_riverhog_ftp_spool.config import FtpSpoolDocument
+    from review0.http import Review0Config
+    from riverhog_client import PrimaryStatePolicy
+
+    publication_configs = tmp_path / "publication-config"
+    publication_configs.mkdir()
     completed, docker_log_path, uv_log_path = _run_make(
         tmp_path,
         "compose-shard",
         f"COMPOSE_LANE={lane}",
-        extra_env={"FAKE_DOCKER_HAVE_IMAGES": "1", "STOVE0_SMOKE_TRANSFER_METRICS": "0"},
+        extra_env={
+            "FAKE_DOCKER_HAVE_IMAGES": "1",
+            "STOVE0_SMOKE_TRANSFER_METRICS": "0",
+            "FAKE_DOCKER_PUBLICATION_CONFIG_CAPTURE": str(publication_configs),
+        },
     )
     assert completed.returncode == 0, completed.stderr
     log = "\n".join(_read_log_lines(docker_log_path))
     timing = "\n".join(_read_log_lines(uv_log_path))
+    ftp = FtpSpoolDocument.model_validate(
+        yaml.safe_load((publication_configs / "ftp-spool.yaml").read_text())
+    )
+    review = Review0Config.model_validate(
+        yaml.safe_load((publication_configs / "review0.yaml").read_text())
+    )
+    cli_state = re.search(r"A_RIVERHOG_CLI_PRIMARY_STATE=(\{\S+\})", log)
+    assert cli_state is not None
+    assert (
+        ftp.primary_state
+        == review.primary_state
+        == PrimaryStatePolicy.model_validate_json(cli_state.group(1))
+    )
     assert timing.count(f"compose-prepare --lane {lane}") == 1
     assert ("RIVERHOG_SMOKE_PARTITION_OUTPUT=1" in log) == (lane == "ingress-custody")
     assert ("collection upload start /overflow" in log) == (lane == "storage")

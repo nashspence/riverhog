@@ -67,7 +67,7 @@ def _declared_operations(packages: Mapping[str, Path]) -> tuple[Callable[..., An
                     value = value.fget
                 if not inspect.isfunction(value) or not hasattr(value, "__riverhog_growth__"):
                     continue
-                if Path(inspect.getfile(value)).resolve() != path.resolve():
+                if Path(inspect.getfile(inspect.unwrap(value))).resolve() != path.resolve():
                     continue
                 result.append(value)
     return tuple(result)
@@ -132,15 +132,16 @@ def source_analysis(
         pending.extend(growth_binding(operation) for _, operation in binding.delegates)
     declarations = {}
     for identity, binding in sorted(owned.items()):
-        path = Path(inspect.getfile(binding.operation)).resolve()
+        definition = inspect.unwrap(binding.operation)
+        path = Path(inspect.getfile(definition)).resolve()
         if not path.is_relative_to(root.resolve()):
             raise ValueError("growth declaration source is outside the authoritative checkout")
         declarations[identity] = {
             "implementation": f"{binding.operation.__module__}.{binding.operation.__qualname__}",
             "source": {
                 "path": path.relative_to(root.resolve()).as_posix(),
-                "symbol": binding.operation.__qualname__,
-                "line": inspect.getsourcelines(binding.operation)[1],
+                "symbol": definition.__qualname__,
+                "line": inspect.getsourcelines(definition)[1],
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             },
             "declaration_sha256": hashlib.sha256(

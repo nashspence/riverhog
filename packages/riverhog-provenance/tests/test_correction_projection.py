@@ -482,20 +482,20 @@ def test_native_correction_uses_private_bounded_phases_before_prefix_publication
     replacement["assertion_id"] = new_id()
     replacement["name"] = "Changed label"
     observed = []
-    for operation in ("retire", "seed"):
-        native = getattr(CorrectionWork, operation)
+    native = CorrectionWork._apply
 
-        def advance(self, *, native=native, operation=operation, **options):
-            before = self.db.execute("SELECT checkpoint FROM journal_prefix").fetchone()[0]
-            changes = self.db.total_changes
-            state = native(self, **options)
-            assert self.db.total_changes - changes <= 65
-            assert self.db.execute("SELECT checkpoint FROM journal_prefix").fetchone()[0] == before
-            assert not self.db.in_transaction
-            observed.append((operation, state.phase))
-            return state
+    def apply(self, batch):
+        assert self.db.in_transaction
+        before = self.db.execute("SELECT checkpoint FROM journal_prefix").fetchone()[0]
+        changes = self.db.total_changes
+        state = native(self, batch)
+        assert self.db.total_changes - changes <= 65
+        assert self.db.execute("SELECT checkpoint FROM journal_prefix").fetchone()[0] == before
+        assert self.db.in_transaction
+        observed.append((self.operation, state.phase))
+        return state
 
-        monkeypatch.setattr(CorrectionWork, operation, advance)
+    monkeypatch.setattr(CorrectionWork, "_apply", apply)
     raw = append_correction(
         journal,
         [target],
@@ -567,7 +567,8 @@ class WorkConnection(sqlite3.Connection):
         return result
 
     @contextmanager
-    def observe(self):
+    def observe(self, *, weights=None):
+        was_in_transaction = self.in_transaction
         self.metrics = {
             name: 0
             for name in (
@@ -581,7 +582,7 @@ class WorkConnection(sqlite3.Connection):
                 "sqlite_vm_instructions",
             )
         }
-        self.statements, self.weights = [], {}
+        self.statements, self.weights = [], dict(weights or {})
         before = self.total_changes
 
         def trace(_sql):
@@ -610,7 +611,7 @@ class WorkConnection(sqlite3.Connection):
             self.set_progress_handler(None, 0)
             self.set_authorizer(None)
             self.metrics["changed_rows"] = self.total_changes - before
-        assert not self.in_transaction
+        assert self.in_transaction == was_in_transaction
         assert all(cursor.closed for _sql, _parameters, cursor in self.statements)
         for sql, parameters, _cursor in self.statements:
             if not sql.startswith(("SELECT", "UPDATE", "DELETE")):
@@ -633,15 +634,9 @@ def execution_sample(binding, projection, dimensions, metrics):
     return sample
 
 
-@pytest.mark.growth_witness(
-    "riverhog-correction-retirement-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._correction_projection.CorrectionWork.retire",
-)
-def test_cold_retirement_records_actual_indexed_row_byte_and_vm_work(tmp_path, record_property):
-    binding = growth_binding(CorrectionWork.retire)
+def retirement_unit_samples(tmp_path, operation):
+    binding = growth_binding(getattr(CorrectionWork, operation))
     projection = project_bindings((binding,))
-    samples = []
     for table in TABLES:
         for count, quantum in ((0, 1), (1, 1), (17, 16), (129, 64), (1025, 64)):
             path = tmp_path / f"retire-{table}-{count}.sqlite3"
@@ -660,40 +655,65 @@ def test_cold_retirement_records_actual_indexed_row_byte_and_vm_work(tmp_path, r
             with closing(connect(path, factory=WorkConnection)) as db:
                 current = work(db)
                 before = db.execute("SELECT count(*) FROM " + table).fetchone()[0]
-                with db.observe() as metrics:
-                    state = current.retire(row_budget=quantum, byte_budget=admission)
+                unchanged = contents(db) if operation != "retire" else None
+                if operation == "_apply":
+                    with db.observe():
+                        batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                    weights = dict(db.weights)
+                    db.execute("BEGIN IMMEDIATE").close()
+                    with db.observe(weights=weights) as metrics:
+                        state = current._apply(batch)
+                    assert db.in_transaction and state == batch.after
+                elif operation == "prepare":
+                    with db.observe() as metrics:
+                        batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                    state = batch.after
+                    assert not db.in_transaction
+                else:
+                    with db.observe() as metrics:
+                        state = current.retire(row_budget=quantum, byte_budget=admission)
                 after = db.execute("SELECT count(*) FROM " + table).fetchone()[0]
-                assert before - after == metrics["changed_rows"] - 1
-                assert before - after <= quantum
+                if operation == "prepare":
+                    assert before == after and metrics["changed_rows"] == 0
+                    assert len(batch.keys) <= quantum
+                else:
+                    assert before - after == metrics["changed_rows"] - 1
+                    assert before - after <= quantum
+                if operation == "_apply":
+                    db.rollback()
+                if unchanged is not None:
+                    assert contents(db) == unchanged
                 if count == 0:
                     assert state.phase != table
                 assert metrics["payload_fetched_octets"] == 0
-                samples.append(
-                    execution_sample(
-                        binding,
-                        projection,
-                        {
-                            "retained_rows": count,
-                            "row_budget": quantum,
-                            "byte_budget": admission,
-                            "max_atom_octets": maximum,
-                        },
-                        metrics,
-                    )
+                yield execution_sample(
+                    binding,
+                    projection,
+                    {
+                        "retained_rows": count,
+                        "row_budget": quantum,
+                        "byte_budget": admission,
+                        "max_atom_octets": maximum,
+                    },
+                    metrics,
                 )
-    assert len(samples) == 20
-    record_property("growth_samples", samples)
 
 
 @pytest.mark.growth_witness(
-    "riverhog-correction-seeding-work/v1",
+    "riverhog-correction-retirement-work/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._correction_projection.CorrectionWork.seed",
+    operation="riverhog_provenance._correction_projection.CorrectionWork.retire",
 )
-def test_cold_seeding_skips_retired_payloads_and_records_actual_work(tmp_path, record_property):
-    binding = growth_binding(CorrectionWork.seed)
-    projection = project_bindings((binding,))
+def test_cold_retirement_records_actual_indexed_row_byte_and_vm_work(tmp_path, record_property):
     samples = []
+    record_property("growth_samples", samples)
+    samples.extend(retirement_unit_samples(tmp_path, "retire"))
+    assert len(samples) == 20
+
+
+def seeding_unit_samples(tmp_path, operation):
+    binding = growth_binding(getattr(CorrectionWork, operation))
+    projection = project_bindings((binding,))
     for active_count, retired_count in (
         (0, 0),
         (1, 1),
@@ -720,30 +740,59 @@ def test_cold_seeding_skips_retired_payloads_and_records_actual_work(tmp_path, r
         admission = 90 if active_count == 1025 else max(1, quantum * 45)
         with closing(connect(path, factory=WorkConnection)) as db:
             current = work(db, "seed")
-            with db.observe() as metrics:
-                state = current.seed(row_budget=quantum, byte_budget=admission)
+            unchanged = contents(db) if operation != "seed" else None
+            if operation == "_apply":
+                batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                db.execute("BEGIN IMMEDIATE").close()
+                with db.observe() as metrics:
+                    state = current._apply(batch)
+                assert db.in_transaction and state == batch.after
+            elif operation == "prepare":
+                with db.observe() as metrics:
+                    batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                state = batch.after
+                assert not db.in_transaction
+            else:
+                with db.observe() as metrics:
+                    state = current.seed(row_budget=quantum, byte_budget=admission)
             inserted = {key for (key,) in db.execute("SELECT assertion_id FROM changes")}
             admitted = set(sorted(active)[primed : primed + min(quantum, max(1, admission // 45))])
-            assert inserted == initial | admitted
-            assert metrics["changed_rows"] == 1 + len(admitted - initial)
+            if operation == "prepare":
+                assert inserted == initial and metrics["changed_rows"] == 0
+                assert set(batch.keys) == admitted
+            else:
+                assert inserted == initial | admitted
+                assert metrics["changed_rows"] == 1 + len(admitted - initial)
+            if operation == "_apply":
+                db.rollback()
+            if unchanged is not None:
+                assert contents(db) == unchanged
             if not active:
                 assert state.done
             assert metrics["payload_fetched_octets"] == 0
-            samples.append(
-                execution_sample(
-                    binding,
-                    projection,
-                    {
-                        "retained_rows": active_count + retired_count + len(initial),
-                        "row_budget": quantum,
-                        "byte_budget": admission,
-                        "max_atom_octets": 45,
-                    },
-                    metrics,
-                )
+            yield execution_sample(
+                binding,
+                projection,
+                {
+                    "retained_rows": active_count + retired_count + len(initial),
+                    "row_budget": quantum,
+                    "byte_budget": admission,
+                    "max_atom_octets": 45,
+                },
+                metrics,
             )
-    assert len(samples) == 8
+
+
+@pytest.mark.growth_witness(
+    "riverhog-correction-seeding-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._correction_projection.CorrectionWork.seed",
+)
+def test_cold_seeding_skips_retired_payloads_and_records_actual_work(tmp_path, record_property):
+    samples = []
     record_property("growth_samples", samples)
+    samples.extend(seeding_unit_samples(tmp_path, "seed"))
+    assert len(samples) == 8
 
 
 @pytest.mark.parametrize(
@@ -804,3 +853,33 @@ def test_retirement_uses_sqlites_actual_physical_rowid_domain(tmp_path):
         current.retire(row_budget=2)
         assert db.execute("SELECT count(*) FROM maps").fetchone()[0] == 0
         assert current.retire().phase == "findings"
+
+
+@pytest.mark.growth_witness(
+    "riverhog-correction-projection-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._correction_projection.CorrectionWork.prepare",
+)
+def test_actual_detached_correction_projection_plan(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    for action, helper in (("retire", retirement_unit_samples), ("seed", seeding_unit_samples)):
+        directory = tmp_path / action
+        directory.mkdir()
+        samples.extend(helper(directory, "prepare"))
+    assert len(samples) == 28
+
+
+@pytest.mark.growth_witness(
+    "riverhog-correction-projection-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._correction_projection.CorrectionWork._apply",
+)
+def test_actual_owner_transaction_correction_projection_application(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    for action, helper in (("retire", retirement_unit_samples), ("seed", seeding_unit_samples)):
+        directory = tmp_path / action
+        directory.mkdir()
+        samples.extend(helper(directory, "_apply"))
+    assert len(samples) == 28

@@ -398,12 +398,13 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             """,
             f"""
             INSERT INTO app_keys (
-                id, app, token_sha256, monthly_download_quota_bytes,
+                id, app, token_sha256, access_generation, monthly_download_quota_bytes,
                 created_at, expires_at, revoked_at, last_used_at
             )
             SELECT substring(md5(g::text), 1, 16),
                    CASE WHEN g <= {rows // 2} THEN 'app-000'
                         ELSE 'app-' || lpad(g::text, 6, '0') END, {sha},
+                   repeat(md5('access-' || g), 2),
                    1000000000 + g, {timestamp},
                    CASE WHEN g % 3 = 0 THEN '2027-08-28T00:00:00.000000000Z' ELSE NULL END,
                    CASE WHEN g = {rows} THEN NULL ELSE {timestamp} END,

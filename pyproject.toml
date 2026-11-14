@@ -33,6 +33,7 @@ members = [
 ]
 
 [tool.uv.sources]
+workspace-reclamation = { workspace = true }
 release-documentation-lib = { workspace = true }
 gogurt-core = { workspace = true }
 gogurt-listener-runtime = { workspace = true }
@@ -99,9 +100,12 @@ time-formats = { workspace = true }
 [dependency-groups]
 browser = ["playwright==1.63.0"]
 dev = [
+  "setuptools==84.2.1",
   "markdown-it-py==4.2.0",
   "PyYAML==6.0.3",
   "boto3-stubs[s3]>=1.43.59,<2.0",
+  "cryptography>=50,<51",
+  "h2>=4.4.1,<5",
   "httpx2>=2,<3",
   "license-expression>=30.4,<31",
   "mypy>=2.3.0,<3.0",
@@ -165,6 +169,7 @@ support_paths = [
   "scripts/ci_qualification.py",
   "scripts/ci_actions.py",
   "scripts/ci_execution.py",
+  "scripts/compose_exception_diagnostics.py",
 ]
 
 [[tool.mypy.overrides]]

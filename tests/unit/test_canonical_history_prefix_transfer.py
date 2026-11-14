@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import hashlib
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from dataclasses import replace
 from typing import Any
 
@@ -85,116 +85,118 @@ def test_longer_authenticated_source_prefix_preserves_early_octets_and_upload_bo
     tmp_path,
 ) -> None:
     f = _construction(tmp_path)
-    api = _ConstructionApi(f.service)
-    observed = BoundedSourceObserver().observe(BytesSource(b"source"))
-    first = create_journal(
-        observed.graph_fragment(), recorded_by_agent_id=observed.observer_agent_id
-    )
-    summary = validate_journal(first)
-    later = append_assertion_batches(
-        first,
-        (
-            {
-                "extensions": [
-                    assertion(
-                        "extension",
-                        observed.observer_agent_id,
-                        subject=reference(observed.state_id, "state"),
-                        property="urn:test:bounded-source-record",
-                        value={"type": "text", "value": str(index) + "x" * 150000},
-                    )
-                ]
-            }
-            for index in range(10)
-        ),
-        recorded_by_agent_id=observed.observer_agent_id,
-    )
-    assert len(first) < 1024 * 1024 < len(later)
-    early = api.upload_collection_upload_session_provenance_journal(
-        1,
-        summary.journal_id,
-        content=(first,),
-        byte_count=len(first),
-        sha256=hashlib.sha256(first).hexdigest(),
-        selection_role="history-dependency",
-    )
-    with session_scope(f.factory) as session:
-        earlier = session.get(CollectionUploadProvenanceJournalRecord, (1, summary.journal_id))
-        attempt, directory = earlier.capture_attempt_id, earlier.capture_directory_id
-        prefix_positions = [
-            (row.ordinal, row.byte_offset, row.json_bytes)
-            for row in session.scalars(
-                select(CollectionUploadProvenanceFrameRecord)
-                .where(
-                    CollectionUploadProvenanceFrameRecord.directory_id == directory,
-                )
-                .order_by(CollectionUploadProvenanceFrameRecord.ordinal)
-            )
-        ]
-    transfer = CanonicalHistoryTransfer(api, 1)
-    first_anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
-    transfer._journal(None, first_anchor)
-    assert api.stream_reads == 0
-    with pytest.raises(ValueError, match="already accepted prefix"):
-        transfer._journal(None, replace(first_anchor, prefix_sha256="f" * 64))
-    complete = api.upload_collection_upload_session_provenance_journal(
-        1,
-        summary.journal_id,
-        content=(later,),
-        byte_count=len(later),
-        sha256=hashlib.sha256(later).hexdigest(),
-        selection_role="history-dependency",
-    )
-    assert early.anchor.model_dump(mode="json") == summary.anchor
-    assert complete.anchor.model_dump(mode="json") == validate_journal(later).anchor
-    # A longer receiver prefix still requires exact overlap authentication.
-    transfer._journal(None, first_anchor)
-    assert api.stream_reads == 1
-    with pytest.raises(ValueError, match="already accepted prefix"):
-        transfer._journal(None, replace(first_anchor, prefix_sha256="f" * 64))
-    with session_scope(f.factory) as session:
-        chunks = list(
-            session.scalars(
-                select(CollectionUploadProvenanceJournalChunkRecord)
-                .where(
-                    CollectionUploadProvenanceJournalChunkRecord.journal_id == summary.journal_id
-                )
-                .order_by(CollectionUploadProvenanceJournalChunkRecord.ordinal)
-            )
+    with closing(f.service):
+        api = _ConstructionApi(f.service)
+        observed = BoundedSourceObserver().observe(BytesSource(b"source"))
+        first = create_journal(
+            observed.graph_fragment(), recorded_by_agent_id=observed.observer_agent_id
         )
-        current = session.get(CollectionUploadProvenanceJournalRecord, (1, summary.journal_id))
-        assert current.capture_attempt_id != attempt
-        assert current.capture_directory_id == directory
-        assert current.capture_byte_offset == len(later)
-        assert [
-            (row.ordinal, row.byte_offset, row.json_bytes)
-            for row in session.scalars(
-                select(CollectionUploadProvenanceFrameRecord)
-                .where(
-                    CollectionUploadProvenanceFrameRecord.directory_id == directory,
-                    CollectionUploadProvenanceFrameRecord.ordinal < len(prefix_positions),
-                )
-                .order_by(CollectionUploadProvenanceFrameRecord.ordinal)
-            )
-        ] == prefix_positions
-        assert chunks[0].content == first
-        assert b"".join(row.content for row in chunks) == later
-        assert len(chunks[1].content) == 1024 * 1024
-    # Same-sized replacement and role substitution both fail without modifying
-    # any accepted source prefix or permitting a primary rewrite.
-    with pytest.raises(Conflict, match="authority already differs"):
-        api.create_collection_upload_session_provenance_journal(
+        summary = validate_journal(first)
+        later = append_assertion_batches(
+            first,
+            (
+                {
+                    "extensions": [
+                        assertion(
+                            "extension",
+                            observed.observer_agent_id,
+                            subject=reference(observed.state_id, "state"),
+                            property="urn:test:bounded-source-record",
+                            value={"type": "text", "value": str(index) + "x" * 150000},
+                        )
+                    ]
+                }
+                for index in range(10)
+            ),
+            recorded_by_agent_id=observed.observer_agent_id,
+        )
+        assert len(first) < 1024 * 1024 < len(later)
+        early = api.upload_collection_upload_session_provenance_journal(
             1,
             summary.journal_id,
-            byte_count=len(later),
-            sha256="f" * 64,
+            content=(first,),
+            byte_count=len(first),
+            sha256=hashlib.sha256(first).hexdigest(),
             selection_role="history-dependency",
         )
-    with pytest.raises(Conflict, match="construction role"):
-        api.create_collection_upload_session_provenance_journal(
+        with session_scope(f.factory) as session:
+            earlier = session.get(CollectionUploadProvenanceJournalRecord, (1, summary.journal_id))
+            attempt, directory = earlier.capture_attempt_id, earlier.capture_directory_id
+            prefix_positions = [
+                (row.ordinal, row.byte_offset, row.json_bytes)
+                for row in session.scalars(
+                    select(CollectionUploadProvenanceFrameRecord)
+                    .where(
+                        CollectionUploadProvenanceFrameRecord.directory_id == directory,
+                    )
+                    .order_by(CollectionUploadProvenanceFrameRecord.ordinal)
+                )
+            ]
+        transfer = CanonicalHistoryTransfer(api, 1)
+        first_anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
+        transfer._journal(None, first_anchor)
+        assert api.stream_reads == 0
+        with pytest.raises(ValueError, match="already accepted prefix"):
+            transfer._journal(None, replace(first_anchor, prefix_sha256="f" * 64))
+        complete = api.upload_collection_upload_session_provenance_journal(
             1,
-            f.primary.journal_id,
-            byte_count=len(f.primary.content) + 1,
-            sha256="f" * 64,
+            summary.journal_id,
+            content=(later,),
+            byte_count=len(later),
+            sha256=hashlib.sha256(later).hexdigest(),
             selection_role="history-dependency",
         )
+        assert early.anchor.model_dump(mode="json") == summary.anchor
+        assert complete.anchor.model_dump(mode="json") == validate_journal(later).anchor
+        # A longer receiver prefix still requires exact overlap authentication.
+        transfer._journal(None, first_anchor)
+        assert api.stream_reads == 1
+        with pytest.raises(ValueError, match="already accepted prefix"):
+            transfer._journal(None, replace(first_anchor, prefix_sha256="f" * 64))
+        with session_scope(f.factory) as session:
+            chunks = list(
+                session.scalars(
+                    select(CollectionUploadProvenanceJournalChunkRecord)
+                    .where(
+                        CollectionUploadProvenanceJournalChunkRecord.journal_id
+                        == summary.journal_id
+                    )
+                    .order_by(CollectionUploadProvenanceJournalChunkRecord.ordinal)
+                )
+            )
+            current = session.get(CollectionUploadProvenanceJournalRecord, (1, summary.journal_id))
+            assert current.capture_attempt_id != attempt
+            assert current.capture_directory_id == directory
+            assert current.capture_byte_offset == len(later)
+            assert [
+                (row.ordinal, row.byte_offset, row.json_bytes)
+                for row in session.scalars(
+                    select(CollectionUploadProvenanceFrameRecord)
+                    .where(
+                        CollectionUploadProvenanceFrameRecord.directory_id == directory,
+                        CollectionUploadProvenanceFrameRecord.ordinal < len(prefix_positions),
+                    )
+                    .order_by(CollectionUploadProvenanceFrameRecord.ordinal)
+                )
+            ] == prefix_positions
+            assert chunks[0].content == first
+            assert b"".join(row.content for row in chunks) == later
+            assert len(chunks[1].content) == 1024 * 1024
+        # Same-sized replacement and role substitution both fail without modifying
+        # any accepted source prefix or permitting a primary rewrite.
+        with pytest.raises(Conflict, match="authority already differs"):
+            api.create_collection_upload_session_provenance_journal(
+                1,
+                summary.journal_id,
+                byte_count=len(later),
+                sha256="f" * 64,
+                selection_role="history-dependency",
+            )
+        with pytest.raises(Conflict, match="construction role"):
+            api.create_collection_upload_session_provenance_journal(
+                1,
+                f.primary.journal_id,
+                byte_count=len(f.primary.content) + 1,
+                sha256="f" * 64,
+                selection_role="history-dependency",
+            )

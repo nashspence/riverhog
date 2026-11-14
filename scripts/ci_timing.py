@@ -6,12 +6,13 @@ import argparse
 import math
 import os
 import platform
+import re
 import subprocess
 import sys
 import time
 from collections.abc import Callable, Generator, Sequence
 from datetime import UTC, datetime
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from threading import Timer
 from typing import TYPE_CHECKING, Any
 from uuid import uuid4
@@ -24,6 +25,7 @@ if __package__ in (None, ""):
 
 from scripts.validation_identity import source_identity as source_identity
 from scripts.validation_process import ValidationInterrupted, run_validation_child
+from scripts.validation_resources import validation_storage_budget
 
 if TYPE_CHECKING:
     from scripts.validation_evidence import ValidationWork
@@ -49,6 +51,8 @@ class PytestTiming:
         root = Path(os.environ.get("RIVERHOG_CI_TIMING_DIR", "build/ci-timing"))
         self.directory = root / "pytest" / self.lane / self.run_id / self.session_id
         self.source = source_identity(config.rootpath)
+        self.root = config.rootpath
+        self.first_failure_reported = False
         self.started_at = datetime.now(UTC).isoformat()
         self.started = time.monotonic()
         self.fixtures: dict[str, dict[str, int | float]] = {}
@@ -92,6 +96,7 @@ class PytestTiming:
             metric["seconds"] += time.monotonic() - started
 
     def pytest_runtest_logreport(self, report: pytest.TestReport) -> None:
+        self._report_first_failure(report)
         self.tests.setdefault(report.nodeid, {})[report.when] = {
             "seconds": report.duration,
             "outcome": report.outcome,
@@ -106,6 +111,112 @@ class PytestTiming:
             samples = [value for name, value in report.user_properties if name == "growth_samples"]
             if len(samples) == 1:
                 self.growth_samples[report.nodeid] = samples[0]
+
+    def _report_first_failure(self, report: pytest.TestReport) -> None:
+        """Expose one source location while other workers are still running."""
+        if (
+            self.first_failure_reported
+            or self.worker_id != "controller"
+            or os.environ.get("GITHUB_ACTIONS") != "true"
+            or not report.failed
+            or self.source.get("source_clean") is not True
+            or report.when not in {"setup", "call", "teardown"}
+            or re.fullmatch(r"unit-(?:release|contract|unit-[1-4])", self.lane) is None
+            or re.fullmatch(r"[0-9]+-[0-9]+", self.run_id) is None
+        ):
+            return
+        module = report.nodeid.partition("::")[0]
+        path = PurePosixPath(module)
+        line = report.location[1]
+        if (
+            re.fullmatch(r"[A-Za-z0-9_./-]{1,240}", module) is None
+            or path.is_absolute()
+            or ".." in path.parts
+            or path.suffix != ".py"
+            or type(line) is not int
+            or line < 0
+            or Path(report.location[0]).as_posix() != module
+        ):
+            return
+        source = self.source["source_sha"]
+        try:
+            tracked = subprocess.run(
+                ["git", "cat-file", "-e", f"{source}:{module}"],
+                cwd=self.root,
+                capture_output=True,
+                check=False,
+                timeout=5,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return
+        if tracked.returncode:
+            return
+        self.first_failure_reported = True
+        diagnostic = canonical_json_bytes(
+            {
+                "format": "riverhog-pytest-first-failure/v1",
+                "source_sha": source,
+                "run_id": self.run_id,
+                "lane": self.lane,
+                "file": module,
+                "line": line + 1,
+                "phase": report.when,
+            }
+        ).decode()
+        print(
+            f"\n::error title=Pytest qualification,file={module},line={line + 1}::{diagnostic}",
+            flush=True,
+        )
+        self._report_failure_site(report, test_file=module)
+
+    def _report_failure_site(self, report: pytest.TestReport, *, test_file: str) -> None:
+        """Expose only a tracked source location, excluding messages and locals."""
+        crash = getattr(report.longrepr, "reprcrash", None)
+        raw_path = getattr(crash, "path", None)
+        line = getattr(crash, "lineno", None)
+        if not isinstance(raw_path, str) or type(line) is not int or line < 1:
+            return
+        path = Path(raw_path)
+        if path.is_absolute():
+            try:
+                path = path.relative_to(self.root)
+            except ValueError:
+                return
+        module = path.as_posix()
+        if (
+            re.fullmatch(r"[A-Za-z0-9_./-]{1,240}", module) is None
+            or ".." in path.parts
+            or path.suffix != ".py"
+        ):
+            return
+        try:
+            tracked = subprocess.run(
+                ["git", "cat-file", "-e", f"{self.source['source_sha']}:{module}"],
+                cwd=self.root,
+                capture_output=True,
+                check=False,
+                timeout=5,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return
+        if tracked.returncode:
+            return
+        diagnostic = canonical_json_bytes(
+            {
+                "format": "riverhog-pytest-failure-site/v1",
+                "source_sha": self.source["source_sha"],
+                "run_id": self.run_id,
+                "lane": self.lane,
+                "test_file": test_file,
+                "file": module,
+                "line": line,
+                "phase": report.when,
+            }
+        ).decode()
+        print(
+            f"::error title=Pytest failure site,file={module},line={line}::{diagnostic}",
+            flush=True,
+        )
 
     def pytest_sessionfinish(self, session: pytest.Session, exitstatus: int) -> None:
         write_record(
@@ -406,7 +517,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             + b"\n"
         )
-        budget = int(os.environ.get("RIVERHOG_VALIDATION_MAX_BYTES", str(64 * 1024 * 1024)))
+        budget = validation_storage_budget()
         previous = args.output.stat().st_size if args.output.exists() else 0
         if budget < 1 or previous + len(encoded) > budget:
             print("validation phase storage budget is exhausted", file=sys.stderr)

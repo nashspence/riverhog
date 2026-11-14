@@ -12,8 +12,8 @@ import sys
 import time
 import tomllib
 import zipfile
-from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime
+from collections.abc import Callable, Mapping, Sequence
+from datetime import UTC, datetime, timedelta
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any, cast
@@ -26,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from contract_atlas.github_publication import GitHubPublication
 from contract_atlas.model import ContractAtlasError
+from contract_atlas.publication import file_sha256
 
 if TYPE_CHECKING:
     from ci_execution import validate_checkout
@@ -49,13 +50,22 @@ else:
     from scripts.ci_timing import source_identity, write_record
 
 from scripts.ci_make import owned_execution_spans, validate_make_receipt
-from scripts.ci_unit import SHARDS
+from scripts.ci_unit import CI_SHARDS, UNIT_PARTITIONS
 from scripts.validation_evidence import ValidationWork, runner_platform, validate_evidence_records
+from scripts.validation_resources import validation_storage_budget
 from scripts.validation_witnesses import collect_test_witnesses
 
-BUDGET_BYTES = 64 * 1024 * 1024
 MAX_ROWS = 512
 MAX_FILES = 4096
+TIMESTAMP_RESOLUTION_SECONDS = 1
+
+
+EvidenceProgress = Callable[[str, str | None], None]
+
+
+def _progress(observer: EvidenceProgress | None, phase: str, work: str | None = None) -> None:
+    if observer is not None:
+        observer(phase, work)
 
 
 def ci_execution_work() -> dict[str, ValidationWork]:
@@ -65,7 +75,7 @@ def ci_execution_work() -> dict[str, ValidationWork]:
     definitions = {work.name: work for work in validation_workloads()}
     for owner, parameter, values, prefix in (
         ("repository", "target", REPOSITORY_TARGETS, ""),
-        ("units", "shard", SHARDS, "unit-"),
+        ("units", "shard", CI_SHARDS, "unit-"),
         ("compose", "lane", COMPOSE_LANES, "compose-"),
         ("images", "group", IMAGE_GROUPS, "image-"),
         (
@@ -84,6 +94,15 @@ def ci_execution_work() -> dict[str, ValidationWork]:
             if name in cases:
                 raise ValueError("duplicate matrix execution identity")
             cases[name] = definitions[prefix + value]
+    unit_witnesses = [
+        identity
+        for part in UNIT_PARTITIONS
+        for identity in cases[f"unit unit-{part}"].growth_witnesses
+    ]
+    if len(unit_witnesses) != len(set(unit_witnesses)) or set(unit_witnesses) != set(
+        definitions["unit-unit"].growth_witnesses
+    ):
+        raise ValueError("CI unit partitions omit or duplicate required growth witnesses")
     if set(jobs["gate"]["needs"]) != set(jobs) - {"gate"}:
         raise ValueError("CI gate omits a maintained execution owner")
     if set(jobs) != {
@@ -99,11 +118,15 @@ def ci_execution_work() -> dict[str, ValidationWork]:
     return cases
 
 
-def bounded_rows(remote: GitHubPublication, endpoint: str, key: str) -> list[dict[str, Any]]:
+def bounded_rows(
+    remote: GitHubPublication, endpoint: str, key: str, *, page_size: int = 100
+) -> list[dict[str, Any]]:
+    if type(page_size) is not int or not 1 <= page_size <= 100:
+        raise ValueError("Actions evidence page size is invalid")
     result: list[dict[str, Any]] = []
-    for page in range(1, MAX_ROWS // 100 + 2):
+    for page in range(1, MAX_ROWS // page_size + 2):
         separator = "&" if "?" in endpoint else "?"
-        response = remote.api(endpoint + separator + f"per_page=100&page={page}")
+        response = remote.api(endpoint + separator + f"per_page={page_size}&page={page}")
         rows = response[key]
         if (
             not isinstance(rows, list)
@@ -124,7 +147,9 @@ def _execution_jobs(
     remote: GitHubPublication, run: Mapping[str, Any]
 ) -> list[tuple[dict[str, Any], dict[str, Any]]]:
     """Pair each latest API snapshot with its proven actual execution origin."""
-    rows = bounded_rows(remote, f"actions/runs/{run['id']}/jobs?filter=all", "jobs")
+    # Job history includes complete step vectors. Small pages keep the response
+    # bounded independently of the workflow's matrix and repeated attempts.
+    rows = bounded_rows(remote, f"actions/runs/{run['id']}/jobs?filter=all", "jobs", page_size=10)
     grouped: dict[str, list[dict[str, Any]]] = {}
     seen: set[int] = set()
     for row in rows:
@@ -231,13 +256,14 @@ def extract_artifact(
     run: Mapping[str, Any],
     destination: Path,
 ) -> int:
+    budget = validation_storage_budget()
     owner = artifact.get("workflow_run", {})
     size = artifact.get("size_in_bytes")
     if (
         artifact.get("expired") is not False
         or type(artifact.get("id")) is not int
         or type(size) is not int
-        or not 0 < size <= BUDGET_BYTES
+        or not 0 < size <= budget
         or owner.get("id") != run["id"]
         or owner.get("head_sha") != run["head_sha"]
         or owner.get("head_branch") != run["head_branch"]
@@ -248,9 +274,7 @@ def extract_artifact(
         raise ValueError("artifact is not owned by the selected trusted execution")
     archive = destination.with_suffix(".zip")
     remote.download_workflow_artifact(artifact["id"], archive)
-    if archive.stat().st_size != size or (
-        "sha256:" + hashlib.sha256(archive.read_bytes()).hexdigest() != artifact["digest"]
-    ):
+    if archive.stat().st_size != size or ("sha256:" + file_sha256(archive) != artifact["digest"]):
         raise ValueError("artifact bytes differ from GitHub's exact digest")
     destination.mkdir()
     expanded = 0
@@ -274,7 +298,7 @@ def extract_artifact(
                 raise ValueError("artifact has an unsafe, repeated or special path")
             seen.add(str(relative))
             expanded += item.file_size
-            if expanded > BUDGET_BYTES:
+            if expanded > budget:
                 raise ValueError("artifact expansion exceeds the evidence budget")
             path = destination / relative
             if item.is_dir():
@@ -288,17 +312,26 @@ def extract_artifact(
 
 
 def verify_ci_artifacts(
-    remote: GitHubPublication, run: Mapping[str, Any], source_sha: str, directory: Path
+    remote: GitHubPublication,
+    run: Mapping[str, Any],
+    source_sha: str,
+    directory: Path,
+    *,
+    progress: EvidenceProgress | None = None,
 ) -> dict[str, object]:
     """Consume actual owner artifacts, never an unbound pass string in a summary."""
+    budget = validation_storage_budget()
     cases = ci_execution_work()
+    _progress(progress, "artifact-list")
     artifacts = bounded_rows(remote, f"actions/runs/{run['id']}/artifacts", "artifacts")
     attempt = run["run_attempt"]
+    _progress(progress, "execution-history")
     jobs = latest_execution_jobs(remote, run)
     results: dict[str, object] = {}
     total = 0
     expanded_total = 0
     for job, work in cases.items():
+        _progress(progress, "job-measurement", work.name)
         owned_jobs = [
             row
             for row in jobs
@@ -313,6 +346,7 @@ def verify_ci_artifacts(
         runner = dict(work.conditions).get("runner_image")
         if runner is not None and runner not in owned_jobs[0]["labels"]:
             raise ValueError("execution ran under a different runner condition")
+        _progress(progress, "artifact-selection", work.name)
         name = f"validation-{work.name}-{run['id']}-attempt-{origin}"
         matches = [row for row in artifacts if row.get("name") == name]
         if len(matches) != 1:
@@ -322,12 +356,14 @@ def verify_ci_artifacts(
         if type(size) is not int:
             raise ValueError("artifact size is missing")
         total += size
-        if total > BUDGET_BYTES:
+        if total > budget:
             raise ValueError("complete execution artifacts exceed the collection budget")
         owned = directory / work.name
+        _progress(progress, "artifact-extraction", work.name)
         expanded_total += extract_artifact(remote, artifact, run, owned)
-        if expanded_total > BUDGET_BYTES:
+        if expanded_total > budget:
             raise ValueError("complete expanded artifacts exceed the collection budget")
+        _progress(progress, "receipt-validation", work.name)
         receipt = require_canonical_json((owned / "receipt.json").read_bytes())
         report = validate_evidence_records(
             [receipt], expected=[work], source_sha=source_sha, run_id=run_identity
@@ -339,6 +375,7 @@ def verify_ci_artifacts(
             if not isinstance(conditions, dict) or conditions.get("platform") != expected_platform:
                 raise ValueError("native evidence contradicts the actual platform condition")
         if work.command[0] == "make":
+            _progress(progress, "make-validation", work.name)
             manifests = [
                 require_canonical_json(path.read_bytes())
                 for path in (owned / "make" / run_identity).glob("*/manifest.json")
@@ -375,6 +412,7 @@ def verify_ci_artifacts(
                     report["qualification_exit_status"] or make_report["qualification_exit_status"]
                 )
         if work.growth_witnesses:
+            _progress(progress, "growth-validation", work.name)
             actual = collect_test_witnesses(
                 tuple((owned / "pytest").glob(f"*/{run_identity}/*/*.json")),
                 root=ROOT,
@@ -457,7 +495,10 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
             seconds = None
             if step.get("conclusion") != "skipped":
                 left, right = timestamp(step.get("started_at")), timestamp(step.get("completed_at"))
-                if not start <= left <= right <= finish:
+                # Independent job and step snapshots can straddle one reported second.
+                # Retain both clocks verbatim; only the containment comparison is tolerant.
+                resolution = timedelta(seconds=TIMESTAMP_RESOLUTION_SECONDS)
+                if not start - resolution <= left <= right <= finish + resolution:
                     raise ValueError("step is outside its owning job's completion boundary")
                 seconds = (right - left).total_seconds()
             steps.append(
@@ -486,7 +527,8 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
     if not starts:
         return {
             "boundary": "no-job-started",
-            "timestamp_resolution_seconds": 1,
+            "timestamp_resolution_seconds": TIMESTAMP_RESOLUTION_SECONDS,
+            "timestamp_boundary_tolerance_seconds": TIMESTAMP_RESOLUTION_SECONDS,
             "started_at": None,
             "finished_at": None,
             "elapsed_seconds": None,
@@ -494,7 +536,8 @@ def measure_jobs(jobs: Sequence[Mapping[str, Any]], run: Mapping[str, Any]) -> d
         }
     return {
         "boundary": "first-job-start-through-last-job-cleanup-including-between-job-gaps",
-        "timestamp_resolution_seconds": 1,
+        "timestamp_resolution_seconds": TIMESTAMP_RESOLUTION_SECONDS,
+        "timestamp_boundary_tolerance_seconds": TIMESTAMP_RESOLUTION_SECONDS,
         "started_at": min(starts).isoformat(),
         "finished_at": max(finishes).isoformat(),
         "elapsed_seconds": (max(finishes) - min(starts)).total_seconds(),
@@ -521,10 +564,17 @@ def _job_completion(job: Mapping[str, Any], run: Mapping[str, Any]) -> dict[str,
     return result
 
 
-def collect_gate(remote: GitHubPublication, run_id: int, attempt: int) -> dict[str, object]:
+def collect_gate(
+    remote: GitHubPublication,
+    run_id: int,
+    attempt: int,
+    *,
+    progress: EvidenceProgress | None = None,
+) -> dict[str, object]:
     source = source_identity(ROOT)
     if source["source_clean"] is not True:
         raise ValueError("gate source must be exact and clean")
+    _progress(progress, "execution-identity")
     run = trusted_attempt(remote, run_id, attempt)
     owners = {".github/workflows/ci.yml"}
     for path in (ROOT / ".github/workflows").glob("*.yml"):
@@ -536,10 +586,14 @@ def collect_gate(remote: GitHubPublication, run_id: int, attempt: int) -> dict[s
     if run["path"] not in owners:
         raise ValueError("execution artifacts are not owned by a maintained CI workflow")
     with TemporaryDirectory(prefix="riverhog-ci-evidence-") as temporary:
-        results = verify_ci_artifacts(remote, run, str(source["source_sha"]), Path(temporary))
+        results = verify_ci_artifacts(
+            remote, run, str(source["source_sha"]), Path(temporary), progress=progress
+        )
+    _progress(progress, "execution-recheck")
     after = trusted_attempt(remote, run_id, attempt)
     if attempt_identity(after) != attempt_identity(run) or source_identity(ROOT) != source:
         raise ValueError("execution identity changed during consumption")
+    _progress(progress, "qualification-summary")
     statuses = []
     for row in results.values():
         if not isinstance(row, dict) or not isinstance(row.get("result"), dict):
@@ -561,6 +615,7 @@ def collect_gate(remote: GitHubPublication, run_id: int, attempt: int) -> dict[s
 def collect_codeql_checkout(
     remote: GitHubPublication, run: Mapping[str, Any], jobs: Sequence[Mapping[str, Any]]
 ) -> dict[str, object]:
+    budget = validation_storage_budget()
     text, document = source_document(remote, run["head_sha"], run["path"])
     workflow = yaml.safe_load(text)
     job_definition = workflow["jobs"]["analyze"]
@@ -586,7 +641,7 @@ def collect_codeql_checkout(
             if type(artifact.get("size_in_bytes")) is not int:
                 raise ValueError("CodeQL checkout artifact has no bounded size")
             total += artifact["size_in_bytes"]
-            if total > BUDGET_BYTES:
+            if total > budget:
                 raise ValueError("CodeQL checkout artifacts exceed the collection budget")
             destination = Path(temporary) / work
             extract_artifact(remote, artifact, run, destination)
@@ -857,10 +912,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error("evidence output must not overwrite another attempt")
     write_record(args.output, record)
     status = 2
+    failure_context: dict[str, str | None] = {"phase": "collector-start", "work": None}
+
+    def progress(phase: str, work: str | None) -> None:
+        # Only source-owned stage names and declared workload names reach this
+        # receipt. Exception messages, API bodies and environments stay outside it.
+        failure_context.update(phase=phase, work=work)
+
     try:
         remote = GitHubPublication(args.repository)
         record["result"] = (
-            collect_gate(remote, args.run_id, args.attempt)
+            collect_gate(remote, args.run_id, args.attempt, progress=progress)
             if args.command == "gate"
             else collect_completed(remote, args.run_id, args.attempt)
         )
@@ -890,8 +952,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         yaml.YAMLError,
         subprocess.CalledProcessError,
         ContractAtlasError,
-    ):
+    ) as error:
         record["state"] = "evidence-failed"
+        record["failure_context"] = {
+            **failure_context,
+            "category": (
+                "command"
+                if isinstance(error, subprocess.CalledProcessError)
+                else "archive"
+                if isinstance(error, zipfile.BadZipFile)
+                else "schema"
+                if isinstance(error, yaml.YAMLError)
+                else "github"
+                if isinstance(error, ContractAtlasError)
+                else "io"
+                if isinstance(error, OSError)
+                else "shape"
+                if isinstance(error, KeyError)
+                else "type"
+                if isinstance(error, TypeError)
+                else "validation"
+            ),
+        }
         print("Actions validation evidence is invalid or incomplete.")
     finally:
         record.update(

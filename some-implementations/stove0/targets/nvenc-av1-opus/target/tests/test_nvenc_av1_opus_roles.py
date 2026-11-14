@@ -42,6 +42,7 @@ from stove0_target_support import (
 )
 
 from tests.fixtures.stove0_media import media_preflight_request, sealed_media_job
+from tests.support.prepared_primary import PRIMARY_STATE_POLICY
 
 
 def _sha(character: str) -> str:
@@ -113,6 +114,7 @@ def test_actual_nvenc_payload_waits_for_a_component_owned_permit_and_releases_af
 
     def service_at_state():
         return NvencAv1OpusTargetService(
+            primary_state=PRIMARY_STATE_POLICY,
             state_root=tmp_path / "state",
             workspace_root=tmp_path / "workspace",
             image_id="sha256:" + _sha("9"),
@@ -252,6 +254,7 @@ def test_paired_nvenc_roles_bind_av1_opus_semantics_and_isolated_contracts(
         image_id=image_id,
     )
     target = NvencAv1OpusTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         state_root=tmp_path / "target-state",
         workspace_root=tmp_path / "target-workspace",
         source_revision="fixture",
@@ -300,6 +303,7 @@ def test_paired_nvenc_roles_bind_av1_opus_semantics_and_isolated_contracts(
 
 def test_nvenc_preflight_and_encode_share_one_exact_projection(tmp_path: Path) -> None:
     target = NvencAv1OpusTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         state_root=tmp_path / "state",
         workspace_root=tmp_path / "workspace",
         source_revision="fixture",
@@ -512,6 +516,7 @@ def test_maintained_nvenc_executable_uses_a_real_deployment_cooperative_lease(
     token.write_text("fixture-target")
     for name, value in {
         "STATE_ROOT": str(tmp_path / "state"),
+        "PRIMARY_STATE": PRIMARY_STATE_POLICY.model_dump_json(),
         "WORKSPACE": str(tmp_path / "workspace"),
         "IMAGE_ID": "sha256:" + _sha("9"),
         "TOKEN_FILE": str(token),

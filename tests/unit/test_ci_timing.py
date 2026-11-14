@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import json
 import os
+import queue
 import subprocess
 import sys
+import threading
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -304,3 +307,193 @@ def test_phase_storage_limit_preserves_the_existing_attempt(tmp_path, monkeypatc
     monkeypatch.setenv("RIVERHOG_VALIDATION_MAX_BYTES", str(len(original)))
     assert main(arguments) == 2
     assert output.read_bytes() == original
+
+
+@pytest.mark.parametrize("phase", ["setup", "call", "teardown"])
+def test_first_failure_annotation_precedes_other_worker_completion(tmp_path, phase):
+    source = tmp_path / "source"
+    source.mkdir()
+    started, release = tmp_path / "started", tmp_path / "release"
+    (source / "pytest.ini").write_text("[pytest]\n")
+    (source / ".gitignore").write_text("__pycache__/\n.pytest_cache/\n")
+    wait = (
+        "def wait_for_sibling():\n"
+        "    deadline = time.monotonic() + 20\n"
+        f"    while not Path({str(started)!r}).exists():\n"
+        "        assert time.monotonic() < deadline\n"
+        "        time.sleep(0.01)\n"
+    )
+    failure = "    wait_for_sibling()\n    assert False, 'exception-text-must-not-be-annotated'\n"
+    fixture = (
+        "@pytest.fixture\ndef failing():\n"
+        + ("    yield\n" if phase == "teardown" else "")
+        + failure
+    )
+    (source / "test_failed.py").write_text(
+        "import time\nfrom pathlib import Path\nimport pytest\n"
+        + wait
+        + (fixture if phase != "call" else "")
+        + (
+            "def test_failed(failing):\n    pass\n"
+            if phase != "call"
+            else "def test_failed():\n" + failure
+        )
+    )
+    (source / "test_waiting.py").write_text(
+        "import time\nfrom pathlib import Path\n"
+        "def test_waiting():\n"
+        f"    Path({str(started)!r}).touch()\n"
+        "    deadline = time.monotonic() + 25\n"
+        f"    while not Path({str(release)!r}).exists():\n"
+        "        assert time.monotonic() < deadline\n"
+        "        time.sleep(0.01)\n"
+    )
+    _git(source, "init", "-q")
+    _git(source, "add", ".")
+    _git(source, "commit", "-qm", "fixture")
+    sha = _git(source, "rev-parse", "HEAD")
+    process = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "-n",
+            "2",
+            "--dist=loadfile",
+            "-p",
+            "scripts.ci_timing",
+        ],
+        cwd=source,
+        env={
+            **os.environ,
+            "PYTHONPATH": str(ROOT),
+            "GITHUB_ACTIONS": "true",
+            "RIVERHOG_CI_TIMING_DIR": str(tmp_path / "timing"),
+            "RIVERHOG_CI_LANE": "unit-unit-3",
+            "RIVERHOG_CI_RUN_ID": "123-1",
+        },
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    assert process.stdout is not None
+    lines: queue.Queue[str] = queue.Queue()
+    output: list[str] = []
+
+    def read():
+        assert process.stdout is not None
+        for line in process.stdout:
+            output.append(line)
+            lines.put(line)
+
+    reader = threading.Thread(target=read, daemon=True)
+    reader.start()
+    try:
+        deadline = time.monotonic() + 20
+        while True:
+            assert time.monotonic() < deadline, "first failure annotation was not streamed"
+            try:
+                line = lines.get(timeout=0.2)
+            except queue.Empty:
+                continue
+            if line.startswith("::error title=Pytest qualification,"):
+                break
+        assert process.poll() is None
+        assert started.exists() and not release.exists()
+        diagnostic = json.loads(line.split("::", 2)[2])
+        assert diagnostic == {
+            "format": "riverhog-pytest-first-failure/v1",
+            "source_sha": sha,
+            "run_id": "123-1",
+            "lane": "unit-unit-3",
+            "file": "test_failed.py",
+            "line": diagnostic["line"],
+            "phase": phase,
+        }
+        assert type(diagnostic["line"]) is int and diagnostic["line"] > 0
+    finally:
+        release.touch()
+        process.wait(timeout=30)
+        reader.join(timeout=5)
+        process.stdout.close()
+    assert process.returncode == 1
+    assert sum(line.startswith("::error title=Pytest qualification,") for line in output) == 1
+    sites = [
+        json.loads(line.split("::", 2)[2])
+        for line in output
+        if line.startswith("::error title=Pytest failure site,")
+    ]
+    assert sites == [
+        {
+            "format": "riverhog-pytest-failure-site/v1",
+            "source_sha": sha,
+            "run_id": "123-1",
+            "lane": "unit-unit-3",
+            "test_file": "test_failed.py",
+            "file": "test_failed.py",
+            "line": next(
+                number
+                for number, text in enumerate(
+                    (source / "test_failed.py").read_text().splitlines(), 1
+                )
+                if "exception-text-must-not-be-annotated" in text
+            ),
+            "phase": phase,
+        }
+    ]
+    assert all(
+        "exception-text-must-not-be-annotated" not in line
+        for line in output
+        if line.startswith("::error")
+    )
+
+
+@pytest.mark.parametrize(
+    "location",
+    (
+        "outside",
+        "untracked.py",
+        "../outside.py",
+        "private file.py",
+        "nested/../test_failed.py",
+        "file.txt",
+    ),
+)
+def test_failure_site_rejects_unowned_paths_without_reading_exception_details(
+    tmp_path, monkeypatch, capsys, location
+):
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "test_failed.py").write_text("def test_failed():\n    assert False\n")
+    _git(source, "init", "-q")
+    _git(source, "add", ".")
+    _git(source, "commit", "-qm", "fixture")
+    for name, value in (
+        ("GITHUB_ACTIONS", "true"),
+        ("RIVERHOG_CI_LANE", "unit-unit-1"),
+        ("RIVERHOG_CI_RUN_ID", "123-1"),
+    ):
+        monkeypatch.setenv(name, value)
+    raw_path = str(tmp_path / "outside.py") if location == "outside" else location
+
+    class PrivateCrash:
+        path = raw_path
+        lineno = 1
+
+        @property
+        def message(self):
+            pytest.fail("exception text must remain unread")
+
+    report = SimpleNamespace(
+        nodeid="test_failed.py::test_failed",
+        location=("test_failed.py", 0, "test_failed"),
+        when="call",
+        failed=True,
+        longrepr=SimpleNamespace(reprcrash=PrivateCrash()),
+    )
+    timing = ci_timing.PytestTiming(SimpleNamespace(rootpath=source))
+    timing._report_first_failure(report)
+    lines = capsys.readouterr().out.splitlines()
+    assert sum(line.startswith("::error title=Pytest qualification,") for line in lines) == 1
+    assert not any(line.startswith("::error title=Pytest failure site,") for line in lines)

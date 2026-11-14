@@ -82,7 +82,18 @@ def test_repo_owns_toolchain_python_lock_and_runtime_exports() -> None:
     assert mise["settings"]["lockfile"] is True
     assert "dev" in pyproject["dependency-groups"]
     assert pyproject["tool"]["uv"]["workspace"]["members"]
-    assert (REPO_ROOT / "mise.lock").is_file()
+    locked = tomllib.loads((REPO_ROOT / "mise.lock").read_text(encoding="utf-8"))
+    for tool, versions in locked["tools"].items():
+        for version in versions:
+            platforms = {
+                key: download for key, download in version.items() if key.startswith("platforms.")
+            }
+            assert platforms, tool
+            for platform, download in platforms.items():
+                assert re.fullmatch(r"sha256:[0-9a-f]{64}", download.get("checksum", "")), (
+                    tool,
+                    platform,
+                )
     assert (REPO_ROOT / "uv.lock").is_file()
     assert "mise.local.toml" in gitignore
     assert "mise.local.lock" in gitignore

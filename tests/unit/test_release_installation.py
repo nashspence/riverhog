@@ -8,6 +8,7 @@ import tomllib
 from pathlib import Path
 from types import ModuleType
 from typing import Any
+from urllib.parse import urlsplit
 
 import pytest
 
@@ -44,19 +45,39 @@ def _external_lock() -> tuple[str, dict[str, str]]:
 
 
 def _wheel_records(projects: list[Any]) -> list[dict[str, object]]:
+    native_tags = {
+        "linux": "cp312-cp312-manylinux_2_17_x86_64",
+        "darwin": "cp312-cp312-macosx_11_0_arm64",
+        "win32": "cp312-cp312-win_amd64",
+    }
     records = []
     for project in projects:
         name = str(project.name)
-        filename = f"{name.replace('-', '_')}-0.1.0-py3-none-any.whl"
-        records.append(
-            {
-                "kind": "wheel",
-                "name": f"python/{filename}",
-                "sha256": hashlib.sha256(name.encode()).hexdigest(),
-                "size": len(name),
-                "distribution": name,
-            }
+        config = tomllib.loads((REPO_ROOT / project.path / "pyproject.toml").read_text())
+        platforms = (
+            config.get("tool", {})
+            .get("hatch", {})
+            .get("build", {})
+            .get("targets", {})
+            .get("wheel", {})
+            .get("hooks", {})
+            .get("custom", {})
+            .get("native-platforms", [])
         )
+        tags = [native_tags[platform] for platform in platforms]
+        if set(platforms) != set(native_tags):
+            tags.append("py3-none-any")
+        for tag in tags:
+            filename = f"{name.replace('-', '_')}-0.1.0-{tag}.whl"
+            records.append(
+                {
+                    "kind": "wheel",
+                    "name": f"python/{filename}",
+                    "sha256": hashlib.sha256(filename.encode()).hexdigest(),
+                    "size": len(filename),
+                    "distribution": name,
+                }
+            )
     return records
 
 
@@ -127,9 +148,16 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
         lock = tomllib.loads((tmp_path / component["lock"]["path"]).read_text(encoding="utf-8"))
         locked_names = {item["name"] for item in lock["packages"]}
         assert locked_names == {item["name"] for item in component["resolved_packages"]}
-        assert not any(
-            "workspace" in str(item) or "file://" in str(item) for item in lock["packages"]
-        )
+        for package in lock["packages"]:
+            assert not {"directory", "vcs", "archive"} & package.keys()
+            assert package["wheels"]
+            if "index" in package:
+                index = urlsplit(package["index"])
+                assert index.scheme == "https" and index.netloc
+            for wheel in package["wheels"]:
+                assert "path" not in wheel
+                location = urlsplit(wheel["url"])
+                assert location.scheme == "https" and location.netloc
         for platform in installation.SUPPORTED_PLATFORMS:
             closure = {item["name"] for item in component["first_party_closure"][platform]}
             requirements = {

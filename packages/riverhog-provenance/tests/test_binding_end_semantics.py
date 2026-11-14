@@ -33,6 +33,7 @@ from test_generic_semantics import (
     CommonWorkConnection,
     binding_projection,
     finish,
+    measure_semantic_operation,
     outputs,
     position,
     require_reclaimed,
@@ -165,7 +166,11 @@ def test_binding_time_reads_effective_raw_fields_without_payload_or_writes(
     assert row == original
 
 
-@pytest.mark.parametrize("value", ["x" * 1048576, b"x" * 1048576, "\N{SNOWMAN}"])
+@pytest.mark.parametrize(
+    "value",
+    ["x" * 1048576, b"x" * 1048576, "\N{SNOWMAN}"],
+    ids=("oversized-text", "oversized-blob", "non-ascii"),
+)
 def test_invalid_projection_is_rejected_after_a_bounded_metadata_read(tmp_path, value):
     path = tmp_path / "corrupt.sqlite3"
     row = prepare(path, "instant")
@@ -580,26 +585,21 @@ def test_cold_binding_end_step_has_independent_retained_set_history(tmp_path, ca
         current = semantic_work(db, row, catalog, operation="row")
         current.initialize()
         position(current, ("row", "1"))
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+    binding, projection, _ = binding_projection(GenericSemantics.advance)
     with closing(connect(path, factory=CommonWorkConnection)) as db:
         current = semantic_work(db, row, catalog, operation="row")
         retained = workspace_rows(db)
         before = snapshot(db)["journal_prefix"]
         byte_budget = 16 * 1024 * 1024
-        with db.observe() as metrics:
-            current.advance(step_budget=1, byte_budget=byte_budget)
-        sample = {
-            "declaration": binding.declaration.id,
-            "declaration_sha256": digest,
-            "dimensions": {
-                "retained_rows": retained,
-                "step_budget": 1,
-                "byte_budget": byte_budget,
-                "metadata_row_octets": 16384,
-            },
-            "metrics": dict(metrics),
-            "delegates": {},
-        }
+        sample = measure_semantic_operation(
+            current,
+            measured_operation="advance",
+            step_budget=1,
+            byte_budget=byte_budget,
+            retained_rows=retained,
+            metadata_row_octets=16384,
+        )
+        metrics = sample["metrics"]
         validate_execution_samples(projection, binding.declaration.id, [sample])
         assert metrics["source_payload_octets"] == metrics["adjacency_rows"] == 0
         assert snapshot(db)["journal_prefix"] == before

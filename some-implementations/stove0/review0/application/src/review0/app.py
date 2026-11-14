@@ -98,6 +98,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     samplers = sampler_registrations(config)
     version = importlib.metadata.version(SERVICE)
     target = ReviewMaterializeTargetService(
+        primary_state=config.primary_state,
         state_root=Path(os.getenv(f"{PREFIX}_STATE_ROOT", "/var/lib/review0")),
         workspace_root=Path(os.getenv(f"{PREFIX}_WORKSPACE", "/run/review0")),
         samplers=samplers,

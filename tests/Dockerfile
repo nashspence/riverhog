@@ -37,7 +37,7 @@ COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
 COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates git perl \
+    && apt-get install -y --no-install-recommends ca-certificates gcc git libc6-dev perl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=locked-tools /opt/riverhog-tools/bin/ /usr/local/bin/

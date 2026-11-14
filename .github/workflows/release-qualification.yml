@@ -340,7 +340,7 @@ jobs:
           tests/unit/test_local_materialization.py
           some-implementations/stove0/application/tests/test_cli.py
           some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py::test_operator_cli_has_human_and_json_views_for_each_management_operation"
-          args="-p tests.operation_observer"
+          args="-p tests.operation_observer -p scripts.ci_timing"
       - name: Verify and record the complete operation matrix
         run: |
           make operation-qualification \

@@ -15,6 +15,8 @@ if ! command -v "${MISE_BIN}" >/dev/null 2>&1; then
 fi
 
 curl --fail --location --silent --show-error \
+  --retry 3 --retry-all-errors --retry-max-time 120 \
+  --connect-timeout 15 --max-time 60 \
   --output "${SCRATCH}/cctv.tar.gz" \
   "${URL}"
 printf '%s  %s\n' "${CHECKSUM}" "${SCRATCH}/cctv.tar.gz" | shasum -a 256 --check

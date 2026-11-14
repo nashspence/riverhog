@@ -84,7 +84,7 @@ def save(name, raw):
     summary = validate_journal(raw)
     (P / (name + ".jsonseq")).write_bytes(raw)
     (P / (name + ".materialized.json")).write_text(
-        json.dumps(summary.materialize(), indent=2) + "\n"
+        json.dumps(summary.materialize(), sort_keys=True, indent=2) + "\n"
     )
     return summary
 

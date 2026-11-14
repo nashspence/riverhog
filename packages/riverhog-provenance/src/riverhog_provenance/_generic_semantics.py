@@ -12,7 +12,7 @@ import hashlib
 import json
 import re
 import sqlite3
-from collections.abc import Iterator, Mapping, MutableMapping, MutableSet
+from collections.abc import Callable, Iterator, Mapping, MutableMapping, MutableSet
 from contextlib import closing
 from dataclasses import dataclass, replace
 from typing import Any
@@ -28,6 +28,7 @@ from riverhog_growth_contracts import (
     Dimension,
     Expression,
     declare_growth,
+    growth_binding,
 )
 from riverhog_provenance_contracts import (
     ContractCatalog,
@@ -36,7 +37,9 @@ from riverhog_provenance_contracts import (
 )
 
 from ._activity_projection import read_activity
+from ._admission_growth import admission_declaration
 from ._binding_projection import read_binding_time
+from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._delivery_projection import read_delivery_metadata, read_locator_observation
 from ._description_projection import read_description_metadata
 from ._fixity_projection import read_fixity_metadata
@@ -49,12 +52,17 @@ from ._semantic_edge import EdgeAdmission, EdgeBatch, SemanticEdge
 from ._semantic_program import ROW_STAGES, ROW_TYPES, Frame, MemoryStack, Nodes, Program, Stack
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+from .errors import JournalValidationCapacity
 from .graph import _Validator
+from .graph_certificates import (
+    InvalidJournalGraphCertificate,
+    JournalGraphCertificate,
+    JournalGraphCertificates,
+)
 
-ALGORITHM = "riverhog-generic-semantics/v11"
+ALGORITHM = "riverhog-generic-semantics/v12"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
-_BINDING_OCTETS = 8192
 _FRAME_OCTETS = 512
 # Fixed JSON keys, one 45-octet UUID and an optional 30-octet native UTC timestamp.
 _LIFECYCLE_OCTETS = 128
@@ -87,7 +95,7 @@ class StaleGenericSemantics(RuntimeError):
     """The source, semantic subject, prefix, worker or proposal was replaced."""
 
 
-class GenericSemanticsCapacity(RuntimeError):
+class GenericSemanticsCapacity(JournalValidationCapacity):
     """The next existing atom requires more byte admission."""
 
 
@@ -461,6 +469,195 @@ def _declaration() -> Declaration:
     )
 
 
+def _phase_declaration(operation: str) -> Declaration:
+    planning = operation == "prepare"
+    base = _declaration()
+    return replace(
+        base,
+        id="riverhog-provenance.sqlite-generic-semantics-"
+        + ("plan" if planning else "application")
+        + ".growth/v1",
+        subjects=("riverhog_provenance._generic_semantics.GenericSemantics." + operation,),
+        scope="detached-common-semantic-plan"
+        if planning
+        else "owner-transaction-common-semantic-application",
+        starts_at=(
+            "load the exact common semantic checkpoint outside a transaction"
+            if planning
+            else "accept an admitted exact semantic proposal inside the parent transaction"
+        ),
+        ends_at=(
+            "return bounded semantic checks, graph work or undo/reclamation plans without writes"
+            if planning
+            else "return native changes and progress while preserving the parent transaction"
+        ),
+        bounds=tuple(
+            replace(bound, relation="equal", expression=Expression("constant", value=0, unit=COUNT))
+            if planning and bound.metric == "changed_rows"
+            else bound
+            for bound in base.bounds
+        ),
+        conditions=(
+            *base.conditions[:-1],
+            "The exact proposal is admitted under the recorded step/byte budget; planning is "
+            "detached and application runs inside its owner's transaction.",
+        ),
+        invariants=(
+            *base.invariants,
+            "Planning never writes; application neither commits nor rolls back the parent "
+            "transaction.",
+        ),
+        limitations=(
+            *base.limitations,
+            "Admission, parent publication, graph delegate composition and transaction control "
+            "require caller evidence; this phase does not claim execution of standalone advance.",
+        ),
+    )
+
+
+def _edge_delegates(operation: str) -> tuple[tuple[str, Callable[..., Any]], ...]:
+    if operation == "prepare":
+        return (
+            ("edge_admission", SemanticEdge.prepare_admission),
+            ("edge_plan", SemanticEdge.prepare),
+            ("edge_result", SemanticEdge.result),
+        )
+    if operation == "_apply":
+        return (("edge_admission", SemanticEdge._admit), ("edge_application", SemanticEdge._apply))
+    raise ValueError("unknown common semantic phase")
+
+
+def _composed_declaration(
+    operation: str, *, phase_delegates: tuple[tuple[str, Callable[..., Any]], ...] = ()
+) -> Declaration:
+    whole = operation == "advance"
+    base = _declaration() if whole else _phase_declaration(operation)
+    delegates = phase_delegates if whole else _edge_delegates(operation)
+    dimensions = (
+        *base.dimensions,
+        Dimension(
+            "edge_retained_rows", COUNT, "Actual rows in the semantic graph child's owned tables."
+        ),
+        Dimension(
+            "edge_metadata_row_octets",
+            OCTETS_PER_COUNT,
+            "Input-derived graph admission/header/source/subject scalar envelope.",
+        ),
+        Dimension(
+            "graph_retained_rows",
+            COUNT,
+            "Actual native graph-owned rows within the semantic child.",
+        ),
+        Dimension(
+            "graph_metadata_row_octets",
+            OCTETS_PER_COUNT,
+            "Input-derived native graph identity/checkpoint/scalar envelope.",
+        ),
+        *(
+            Dimension(
+                name + "_calls",
+                COUNT,
+                "Exact zero/one invocation selected by the incoming semantic/graph control state.",
+            )
+            for name in (
+                "edge_admission",
+                "edge_unit",
+                "edge_result",
+                "graph_start",
+                "graph_transition",
+                "graph_application",
+            )
+        ),
+    )
+    parameters = next(
+        bound.expression for bound in base.bounds if bound.metric == "bound_parameter_octets"
+    )
+    extra = [
+        Bound(
+            "written_value_octets",
+            OCTETS,
+            "equal" if operation == "prepare" else "upper",
+            Expression("constant", value=0, unit=OCTETS) if operation == "prepare" else parameters,
+            "Actual mutation parameters remain within the inclusive admitted parameter envelope.",
+        )
+    ]
+    for metric in growth_binding(SemanticEdge.prepare_admission).declaration.bounds:
+        terms = []
+        for name, child in delegates:
+            arguments = []
+            for dimension in growth_binding(child).declaration.dimensions:
+                key = dimension.name
+                if whole:
+                    value = Expression("dimension", name=key)
+                elif key == "retained_rows":
+                    value = Expression("dimension", name="edge_retained_rows")
+                elif key == "metadata_row_octets":
+                    value = Expression("dimension", name="edge_metadata_row_octets")
+                elif key == "row_budget":
+                    value = (
+                        Expression("constant", value=1, unit=COUNT)
+                        if name == "edge_result"
+                        else Expression("dimension", name="step_budget")
+                    )
+                else:
+                    value = Expression("dimension", name=key)
+                arguments.append((key, value))
+            selector = (
+                "edge_unit_calls" if name in {"edge_plan", "edge_application"} else name + "_calls"
+            )
+            terms.append(
+                Expression(
+                    "delegate",
+                    name=name,
+                    metric="edge_" + metric.metric if whole else metric.metric,
+                    terms=(
+                        Expression("constant", value=1, unit=COUNT)
+                        if whole
+                        else Expression("dimension", name=selector),
+                    ),
+                    arguments=tuple(arguments),
+                )
+            )
+        expression = terms[0] if len(terms) == 1 else Expression("sum", terms=tuple(terms))
+        extra.append(
+            Bound(
+                "edge_" + metric.metric,
+                metric.unit,
+                "upper",
+                expression,
+                "Actual semantic graph child subtotal already included in the parent's "
+                "inclusive work.",
+            )
+        )
+    return replace(
+        base,
+        dimensions=dimensions,
+        bounds=(*base.bounds, *extra),
+        conditions=(
+            *base.conditions,
+            "Graph-child invocation bounds come from the incoming phase and at most one "
+            "admitted graph handoff; "
+            "native graph phase selectors are mapped through the exact child input.",
+        ),
+        invariants=(
+            *base.invariants,
+            "All prior inclusive primitive bounds retain child work. Named child subtotals "
+            "are subsets, not additional charges.",
+        ),
+        limitations=tuple(
+            note
+            for note in base.limitations
+            if not note.startswith("Admission, parent publication, graph delegate composition")
+        )
+        + (
+            "Source atom/index and catalog construction, parent publication and transaction "
+            "custody require their owning evidence. "
+            "Whole units compose actual phases, which compose semantic graph admission, "
+            "planning, application and terminal results.",
+        ),
+    )
+
+
 def _result_declaration() -> Declaration:
     unit = _declaration()
     return replace(
@@ -490,6 +687,69 @@ def _result_declaration() -> Declaration:
         + (
             "Earlier outputs, duplicate keys and traversal frames are reclaimed before rejection.",
             "The current immutable atom supplies correlations independently of the desired error.",
+        ),
+    )
+
+
+def _composed_result_declaration() -> Declaration:
+    base = _result_declaration()
+    child = growth_binding(SemanticEdge.result).declaration
+    calls = Expression("dimension", name="edge_result_calls")
+    arguments = (
+        ("retained_rows", Expression("dimension", name="edge_retained_rows")),
+        ("row_budget", Expression("constant", value=1, unit=COUNT)),
+        ("metadata_row_octets", Expression("dimension", name="edge_metadata_row_octets")),
+    )
+    return replace(
+        base,
+        dimensions=(
+            *base.dimensions,
+            Dimension("edge_retained_rows", COUNT, "Actual semantic graph-owned rows."),
+            Dimension(
+                "edge_metadata_row_octets",
+                OCTETS_PER_COUNT,
+                "Actual graph terminal header/source/prefix scalar envelope.",
+            ),
+            Dimension(
+                "edge_result_calls",
+                COUNT,
+                "Exact zero/one graph-result call selected by the retained failure frame.",
+            ),
+        ),
+        bounds=(
+            *base.bounds,
+            Bound(
+                "written_value_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "Terminal success or native error reconstruction never writes state.",
+            ),
+            *(
+                Bound(
+                    "edge_" + bound.metric,
+                    bound.unit,
+                    "upper",
+                    Expression(
+                        "delegate",
+                        name="edge_result",
+                        metric=bound.metric,
+                        terms=(calls,),
+                        arguments=arguments,
+                    ),
+                    "Actual graph-result subtotal within the inclusive terminal counters.",
+                )
+                for bound in child.bounds
+            ),
+        ),
+        conditions=(
+            *base.conditions,
+            "A rejected row graph handoff retains the exact child and failing row stage.",
+        ),
+        invariants=(
+            *base.invariants,
+            "The authentic child error is reconstructed before its identity is checked.",
+            "Child observations remain subsets of inclusive terminal work.",
         ),
     )
 
@@ -798,6 +1058,33 @@ class _ProjectedValidator(_Validator):
         }
 
     def _graph_edge(self, kind: str, source: str, target: str) -> None:
+        certificates = self.owner.certificates
+        if self.edge_result is None and certificates is not None:
+            binding = self.owner.certificate_binding
+            if binding is None or certificates.binding != binding:
+                raise InvalidJournalGraphCertificate("graph certificate manifest changed")
+            self.meter.claim(4096 + len(binding.to_json().encode()))
+            proof = certificates.edge(
+                frame_ordinal=int(self.owner.source.sequence),
+                frame_sha256=self.owner.source.sha256,
+                kind=kind,
+                source=source,
+                target=target,
+                byte_budget=self.meter.budget - self.meter.used,
+            )
+            if proof is not None:
+                if type(proof) is not JournalGraphCertificate:
+                    raise InvalidJournalGraphCertificate("unknown graph certificate record")
+                proof.verify(
+                    binding,
+                    frame_ordinal=int(self.owner.source.sequence),
+                    frame_sha256=self.owner.source.sha256,
+                    kind=kind,
+                    source=source,
+                    target=target,
+                )
+                self.meter.claim(proof.encoded_octets())
+                return
         if self.edge_result is None:
             raise _GraphRequest
         if (kind, source, target) != (
@@ -946,6 +1233,15 @@ class _Stack:
 
 
 @dataclass(frozen=True)
+class GenericAdmission:
+    binding: bytes
+    attempt_id: str
+    prefix: tuple[str, bytes, str]
+    prior: tuple[Any, ...] | None
+    after: GenericState
+
+
+@dataclass(frozen=True)
 class GenericBatch:
     binding: bytes
     attempt_id: str
@@ -966,6 +1262,7 @@ class GenericSemantics:
         atom: GenericAtom,
         catalog: ContractCatalog,
         operation: str = "generic",
+        certificates: JournalGraphCertificates | None = None,
     ) -> None:
         if type(attempt_id) is not str or not attempt_id:
             raise ValueError("an explicit generic semantic attempt is required")
@@ -985,6 +1282,19 @@ class GenericSemantics:
             operation == "row" and row["type"] not in ROW_TYPES
         ):
             raise ValueError("an exact supported semantic root operation is required")
+        self.certificates = certificates
+        self.certificate_binding = None if certificates is None else certificates.binding
+        if self.certificate_binding is not None:
+            pinned = self.certificate_binding.source
+            if (
+                pinned.journal_id != self.source.journal_id
+                or pinned.catalog_sha256 != self.source.catalog_sha256
+                or pinned.require_profiles != self.source.require_profiles
+                or int(self.source.sequence) >= int(pinned.frame_count)
+            ):
+                raise InvalidJournalGraphCertificate(
+                    "graph ranks belong to another semantic source"
+                )
         self.operation = operation
         self.assertion_id, self.object_id, self.kind = row["assertion_id"], row["id"], row["type"]
         self.binding = canonical_json_bytes(
@@ -998,6 +1308,9 @@ class GenericSemantics:
                 "object_id": self.object_id,
                 "kind": self.kind,
                 "row_sha256": atom.sha256,
+                "graph_certificate_sha256": None
+                if self.certificate_binding is None
+                else self.certificate_binding.checkpoint_sha256(),
             }
         )
 
@@ -1010,10 +1323,12 @@ class GenericSemantics:
             raise RuntimeError("generic semantic units require a closed owner transaction")
 
     def _prefix(self) -> tuple[str, bytes, str]:
+        if self.certificates is not None and self.certificates.binding != self.certificate_binding:
+            raise InvalidJournalGraphCertificate("graph certificate manifest changed")
         row = self._one(
             "SELECT substr(attempt_id,1,?),substr(binding,1,?),substr(checkpoint,1,?) "
             "FROM journal_prefix WHERE singleton=1",
-            (_HEADER_OCTETS + 1, _BINDING_OCTETS + 1, _HEADER_OCTETS + 1),
+            (_HEADER_OCTETS + 1, PREFIX_BINDING_OCTETS_MAX + 1, _HEADER_OCTETS + 1),
         )
         if (
             row is None
@@ -1021,7 +1336,7 @@ class GenericSemantics:
             or not row[0]
             or len(row[0]) > _HEADER_OCTETS
             or type(row[1]) is not bytes
-            or len(row[1]) > _BINDING_OCTETS
+            or len(row[1]) > PREFIX_BINDING_OCTETS_MAX
         ):
             raise RuntimeError("missing or invalid semantic accepted-prefix manifest")
         prefix = PrefixState.from_json(row[2])
@@ -1044,44 +1359,82 @@ class GenericSemantics:
         if self.catalog.checkpoint_sha256() != self.source.catalog_sha256:
             raise StaleGenericSemantics("semantic catalog was replaced")
 
-    def initialize(self) -> GenericState:
+    def _admission_row(self) -> tuple[Any, ...] | None:
+        row = self._one(
+            "SELECT algorithm,attempt_id,substr(checkpoint,1,?) "
+            "FROM journal_generic_semantics WHERE singleton=1",
+            (_HEADER_OCTETS + 1,),
+        )
+        return None if row is None else tuple(row)
+
+    def _require_reclaimed(self) -> None:
+        if (
+            self._one("SELECT 1 FROM generic_semantic_frames LIMIT 1") is not None
+            or self._one("SELECT 1 FROM generic_semantic_keys LIMIT 1") is not None
+            or self._one("SELECT 1 FROM generic_semantic_outputs LIMIT 1") is not None
+        ):
+            raise RuntimeError("common semantic state was not reclaimed")
+
+    @declare_growth(
+        admission_declaration(
+            identifier="generic-semantics",
+            subject="riverhog_provenance._generic_semantics.GenericSemantics.prepare_admission",
+            planning=True,
+        )
+    )
+    def prepare_admission(self) -> GenericAdmission:
         self._detached()
+        prefix = self._prefix()
+        self._subject()
+        old = self._admission_row()
+        version = 0
+        if old is not None:
+            if old[0] != ALGORITHM:
+                raise RuntimeError("unknown common semantic algorithm")
+            prior = GenericState.from_json(old[2])
+            if old[1] == self.attempt_id or prior.phase != "done":
+                raise StaleGenericSemantics("common semantic attempt is already bound")
+            version = prior.version + 1
+        self._require_reclaimed()
+        return GenericAdmission(
+            self.binding, self.attempt_id, prefix, old, GenericState(version=version)
+        )
+
+    @declare_growth(
+        admission_declaration(
+            identifier="generic-semantics",
+            subject="riverhog_provenance._generic_semantics.GenericSemantics._admit",
+            planning=False,
+        )
+    )
+    def _admit(self, batch: GenericAdmission) -> GenericState:
+        if not self.db.in_transaction:
+            raise RuntimeError("common semantic admission requires an owner transaction")
+        if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
+            raise StaleGenericSemantics("common semantic admission belongs to another input")
+        if self._prefix() != batch.prefix or self._admission_row() != batch.prior:
+            raise StaleGenericSemantics("common semantic admission was superseded")
+        self._subject()
+        self._require_reclaimed()
+        self.db.execute(
+            "INSERT INTO journal_generic_semantics VALUES (1,?,?,?,?,?,?,?) "
+            "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
+            "attempt_id=excluded.attempt_id,binding=excluded.binding, "
+            "prefix_attempt=excluded.prefix_attempt,prefix_binding=excluded.prefix_binding, "
+            "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
+            (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.after.to_json()),
+        ).close()
+        self.db.execute(
+            "INSERT INTO generic_semantic_frames VALUES (?,?,?,?)",
+            (self.attempt_id, 0, None, _encode_frame(Frame(self.operation, 0))),
+        ).close()
+        return batch.after
+
+    def initialize(self) -> GenericState:
+        batch = self.prepare_admission()
         self.db.execute("BEGIN IMMEDIATE").close()
         try:
-            prefix = self._prefix()
-            self._subject()
-            old = self._one(
-                "SELECT algorithm,attempt_id,substr(checkpoint,1,?) "
-                "FROM journal_generic_semantics WHERE singleton=1",
-                (_HEADER_OCTETS + 1,),
-            )
-            version = 0
-            if old is not None:
-                if old[0] != ALGORITHM:
-                    raise RuntimeError("unknown common semantic algorithm")
-                prior = GenericState.from_json(old[2])
-                if old[1] == self.attempt_id or prior.phase != "done":
-                    raise StaleGenericSemantics("common semantic attempt is already bound")
-                version = prior.version + 1
-            if (
-                self._one("SELECT 1 FROM generic_semantic_frames LIMIT 1") is not None
-                or self._one("SELECT 1 FROM generic_semantic_keys LIMIT 1") is not None
-                or self._one("SELECT 1 FROM generic_semantic_outputs LIMIT 1") is not None
-            ):
-                raise RuntimeError("common semantic state was not reclaimed")
-            state = GenericState(version=version)
-            self.db.execute(
-                "INSERT INTO journal_generic_semantics VALUES (1,?,?,?,?,?,?,?) "
-                "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
-                "attempt_id=excluded.attempt_id,binding=excluded.binding, "
-                "prefix_attempt=excluded.prefix_attempt,prefix_binding=excluded.prefix_binding, "
-                "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
-                (ALGORITHM, self.attempt_id, self.binding, *prefix, state.to_json()),
-            ).close()
-            self.db.execute(
-                "INSERT INTO generic_semantic_frames VALUES (?,?,?,?)",
-                (self.attempt_id, 0, None, _encode_frame(Frame(self.operation, 0))),
-            ).close()
+            state = self._admit(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
@@ -1096,7 +1449,7 @@ class GenericSemantics:
             "WHERE singleton=1 AND attempt_id=? AND binding=?",
             (
                 _HEADER_OCTETS + 1,
-                _BINDING_OCTETS + 1,
+                PREFIX_BINDING_OCTETS_MAX + 1,
                 _HEADER_OCTETS + 1,
                 _HEADER_OCTETS + 1,
                 self.attempt_id,
@@ -1197,6 +1550,7 @@ class GenericSemantics:
             _ProjectedValidator(self, meter, outputs, edge_result), self.atom.nodes, stack, keys
         )
 
+    @declare_growth(_composed_declaration("prepare"), delegates=_edge_delegates("prepare"))
     def prepare(
         self, *, step_budget: int = MAX_STEPS, byte_budget: int = _DEFAULT_BYTES
     ) -> GenericBatch:
@@ -1442,152 +1796,164 @@ class GenericSemantics:
             self.binding, self.attempt_id, prefix, state.to_json(), after, tuple(writes), edge
         )
 
+    @declare_growth(_composed_declaration("_apply"), delegates=_edge_delegates("_apply"))
+    def _apply(self, batch: GenericBatch) -> GenericState:
+        if not self.db.in_transaction:
+            raise RuntimeError("common semantic application requires an owner transaction")
+        if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
+            raise StaleGenericSemantics("common semantic proposal belongs to another input")
+        if self._prefix() != batch.prefix:
+            raise StaleGenericSemantics("accepted prefix changed before semantic commit")
+        self._subject()
+        if batch.after == GenericState.from_json(batch.before_json):
+            if batch.writes or batch.edge is not None:
+                raise RuntimeError("completed semantic proposal contains writes")
+            row = self._one(
+                "SELECT 1 FROM journal_generic_semantics WHERE singleton=1 "
+                "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
+                "AND prefix_binding=? AND prefix=? AND checkpoint=?",
+                (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before_json),
+            )
+            if row is None:
+                raise StaleGenericSemantics("finished common semantic worker was replaced")
+            return batch.after
+        with closing(
+            self.db.execute(
+                "UPDATE journal_generic_semantics SET checkpoint=? WHERE singleton=1 "
+                "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
+                "AND prefix_binding=? AND prefix=? AND checkpoint=?",
+                (
+                    batch.after.to_json(),
+                    ALGORITHM,
+                    self.attempt_id,
+                    self.binding,
+                    *batch.prefix,
+                    batch.before_json,
+                ),
+            )
+        ) as cursor:
+            if cursor.rowcount != 1:
+                raise StaleGenericSemantics("common semantic checkpoint changed")
+        if isinstance(batch.edge, EdgeAdmission):
+            self._edge_work(batch.after, batch.prefix)._admit(batch.edge)
+        elif isinstance(batch.edge, EdgeBatch):
+            before = GenericState.from_json(batch.before_json)
+            self._edge_work(before, batch.prefix)._apply(batch.edge)
+        for sql, parameters in batch.writes:
+            if sql == "@output":
+                name, key, value = parameters
+                if name == "finding":
+                    finding = json.loads(value)
+                    if (
+                        type(finding) is not str
+                        or key != value
+                        or canonical_json_bytes(finding) != value
+                    ):
+                        raise RuntimeError("semantic finding differs from its identity")
+                    with closing(
+                        self.db.execute(
+                            "INSERT INTO findings VALUES (?,?) ON CONFLICT(key) DO NOTHING",
+                            (finding, finding),
+                        )
+                    ) as cursor:
+                        inserted = cursor.rowcount
+                    if inserted:
+                        self.db.execute(
+                            "INSERT INTO generic_semantic_outputs(attempt_id,name,key,finding) "
+                            "VALUES (?,?,?,?)",
+                            (self.attempt_id, name, key, finding),
+                        ).close()
+                    elif (
+                        self._one(
+                            "SELECT 1 FROM findings WHERE key=? AND value=?", (finding, finding)
+                        )
+                        is None
+                    ):
+                        raise RuntimeError("retained semantic finding differs from its identity")
+                    continue
+                with closing(
+                    self.db.execute(
+                        "INSERT INTO maps VALUES (?,?,?) ON CONFLICT(name,key) DO NOTHING",
+                        parameters,
+                    )
+                ) as cursor:
+                    inserted = cursor.rowcount
+                if inserted:
+                    self.db.execute(
+                        "INSERT INTO generic_semantic_outputs(attempt_id,name,key) VALUES (?,?,?)",
+                        (self.attempt_id, name, key),
+                    ).close()
+                elif (
+                    self._one(
+                        "SELECT 1 FROM maps WHERE name=? AND key=? AND value=?",
+                        (name, key, value),
+                    )
+                    is None
+                ):
+                    raise RuntimeError("retained semantic output differs from its identity")
+            elif sql in {"@rollback-output", "@retire-output"}:
+                if sql == "@rollback-output":
+                    row = self._one(
+                        "SELECT name FROM generic_semantic_outputs WHERE id=? AND attempt_id=?",
+                        (*parameters, self.attempt_id),
+                    )
+                    if row is None:
+                        raise RuntimeError("semantic undo no longer owns its output")
+                    delete = (
+                        "DELETE FROM findings WHERE key=value AND key=(SELECT finding "
+                        "FROM generic_semantic_outputs WHERE id=? AND attempt_id=? "
+                        "AND name='finding')"
+                        if row[0] == "finding"
+                        else "DELETE FROM maps WHERE (name,key)=(SELECT name,key "
+                        "FROM generic_semantic_outputs WHERE id=? AND attempt_id=?)"
+                    )
+                    with closing(
+                        self.db.execute(
+                            delete,
+                            (*parameters, self.attempt_id),
+                        )
+                    ) as cursor:
+                        if cursor.rowcount != 1:
+                            raise RuntimeError("semantic undo no longer owns its output")
+                with closing(
+                    self.db.execute(
+                        "DELETE FROM generic_semantic_outputs WHERE id=? AND attempt_id=?",
+                        (*parameters, self.attempt_id),
+                    )
+                ) as cursor:
+                    if cursor.rowcount != 1:
+                        raise RuntimeError("semantic output reclamation lost its row")
+            else:
+                self.db.execute(sql, parameters).close()
+        return batch.after
+
     def commit(self, batch: GenericBatch) -> GenericState:
         self._detached()
         if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
             raise StaleGenericSemantics("common semantic proposal belongs to another input")
         self.db.execute("BEGIN IMMEDIATE").close()
         try:
-            if self._prefix() != batch.prefix:
-                raise StaleGenericSemantics("accepted prefix changed before semantic commit")
-            self._subject()
-            if batch.after == GenericState.from_json(batch.before_json):
-                if batch.writes or batch.edge is not None:
-                    raise RuntimeError("completed semantic proposal contains writes")
-                row = self._one(
-                    "SELECT 1 FROM journal_generic_semantics WHERE singleton=1 "
-                    "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
-                    "AND prefix_binding=? AND prefix=? AND checkpoint=?",
-                    (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before_json),
-                )
-                if row is None:
-                    raise StaleGenericSemantics("finished common semantic worker was replaced")
-                self.db.commit()
-                return batch.after
-            with closing(
-                self.db.execute(
-                    "UPDATE journal_generic_semantics SET checkpoint=? WHERE singleton=1 "
-                    "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
-                    "AND prefix_binding=? AND prefix=? AND checkpoint=?",
-                    (
-                        batch.after.to_json(),
-                        ALGORITHM,
-                        self.attempt_id,
-                        self.binding,
-                        *batch.prefix,
-                        batch.before_json,
-                    ),
-                )
-            ) as cursor:
-                if cursor.rowcount != 1:
-                    raise StaleGenericSemantics("common semantic checkpoint changed")
-            if isinstance(batch.edge, EdgeAdmission):
-                self._edge_work(batch.after, batch.prefix)._admit(batch.edge)
-            elif isinstance(batch.edge, EdgeBatch):
-                before = GenericState.from_json(batch.before_json)
-                self._edge_work(before, batch.prefix)._apply(batch.edge)
-            for sql, parameters in batch.writes:
-                if sql == "@output":
-                    name, key, value = parameters
-                    if name == "finding":
-                        finding = json.loads(value)
-                        if (
-                            type(finding) is not str
-                            or key != value
-                            or canonical_json_bytes(finding) != value
-                        ):
-                            raise RuntimeError("semantic finding differs from its identity")
-                        with closing(
-                            self.db.execute(
-                                "INSERT INTO findings VALUES (?,?) ON CONFLICT(key) DO NOTHING",
-                                (finding, finding),
-                            )
-                        ) as cursor:
-                            inserted = cursor.rowcount
-                        if inserted:
-                            self.db.execute(
-                                "INSERT INTO generic_semantic_outputs(attempt_id,name,key,finding) "
-                                "VALUES (?,?,?,?)",
-                                (self.attempt_id, name, key, finding),
-                            ).close()
-                        elif (
-                            self._one(
-                                "SELECT 1 FROM findings WHERE key=? AND value=?", (finding, finding)
-                            )
-                            is None
-                        ):
-                            raise RuntimeError(
-                                "retained semantic finding differs from its identity"
-                            )
-                        continue
-                    with closing(
-                        self.db.execute(
-                            "INSERT INTO maps VALUES (?,?,?) ON CONFLICT(name,key) DO NOTHING",
-                            parameters,
-                        )
-                    ) as cursor:
-                        inserted = cursor.rowcount
-                    if inserted:
-                        self.db.execute(
-                            "INSERT INTO generic_semantic_outputs(attempt_id,name,key) "
-                            "VALUES (?,?,?)",
-                            (self.attempt_id, name, key),
-                        ).close()
-                    elif (
-                        self._one(
-                            "SELECT 1 FROM maps WHERE name=? AND key=? AND value=?",
-                            (name, key, value),
-                        )
-                        is None
-                    ):
-                        raise RuntimeError("retained semantic output differs from its identity")
-                elif sql in {"@rollback-output", "@retire-output"}:
-                    if sql == "@rollback-output":
-                        row = self._one(
-                            "SELECT name FROM generic_semantic_outputs WHERE id=? AND attempt_id=?",
-                            (*parameters, self.attempt_id),
-                        )
-                        if row is None:
-                            raise RuntimeError("semantic undo no longer owns its output")
-                        delete = (
-                            "DELETE FROM findings WHERE key=value AND key=(SELECT finding "
-                            "FROM generic_semantic_outputs WHERE id=? AND attempt_id=? "
-                            "AND name='finding')"
-                            if row[0] == "finding"
-                            else "DELETE FROM maps WHERE (name,key)=(SELECT name,key "
-                            "FROM generic_semantic_outputs WHERE id=? AND attempt_id=?)"
-                        )
-                        with closing(
-                            self.db.execute(
-                                delete,
-                                (*parameters, self.attempt_id),
-                            )
-                        ) as cursor:
-                            if cursor.rowcount != 1:
-                                raise RuntimeError("semantic undo no longer owns its output")
-                    with closing(
-                        self.db.execute(
-                            "DELETE FROM generic_semantic_outputs WHERE id=? AND attempt_id=?",
-                            (*parameters, self.attempt_id),
-                        )
-                    ) as cursor:
-                        if cursor.rowcount != 1:
-                            raise RuntimeError("semantic output reclamation lost its row")
-                else:
-                    self.db.execute(sql, parameters).close()
+            state = self._apply(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
-        return batch.after
+        return state
 
-    @declare_growth(_declaration())
+    @declare_growth(
+        _composed_declaration(
+            "advance", phase_delegates=(("planning", prepare), ("application", _apply))
+        ),
+        delegates=(("planning", prepare), ("application", _apply)),
+    )
     def advance(
         self, *, step_budget: int = MAX_STEPS, byte_budget: int = _DEFAULT_BYTES
     ) -> GenericState:
         return self.commit(self.prepare(step_budget=step_budget, byte_budget=byte_budget))
 
-    @declare_growth(_result_declaration())
+    @declare_growth(
+        _composed_result_declaration(), delegates=(("edge_result", SemanticEdge.result),)
+    )
     def result(self) -> None:
         state, _prefix = self._load()
         if not state.done:

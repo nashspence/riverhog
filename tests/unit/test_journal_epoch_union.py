@@ -10,7 +10,6 @@ from uuid import UUID
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_core.services import collection_uploads as owner
 from riverhog_core.services import upload_journal_union as union
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import epoch_union as neutral
@@ -23,7 +22,7 @@ from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_journal_topology_capture import entry, raw_journal
 from tests.unit.test_journal_topology_capture import finish as finish_facts
 from tests.unit.test_journal_topology_capture import ready as boundary_ready
-from tests.unit.test_journal_validation_handoff import service_for, terminal
+from tests.unit.test_journal_validation_handoff import native_outcome, service_for, terminal
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
 
 Active, Arc, Graph, Vertex, Scan = union.Active, union.Arc, union.Graph, union.Vertex, union.Scan
@@ -363,23 +362,34 @@ def test_native_acceptance_follows_private_union_completion(tmp_path, monkeypatc
     raw = source(journal_id=JOURNAL)
     with retained(tmp_path, raw) as (engine, factory):
         ready(factory)
-        native = owner._compute_upload_journal_validation
+        service = service_for(factory)
+        native = service._journal_validation_owner.advance
         observed = []
 
-        def detached(*args):
+        def detached(*args, **kwargs):
             assert checkpoint(factory)[2] == "complete"
             assert engine.pool.checkedout() == 0 and terminal(factory)["anchor"] is None
             observed.append(True)
-            return native(*args)
+            return native(*args, **kwargs)
 
-        monkeypatch.setattr(owner, "_compute_upload_journal_validation", detached)
-        service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
-        assert observed == [True]
-        with validate_journal(raw) as expected:
-            assert terminal(factory)["anchor"] == expected.anchor
+        monkeypatch.setattr(service._journal_validation_owner, "advance", detached)
+        try:
+            for _ in range(10000):
+                service._advance_provenance_journal_validation(1, JOURNAL)
+                if terminal(factory)["state"] == "sealed":
+                    break
+            else:
+                pytest.fail("small native handoff did not complete")
+            assert len(observed) > 1
+            with validate_journal(raw) as expected:
+                assert terminal(factory)["anchor"] == expected.anchor
+        finally:
+            service.close()
 
 
-def test_cyclic_later_union_does_not_replace_an_earlier_native_prefix_error(tmp_path):
+def test_cyclic_later_union_does_not_replace_an_earlier_native_prefix_error(
+    tmp_path, *, journal_constructions
+):
     document = parse_journal(source(journal_id=JOURNAL))[0].document
     document["sequence"] = "7"
     raw = raw_journal(canonical_json_bytes(document), entry([edge(0, 0, 1), edge(1, 1, 0)]))
@@ -389,9 +399,9 @@ def test_cyclic_later_union_does_not_replace_an_earlier_native_prefix_error(tmp_
         work = ready(factory)
         finish(factory, work)
         assert checkpoint(factory)[2] == "complete"
-        assert owner._compute_upload_journal_validation(factory, work).failure == str(
-            expected.value
-        )
+        assert native_outcome(
+            factory, work, journal_constructions=journal_constructions
+        ).failure == str(expected.value)
 
 
 @pytest.mark.growth_witness(
@@ -578,7 +588,15 @@ def test_actual_indexed_active_seed_work(tmp_path, monkeypatch, record_property)
             assert [row.assertion_id for row in actual] == expected
             assert len(actual) == observed["returned_positions"]
             assert observed["closed"] and not payload_reads and engine.pool.checkedout() == 0
-            for statement, parameters in statements:
+            selects = [
+                (statement, parameters)
+                for statement, parameters in statements
+                if statement.lstrip().upper().startswith("SELECT")
+            ]
+            starts = sum(statement.strip().upper() == "BEGIN" for statement, _ in statements)
+            assert len(selects) == 2 and starts == 1
+            assert len(statements) == len(selects) + starts
+            for statement, parameters in selects:
                 with engine.connect() as connection:
                     result = connection.exec_driver_sql(
                         "EXPLAIN QUERY PLAN " + statement, parameters

@@ -290,6 +290,17 @@ def test_existing_finding_is_preserved_and_inconsistent_identity_is_rejected(
         ("sha256", b"a" * 64),
         ("sha256", None),
     ],
+    ids=(
+        "size-noncanonical",
+        "size-large-integer",
+        "size-oversized",
+        "size-blob",
+        "size-null",
+        "sha-uppercase",
+        "sha-oversized",
+        "sha-blob",
+        "sha-null",
+    ),
 )
 def test_raw_fixity_corruption_fails_closed_after_bounded_reads(tmp_path, field, value):
     path = tmp_path / "corrupt.sqlite3"
@@ -612,18 +623,19 @@ def measured_descriptions(mode, count):
     return values
 
 
-def growth_samples(tmp_path, catalog):
+def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
     from riverhog_growth_contracts import validate_execution_samples
     from riverhog_provenance._generic_semantics import GenericSemantics
-    from test_edge_row_semantics import envelope, semantic_sample
+    from test_edge_row_semantics import envelope
     from test_generic_semantics import (
         CommonWorkConnection,
         binding_projection,
+        measure_semantic_operation,
         position,
         workspace_rows,
     )
 
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+    binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
     samples = []
     for stage in (0, 1, 2):
         for mode in (
@@ -660,10 +672,13 @@ def growth_samples(tmp_path, catalog):
                 with closing(connect(path, factory=CommonWorkConnection)) as db:
                     current = work(db, row, catalog, operation="row")
                     byte_budget = 16 * 1024 * 1024
-                    with db.observe() as metrics:
-                        current.advance(step_budget=budget, byte_budget=byte_budget)
-                    sample = semantic_sample(
-                        binding, digest, retained, budget, width, metrics, byte_budget
+                    sample = measure_semantic_operation(
+                        current,
+                        measured_operation=measured_operation,
+                        step_budget=budget,
+                        byte_budget=byte_budget,
+                        retained_rows=retained,
+                        metadata_row_octets=width,
                     )
                     validate_execution_samples(projection, binding.declaration.id, [sample])
                     samples.append(sample)
@@ -673,26 +688,29 @@ def growth_samples(tmp_path, catalog):
                         suffix = work(suffix_db, row, catalog, operation="row")
                         finish(suffix, budget=64)
                         assert_comparison_result(suffix, suffix_db, row, mode)
-    samples.extend(finding_undo_growth_samples(tmp_path, catalog))
+    samples.extend(
+        finding_undo_growth_samples(tmp_path, catalog, measured_operation=measured_operation)
+    )
     assert len(samples) == 114
     return samples
 
 
-def finding_undo_growth_samples(tmp_path, catalog):
+def finding_undo_growth_samples(tmp_path, catalog, *, measured_operation="advance"):
     from riverhog_growth_contracts import validate_execution_samples
     from riverhog_provenance._generic_semantics import GenericSemantics, _ProjectedValidator
-    from test_edge_row_semantics import envelope, semantic_sample
+    from test_edge_row_semantics import envelope
     from test_generic_semantics import (
         CommonWorkConnection,
         binding_projection,
         create,
+        measure_semantic_operation,
         metadata,
         position,
         workspace_rows,
     )
     from test_generic_semantics import subject as common_subject
 
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+    binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
     samples = []
     for count, budget in REGIMES:
         row = common_subject(count)
@@ -736,9 +754,14 @@ def finding_undo_growth_samples(tmp_path, catalog):
         with closing(connect(path, factory=CommonWorkConnection)) as db:
             current = work(db, row, catalog)
             byte_budget = 16 * 1024 * 1024
-            with db.observe() as metrics:
-                current.advance(step_budget=budget, byte_budget=byte_budget)
-            sample = semantic_sample(binding, digest, retained, budget, width, metrics, byte_budget)
+            sample = measure_semantic_operation(
+                current,
+                measured_operation=measured_operation,
+                step_budget=budget,
+                byte_budget=byte_budget,
+                retained_rows=retained,
+                metadata_row_octets=width,
+            )
             validate_execution_samples(projection, binding.declaration.id, [sample])
             samples.append(sample)
             assert (
@@ -763,8 +786,14 @@ def finding_undo_growth_samples(tmp_path, catalog):
 def terminal_growth_samples(tmp_path, catalog):
     from riverhog_growth_contracts import validate_execution_samples
     from riverhog_provenance._generic_semantics import _RESULT_BYTES, GenericSemantics
-    from test_edge_row_semantics import envelope, semantic_sample
-    from test_generic_semantics import CommonWorkConnection, binding_projection, workspace_rows
+    from test_edge_row_semantics import envelope
+    from test_generic_semantics import (
+        CommonWorkConnection,
+        binding_projection,
+        measure_semantic_result,
+        semantic_terminal_dimensions,
+        workspace_rows,
+    )
 
     binding, projection, digest = binding_projection(GenericSemantics.result)
     samples = []
@@ -785,26 +814,30 @@ def terminal_growth_samples(tmp_path, catalog):
                 current.initialize()
                 finish(current, budget=64)
                 assert_comparison_result(current, db, row, mode)
+                terminal_dimensions = semantic_terminal_dimensions(current)
                 retained = workspace_rows(db)
                 prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                 width = envelope(current, prefix)
+                before = owned(db)
                 with closing(connect(path)) as destination:
                     db.backup(destination)
             with closing(connect(path, factory=CommonWorkConnection)) as db:
                 current = work(db, row, catalog, operation="row")
-                before = owned(db)
-                with db.observe() as metrics:
-                    if mode in COMPARISON_ERRORS:
-                        with pytest.raises(
-                            ProvenanceValidationError, match=COMPARISON_ERRORS[mode]
-                        ):
-                            current.result()
-                    else:
-                        current.result()
-                assert owned(db) == before
-                sample = semantic_sample(
-                    binding, digest, retained, 1, width, metrics, _RESULT_BYTES
+                sample = measure_semantic_result(
+                    current,
+                    {
+                        "retained_rows": retained,
+                        "step_budget": 1,
+                        "byte_budget": _RESULT_BYTES,
+                        "metadata_row_octets": width,
+                        **terminal_dimensions,
+                    },
+                    expected_exception=ProvenanceValidationError
+                    if mode in COMPARISON_ERRORS
+                    else None,
+                    pattern=COMPARISON_ERRORS.get(mode),
                 )
+                assert owned(db) == before
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
     assert len(samples) == 54

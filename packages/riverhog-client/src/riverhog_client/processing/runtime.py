@@ -2,18 +2,23 @@
 
 from __future__ import annotations
 
+import sqlite3
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal, Self
 
+from riverhog_archive_contracts import MemberHistoryBuilder, MemberHistoryHeads
 from riverhog_protocol.collection_workflows import (
     ArtifactDispositionSetIdentity,
     CollectionRootIdentity,
 )
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
+from riverhog_provenance import JournalStore, MemberHistoryClosure
 from time_formats import utc_timestamp_now
 
-from riverhog_client import ApiClient
+from riverhog_client import ApiClient, PrimaryStore
+from riverhog_client.completion_records import CompletionRecords
+from riverhog_client.initial_tags import PreparedInitialCollectionTags
 from riverhog_client.processing.capability import CapabilityApiClient
 from riverhog_client.processing.models import (
     ClaimedArtifact,
@@ -50,6 +55,12 @@ class ClaimedCollectionRuntime:
         cancellation_check: CancellationCheck | None = None,
         input_retrieval_policy: Literal["available-only", "allow"] = "available-only",
         owned_api: bool = False,
+        history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
     ) -> None:
         self.api = (
             api
@@ -72,6 +83,12 @@ class ClaimedCollectionRuntime:
             claim_id=claim_id,
             fence=fence,
             heartbeat=self.heartbeat,
+            history_connection_factory=history_connection_factory,
+            on_history_storage_open=on_history_storage_open,
+            history_verification_connection_factory=history_verification_connection_factory,
+            on_history_verification_storage_open=on_history_verification_storage_open,
+            provenance_connection_factory=provenance_connection_factory,
+            on_provenance_storage_open=on_provenance_storage_open,
         )
 
     @classmethod
@@ -175,6 +192,16 @@ class CollectionTransformRuntime:
         self,
         api: Any,
         *,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
+        completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
+        history_selection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_selection_storage_open: Callable[[MemberHistoryBuilder], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -186,12 +213,28 @@ class CollectionTransformRuntime:
         cancellation_check: CancellationCheck | None = None,
         input_retrieval_policy: Literal["available-only", "allow"] = "available-only",
         owned_api: bool = False,
+        history_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_storage_open: Callable[[MemberHistoryClosure], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
     ) -> None:
         self.api = (
             api
             if isinstance(api, CapabilityApiClient)
             else CapabilityApiClient(api, owns_client=owned_api)
         )
+        self.primary_store = primary_store
+        self.member_inventory = member_inventory
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
+        self._initial_tags_connection_factory = initial_tags_connection_factory
+        self._on_initial_tags_storage_open = on_initial_tags_storage_open
+        self._completion_connection_factory = completion_connection_factory
+        self._on_completion_storage_open = on_completion_storage_open
+        self._history_selection_connection_factory = history_selection_connection_factory
+        self._on_history_selection_storage_open = on_history_selection_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
         self.spec = spec
         self.work_id = work_id
         self.execution_id = execution_id
@@ -217,9 +260,27 @@ class CollectionTransformRuntime:
             claim_id=claim_id,
             fence=fence,
             heartbeat=self.heartbeat,
+            history_connection_factory=history_connection_factory,
+            on_history_storage_open=on_history_storage_open,
+            history_verification_connection_factory=history_verification_connection_factory,
+            on_history_verification_storage_open=on_history_verification_storage_open,
+            provenance_connection_factory=provenance_connection_factory,
+            on_provenance_storage_open=on_provenance_storage_open,
         )
         self.writer = DerivedCollectionWriter(
             self.api,
+            primary_store=primary_store,
+            member_inventory=member_inventory,
+            provenance_connection_factory=provenance_connection_factory,
+            on_provenance_storage_open=on_provenance_storage_open,
+            initial_tags_connection_factory=initial_tags_connection_factory,
+            on_initial_tags_storage_open=on_initial_tags_storage_open,
+            completion_connection_factory=completion_connection_factory,
+            on_completion_storage_open=on_completion_storage_open,
+            history_selection_connection_factory=history_selection_connection_factory,
+            on_history_selection_storage_open=on_history_selection_storage_open,
+            history_verification_connection_factory=history_verification_connection_factory,
+            on_history_verification_storage_open=on_history_verification_storage_open,
             spec=spec,
             work_id=work_id,
             claim_id=claim_id,
@@ -236,6 +297,8 @@ class CollectionTransformRuntime:
         *,
         base_url: str,
         capability_token: str,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -252,6 +315,8 @@ class CollectionTransformRuntime:
         )
         return cls(
             api,
+            primary_store=primary_store,
+            member_inventory=member_inventory,
             spec=spec,
             claim_id=claim_id,
             fence=fence,
@@ -365,6 +430,18 @@ class CollectionTransformRuntime:
             return self._incremental_writer
         writer = IncrementalDerivedCollectionWriter(
             self.api,
+            primary_store=self.primary_store,
+            member_inventory=self.member_inventory,
+            provenance_connection_factory=self._provenance_connection_factory,
+            on_provenance_storage_open=self._on_provenance_storage_open,
+            initial_tags_connection_factory=self._initial_tags_connection_factory,
+            on_initial_tags_storage_open=self._on_initial_tags_storage_open,
+            completion_connection_factory=self._completion_connection_factory,
+            on_completion_storage_open=self._on_completion_storage_open,
+            history_selection_connection_factory=self._history_selection_connection_factory,
+            on_history_selection_storage_open=self._on_history_selection_storage_open,
+            history_verification_connection_factory=self._history_verification_connection_factory,
+            on_history_verification_storage_open=self._on_history_verification_storage_open,
             spec=self.spec,
             work_id=self.work_id,
             claim_id=self.claim_id,

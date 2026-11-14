@@ -32,6 +32,7 @@ from scripts.validation_evidence import (
     validation_path_identity,
 )
 from scripts.validation_process import ValidationInterrupted, run_validation_child
+from scripts.validation_resources import validation_storage_budget
 
 ROOT = Path(__file__).resolve().parents[1]
 RECIPE_MARKER = "# Maintained target recipes."
@@ -135,13 +136,22 @@ def make_work_definitions(
         from scripts.ci_qualification import validation_work
 
     definitions = []
+    targets = maintained_make_targets(ROOT / "Makefile")
     for goal in dict.fromkeys(goals):
+        if goal not in targets and not (
+            "build-%" in targets and re.fullmatch(r"build-[a-zA-Z0-9_-]+", goal)
+        ):
+            raise ValueError("unknown maintained Make target")
         selector = {
             "unit-shard": ("UNIT_SHARD", "unit-"),
             "image-qualification": ("IMAGE_GROUP", "image-"),
             "compose-shard": ("COMPOSE_LANE", "compose-"),
         }.get(goal)
         name = goal if selector is None else selector[1] + parameters[selector[0]]
+        if goal == "unit-shard":
+            from scripts.ci_unit import unit_work_name
+
+            name = unit_work_name(parameters["UNIT_SHARD"], parameters.get("UNIT_PARTITION", ""))
         definitions.append(validation_work(name).definition())
     return definitions
 
@@ -192,7 +202,7 @@ def owned_execution_spans(timing_root: Path, run_id: str, span: str, source_sha:
 
 def retain_completed_runs(timing_root: Path, current: str) -> None:
     keep = int(os.environ.get("RIVERHOG_VALIDATION_RETAIN_RUNS", "32"))
-    budget = int(os.environ.get("RIVERHOG_VALIDATION_MAX_BYTES", str(64 * 1024 * 1024)))
+    budget = validation_storage_budget()
     if min(keep, budget) < 1:
         raise ValueError("validation retention resources must be positive")
     completed: list[tuple[float, Path]] = []
@@ -304,6 +314,8 @@ def observe_make(makefile: Path, goals: Sequence[str]) -> int:
         )
         if goal in goals
     }
+    if "unit-shard" in goals and os.environ.get("UNIT_PARTITION"):
+        parameters["UNIT_PARTITION"] = os.environ["UNIT_PARTITION"]
     try:
         definitions = make_work_definitions(goals, parameters)
     except (ValueError, KeyError):

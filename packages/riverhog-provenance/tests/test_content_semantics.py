@@ -400,8 +400,10 @@ def test_process_death_preserves_content_progress_keys_and_output_undo(tmp_path,
         require_reclaimed(db)
 
 
-def growth_samples(tmp_path, catalog):
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
+    from test_generic_semantics import measure_semantic_operation
+
+    binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
     samples = []
     phases = (
         "content-first",
@@ -478,20 +480,14 @@ def growth_samples(tmp_path, catalog):
             with closing(connect(path, factory=CommonWorkConnection)) as db:
                 current = work(db, value, catalog)
                 byte_budget = 16 * 1024 * 1024
-                with db.observe() as metrics:
-                    current.advance(step_budget=budget, byte_budget=byte_budget)
-                sample = {
-                    "declaration": binding.declaration.id,
-                    "declaration_sha256": digest,
-                    "dimensions": {
-                        "retained_rows": retained,
-                        "step_budget": budget,
-                        "byte_budget": byte_budget,
-                        "metadata_row_octets": envelope,
-                    },
-                    "metrics": dict(metrics),
-                    "delegates": {},
-                }
+                sample = measure_semantic_operation(
+                    current,
+                    measured_operation=measured_operation,
+                    step_budget=budget,
+                    byte_budget=byte_budget,
+                    retained_rows=retained,
+                    metadata_row_octets=envelope,
+                )
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
                 assert db.execute("SELECT * FROM journal_prefix").fetchone() == prefix

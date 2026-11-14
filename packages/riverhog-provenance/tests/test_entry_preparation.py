@@ -6,6 +6,7 @@ import sqlite3
 import subprocess
 import sys
 from contextlib import closing, contextmanager
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -27,6 +28,8 @@ def owner(db):
     store = object.__new__(JournalStore)
     store._storage = SimpleNamespace(connection=db)
     store._cleanup = SimpleNamespace(alive=True)
+    store._closing = False
+    store._lease = SimpleNamespace(closed=False)
     return store
 
 
@@ -131,7 +134,9 @@ def test_reopen_each_unit_reuses_identities_and_retired_queue(tmp_path, count, b
 
 
 @pytest.mark.parametrize(
-    "domain,value", [("referent", b"large" * 65536), ("journal", ""), ("journal", b"nonempty")]
+    "domain,value",
+    [("referent", b"large" * 65536), ("journal", ""), ("journal", b"nonempty")],
+    ids=("referent-oversized", "journal-text", "journal-nonempty"),
 )
 def test_journal_identity_error_precedes_duplicate_entry(tmp_path, domain, value):
     path, source = tmp_path / "entry.sqlite3", frame()
@@ -411,6 +416,7 @@ class WorkConnection(sqlite3.Connection):
 
     @contextmanager
     def observe(self):
+        was_in_transaction = self.in_transaction
         self.metrics = {
             key: 0
             for key in (
@@ -454,7 +460,7 @@ class WorkConnection(sqlite3.Connection):
             self.set_progress_handler(None, 0)
             self.set_authorizer(None)
             self.metrics["changed_rows"] = self.total_changes - before
-        assert not self.in_transaction
+        assert self.in_transaction == was_in_transaction
         assert all(cursor.closed for _sql, _args, cursor in self.statements)
         for sql, args, _ in self.statements:
             if not sql.startswith(("SELECT", "UPDATE", "DELETE")):
@@ -563,3 +569,199 @@ def test_actual_cold_entry_preparation_units(tmp_path, record_property):
                     assert finish(work(suffix_db, source)).retired == count
     assert len(samples) == 40
     record_property("growth_samples", samples)
+
+
+def preparation_phase_samples(tmp_path, operation):
+    selected = getattr(EntryPreparation, operation)
+    binding = growth_binding(selected)
+    projection = project_bindings((binding,))
+    digest = hashlib.sha256(
+        canonical_json_bytes(projection["declarations"][binding.declaration.id])
+    ).hexdigest()
+    cases = [
+        (phase, count, budget, 0)
+        for phase in ("journal", "entry", "changes", "done")
+        for count, budget in ((1, 1), (15, 16), (16, 16), (17, 16), (129, 16), (1025, 64))
+    ]
+    cases += [(phase, 0, 16, 0) for phase in ("changes", "done")]
+    cases += [("entry", 17, 16, size) for size in (1024 * 1024, 7 * 1024 * 1024)]
+    for ordinal, (phase, count, budget, payload) in enumerate(cases):
+        path, source = tmp_path / f"phase-{ordinal}.sqlite3", frame(payload)
+        create(path)
+        with closing(connect(path)) as db:
+            queued(db, count)
+            history = 4097 if count in (17, 1025) else count
+            db.executemany(
+                "INSERT INTO identities VALUES (?,?,?)",
+                (
+                    (identity(100000 + n), "entry", b"unread" * (65536 if n == 0 else 1))
+                    for n in range(history)
+                ),
+            ).close()
+            db.commit()
+            current = work(db, source)
+            current.initialize()
+            position(current, phase)
+        with closing(connect(path, factory=WorkConnection)) as db:
+            current = work(db, source)
+            before, prefix = snapshot(db), current._prefix()
+            state = current.load()
+            control = (
+                8192
+                + len(current.binding)
+                + len(current.attempt_id.encode())
+                + len(state.to_json().encode())
+                + logical_octets(prefix)
+            )
+            retained = sum(
+                db.execute("SELECT count(*) FROM " + name).fetchone()[0]
+                for name in (
+                    "identities",
+                    "changes",
+                    "journal_prefix",
+                    "journal_entry_preparation",
+                )
+            )
+            byte_budget = 16 * 1024 * 1024
+            if operation == "prepare":
+                with db.observe() as metrics:
+                    batch = current.prepare(row_budget=budget, byte_budget=byte_budget)
+                assert not db.in_transaction and snapshot(db) == before
+                assert batch.before_json == state.to_json() and batch.prefix == prefix
+            else:
+                batch = current.prepare(row_budget=budget, byte_budget=byte_budget)
+                db.execute("BEGIN IMMEDIATE").close()
+                with db.observe() as metrics:
+                    after = current._apply(batch)
+                assert db.in_transaction
+                assert after.version == state.version + int(not state.done)
+                db.rollback()
+                assert snapshot(db) == before
+            measured = {
+                "declaration": binding.declaration.id,
+                "declaration_sha256": digest,
+                "dimensions": {
+                    "retained_rows": retained,
+                    "row_budget": budget,
+                    "byte_budget": byte_budget,
+                    "control_octets": control,
+                },
+                "metrics": dict(metrics),
+                "delegates": {},
+            }
+            validate_execution_samples(projection, binding.declaration.id, [measured])
+            yield measured
+
+
+@pytest.mark.growth_witness(
+    "riverhog-detached-entry-preparation-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._entry_preparation.EntryPreparation.prepare",
+)
+def test_actual_detached_entry_preparation_plans(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    samples.extend(preparation_phase_samples(tmp_path, "prepare"))
+    assert len(samples) == 28
+
+
+@pytest.mark.growth_witness(
+    "riverhog-owner-transaction-entry-preparation-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._entry_preparation.EntryPreparation._apply",
+)
+def test_actual_owner_transaction_entry_preparation_applications(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    samples.extend(preparation_phase_samples(tmp_path, "_apply"))
+    assert len(samples) == 28
+
+
+@pytest.mark.growth_witness(
+    "riverhog-entry-preparation-terminal-result-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._entry_preparation.EntryPreparation.result",
+)
+def test_actual_cold_entry_preparation_terminal_result(tmp_path, record_property):
+    binding = growth_binding(EntryPreparation.result)
+    projection = project_bindings((binding,))
+    digest = hashlib.sha256(
+        canonical_json_bytes(projection["declarations"][binding.declaration.id])
+    ).hexdigest()
+    samples = []
+    record_property("growth_samples", samples)
+    cases = [(count, 0, False) for count in (0, 1, 17, 129, 1025, 4097)]
+    cases.extend(((17, 65537, False), (1025, 7 * 1024 * 1024, False), (17, 0, True)))
+    for index, (count, payload, wide) in enumerate(cases):
+        path = tmp_path / f"entry-result-{index}.sqlite3"
+        source = frame(payload)
+        create(path)
+        with closing(sqlite3.connect(":memory:")) as setup:
+            with closing(connect(path)) as original:
+                original.backup(setup)
+            queued(setup, count)
+            setup.executemany(
+                "INSERT INTO identities VALUES (?,?,?)",
+                (
+                    (identity(100000 + n), "entry", b"unread-history" if n else b"unread" * 65536)
+                    for n in range(count)
+                ),
+            ).close()
+            setup.commit()
+            current = work(setup, source)
+            current.initialize()
+            state = finish(current, budget=64)
+            if wide:
+                state = replace(state, version=2**200)
+                setup.execute(
+                    "UPDATE journal_entry_preparation SET checkpoint=?", (state.to_json(),)
+                ).close()
+                setup.commit()
+            before = snapshot(setup)
+            prefix_values = setup.execute("SELECT * FROM journal_prefix").fetchone()
+            dimensions = {
+                "retained_rows": sum(len(rows) for rows in before.values()),
+                "control_octets": 8192
+                + len(current.binding)
+                + len(current.attempt_id.encode())
+                + len(state.to_json().encode())
+                + logical_octets(prefix_values),
+            }
+            with closing(connect(path)) as stored:
+                setup.backup(stored)
+        with closing(connect(path, factory=WorkConnection)) as db:
+            current = work(db, source)
+            with db.observe() as metrics:
+                assert current.result() is None
+            samples.append(
+                {
+                    "declaration": binding.declaration.id,
+                    "declaration_sha256": digest,
+                    "dimensions": dimensions,
+                    "metrics": dict(metrics),
+                    "delegates": {},
+                }
+            )
+            validate_execution_samples(projection, binding.declaration.id, [samples[-1]])
+            assert not db.in_transaction and snapshot(db) == before
+            assert current.load() == state
+    assert len(samples) == 9
+
+
+@pytest.mark.parametrize("damage", ["unfinished", "replaced"])
+def test_preparation_terminal_result_preserves_quarantine(tmp_path, damage):
+    path = tmp_path / "entry-result-refusal.sqlite3"
+    create(path)
+    with closing(connect(path)) as db:
+        current = work(db, frame())
+        current.initialize()
+        if damage == "replaced":
+            finish(current)
+            db.execute("UPDATE journal_entry_preparation SET attempt_id='another'").close()
+            db.commit()
+        before = snapshot(db)
+        with pytest.raises(
+            RuntimeError, match="superseded" if damage == "replaced" else "quarantined"
+        ):
+            current.result()
+        assert snapshot(db) == before and not db.in_transaction

@@ -10,6 +10,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, JsonValue
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_client import PrimaryStatePolicy, PrimaryStore
 from riverhog_client.canonical_completion import CompletionRecord
 from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 from stove0_target_client import TargetCallbackClient
@@ -50,21 +51,45 @@ class TargetExecutionSession:
         runtime_registry: ClaimedCollectionRuntimeRegistry,
         *,
         state_root: Path | None = None,
+        primary_state: PrimaryStatePolicy | None = None,
+        initialize_primary: bool = False,
         progress_callback: Callable[[TargetProgress], None] | None = None,
         completion_callback: Callable[[TargetJobStatus], object] | None = None,
     ) -> None:
+        if type(initialize_primary) is not bool or (initialize_primary and attempt != 1):
+            raise ValueError("only the first admitted attempt can initialize publication state")
         self.job_id = request.declaration.job_id
         self.request_sha256 = request.request_sha256
         self.plan_sha256 = request.declaration.plan.plan_sha256
         self.attempt = attempt
         self.runtime_registry = runtime_registry
         self.state_root = state_root
+        self.primary_state = primary_state
+        self._initialize_primary = initialize_primary
         self._lock = threading.RLock()
         self._completed_status: TargetJobStatus | None = None
         self._progress_callback = progress_callback
         self._completion_callback = completion_callback
         self._callback_access = request.callback_access
         self._callback_client: TargetCallbackClient | None = None
+
+    def open_primary_store(self) -> PrimaryStore:
+        """Initialize only an explicitly fresh admitted attempt; later opens resume."""
+        with self._lock:
+            if self.state_root is None or self.primary_state is None:
+                raise ValueError(
+                    "transform publication requires target-owned durable primary state"
+                )
+            fresh = self._initialize_primary
+            self._initialize_primary = False
+            root = self.state_root / f"{self.job_id}.primary"
+            return PrimaryStore(
+                root,
+                allocation_id=self.job_id,
+                scope=self.primary_state.scope,
+                limits=self.primary_state.limits(),
+                initialize=fresh and not root.exists(),
+            )
 
     def callback_client(self) -> TargetCallbackClient:
         """Bind queued and running callback reads to the latest transient access."""

@@ -2,6 +2,8 @@
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_compose_env.sh"
+export RIVERHOG_CI_LANE="${RIVERHOG_CI_LANE:-filesystem-recovery-qualification}"
+source "${ROOT_DIR}/scripts/_ci_timing.sh"
 
 setup_test_compose_project
 configure_compose_tty
@@ -47,6 +49,7 @@ receipt=""
 
 cleanup() {
   local status=$?
+  ci_phase teardown "${status}" || true
   if [[ "${status}" -ne 0 ]]; then
     if [[ -n "${receipt}" ]]; then
       printf '\nclient stdout:\n%s\n' "${receipt}" >&2
@@ -67,19 +70,25 @@ cleanup() {
     alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce \
     chown -R "$(id -u):$(id -g)" /cleanup >/dev/null 2>&1 || true
   rm -rf -- "${proof_root}"
+  ci_phase_finish "${status}" || true
   return "${status}"
 }
 trap cleanup EXIT
 
+ci_phase images-test
 ensure_compose_image test
+ci_phase images-filesystem
 ensure_compose_image filesystem-cache-adapter
+ci_phase images-app
 ensure_compose_image app
+ci_phase image-client
 docker build \
   --file "${ROOT_DIR}/tests/harness/filesystem_recovery.Dockerfile" \
   --target client \
   --build-arg "SOURCE_REVISION=${SOURCE_REVISION}" \
   --tag "${client_image}" \
   "${ROOT_DIR}"
+ci_phase image-recovery
 docker build \
   --file "${ROOT_DIR}/tests/harness/filesystem_recovery.Dockerfile" \
   --target recovery \
@@ -87,6 +96,7 @@ docker build \
   --tag "${recovery_image}" \
   "${ROOT_DIR}"
 
+ci_phase input-preparation
 install -d -m 0755 "${proof_root}/oracle"
 printf '%s\n' 'small packed member alpha' >"${proof_root}/oracle/alpha.txt"
 printf '%s\n' 'small packed member beta' >"${proof_root}/oracle/beta.txt"
@@ -97,7 +107,9 @@ printf '%s' '{"filesystem-proof":"filesystem-recovery-qualification-passphrase"}
   >"${proof_root}/passphrases.json"
 chmod 0600 "${proof_root}/passphrases.json"
 
+ci_phase service-start
 compose up --detach --wait filesystem-cache-adapter postgres app
+ci_phase bootstrap-key
 bootstrap_token="$(cat "${RIVERHOG_BOOTSTRAP_TOKEN_HOST_PATH}")"
 qualification_key_code="import json, os, urllib.request
 request = urllib.request.Request(
@@ -118,12 +130,14 @@ tags=()
 for number in $(seq 1 300); do
   tags+=(--tag "qualification/recovery/tag-${number}")
 done
+ci_phase collection-upload
 receipt="$({
   docker run --rm \
     --network "${network_name}" \
     --env RIVERHOG_BASE_URL=http://app:8000 \
     --env "RIVERHOG_TOKEN=${qualification_token}" \
     --env RIVERHOG_ALLOW_INSECURE_HTTP=true \
+    --env 'A_RIVERHOG_CLI_PRIMARY_STATE={"scope":{"service":"qualification-service","account":"qualification-account"}}' \
     --env XDG_STATE_HOME=/state \
     --tmpfs /state:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532 \
     --volume "${proof_root}/oracle:/input:ro" \
@@ -137,10 +151,13 @@ receipt="$({
 printf '%s\n' "${receipt}" >"${proof_root}/receipt.json"
 python3 -c 'import json,sys; value=json.load(open(sys.argv[1])); collection_id=value["collection_id"]; assert isinstance(collection_id,str) and collection_id == str(int(collection_id)) and int(collection_id) > 0; assert len(value["archive_root_sha256"]) == 64' "${proof_root}/receipt.json"
 collection_id="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["collection_id"])' "${proof_root}/receipt.json")"
+ci_phase index-rebuild
 compose exec -T app riverhog-api index rebuild --collection "${collection_id}" --json \
   >"${proof_root}/index-rebuild.json"
 
+ci_phase service-stop
 compose stop app postgres filesystem-cache-adapter
+ci_phase interrupted-write
 docker run --rm \
   --user 65532:65532 \
   --volume "${volume_name}:/var/lib/riverhog-filesystem" \
@@ -152,6 +169,7 @@ from riverhog_storage_adapter_protocol import WriteStartRequest
 with FilesystemStorageAdapter(FilesystemStorageAdapterConfig(root=Path("/var/lib/riverhog-filesystem"), minimum_free_bytes=0)) as adapter:
     adapter.begin_write(WriteStartRequest(object_path="archives/incomplete/payload.age", expected_bytes=65536, content_type="application/octet-stream", required_identity_assertions={"qualification":"incomplete"}, placement_policy="archive_default"))'
 
+ci_phase materialize-full
 chmod 0777 "${proof_root}"
 install -d -m 0777 \
   "${proof_root}/recovery-output" \
@@ -185,6 +203,7 @@ print(items[0].parent.relative_to("/materialized").as_posix())')"
 test -n "${archive_relative}"
 test ! -e "${proof_root}/materializer-full/tree/archives/incomplete"
 
+ci_phase recover-full
 docker run --rm \
   --network none \
   --read-only \
@@ -194,6 +213,7 @@ docker run --rm \
   --volume "${proof_root}/passphrases.json:/passphrases.json:ro" \
   "${recovery_image}" "/materialized/${archive_relative}" /output-parent/recovered \
   --passphrases-file /passphrases.json
+ci_phase verify-recovered-bytes
 docker run --rm \
   --network none \
   --volume "${proof_root}/oracle:/oracle:ro" \
@@ -212,6 +232,7 @@ description_paths=(
   "${archive_relative}/manifest.json.age"
   "${archive_relative}/description.json.age"
 )
+ci_phase materialize-description
 "${instrument[@]}" "${description_paths[@]}"
 description_args=()
 for path in "${description_paths[@]}"; do
@@ -223,6 +244,7 @@ docker run --rm --network none --user 65532:65532 \
   --entrypoint /bin/sh "${filesystem_image}" -ceu \
   'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec a-riverhog-filesystem-store-materialize "$@"' \
   sh /source /work/tree "${description_args[@]}"
+ci_phase recover-description
 description="$({
   docker run --rm --network none --read-only \
     --tmpfs /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532 \
@@ -233,6 +255,7 @@ description="$({
 } 2>"${proof_root}/description.stderr")"
 python3 -c 'import json,sys; assert json.loads(sys.argv[1])["description"] == "Built-service filesystem recovery qualification"' "${description}"
 
+ci_phase materialize-tags
 tag_paths=("${archive_relative}/recovery.json" "${archive_relative}/manifest.json.age" "${archive_relative}/tags/head.json.age")
 tag_prefix="${archive_relative}/tags/nodes/"
 "${instrument[@]}" "${tag_paths[@]}" --prefix "${tag_prefix}"
@@ -244,6 +267,7 @@ docker run --rm --network none --user 65532:65532 \
   sh /source /work/tree \
   --path "${tag_paths[0]}" --path "${tag_paths[1]}" --path "${tag_paths[2]}" \
   --prefix "${tag_prefix}"
+ci_phase recover-tags
 docker run --rm --network none --read-only \
   --tmpfs /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532 \
   --volume "${proof_root}/materializer-tags/tree:/materialized:ro" \
@@ -253,6 +277,7 @@ docker run --rm --network none --read-only \
 python3 -c 'import json,sys; rows=[json.loads(line) for line in open(sys.argv[1])]; assert sum(row.get("record")=="tag" for row in rows)==300; assert rows[-1]=={"record":"complete","tag_count":300}' "${proof_root}/tags.json-seq"
 "${instrument[@]}" --restore
 
+ci_phase reject-invalid-archives
 for directory in invalid-corrupt invalid-missing invalid-authority invalid-output; do
   install -d -m 0777 "${proof_root}/${directory}"
 done
@@ -288,6 +313,7 @@ for invalid in invalid-corrupt invalid-missing invalid-authority; do
   test ! -e "${proof_root}/invalid-output/${invalid}"
 done
 
+ci_phase qualified
 printf 'Qualified built filesystem recovery at %s; client=%s recovery=%s filesystem=%s\n' \
   "${SOURCE_REVISION}" \
   "$(docker image inspect --format '{{.Id}}' "${client_image}")" \

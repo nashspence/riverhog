@@ -7,27 +7,21 @@ import re
 import secrets
 import uuid
 from collections import OrderedDict
-from collections.abc import Generator, Iterator, Mapping, Sequence
-from contextlib import closing
+from collections.abc import Callable, Generator, Iterator, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import timedelta
+from functools import partial
 from itertools import islice
-from typing import Any, Literal, TypedDict, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 
 from http_api_contracts import BrowseScalar, closed_literal_values
+from riverhog_age import UploadState
 from riverhog_archive_contracts import (
     BOUND_HISTORY_EXTENT,
     MEMBER_HISTORY_IMPORTS_SCHEMA,
     MEMBER_HISTORY_ROOTS_SCHEMA,
-    PROVENANCE_BINDING_PAGE_BYTES_MAX,
-    PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
-    PROVENANCE_BINDINGS_FORMAT,
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
-    PROVENANCE_SEQUENCE_DOMAIN,
     RETAINED_HISTORY_EXTENT,
-    CollectionArchiveTerminalDocument,
-    CollectionArchiveVolumeDocument,
-    CollectionEncryptionBinding,
     HistoryJournalAnchor,
     MemberHistoryBinding,
     MemberHistoryDocument,
@@ -35,23 +29,16 @@ from riverhog_archive_contracts import (
     MemberHistoryPrimary,
     MemberHistoryRoot,
     MemberHistoryStore,
-    ProvenancePayload,
-    ProvenanceRootDocument,
-    ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
     RecordPage,
     RecordSetCommitment,
     RecordSetRef,
     SourceMemberHistoryBindingProof,
-    binding_tree_commitment,
     format_archive_sequence,
     history_record_page_object_path,
     member_history_object_path,
     provenance_structure_identity,
     provenance_structure_object_id,
-    update_archive_sequence_commitment,
-    update_provenance_commitment,
-    validate_member_history_binding_page,
     verify_member_history_sets,
     verify_record_pages,
 )
@@ -65,6 +52,7 @@ from riverhog_growth_contracts import (
     Dimension,
     Expression,
     declare_growth,
+    growth_binding,
 )
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
@@ -74,11 +62,8 @@ from riverhog_protocol import (
     CollectionArtifactProvenanceBindingBatchDocument,
     CollectionArtifactProvenanceBindingDocument,
     CollectionDescription,
-    CollectionDescriptionDocument,
     CollectionTag,
-    CollectionTagHeadDocument,
     CollectionTagSet,
-    CollectionTagSetRoot,
     CollectionUploadArtifactBatchDocument,
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadArtifactIn,
@@ -96,10 +81,9 @@ from riverhog_protocol import (
     PortableCollectionArtifact,
     PortableCollectionHeader,
     SortOrder,
-    collection_description_identity,
     collection_upload_raw_digest_summary,
-    decode_collection_tag_node,
     validate_collection_tag,
+    validate_collection_upload_artifact_custody_receipt,
     validate_collection_upload_batch_against_registration_constraints,
 )
 from riverhog_protocol.collection_completion import (
@@ -148,12 +132,27 @@ from riverhog_provenance import (
     MemberHistoryClosure,
     ProvenanceValidationError,
     advance_journal_framing,
-    external_reference,
     validate_journal_chunks,
 )
-from sqlalchemy import asc, case, desc, exists, func, insert, or_, select, true, update
+from riverhog_provenance_contracts import ContractCatalog
+from sqlalchemy import (
+    Select,
+    asc,
+    case,
+    desc,
+    exists,
+    func,
+    insert,
+    literal_column,
+    or_,
+    select,
+    true,
+    tuple_,
+    update,
+)
 from sqlalchemy.engine import CursorResult
-from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.exc import OperationalError
+from sqlalchemy.orm import Session, load_only, selectinload
 from state_schema import read_snapshot
 from time_formats import (
     add_utc_timestamp,
@@ -164,6 +163,8 @@ from time_formats import (
     utc_timestamp_now,
 )
 
+from riverhog_core import provenance_volume_source
+from riverhog_core import upload_journal_ranges as journal_ranges
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     ARCHIVES_MANAGE,
@@ -174,23 +175,19 @@ from riverhog_core.app_permissions import (
     normalize_access,
     tag_resource,
 )
-from riverhog_core.archive_manifest import (
-    build_collection_archive_root_manifest,
-    build_collection_archive_terminal_document,
-    build_collection_archive_volume_document,
-)
 from riverhog_core.archive_provenance import (
     ArchiveProvenancePublisher,
     SealedArchiveProvenance,
 )
-from riverhog_core.archive_recovery_descriptor import (
-    ArchiveRecoveryDescriptorPublisher,
-)
 from riverhog_core.archive_root import (
-    ArchiveRootPublisher,
     SealedArchiveVolumeMetadata,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
+from riverhog_core.archive_volume_receipts import (
+    parse_sealed_pack,
+    parse_sealed_raw,
+    stored_nonnegative_int,
+)
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
 from riverhog_core.canonical_discovery_build import stage_relevant_member
 from riverhog_core.canonical_discovery_index import (
@@ -201,7 +198,13 @@ from riverhog_core.canonical_discovery_index import (
 from riverhog_core.canonical_discovery_relevance import (
     member_relevance,
 )
-from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
+from riverhog_core.catalog_db import (
+    SessionFactory,
+    catalog_write_contention,
+    make_session_factory,
+    session_scope,
+)
 from riverhog_core.catalog_events import (
     begin_catalog_event,
     open_catalog_tag_visibility,
@@ -215,6 +218,7 @@ from riverhog_core.catalog_models import (
     CollectionArchiveCopyRecord,
     CollectionArchiveObjectRecord,
     CollectionArchiveObjectUploadRecord,
+    CollectionArchiveObjectUploadUnitRecord,
     CollectionArtifactProvenanceRecord,
     CollectionArtifactRecord,
     CollectionDescriptionPublicationRecord,
@@ -222,7 +226,6 @@ from riverhog_core.catalog_models import (
     CollectionProvenanceJournalSegmentRecord,
     CollectionRecord,
     CollectionTagMembershipRecord,
-    CollectionTagNodeRecord,
     CollectionTagPublicationFrontierRecord,
     CollectionTagPublicationRecord,
     CollectionTagPublishedNodeRecord,
@@ -297,6 +300,10 @@ from riverhog_core.pack_volume import (
 )
 from riverhog_core.placement_choices import resolve_use_cache
 from riverhog_core.ports.archive_objects import ArchiveResumableObjectStore
+from riverhog_core.ports.archive_upload_checkpoints import (
+    PackUploadCheckpointStore,
+    RawUploadCheckpointStore,
+)
 from riverhog_core.ports.retrieval_cache import RetrievalCache
 from riverhog_core.provenance_binding import verify_member_binding
 from riverhog_core.provenance_catalog import admission_provenance_catalog
@@ -304,14 +311,47 @@ from riverhog_core.provenance_custody_set import ProvenanceCustodySet
 from riverhog_core.raw_upload import RawUploadCheckpoint, RawVolumeUploader
 from riverhog_core.raw_volume import parse_raw_volume_plan, raw_volume_plan_bytes
 from riverhog_core.retrieval_cache_receipts import (
-    parse_retrieval_cache_receipt,
     retrieval_cache_receipt_payload,
 )
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.app_keys import KeyAuthorizationFence, require_key_authorization
+from riverhog_core.services.archive_artifact_custody import (
+    ArchiveArtifactCustodyFinalizer,
+    ArtifactCustodySelection,
+)
+from riverhog_core.services.archive_artifact_custody_receipt import (
+    ArchiveArtifactCustodyReceiptSource,
+)
+from riverhog_core.services.archive_custody_due import (
+    ArchiveCustodyDue,
+    refresh_custody_member,
+    refresh_custody_parent,
+    rotate_custody_member,
+)
+from riverhog_core.services.archive_native_seal_receiving import (
+    NativeArchiveSealSource,
+    OriginalNativeArchiveSeal,
+)
+from riverhog_core.services.archive_provenance_journal_checkpoint import ProvenanceJournalRange
+from riverhog_core.services.archive_upload_drain import read_terminal_selection
+from riverhog_core.services.archive_upload_terminal_access import (
+    require_terminal_creator_scope,
+    require_terminal_read_access,
+)
+from riverhog_core.services.archive_upload_terminal_tags import upload_terminal_tag_selector
+from riverhog_core.services.archive_write_admission import ArchiveWriteAdmission, Guard, _writer
 from riverhog_core.services.collection_tags import (
     advance_collection_tag_set,
     collection_tag_sha256,
 )
+from riverhog_core.services.collection_upload_authority import (
+    require_archive_write_control,
+    require_open_upload_writes,
+    retain_inactive_upload_claim,
+    retain_upload_claim,
+    retain_upload_key,
+)
+from riverhog_core.services.immutable_archive_receiving import drain_original_immutable_report
 from riverhog_core.services.lifecycle_events import (
     SqlAlchemyLifecycleEventService,
     event_context_json,
@@ -323,6 +363,13 @@ from riverhog_core.services.operation_plans import (
     plan_challenge,
 )
 from riverhog_core.services.retrieval_cache import register_cache_ready
+from riverhog_core.services.upload_custody_growth import custody_readback_declaration
+from riverhog_core.services.upload_custody_projection import upload_custody_payload
+from riverhog_core.services.upload_journal_result_receiving import (
+    UploadJournalResultOpening,
+    UploadJournalResultResources,
+)
+from riverhog_core.services.upload_session_projection import upload_session_payload
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
@@ -374,6 +421,72 @@ class _InitialTagReceipt(TypedDict):
     stored_sha256: str
 
 
+class _FinalizationNotDue(Exception):
+    """The point-selected workflow no longer has a due fresh turn."""
+
+
+@dataclass(frozen=True)
+class _FinalizationClaim:
+    """An exact workflow turn; it grants no provider or terminal authority."""
+
+    collection_id: int
+    claim_id: str
+
+    def guard(self, session: Session) -> None:
+        current = session.execute(
+            select(
+                CollectionUploadRecord.state,
+                CollectionUploadRecord.archive_phase,
+                CollectionUploadRecord.archive_claim_id,
+            )
+            .where(CollectionUploadRecord.collection_id == self.collection_id)
+            .with_for_update(of=CollectionUploadRecord)
+        ).one_or_none()
+        if current != ("finalizing", "finalizing", self.claim_id):
+            raise Conflict("original finalization claim is unavailable")
+
+
+def _early_custody_guard(session: Session, *, collection_id: int) -> None:
+    """Retain current workflow state before the semantic child's admission locks."""
+    state = session.scalar(
+        select(CollectionUploadRecord.state)
+        .where(CollectionUploadRecord.collection_id == collection_id)
+        .with_for_update(nowait=True)
+    )
+    if state not in {"open", "closing", "uploading", "finalizing"}:
+        raise Conflict("early artifact custody construction is unavailable")
+
+
+if TYPE_CHECKING:
+    from riverhog_core.cache_write_grants import CacheWriteGrants
+    from riverhog_core.services.archive_cache_families import (
+        ArchiveCacheCreate,
+        ArchiveCacheValidate,
+        ArchivePayloadMirrorFactory,
+    )
+    from riverhog_core.services.archive_catalog_finalizer import (
+        ArchiveCatalogFinalizer,
+        CatalogFinalizationKind,
+    )
+    from riverhog_core.services.archive_finalization_admission import (
+        OriginalFinalizationAdmission,
+    )
+    from riverhog_core.services.archive_finalization_pipeline import (
+        ArchiveFinalizationPipeline,
+        ArchiveFinalizationStage,
+    )
+    from riverhog_core.services.archive_finalizer_registry import FinalizerSubmission
+    from riverhog_core.services.archive_payload_cache import CacheUploadCandidates
+    from riverhog_core.services.archive_payload_input import ArchivePayloadInput, InputRefusal
+    from riverhog_core.services.archive_payload_unit import (
+        ArchivePayloadUnit,
+    )
+    from riverhog_core.services.archive_upload_invocations import InvocationSubmission
+    from riverhog_core.services.archive_upload_terminal_turn import ArchiveUploadTerminalTurn
+    from riverhog_core.services.cache_population_cleanup_registry import CacheCleanupCreate
+    from riverhog_core.services.physical_execution import PhysicalExecutionKey
+
+
 class SqlAlchemyCollectionUploadService:
     """Own direct-to-final collection ingress and its final catalog transaction."""
 
@@ -383,6 +496,8 @@ class SqlAlchemyCollectionUploadService:
         archive_stores: ArchiveStoreRegistry,
         *,
         retrieval_cache: RetrievalCache | None = None,
+        cache_upload_candidates: CacheUploadCandidates | None = None,
+        cache_cleanup_create: CacheCleanupCreate | None = None,
         policy: CollectionVolumePolicy | None = None,
         session_factory: SessionFactory | None = None,
         throughput_tuning: ArchiveThroughputTuning | None = None,
@@ -391,8 +506,136 @@ class SqlAlchemyCollectionUploadService:
         self._config = config
         self._archive_stores = archive_stores
         self._retrieval_cache = retrieval_cache
+        self._cache_upload_candidates = cache_upload_candidates
         self._policy = policy or config.volume_policy
         self._session_factory = session_factory or make_session_factory(config.database_url)
+        from .journal_storage_resources import JournalStorageResources
+        from .upload_journal_validation_owner import UploadJournalValidationOwner
+
+        self._journal_storage = JournalStorageResources(config.journal_storage)
+        self._journal_validation_owner = UploadJournalValidationOwner(
+            self._session_factory,
+            config.journal_validation_workspace,
+            concurrency=config.journal_validation_concurrency,
+            construction_factory=self._journal_storage.journal,
+        )
+        from .upload_primary_facts import UploadPrimaryFactsOwner
+
+        self._primary_facts = UploadPrimaryFactsOwner(
+            storage=self._journal_storage,
+            root=self._journal_validation_owner.root,
+            max_owners=config.archive_execution.retained_constructions,
+        )
+        from .physical_execution import PhysicalExecutionOwner
+
+        self._archive_execution = PhysicalExecutionOwner(config.archive_execution)
+        from .archive_finalization_due import ArchiveFinalizationDue
+
+        self._finalization_due = ArchiveFinalizationDue(self._session_factory)
+        self._custody_due = ArchiveCustodyDue(self._session_factory)
+        from .archive_construction_retention import ArchiveConstructionRetention
+        from .archive_finalizer_registry import ArchiveFinalizerRegistry
+
+        self._archive_retention = ArchiveConstructionRetention(config.archive_execution)
+        self._archive_finalizers = ArchiveFinalizerRegistry(
+            self._session_factory, self._archive_execution, self._archive_retention
+        )
+        from .archive_cache_families import ArchiveCacheFamilies
+        from .archive_payload_input import ArchivePayloadInputs
+        from .archive_upload_invocations import ArchiveUploadInvocationRegistry
+
+        self._archive_inputs = ArchivePayloadInputs(config.archive_input)
+
+        self._archive_invocations = ArchiveUploadInvocationRegistry(
+            self._session_factory, self._archive_execution, self._archive_retention
+        )
+        from .cache_population_cleanup_registry import CachePopulationCleanupRegistry
+
+        self._archive_cache_families = ArchiveCacheFamilies(self._archive_invocations)
+        self._cache_cleanup = (
+            CachePopulationCleanupRegistry(
+                self._session_factory,
+                self._archive_execution,
+                self._archive_retention,
+                cache_cleanup_create,
+            )
+            if cache_cleanup_create is not None
+            else None
+        )
+        from .archive_finalizer_work import ArchiveFinalizerWork
+
+        self._archive_finalizer_work = ArchiveFinalizerWork(
+            self._session_factory,
+            self._archive_finalizers,
+            config=config,
+            archive_stores=archive_stores,
+        )
+        from .archive_upload_terminal_observation import ArchiveUploadTerminalObservation
+
+        self._archive_terminal_observation = ArchiveUploadTerminalObservation(
+            self._archive_finalizers,
+            self._archive_invocations,
+            self._archive_inputs,
+            self._archive_execution,
+        )
+        from .archive_upload_terminal_adjudication import ArchiveUploadTerminalAdjudication
+
+        self._archive_terminal_adjudication = ArchiveUploadTerminalAdjudication(
+            self._session_factory, self._archive_terminal_observation
+        )
+        from .archive_upload_terminal_retirement import ArchiveUploadTerminalRetirement
+
+        self._archive_terminal_retirement = ArchiveUploadTerminalRetirement(
+            self._session_factory,
+            self._archive_terminal_observation,
+            self._archive_finalizers,
+            self._archive_invocations,
+            retire_preparation=self._primary_facts.retire,
+        )
+        from .archive_upload_terminal_registry import ArchiveUploadTerminalRegistry
+
+        self._archive_terminals = ArchiveUploadTerminalRegistry(
+            self._archive_execution, self._archive_retention, self._terminal_turn
+        )
+        from .archive_upload_maintenance import ArchiveUploadMaintenance
+
+        self._archive_upload_maintenance = ArchiveUploadMaintenance(
+            self._session_factory,
+            self._archive_finalizers,
+            self._archive_invocations,
+            self._archive_cache_families,
+            retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
+            cache_cleanup=self._cache_cleanup,
+        )
+        self._journal_validation_after: tuple[int, str] | None = None
+        # Volatile seek hints retain no permission, work or completion authority.
+        self._registration_due_after: tuple[str, int, str] | None = None
+        self._registration_due_before: str | None = None
+        from .upload_journal_validation_retirement import UploadJournalValidationRetirement
+
+        self._journal_validation_retirement = UploadJournalValidationRetirement(
+            self._session_factory,
+            config.journal_validation_workspace,
+            execution=self._archive_execution,
+            retention=self._archive_retention,
+            metadata_budget=config.registration.metadata_bytes_per_step,
+            receive_limit=config.archive_execution.retained_constructions,
+            retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
+        )
+        from .upload_primary_facts_retirement import UploadPrimaryFactsRetirement
+
+        self._primary_facts_retirement = UploadPrimaryFactsRetirement(
+            self._session_factory,
+            config.journal_validation_workspace,
+            owner_id=self._primary_facts.owner_id,
+            execution=self._archive_execution,
+            retention=self._archive_retention,
+            metadata_budget=config.registration.metadata_bytes_per_step,
+            receive_limit=config.archive_execution.retained_constructions,
+            retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
+        )
+        self._primary_facts_cleanup_turn = False
+        self._journal_validation_cleanup_turn = False
         self._checkpoints = SqlAlchemyArchiveUploadCheckpointStore(
             config,
             session_factory=self._session_factory,
@@ -412,6 +655,22 @@ class SqlAlchemyCollectionUploadService:
             )
             for passphrase_id, passphrase in config.archive_passphrases.items()
         }
+
+    def close(self) -> None:
+        self._primary_facts_retirement.close()
+        self._journal_validation_retirement.close()
+        self._archive_terminals.close()
+        if self._cache_cleanup is not None:
+            self._cache_cleanup.close()
+        self._archive_invocations.close()
+        self._archive_finalizers.close()
+        self._primary_facts.close()
+        if not self._primary_facts_retirement.receive_stopped():
+            raise Conflict("original primary preparation retirement receiving remains unconfirmed")
+        if not self._journal_validation_retirement.receive_stopped():
+            raise Conflict("original Native retirement receiving remains unconfirmed")
+        self._journal_validation_owner.close()
+        self._journal_storage.close()
 
     def create_or_resume(
         self,
@@ -442,6 +701,8 @@ class SqlAlchemyCollectionUploadService:
         context_json = event_context_json(event_context)
         normalized_custody_mode = _normalize_custody_mode(custody_mode)
         with session_scope(self._session_factory) as session:
+            if session.get_bind().dialect.name == "sqlite":
+                session.connection(execution_options={"sqlite_immediate_writer": True})
             _require_transform_output_intent(
                 session,
                 initiator=initiator,
@@ -470,6 +731,9 @@ class SqlAlchemyCollectionUploadService:
                 )
                 .with_for_update()
             )
+            # The exact execution claim is already retained. Recheck clock expiry
+            # after a later upload lock wait without acquiring earlier locks again.
+            retain_upload_claim(session, initiator.id, initiator.key_id, for_update=False)
             persisted_store = (
                 collection.creation_archive_store
                 if collection is not None
@@ -552,9 +816,11 @@ class SqlAlchemyCollectionUploadService:
             if upload is not None:
                 if upload.creation_identity_sha256 != creation_identity.creation_identity_sha256:
                     raise Conflict("collection upload idempotency identity changed")
+                require_open_upload_writes(session, upload)
                 if upload.state == "orphaned":
                     checkpoint = _planner_checkpoint(upload)
                     upload.state = "closing" if checkpoint.closed else "open"
+                    refresh_custody_parent(session, upload)
                     upload.orphaned_at = None
                     resumed_at = utc_timestamp_now()
                     _touch_upload(upload, config=self._config, now=resumed_at)
@@ -648,6 +914,9 @@ class SqlAlchemyCollectionUploadService:
             )
             session.add(upload)
             session.flush()
+            from .archive_write_admission import initialize_archive_write_control
+
+            initialize_archive_write_control(session, upload)
             for destination in destinations:
                 session.add(
                     CollectionUploadCopyIntentRecord(
@@ -709,6 +978,7 @@ class SqlAlchemyCollectionUploadService:
         canonical = _canonical_tag_batch(tags, allow_empty=False)
         _require_tag_assignment_access(principal, canonical)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized)
@@ -716,6 +986,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or upload.initiated_by_principal_id != principal.id:
                 raise NotFound(f"collection upload not found: {normalized}")
+            require_open_upload_writes(session, upload)
             existing_tag_count = _require_upload_create_access(
                 session,
                 normalized,
@@ -765,9 +1036,16 @@ class SqlAlchemyCollectionUploadService:
         """Allow the owning producer or a collection-scoped deletion operator to inspect."""
 
         normalized = _collection_id(collection_id)
-        with session_scope(self._session_factory) as session:
+        with read_snapshot(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, normalized)
             if upload is not None:
+                control = session.get(ArchiveWriteControlRecord, normalized)
+                if control is not None and control.terminal_id is not None:
+                    require_archive_write_control(session, upload)
+                    require_terminal_read_access(
+                        session, normalized, control.terminal_id, principal
+                    )
+                    return
                 if upload.initiated_by_principal_id == principal.id:
                     _require_upload_create_access(session, normalized, principal)
                     return
@@ -787,6 +1065,14 @@ class SqlAlchemyCollectionUploadService:
                 normalized,
             )
 
+    def require_terminal_read_access(
+        self, collection_id: int, operation_id: str, principal: Principal
+    ) -> None:
+        """Authorize an exact retained outcome independently of upload-row lifetime."""
+        normalized = _collection_id(collection_id)
+        with read_snapshot(self._session_factory) as session:
+            require_terminal_read_access(session, normalized, operation_id, principal)
+
     def require_discard_access(
         self,
         collection_id: int,
@@ -799,6 +1085,178 @@ class SqlAlchemyCollectionUploadService:
             upload = session.get(CollectionUploadRecord, normalized)
             if upload is None or not _upload_visible_to_deleter(session, upload, principal):
                 raise NotFound(f"collection upload not found: {normalized}")
+
+    def _terminal_turn(self, collection_id: int, operation_id: str) -> ArchiveUploadTerminalTurn:
+        """Construct one original execution unit with its reusable current guard."""
+        from .archive_upload_terminal_turn import ArchiveUploadTerminalTurn
+
+        normalized = _collection_id(collection_id)
+        return ArchiveUploadTerminalTurn(
+            self._session_factory,
+            normalized,
+            operation_id,
+            guard=self._terminal_write_guard(normalized, operation_id),
+            adjudication=self._archive_terminal_adjudication,
+            retirement=self._archive_terminal_retirement,
+        )
+
+    def _terminal_write_guard(
+        self, collection_id: int, operation_id: str
+    ) -> Callable[[Session], None]:
+        """Reconstruct current scope for one exact terminal execution owner."""
+        from .archive_upload_terminal_authority import ArchiveUploadTerminalAuthority
+
+        normalized = _collection_id(collection_id)
+
+        def guard_factory(kind: str, principal: Principal) -> Callable[[Session], None]:
+            return (
+                self._cancel_write_guard(normalized, principal)
+                if kind == "cancel"
+                else self._discard_write_guard(normalized, principal)
+            )
+
+        return ArchiveUploadTerminalAuthority(
+            self._session_factory, normalized, operation_id, guard_factory
+        )
+
+    def _cancel_write_guard(
+        self, collection_id: int, principal: Principal
+    ) -> Callable[[Session], None]:
+        """Retain current creator rights over this original cancel selection.
+
+        The caller starts SQLite's early writer and owns this short transaction.
+        Key, claim and upload locks follow that order and defer on contention.
+        A permission proof is reusable only for the same immutable principal,
+        unchanged key generation and original selected tag set. Lease/state
+        eligibility, sealed custody, quiescence and disposal remain separate.
+        """
+        normalized_id = _collection_id(collection_id)
+        authorized = False
+        key: KeyAuthorizationFence | None = None
+        authorized_tags: str | None = None
+
+        def guard(session: Session) -> None:
+            nonlocal authorized, key, authorized_tags
+            if authorized and key is not None:
+                require_key_authorization(session, key, nowait=True)
+            else:
+                key = retain_upload_key(session, principal, nowait=True)
+            claim_id = retain_upload_claim(session, principal.id, principal.key_id, nowait=True)
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update(nowait=True)
+                .execution_options(populate_existing=True)
+            )
+            if upload is None or upload.initiated_by_principal_id != principal.id:
+                raise NotFound(f"collection upload not found: {normalized_id}")
+            control = require_archive_write_control(session, upload)
+            if control.terminal_id is None:
+                if control.gate != "open":
+                    raise Conflict("archive upload terminal selection is unavailable")
+                selector = upload_terminal_tag_selector(upload)
+            else:
+                if control.gate != "closed":
+                    raise Conflict("archive upload terminal selection is not current")
+                _, terminal, selector = read_terminal_selection(
+                    session, normalized_id, control.terminal_id
+                )
+                if (
+                    terminal.kind != "cancel"
+                    or terminal.principal_id != principal.id
+                    or terminal.key_id != principal.key_id
+                ):
+                    raise Conflict("a different archive upload terminal request was selected")
+            if not authorized or authorized_tags != selector.tag_set_identity:
+                require_terminal_creator_scope(session, selector, principal)
+            # Permission traversal can take time. Retained rows prevent mutation;
+            # expiry still advances and must be checked after that work.
+            if key is not None:
+                require_key_authorization(session, key, for_update=False)
+            if (
+                retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
+                != claim_id
+            ):
+                raise Conflict("collection upload execution authority changed")
+            authorized_tags = selector.tag_set_identity
+            authorized = True
+
+        return guard
+
+    def _discard_write_guard(
+        self, collection_id: int, principal: Principal
+    ) -> Callable[[Session], None]:
+        """Retain current deletion rights and the original output claim.
+
+        The caller starts the early SQLite writer and retains this short
+        transaction. Scope binds the collection identity, independently of tags.
+        Key, claim and parent locks follow that order; a nonlocking creator
+        lookup selects the bounded claim rows, then the locked parent and its
+        original construction must still agree. Inactivity is never cached.
+        This guard supplies neither orphan eligibility nor writer quiescence.
+        """
+        normalized_id = _collection_id(collection_id)
+        authorized = False
+        key: KeyAuthorizationFence | None = None
+
+        def guard(session: Session) -> None:
+            nonlocal authorized, key
+            if not principal.allows_collection(COLLECTIONS_DELETE, normalized_id):
+                raise NotFound(f"collection upload not found: {normalized_id}")
+            if authorized and key is not None:
+                require_key_authorization(session, key, nowait=True)
+            else:
+                key = retain_upload_key(session, principal, nowait=True)
+            creator = session.scalar(
+                select(CollectionUploadRecord.initiated_by_principal_id).where(
+                    CollectionUploadRecord.collection_id == normalized_id
+                )
+            )
+            if creator is None:
+                raise NotFound(f"collection upload not found: {normalized_id}")
+            executions = sorted(
+                {
+                    value.removeprefix("processing:")
+                    for value in (principal.id, creator)
+                    if value.startswith("processing:")
+                }
+            )
+            if executions:
+                # At most the caller and original output claims participate.
+                # Acquire their stable row order before checking either one.
+                session.execute(
+                    select(CollectionProcessingClaimRecord.id)
+                    .where(CollectionProcessingClaimRecord.execution_id.in_(executions))
+                    .order_by(CollectionProcessingClaimRecord.id)
+                    .with_for_update(nowait=True)
+                ).all()
+            claim_id = retain_upload_claim(
+                session, principal.id, principal.key_id, for_update=False
+            )
+            output_claim_id = retain_inactive_upload_claim(session, creator, for_update=False)
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update(nowait=True)
+                .execution_options(populate_existing=True)
+            )
+            if upload is None or upload.initiated_by_principal_id != creator:
+                raise Conflict("collection upload original creator changed")
+            require_archive_write_control(session, upload)
+            # Expiry can advance while a later lock is acquired. These rows
+            # are retained already; do not reacquire an earlier lock class.
+            if key is not None:
+                require_key_authorization(session, key, for_update=False)
+            if (
+                retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
+                != claim_id
+                or retain_inactive_upload_claim(session, creator, for_update=False)
+                != output_claim_id
+            ):
+                raise Conflict("collection upload original claim authority changed")
+            authorized = True
+
+        return guard
 
     def register_artifacts(
         self,
@@ -813,6 +1271,7 @@ class SqlAlchemyCollectionUploadService:
             )
 
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -820,8 +1279,11 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict(f"collection upload session is not open: {normalized_id}")
+            if upload.active_registration_id is not None:
+                raise Conflict("collection upload registration is pending")
             checkpoint = _planner_checkpoint(upload)
             try:
                 batch_document = CollectionUploadArtifactBatchDocument.model_validate(
@@ -897,12 +1359,21 @@ class SqlAlchemyCollectionUploadService:
             upload.artifact_count += len(new_artifacts)
             upload.artifact_bytes += sum(current["bytes"] for current in new_artifacts)
             batch = advance_incremental_volume_plan(checkpoint, ordered)
-            _persist_plan_batch(session, upload=upload, batch=batch)
             upload.planner_checkpoint_json = incremental_volume_planner_checkpoint_bytes(
                 batch.checkpoint
             ).decode("utf-8")
+            upload.planner_next_sequence = batch.checkpoint.next_sequence
+            _persist_plan_batch(session, upload=upload, batch=batch)
             _touch_upload(upload, config=self._config)
-            upload.archive_phase = "uploading" if upload.archive_objects else "planning"
+            has_archive_objects = (
+                session.scalar(
+                    select(CollectionArchiveObjectUploadRecord.object_id)
+                    .where(CollectionArchiveObjectUploadRecord.collection_id == normalized_id)
+                    .limit(1)
+                )
+                is not None
+            )
+            upload.archive_phase = "uploading" if has_archive_objects else "planning"
             upload.archive_phase_updated_at = upload.last_activity_at
             session.flush()
             records = [
@@ -929,6 +1400,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -936,6 +1408,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts raw source digests")
             artifact = session.scalar(
@@ -1000,6 +1473,17 @@ class SqlAlchemyCollectionUploadService:
                 and commitment != artifact.raw_part_ordered_sha256
             ):
                 raise BadRequest("raw source digest sequence differs from its registered authority")
+            session.execute(
+                update(CollectionArchiveObjectUploadRecord)
+                .where(
+                    CollectionArchiveObjectUploadRecord.collection_id == normalized_id,
+                    CollectionArchiveObjectUploadRecord.source_artifact_id == batch.artifact_id,
+                    CollectionArchiveObjectUploadRecord.source_last_part > accepted,
+                    CollectionArchiveObjectUploadRecord.source_last_part <= next_part,
+                )
+                .values(work_ready=True),
+                execution_options={"synchronize_session": False},
+            )
             _touch_upload(upload, config=self._config)
             session.flush()
             return _raw_digest_progress(artifact)
@@ -1014,6 +1498,7 @@ class SqlAlchemyCollectionUploadService:
         normalized_id = _collection_id(collection_id)
         encoded = canonical_json_bytes(requirement.model_dump(mode="json")).decode("utf-8")
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1021,6 +1506,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound("collection construction is unavailable")
+            require_open_upload_writes(session, upload)
             if upload.completion_requirement_json is not None:
                 if upload.completion_requirement_json != encoded:
                     raise Conflict("accepted completion requirement cannot be replaced")
@@ -1043,6 +1529,7 @@ class SqlAlchemyCollectionUploadService:
                 ):
                     raise Conflict("completion declaration differs from the accepted claim plan")
             upload.completion_requirement_json = encoded
+            refresh_custody_parent(session, upload)
             _touch_upload(upload, config=self._config)
         return requirement
 
@@ -1054,6 +1541,7 @@ class SqlAlchemyCollectionUploadService:
     ) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1061,6 +1549,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload does not accept provenance journals")
             if authority.selection_role == "completion":
@@ -1131,6 +1620,7 @@ class SqlAlchemyCollectionUploadService:
         after a crash without retaining or rereading disposable payload files.
         """
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == _collection_id(collection_id))
@@ -1138,6 +1628,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or upload.completion_requirement_json is None:
                 raise NotFound("execution construction has no accepted completion requirement")
+            require_open_upload_writes(session, upload)
             requirement = CollectionCompletionRequirementDocument.model_validate_json(
                 upload.completion_requirement_json
             )
@@ -1169,6 +1660,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1176,6 +1668,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts provenance bindings")
             for binding in batch.bindings:
@@ -1200,7 +1693,7 @@ class SqlAlchemyCollectionUploadService:
                 values = {
                     "journal_id": binding.journal.journal_id,
                     "through_entry_id": binding.journal.through.entry_id,
-                    "through_sequence": binding.journal.through.sequence,
+                    "through_sequence": int(binding.journal.through.sequence),
                     "through_json_sha256": binding.journal.through.json_sha256,
                     "prefix_sha256": binding.journal.prefix_sha256,
                     "prefix_bytes": binding.journal.prefix_bytes,
@@ -1220,6 +1713,7 @@ class SqlAlchemyCollectionUploadService:
                     )
                 elif any(getattr(existing, name) != value for name, value in values.items()):
                     raise Conflict("artifact provenance binding retry differs from accepted anchor")
+                refresh_custody_member(session, upload, artifact_id)
             _touch_upload(upload, config=self._config)
         return {
             "bindings": [binding.model_dump(mode="json") for binding in batch.bindings],
@@ -1249,6 +1743,7 @@ class SqlAlchemyCollectionUploadService:
         normalized_id = _collection_id(collection_id)
         encoded = canonical_json_bytes(authority.to_mapping()).decode("utf-8")
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1259,6 +1754,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or binding is None:
                 raise NotFound("input selection has no accepted member primary")
+            require_open_upload_writes(session, upload)
             if binding.history_imports_ref_json is not None:
                 if binding.history_imports_ref_json != encoded:
                     raise Conflict("accepted input-history extent cannot be replaced")
@@ -1324,6 +1820,7 @@ class SqlAlchemyCollectionUploadService:
                                     "input-history selection is outside the sealed claim"
                                 )
             binding.history_imports_ref_json = encoded
+            refresh_custody_member(session, upload, str(artifact_id))
             _touch_upload(upload, config=self._config)
         return authority
 
@@ -1348,6 +1845,7 @@ class SqlAlchemyCollectionUploadService:
         except ValueError as exc:
             raise BadRequest(str(exc)) from exc
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1355,6 +1853,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts history structure")
             _stage_provenance_structure(
@@ -1380,6 +1879,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1387,6 +1887,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts final history bindings")
             for value in batch.bindings:
@@ -1456,6 +1957,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1463,6 +1965,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict("collection upload no longer accepts materialization decisions")
             for decision in batch.decisions:
@@ -1516,6 +2019,7 @@ class SqlAlchemyCollectionUploadService:
         if offset < 0 or not chunk or len(chunk) > COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX:
             raise BadRequest("provenance append is outside its bounded transport contract")
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -1531,6 +2035,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or record is None:
                 raise NotFound(f"collection upload provenance journal not found: {journal_id}")
+            require_open_upload_writes(session, upload)
             if upload.state != "open":
                 raise Conflict(f"collection upload session is not open: {normalized_id}")
             if record.state != "accepting":
@@ -1585,6 +2090,15 @@ class SqlAlchemyCollectionUploadService:
     ) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update()
+            )
+            if upload is None:
+                raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             record = session.scalar(
                 select(CollectionUploadProvenanceJournalRecord)
                 .where(
@@ -1605,7 +2119,16 @@ class SqlAlchemyCollectionUploadService:
         self._advance_provenance_journal_validation(normalized_id, journal_id)
         return self.get_provenance_journal(normalized_id, journal_id)
 
-    def _advance_provenance_journal_validation(self, collection_id: int, journal_id: str) -> None:
+    def _advance_provenance_journal_validation(self, collection_id: int, journal_id: str) -> bool:
+        before = _upload_journal_validation_stamp(self._session_factory, collection_id, journal_id)
+        self._advance_provenance_journal_validation_unit(collection_id, journal_id)
+        return before != _upload_journal_validation_stamp(
+            self._session_factory, collection_id, journal_id
+        )
+
+    def _advance_provenance_journal_validation_unit(
+        self, collection_id: int, journal_id: str
+    ) -> None:
         work = _read_upload_journal_capture(self._session_factory, collection_id, journal_id)
         if work is not None:
             # Source and catalog readers have closed before this detached scan.
@@ -1647,11 +2170,11 @@ class SqlAlchemyCollectionUploadService:
             self._session_factory, validation, catalog=admission_provenance_catalog()
         ):
             return
-        try:
-            outcome = _compute_upload_journal_validation(self._session_factory, validation)
-        except _StaleUploadJournalValidation:
-            return
-        _commit_upload_journal_validation(self._session_factory, validation, outcome)
+        step = self._journal_validation_owner.advance(
+            validation, catalog=admission_provenance_catalog()
+        )
+        if step.outcome is not None:
+            _commit_upload_journal_validation(self._session_factory, validation, step.outcome)
 
     def get_provenance_journal(
         self,
@@ -1686,26 +2209,45 @@ class SqlAlchemyCollectionUploadService:
     def process_due_provenance_journal_validations(self, *, limit: int = 1) -> int:
         processed = 0
         for _ in range(max(0, limit)):
-            with session_scope(self._session_factory) as session:
-                selected = session.execute(
-                    select(
-                        CollectionUploadProvenanceJournalRecord.collection_id,
-                        CollectionUploadProvenanceJournalRecord.journal_id,
-                    )
-                    .where(CollectionUploadProvenanceJournalRecord.state == "validating")
-                    .order_by(
-                        CollectionUploadProvenanceJournalRecord.collection_id,
-                        CollectionUploadProvenanceJournalRecord.journal_id,
-                    )
-                    .with_for_update(skip_locked=True)
-                    .limit(1)
-                ).first()
-            if selected is None:
+            self._journal_validation_owner.release_stale()
+            cleanup_first = self._journal_validation_cleanup_turn
+            self._journal_validation_cleanup_turn = not cleanup_first
+            if cleanup_first and self._journal_validation_retirement.advance(limit=1):
+                processed += 1
+                continue
+            active = self._journal_validation_owner.active_keys()
+            after = self._journal_validation_after
+            warm = sorted(active)
+            if after is not None:
+                warm = [key for key in warm if key > after] + [key for key in warm if key <= after]
+            fresh: list[tuple[int, str]] = []
+            cursor = after
+            for _candidate in range(self._config.journal_validation_concurrency + 1):
+                key = _next_upload_journal_validation(
+                    self._session_factory, after=cursor, excluding=(*active, *fresh)
+                )
+                if key is None:
+                    break
+                fresh.append(key)
+                cursor = key
+            candidates = (
+                [*fresh, *warm]
+                if len(active) < self._config.journal_validation_concurrency
+                else [*warm, *fresh]
+            )
+            progressed = False
+            for collection_id, journal_id in candidates:
+                self._journal_validation_after = collection_id, journal_id
+                if self._advance_provenance_journal_validation(collection_id, journal_id):
+                    self._schedule_finalization_if_ready(collection_id)
+                    processed += 1
+                    progressed = True
+                    break
+            if not progressed:
+                if not cleanup_first and self._journal_validation_retirement.advance(limit=1):
+                    processed += 1
+                    continue
                 break
-            collection_id, journal_id = selected
-            self._advance_provenance_journal_validation(collection_id, journal_id)
-            self._schedule_finalization_if_ready(collection_id)
-            processed += 1
         return processed
 
     def complete(
@@ -1714,6 +2256,7 @@ class SqlAlchemyCollectionUploadService:
     ) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             collection = session.scalar(
                 select(CollectionRecord).where(
                     CollectionRecord.id == normalized_id,
@@ -1733,6 +2276,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.state not in {"open", "closing", "uploading", "finalizing"}:
                 raise Conflict(f"collection upload session is {upload.state}: {normalized_id}")
             checkpoint = _planner_checkpoint(upload)
@@ -1748,18 +2292,46 @@ class SqlAlchemyCollectionUploadService:
         self._schedule_finalization_if_ready(normalized_id)
         return self.get(normalized_id)
 
+    @declare_growth(custody_readback_declaration())
     def get_artifact(self, collection_id: int, artifact_id: ArtifactId) -> dict[str, object]:
         """Read one accepted member and its exact safe-release receipt by immutable ID."""
         normalized_id = _collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
-            if session.get(CollectionUploadRecord, normalized_id) is None:
-                raise NotFound(f"collection upload session not found: {normalized_id}")
-            member = session.get(CollectionUploadArtifactRecord, (normalized_id, str(artifact_id)))
-            if member is None:
-                raise NotFound(
-                    f"collection upload artifact not found: {normalized_id}/{artifact_id}"
+            upload_session_row_id = session.scalar(
+                select(CollectionUploadRecord.collection_id).where(
+                    CollectionUploadRecord.collection_id == normalized_id
                 )
-            return _artifact_payload(member)
+            )
+            if upload_session_row_id is not None:
+                member = session.get(
+                    CollectionUploadArtifactRecord, (normalized_id, str(artifact_id))
+                )
+                if member is not None:
+                    return _artifact_payload(member)
+            else:
+                is_published = session.scalar(
+                    select(CollectionRecord.is_published).where(
+                        CollectionRecord.id == normalized_id
+                    )
+                )
+                if is_published:
+                    published = session.get(
+                        CollectionArtifactRecord, (normalized_id, str(artifact_id))
+                    )
+                    if published is not None and published.custody_receipt_json is not None:
+                        receipt = _validate_member_custody_receipt(
+                            normalized_id, published, published.custody_receipt_json
+                        )
+                        return {
+                            "artifact_id": published.artifact_id,
+                            "bytes": format_scalar("nonnegative", published.bytes),
+                            "sha256": published.sha256,
+                            "payload_sealed": True,
+                            "custody_receipt": receipt,
+                        }
+            raise NotFound(
+                f"collection upload artifact custody unavailable: {normalized_id}/{artifact_id}"
+            )
 
     def list_artifacts(
         self,
@@ -1878,9 +2450,25 @@ class SqlAlchemyCollectionUploadService:
             volumes = list(
                 session.scalars(
                     select(CollectionArchiveObjectUploadRecord)
+                    .options(
+                        load_only(
+                            CollectionArchiveObjectUploadRecord.collection_id,
+                            CollectionArchiveObjectUploadRecord.object_id,
+                            CollectionArchiveObjectUploadRecord.sequence,
+                            CollectionArchiveObjectUploadRecord.kind,
+                            CollectionArchiveObjectUploadRecord.plan_json,
+                            CollectionArchiveObjectUploadRecord.plan_sha256,
+                            CollectionArchiveObjectUploadRecord.unit_plaintext_bytes,
+                            CollectionArchiveObjectUploadRecord.total_units,
+                            CollectionArchiveObjectUploadRecord.next_unit,
+                        )
+                    )
                     .where(
                         CollectionArchiveObjectUploadRecord.collection_id == normalized_id,
-                        CollectionArchiveObjectUploadRecord.state != "sealed",
+                        CollectionArchiveObjectUploadRecord.sequence < upload.planner_next_sequence,
+                        # Keep the partial-index predicate provable in generic prepared plans.
+                        CollectionArchiveObjectUploadRecord.state != literal_column("'sealed'"),
+                        CollectionArchiveObjectUploadRecord.work_ready.is_(true()),
                         or_(
                             CollectionArchiveObjectUploadRecord.kind == "pack",
                             exists(
@@ -1888,6 +2476,8 @@ class SqlAlchemyCollectionUploadService:
                                     CollectionUploadArtifactRecord.collection_id == normalized_id,
                                     CollectionUploadArtifactRecord.artifact_id
                                     == CollectionArchiveObjectUploadRecord.source_artifact_id,
+                                    CollectionUploadArtifactRecord.artifact_order
+                                    < upload.artifact_count,
                                     CollectionUploadArtifactRecord.raw_parts_accepted
                                     >= (
                                         CollectionArchiveObjectUploadRecord.source_first_part
@@ -1899,6 +2489,8 @@ class SqlAlchemyCollectionUploadService:
                     )
                     .order_by(CollectionArchiveObjectUploadRecord.sequence)
                     .limit(limit)
+                    # Both publication markers are pinned by this read snapshot.
+                    .execution_options(include_unpublished_registration=True)
                 )
             )
             work = [_unit_assignment_payload(row) for row in volumes]
@@ -1923,6 +2515,245 @@ class SqlAlchemyCollectionUploadService:
                 raise NotFound(f"collection upload volume not found: {volume_id}")
             return _volume_work_payload(record)
 
+    def _payload_write_guard(
+        self, collection_id: int, principal: Principal
+    ) -> Callable[[Session], None]:
+        """Retain current payload authority before admission's construction locks.
+
+        The caller starts the early SQLite writer. A verified permission proof is
+        reusable only for this immutable caller and the unchanged tag set; key and
+        claim validity, construction ownership, state and lease stay live checks.
+        """
+        normalized_id = _collection_id(collection_id)
+        authorized = False
+        key: KeyAuthorizationFence | None = None
+        authorized_tags: str | None = None
+
+        def guard(session: Session) -> None:
+            nonlocal authorized, key, authorized_tags
+            if authorized and key is not None:
+                require_key_authorization(session, key)
+            else:
+                key = retain_upload_key(session, principal)
+            claim_id = retain_upload_claim(session, principal.id, principal.key_id)
+            upload = session.execute(
+                select(
+                    CollectionUploadRecord.initiated_by_principal_id,
+                    CollectionUploadRecord.state,
+                    CollectionUploadRecord.custody_mode,
+                    CollectionUploadRecord.lease_expires_at,
+                    CollectionUploadRecord.tag_staging_set_identity,
+                )
+                .where(CollectionUploadRecord.collection_id == normalized_id)
+                .with_for_update()
+            ).one_or_none()
+            if upload is None or upload.initiated_by_principal_id != principal.id:
+                raise NotFound(f"collection upload not found: {normalized_id}")
+            if upload.state not in {"open", "closing", "uploading"}:
+                raise Conflict(f"collection upload session is {upload.state}: {normalized_id}")
+            if upload.custody_mode == "custody-transfer" and (
+                upload.lease_expires_at is None or upload.lease_expires_at <= utc_timestamp_now()
+            ):
+                raise Conflict("collection upload custody lease is not active")
+            # Expiry can advance while a later construction lock is awaited.
+            # These references are already retained; do not reacquire earlier locks.
+            if key is not None:
+                require_key_authorization(session, key, for_update=False)
+            if (
+                retain_upload_claim(session, principal.id, principal.key_id, for_update=False)
+                != claim_id
+            ):
+                raise Conflict("collection upload execution authority changed")
+            if not authorized or authorized_tags != upload.tag_staging_set_identity:
+                _require_upload_create_access(session, normalized_id, principal)
+                authorized_tags = upload.tag_staging_set_identity
+            authorized = True
+
+        return guard
+
+    def _payload_cache_family(
+        self,
+        payload: ArchivePayloadInput,
+        *,
+        create: ArchiveCacheCreate,
+        grants: CacheWriteGrants,
+        validate_population: ArchiveCacheValidate,
+    ) -> ArchivePayloadMirrorFactory:
+        payload.require_pool(self._archive_inputs)
+        return self._archive_cache_families.factory(
+            payload, create=create, grants=grants, validate_population=validate_population
+        )
+
+    def _configured_payload_cache_family(
+        self, payload: ArchivePayloadInput, *, source_store: str
+    ) -> ArchivePayloadMirrorFactory:
+        from .archive_cache_families import CacheFamilyNotAdmitted
+        from .archive_payload_cache import ArchivePayloadCache
+
+        if self._cache_upload_candidates is None:
+            raise CacheFamilyNotAdmitted("configured cache population binding is unavailable")
+        builder = ArchivePayloadCache(
+            payload.request,
+            source_store=source_store,
+            candidates=self._cache_upload_candidates,
+            grants=self._config.cache_write,
+            session_factory=self._session_factory,
+        )
+        return self._payload_cache_family(
+            payload,
+            create=builder.create,
+            grants=self._config.cache_write,
+            validate_population=builder.validate_population,
+        )
+
+    def _reserve_payload_input(
+        self,
+        collection_id: int,
+        volume_id: str,
+        unit: int,
+        *,
+        plan_sha256: str,
+        principal: Principal,
+    ) -> ArchivePayloadInput | InputRefusal:
+        """Select current upload authority and reserve before assembling a body."""
+        from .archive_payload_input import ArchivePayloadInput, ArchivePayloadRequest
+        from .physical_execution import PhysicalExecutionKey
+
+        normalized_id = _collection_id(collection_id)
+        guard = self._payload_write_guard(normalized_id, principal)
+        original: ArchivePayloadInput | InputRefusal | None = None
+        try:
+            with session_scope(self._session_factory) as session:
+                _writer(session)
+                guard(session)
+                upload = session.scalar(ArchiveWriteAdmission._upload_query(normalized_id))
+                if upload is None:
+                    raise NotFound("collection upload construction is unavailable")
+                control = require_open_upload_writes(session, upload)
+                volume = session.get(
+                    CollectionArchiveObjectUploadRecord, (normalized_id, volume_id)
+                )
+                if (
+                    volume is None
+                    or type(unit) is not int
+                    or unit < 0
+                    or unit >= volume.total_units
+                ):
+                    raise NotFound("collection upload unit not found")
+                if volume.plan_sha256 != plan_sha256:
+                    raise Conflict("archive upload unit plan identity changed")
+                work = _unit_work_payload(volume, unit, committed=False)
+                request = ArchivePayloadRequest(
+                    key=PhysicalExecutionKey(
+                        normalized_id,
+                        hashlib.sha256(control.construction_json.encode()).hexdigest(),
+                    ),
+                    target_incarnation=upload.archive_incarnation_id,
+                    epoch=control.epoch,
+                    volume_id=volume_id,
+                    unit=unit,
+                    plan_sha256=plan_sha256,
+                    plaintext_bytes=int(cast(str, work["payload_bytes"])),
+                    principal=principal,
+                )
+                original = self._archive_inputs.reserve(request)
+        except BaseException:
+            if isinstance(original, ArchivePayloadInput):
+                original.discard_unretained()
+            raise
+        # Installation precedes releasing the same upload lock used by terminal
+        # selection. A selected terminal cannot miss an incoming original body.
+        assert original is not None
+        return original
+
+    def _submit_payload_input(
+        self,
+        payload: ArchivePayloadInput,
+        *,
+        mirror: ArchivePayloadMirrorFactory | None = None,
+    ) -> InvocationSubmission:
+        """Install exact original input before any semantic constructor can run."""
+        payload.require_pool(self._archive_inputs)
+        request = payload.request
+        return self._archive_invocations.submit(
+            request.key,
+            target_incarnation=request.target_incarnation,
+            request_sha256=payload.request_sha256,
+            payload=payload,
+            create=lambda: self._payload_unit_invocation(
+                key=request.key,
+                target_incarnation=request.target_incarnation,
+                volume_id=request.volume_id,
+                unit=request.unit,
+                plan_sha256=request.plan_sha256,
+                payload=payload,
+                principal=request.principal,
+                mirror=mirror,
+            ),
+            advance=lambda owner: cast("ArchivePayloadUnit", owner).advance(),
+        )
+
+    def _payload_unit_invocation(
+        self,
+        *,
+        key: PhysicalExecutionKey,
+        target_incarnation: str,
+        volume_id: str,
+        unit: int,
+        plan_sha256: str,
+        payload: ArchivePayloadInput,
+        principal: Principal,
+        mirror: ArchivePayloadMirrorFactory | None = None,
+    ) -> ArchivePayloadUnit:
+        from .archive_payload_unit import ArchivePayloadUnit
+
+        payload.require_pool(self._archive_inputs)
+
+        return ArchivePayloadUnit(
+            self,
+            key=key,
+            target_incarnation=target_incarnation,
+            volume_id=volume_id,
+            unit=unit,
+            plan_sha256=plan_sha256,
+            payload=payload,
+            principal=principal,
+            mirror=mirror,
+        )
+
+    def _retain_volume_preparation(
+        self,
+        *,
+        admission: ArchiveWriteAdmission,
+        collection_id: int,
+        volume_id: str,
+        epoch: str,
+        identity: Mapping[str, str],
+        guard: Callable[[Session], None],
+        load: Callable[[], UploadState | None],
+        prepare: Callable[[], UploadState],
+    ) -> UploadState:
+        retained = admission.load_preparation(
+            collection_id, volume_id, epoch=epoch, identity=identity, guard=guard
+        )
+        if retained is None:
+            original = load()
+            if original is None:
+                original = prepare()
+            retained = admission.prepare(
+                collection_id,
+                volume_id,
+                epoch=epoch,
+                identity=identity,
+                preparation={"age_state": json.loads(original.to_json_bytes())},
+                grants=self._config.archive_write,
+                guard=guard,
+            )
+        document = json.loads(retained)
+        if not isinstance(document, dict) or set(document) != {"age_state"}:
+            raise RuntimeError("archive write original preparation is invalid")
+        return UploadState.from_json_bytes(canonical_json_bytes(document["age_state"]))
+
     def upload_unit(
         self,
         collection_id: int,
@@ -1931,9 +2762,14 @@ class SqlAlchemyCollectionUploadService:
         *,
         plan_sha256: str,
         content: bytes,
+        principal: Principal,
     ) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
+        guard = self._payload_write_guard(normalized_id, principal)
         with session_scope(self._session_factory) as session:
+            if session.get_bind().dialect.name == "sqlite":
+                session.connection(execution_options={"sqlite_immediate_writer": True})
+            guard(session)
             upload = session.get(CollectionUploadRecord, normalized_id)
             record = session.get(
                 CollectionArchiveObjectUploadRecord,
@@ -1953,6 +2789,9 @@ class SqlAlchemyCollectionUploadService:
             plan_json = record.plan_json
             unit_plaintext_bytes = record.unit_plaintext_bytes
 
+        admission = ArchiveWriteAdmission(self._session_factory)
+        epoch = admission.bind_epoch(normalized_id, guard=guard)
+        identity = {"kind": kind, "object_path": object_path, "plan_sha256": plan_sha256}
         receipt: SealedPackVolume | SealedRawVolume | None
         try:
             if kind == "pack":
@@ -1968,11 +2807,27 @@ class SqlAlchemyCollectionUploadService:
                     ),
                     passphrase_id=passphrase_id,
                 )
+                pack_preparation = self._retain_volume_preparation(
+                    admission=admission,
+                    collection_id=normalized_id,
+                    volume_id=volume_id,
+                    epoch=epoch,
+                    identity=identity,
+                    guard=guard,
+                    load=lambda: pack_uploader.load_preparation(
+                        collection_id=normalized_id,
+                        plan=pack_plan,
+                        object_path=object_path,
+                        relative_path=relative_path,
+                    ),
+                    prepare=lambda: pack_uploader.prepare(plan=pack_plan),
+                )
                 pack_checkpoint = pack_uploader.open(
                     collection_id=normalized_id,
                     plan=pack_plan,
                     object_path=object_path,
                     relative_path=relative_path,
+                    prepared_state=pack_preparation,
                 )
                 pack_checkpoint = pack_uploader.upload_unit(
                     plan=pack_plan,
@@ -2007,6 +2862,23 @@ class SqlAlchemyCollectionUploadService:
                     ),
                     passphrase_id=passphrase_id,
                 )
+                raw_preparation = self._retain_volume_preparation(
+                    admission=admission,
+                    collection_id=normalized_id,
+                    volume_id=volume_id,
+                    epoch=epoch,
+                    identity=identity,
+                    guard=guard,
+                    load=lambda: raw_uploader.load_preparation(
+                        collection_id=normalized_id,
+                        plan=raw_plan,
+                        object_path=object_path,
+                        relative_path=relative_path,
+                        target_part_plaintext_bytes=unit_plaintext_bytes,
+                        expected_part_sha256s=expected,
+                    ),
+                    prepare=lambda: raw_uploader.prepare(plan=raw_plan),
+                )
                 raw_checkpoint = raw_uploader.open(
                     collection_id=normalized_id,
                     plan=raw_plan,
@@ -2014,6 +2886,7 @@ class SqlAlchemyCollectionUploadService:
                     relative_path=relative_path,
                     target_part_plaintext_bytes=unit_plaintext_bytes,
                     expected_part_sha256s=expected,
+                    prepared_state=raw_preparation,
                 )
                 raw_checkpoint = raw_uploader.upload_unit(
                     plan=raw_plan,
@@ -2022,7 +2895,7 @@ class SqlAlchemyCollectionUploadService:
                     plaintext=content,
                 )
                 receipt = (
-                    raw_uploader.sealed_receipt(raw_checkpoint)
+                    raw_uploader.sealed_receipt(raw_checkpoint, plan=raw_plan)
                     if raw_checkpoint.completed
                     else None
                 )
@@ -2043,10 +2916,28 @@ class SqlAlchemyCollectionUploadService:
             record = session.get(
                 CollectionArchiveObjectUploadRecord,
                 (normalized_id, volume_id),
+                options=(
+                    load_only(
+                        CollectionArchiveObjectUploadRecord.collection_id,
+                        CollectionArchiveObjectUploadRecord.object_id,
+                        CollectionArchiveObjectUploadRecord.kind,
+                        CollectionArchiveObjectUploadRecord.plan_json,
+                        CollectionArchiveObjectUploadRecord.total_units,
+                        CollectionArchiveObjectUploadRecord.unit_plaintext_bytes,
+                        CollectionArchiveObjectUploadRecord.state,
+                    ),
+                ),
             )
             if record is None or unit < 0 or unit >= record.total_units:
                 raise NotFound(f"collection upload unit not found: {unit}")
-            return _unit_work_payload(record, unit)
+            committed = (
+                record.state == "sealed"
+                or session.get(
+                    CollectionArchiveObjectUploadUnitRecord, (normalized_id, volume_id, unit)
+                )
+                is not None
+            )
+            return _unit_work_payload(record, unit, committed=committed)
 
     def get(self, collection_id: int) -> dict[str, object]:
         normalized_id = _collection_id(collection_id)
@@ -2075,6 +2966,7 @@ class SqlAlchemyCollectionUploadService:
 
         normalized_id = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == normalized_id)
@@ -2082,6 +2974,7 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 raise NotFound(f"collection upload session not found: {normalized_id}")
+            require_open_upload_writes(session, upload)
             if upload.custody_mode != "custody-transfer":
                 raise Conflict("collection upload does not have a custody-transfer lease")
             if upload.state not in {"open", "closing"}:
@@ -2115,6 +3008,7 @@ class SqlAlchemyCollectionUploadService:
             )
             for upload in uploads:
                 upload.state = "orphaned"
+                refresh_custody_parent(session, upload)
                 upload.orphaned_at = now
                 upload.lease_expires_at = None
                 upload.last_activity_at = now
@@ -2341,6 +3235,7 @@ class SqlAlchemyCollectionUploadService:
             }
             now = utc_timestamp_now()
             upload.state = "discarding"
+            refresh_custody_parent(session, upload)
             upload.archive_phase = "discarding"
             upload.archive_phase_updated_at = now
             upload.last_activity_at = now
@@ -2377,6 +3272,7 @@ class SqlAlchemyCollectionUploadService:
                 if upload is not None and upload.state == "discarding":
                     now = utc_timestamp_now()
                     upload.state = "orphaned"
+                    refresh_custody_parent(session, upload)
                     upload.orphaned_at = now
                     upload.archive_phase = "orphaned"
                     upload.archive_phase_updated_at = now
@@ -2400,11 +3296,14 @@ class SqlAlchemyCollectionUploadService:
         object_store: ArchiveResumableObjectStore,
         *,
         passphrase_id: str,
+        checkpoint_store: PackUploadCheckpointStore | None = None,
     ) -> PackVolumeUploader:
         passphrase = self._config.archive_passphrase_for(passphrase_id)
         return PackVolumeUploader(
             object_store=object_store,
-            checkpoint_store=self._checkpoints,
+            checkpoint_store=checkpoint_store
+            if checkpoint_store is not None
+            else self._checkpoints,
             passphrase=passphrase,
             scrypt_log_n=self._config.archive_scrypt_work_factor,
             source_read_chunk_bytes=self._throughput.source_read_chunk_bytes,
@@ -2447,11 +3346,14 @@ class SqlAlchemyCollectionUploadService:
         object_store: ArchiveResumableObjectStore,
         *,
         passphrase_id: str,
+        checkpoint_store: RawUploadCheckpointStore | None = None,
     ) -> RawVolumeUploader:
         passphrase = self._config.archive_passphrase_for(passphrase_id)
         return RawVolumeUploader(
             object_store=object_store,
-            checkpoint_store=self._checkpoints,
+            checkpoint_store=checkpoint_store
+            if checkpoint_store is not None
+            else self._checkpoints,
             passphrase=passphrase,
             scrypt_log_n=self._config.archive_scrypt_work_factor,
             source_read_chunk_bytes=self._throughput.source_read_chunk_bytes,
@@ -2509,21 +3411,34 @@ class SqlAlchemyCollectionUploadService:
         self,
         collection_id: int,
         receipt: SealedPackVolume | SealedRawVolume,
+        *,
+        source: NativeArchiveSealSource | None = None,
     ) -> None:
+        if source is not None:
+            source.require_receipt_identity(collection_id, receipt)
+        encoded = _sealed_volume_json(receipt)
+        if source is not None:
+            source.require_receipt_capacity(encoded)
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            record = session.get(
-                CollectionArchiveObjectUploadRecord,
-                (collection_id, receipt.volume_id),
+            _writer(session)
+            upload = session.scalar(ArchiveWriteAdmission._upload_query(collection_id))
+            if source is not None:
+                if upload is None:
+                    raise Conflict("original native seal construction disappeared")
+                source.require_original(session, upload, encoded)
+            elif upload is not None:
+                require_archive_write_control(session, upload)
+            record = session.scalar(
+                select(CollectionArchiveObjectUploadRecord)
+                .where(
+                    CollectionArchiveObjectUploadRecord.collection_id == collection_id,
+                    CollectionArchiveObjectUploadRecord.object_id == receipt.volume_id,
+                )
+                .execution_options(include_unpublished_registration=source is not None)
             )
             if record is None:
                 raise RuntimeError("sealed archive volume plan disappeared")
-            encoded = _sealed_volume_json(receipt)
             if record.sealed_receipt_json not in {None, encoded}:
                 raise RuntimeError("sealed archive volume receipt changed")
             record.sealed_receipt_json = encoded
@@ -2531,9 +3446,11 @@ class SqlAlchemyCollectionUploadService:
             record.sealed_at = receipt.completed_at
             record.updated_at = now
             record.uploaded_units = len(receipt.parts)
+            record.next_unit = len(receipt.parts)
             record.uploaded_bytes = receipt.stored_bytes
             if upload is not None:
-                _touch_upload(upload, config=self._config, now=now)
+                # Original receiving records custody, never fresh writer activity.
+                # Lease renewal remains with an authenticated heartbeat operation.
                 upload.archive_phase_updated_at = now
                 _record_payload_custody_progress(session, upload, record, now=now)
 
@@ -2543,9 +3460,10 @@ class SqlAlchemyCollectionUploadService:
         now = utc_timestamp_now()
         requeued = 0
         with session_scope(self._session_factory) as session:
+            _writer(session)
             uploads = list(
                 session.scalars(
-                    select(CollectionUploadRecord)
+                    _open_finalization_query()
                     .where(CollectionUploadRecord.state.in_(("closing", "uploading", "finalizing")))
                     .order_by(
                         CollectionUploadRecord.archive_phase_updated_at,
@@ -2556,10 +3474,14 @@ class SqlAlchemyCollectionUploadService:
                 )
             )
             for upload in uploads:
-                interrupted = upload.state == "finalizing" and upload.archive_phase == "finalizing"
-                if not interrupted and not _ready_for_finalization(session, upload):
+                if require_archive_write_control(session, upload).gate != "open":
                     continue
-                upload.state = "finalizing"
+                interrupted = upload.state == "finalizing" and upload.archive_phase == "finalizing"
+                if upload.state != "finalizing":
+                    if not _ready_for_finalization(session, upload):
+                        continue
+                    _mark_finalization_ready(upload, now=now)
+                upload.archive_claim_id = None
                 upload.archive_phase = "retry_wait" if interrupted else "finalization_queued"
                 upload.archive_next_attempt_at = now
                 upload.archive_phase_updated_at = now
@@ -2588,40 +3510,60 @@ class SqlAlchemyCollectionUploadService:
             )
             for upload in uploads:
                 upload.state = "orphaned"
+                refresh_custody_parent(session, upload)
                 upload.orphaned_at = now
                 upload.archive_phase = "orphaned"
                 upload.archive_phase_updated_at = now
                 upload.archive_failure = "orphan discard interrupted before cleanup completed"
             return len(uploads)
 
+    def process_due_archive_uploads(self, *, limit: int = 1) -> int:
+        if limit < 1:
+            return 0
+        # Shared maintenance receives originals without capturing a fresh slot
+        # ahead of whichever forward scheduler called it.
+        progressed = self._primary_facts_retirement.advance(limit=limit, admit=False)
+        return progressed + self._archive_upload_maintenance.process_due(limit=limit)
+
+    def has_unreceived_archive_work(self) -> bool:
+        """A local poll hint; this grants no provider closure or global quiescence."""
+        return self._archive_execution.has_unreceived_work()
+
     def process_due_finalizations(self, *, limit: int = 1) -> int:
         if limit < 1:
             return 0
-        self._schedule_ready_finalizations(limit=max(100, limit))
-        processed = 0
-        for _ in range(limit):
-            collection_id = self._claim_due_finalization()
-            if collection_id is None:
-                break
-            try:
-                self._reconcile_sealed_volume_receipts(collection_id)
-                self._finalize(collection_id)
-            except Exception as exc:
-                self._record_finalization_retry(collection_id, exc)
-                _LOG.exception(
-                    "collection archive finalization failed; retry scheduled: collection_id=%s",
-                    collection_id,
-                )
-            processed += 1
-        return processed
+        # Receive joined physical results and original workflow feedback before
+        # any fresh candidate can acquire another durable claim.
+        progressed = self.process_due_archive_uploads(limit=limit)
+        self._primary_facts_cleanup_turn = not self._primary_facts_cleanup_turn
+        cleanup_first = self._primary_facts_cleanup_turn
+        if cleanup_first:
+            progressed += self._primary_facts_retirement.advance(limit=limit)
+        try:
+            progressed += self._schedule_ready_finalizations(limit=max(100, limit))
+        except OperationalError as error:
+            if catalog_write_contention(error):
+                return progressed
+            raise
+        now = utc_timestamp_now()
+        for collection_id in self._finalization_due.select(now, limit=limit):
+            if self._submit_finalization_if_due(collection_id, now=now) == "submitted":
+                progressed += 1
+        if not cleanup_first:
+            # Alternate actual admission opportunities, not arbitrary maintenance
+            # polls: a long retired extent cannot monopolize the sole ordinary
+            # slot, even when custody and finalization poll in the same cycle.
+            progressed += self._primary_facts_retirement.advance(limit=limit)
+        return progressed
 
     def _schedule_ready_finalizations(self, *, limit: int) -> int:
         now = utc_timestamp_now()
         scheduled = 0
         with session_scope(self._session_factory) as session:
+            _writer(session, defer_if_busy=True)
             uploads = list(
                 session.scalars(
-                    select(CollectionUploadRecord)
+                    _open_finalization_query()
                     .where(CollectionUploadRecord.state.in_(("closing", "uploading")))
                     .order_by(
                         CollectionUploadRecord.archive_phase_updated_at,
@@ -2632,17 +3574,20 @@ class SqlAlchemyCollectionUploadService:
                 )
             )
             for upload in uploads:
+                if require_archive_write_control(session, upload).gate != "open":
+                    continue
                 if not _ready_for_finalization(session, upload):
                     continue
                 _mark_finalization_ready(upload, now=now)
                 scheduled += 1
         return scheduled
 
-    def _claim_due_finalization(self) -> int | None:
+    def _claim_due_finalization(self) -> _FinalizationClaim | None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
-                select(CollectionUploadRecord)
+                _open_finalization_query()
                 .where(
                     CollectionUploadRecord.state == "finalizing",
                     CollectionUploadRecord.archive_phase.in_(("finalization_queued", "retry_wait")),
@@ -2658,98 +3603,97 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 return None
-            if not _ready_for_finalization(session, upload):
-                upload.state = "uploading"
-                upload.archive_phase = "uploading"
-                upload.archive_next_attempt_at = None
-                upload.archive_phase_updated_at = now
+            if require_archive_write_control(session, upload).gate != "open":
                 return None
-            upload.state = "finalizing"
+            # Entering finalizing commits exact readiness under the upload lock.
+            # Its closed plan and payload seals survive every bounded metadata step.
             upload.archive_phase = "finalizing"
             upload.archive_phase_updated_at = now
             upload.archive_last_attempt_at = now
             upload.archive_next_attempt_at = None
             upload.archive_failure = None
-            return upload.collection_id
+            upload.archive_claim_id = secrets.token_hex(32)
+            return _FinalizationClaim(upload.collection_id, upload.archive_claim_id)
 
     def _schedule_finalization_if_ready(self, collection_id: int) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
+            selected = session.execute(
+                select(
+                    CollectionUploadRecord,
+                    ArchiveWriteControlRecord.gate,
+                    ArchiveWriteControlRecord.epoch,
+                )
+                .join(
+                    ArchiveWriteControlRecord,
+                    ArchiveWriteControlRecord.collection_id == CollectionUploadRecord.collection_id,
+                )
                 .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None or not _ready_for_finalization(session, upload):
+                .with_for_update(of=CollectionUploadRecord)
+            ).one_or_none()
+            if selected is None:
                 return
-            _mark_finalization_ready(upload, now=now)
+            upload, gate, epoch = selected
+            if (
+                upload.state not in {"closing", "uploading"}
+                or gate != "open"
+                or not _ready_for_finalization(session, upload)
+            ):
+                return
+            # SQLite reads need not hold a writer lock, and a PostgreSQL parent
+            # wait can outlive the joined gate's snapshot. Match the original
+            # readiness facts and current admission in this atomic transition.
+            session.execute(
+                update(CollectionUploadRecord)
+                .where(
+                    CollectionUploadRecord.collection_id == collection_id,
+                    CollectionUploadRecord.state.in_(("closing", "uploading")),
+                    CollectionUploadRecord.planner_checkpoint_json
+                    == upload.planner_checkpoint_json,
+                    CollectionUploadRecord.planner_next_sequence == upload.planner_next_sequence,
+                    CollectionUploadRecord.artifact_count == upload.artifact_count,
+                    CollectionUploadRecord.artifact_bytes == upload.artifact_bytes,
+                    CollectionUploadRecord.payload_sealed_artifact_count
+                    == upload.payload_sealed_artifact_count,
+                    CollectionUploadRecord.payload_sealed_artifact_bytes
+                    == upload.payload_sealed_artifact_bytes,
+                    exists(
+                        select(ArchiveWriteControlRecord.collection_id).where(
+                            ArchiveWriteControlRecord.collection_id == collection_id,
+                            ArchiveWriteControlRecord.gate == "open",
+                            ArchiveWriteControlRecord.epoch == epoch,
+                        )
+                    ),
+                )
+                .values(**_finalization_ready_values(now=now))
+                .execution_options(synchronize_session=False)
+            ).close()
 
     def _reconcile_sealed_volume_receipts(self, collection_id: int) -> None:
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None:
-                return
-            store_name = upload.archive_store
-            passphrase_id = upload.passphrase_id
-            pending = list(
-                session.execute(
-                    select(
-                        CollectionArchiveObjectUploadRecord.object_id,
-                        CollectionArchiveObjectUploadRecord.kind,
-                        CollectionArchiveObjectUploadRecord.plan_json,
-                        CollectionArchiveObjectUploadRecord.checkpoint_json,
-                    )
-                    .where(
-                        CollectionArchiveObjectUploadRecord.collection_id == collection_id,
-                        CollectionArchiveObjectUploadRecord.state == "sealed",
-                        CollectionArchiveObjectUploadRecord.sealed_receipt_json.is_(None),
-                    )
-                    .order_by(CollectionArchiveObjectUploadRecord.sequence)
-                    .limit(64)
-                )
-            )
-        for volume_id, kind, plan_json, checkpoint_json in pending:
-            if checkpoint_json is None:
-                raise RuntimeError(f"sealed archive volume has no checkpoint: {volume_id}")
-            if kind == "pack":
-                checkpoint = PackUploadCheckpoint.from_json(checkpoint_json)
-                if checkpoint.completed is None:
-                    raise RuntimeError(f"sealed pack volume is incomplete: {volume_id}")
-                receipt: SealedPackVolume | SealedRawVolume = self._pack_uploader(
-                    self._volume_object_store(
-                        store_name=store_name,
-                        collection_id=collection_id,
-                        object_id=volume_id,
-                    ),
-                    passphrase_id=passphrase_id,
-                ).sealed_receipt(
-                    plan=parse_pack_volume_plan(plan_json),
-                    checkpoint=checkpoint,
-                )
-            elif kind == "segment":
-                raw_checkpoint = RawUploadCheckpoint.from_json(checkpoint_json)
-                if not raw_checkpoint.completed:
-                    raise RuntimeError(f"sealed raw volume is incomplete: {volume_id}")
-                receipt = self._raw_uploader(
-                    self._volume_object_store(
-                        store_name=store_name,
-                        collection_id=collection_id,
-                        object_id=volume_id,
-                    ),
-                    passphrase_id=passphrase_id,
-                ).sealed_receipt(raw_checkpoint)
-            else:
-                raise RuntimeError(f"unsupported archive volume kind: {kind}")
-            self._record_sealed_volume(collection_id, receipt)
+        for _ in range(64):
+            if not OriginalNativeArchiveSeal(self, collection_id).advance():
+                break
 
-    def _record_finalization_retry(self, collection_id: int, exc: Exception) -> None:
+    def _record_finalization_retry(self, claim: _FinalizationClaim, exc: Exception) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None:
+            _writer(session)
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == claim.collection_id)
+                .with_for_update()
+            )
+            if (
+                upload is None
+                or upload.state != "finalizing"
+                or upload.archive_phase != "finalizing"
+                or upload.archive_claim_id != claim.claim_id
+            ):
+                return
+            if require_archive_write_control(session, upload).gate != "open":
                 return
             delay = min(3600, 2 ** min(upload.archive_attempt_count, 10))
-            upload.state = "finalizing"
+            upload.archive_claim_id = None
             upload.archive_phase = "retry_wait"
             upload.archive_phase_updated_at = now
             upload.archive_next_attempt_at = format_utc_timestamp(
@@ -2757,215 +3701,369 @@ class SqlAlchemyCollectionUploadService:
             )
             upload.archive_failure = f"{type(exc).__name__}: {exc}"[:1000]
 
-    def _finalize(self, collection_id: int) -> None:
-        if self._stage_next_member_histories(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._advance_provenance_closure_validation(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._publish_next_provenance_structure(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._advance_archive_tree_checkpoint(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._publish_next_archive_volume_metadata(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._publish_next_provenance_archive_object(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._publish_final_authority(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._publish_custody_receipts(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._publish_initial_tags(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._publish_initial_description(collection_id):
-            self._requeue_finalization_step(collection_id)
-            return
-        if self._advance_catalog_projection(collection_id):
-            self._requeue_finalization_step(collection_id)
+    def _catalog_finalization_owner(
+        self, claim: _FinalizationClaim, *, kind: CatalogFinalizationKind
+    ) -> ArchiveCatalogFinalizer:
+        from .archive_catalog_finalizer import ArchiveCatalogFinalizer
 
-    def _publish_final_authority(self, collection_id: int) -> bool:
-        """Publish the bounded immutable root once and persist its exact receipts."""
+        bodies = {
+            "member-histories": self._stage_member_histories,
+            "artifact-tree": self._commit_archive_tree,
+        }
 
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or upload.final_authority_json is not None:
-                return False
-            if (
-                upload.archive_tree_sha256 is None
-                or upload.archive_ordered_volume_sha256 is None
-                or upload.archive_terminal_receipt_json is None
-            ):
-                raise RuntimeError("archive authority checkpoints are incomplete")
-            store_name = upload.archive_store
-            prefix = upload.archive_storage_prefix
-            encryption_format = upload.encryption_format
-            passphrase_id = upload.passphrase_id
-            sealed_provenance = _sealed_upload_provenance(upload)
-            manifest = build_collection_archive_root_manifest(
-                archive_generation=upload.archive_generation,
-                artifact_set={
-                    "count": int(upload.artifact_count),
-                    "bytes": int(upload.artifact_bytes),
-                    "sha256": upload.archive_tree_sha256,
-                },
-                ordered_volume_sha256=upload.archive_ordered_volume_sha256,
-                provenance_identity=sealed_provenance.identity,
-                provenance_objects=(sealed_provenance.root,),
+        def advance(session: Session, upload: CollectionUploadRecord) -> bool:
+            if kind == "catalog-projection":
+                return self._commit_catalog_projection(
+                    session, upload, result_resources=owner.result_resources
+                )
+            if kind == "provenance-closure":
+                return self._validate_provenance_closure(
+                    session, upload, result_resources=owner.result_resources
+                )
+            return bodies[kind](session, upload)
+
+        owner = ArchiveCatalogFinalizer(
+            self._session_factory,
+            collection_id=claim.collection_id,
+            claim_id=claim.claim_id,
+            kind=kind,
+            construction_factory=self._journal_storage.journal,
+            advance=advance,
+        )
+        return owner
+
+    def _submit_finalization_if_due(
+        self, collection_id: int, *, now: str
+    ) -> FinalizerSubmission | None:
+        """Register the exact original before committing a fresh workflow nonce."""
+        from threading import Event
+
+        from .archive_finalization_admission import OriginalFinalizationAdmission
+        from .archive_finalization_pipeline import ArchiveFinalizationPipeline
+
+        claim = _FinalizationClaim(collection_id, secrets.token_hex(32))
+        ready = Event()
+        admission = OriginalFinalizationAdmission(
+            self._session_factory,
+            collection_id=collection_id,
+            claim_id=claim.claim_id,
+            ready=ready,
+        )
+
+        def require_due(session: Session) -> None:
+            selected = session.scalar(
+                select(CollectionUploadRecord.collection_id).where(
+                    CollectionUploadRecord.collection_id == collection_id,
+                    CollectionUploadRecord.state == "finalizing",
+                    CollectionUploadRecord.archive_phase.in_(("finalization_queued", "retry_wait")),
+                    CollectionUploadRecord.archive_next_attempt_at.is_not(None),
+                    CollectionUploadRecord.archive_next_attempt_at <= now,
+                )
             )
-        if not prefix:
-            raise RuntimeError("collection archive storage prefix is missing")
-        self._begin_final_publication_attempt(collection_id)
-        passphrase = self._config.archive_passphrase_for(passphrase_id)
-        archive_store = self._archive_stores.require(store_name)
-        root = ArchiveRootPublisher(
-            object_store=archive_store.immutable_objects,
-            passphrase=passphrase,
-            scrypt_log_n=self._config.archive_scrypt_work_factor,
-        ).publish_root_manifest(archive_storage_prefix=prefix, manifest=manifest)
-        recovery = ArchiveRecoveryDescriptorPublisher(
-            object_store=archive_store.immutable_objects
-        ).publish(
-            archive_storage_prefix=prefix,
-            root=root,
-            encryption=CollectionEncryptionBinding(
-                format=encryption_format,
-                passphrase_id=passphrase_id,
+            if selected is None:
+                raise _FinalizationNotDue
+
+        def register_claim(session: Session) -> None:
+            # The parent/control locks still cover the successful local
+            # registration. The registered worker cannot select children until
+            # this exact transaction exits, including rollback or lost reply.
+            session.execute(
+                update(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == collection_id)
+                .values(
+                    archive_phase="finalizing",
+                    archive_phase_updated_at=now,
+                    archive_last_attempt_at=now,
+                    archive_next_attempt_at=None,
+                    archive_failure=None,
+                    archive_claim_id=claim.claim_id,
+                )
+                .execution_options(synchronize_session=False)
+            ).close()
+
+        try:
+            return self._archive_finalizer_work._submit(
+                collection_id,
+                "collection-finalization",
+                partial(self._finalization_owner, claim, admission=admission),
+                lambda owner: self._advance_finalization_owner(
+                    claim, cast(ArchiveFinalizationPipeline, owner)
+                ),
+                lambda progressed: self._requeue_finalization_step(claim),
+                resume_original=False,
+                claim_guard=require_due,
+                register_claim=register_claim,
+            )
+        except _FinalizationNotDue:
+            return None
+        finally:
+            ready.set()
+
+    def _submit_finalization(self, claim: _FinalizationClaim) -> FinalizerSubmission:
+        """Keep the original pipeline and claim until its workflow reply is received."""
+        from .archive_finalization_pipeline import ArchiveFinalizationPipeline
+
+        return self._archive_finalizer_work._submit(
+            claim.collection_id,
+            "collection-finalization",
+            partial(self._finalization_owner, claim),
+            lambda owner: cast(ArchiveFinalizationPipeline, owner).advance(),
+            lambda progressed: self._requeue_finalization_step(claim),
+        )
+
+    def _finalization_owner(
+        self,
+        claim: _FinalizationClaim,
+        *,
+        admission: OriginalFinalizationAdmission | None = None,
+    ) -> ArchiveFinalizationPipeline:
+        """Compose one retained workflow turn without constructing semantic children."""
+        from .archive_authority_finalizer import ArchiveAuthorityFinalizer
+        from .archive_finalization_pipeline import (
+            ArchiveFinalizationPipeline,
+            ArchiveFinalizationStagePlan,
+        )
+        from .archive_initial_description_finalizer import ArchiveInitialDescriptionFinalizer
+        from .archive_initial_tag_finalizer import ArchiveInitialTagFinalizer
+        from .archive_provenance_authority_finalizer import ArchiveProvenanceAuthorityFinalizer
+        from .archive_provenance_structure_writer import ArchiveProvenanceStructureWriter
+        from .archive_provenance_volume_finalizer import ArchiveProvenanceVolumeFinalizer
+        from .archive_volume_metadata_finalizer import ArchiveVolumeMetadataFinalizer
+        from .immutable_archive_receiving import OriginalImmutableArchiveReport
+
+        fixed = ArchiveFinalizationStagePlan.fixed
+
+        def gated(
+            stages: tuple[ArchiveFinalizationStagePlan, ...],
+        ) -> tuple[ArchiveFinalizationStagePlan, ...]:
+            if admission is None:
+                return stages
+            return tuple(
+                ArchiveFinalizationStagePlan(partial(admission.select, stage.select))
+                for stage in stages
+            )
+
+        return ArchiveFinalizationPipeline(
+            self._session_factory,
+            collection_id=claim.collection_id,
+            stages=gated(
+                (
+                    fixed(partial(OriginalNativeArchiveSeal, self, claim.collection_id)),
+                    fixed(
+                        partial(
+                            OriginalImmutableArchiveReport,
+                            self._session_factory,
+                            claim.collection_id,
+                        )
+                    ),
+                    fixed(
+                        partial(self._catalog_finalization_owner, claim, kind="member-histories")
+                    ),
+                    fixed(
+                        partial(self._catalog_finalization_owner, claim, kind="provenance-closure")
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveProvenanceStructureWriter,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(partial(self._catalog_finalization_owner, claim, kind="artifact-tree")),
+                    fixed(
+                        partial(
+                            ArchiveVolumeMetadataFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveProvenanceVolumeFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveProvenanceAuthorityFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveAuthorityFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    ArchiveFinalizationStagePlan(partial(self._select_finalization_custody, claim)),
+                    fixed(
+                        partial(
+                            ArchiveInitialTagFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(
+                            ArchiveInitialDescriptionFinalizer,
+                            self._session_factory,
+                            collection_id=claim.collection_id,
+                            config=self._config,
+                            archive_stores=self._archive_stores,
+                            forward_guard=claim.guard,
+                        )
+                    ),
+                    fixed(
+                        partial(self._catalog_finalization_owner, claim, kind="catalog-projection")
+                    ),
+                )
             ),
         )
-        authority = {
-            "root": {
-                "object_path": root.object_path,
-                "relative_path": root.relative_path,
-                "revision": root.revision,
-                "plaintext_bytes": root.plaintext_bytes,
-                "plaintext_sha256": root.plaintext_sha256,
-                "stored_bytes": root.stored_bytes,
-                "stored_sha256": root.stored_sha256,
-                "artifact_set_sha256": root.artifact_set_sha256,
-                "artifact_count": root.artifact_count,
-                "artifact_bytes": root.artifact_bytes,
-                "completed_at": root.completed_at,
-            },
-            "recovery": {
-                "object_path": recovery.object_path,
-                "relative_path": recovery.relative_path,
-                "revision": recovery.revision,
-                "bytes": recovery.bytes,
-                "sha256": recovery.sha256,
-                "completed_at": recovery.completed_at,
-            },
-        }
-        encoded = json.dumps(authority, sort_keys=True, separators=(",", ":"))
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is not None:
-                if upload.final_authority_json not in {None, encoded}:
-                    raise RuntimeError("final archive authority receipt changed")
-                upload.final_authority_json = encoded
-        return True
 
-    def _publish_custody_receipts(self, collection_id: int) -> bool:
-        """Finalize remaining receipts through the same early custody rail."""
-        with read_snapshot(self._session_factory) as session:
+    def _select_finalization_custody(
+        self, claim: _FinalizationClaim
+    ) -> Callable[[], ArchiveFinalizationStage] | None:
+        """Select an exact member before its tracked semantic constructor starts."""
+        with session_scope(self._session_factory) as session:
+            claim.guard(session)
             artifact_id = session.scalar(
                 select(CollectionUploadArtifactRecord.artifact_id)
                 .where(
-                    CollectionUploadArtifactRecord.collection_id == collection_id,
+                    CollectionUploadArtifactRecord.collection_id == claim.collection_id,
                     CollectionUploadArtifactRecord.custody_receipt_json.is_(None),
                 )
                 .order_by(CollectionUploadArtifactRecord.artifact_id)
                 .limit(1)
             )
         if artifact_id is None:
-            return False
-        return self._advance_artifact_custody(collection_id, str(artifact_id))
+            return None
+        return partial(
+            self._artifact_custody_owner,
+            claim.collection_id,
+            str(artifact_id),
+            forward_guard=claim.guard,
+        )
+
+    def _advance_finalization_owner(
+        self, claim: _FinalizationClaim, owner: ArchiveFinalizationPipeline
+    ) -> bool:
+        try:
+            return owner.advance()
+        except Exception as error:
+            try:
+                self._record_retained_finalization_failure(claim, error)
+            except Exception as feedback_error:
+                # Diagnostic failure cannot replace the original semantic
+                # outcome, release its claim, or discard its retained receiver.
+                _LOG.warning(
+                    "collection finalization diagnostic failed: collection_id=%s error_type=%s",
+                    claim.collection_id,
+                    type(feedback_error).__name__,
+                )
+            raise
+
+    def _record_retained_finalization_failure(
+        self, claim: _FinalizationClaim, error: Exception
+    ) -> None:
+        message = f"{type(error).__name__}: {error}"[:1000]
+        try:
+            with session_scope(self._session_factory) as session:
+                _writer(session, defer_if_busy=True)
+                parent = session.scalar(
+                    select(CollectionUploadRecord.collection_id)
+                    .where(CollectionUploadRecord.collection_id == claim.collection_id)
+                    .with_for_update(nowait=True)
+                )
+                if parent is None:
+                    return
+                session.execute(
+                    update(CollectionUploadRecord)
+                    .where(
+                        CollectionUploadRecord.collection_id == claim.collection_id,
+                        CollectionUploadRecord.state == "finalizing",
+                        CollectionUploadRecord.archive_phase == "finalizing",
+                        CollectionUploadRecord.archive_claim_id == claim.claim_id,
+                        exists(
+                            select(ArchiveWriteControlRecord.collection_id).where(
+                                ArchiveWriteControlRecord.collection_id == claim.collection_id,
+                                ArchiveWriteControlRecord.gate == "open",
+                            )
+                        ),
+                    )
+                    .values(archive_failure=message)
+                    .execution_options(synchronize_session=False)
+                ).close()
+        except OperationalError as feedback_error:
+            if not catalog_write_contention(feedback_error):
+                raise
 
     def process_due_custody_receipts(self, *, limit: int = 1) -> int:
-        progressed = 0
-        with read_snapshot(self._session_factory) as session:
-            candidates = list(
-                session.execute(
-                    select(
-                        CollectionUploadArtifactRecord.collection_id,
-                        CollectionUploadArtifactRecord.artifact_id,
-                    )
-                    .join(
-                        CollectionUploadRecord,
-                        CollectionUploadRecord.collection_id
-                        == CollectionUploadArtifactRecord.collection_id,
-                    )
-                    .join(
-                        CollectionUploadArtifactProvenanceBindingRecord,
-                        (
-                            CollectionUploadArtifactProvenanceBindingRecord.collection_id
-                            == CollectionUploadArtifactRecord.collection_id
-                        )
-                        & (
-                            CollectionUploadArtifactProvenanceBindingRecord.artifact_id
-                            == CollectionUploadArtifactRecord.artifact_id
-                        ),
-                    )
-                    .where(
-                        CollectionUploadArtifactRecord.payload_sealed_at.is_not(None),
-                        CollectionUploadArtifactRecord.custody_receipt_json.is_(None),
-                        or_(
-                            ~CollectionUploadRecord.initiated_by_principal_id.startswith(
-                                "processing:"
-                            ),
-                            CollectionUploadRecord.completion_requirement_json.is_not(None),
-                        ),
-                        or_(
-                            CollectionUploadRecord.completion_requirement_json.is_(None),
-                            CollectionUploadArtifactProvenanceBindingRecord.history_imports_ref_json.is_not(
-                                None
-                            ),
-                        ),
-                        CollectionUploadRecord.state.in_(
-                            ("open", "closing", "uploading", "finalizing")
-                        ),
-                    )
-                    .order_by(
-                        CollectionUploadArtifactRecord.collection_id,
-                        CollectionUploadArtifactRecord.artifact_id,
-                    )
-                    .limit(max(0, limit))
-                )
-            )
-        for collection_id, artifact_id in candidates:
+        if limit < 1:
+            return 0
+        # Receive original physical results before selecting another member.
+        progressed = self.process_due_archive_uploads(limit=limit)
+        for collection_id, artifact_id in self._custody_due.select(limit=limit):
+            guard = partial(_early_custody_guard, collection_id=collection_id)
             try:
-                progressed += int(
-                    self._advance_artifact_custody(int(collection_id), str(artifact_id))
+                result = self._archive_finalizer_work._submit(
+                    collection_id,
+                    "artifact-custody:" + artifact_id,
+                    partial(
+                        self._artifact_custody_owner,
+                        collection_id,
+                        artifact_id,
+                        forward_guard=guard,
+                    ),
+                    lambda owner: cast(ArchiveArtifactCustodyFinalizer, owner).advance(),
+                    lambda _progressed: None,
+                    resume_original=False,
+                    claim_guard=guard,
+                    register_claim=partial(
+                        rotate_custody_member,
+                        collection_id=collection_id,
+                        artifact_id=artifact_id,
+                    ),
                 )
-            except Exception:
-                _LOG.exception(
-                    "early artifact custody remains pending: collection_id=%s artifact_id=%s",
+                progressed += int(result == "submitted")
+            except Exception as exc:
+                _LOG.warning(
+                    "early artifact custody remains pending: "
+                    "collection_id=%s artifact_id=%s error_type=%s",
                     collection_id,
                     artifact_id,
+                    type(exc).__name__,
                 )
         return progressed
 
-    def _advance_artifact_custody(self, collection_id: int, artifact_id: str) -> bool:
-        """Seal one required object, or acknowledge a fully verified early primary.
-
-        Store writes precede durable receipt publication. Each step rechecks the
-        immutable construction; retries reuse content addresses and never claim
-        completion, discoverable publication or source-retirement permission.
-        """
+    def _select_artifact_custody(
+        self, collection_id: int, artifact_id: str
+    ) -> ArtifactCustodySelection | None:
+        """Verify one member's next dependency or complete receipt without provider IO."""
         pending_segment = None
         pending_structure = None
         receipt = None
+        receipt_source = None
         with read_snapshot(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, collection_id)
             artifact = session.get(CollectionUploadArtifactRecord, (collection_id, artifact_id))
@@ -2980,7 +4078,7 @@ class SqlAlchemyCollectionUploadService:
                 or artifact.payload_sealed_at is None
                 or artifact.custody_receipt_json is not None
             ):
-                return False
+                return None
             requirement = (
                 None
                 if upload.completion_requirement_json is None
@@ -2989,17 +4087,13 @@ class SqlAlchemyCollectionUploadService:
                 )
             )
             if upload.initiated_by_principal_id.startswith("processing:") and requirement is None:
-                return False
+                return None
             if requirement is not None and binding_row.history_imports_ref_json is None:
-                return False
+                return None
             primary = CollectionArtifactProvenanceBindingDocument.model_validate(
                 _provenance_binding_row(binding_row)
             )
-            accepted_inputs = binding_row.history_imports_ref_json
-            accepted_requirement = upload.completion_requirement_json
             anchor = HistoryJournalAnchor.from_mapping(primary.journal.model_dump(mode="json"))
-            prefix, store_name = upload.archive_storage_prefix, upload.archive_store
-            passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
             with (
                 _staged_history_closure(session, collection_id) as closure,
                 ProvenanceCustodySet() as objects,
@@ -3077,7 +4171,7 @@ class SqlAlchemyCollectionUploadService:
                             size = min(
                                 PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX, selected.prefix_bytes - offset
                             )
-                            content = _upload_journal_range_bytes(
+                            content = journal_ranges.upload_journal_range_bytes(
                                 session, collection_id, journal.journal_id, offset=offset, size=size
                             )
                             segment_sha256 = hashlib.sha256(content).hexdigest()
@@ -3086,11 +4180,13 @@ class SqlAlchemyCollectionUploadService:
                                 (collection_id, journal.journal_id, offset, segment_sha256),
                             )
                             if sealed is None:
-                                pending_segment = (
+                                pending_segment = ProvenanceJournalRange(
                                     journal.journal_id,
+                                    journal.bytes,
                                     journal.sha256,
                                     offset,
-                                    content,
+                                    size,
+                                    segment_sha256,
                                 )
                                 break
                             objects.add(_provenance_custody_object(sealed.receipt_json))
@@ -3142,301 +4238,45 @@ class SqlAlchemyCollectionUploadService:
                         archive_objects=archive_objects(),
                         provenance_objects=objects.objects(),
                     )
-        if pending_structure is not None:
-            return self._publish_next_provenance_structure(
-                collection_id, selected_object_id=pending_structure
-            )
-        if pending_segment is not None:
-            journal_id, journal_sha256, offset, content = pending_segment
-            publisher = ArchiveProvenancePublisher(
-                object_store=self._archive_stores.require(store_name).immutable_objects,
-                passphrase=passphrase,
-                scrypt_log_n=self._config.archive_scrypt_work_factor,
-            )
-            sealed_segment = publisher.publish_journal_segment(
-                archive_storage_prefix=prefix, content=content
-            )
-            with session_scope(self._session_factory) as session:
-                journal = session.get(
-                    CollectionUploadProvenanceJournalRecord, (collection_id, journal_id)
-                )
-                if journal is None or journal.sha256 != journal_sha256:
-                    raise Conflict("canonical custody journal changed during durable publication")
-                old = session.get(
-                    CollectionUploadProvenanceCustodyObjectRecord,
-                    (collection_id, journal_id, offset, sealed_segment.plaintext_sha256),
-                )
-                if old is None:
-                    session.add(
-                        CollectionUploadProvenanceCustodyObjectRecord(
-                            collection_id=collection_id,
-                            journal_id=journal_id,
-                            byte_offset=offset,
-                            plaintext_bytes=len(content),
-                            plaintext_sha256=sealed_segment.plaintext_sha256,
-                            relative_path=sealed_segment.relative_path,
-                            receipt_json=_sealed_provenance_object_json(sealed_segment),
-                        )
+                    receipt_source = ArchiveArtifactCustodyReceiptSource.capture(
+                        session,
+                        upload,
+                        artifact,
+                        binding_row,
+                        receipt=receipt,
+                        completion_output_id=output_id,
+                        grants=self._config.archive_write,
                     )
-            return True
-        if receipt is None:
-            return False
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            artifact = session.get(CollectionUploadArtifactRecord, (collection_id, artifact_id))
-            binding_row = session.get(
-                CollectionUploadArtifactProvenanceBindingRecord, (collection_id, artifact_id)
-            )
-            if (
-                upload is None
-                or artifact is None
-                or binding_row is None
-                or upload.state not in {"open", "closing", "uploading", "finalizing"}
-                or _provenance_binding_row(binding_row) != receipt.primary.model_dump(mode="json")
-                or upload.completion_requirement_json != accepted_requirement
-                or binding_row.history_imports_ref_json != accepted_inputs
-            ):
-                raise Conflict("early primary construction changed before receipt publication")
-            if artifact.custody_receipt_json is None:
-                artifact.custody_receipt_json = receipt.model_dump_json()
-                binding_row.completion_output_id = output_id
-                upload.safe_release_artifact_count += 1
-                upload.safe_release_artifact_bytes += artifact.bytes
-        return True
-
-    def _publish_initial_description(self, collection_id: int) -> bool:
-        """Establish the initial description state after the root and before catalog publish."""
-
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or upload.final_authority_json is None:
-                return False
-            if upload.description_identity is not None:
-                return False
-            authority = _final_authority(upload)
-            archive_root_sha256 = str(authority["root"]["plaintext_sha256"])
-            revision = 1 if upload.description is not None else 0
-            identity = collection_description_identity(
-                archive_root_sha256=archive_root_sha256,
-                revision=revision,
-                description=upload.description,
-            )
-            if revision == 0:
-                upload.description_revision = revision
-                upload.description_identity = identity
-                return True
-            if not upload.archive_storage_prefix:
-                raise RuntimeError("collection archive storage prefix is missing")
-            document = CollectionDescriptionDocument(
-                archive_root_sha256=archive_root_sha256,
-                revision=revision,
-                description=upload.description,
-                description_identity=identity,
-            ).to_json_bytes()
-            store_name = upload.archive_store
-            prefix = upload.archive_storage_prefix
-            passphrase_id = upload.passphrase_id
-
-        receipt = self._archive_stores.require(store_name).store.publish_collection_description(
+        if pending_structure is None and pending_segment is None and receipt_source is None:
+            return None
+        return ArtifactCustodySelection(
             collection_id=collection_id,
-            archive_storage_prefix=prefix,
-            document=document,
-            passphrase_id=passphrase_id,
+            artifact_id=artifact_id,
+            structure_object_id=pending_structure,
+            journal_range=pending_segment,
+            receipt_source=receipt_source,
         )
-        receipt_json = json.dumps(
-            {
-                "object_path": receipt.object_path,
-                "provider_revision": receipt.revision,
-                "stored_bytes": receipt.stored_bytes,
-                "stored_sha256": receipt.stored_sha256,
-                "published_at": receipt.published_at,
-            },
-            sort_keys=True,
-            separators=(",", ":"),
-        )
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None:
-                return False
-            if upload.description_identity not in {None, identity}:
-                raise RuntimeError("initial collection description identity changed")
-            upload.description_revision = revision
-            upload.description_identity = identity
-            upload.description_publication_receipt_json = receipt_json
-        return True
 
-    def _publish_initial_tags(self, collection_id: int) -> bool:
-        """Advance one bounded step of revision-one tag-authority publication."""
-
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None or upload.final_authority_json is None:
-                return False
-            if upload.tag_publication_receipt_json is not None:
-                return False
-            if upload.tag_set_identity is None:
-                expected_staging_identity = CollectionTagSetRoot.seal(
-                    upload.tag_staging_root_sha256
-                ).tag_set_identity
-                if upload.tag_staging_set_identity != expected_staging_identity:
-                    raise RuntimeError("staged collection tag identity is inconsistent")
-                authority = _final_authority(upload)
-                head = CollectionTagHeadDocument.seal(
-                    archive_root_sha256=str(authority["root"]["plaintext_sha256"]),
-                    revision=1,
-                    root_sha256=upload.tag_staging_root_sha256,
-                )
-                upload.tag_revision = head.revision
-                upload.tag_root_sha256 = head.root_sha256
-                upload.tag_set_identity = head.tag_set_identity
-                upload.tag_head_identity = head.head_identity
-                if head.root_sha256 is not None:
-                    session.add(
-                        CollectionUploadTagPublicationFrontierRecord(
-                            collection_id=collection_id,
-                            node_digest=head.root_sha256,
-                        )
-                    )
-                return True
-
-            frontier = session.scalar(
-                select(CollectionUploadTagPublicationFrontierRecord)
-                .where(
-                    CollectionUploadTagPublicationFrontierRecord.collection_id == collection_id,
-                    CollectionUploadTagPublicationFrontierRecord.expanded.is_(False),
-                )
-                .order_by(CollectionUploadTagPublicationFrontierRecord.node_digest)
-                .limit(1)
-            )
-            if frontier is not None:
-                node_record = session.get(CollectionTagNodeRecord, frontier.node_digest)
-                if node_record is None:
-                    raise RuntimeError("initial collection tag node is unavailable")
-                node = decode_collection_tag_node(node_record.encoded)
-                for child in node.children:
-                    existing = session.get(
-                        CollectionUploadTagPublicationFrontierRecord,
-                        (collection_id, child.digest),
-                    )
-                    if existing is None:
-                        session.add(
-                            CollectionUploadTagPublicationFrontierRecord(
-                                collection_id=collection_id,
-                                node_digest=child.digest,
-                            )
-                        )
-                frontier.expanded = True
-                return True
-
-            frontier = session.scalar(
-                select(CollectionUploadTagPublicationFrontierRecord)
-                .where(
-                    CollectionUploadTagPublicationFrontierRecord.collection_id == collection_id,
-                    CollectionUploadTagPublicationFrontierRecord.published.is_(False),
-                )
-                .order_by(CollectionUploadTagPublicationFrontierRecord.node_digest)
-                .limit(1)
-            )
-            if frontier is not None:
-                node_record = session.get(CollectionTagNodeRecord, frontier.node_digest)
-                if node_record is None:
-                    raise RuntimeError("initial collection tag node is unavailable")
-                if not upload.archive_storage_prefix:
-                    raise RuntimeError("collection archive storage prefix is missing")
-                node_digest = frontier.node_digest
-                encoded_node = node_record.encoded
-                store_name = upload.archive_store
-                prefix = upload.archive_storage_prefix
-                passphrase_id = upload.passphrase_id
-            else:
-                node_digest = None
-                encoded_node = None
-                store_name = upload.archive_store
-                prefix = upload.archive_storage_prefix
-                passphrase_id = upload.passphrase_id
-
-        store = self._archive_stores.require(store_name).store
-        if node_digest is not None and encoded_node is not None:
-            receipt = store.publish_collection_tag_node(
-                collection_id=collection_id,
-                archive_storage_prefix=prefix,
-                digest=node_digest,
-                encoded=encoded_node,
-                passphrase_id=passphrase_id,
-            )
-            with session_scope(self._session_factory) as session:
-                frontier = session.get(
-                    CollectionUploadTagPublicationFrontierRecord,
-                    (collection_id, node_digest),
-                )
-                if frontier is not None:
-                    frontier.published = True
-                    frontier.object_path = receipt.object_path
-                    frontier.provider_revision = receipt.revision
-                    frontier.stored_bytes = receipt.stored_bytes
-                    frontier.stored_sha256 = receipt.stored_sha256
-                    frontier.published_at = receipt.published_at
-            return True
-
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or upload.tag_head_identity is None:
-                return False
-            authority = _final_authority(upload)
-            head = CollectionTagHeadDocument.seal(
-                archive_root_sha256=str(authority["root"]["plaintext_sha256"]),
-                revision=upload.tag_revision or 1,
-                root_sha256=upload.tag_root_sha256,
-            )
-            if head.head_identity != upload.tag_head_identity:
-                raise RuntimeError("initial collection tag head changed")
-
-        receipt = store.publish_collection_tag_head(
+    def _artifact_custody_owner(
+        self, collection_id: int, artifact_id: str, *, forward_guard: Guard
+    ) -> ArchiveArtifactCustodyFinalizer:
+        return ArchiveArtifactCustodyFinalizer(
+            self._session_factory,
             collection_id=collection_id,
-            archive_storage_prefix=prefix,
-            document=head.to_json_bytes(),
-            passphrase_id=passphrase_id,
+            artifact_id=artifact_id,
+            config=self._config,
+            archive_stores=self._archive_stores,
+            forward_guard=forward_guard,
+            select_source=partial(self._select_artifact_custody, collection_id, artifact_id),
         )
-        receipt_json = json.dumps(
-            {
-                "object_path": receipt.object_path,
-                "provider_revision": receipt.revision,
-                "stored_bytes": receipt.stored_bytes,
-                "stored_sha256": receipt.stored_sha256,
-                "published_at": receipt.published_at,
-            },
-            sort_keys=True,
-            separators=(",", ":"),
-        )
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None:
-                return False
-            if upload.tag_set_identity != head.tag_set_identity:
-                raise RuntimeError("initial collection tag identity changed")
-            upload.tag_publication_receipt_json = receipt_json
-        return True
 
-    def _advance_catalog_projection(self, collection_id: int) -> bool:
+    def _advance_catalog_projection(
+        self, collection_id: int, *, result_resources: UploadJournalResultResources
+    ) -> bool:
         """Advance one bounded durable catalog-projection transaction."""
 
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
@@ -3444,34 +4284,61 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 return False
-            phase = upload.catalog_phase
-            if phase == "complete":
-                return False
-            if phase in {"artifact-set-identity", "inventory-identity"}:
-                _advance_catalog_identity(session, upload)
-            elif phase == "collection":
-                self._create_catalog_collection(session, upload)
-            elif phase == "tags":
-                _advance_catalog_tags(session, upload)
-            elif phase == "artifacts":
-                _advance_catalog_artifacts(session, upload)
-            elif phase == "journals":
-                _advance_catalog_journals(session, upload)
-            elif phase == "bindings":
-                _advance_catalog_bindings(session, upload)
-            elif phase == "provenance-segments":
-                _advance_catalog_provenance_segments(session, upload)
-            elif phase == "archive-objects":
-                self._advance_catalog_archive_objects(session, upload)
-            elif phase == "artifact-objects":
-                _advance_catalog_artifact_objects(session, upload)
-            elif phase == "index":
-                _advance_catalog_canonical_index(session, upload)
-            elif phase == "terminal":
-                self._publish_catalog_collection(session, upload)
-            else:  # pragma: no cover - constrained durable state
-                raise RuntimeError(f"unknown catalog finalization phase: {phase}")
-            return True
+            require_open_upload_writes(session, upload)
+            return self._commit_catalog_projection(
+                session, upload, result_resources=result_resources
+            )
+
+    def _commit_catalog_projection(
+        self,
+        session: Session,
+        upload: CollectionUploadRecord,
+        *,
+        result_resources: UploadJournalResultResources,
+    ) -> bool:
+        collection_id = upload.collection_id
+        phase = upload.catalog_phase
+        if phase == "complete":
+            return False
+        if phase in {"artifact-set-identity", "inventory-identity"}:
+            _advance_catalog_identity(session, upload)
+        elif phase == "collection":
+            self._create_catalog_collection(session, upload)
+        elif phase == "tags":
+            _advance_catalog_tags(session, upload)
+        elif phase == "artifacts":
+            _advance_catalog_artifacts(session, upload)
+        elif phase == "journals":
+            _advance_catalog_journals(session, upload)
+        elif phase == "bindings":
+            _advance_catalog_bindings(session, upload)
+        elif phase == "provenance-segments":
+            _advance_catalog_provenance_segments(session, upload)
+        elif phase == "archive-objects":
+            self._advance_catalog_archive_objects(session, upload)
+        elif phase == "artifact-objects":
+            _advance_catalog_artifact_objects(session, upload)
+        elif phase == "index":
+            from .upload_journal_result import open_upload_journal_result
+
+            _advance_catalog_canonical_index(
+                session,
+                upload,
+                result_resources=result_resources,
+                open_summary=lambda journal_id, receiver: open_upload_journal_result(
+                    session,
+                    self._journal_validation_owner.root,
+                    collection_id,
+                    journal_id,
+                    catalog=admission_provenance_catalog(),
+                    receiver=receiver,
+                ),
+            )
+        elif phase == "terminal":
+            self._publish_catalog_collection(session, upload)
+        else:  # pragma: no cover - constrained durable state
+            raise RuntimeError(f"unknown catalog finalization phase: {phase}")
+        return True
 
     def _create_catalog_collection(
         self,
@@ -3628,9 +4495,9 @@ class SqlAlchemyCollectionUploadService:
                 if record is None or record.sealed_receipt_json is None:
                     raise RuntimeError("catalog archive volume receipt is unavailable")
                 volume = (
-                    _parse_sealed_pack(record.sealed_receipt_json)
+                    parse_sealed_pack(record.sealed_receipt_json)
                     if record.kind == "pack"
-                    else _parse_sealed_raw(record.sealed_receipt_json)
+                    else parse_sealed_raw(record.sealed_receipt_json)
                 )
                 session.add(
                     CollectionArchiveObjectRecord(
@@ -3869,6 +4736,7 @@ class SqlAlchemyCollectionUploadService:
         session: Session,
         upload: CollectionUploadRecord,
     ) -> None:
+        require_open_upload_writes(session, upload)
         collection = session.get(CollectionRecord, upload.collection_id)
         if collection is None:
             raise RuntimeError("catalog collection projection is unavailable")
@@ -3911,165 +4779,164 @@ class SqlAlchemyCollectionUploadService:
         """Freeze final selections in bounded transactions before root publication."""
 
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
                 .with_for_update()
             )
-            if upload is None or upload.provenance_histories_sealed:
+            if upload is None:
                 return False
-            statement = select(CollectionUploadArtifactRecord).where(
-                CollectionUploadArtifactRecord.collection_id == collection_id
+            require_open_upload_writes(session, upload)
+            return self._stage_member_histories(session, upload)
+
+    def _stage_member_histories(self, session: Session, upload: CollectionUploadRecord) -> bool:
+        collection_id = upload.collection_id
+        if upload.provenance_histories_sealed:
+            return False
+        statement = select(CollectionUploadArtifactRecord).where(
+            CollectionUploadArtifactRecord.collection_id == collection_id
+        )
+        if upload.provenance_history_after_artifact_id is not None:
+            statement = statement.where(
+                CollectionUploadArtifactRecord.artifact_id
+                > upload.provenance_history_after_artifact_id
             )
-            if upload.provenance_history_after_artifact_id is not None:
-                statement = statement.where(
-                    CollectionUploadArtifactRecord.artifact_id
-                    > upload.provenance_history_after_artifact_id
-                )
-            artifacts = list(
-                session.scalars(
-                    statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
-                        _FINALIZATION_FILE_BATCH
-                    )
+        artifacts = list(
+            session.scalars(
+                statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
+                    _FINALIZATION_FILE_BATCH
                 )
             )
-            if not artifacts:
-                count = session.scalar(
-                    select(func.count())
-                    .select_from(CollectionUploadMemberHistoryRecord)
-                    .where(CollectionUploadMemberHistoryRecord.collection_id == collection_id)
-                )
-                if count != upload.artifact_count:
-                    raise Conflict("final member histories do not cover the artifact set")
-                upload.provenance_histories_sealed = True
-                return True
-            completion = None
-            if (
-                upload.completion_requirement_json is not None
-                and upload.completion_journal_id is None
-            ):
-                raise Conflict("accepted execution completion journal is missing")
-            if upload.completion_journal_id is not None:
-                journal = session.get(
-                    CollectionUploadProvenanceJournalRecord,
-                    (collection_id, upload.completion_journal_id),
-                )
-                if journal is None or journal.state != "sealed":
-                    raise Conflict("required completion journal is not sealed")
-                completion = _sealed_journal_history_anchor(journal)
-            for artifact in artifacts:
-                existing_history = session.get(
-                    CollectionUploadMemberHistoryRecord, (collection_id, artifact.artifact_id)
-                )
-                if existing_history is not None:
-                    upload.provenance_history_after_artifact_id = artifact.artifact_id
-                    continue
-                early = session.get(
-                    CollectionUploadArtifactProvenanceBindingRecord,
-                    (collection_id, artifact.artifact_id),
-                )
-                if early is None:
-                    raise Conflict("member history has no accepted primary binding")
-                primary = MemberHistoryPrimary.from_mapping(
-                    {
-                        "journal": _provenance_binding_row(early)["journal"],
-                        "delivery_association_id": early.delivery_association_id,
-                    }
-                )
-                roots = [MemberHistoryRoot(primary.journal, "bound")]
-                if completion is not None:
-                    roots.append(MemberHistoryRoot(completion, "bound"))
-                ordered = sorted(roots, key=lambda root: root.key)
-                commitment = RecordSetCommitment(MEMBER_HISTORY_ROOTS_SCHEMA)
-                root_rows: tuple[dict[str, Any], ...] = tuple(
-                    {"key": root.key, "value": root.to_mapping()} for root in ordered
-                )
-                for root in ordered:
-                    commitment.update(root.key, root.to_mapping())
-                root_ref = commitment.ref()
-                if early.history_imports_ref_json is None:
-                    if upload.completion_requirement_json is not None:
-                        raise Conflict(
-                            "execution member lacks its accepted input-history selection"
-                        )
-                    import_ref = RecordSetCommitment(MEMBER_HISTORY_IMPORTS_SCHEMA).ref()
-                else:
-                    import_ref = RecordSetRef.from_mapping(
-                        json.loads(early.history_imports_ref_json)
-                    )
-                history = MemberHistoryDocument(
-                    artifact_id=artifact.artifact_id,
-                    bytes=artifact.bytes,
-                    sha256=artifact.sha256,
-                    primary=primary,
-                    roots=root_ref,
-                    imports=import_ref,
-                )
-                root_pages = (
-                    RecordPage(root_ref, 0, root_rows, False),
-                    RecordPage(root_ref, 1, (), True),
-                )
-                import_pages = (
-                    (RecordPage(import_ref, 0, (), True),)
-                    if early.history_imports_ref_json is None
-                    else _iter_staged_history_pages(session, collection_id, import_ref)
-                )
-                verify_member_history_sets(
-                    history, root_pages=root_pages, import_pages=import_pages
-                )
-                new_pages = (
-                    root_pages
-                    if early.history_imports_ref_json is not None
-                    else (*root_pages, RecordPage(import_ref, 0, (), True))
-                )
-                for page in new_pages:
-                    _stage_provenance_structure(
-                        session,
-                        collection_id=collection_id,
-                        object_id="provenance-record-page-"
-                        + page.authority.records_sha256
-                        + "-"
-                        + format_archive_sequence(page.ordinal),
-                        kind="record-page",
-                        relative_path=history_record_page_object_path(
-                            page.authority.records_sha256, page.ordinal
-                        ),
-                        content=page.to_json_bytes(),
-                    )
-                content = history.to_json_bytes()
-                binding = MemberHistoryBinding(
-                    artifact.artifact_id,
-                    artifact.bytes,
-                    artifact.sha256,
-                    history.identity,
-                    len(content),
-                )
+        )
+        if not artifacts:
+            count = session.scalar(
+                select(func.count())
+                .select_from(CollectionUploadMemberHistoryRecord)
+                .where(CollectionUploadMemberHistoryRecord.collection_id == collection_id)
+            )
+            if count != upload.artifact_count:
+                raise Conflict("final member histories do not cover the artifact set")
+            upload.provenance_histories_sealed = True
+            return True
+        completion = None
+        if upload.completion_requirement_json is not None and upload.completion_journal_id is None:
+            raise Conflict("accepted execution completion journal is missing")
+        if upload.completion_journal_id is not None:
+            journal = session.get(
+                CollectionUploadProvenanceJournalRecord,
+                (collection_id, upload.completion_journal_id),
+            )
+            if journal is None or journal.state != "sealed":
+                raise Conflict("required completion journal is not sealed")
+            completion = _sealed_journal_history_anchor(journal)
+        for artifact in artifacts:
+            existing_history = session.get(
+                CollectionUploadMemberHistoryRecord, (collection_id, artifact.artifact_id)
+            )
+            if existing_history is not None:
+                upload.provenance_history_after_artifact_id = artifact.artifact_id
+                continue
+            early = session.get(
+                CollectionUploadArtifactProvenanceBindingRecord,
+                (collection_id, artifact.artifact_id),
+            )
+            if early is None:
+                raise Conflict("member history has no accepted primary binding")
+            primary = MemberHistoryPrimary.from_mapping(
+                {
+                    "journal": _provenance_binding_row(early)["journal"],
+                    "delivery_association_id": early.delivery_association_id,
+                }
+            )
+            roots = [MemberHistoryRoot(primary.journal, "bound")]
+            if completion is not None:
+                roots.append(MemberHistoryRoot(completion, "bound"))
+            ordered = sorted(roots, key=lambda root: root.key)
+            commitment = RecordSetCommitment(MEMBER_HISTORY_ROOTS_SCHEMA)
+            root_rows: tuple[dict[str, Any], ...] = tuple(
+                {"key": root.key, "value": root.to_mapping()} for root in ordered
+            )
+            for root in ordered:
+                commitment.update(root.key, root.to_mapping())
+            root_ref = commitment.ref()
+            if early.history_imports_ref_json is None:
+                if upload.completion_requirement_json is not None:
+                    raise Conflict("execution member lacks its accepted input-history selection")
+                import_ref = RecordSetCommitment(MEMBER_HISTORY_IMPORTS_SCHEMA).ref()
+            else:
+                import_ref = RecordSetRef.from_mapping(json.loads(early.history_imports_ref_json))
+            history = MemberHistoryDocument(
+                artifact_id=artifact.artifact_id,
+                bytes=artifact.bytes,
+                sha256=artifact.sha256,
+                primary=primary,
+                roots=root_ref,
+                imports=import_ref,
+            )
+            root_pages = (
+                RecordPage(root_ref, 0, root_rows, False),
+                RecordPage(root_ref, 1, (), True),
+            )
+            import_pages = (
+                (RecordPage(import_ref, 0, (), True),)
+                if early.history_imports_ref_json is None
+                else _iter_staged_history_pages(session, collection_id, import_ref)
+            )
+            verify_member_history_sets(history, root_pages=root_pages, import_pages=import_pages)
+            new_pages = (
+                root_pages
+                if early.history_imports_ref_json is not None
+                else (*root_pages, RecordPage(import_ref, 0, (), True))
+            )
+            for page in new_pages:
                 _stage_provenance_structure(
                     session,
                     collection_id=collection_id,
-                    object_id="provenance-history-" + history.identity,
-                    kind="history",
-                    relative_path=member_history_object_path(history.identity),
-                    content=content,
+                    object_id="provenance-record-page-"
+                    + page.authority.records_sha256
+                    + "-"
+                    + format_archive_sequence(page.ordinal),
+                    kind="record-page",
+                    relative_path=history_record_page_object_path(
+                        page.authority.records_sha256, page.ordinal
+                    ),
+                    content=page.to_json_bytes(),
                 )
-                existing = session.get(
-                    CollectionUploadMemberHistoryRecord, (collection_id, artifact.artifact_id)
-                )
-                binding_json = canonical_json_bytes(binding.to_mapping()).decode("utf-8")
-                if existing is None:
-                    session.add(
-                        CollectionUploadMemberHistoryRecord(
-                            collection_id=collection_id,
-                            artifact_id=artifact.artifact_id,
-                            history_sha256=history.identity,
-                            history_bytes=len(content),
-                            binding_json=binding_json,
-                        )
+            content = history.to_json_bytes()
+            binding = MemberHistoryBinding(
+                artifact.artifact_id,
+                artifact.bytes,
+                artifact.sha256,
+                history.identity,
+                len(content),
+            )
+            _stage_provenance_structure(
+                session,
+                collection_id=collection_id,
+                object_id="provenance-history-" + history.identity,
+                kind="history",
+                relative_path=member_history_object_path(history.identity),
+                content=content,
+            )
+            existing = session.get(
+                CollectionUploadMemberHistoryRecord, (collection_id, artifact.artifact_id)
+            )
+            binding_json = canonical_json_bytes(binding.to_mapping()).decode("utf-8")
+            if existing is None:
+                session.add(
+                    CollectionUploadMemberHistoryRecord(
+                        collection_id=collection_id,
+                        artifact_id=artifact.artifact_id,
+                        history_sha256=history.identity,
+                        history_bytes=len(content),
+                        binding_json=binding_json,
                     )
-                elif existing.binding_json != binding_json:
-                    raise Conflict("member history retry differs from its sealed selection")
-                upload.provenance_history_after_artifact_id = artifact.artifact_id
-            return True
+                )
+            elif existing.binding_json != binding_json:
+                raise Conflict("member history retry differs from its sealed selection")
+            upload.provenance_history_after_artifact_id = artifact.artifact_id
+        return True
 
     def _publish_next_provenance_structure(
         self, collection_id: int, *, selected_object_id: str | None = None
@@ -4135,359 +5002,13 @@ class SqlAlchemyCollectionUploadService:
                 row.receipt_json = _sealed_provenance_object_json(sealed)
         return True
 
-    def _advance_provenance_closure_validation(self, collection_id: int) -> bool:
+    def _advance_provenance_closure_validation(
+        self, collection_id: int, *, result_resources: UploadJournalResultResources
+    ) -> bool:
         """Resolve each member against its exact primary canonical snapshot."""
 
         with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            if upload is None or upload.provenance_closure_validated:
-                return False
-            if not upload.provenance_histories_sealed:
-                raise Conflict("final member history selections are not sealed")
-            statement = select(CollectionUploadArtifactRecord).where(
-                CollectionUploadArtifactRecord.collection_id == collection_id
-            )
-            if upload.provenance_validation_after_artifact_id is not None:
-                statement = statement.where(
-                    CollectionUploadArtifactRecord.artifact_id
-                    > upload.provenance_validation_after_artifact_id
-                )
-            rows = list(
-                session.scalars(
-                    statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
-                        _FINALIZATION_FILE_BATCH
-                    )
-                )
-            )
-            if rows:
-                for row in rows:
-                    binding_row = session.get(
-                        CollectionUploadArtifactProvenanceBindingRecord,
-                        (collection_id, row.artifact_id),
-                    )
-                    if binding_row is None:
-                        raise Conflict(
-                            f"canonical provenance binding is missing: {row.artifact_id}"
-                        )
-                    journal = session.get(
-                        CollectionUploadProvenanceJournalRecord,
-                        (collection_id, binding_row.journal_id),
-                    )
-                    if journal is None or journal.state != "sealed":
-                        raise Conflict(
-                            f"primary canonical journal is not sealed: {row.artifact_id}"
-                        )
-                    binding = CollectionArtifactProvenanceBindingDocument.model_validate(
-                        _provenance_binding_row(binding_row)
-                    )
-                    with validate_journal_chunks(
-                        _iter_upload_journal_chunks(
-                            session, journal, through_bytes=binding.journal.prefix_bytes
-                        ),
-                        catalog=admission_provenance_catalog(),
-                        expected_anchor=binding.journal.model_dump(mode="json"),
-                        require_exact_tail=True,
-                        require_profiles=False,
-                    ) as summary:
-                        member = ArtifactMemberIdentityDocument.model_validate(
-                            {
-                                "artifact_id": row.artifact_id,
-                                "bytes": format_scalar("sequence63", row.bytes),
-                                "sha256": row.sha256,
-                            }
-                        )
-                        verified = verify_member_binding(
-                            member=member,
-                            binding=binding,
-                            summary=summary,
-                            delivery_context_id=upload.delivery_context_id,
-                        )
-                        final = session.get(
-                            CollectionUploadMemberHistoryRecord, (collection_id, row.artifact_id)
-                        )
-                        if final is None:
-                            raise Conflict("final member history is missing")
-                        structural = session.get(
-                            CollectionUploadProvenanceStructureRecord,
-                            (collection_id, "provenance-history-" + final.history_sha256),
-                        )
-                        if structural is None:
-                            raise Conflict("final member history descriptor bytes are missing")
-                        history = _member_history_binding_row(final).verify_descriptor(
-                            structural.content
-                        )
-                        expected_primary = MemberHistoryPrimary.from_mapping(
-                            {
-                                "journal": binding.journal.model_dump(mode="json"),
-                                "delivery_association_id": binding.delivery_association_id,
-                            }
-                        )
-                        if history.primary != expected_primary:
-                            raise Conflict(
-                                "final member history differs from the accepted early primary"
-                            )
-                        verify_member_history_sets(
-                            history,
-                            root_pages=_iter_staged_history_pages(
-                                session, collection_id, history.roots
-                            ),
-                            import_pages=_iter_staged_history_pages(
-                                session, collection_id, history.imports
-                            ),
-                        )
-                        for page in _iter_staged_history_pages(
-                            session, collection_id, history.roots
-                        ):
-                            for selected in page.records:
-                                selected_anchor = MemberHistoryRoot.from_mapping(
-                                    selected["value"]
-                                ).journal
-                                if selected_anchor == history.primary.journal:
-                                    continue
-                                selected_journal = session.get(
-                                    CollectionUploadProvenanceJournalRecord,
-                                    (collection_id, selected_anchor.journal_id),
-                                )
-                                if selected_journal is None or selected_journal.state != "sealed":
-                                    raise Conflict(
-                                        "selected member history root is absent or unsealed"
-                                    )
-                                validate_journal_chunks(
-                                    _iter_upload_journal_chunks(
-                                        session,
-                                        selected_journal,
-                                        through_bytes=selected_anchor.prefix_bytes,
-                                    ),
-                                    catalog=admission_provenance_catalog(),
-                                    expected_anchor=selected_anchor.to_mapping(),
-                                    require_exact_tail=True,
-                                    require_profiles=False,
-                                ).close()
-                        validate_collection_production_records(
-                            summary.graph_validation.view,
-                            delivery_context_id=upload.delivery_context_id,
-                        )
-                        association = summary.graph_validation.objects[
-                            binding.delivery_association_id
-                        ]
-                        binding_row.completion_output_id = validate_member_completion_requirement(
-                            summary.graph_validation.view,
-                            delivery_context_id=upload.delivery_context_id,
-                            state_id=association["state"]["object_id"],
-                            requirement=(
-                                None
-                                if upload.completion_requirement_json is None
-                                else CollectionCompletionRequirementDocument.model_validate_json(
-                                    upload.completion_requirement_json
-                                )
-                            ),
-                        )
-                        decision = session.get(
-                            CollectionUploadArtifactMaterializationDecisionRecord,
-                            (collection_id, row.artifact_id),
-                        )
-                        if decision is None:
-                            raise MaterializationDecisionRequired(
-                                f"materialization decision is missing: {row.artifact_id}"
-                            )
-                        expected_hint = (
-                            None
-                            if decision.hint_json is None
-                            else tuple(json.loads(decision.hint_json)["components"])
-                        )
-                        if expected_hint != verified.materialization_hint:
-                            raise Conflict("publication hint differs from the delivered Occurrence")
-                        if (expected_hint is None) != decision.allow_missing_materialization_hint:
-                            raise MaterializationDecisionRequired(
-                                "publication requires exactly one hint or explicit omission"
-                            )
-                        upload.provenance_validation_after_artifact_id = row.artifact_id
-                        upload.provenance_validation_next_artifact_order += 1
-                return True
-            if upload.provenance_validation_next_artifact_order != upload.artifact_count:
-                raise Conflict("canonical provenance bindings do not cover the artifact set")
-            _validate_staged_canonical_journal_set(session, upload)
-            upload.provenance_closure_validated = True
-            return True
-
-    def _publish_next_provenance_archive_object(self, collection_id: int) -> bool:
-        """Publish one bounded structural page, journal segment, terminal or root."""
-
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or not upload.provenance_closure_validated:
-                return False
-            artifact_set_sha256 = upload.archive_tree_sha256
-            if (
-                artifact_set_sha256 is None
-                or upload.provenance_archive_root_receipt_json is not None
-            ):
-                return False
-            sequence = int(upload.provenance_archive_next_sequence)
-            prefix = upload.archive_storage_prefix
-            store_name = upload.archive_store
-            archive_generation = upload.archive_generation
-            passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-            document: ProvenanceVolumeDocument | None = None
-            terminal: ProvenanceTerminalDocument | None = None
-            root: ProvenanceRootDocument | None = None
-            payload = b""
-            after_artifact_id: str | None = None
-            journal_id: str | None = None
-            next_journal_offset = 0
-            next_artifact_order = int(upload.provenance_archive_next_artifact_order)
-
-            if next_artifact_order < upload.artifact_count:
-                statement = select(CollectionUploadMemberHistoryRecord).where(
-                    CollectionUploadMemberHistoryRecord.collection_id == collection_id
-                )
-                if upload.provenance_archive_after_artifact_id is not None:
-                    statement = statement.where(
-                        CollectionUploadMemberHistoryRecord.artifact_id
-                        > upload.provenance_archive_after_artifact_id
-                    )
-                rows = list(
-                    session.scalars(
-                        statement.order_by(CollectionUploadMemberHistoryRecord.artifact_id).limit(
-                            PROVENANCE_BINDING_PAGE_MEMBERS_MAX
-                        )
-                    )
-                )
-                if not rows:
-                    raise RuntimeError("provenance binding pages do not cover the member set")
-                bindings = [_member_history_binding_row(row).to_mapping() for row in rows]
-                validate_member_history_binding_page(
-                    bindings, max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX
-                )
-                payload = canonical_json_bytes(
-                    {"format": PROVENANCE_BINDINGS_FORMAT, "bindings": bindings}
-                )
-                if len(payload) > PROVENANCE_BINDING_PAGE_BYTES_MAX:
-                    raise RuntimeError("bounded binding page exceeds its byte contract")
-                document = _provenance_volume_document(
-                    archive_generation=archive_generation,
-                    artifact_set_sha256=artifact_set_sha256,
-                    sequence=sequence,
-                    payload=payload,
-                    first_artifact_id=rows[0].artifact_id,
-                    last_artifact_id=rows[-1].artifact_id,
-                    binding_count=len(rows),
-                )
-                next_artifact_order += len(rows)
-                after_artifact_id = rows[-1].artifact_id
-            else:
-                journal = _next_provenance_publication_journal(session, upload)
-                if journal is not None:
-                    offset = int(upload.provenance_archive_current_journal_offset)
-                    payload = _upload_journal_range_bytes(
-                        session,
-                        collection_id,
-                        journal.journal_id,
-                        offset=offset,
-                        size=min(PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX, journal.bytes - offset),
-                    )
-                    document = _provenance_volume_document(
-                        archive_generation=archive_generation,
-                        artifact_set_sha256=artifact_set_sha256,
-                        sequence=sequence,
-                        payload=payload,
-                        journal=journal,
-                        journal_offset=offset,
-                    )
-                    journal_id = journal.journal_id
-                    next_journal_offset = offset + len(payload)
-                elif upload.provenance_archive_terminal_receipt_json is None:
-                    terminal = ProvenanceTerminalDocument(
-                        archive_generation=archive_generation,
-                        artifact_set_sha256=artifact_set_sha256,
-                        sequence=sequence,
-                    )
-                else:
-                    if upload.provenance_archive_ordered_sha256 is None:
-                        raise RuntimeError("provenance terminal has no ordered commitment")
-                    journal_count = int(
-                        session.scalar(
-                            select(func.count())
-                            .select_from(CollectionUploadProvenanceJournalRecord)
-                            .where(
-                                CollectionUploadProvenanceJournalRecord.collection_id
-                                == collection_id
-                            )
-                        )
-                        or 0
-                    )
-                    root = ProvenanceRootDocument(
-                        archive_generation=archive_generation,
-                        artifact_set_sha256=artifact_set_sha256,
-                        delivery_context_id=upload.delivery_context_id,
-                        binding_count=upload.artifact_count,
-                        binding_tree_sha256=binding_tree_commitment(
-                            _member_history_binding_row(row)
-                            for row in session.scalars(
-                                select(CollectionUploadMemberHistoryRecord)
-                                .where(
-                                    CollectionUploadMemberHistoryRecord.collection_id
-                                    == collection_id
-                                )
-                                .order_by(CollectionUploadMemberHistoryRecord.artifact_id)
-                                .execution_options(yield_per=256)
-                            )
-                        ).root_sha256,
-                        journal_count=journal_count,
-                        ordered_volume_sha256=upload.provenance_archive_ordered_sha256,
-                    )
-
-        publisher = ArchiveProvenancePublisher(
-            object_store=self._archive_stores.require(store_name).immutable_objects,
-            passphrase=passphrase,
-            scrypt_log_n=self._config.archive_scrypt_work_factor,
-        )
-        if root is not None:
-            sealed_root = publisher.publish_root(archive_storage_prefix=prefix, root=root)
-            with session_scope(self._session_factory) as session:
-                upload = session.scalar(
-                    select(CollectionUploadRecord)
-                    .where(CollectionUploadRecord.collection_id == collection_id)
-                    .with_for_update()
-                )
-                if upload is None:
-                    return False
-                if upload.provenance_archive_root_receipt_json is None:
-                    upload.provenance_identity = sealed_root.identity
-                    upload.provenance_archive_root_receipt_json = _sealed_provenance_json(
-                        sealed_root
-                    )
-            return True
-        if terminal is not None:
-            sealed_terminal = publisher.publish_terminal(
-                archive_storage_prefix=prefix, terminal=terminal
-            )
-            with session_scope(self._session_factory) as session:
-                upload = session.scalar(
-                    select(CollectionUploadRecord)
-                    .where(CollectionUploadRecord.collection_id == collection_id)
-                    .with_for_update()
-                )
-                if upload is None:
-                    return False
-                if upload.provenance_archive_terminal_receipt_json is None:
-                    digest = _provenance_commitment(upload)
-                    update_provenance_commitment(digest, terminal)
-                    upload.provenance_archive_terminal_receipt_json = (
-                        _sealed_provenance_object_json(sealed_terminal)
-                    )
-                    upload.provenance_archive_ordered_sha256 = digest.hexdigest()
-                    upload.provenance_archive_hash_state = None
-            return True
-        assert document is not None
-        sealed = publisher.publish_volume(
-            archive_storage_prefix=prefix, document=document, payload=payload
-        )
-        with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
@@ -4495,241 +5016,258 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None:
                 return False
-            if upload.provenance_archive_next_sequence != sequence:
-                return True
-            digest = _provenance_commitment(upload)
-            update_provenance_commitment(digest, document)
-            session.add(
-                CollectionUploadProvenanceArchiveVolumeRecord(
-                    collection_id=collection_id,
-                    sequence=sequence,
-                    kind=document.payload.kind,
-                    document_json=document.to_json_bytes().decode("utf-8"),
-                    payload_receipt_json=_sealed_provenance_object_json(sealed.payload),
-                    metadata_receipt_json=_sealed_provenance_object_json(sealed.metadata),
+            require_open_upload_writes(session, upload)
+            return self._validate_provenance_closure(
+                session, upload, result_resources=result_resources
+            )
+
+    def _validate_provenance_closure(
+        self,
+        session: Session,
+        upload: CollectionUploadRecord,
+        *,
+        result_resources: UploadJournalResultResources,
+    ) -> bool:
+        from .upload_journal_prefix import verify_selected_upload_journal_prefix
+
+        collection_id = upload.collection_id
+        if upload.provenance_closure_validated:
+            return False
+        if not upload.provenance_histories_sealed:
+            raise Conflict("final member history selections are not sealed")
+        statement = select(CollectionUploadArtifactRecord).where(
+            CollectionUploadArtifactRecord.collection_id == collection_id
+        )
+        if upload.provenance_validation_after_artifact_id is not None:
+            statement = statement.where(
+                CollectionUploadArtifactRecord.artifact_id
+                > upload.provenance_validation_after_artifact_id
+            )
+        rows = list(
+            session.scalars(
+                statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
+                    _FINALIZATION_FILE_BATCH
                 )
             )
-            upload.provenance_archive_next_sequence = sequence + 1
-            upload.provenance_archive_hash_state = digest.export_state()
-            upload.provenance_archive_next_artifact_order = next_artifact_order
-            if after_artifact_id is not None:
-                upload.provenance_archive_after_artifact_id = after_artifact_id
-            if journal_id is not None:
-                if upload.provenance_archive_current_journal_id not in {None, journal_id}:
-                    raise RuntimeError("provenance journal publication changed identity")
-                if document.journal_bytes == next_journal_offset:
-                    upload.provenance_archive_last_journal_id = journal_id
-                    upload.provenance_archive_current_journal_id = None
-                    upload.provenance_archive_current_journal_offset = 0
-                else:
-                    upload.provenance_archive_current_journal_id = journal_id
-                    upload.provenance_archive_current_journal_offset = next_journal_offset
+        )
+        if rows:
+            for row in rows:
+                binding_row = session.get(
+                    CollectionUploadArtifactProvenanceBindingRecord,
+                    (collection_id, row.artifact_id),
+                )
+                if binding_row is None:
+                    raise Conflict(f"canonical provenance binding is missing: {row.artifact_id}")
+                journal = session.get(
+                    CollectionUploadProvenanceJournalRecord,
+                    (collection_id, binding_row.journal_id),
+                )
+                if journal is None or journal.state != "sealed":
+                    raise Conflict(f"primary canonical journal is not sealed: {row.artifact_id}")
+                binding = CollectionArtifactProvenanceBindingDocument.model_validate(
+                    _provenance_binding_row(binding_row)
+                )
+                member = ArtifactMemberIdentityDocument.model_validate(
+                    {
+                        "artifact_id": row.artifact_id,
+                        "bytes": format_scalar("sequence63", row.bytes),
+                        "sha256": row.sha256,
+                    }
+                )
+                primary = self._primary_facts.verify(
+                    session,
+                    upload,
+                    member=member,
+                    binding=binding,
+                    result_resources=result_resources,
+                    catalog=admission_provenance_catalog(),
+                )
+                if primary is None:
+                    return True
+                verified = primary.verified
+                final = session.get(
+                    CollectionUploadMemberHistoryRecord, (collection_id, row.artifact_id)
+                )
+                if final is None:
+                    raise Conflict("final member history is missing")
+                structural = session.get(
+                    CollectionUploadProvenanceStructureRecord,
+                    (collection_id, "provenance-history-" + final.history_sha256),
+                )
+                if structural is None:
+                    raise Conflict("final member history descriptor bytes are missing")
+                history = provenance_volume_source.member_history_binding_row(
+                    final
+                ).verify_descriptor(structural.content)
+                expected_primary = MemberHistoryPrimary.from_mapping(
+                    {
+                        "journal": binding.journal.model_dump(mode="json"),
+                        "delivery_association_id": binding.delivery_association_id,
+                    }
+                )
+                if history.primary != expected_primary:
+                    raise Conflict("final member history differs from the accepted early primary")
+                verify_member_history_sets(
+                    history,
+                    root_pages=_iter_staged_history_pages(session, collection_id, history.roots),
+                    import_pages=_iter_staged_history_pages(
+                        session, collection_id, history.imports
+                    ),
+                )
+                for page in _iter_staged_history_pages(session, collection_id, history.roots):
+                    for selected in page.records:
+                        selected_anchor = MemberHistoryRoot.from_mapping(selected["value"]).journal
+                        if selected_anchor == history.primary.journal:
+                            continue
+                        selected_journal = session.get(
+                            CollectionUploadProvenanceJournalRecord,
+                            (collection_id, selected_anchor.journal_id),
+                        )
+                        if selected_journal is None or selected_journal.state != "sealed":
+                            raise Conflict("selected member history root is absent or unsealed")
+                        verify_selected_upload_journal_prefix(
+                            session,
+                            self._journal_validation_owner.root,
+                            collection_id,
+                            selected_anchor,
+                            catalog=admission_provenance_catalog(),
+                            result_resources=result_resources,
+                        )
+                binding_row.completion_output_id = primary.completion_output_id
+                decision = session.get(
+                    CollectionUploadArtifactMaterializationDecisionRecord,
+                    (collection_id, row.artifact_id),
+                )
+                if decision is None:
+                    raise MaterializationDecisionRequired(
+                        f"materialization decision is missing: {row.artifact_id}"
+                    )
+                expected_hint = (
+                    None
+                    if decision.hint_json is None
+                    else tuple(json.loads(decision.hint_json)["components"])
+                )
+                if expected_hint != verified.materialization_hint:
+                    raise Conflict("publication hint differs from the delivered Occurrence")
+                if (expected_hint is None) != decision.allow_missing_materialization_hint:
+                    raise MaterializationDecisionRequired(
+                        "publication requires exactly one hint or explicit omission"
+                    )
+                upload.provenance_validation_after_artifact_id = row.artifact_id
+                upload.provenance_validation_next_artifact_order += 1
             return True
+        if upload.provenance_validation_next_artifact_order != upload.artifact_count:
+            raise Conflict("canonical provenance bindings do not cover the artifact set")
+        # Derived preparation owns no publication authority. Receive its actual
+        # resources before the separate complete current raw terminal barrier.
+        if not self._primary_facts.retire(session, collection_id):
+            return True
+        # Member cursors retain provisional accepted-prefix facts. Resolve the
+        # complete current raw histories before recording closure success.
+        _validate_staged_canonical_journal_set(session, upload)
+        upload.provenance_closure_validated = True
+        return True
 
     def _advance_archive_tree_checkpoint(self, collection_id: int) -> bool:
         """Commit the ID-ordered artifact set in bounded catalog scans."""
 
         with session_scope(self._session_factory) as session:
+            _writer(session)
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(CollectionUploadRecord.collection_id == collection_id)
                 .with_for_update()
             )
-            if upload is None or upload.archive_tree_sha256 is not None:
+            if upload is None:
                 return False
-            digest = (
-                CheckpointSHA256.from_state(upload.archive_tree_hash_state)
-                if upload.archive_tree_hash_state is not None
-                else CheckpointSHA256()
-            )
-            if upload.archive_tree_next_artifact_order == 0:
-                digest.update(b'{"artifacts":[')
-            statement = select(CollectionUploadArtifactRecord).where(
-                CollectionUploadArtifactRecord.collection_id == collection_id
-            )
-            if upload.archive_tree_after_artifact_id is not None:
-                statement = statement.where(
-                    CollectionUploadArtifactRecord.artifact_id
-                    > upload.archive_tree_after_artifact_id
-                )
-            rows = list(
-                session.scalars(
-                    statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
-                        _FINALIZATION_FILE_BATCH
-                    )
-                )
-            )
-            if not rows:
-                if (
-                    upload.archive_tree_next_artifact_order != upload.artifact_count
-                    or upload.artifact_count < 1
-                ):
-                    raise RuntimeError("artifact set does not cover registered artifacts")
-                digest.update(b'],"format":"riverhog-artifact-set/v1"}')
-                upload.archive_tree_sha256 = digest.hexdigest()
-                upload.archive_tree_hash_state = None
-                return True
-            expected = upload.archive_tree_next_artifact_order
-            for row in rows:
-                if expected:
-                    digest.update(b",")
-                digest.update(
-                    canonical_json_bytes(
-                        {
-                            "artifact_id": row.artifact_id,
-                            "bytes": format_scalar("nonnegative", row.bytes),
-                            "sha256": row.sha256,
-                        }
-                    )
-                )
-                expected += 1
-            upload.archive_tree_next_artifact_order = expected
-            upload.archive_tree_after_artifact_id = rows[-1].artifact_id
-            if expected == upload.artifact_count:
-                digest.update(b'],"format":"riverhog-artifact-set/v1"}')
-                upload.archive_tree_sha256 = digest.hexdigest()
-                upload.archive_tree_hash_state = None
-            else:
-                upload.archive_tree_hash_state = digest.export_state()
-            return True
+            require_open_upload_writes(session, upload)
+            return self._commit_archive_tree(session, upload)
 
-    def _publish_next_archive_volume_metadata(self, collection_id: int) -> bool:
-        """Publish and checkpoint one bounded volume document in sequence order."""
-
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None or upload.archive_tree_sha256 is None:
-                return False
-            total_volumes = _planner_checkpoint(upload).next_sequence
-            sequence = upload.archive_volume_next_sequence
-            if sequence >= total_volumes:
-                if sequence != total_volumes:
-                    raise RuntimeError("archive volume metadata checkpoint exceeds its authority")
-                if upload.archive_terminal_receipt_json is not None:
-                    if upload.archive_ordered_volume_sha256 is None:
-                        raise RuntimeError("archive terminal has no ordered commitment")
-                    return False
-                prefix = upload.archive_storage_prefix
-                store_name = upload.archive_store
-                archive_generation = upload.archive_generation
-                passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-                artifact_set_sha256 = upload.archive_tree_sha256
-                terminal = build_collection_archive_terminal_document(
-                    archive_generation=archive_generation,
-                    artifact_set_sha256=artifact_set_sha256,
-                    sequence=sequence,
-                )
-                terminal_mode = True
-            else:
-                terminal_mode = False
-            if terminal_mode:
-                record = None
-            else:
-                record = session.scalar(
-                    select(CollectionArchiveObjectUploadRecord).where(
-                        CollectionArchiveObjectUploadRecord.collection_id == collection_id,
-                        CollectionArchiveObjectUploadRecord.sequence == sequence,
-                    )
-                )
-                if record is None or record.sealed_receipt_json is None:
-                    raise RuntimeError("archive volume metadata source is not sealed")
-                prefix = upload.archive_storage_prefix
-                store_name = upload.archive_store
-                archive_generation = upload.archive_generation
-                passphrase = self._config.archive_passphrase_for(upload.passphrase_id)
-                artifact_set_sha256 = upload.archive_tree_sha256
-                receipt: SealedPackVolume | SealedRawVolume
-                plan: PackVolumePlan | None
-                if record.kind == "pack":
-                    plan = parse_pack_volume_plan(record.plan_json)
-                    receipt = _parse_sealed_pack(record.sealed_receipt_json)
-                elif record.kind == "segment":
-                    plan = None
-                    receipt = _parse_sealed_raw(record.sealed_receipt_json)
-                else:
-                    raise RuntimeError(f"unsupported archive volume kind: {record.kind}")
-        publisher = ArchiveRootPublisher(
-            object_store=self._archive_stores.require(store_name).immutable_objects,
-            passphrase=passphrase,
-            scrypt_log_n=self._config.archive_scrypt_work_factor,
+    def _commit_archive_tree(self, session: Session, upload: CollectionUploadRecord) -> bool:
+        collection_id = upload.collection_id
+        if upload.archive_tree_sha256 is not None:
+            return False
+        digest = (
+            CheckpointSHA256.from_state(upload.archive_tree_hash_state)
+            if upload.archive_tree_hash_state is not None
+            else CheckpointSHA256()
         )
-        document: CollectionArchiveTerminalDocument | CollectionArchiveVolumeDocument
-        if terminal_mode:
-            document = terminal
-            published = publisher.publish_terminal_metadata(
-                archive_storage_prefix=prefix, document=terminal
+        if upload.archive_tree_next_artifact_order == 0:
+            digest.update(b'{"artifacts":[')
+        statement = select(CollectionUploadArtifactRecord).where(
+            CollectionUploadArtifactRecord.collection_id == collection_id
+        )
+        if upload.archive_tree_after_artifact_id is not None:
+            statement = statement.where(
+                CollectionUploadArtifactRecord.artifact_id > upload.archive_tree_after_artifact_id
             )
-        else:
-            volume_document = build_collection_archive_volume_document(
-                archive_generation=archive_generation,
-                artifact_set_sha256=artifact_set_sha256,
-                plan=plan,
-                receipt=receipt,
-            )
-            document = volume_document
-            published = publisher.publish_volume_metadata(
-                archive_storage_prefix=prefix,
-                document=volume_document,
-            )
-        with session_scope(self._session_factory) as session:
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(CollectionUploadRecord.collection_id == collection_id)
-                .with_for_update()
-            )
-            record = (
-                session.scalar(
-                    select(CollectionArchiveObjectUploadRecord)
-                    .where(
-                        CollectionArchiveObjectUploadRecord.collection_id == collection_id,
-                        CollectionArchiveObjectUploadRecord.sequence == sequence,
-                    )
-                    .with_for_update()
+        rows = list(
+            session.scalars(
+                statement.order_by(CollectionUploadArtifactRecord.artifact_id).limit(
+                    _FINALIZATION_FILE_BATCH
                 )
-                if not terminal_mode
-                else None
             )
-            if upload is None or (not terminal_mode and record is None):
-                return False
-            if upload.archive_volume_next_sequence != sequence:
-                return True
-            digest = (
-                CheckpointSHA256.from_state(upload.archive_volume_hash_state)
-                if upload.archive_volume_hash_state is not None
-                else CheckpointSHA256()
-            )
-            update_archive_sequence_commitment(digest, document)
-            if terminal_mode:
-                upload.archive_terminal_receipt_json = _archive_volume_metadata_receipt_json(
-                    published
-                )
-                upload.archive_ordered_volume_sha256 = digest.hexdigest()
-                upload.archive_volume_hash_state = None
-            else:
-                assert record is not None
-                record.metadata_receipt_json = _archive_volume_metadata_receipt_json(published)
-                upload.archive_volume_next_sequence = sequence + 1
-                upload.archive_volume_hash_state = digest.export_state()
+        )
+        if not rows:
+            if (
+                upload.archive_tree_next_artifact_order != upload.artifact_count
+                or upload.artifact_count < 1
+            ):
+                raise RuntimeError("artifact set does not cover registered artifacts")
+            digest.update(b'],"format":"riverhog-artifact-set/v1"}')
+            upload.archive_tree_sha256 = digest.hexdigest()
+            upload.archive_tree_hash_state = None
             return True
+        expected = upload.archive_tree_next_artifact_order
+        for row in rows:
+            if expected:
+                digest.update(b",")
+            digest.update(
+                canonical_json_bytes(
+                    {
+                        "artifact_id": row.artifact_id,
+                        "bytes": format_scalar("nonnegative", row.bytes),
+                        "sha256": row.sha256,
+                    }
+                )
+            )
+            expected += 1
+        upload.archive_tree_next_artifact_order = expected
+        upload.archive_tree_after_artifact_id = rows[-1].artifact_id
+        if expected == upload.artifact_count:
+            digest.update(b'],"format":"riverhog-artifact-set/v1"}')
+            upload.archive_tree_sha256 = digest.hexdigest()
+            upload.archive_tree_hash_state = None
+        else:
+            upload.archive_tree_hash_state = digest.export_state()
+        return True
 
-    def _requeue_finalization_step(self, collection_id: int) -> None:
+    def _drain_archive_immutable_report(self, collection_id: int) -> bool:
+        return drain_original_immutable_report(self._session_factory, collection_id)
+
+    def _requeue_finalization_step(self, claim: _FinalizationClaim) -> None:
         now = utc_timestamp_now()
         with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None:
+            _writer(session)
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == claim.collection_id)
+                .with_for_update()
+            )
+            if (
+                upload is None
+                or upload.state != "finalizing"
+                or upload.archive_phase != "finalizing"
+                or upload.archive_claim_id != claim.claim_id
+            ):
                 return
-            upload.state = "finalizing"
+            if require_archive_write_control(session, upload).gate != "open":
+                return
+            upload.archive_claim_id = None
             upload.archive_phase = "finalization_queued"
             upload.archive_phase_updated_at = now
             upload.archive_next_attempt_at = now
             upload.archive_failure = None
-
-    def _begin_final_publication_attempt(self, collection_id: int) -> None:
-        with session_scope(self._session_factory) as session:
-            upload = session.get(CollectionUploadRecord, collection_id)
-            if upload is None:
-                return
-            upload.archive_attempt_count += 1
 
 
 def _catalog_cursor(upload: CollectionUploadRecord) -> dict[str, object]:
@@ -5010,18 +5548,40 @@ def _advance_catalog_artifacts(session: Session, upload: CollectionUploadRecord)
         upload.catalog_phase = "journals"
         upload.catalog_cursor_json = "{}"
         return
-    session.execute(
-        insert(CollectionArtifactRecord),
-        [
+    requirement = (
+        None
+        if upload.completion_requirement_json is None
+        else CollectionCompletionRequirementDocument.model_validate_json(
+            upload.completion_requirement_json
+        ).identity
+    )
+    projected: list[dict[str, object]] = []
+    for row in rows:
+        original = row.custody_receipt_json
+        if original is None:
+            raise RuntimeError("catalog publication requires original artifact custody")
+        receipt = _validate_member_custody_receipt(upload.collection_id, row, original)
+        binding = session.get(
+            CollectionUploadArtifactProvenanceBindingRecord,
+            (upload.collection_id, row.artifact_id),
+        )
+        if (
+            binding is None
+            or receipt.primary.model_dump(mode="json") != _provenance_binding_row(binding)
+            or receipt.completion_requirement_sha256 != requirement
+        ):
+            raise Conflict("catalog custody differs from the accepted primary construction")
+        projected.append(
             {
                 "collection_id": upload.collection_id,
                 "artifact_id": row.artifact_id,
                 "bytes": row.bytes,
                 "sha256": row.sha256,
+                "custody_receipt_json": original,
             }
-            for row in rows
-        ],
-    )
+        )
+    # The original octets and the cursor commit in the same finalizer transaction.
+    session.execute(insert(CollectionArtifactRecord), projected)
     _set_catalog_cursor(
         upload,
         {
@@ -5359,7 +5919,7 @@ def _advance_catalog_artifact_objects(session: Session, upload: CollectionUpload
             ],
         )
     elif record.kind == "segment":
-        volume = _parse_sealed_raw(record.sealed_receipt_json)
+        volume = parse_sealed_raw(record.sealed_receipt_json)
         if record.source_first_part is None:
             raise RuntimeError("raw archive segment has no source sequence")
         session.add(
@@ -5383,41 +5943,60 @@ def _advance_catalog_artifact_objects(session: Session, upload: CollectionUpload
 class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
     """Read exact sealed upload journals on demand while indexing one member."""
 
-    def __init__(self, session: Session, collection_id: int) -> None:
+    def __init__(
+        self,
+        session: Session,
+        collection_id: int,
+        *,
+        open_summary: Callable[[str, UploadJournalResultOpening], JournalSummary],
+        result_resources: UploadJournalResultResources,
+    ) -> None:
         self.session = session
         self.collection_id = collection_id
-        self.cache: OrderedDict[str, JournalSummary] = OrderedDict()
+        self._open_summary = open_summary
+        self._result_resources = result_resources
+        self.cache: OrderedDict[str, UploadJournalResultOpening] = OrderedDict()
 
     def __enter__(self) -> _StagedCanonicalCorpus:
         return self
 
     def __exit__(self, *_exc: object) -> None:
-        for summary in self.cache.values():
-            summary.close()
+        self._result_resources.close()
         self.cache.clear()
 
+    def _receive_oldest(self) -> None:
+        key = next(iter(self.cache))
+        self._result_resources.retire(self.cache[key])
+        del self.cache[key]
+
     def __getitem__(self, journal_id: str) -> JournalSummary:
+        if len(self.cache) > 2:
+            self._receive_oldest()
         cached = self.cache.get(journal_id)
         if cached is not None:
             self.cache.move_to_end(journal_id)
-            return cached
+            assert cached.result is not None
+            return cached.result
         record = self.session.get(
             CollectionUploadProvenanceJournalRecord, (self.collection_id, journal_id)
         )
         if record is None or record.state != "sealed":
             raise KeyError(journal_id)
-        summary = validate_journal_chunks(
-            _iter_upload_journal_chunks(self.session, record),
-            catalog=admission_provenance_catalog(),
-            require_profiles=False,
-        )
-        if summary.journal_sha256 != record.sha256 or summary.journal_bytes != record.bytes:
-            summary.close()
+        self._result_resources.receive_retired()
+        while not self._result_resources.capacity_available and self.cache:
+            self._receive_oldest()
+        original = self._result_resources.retain()
+        summary = original.result = self._open_summary(journal_id, original)
+        if (
+            summary.journal_id != record.journal_id
+            or summary.journal_sha256 != record.sha256
+            or summary.journal_bytes != record.bytes
+        ):
+            self._result_resources.receive(original)
             raise ProvenanceValidationError("staged canonical journal identity changed")
-        self.cache[journal_id] = summary
+        self.cache[journal_id] = original
         if len(self.cache) > 2:
-            _, removed = self.cache.popitem(last=False)
-            removed.close()
+            self._receive_oldest()
         return summary
 
     def __iter__(self) -> Iterator[str]:
@@ -5438,7 +6017,13 @@ class _StagedCanonicalCorpus(Mapping[str, JournalSummary]):
         )
 
 
-def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadRecord) -> None:
+def _advance_catalog_canonical_index(
+    session: Session,
+    upload: CollectionUploadRecord,
+    *,
+    open_summary: Callable[[str, UploadJournalResultOpening], JournalSummary],
+    result_resources: UploadJournalResultResources,
+) -> None:
     """Stage one member's exact canonical discovery support before publication."""
 
     cursor = _catalog_cursor(upload)
@@ -5510,7 +6095,12 @@ def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadR
         _provenance_binding_row(binding_record)
     )
     with (
-        _StagedCanonicalCorpus(session, upload.collection_id) as corpus,
+        _StagedCanonicalCorpus(
+            session,
+            upload.collection_id,
+            open_summary=open_summary,
+            result_resources=result_resources,
+        ) as corpus,
         corpus[binding.journal.journal_id].borrow() as full_primary,
     ):
         expected_primary = binding.journal.model_dump(mode="json")
@@ -5551,7 +6141,9 @@ def _advance_catalog_canonical_index(session: Session, upload: CollectionUploadR
                     primary=primary,
                     corpus=corpus,
                     delivery_context_id=upload.delivery_context_id,
-                    history_binding=_member_history_binding_row(history_record),
+                    history_binding=provenance_volume_source.member_history_binding_row(
+                        history_record
+                    ),
                     closure=closure,
                     catalog=admission_provenance_catalog(),
                 ) as relevance,
@@ -5941,10 +6533,6 @@ def _stage_provenance_structure(
         raise Conflict("provenance structure retry differs from accepted bytes")
 
 
-def _member_history_binding_row(row: CollectionUploadMemberHistoryRecord) -> MemberHistoryBinding:
-    return MemberHistoryBinding.from_mapping(json.loads(row.binding_json))
-
-
 def _iter_staged_history_pages(
     session: Session, collection_id: int, authority: RecordSetRef
 ) -> Iterator[RecordPage]:
@@ -5965,7 +6553,13 @@ def _iter_staged_history_pages(
     raise Conflict("member history set has no terminal")
 
 
-def _staged_history_closure(session: Session, collection_id: int) -> MemberHistoryClosure:
+def _staged_history_closure(
+    session: Session,
+    collection_id: int,
+    *,
+    catalog: ContractCatalog | None = None,
+    imported_primary_state: Callable[[MemberHistoryDocument], Mapping[str, Any]] | None = None,
+) -> MemberHistoryClosure:
     def read_structure(path: str) -> Iterator[bytes]:
         row = session.get(
             CollectionUploadProvenanceStructureRecord,
@@ -5985,19 +6579,65 @@ def _staged_history_closure(session: Session, collection_id: int) -> MemberHisto
         MemberHistoryStore(read_structure),
         read_journal,
         member_role=COLLECTION_MEMBER_ROLE,
-        catalog=admission_provenance_catalog(),
+        catalog=admission_provenance_catalog() if catalog is None else catalog,
+        imported_primary_state=imported_primary_state,
     )
 
 
 def _validate_staged_canonical_journal_set(
     session: Session, upload: CollectionUploadRecord
 ) -> None:
-    """Resolve explicit member roots/imports and exact documentary dependencies."""
+    """Resolve complete current history in one existing terminal transaction.
+
+    Raw source admission and indexing precede imported-primary point selection.
+    This disposable corpus belongs only to this synchronous terminal attempt;
+    interruption restarts its current-byte checks, never a cached success.
+    """
+    from .upload_journal_result import prepare_upload_journal_result
+    from .upload_terminal_primary import selected_upload_terminal_primary_state
+
     collection_id = upload.collection_id
+    catalog = admission_provenance_catalog()
     with (
-        _staged_history_closure(session, collection_id) as closure,
         CanonicalCorpusValidator() as corpus,
+        _staged_history_closure(
+            session,
+            collection_id,
+            catalog=catalog,
+            imported_primary_state=partial(
+                selected_upload_terminal_primary_state,
+                session,
+                collection_id,
+                catalog=catalog,
+                corpus=corpus,
+            ),
+        ) as closure,
     ):
+        count = 0
+        for record in session.scalars(
+            select(CollectionUploadProvenanceJournalRecord)
+            .where(CollectionUploadProvenanceJournalRecord.collection_id == collection_id)
+            .order_by(CollectionUploadProvenanceJournalRecord.journal_id)
+            .execution_options(yield_per=_FINALIZATION_FILE_BATCH, populate_existing=True)
+        ):
+            if record.state != "sealed":
+                raise Conflict("canonical provenance corpus contains an unsealed journal")
+            admission = prepare_upload_journal_result(
+                session, collection_id, record.journal_id, catalog=catalog
+            )
+            with validate_journal_chunks(
+                _iter_upload_journal_chunks(session, record),
+                catalog=catalog,
+                expected_anchor=admission.anchor,
+                require_exact_tail=True,
+                require_profiles=False,
+            ) as summary:
+                corpus.add(summary)
+            if not admission.verify_current(session):
+                raise Conflict("canonical provenance source or validation job changed")
+            count += 1
+        if count == 0:
+            raise Conflict("canonical provenance corpus is absent")
         for final in session.scalars(
             select(CollectionUploadMemberHistoryRecord)
             .where(CollectionUploadMemberHistoryRecord.collection_id == collection_id)
@@ -6006,34 +6646,34 @@ def _validate_staged_canonical_journal_set(
         ):
             # Publication retains every selected local documentary root. Each
             # inherited selection keeps its own exact accepted transfer extent.
-            closure.resolve(_member_history_binding_row(final), extent=RETAINED_HISTORY_EXTENT)
-        count = 0
-        for record in session.scalars(
-            select(CollectionUploadProvenanceJournalRecord)
+            closure.resolve(
+                provenance_volume_source.member_history_binding_row(final),
+                extent=RETAINED_HISTORY_EXTENT,
+            )
+        for journal_id in session.scalars(
+            select(CollectionUploadProvenanceJournalRecord.journal_id)
             .where(CollectionUploadProvenanceJournalRecord.collection_id == collection_id)
             .order_by(CollectionUploadProvenanceJournalRecord.journal_id)
             .execution_options(yield_per=_FINALIZATION_FILE_BATCH)
         ):
-            if record.state != "sealed":
-                raise Conflict("canonical provenance corpus contains an unsealed journal")
-            if not closure.contains_journal(record.journal_id):
+            if not closure.contains_journal(journal_id):
                 raise Conflict("canonical provenance corpus contains unrelated journals")
-            with validate_journal_chunks(
-                _iter_upload_journal_chunks(session, record),
-                catalog=admission_provenance_catalog(),
-                require_profiles=False,
-            ) as summary:
-                corpus.add(summary)
-            count += 1
-        if count == 0:
-            raise Conflict("canonical provenance corpus is absent")
         corpus.validate()
-        _validate_staged_execution_completion(session, upload, closure)
+        _validate_staged_execution_completion(
+            session, upload, closure, catalog=catalog, corpus=corpus
+        )
 
 
 def _validate_staged_execution_completion(
-    session: Session, upload: CollectionUploadRecord, closure: MemberHistoryClosure
+    session: Session,
+    upload: CollectionUploadRecord,
+    closure: MemberHistoryClosure,
+    *,
+    catalog: ContractCatalog,
+    corpus: CanonicalCorpusValidator,
 ) -> None:
+    from .upload_terminal_primary import selected_upload_terminal_primary_state
+
     if upload.completion_requirement_json is None:
         if upload.completion_journal_id is not None:
             raise Conflict("completion selection lacks an accepted requirement")
@@ -6133,24 +6773,36 @@ def _validate_staged_execution_completion(
                     raise Conflict(
                         "completion output has no exact primary/key/history correspondence"
                     )
-                history = closure.store.descriptor(_member_history_binding_row(final))
+                history = closure.store.descriptor(
+                    provenance_volume_source.member_history_binding_row(final)
+                )
+                current_primary = MemberHistoryPrimary.from_mapping(
+                    {
+                        "journal": _provenance_binding_row(binding)["journal"],
+                        "delivery_association_id": binding.delivery_association_id,
+                    }
+                )
+                if history.primary != current_primary:
+                    raise Conflict("completion history differs from the current member primary")
                 if not any(
                     root.journal == completion_anchor
                     for root in closure.store.roots(
-                        _member_history_binding_row(final), extent=BOUND_HISTORY_EXTENT
+                        provenance_volume_source.member_history_binding_row(final),
+                        extent=BOUND_HISTORY_EXTENT,
                     )
                 ):
                     raise Conflict("member history omits its required exact completion snapshot")
-                with closure.summary_at(history.primary.journal) as primary:
-                    association = primary.graph_validation.objects[binding.delivery_association_id]
-                    yield {
-                        "output_id": binding.completion_output_id,
-                        "artifact_id": binding.artifact_id,
-                        "bytes": str(member.bytes),
-                        "sha256": member.sha256,
-                        "primary": history.primary.to_mapping(),
-                        "state": external_reference(primary, association["state"]["object_id"]),
-                    }
+                state = selected_upload_terminal_primary_state(
+                    session, upload.collection_id, history, catalog=catalog, corpus=corpus
+                )
+                yield {
+                    "output_id": binding.completion_output_id,
+                    "artifact_id": binding.artifact_id,
+                    "bytes": str(member.bytes),
+                    "sha256": member.sha256,
+                    "primary": history.primary.to_mapping(),
+                    "state": state,
+                }
 
         def imports() -> Iterator[Mapping[str, Any]]:
             for final in session.scalars(
@@ -6159,7 +6811,9 @@ def _validate_staged_execution_completion(
                 .order_by(CollectionUploadMemberHistoryRecord.artifact_id)
                 .execution_options(yield_per=_FINALIZATION_FILE_BATCH)
             ):
-                history = closure.store.descriptor(_member_history_binding_row(final))
+                history = closure.store.descriptor(
+                    provenance_volume_source.member_history_binding_row(final)
+                )
                 yield {"artifact_id": final.artifact_id, "imports": history.imports.to_mapping()}
 
         record_identities = validate_completion_preimages(
@@ -6198,303 +6852,6 @@ def _validate_staged_execution_completion(
         upload.completion_receipt_json = encoded
 
 
-def _provenance_volume_document(
-    *,
-    archive_generation: str,
-    artifact_set_sha256: str,
-    sequence: int,
-    payload: bytes,
-    first_artifact_id: str | None = None,
-    last_artifact_id: str | None = None,
-    binding_count: int | None = None,
-    journal: CollectionUploadProvenanceJournalRecord | None = None,
-    journal_offset: int | None = None,
-) -> ProvenanceVolumeDocument:
-    kind: Literal["bindings", "journal"] = "journal" if journal is not None else "bindings"
-    identity = ProvenancePayload(
-        kind=kind,
-        sequence=sequence,
-        bytes=len(payload),
-        sha256=hashlib.sha256(payload).hexdigest(),
-    )
-    if journal is None:
-        return ProvenanceVolumeDocument(
-            archive_generation=archive_generation,
-            artifact_set_sha256=artifact_set_sha256,
-            sequence=sequence,
-            payload=identity,
-            first_artifact_id=first_artifact_id,
-            last_artifact_id=last_artifact_id,
-            binding_count=binding_count,
-        )
-    return ProvenanceVolumeDocument(
-        archive_generation=archive_generation,
-        artifact_set_sha256=artifact_set_sha256,
-        sequence=sequence,
-        payload=identity,
-        journal_id=journal.journal_id,
-        journal_offset=journal_offset,
-        journal_bytes=journal.bytes,
-        journal_sha256=journal.sha256,
-    )
-
-
-def _provenance_commitment(upload: CollectionUploadRecord) -> CheckpointSHA256:
-    if upload.provenance_archive_hash_state is not None:
-        return CheckpointSHA256.from_state(upload.provenance_archive_hash_state)
-    if upload.provenance_archive_next_sequence != 0:
-        raise RuntimeError("provenance volume commitment state is missing")
-    digest = CheckpointSHA256()
-    digest.update(PROVENANCE_SEQUENCE_DOMAIN)
-    return digest
-
-
-def _next_provenance_publication_journal(
-    session: Session,
-    upload: CollectionUploadRecord,
-) -> CollectionUploadProvenanceJournalRecord | None:
-    if upload.provenance_archive_current_journal_id is not None:
-        journal = session.get(
-            CollectionUploadProvenanceJournalRecord,
-            (upload.collection_id, upload.provenance_archive_current_journal_id),
-        )
-    else:
-        statement = select(CollectionUploadProvenanceJournalRecord).where(
-            CollectionUploadProvenanceJournalRecord.collection_id == upload.collection_id
-        )
-        if upload.provenance_archive_last_journal_id is not None:
-            statement = statement.where(
-                CollectionUploadProvenanceJournalRecord.journal_id
-                > upload.provenance_archive_last_journal_id
-            )
-        journal = session.scalar(
-            statement.order_by(CollectionUploadProvenanceJournalRecord.journal_id).limit(1)
-        )
-    if journal is not None and journal.state != "sealed":
-        raise Conflict(f"provenance journal is not sealed: {journal.journal_id}")
-    return journal
-
-
-@declare_growth(
-    Declaration(
-        id="riverhog-server.sqlite-staged-journal-range.growth/v1",
-        authority="riverhog-server",
-        subjects=("riverhog_core.services.collection_uploads._upload_journal_range_bytes",),
-        scope="native-sqlite-successful-range-read",
-        starts_at="locate one exact byte range in component-owned staged transport chunks",
-        ends_at="return the complete requested range and close its query result",
-        dimensions=(
-            Dimension("range_octets", OCTETS, "Octets requested and returned by this call."),
-            Dimension("overlap_chunks", COUNT, "Ordinals intersecting the requested byte range."),
-            Dimension("staged_chunks", COUNT, "Retained transport chunks in the selected journal."),
-        ),
-        bounds=(
-            Bound(
-                "sql_statements",
-                COUNT,
-                "upper",
-                Expression("constant", value=2, unit=COUNT),
-                "Native source-location and remaining-range SELECT statements.",
-            ),
-            Bound(
-                "returned_rows",
-                COUNT,
-                "upper",
-                Expression("dimension", name="overlap_chunks"),
-                "Native result rows visited; completed-prefix rows are outside the interval.",
-            ),
-            Bound(
-                "loaded_chunk_octets",
-                OCTETS,
-                "upper",
-                Expression(
-                    "product",
-                    terms=(
-                        Expression(
-                            "constant",
-                            value=COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
-                            unit=OCTETS_PER_COUNT,
-                        ),
-                        Expression("dimension", name="overlap_chunks"),
-                    ),
-                ),
-                "Transport octets loaded from actual selected rows.",
-            ),
-            Bound(
-                "range_buffer_octets",
-                OCTETS,
-                "upper",
-                Expression("dimension", name="range_octets"),
-                "Peak length of the range assembly buffer.",
-            ),
-            Bound(
-                "returned_octets",
-                OCTETS,
-                "equal",
-                Expression("dimension", name="range_octets"),
-                "Exact complete returned bytes; neither gaps nor short tails succeed.",
-            ),
-            Bound(
-                "sqlite_vm_instructions",
-                COUNT,
-                "upper",
-                Expression(
-                    "sum",
-                    terms=(
-                        Expression("constant", value=128, unit=COUNT),
-                        Expression(
-                            "product",
-                            terms=(
-                                Expression("constant", value=64),
-                                Expression("dimension", name="overlap_chunks"),
-                            ),
-                        ),
-                        Expression(
-                            "product",
-                            terms=(
-                                Expression("constant", value=64, unit=COUNT),
-                                Expression(
-                                    "log2_ceil",
-                                    terms=(
-                                        Expression(
-                                            "sum",
-                                            terms=(
-                                                Expression("constant", value=2, unit=COUNT),
-                                                Expression("dimension", name="staged_chunks"),
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-                "Maintained native SQLite instruction envelope for indexed seeks and row "
-                "iteration.",
-            ),
-        ),
-        conditions=(
-            "The private catalog uses its maintained (collection_id, journal_id, "
-            "ordinal) primary key.",
-            "The unique source byte-offset index locates the first intersecting chunk.",
-            "Immutable contiguous source chunks are at most the declared append extent; "
-            "completed history prefixes may retain shorter interior chunks.",
-            "overlap_chunks counts actual retained chunks intersecting this range.",
-            "The native SQLite execution profile is exercised by the maintained "
-            "actual-body witness.",
-        ),
-        invariants=(
-            "Selected ordinals and byte offsets remain exact and contiguous.",
-            "The requested bytes remain exact and contiguous, and query ownership "
-            "closes on every exit.",
-        ),
-        limitations=(
-            "Other database engines require their own instruction/index-cost qualification.",
-            "SQLite VM instructions exclude internal B-tree comparisons, page I/O and "
-            "physical CPU costs.",
-            "This range read does not assert semantic journal acceptance, complete "
-            "publication, or permission.",
-            "Physical memory, caller preparation, rejected attempts and retries are "
-            "separately charged.",
-        ),
-    )
-)
-def _upload_journal_range_bytes(
-    session: Session,
-    collection_id: int,
-    journal_id: str,
-    *,
-    offset: int,
-    size: int,
-) -> bytes:
-    if (
-        type(offset) is not int
-        or offset < 0
-        or type(size) is not int
-        or not 1 <= size <= PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX
-    ):
-        raise RuntimeError("provenance journal publication range is invalid")
-    ordinal, row_offset, raw = _upload_journal_chunk_at(
-        session,
-        collection_id,
-        journal_id,
-        offset=offset,
-    )
-    content = bytearray()
-    start = offset - row_offset
-    content.extend(raw[start : start + size])
-    if len(content) < size:
-        statement = (
-            select(
-                CollectionUploadProvenanceJournalChunkRecord.ordinal,
-                CollectionUploadProvenanceJournalChunkRecord.byte_offset,
-                CollectionUploadProvenanceJournalChunkRecord.content,
-            )
-            .where(
-                CollectionUploadProvenanceJournalChunkRecord.collection_id == collection_id,
-                CollectionUploadProvenanceJournalChunkRecord.journal_id == journal_id,
-                CollectionUploadProvenanceJournalChunkRecord.byte_offset > row_offset,
-                CollectionUploadProvenanceJournalChunkRecord.byte_offset < offset + size,
-            )
-            .order_by(CollectionUploadProvenanceJournalChunkRecord.byte_offset)
-            .execution_options(yield_per=1)
-        )
-        expected = offset + len(content)
-        ordinal += 1
-        with session.execute(statement) as rows:
-            for row in rows:
-                raw = bytes(row.content)
-                if (
-                    row.ordinal != ordinal
-                    or row.byte_offset != expected
-                    or not 1 <= len(raw) <= COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX
-                ):
-                    raise RuntimeError("provenance journal chunks are not contiguous")
-                take = min(len(raw), size - len(content))
-                content.extend(raw[:take])
-                expected += take
-                ordinal += 1
-                if len(content) == size:
-                    break
-    if len(content) != size:
-        raise RuntimeError("provenance journal publication range is unavailable")
-    return bytes(content)
-
-
-def _upload_journal_chunk_at(
-    session: Session,
-    collection_id: int,
-    journal_id: str,
-    *,
-    offset: int,
-) -> tuple[int, int, bytes]:
-    """Locate one retained segment without assuming uniform historical chunks."""
-    if type(offset) is not int or offset < 0:
-        raise RuntimeError("provenance journal publication range is invalid")
-    chunk = CollectionUploadProvenanceJournalChunkRecord
-    statement = (
-        select(chunk.ordinal, chunk.byte_offset, chunk.content)
-        .where(
-            chunk.collection_id == collection_id,
-            chunk.journal_id == journal_id,
-            chunk.byte_offset <= offset,
-        )
-        .order_by(chunk.byte_offset.desc())
-        .limit(1)
-        .execution_options(yield_per=1)
-    )
-    with session.execute(statement) as rows:
-        for row in rows:
-            raw = bytes(row.content)
-            if (
-                not 1 <= len(raw) <= COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX
-                or not row.byte_offset <= offset < row.byte_offset + len(raw)
-            ):
-                raise RuntimeError("provenance journal chunks are not contiguous")
-            return int(row.ordinal), int(row.byte_offset), raw
-    raise RuntimeError("provenance journal publication range is unavailable")
-
-
 def _planner_checkpoint(upload: CollectionUploadRecord) -> Any:
     if not upload.planner_checkpoint_json:
         raise RuntimeError("collection upload planner checkpoint is missing")
@@ -6508,6 +6865,8 @@ def _seal_open_collection_upload(
     checkpoint: Any,
     config: RuntimeConfig,
 ) -> None:
+    if upload.active_registration_id is not None:
+        raise Conflict("collection upload registration is pending")
     collection_id = upload.collection_id
     incomplete_raw = session.scalar(
         select(CollectionUploadArtifactRecord.artifact_id)
@@ -6547,10 +6906,11 @@ def _seal_open_collection_upload(
         or sealed.bytes_seen != upload.artifact_bytes
     ):
         raise Conflict("collection upload planner differs from registered artifacts")
-    _persist_plan_batch(session, upload=upload, batch=batch)
     upload.planner_checkpoint_json = incremental_volume_planner_checkpoint_bytes(sealed).decode(
         "utf-8"
     )
+    upload.planner_next_sequence = sealed.next_sequence
+    _persist_plan_batch(session, upload=upload, batch=batch)
     upload.catalog_artifact_set_identity = None
     upload.catalog_phase = "artifact-set-identity"
     upload.catalog_cursor_json = "{}"
@@ -6573,7 +6933,13 @@ def _seal_open_collection_upload(
     session.flush()
 
 
-def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, batch: Any) -> None:
+def _persist_plan_batch(
+    session: Session,
+    *,
+    upload: CollectionUploadRecord,
+    batch: Any,
+    registration_id: str | None = None,
+) -> None:
     if not upload.archive_storage_prefix:
         raise RuntimeError("collection archive storage prefix is missing")
     now = utc_timestamp_now()
@@ -6581,9 +6947,10 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
     for plan in batch.packs:
         plan_json = pack_volume_plan_bytes(plan).decode("utf-8")
         relative = f"volumes/{plan.volume_id}.tar.age"
-        upload.archive_objects.append(
+        session.add(
             CollectionArchiveObjectUploadRecord(
                 collection_id=upload.collection_id,
+                registration_id=registration_id,
                 object_id=plan.volume_id,
                 sequence=plan.sequence,
                 kind="pack",
@@ -6595,6 +6962,7 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
                 plan_json=plan_json,
                 plan_sha256=plan.plan_sha256,
                 state="planned",
+                work_ready=True,
                 uploaded_bytes=0,
                 uploaded_units=0,
                 total_units=len(plan.units),
@@ -6606,9 +6974,10 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
     for plan in batch.raw_volumes:
         plan_json = raw_volume_plan_bytes(plan).decode("utf-8")
         relative = f"volumes/{plan.volume_id}.bin.age"
-        upload.archive_objects.append(
+        session.add(
             CollectionArchiveObjectUploadRecord(
                 collection_id=upload.collection_id,
+                registration_id=registration_id,
                 object_id=plan.volume_id,
                 sequence=plan.sequence,
                 kind="segment",
@@ -6629,6 +6998,8 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
                 plan_json=plan_json,
                 plan_sha256=hashlib.sha256(plan_json.encode()).hexdigest(),
                 state="planned",
+                # Raw plans precede acceptance of their source digest batches.
+                work_ready=False,
                 uploaded_bytes=0,
                 uploaded_units=0,
                 total_units=max(
@@ -6640,18 +7011,19 @@ def _persist_plan_batch(session: Session, *, upload: CollectionUploadRecord, bat
             )
         )
         coverage.append((plan.artifact_id, plan.volume_id))
-    # The archive objects are appended through a relationship. Flush their
-    # primary keys before adding the independent coverage rows with two FKs.
+    # Flush archive object keys before adding coverage rows with two FKs.
     session.flush()
     for artifact_id, volume_id in coverage:
         session.add(
             CollectionUploadArtifactVolumeRecord(
                 collection_id=upload.collection_id,
+                registration_id=registration_id,
                 artifact_id=artifact_id,
                 object_id=volume_id,
             )
         )
     session.flush()
+    session.expire(upload, ["archive_objects"])
 
 
 def _require_pending_pack_matches_registration(
@@ -6686,23 +7058,330 @@ def _require_pending_pack_matches_registration(
         raise Conflict("collection upload volume plans differ from registered artifacts")
 
 
+def _finalization_readiness_declaration() -> Declaration:
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(Expression("constant", value=value), term))
+
+    def admitted(term: Expression) -> Expression:
+        return Expression(
+            "product",
+            terms=(
+                Expression("constant", value=1, unit=(("count", -1),)),
+                dimension("count_admitted"),
+                term,
+            ),
+        )
+
+    return Declaration(
+        id="riverhog-server.finalization-readiness.growth/v1",
+        authority="riverhog-server",
+        subjects=("riverhog_core.services.collection_uploads._ready_for_finalization",),
+        scope=(
+            "exact finalization readiness with canonical planner controls and "
+            "phase-admitted volume verification"
+        ),
+        starts_at=(
+            "receive fully loaded upload scalars in the caller's existing catalog transaction"
+        ),
+        ends_at=(
+            "return the exact readiness predicate or reject invalid planner "
+            "controls without catalog mutation"
+        ),
+        dimensions=(
+            Dimension(
+                "checkpoint_octets",
+                OCTETS,
+                (
+                    "Complete incoming planner checkpoint "
+                    "text, including malformed or empty "
+                    "controls."
+                ),
+            ),
+            Dimension(
+                "volume_rows",
+                COUNT,
+                ("All retained volume rows in the selected collection, including unsealed rows."),
+            ),
+            Dimension(
+                "catalog_volume_rows",
+                COUNT,
+                ("Independent total rows in the volume index across collections."),
+            ),
+            Dimension(
+                "count_admitted",
+                COUNT,
+                (
+                    "One only for a valid closed nonempty plan "
+                    "with complete payload sealing; otherwise "
+                    "zero."
+                ),
+            ),
+            Dimension(
+                "lookup_octets",
+                OCTETS,
+                ("Complete decimal width of the exact incoming collection identity."),
+            ),
+            Dimension(
+                "counter_octets",
+                OCTETS,
+                (
+                    "Decimal width sufficient for the actual "
+                    "selected volume population, including "
+                    "zero."
+                ),
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sealed_count_calls_limit",
+                COUNT,
+                "upper",
+                count(1),
+                ("The phase guard admits at most one exact count."),
+            ),
+            Bound(
+                "sealed_count_calls",
+                COUNT,
+                "equal",
+                dimension("count_admitted"),
+                (
+                    "Open, empty or "
+                    "payload-incomplete "
+                    "plans perform no "
+                    "volume census; "
+                    "eligible plans "
+                    "retain the exact "
+                    "sealed count."
+                ),
+            ),
+            *(
+                Bound(
+                    metric,
+                    COUNT,
+                    "upper",
+                    dimension("count_admitted"),
+                    (
+                        "One exact "
+                        "borrowed-context "
+                        "SELECT and its "
+                        "single scalar "
+                        "result, with no "
+                        "owned connection "
+                        "setup."
+                    ),
+                )
+                for metric in ("sql_statements", "driver_statements", "returned_rows")
+            ),
+            Bound(
+                "returned_metadata_octets",
+                OCTETS,
+                "upper",
+                admitted(dimension("counter_octets")),
+                ("The only returned field is the complete exact sealed-volume count."),
+            ),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "upper",
+                admitted(
+                    Expression(
+                        "sum",
+                        terms=(
+                            dimension("lookup_octets"),
+                            Expression("constant", value=6, unit=OCTETS),
+                        ),
+                    )
+                ),
+                ("Bind the exact collection identity and the literal sealed state."),
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                admitted(
+                    Expression(
+                        "sum",
+                        terms=(
+                            count(128),
+                            scale(16, dimension("volume_rows")),
+                            Expression(
+                                "product",
+                                terms=(
+                                    count(512),
+                                    Expression(
+                                        "log2_ceil",
+                                        terms=(
+                                            Expression(
+                                                "sum",
+                                                terms=(count(2), dimension("catalog_volume_rows")),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    )
+                ),
+                (
+                    "An admitted exact "
+                    "count visits the "
+                    "selected "
+                    "collection's volume "
+                    "interval; irrelevant"
+                    " collections "
+                    "contribute only "
+                    "indexed lookup "
+                    "depth."
+                ),
+            ),
+            *(
+                Bound(
+                    metric,
+                    COUNT,
+                    "equal",
+                    count(0),
+                    (
+                        "Readiness neither mutates catalog "
+                        "state nor acquires unrelated payload"
+                        " authority or ownership."
+                    ),
+                )
+                for metric in ("connection_statements", "changed_rows", "uuid_values")
+            ),
+            *(
+                Bound(
+                    metric,
+                    OCTETS,
+                    "equal",
+                    Expression("constant", value=0, unit=OCTETS),
+                    ("No source/archive bytes are read or hashed."),
+                )
+                for metric in ("source_payload_octets", "hashed_octets")
+            ),
+            Bound(
+                "json_decodes",
+                COUNT,
+                "upper",
+                count(1),
+                (
+                    "Canonical planner parsing "
+                    "decodes the incoming text "
+                    "once; empty controls reject "
+                    "before parsing."
+                ),
+            ),
+            Bound(
+                "json_decoded_octets",
+                OCTETS,
+                "upper",
+                dimension("checkpoint_octets"),
+                ("The complete actual text enters the decoder without a short control substitute."),
+            ),
+            Bound(
+                "json_encodes",
+                COUNT,
+                "upper",
+                count(3),
+                (
+                    "Canonical input validation and"
+                    " exact reconstructed "
+                    "checkpoint comparison each "
+                    "retain their actual encoder "
+                    "calls."
+                ),
+            ),
+            Bound(
+                "json_encoded_octets",
+                OCTETS,
+                "upper",
+                scale(8, dimension("checkpoint_octets")),
+                (
+                    "The incoming "
+                    "canonical check "
+                    "allows compact "
+                    "numeric lexemes to "
+                    "expand up to "
+                    "sixfold; two later "
+                    "valid checkpoint "
+                    "reconstructions "
+                    "preserve their "
+                    "complete input "
+                    "width."
+                ),
+            ),
+        ),
+        conditions=(
+            (
+                "The caller already holds the catalog transaction and fully loaded"
+                " upload scalars; automatic flushing and unrelated pending "
+                "mutations are excluded."
+            ),
+            (
+                "The maintained collection/volume keys support exact indexed "
+                "selected-collection lookup."
+            ),
+            (
+                "The admission dimension comes from the supplied canonical plan "
+                "and payload-seal controls, independently of observed SQL work."
+            ),
+        ),
+        invariants=(
+            "Cheap negative prerequisites do not scan retained volumes.",
+            (
+                "Once prerequisites hold, readiness still requires the exact "
+                "sealed count to equal the positive planned sequence count."
+            ),
+            (
+                "Missing or excess sealed volume rows cannot become ready through "
+                "an existence or maximum-sequence substitute."
+            ),
+            (
+                "Planner validation, catalog/archive authority and complete "
+                "payload-seal checks retain their existing meaning."
+            ),
+        ),
+        limitations=(
+            (
+                "Eligible volume verification remains linear in the selected "
+                "volume interval; repeated finalization calls retain that owner's "
+                "separate total-work obligation."
+            ),
+            (
+                "Logical SQL, VM, codec and metadata observations exclude internal"
+                " byte comparisons, allocation, physical I/O and lock/CPU latency."
+            ),
+            (
+                "The caller's upload lookup, scheduling updates, transaction "
+                "lifecycle and whole service orchestration remain separate "
+                "composed work."
+            ),
+        ),
+    )
+
+
+@declare_growth(_finalization_readiness_declaration())
 def _ready_for_finalization(session: Session, upload: CollectionUploadRecord) -> bool:
     checkpoint = _planner_checkpoint(upload)
+    if not (
+        checkpoint.closed and checkpoint.next_sequence > 0 and _has_complete_payload_seal(upload)
+    ):
+        return False
     sealed = int(
         session.scalar(
             select(func.count(CollectionArchiveObjectUploadRecord.object_id)).where(
                 CollectionArchiveObjectUploadRecord.collection_id == upload.collection_id,
-                CollectionArchiveObjectUploadRecord.state == "sealed",
+                CollectionArchiveObjectUploadRecord.state == literal_column("'sealed'"),
             )
         )
         or 0
     )
-    return bool(
-        checkpoint.closed
-        and checkpoint.next_sequence > 0
-        and sealed == checkpoint.next_sequence
-        and _has_complete_payload_seal(upload)
-    )
+    return bool(sealed == checkpoint.next_sequence)
 
 
 def _has_complete_payload_seal(upload: CollectionUploadRecord) -> bool:
@@ -6713,13 +7392,33 @@ def _has_complete_payload_seal(upload: CollectionUploadRecord) -> bool:
     )
 
 
+def _open_finalization_query() -> Select[tuple[CollectionUploadRecord]]:
+    """Select work only from a construction whose forward gate is still open."""
+    return select(CollectionUploadRecord).where(
+        exists(
+            select(ArchiveWriteControlRecord.collection_id).where(
+                ArchiveWriteControlRecord.collection_id == CollectionUploadRecord.collection_id,
+                ArchiveWriteControlRecord.gate == "open",
+            )
+        )
+    )
+
+
+def _finalization_ready_values(*, now: str) -> dict[str, Any]:
+    return {
+        "state": "finalizing",
+        "lease_expires_at": None,
+        "archive_claim_id": None,
+        "archive_phase": "finalization_queued",
+        "archive_phase_updated_at": now,
+        "archive_next_attempt_at": now,
+        "archive_failure": None,
+    }
+
+
 def _mark_finalization_ready(upload: CollectionUploadRecord, *, now: str) -> None:
-    upload.state = "finalizing"
-    upload.lease_expires_at = None
-    upload.archive_phase = "finalization_queued"
-    upload.archive_phase_updated_at = now
-    upload.archive_next_attempt_at = now
-    upload.archive_failure = None
+    for name, value in _finalization_ready_values(now=now).items():
+        setattr(upload, name, value)
 
 
 def _registration_constraints_payload(policy: CollectionVolumePolicy) -> dict[str, str]:
@@ -6727,6 +7426,24 @@ def _registration_constraints_payload(policy: CollectionVolumePolicy) -> dict[st
         "pack_member_bytes": format_scalar("nonnegative", policy.pack_member_bytes),
         "raw_part_plaintext_bytes": format_scalar("nonnegative", policy.raw_part_plaintext_bytes),
     }
+
+
+def _validate_member_custody_receipt(
+    collection_id: int,
+    member: CollectionUploadArtifactRecord | CollectionArtifactRecord,
+    original: str,
+) -> CollectionUploadArtifactCustodyReceiptDocument:
+    return validate_collection_upload_artifact_custody_receipt(
+        collection_id,
+        ArtifactMemberIdentityDocument.model_validate(
+            {
+                "artifact_id": member.artifact_id,
+                "bytes": format_scalar("nonnegative", member.bytes),
+                "sha256": member.sha256,
+            }
+        ),
+        CollectionUploadArtifactCustodyReceiptDocument.model_validate_json(original),
+    )
 
 
 def _artifact_payload(record: CollectionUploadArtifactRecord) -> dict[str, object]:
@@ -6874,7 +7591,7 @@ def _begin_upload_journal_capture(
         raise RuntimeError("journal extension differs from its captured prefix")
     # A new authenticated source snapshot gets a new attempt fence. Immutable
     # prefix positions retain their directory without copying earlier rows.
-    session.execute(
+    changed = session.execute(
         update(journal)
         .where(
             journal.collection_id == record.collection_id,
@@ -6902,7 +7619,12 @@ def _begin_upload_journal_capture(
             capture_failure=None,
         )
         .execution_options(synchronize_session=False)
-    )
+        .returning(journal.collection_id)
+    ).scalar_one_or_none()
+    if changed is not None and record.capture_attempt_id is not None:
+        from .upload_journal_validation_jobs import retire_source
+
+        retire_source(session, record.collection_id, record.journal_id, record.capture_attempt_id)
     session.refresh(record)
 
 
@@ -6983,7 +7705,7 @@ def _read_upload_journal_capture(
         )
         size = min(_JOURNAL_CAPTURE_OCTET_BUDGET, record.bytes - cursor.byte_offset)
         if size:
-            _, offset, raw = _upload_journal_chunk_at(
+            _, offset, raw = journal_ranges.upload_journal_chunk_at(
                 session,
                 collection_id,
                 journal_id,
@@ -7149,6 +7871,63 @@ def _commit_upload_journal_capture(
         return True
 
 
+def _upload_journal_validation_stamp(
+    factory: SessionFactory, collection_id: int, journal_id: str
+) -> tuple[Any, ...] | None:
+    from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
+
+    journal = CollectionUploadProvenanceJournalRecord
+    from riverhog_core.catalog_models import CollectionUploadProvenanceEpochScanRecord as scan
+
+    query = (
+        select(journal.state, journal.capture_version, scan.version, Job.version)
+        .select_from(journal)
+        .outerjoin(
+            scan,
+            (scan.collection_id == journal.collection_id)
+            & (scan.journal_id == journal.journal_id)
+            & (scan.attempt_id == journal.capture_attempt_id),
+        )
+        .outerjoin(
+            Job,
+            (Job.collection_id == journal.collection_id)
+            & (Job.journal_id == journal.journal_id)
+            & (Job.attempt_id == journal.capture_attempt_id),
+        )
+        .where(journal.collection_id == collection_id, journal.journal_id == journal_id)
+    )
+    with read_snapshot(factory) as session:
+        with session.execute(query) as rows:
+            row = rows.one_or_none()
+    return None if row is None else tuple(row)
+
+
+def _next_upload_journal_validation(
+    factory: SessionFactory,
+    *,
+    after: tuple[int, str] | None,
+    excluding: tuple[tuple[int, str], ...],
+) -> tuple[int, str] | None:
+    journal = CollectionUploadProvenanceJournalRecord
+    query = select(journal.collection_id, journal.journal_id).where(journal.state == "validating")
+    for collection_id, journal_id in excluding:
+        query = query.where(
+            or_(journal.collection_id != collection_id, journal.journal_id != journal_id)
+        )
+    query = query.order_by(journal.collection_id, journal.journal_id).limit(1)
+    with read_snapshot(factory) as session:
+        if after is not None:
+            with session.execute(
+                query.where(tuple_(journal.collection_id, journal.journal_id) > after)
+            ) as rows:
+                row = rows.one_or_none()
+            if row is not None:
+                return row[0], row[1]
+        with session.execute(query) as rows:
+            row = rows.one_or_none()
+    return None if row is None else (row[0], row[1])
+
+
 @dataclass(frozen=True, slots=True)
 class _UploadJournalValidationWork:
     collection_id: int
@@ -7265,8 +8044,8 @@ def _check_upload_journal_capture_segment(
                 "sql_statements",
                 COUNT,
                 "equal",
-                Expression("constant", value=2, unit=COUNT),
-                "One fixed-shape attempt probe and one source-page primary-key probe.",
+                Expression("constant", value=3, unit=COUNT),
+                "One explicit snapshot start, one attempt probe and one source-page probe.",
             ),
             Bound(
                 "source_rows",
@@ -7383,193 +8162,6 @@ def _read_upload_journal_capture_segment(
     return raw
 
 
-@declare_growth(
-    Declaration(
-        id="riverhog-server.sqlite-staged-journal-validation-source.growth/v1",
-        authority="riverhog-server",
-        subjects=(
-            "riverhog_core.services.collection_uploads._read_upload_journal_validation_chunk",
-        ),
-        scope="native-sqlite-successful-fenced-source-unit",
-        starts_at="check the detached attempt and seek one retained source ordinal",
-        ends_at="return that source unit after its catalog snapshot closes",
-        dimensions=(
-            Dimension("staged_chunks", COUNT, "Retained transport chunks in the selected journal."),
-        ),
-        bounds=(
-            Bound(
-                "sql_statements",
-                COUNT,
-                "equal",
-                Expression("constant", value=2, unit=COUNT),
-                "One fixed-shape authority probe and one indexed source ordinal probe.",
-            ),
-            Bound(
-                "source_rows",
-                COUNT,
-                "equal",
-                Expression("constant", value=1, unit=COUNT),
-                "One actual retained source row; no earlier chunks are enumerated.",
-            ),
-            Bound(
-                "loaded_chunk_octets",
-                OCTETS,
-                "upper",
-                Expression(
-                    "constant", value=COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX, unit=OCTETS
-                ),
-                "Octets materialized from the selected transport row.",
-            ),
-            Bound(
-                "returned_octets",
-                OCTETS,
-                "upper",
-                Expression(
-                    "constant", value=COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX, unit=OCTETS
-                ),
-                "Detached exact source bytes returned to the native validator.",
-            ),
-            Bound(
-                "sqlite_vm_instructions",
-                COUNT,
-                "upper",
-                Expression(
-                    "sum",
-                    terms=(
-                        Expression("constant", value=128, unit=COUNT),
-                        Expression(
-                            "product",
-                            terms=(
-                                Expression("constant", value=64, unit=COUNT),
-                                Expression(
-                                    "log2_ceil",
-                                    terms=(
-                                        Expression(
-                                            "sum",
-                                            terms=(
-                                                Expression("constant", value=2, unit=COUNT),
-                                                Expression("dimension", name="staged_chunks"),
-                                            ),
-                                        ),
-                                    ),
-                                ),
-                            ),
-                        ),
-                    ),
-                ),
-                "Maintained native SQLite instruction envelope for the two point probes.",
-            ),
-        ),
-        conditions=(
-            "The catalog uses its maintained journal and source-ordinal primary keys.",
-            "The owner retains immutable source chunks no larger than the append extent.",
-            "A successful read still belongs to the exact detached source and attempt.",
-        ),
-        invariants=(
-            "Only the requested ordinal and exact next source offset may be returned.",
-            "The result and read-only snapshot close before native computation continues.",
-        ),
-        limitations=(
-            "Other database engines require their own instruction/index-cost qualification.",
-            "SQLite VM instructions exclude internal B-tree comparisons, page I/O and CPU.",
-            "This source unit does not establish semantic acceptance or bounded total native "
-            "graph/schema execution, retries, preparation, terminal publication or cleanup.",
-        ),
-    )
-)
-def _read_upload_journal_validation_chunk(
-    factory: SessionFactory,
-    work: _UploadJournalValidationWork,
-    *,
-    ordinal: int,
-    offset: int,
-) -> bytes:
-    if (
-        type(ordinal) is not int
-        or ordinal < 0
-        or type(offset) is not int
-        or not 0 <= offset < work.source_bytes
-    ):
-        raise ValueError("invalid retained journal source position")
-    with read_snapshot(factory) as session:
-        if (
-            session.scalar(
-                select(CollectionUploadProvenanceJournalRecord.collection_id).where(
-                    *_upload_journal_validation_fence(work)
-                )
-            )
-            is None
-        ):
-            raise _StaleUploadJournalValidation
-        chunk = CollectionUploadProvenanceJournalChunkRecord
-        with session.execute(
-            select(chunk.byte_offset, chunk.content).where(
-                chunk.collection_id == work.collection_id,
-                chunk.journal_id == work.journal_id,
-                chunk.ordinal == ordinal,
-            )
-        ) as rows:
-            row = rows.one_or_none()
-            if row is None or row.byte_offset != offset:
-                raise ProvenanceValidationError("staged canonical journal chunks are discontinuous")
-            raw = bytes(row.content)
-            if not 1 <= len(raw) <= COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX:
-                raise ProvenanceValidationError("staged canonical journal chunk extent is invalid")
-            return raw[: work.source_bytes - offset]
-
-
-def _iter_upload_journal_validation_chunks(
-    factory: SessionFactory,
-    work: _UploadJournalValidationWork,
-) -> Generator[bytes]:
-    ordinal = offset = 0
-    while offset < work.source_bytes:
-        raw = _read_upload_journal_validation_chunk(factory, work, ordinal=ordinal, offset=offset)
-        yield raw
-        ordinal += 1
-        offset += len(raw)
-
-
-def _compute_upload_journal_validation(
-    factory: SessionFactory,
-    work: _UploadJournalValidationWork,
-) -> _UploadJournalValidationOutcome:
-    """Run the native pass with no catalog reader or write transaction retained.
-
-    This whole native graph/schema pass remains outside the source-unit work claim.
-    Framing findings are speculative; native replay retains exact error ordering.
-    Its temporary summary is owned here and never becomes a durable checkpoint.
-    """
-    from .upload_journal_replay import verify_upload_journal_replay_binding
-
-    try:
-        selected = admission_provenance_catalog()
-        if not verify_upload_journal_replay_binding(factory, work, selected):
-            raise _StaleUploadJournalValidation
-        with (
-            closing(_iter_upload_journal_validation_chunks(factory, work)) as chunks,
-            validate_journal_chunks(chunks, catalog=selected, require_profiles=False) as summary,
-        ):
-            if (
-                summary.journal_id != work.journal_id
-                or summary.journal_sha256 != work.source_sha256
-                or summary.journal_bytes != work.source_bytes
-            ):
-                raise ProvenanceValidationError(
-                    "staged canonical journal differs from its authority"
-                )
-            tail = summary.tail.reference
-            return _UploadJournalValidationOutcome(
-                None,
-                len(summary.frames),
-                tail["entry_id"],
-                int(tail["sequence"]),
-                tail["json_sha256"],
-            )
-    except (ProvenanceValidationError, ValueError) as exc:
-        return _UploadJournalValidationOutcome(str(exc)[:1000])
-
-
 def _commit_upload_journal_validation(
     factory: SessionFactory,
     work: _UploadJournalValidationWork,
@@ -7626,7 +8218,12 @@ def _commit_upload_journal_validation(
                 .values(**values)
             ),
         )
-        return changed.rowcount == 1
+        published = changed.rowcount == 1
+        if published and outcome.failure is not None:
+            from .upload_journal_validation_jobs import retire_source
+
+            retire_source(session, work.collection_id, work.journal_id, work.attempt_id)
+        return published
 
 
 def _volume_summary(plan: PackVolumePlan | RawVolumePlan) -> dict[str, object]:
@@ -7723,8 +8320,9 @@ def _volume_work_payload(record: CollectionArchiveObjectUploadRecord) -> dict[st
 def _unit_work_payload(
     record: CollectionArchiveObjectUploadRecord,
     unit: int,
+    *,
+    committed: bool,
 ) -> dict[str, object]:
-    committed = unit < record.uploaded_units or record.state == "sealed"
     if record.kind == "pack":
         descriptors = pack_unit_descriptors(parse_pack_volume_plan(record.plan_json))
         if unit < 0 or unit >= len(descriptors):
@@ -7773,7 +8371,7 @@ def _unit_work_payload(
 
 
 def _unit_assignment_payload(record: CollectionArchiveObjectUploadRecord) -> dict[str, object]:
-    if record.uploaded_units >= record.total_units:
+    if record.next_unit >= record.total_units:
         raise RuntimeError("unsealed archive volume has no actionable upload unit")
     return {
         "volume": {
@@ -7782,7 +8380,7 @@ def _unit_assignment_payload(record: CollectionArchiveObjectUploadRecord) -> dic
             "kind": record.kind,
         },
         "plan_sha256": record.plan_sha256,
-        "unit": _unit_work_payload(record, record.uploaded_units),
+        "unit": _unit_work_payload(record, record.next_unit, committed=False),
     }
 
 
@@ -7821,38 +8419,20 @@ def _sealed_volume_json(receipt: SealedPackVolume | SealedRawVolume) -> str:
     return json.dumps(common, sort_keys=True, separators=(",", ":"))
 
 
-def _archive_volume_metadata_receipt_json(
-    receipt: SealedArchiveVolumeMetadata,
-) -> str:
-    return json.dumps(
-        {
-            "sequence": receipt.sequence,
-            "object_path": receipt.object_path,
-            "relative_path": receipt.relative_path,
-            "revision": receipt.revision,
-            "plaintext_bytes": receipt.plaintext_bytes,
-            "plaintext_sha256": receipt.plaintext_sha256,
-            "stored_bytes": receipt.stored_bytes,
-            "stored_sha256": receipt.stored_sha256,
-            "completed_at": receipt.completed_at,
-        },
-        sort_keys=True,
-        separators=(",", ":"),
-    )
-
-
 def _parse_archive_volume_metadata_receipt(
     content: str,
 ) -> SealedArchiveVolumeMetadata:
     value = json.loads(content)
     return SealedArchiveVolumeMetadata(
-        sequence=_stored_int(value["sequence"], "metadata sequence"),
+        sequence=stored_nonnegative_int(value["sequence"], "metadata sequence"),
         object_path=str(value["object_path"]),
         relative_path=str(value["relative_path"]),
         revision=str(value["revision"]) if value["revision"] is not None else None,
-        plaintext_bytes=_stored_int(value["plaintext_bytes"], "metadata plaintext bytes"),
+        plaintext_bytes=stored_nonnegative_int(
+            value["plaintext_bytes"], "metadata plaintext bytes"
+        ),
         plaintext_sha256=str(value["plaintext_sha256"]),
-        stored_bytes=_stored_int(value["stored_bytes"], "metadata stored bytes"),
+        stored_bytes=stored_nonnegative_int(value["stored_bytes"], "metadata stored bytes"),
         stored_sha256=str(value["stored_sha256"]),
         completed_at=str(value["completed_at"]),
     )
@@ -7884,9 +8464,11 @@ def _parse_sealed_provenance_object(content: str) -> Any:
         object_id=str(value["object_id"]),
         kind=str(value["kind"]),
         relative_path=str(value["relative_path"]),
-        plaintext_bytes=_stored_int(value["plaintext_bytes"], "provenance plaintext bytes"),
+        plaintext_bytes=stored_nonnegative_int(
+            value["plaintext_bytes"], "provenance plaintext bytes"
+        ),
         plaintext_sha256=str(value["plaintext_sha256"]),
-        stored_bytes=_stored_int(value["stored_bytes"], "provenance stored bytes"),
+        stored_bytes=stored_nonnegative_int(value["stored_bytes"], "provenance stored bytes"),
         stored_sha256=str(value["stored_sha256"]),
         revision=str(value["revision"]) if value["revision"] is not None else None,
         completed_at=str(value["completed_at"]),
@@ -7932,95 +8514,11 @@ def _sealed_upload_provenance(
     return receipt
 
 
-def _parse_parts(values: Sequence[Mapping[str, object]]) -> tuple[StoredArchivePart, ...]:
-    return tuple(
-        StoredArchivePart(
-            number=_stored_int(value["number"], "part number"),
-            plaintext_start=_stored_int(value["plaintext_start"], "part plaintext start"),
-            plaintext_bytes=_stored_int(value["plaintext_bytes"], "part plaintext bytes"),
-            plaintext_sha256=str(value["plaintext_sha256"]),
-            stored_bytes=_stored_int(value["stored_bytes"], "part stored bytes"),
-            stored_sha256=str(value["stored_sha256"]),
-        )
-        for value in values
-    )
-
-
-def _stored_int(value: object, label: str) -> int:
-    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-        raise ValueError(f"{label} must be a non-negative integer")
-    return value
-
-
-def _parse_sealed_pack(content: str) -> SealedPackVolume:
-    value = json.loads(content)
-    return SealedPackVolume(
-        volume_id=str(value["volume_id"]),
-        sequence=int(value["sequence"]),
-        relative_path=str(value["relative_path"]),
-        artifacts=int(value["artifacts"]),
-        source_bytes=int(value["source_bytes"]),
-        plaintext_bytes=int(value["plaintext_bytes"]),
-        age_state_json=json.dumps(value["age_state"], sort_keys=True, separators=(",", ":")),
-        index_sha256=str(value["index_sha256"]),
-        plan_sha256=str(value["plan_sha256"]),
-        parts=_parse_parts(value["parts"]),
-        revision=str(value["revision"]) if value["revision"] is not None else None,
-        completed_at=str(value["completed_at"]),
-        retrieval_cache=parse_retrieval_cache_receipt(value.get("retrieval_cache")),
-    )
-
-
-def _parse_sealed_raw(content: str) -> SealedRawVolume:
-    value = json.loads(content)
-    return SealedRawVolume(
-        volume_id=str(value["volume_id"]),
-        sequence=int(value["sequence"]),
-        relative_path=str(value["relative_path"]),
-        artifact_id=str(value["artifact_id"]),
-        artifact_offset=int(value["artifact_offset"]),
-        plaintext_bytes=int(value["plaintext_bytes"]),
-        artifact_bytes=int(value["artifact_bytes"]),
-        artifact_sha256=str(value["artifact_sha256"]),
-        age_state_json=json.dumps(value["age_state"], sort_keys=True, separators=(",", ":")),
-        parts=_parse_parts(value["parts"]),
-        revision=str(value["revision"]) if value["revision"] is not None else None,
-        completed_at=str(value["completed_at"]),
-        retrieval_cache=parse_retrieval_cache_receipt(value.get("retrieval_cache")),
-    )
-
-
 def _custody_stats(session: Session, collection_id: int) -> tuple[int, int]:
     upload = session.get(CollectionUploadRecord, collection_id)
     if upload is None:
         return 0, 0
     return int(upload.safe_release_artifact_count), int(upload.safe_release_artifact_bytes)
-
-
-def _custody_payload(
-    *,
-    files: int,
-    byte_count: int,
-    custodied_files: int,
-    custodied_bytes: int,
-) -> dict[str, object]:
-    """Project exact completion separately from non-authoritative progress counters."""
-
-    if (
-        custodied_files < 0
-        or custodied_bytes < 0
-        or custodied_files > files
-        or custodied_bytes > byte_count
-        or (custodied_files == 0 and custodied_bytes != 0)
-    ):
-        raise RuntimeError("collection upload custody projection is inconsistent")
-    if (custodied_files, custodied_bytes) == (files, byte_count):
-        return {"state": "complete"}
-    return {
-        "state": "pending",
-        "files": custodied_files,
-        "bytes": custodied_bytes,
-    }
 
 
 def _validate_upload_list(*, page_size: int, sort: str, order: str) -> None:
@@ -8125,7 +8623,7 @@ def _upload_list_payload(
         "custody_mode": upload.custody_mode,
         "files": files,
         "bytes": byte_count,
-        "custody": _custody_payload(
+        "custody": upload_custody_payload(
             files=files,
             byte_count=byte_count,
             custodied_files=custodied_files,
@@ -8207,7 +8705,7 @@ def _orphan_discard_plan(
         "state": upload.state,
         "files": int(files),
         "bytes": int(byte_count),
-        "custody": _custody_payload(
+        "custody": upload_custody_payload(
             files=int(files),
             byte_count=int(byte_count),
             custodied_files=custodied_files,
@@ -8255,34 +8753,72 @@ def _record_payload_custody_progress(
         )
     )
     for artifact_id in artifact_ids:
-        artifact = session.get(CollectionUploadArtifactRecord, (upload.collection_id, artifact_id))
+        # Read durable progress even if this session retains an older member object.
+        artifact = session.execute(
+            select(
+                CollectionUploadArtifactRecord.bytes,
+                CollectionUploadArtifactRecord.raw_part_count,
+                CollectionUploadArtifactRecord.payload_sealed_at,
+            ).where(
+                CollectionUploadArtifactRecord.collection_id == upload.collection_id,
+                CollectionUploadArtifactRecord.artifact_id == artifact_id,
+            )
+        ).one_or_none()
         if artifact is None:
             raise RuntimeError("payload volume names an unregistered artifact")
         if artifact.payload_sealed_at is not None:
             continue
-        volumes = list(
-            session.scalars(
-                select(CollectionArchiveObjectUploadRecord)
-                .join(
-                    CollectionUploadArtifactVolumeRecord,
-                    (
-                        CollectionUploadArtifactVolumeRecord.collection_id
-                        == CollectionArchiveObjectUploadRecord.collection_id
-                    )
-                    & (
-                        CollectionUploadArtifactVolumeRecord.object_id
-                        == CollectionArchiveObjectUploadRecord.object_id
+        if artifact.raw_part_count is not None:
+            # The current verified receipt and its indexed state change belong
+            # to this transaction. Sessions deliberately disable autoflush.
+            session.flush()
+            pending = session.scalar(
+                select(CollectionArchiveObjectUploadRecord.object_id)
+                .where(
+                    CollectionArchiveObjectUploadRecord.collection_id == upload.collection_id,
+                    CollectionArchiveObjectUploadRecord.source_artifact_id == artifact_id,
+                    or_(
+                        # Keep the partial predicate provable in generic prepared plans.
+                        CollectionArchiveObjectUploadRecord.state != literal_column("'sealed'"),
+                        CollectionArchiveObjectUploadRecord.sealed_receipt_json.is_(None),
                     ),
                 )
-                .where(
-                    CollectionUploadArtifactVolumeRecord.collection_id == upload.collection_id,
-                    CollectionUploadArtifactVolumeRecord.artifact_id == artifact_id,
-                )
+                .limit(1)
             )
+            if pending is not None:
+                continue
+        # The pending index only identifies completion candidates. Preserve
+        # complete coverage and receipt validation before recording member progress.
+        volumes = session.scalars(
+            select(CollectionArchiveObjectUploadRecord)
+            .join(
+                CollectionUploadArtifactVolumeRecord,
+                (
+                    CollectionUploadArtifactVolumeRecord.collection_id
+                    == CollectionArchiveObjectUploadRecord.collection_id
+                )
+                & (
+                    CollectionUploadArtifactVolumeRecord.object_id
+                    == CollectionArchiveObjectUploadRecord.object_id
+                ),
+            )
+            .where(
+                CollectionUploadArtifactVolumeRecord.collection_id == upload.collection_id,
+                CollectionUploadArtifactVolumeRecord.artifact_id == artifact_id,
+            )
+            .execution_options(yield_per=64)
         )
-        if not volumes or any(
-            volume.state != "sealed" or volume.sealed_receipt_json is None for volume in volumes
-        ):
+        found = False
+        complete = True
+        try:
+            for volume in volumes:
+                found = True
+                if volume.state != "sealed" or volume.sealed_receipt_json is None:
+                    complete = False
+                    break
+        finally:
+            volumes.close()
+        if not found or not complete:
             continue
         result = cast(
             CursorResult[Any],
@@ -8298,6 +8834,7 @@ def _record_payload_custody_progress(
         )
         changed = result.rowcount
         if changed == 1:
+            refresh_custody_member(session, upload, artifact_id)
             newly_sealed_artifacts += 1
             newly_sealed_bytes += artifact.bytes
         elif changed != 0:
@@ -8326,8 +8863,6 @@ def _upload_payload(
     state: str | None = None,
     resumed: bool | None = None,
 ) -> dict[str, object]:
-    files_total = upload.artifact_count
-    bytes_total = upload.artifact_bytes
     custodied_files, custodied_bytes = _custody_stats(session, upload.collection_id)
     tag_count = _upload_tag_count(session, upload.collection_id)
     archive_progress = session.execute(
@@ -8337,70 +8872,21 @@ def _upload_payload(
             func.coalesce(func.sum(CollectionArchiveObjectUploadRecord.total_units), 0),
         ).where(CollectionArchiveObjectUploadRecord.collection_id == upload.collection_id)
     ).one()
-    payload: dict[str, object] = {
-        "collection_id": format_scalar("sequence63", upload.collection_id),
-        "created_at": upload.opened_at,
-        "ingest_source": upload.ingest_source,
-        "description": upload.description,
-        "description_revision": upload.description_revision,
-        "description_identity": upload.description_identity,
-        "description_publication": (
-            "pending"
-            if upload.description_identity is None
-            else "not_required"
-            if upload.description_revision == 0
-            else "current"
-        ),
-        "tag_revision": upload.tag_revision,
-        "tag_set_identity": upload.tag_set_identity,
-        "tag_publication": (
-            "current" if upload.tag_publication_receipt_json is not None else "pending"
-        ),
-        "tag_count": tag_count,
-        "provenance_identity": None,
-        "delivery_context_id": upload.delivery_context_id,
-        "construction_identity_sha256": upload.creation_identity_sha256,
-        "completion_journal_id": upload.completion_journal_id,
-        "completion_receipt": None
-        if upload.completion_receipt_json is None
-        else json.loads(upload.completion_receipt_json),
-        "archive_store": upload.archive_store,
-        "use_cache": upload.use_cache,
-        "copy_to": json.loads(upload.copy_to_json),
-        "copy_intents": _copy_intent_payloads(
+    return upload_session_payload(
+        upload,
+        tag_count=tag_count,
+        custodied_files=custodied_files,
+        custodied_bytes=custodied_bytes,
+        uploaded_bytes=int(archive_progress[0]),
+        uploaded_units=int(archive_progress[1]),
+        total_units=int(archive_progress[2]),
+        copy_intents=_copy_intent_payloads(
             session, upload.collection_id, canceled=state == "canceled"
         ),
-        "encryption_format": upload.encryption_format,
-        "passphrase_id": upload.passphrase_id,
-        "state": state or upload.state,
-        "custody_mode": upload.custody_mode,
-        "registration_constraints": _registration_constraints_payload(
-            _planner_checkpoint(upload).policy
-        ),
-        "files_total": int(files_total),
-        "bytes_total": int(bytes_total),
-        "upload_state_expires_at": None if state == "canceled" else upload.lease_expires_at,
-        "custody": _custody_payload(
-            files=int(files_total),
-            byte_count=int(bytes_total),
-            custodied_files=custodied_files,
-            custodied_bytes=custodied_bytes,
-        ),
-        "orphaned_at": None if state == "canceled" else upload.orphaned_at,
-        "latest_failure": upload.archive_failure,
-        "archive_phase": upload.archive_phase,
-        "archive_phase_updated_at": upload.archive_phase_updated_at,
-        "archive_next_attempt_at": upload.archive_next_attempt_at,
-        "archive_storage_prefix": upload.archive_storage_prefix,
-        "archive_uploaded_bytes": int(archive_progress[0]),
-        "archive_total_bytes": None,
-        "archive_uploaded_units": int(archive_progress[1]),
-        "archive_total_units": int(archive_progress[2]),
-        "collection": None,
-    }
-    if resumed is not None:
-        payload["resumed"] = resumed
-    return payload
+        policy=_planner_checkpoint(upload).policy,
+        state=state,
+        resumed=resumed,
+    )
 
 
 def _finalized_payload(
@@ -8550,3 +9036,1298 @@ def _copy_intent_payloads(
             }
         )
     return result
+
+
+def _journal_service_catalog_declaration(mode: str) -> Declaration:
+    selecting = mode == "next"
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    excluded = add(number(1), dimension("excluded_keys"))
+    depth = Expression("log2_ceil", terms=(add(number(2), dimension("retained_rows")),))
+    comparisons = (
+        Expression("product", terms=(number(64, (("count", -1),)), excluded, excluded))
+        if selecting
+        else number(128)
+    )
+    return Declaration(
+        id="riverhog-server.validation-service-" + mode + ".growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.services.collection_uploads._"
+            + (
+                "next_upload_journal_validation" if selecting else "upload_journal_validation_stamp"
+            ),
+        ),
+        scope="complete indexed journal selection"
+        if selecting
+        else ("complete exact attempt-fenced progress stamp"),
+        starts_at="receive the session factory, exact key/cursor and complete exclusions",
+        ends_at="close the owned snapshot and return a detached key or progress stamp",
+        dimensions=(
+            Dimension(
+                "retained_rows",
+                COUNT,
+                ("Independent Journal, epoch-scan and validation-job index population."),
+            ),
+            Dimension(
+                "metadata_row_octets",
+                OCTETS,
+                (
+                    "Largest complete supplied/retained "
+                    "metadata row, including actual "
+                    "key/version widths and connection "
+                    "controls."
+                ),
+            ),
+            Dimension(
+                "control_octets",
+                OCTETS,
+                ("Complete encoded lookup, cursor and exclusion identities supplied at entry."),
+            ),
+            Dimension(
+                "excluded_keys",
+                COUNT,
+                ("Actual exclusion tuple cardinality; zero for exact stamps."),
+            ),
+        ),
+        bounds=(
+            Bound(
+                "sql_statements",
+                COUNT,
+                "upper",
+                number(3 if selecting else 2),
+                (
+                    "Selection uses one "
+                    "forward seek and at "
+                    "most one wrap; "
+                    "stamps use one point"
+                    " join. Both include one explicit snapshot start."
+                ),
+            ),
+            Bound(
+                "driver_statements",
+                COUNT,
+                "upper",
+                number(24),
+                ("Include actual cold pool, snapshot and rollback controls."),
+            ),
+            Bound(
+                "connection_statements",
+                COUNT,
+                "upper",
+                number(20),
+                ("Observe native connection controls independently of application SQL."),
+            ),
+            Bound(
+                "returned_rows",
+                COUNT,
+                "upper",
+                number(12),
+                ("One application result plus cold connection-control results."),
+            ),
+            Bound(
+                "returned_metadata_octets",
+                OCTETS,
+                "upper",
+                scale(12, dimension("metadata_row_octets")),
+                (
+                    "Retain complete "
+                    "returned scalar "
+                    "widths, including "
+                    "fixed-width "
+                    "authority ordinals."
+                ),
+            ),
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "upper",
+                add(scale(4, dimension("control_octets")), number(64, OCTETS)),
+                (
+                    "Both forward and "
+                    "wrap probes bind "
+                    "complete exclusions;"
+                    " point stamps bind "
+                    "exact keys."
+                ),
+            ),
+            Bound(
+                "sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                add(number(4096), comparisons, Expression("product", terms=(number(256), depth))),
+                (
+                    "Composite-index "
+                    "seeks avoid "
+                    "revisiting the "
+                    "retained prefix. "
+                    "Selection can visit "
+                    "at most K+1 "
+                    "candidates, each "
+                    "comparing K "
+                    "exclusions; stamps "
+                    "perform fixed "
+                    "indexed joins."
+                ),
+            ),
+            *(
+                Bound(
+                    metric,
+                    unit,
+                    "equal",
+                    number(0, unit),
+                    (
+                        "Selection/stamps neither "
+                        "mutate nor decode, encode, "
+                        "hash or acquire payload "
+                        "authority."
+                    ),
+                )
+                for metric, unit in (
+                    ("changed_rows", COUNT),
+                    ("source_payload_octets", OCTETS),
+                    ("json_decodes", COUNT),
+                    ("json_encodes", COUNT),
+                    ("json_decoded_octets", OCTETS),
+                    ("json_encoded_octets", OCTETS),
+                    ("hashed_octets", OCTETS),
+                    ("uuid_values", COUNT),
+                )
+            ),
+        ),
+        conditions=(
+            (
+                "Maintained Journal state/collection/journal, scan primary key and"
+                " linked-job unique indexes are present."
+            ),
+            (
+                "Factories disable automatic flushing; unrelated pending writes do"
+                " not enter the snapshot."
+            ),
+            (
+                "Journal identities and collection IDs are non-null; the "
+                "maintained database collation defines both ordered selection and "
+                "tuple seek."
+            ),
+            (
+                "Exclusion cardinality comes from caller scheduling admission and "
+                "remains within the database's explicit statement capacity."
+            ),
+        ),
+        invariants=(
+            (
+                "Selection returns the least eligible key after the cursor, or the"
+                " least eligible key on wrap, without changing durable state."
+            ),
+            "Stamps include scan and job versions only for the exact current capture attempt.",
+            (
+                "No source/capture/documentary payload is fetched, interpreted or "
+                "accepted by coordination."
+            ),
+        ),
+        limitations=(
+            (
+                "SQL VM and metadata primitives exclude physical I/O, internal "
+                "byte comparisons, allocations, and lock/CPU latency."
+            ),
+            (
+                "Caller scheduling, actual validation and finalization readiness "
+                "have separate composed work."
+            ),
+        ),
+    )
+
+
+def _journal_service_schedule_declaration() -> Declaration:
+    child = _ready_for_finalization
+    binding = growth_binding(child)
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    own = {
+        "sql_statements": number(2),
+        "driver_statements": number(24),
+        "connection_statements": number(20),
+        "returned_rows": number(12),
+        "returned_metadata_octets": scale(12, dimension("metadata_row_octets")),
+        "bound_parameter_octets": add(
+            scale(4, dimension("metadata_row_octets")), scale(4, dimension("control_octets"))
+        ),
+        "changed_rows": number(1),
+        "sqlite_vm_instructions": add(
+            number(4096),
+            Expression(
+                "product",
+                terms=(
+                    number(256),
+                    Expression("log2_ceil", terms=(add(number(2), dimension("retained_rows")),)),
+                ),
+            ),
+        ),
+    }
+    return Declaration(
+        id="riverhog-server.validation-service-schedule.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.services.collection_uploads.SqlAlchemyCollectionUploadSe"
+            "rvice._schedule_finalization_if_ready",
+        ),
+        scope="complete readiness scheduling transaction including the real planner/count child",
+        starts_at="receive the exact collection identity and owning session factory",
+        ends_at=(
+            "commit or roll back the owned transaction and return or propagate"
+            " the real readiness rejection"
+        ),
+        dimensions=(
+            Dimension("retained_rows", COUNT, "Independent retained upload index population."),
+            Dimension(
+                "metadata_row_octets",
+                OCTETS,
+                (
+                    "Largest complete actual upload row "
+                    "and proposed queued-state update, "
+                    "including full planner and authority "
+                    "controls."
+                ),
+            ),
+            Dimension(
+                "control_octets", OCTETS, ("Full collection lookup and timestamp/update controls.")
+            ),
+            Dimension(
+                "readiness_calls",
+                COUNT,
+                ("Actual child invocations, independently capped at one by the point lookup."),
+            ),
+            *(
+                Dimension(
+                    "readiness_" + item.name,
+                    item.unit,
+                    ("Exact input of the borrowed readiness child, or zero only when absent. ")
+                    + item.meaning,
+                )
+                for item in binding.declaration.dimensions
+            ),
+        ),
+        bounds=(
+            *(
+                Bound(
+                    bound.metric,
+                    bound.unit,
+                    "upper",
+                    add(
+                        Expression(
+                            "delegate",
+                            name="readiness",
+                            metric=bound.metric,
+                            terms=(dimension("readiness_calls"),),
+                            arguments=tuple(
+                                (item.name, dimension("readiness_" + item.name))
+                                for item in binding.declaration.dimensions
+                            ),
+                        ),
+                        own.get(bound.metric, number(0, bound.unit)),
+                    ),
+                    (
+                        "Complete actual readiness work plus the owning exact upload "
+                        "lookup, optional queued-state update, and transaction lifecycle."
+                    ),
+                )
+                for bound in binding.declaration.bounds
+            ),
+            Bound(
+                "readiness_calls",
+                COUNT,
+                "equal",
+                dimension("readiness_calls"),
+                ("Every invocation retains its real child sample, including rejected calls."),
+            ),
+            Bound(
+                "readiness_calls_limit",
+                COUNT,
+                "upper",
+                number(1),
+                ("Only one exact upload can be selected."),
+            ),
+        ),
+        conditions=(
+            "Factories disable automatic flushing and own the complete scheduling transaction.",
+            (
+                "Actual child dimensions retain the complete planner, payload seal"
+                " and selected volume populations."
+            ),
+        ),
+        invariants=(
+            "Missing uploads and incomplete readiness never queue publication.",
+            "Only closing or uploading constructions enter accepted finalization.",
+            "Already accepted finalization retains its current claim or queued retry.",
+            (
+                "Only the existing exact readiness predicate permits the existing "
+                "finalizing/queued state transition."
+            ),
+            "Malformed planner rejection rolls back without changing durable upload state.",
+        ),
+        limitations=(
+            (
+                "This call retains the readiness child's admitted linear "
+                "selected-volume count; whole finalization cadence and publication"
+                " have separate total-work obligations."
+            ),
+            (
+                "Logical primitives exclude physical I/O, allocations, internal "
+                "byte comparisons, and lock/CPU latency."
+            ),
+        ),
+    )
+
+
+declare_growth(_journal_service_catalog_declaration("stamp"))(_upload_journal_validation_stamp)
+declare_growth(_journal_service_catalog_declaration("next"))(_next_upload_journal_validation)
+declare_growth(
+    _journal_service_schedule_declaration(), delegates=(("readiness", _ready_for_finalization),)
+)(SqlAlchemyCollectionUploadService._schedule_finalization_if_ready)
+
+
+def _service_validation_unit_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
+    from riverhog_provenance.epoch_boundaries import classify_epoch_boundary
+    from riverhog_provenance.topology_facts import advance_topology_frame, plan_topology_frame
+
+    from .upload_journal_validation_owner import UploadJournalValidationOwner
+
+    return (
+        ("framing", advance_journal_framing),
+        ("epoch", classify_epoch_boundary),
+        ("plan", plan_topology_frame),
+        ("topology", advance_topology_frame),
+        ("owner", UploadJournalValidationOwner.advance),
+    )
+
+
+def _service_validation_unit_declaration() -> Declaration:
+    from riverhog_core.growth_bounds import bound_envelope
+
+    children = {
+        tag: growth_binding(operation) for tag, operation in _service_validation_unit_children()
+    }
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    def add(*terms: Expression) -> Expression:
+        return terms[0] if len(terms) == 1 else Expression("sum", terms=terms)
+
+    def times(calls: Expression, term: Expression) -> Expression:
+        return Expression("product", terms=(number(1, (("count", -1),)), calls, term))
+
+    pages = dimension("maximum_frame_pages")
+    statements = add(number(1024), scale(8, pages))
+    returned = add(number(1024), scale(4, pages))
+    payload = add(
+        dimension("transport_extent_octets"),
+        number(12 * _JOURNAL_CAPTURE_SEGMENT_OCTETS, OCTETS),
+        Expression(
+            "product", terms=(number(4 * _JOURNAL_CAPTURE_SEGMENT_OCTETS, OCTETS_PER_COUNT), pages)
+        ),
+    )
+    metadata = Expression(
+        "product", terms=(number(1, (("count", -1),)), returned, dimension("metadata_row_octets"))
+    )
+    own: dict[str, tuple[tuple[tuple[str, int], ...], Expression, str]] = {
+        "sql_statements": (
+            COUNT,
+            statements,
+            (
+                "At most 64 frame publications, 64 fact insertions, four union transitions and "
+                "sixteen rank transitions sharing 64 row items, plus indexed source-page probes."
+            ),
+        ),
+        "driver_statements": (
+            COUNT,
+            add(number(4096), scale(24, pages)),
+            (
+                "Include actual transaction begin, commit and rollback controls for each bounded "
+                "phase and page."
+            ),
+        ),
+        "connection_statements": (
+            COUNT,
+            add(number(3072), scale(16, pages)),
+            "Native connection lifecycle remains separately observable.",
+        ),
+        "returned_rows": (
+            COUNT,
+            returned,
+            (
+                "Fixed metadata probes, bounded preparation pages and point reads, without a "
+                "retained-resource census."
+            ),
+        ),
+        "returned_metadata_octets": (
+            OCTETS,
+            metadata,
+            "Every scalar of every returned metadata row is charged at its complete width.",
+        ),
+        "bound_parameter_octets": (
+            OCTETS,
+            add(
+                times(statements, scale(2, dimension("metadata_row_octets"))),
+                number(4 * _JOURNAL_CAPTURE_SEGMENT_OCTETS, OCTETS),
+            ),
+            (
+                "Full lookup, version/cursor and update controls, plus bounded capture-page "
+                "writes and old-tail fences."
+            ),
+        ),
+        "source_payload_octets": (
+            OCTETS,
+            payload,
+            (
+                "One transport extent; tail verification and capture preparation; contiguous "
+                "epoch reads; one topology plan or resumed item window. Complete fetched pages "
+                "remain charged."
+            ),
+        ),
+        "hashed_octets": (
+            OCTETS,
+            add(payload, number(2 * _JOURNAL_CAPTURE_SEGMENT_OCTETS, OCTETS)),
+            (
+                "Hash every fetched capture page and at most two prepared capture pages; Native "
+                "hashes are separate children."
+            ),
+        ),
+        "changed_rows": (
+            COUNT,
+            number(1024),
+            (
+                "Capture/epoch/fact admissions, one retired 64-row page, union/rank admitted "
+                "items and fixed checkpoints; rolled-back attempted changes remain charged."
+            ),
+        ),
+        "sqlite_vm_instructions": (
+            COUNT,
+            Expression(
+                "product",
+                terms=(
+                    number(256, ()),
+                    statements,
+                    Expression("log2_ceil", terms=(add(number(2), dimension("retained_rows")),)),
+                ),
+            ),
+            (
+                "Bounded statements use maintained primary/unique/range indexes; include their "
+                "logarithmic retained-population cost and bounded row/index maintenance."
+            ),
+        ),
+        "json_decodes": (
+            COUNT,
+            number(512),
+            (
+                "Fixed-shape preparation headers and replay bindings, including all sixteen rank "
+                "transitions."
+            ),
+        ),
+        "json_encodes": (
+            COUNT,
+            number(512),
+            (
+                "Canonical preparation headers and replay controls, including rejected retained "
+                "controls."
+            ),
+        ),
+        "json_decoded_octets": (
+            OCTETS,
+            scale(512, dimension("metadata_row_octets")),
+            "Whole incoming private controls, including malformed controls, are measured.",
+        ),
+        "json_encoded_octets": (
+            OCTETS,
+            scale(3072, dimension("metadata_row_octets")),
+            (
+                "Charge complete canonical output, including JSON escaping expansion, "
+                "independently of byte decoding."
+            ),
+        ),
+    }
+    selected_metrics = {
+        "framing": ("consumed_octets", OCTETS),
+        "epoch": ("json_decoded_octets", OCTETS),
+        "plan": ("hashed_octets", OCTETS),
+        "topology": ("visited_octets", OCTETS),
+        "owner": ("sql_statements", COUNT),
+    }
+
+    def child(tag: str, metric: str, unit: tuple[tuple[str, int], ...]) -> Expression:
+        binding = children[tag]
+        if metric not in {bound.metric for bound in binding.declaration.bounds}:
+            return number(0, unit)
+        arguments = {
+            item.name: dimension(tag + "_" + item.name) for item in binding.declaration.dimensions
+        }
+        if tag != "epoch":
+            return Expression(
+                "delegate",
+                name=tag,
+                metric=metric,
+                terms=(dimension(tag + "_calls"),),
+                arguments=tuple(arguments.items()),
+            )
+        return times(
+            dimension(tag + "_calls"), bound_envelope(binding.operation, metric, arguments)
+        )
+
+    return Declaration(
+        id="riverhog-server.validation-service-unit.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            (
+                "riverhog_core.services.collection_uploads.SqlAlchemyCollectionUploadService._adv"
+                "ance_provenance_journal_validation_unit"
+            ),
+        ),
+        scope=(
+            "complete actual capture, preparation, Native validation and fenced terminal "
+            "publication unit"
+        ),
+        starts_at="receive the exact collection/journal key on the owning service",
+        ends_at=(
+            "return after the real bounded phase, early rejection, stale publication or "
+            "committed Native outcome, with owned catalog readers closed"
+        ),
+        dimensions=(
+            Dimension(
+                "retained_rows",
+                COUNT,
+                (
+                    "Independent population of the related catalog indexes across current, "
+                    "retired and unrelated attempts."
+                ),
+            ),
+            Dimension(
+                "metadata_row_octets",
+                OCTETS,
+                (
+                    "Largest complete input/private metadata row and proposed fixed-shape "
+                    "controls, including incoming keys, malformed headers and outcome; payload "
+                    "BLOBs are charged separately."
+                ),
+            ),
+            Dimension(
+                "transport_extent_octets",
+                OCTETS,
+                (
+                    "Maximum complete retained transport chunk width, independently established "
+                    "from this source's stored chunk boundaries."
+                ),
+            ),
+            Dimension(
+                "maximum_frame_pages",
+                COUNT,
+                (
+                    "Ceiling of the largest captured frame extent including framing bytes "
+                    "divided by the existing capture-page width; independent of observed reads."
+                ),
+            ),
+            *(
+                Dimension(
+                    tag + "_calls",
+                    COUNT,
+                    "Actual invocations, independently capped by the service phase admission.",
+                )
+                for tag in children
+            ),
+            *(
+                Dimension(
+                    tag + "_" + item.name,
+                    item.unit,
+                    "Dominating envelope of actual child inputs, zero only if absent. "
+                    + item.meaning,
+                )
+                for tag, binding in children.items()
+                for item in binding.declaration.dimensions
+            ),
+        ),
+        bounds=(
+            *(
+                Bound("core_" + metric, unit, "upper", expression, rationale)
+                for metric, (unit, expression, rationale) in own.items()
+            ),
+            *(
+                Bound(
+                    "native_" + tag + "_" + metric,
+                    unit,
+                    "upper",
+                    child(tag, metric, unit),
+                    (
+                        "Actual child input/call composition; every other Native primitive "
+                        "remains independently enforced in the mandatory child execution records."
+                    ),
+                )
+                for tag, (metric, unit) in selected_metrics.items()
+            ),
+            *(
+                Bound(
+                    tag + "_calls",
+                    COUNT,
+                    "equal",
+                    dimension(tag + "_calls"),
+                    (
+                        "Every real child invocation retains its own input dimensions and "
+                        "execution sample."
+                    ),
+                )
+                for tag in children
+            ),
+            *(
+                Bound(
+                    tag + "_calls_limit",
+                    COUNT,
+                    "upper",
+                    number(64 if tag == "epoch" else 1),
+                    (
+                        "Framing, planning, topology advancement and Native ownership each "
+                        "execute at most once; epoch classification admits at most 64 frames."
+                    ),
+                )
+                for tag in children
+            ),
+        ),
+        conditions=(
+            (
+                "Current capture, epoch, topology, union, rank, retired preparation and "
+                "linked-job primary/unique/range indexes are present; native SQLite VM "
+                "accounting is qualified separately from other engines."
+            ),
+            (
+                "Factories disable autoflush and retain detached scalars; unrelated pending "
+                "writes do not enter owned work."
+            ),
+            (
+                "Existing admissions remain unchanged: 64 KiB/64-frame capture and epoch "
+                "windows, 64 topology items with a 64 KiB atom admission, four union and sixteen "
+                "rank transitions sharing their existing row budgets."
+            ),
+            (
+                "Frame extents retain the existing Native entry capacity; maximum_frame_pages "
+                "comes from actual independently authenticated source positions, never measured "
+                "resource usage."
+            ),
+            (
+                "Each child envelope dominates its real inputs, and each invocation retains an "
+                "independently validated sample, including actual rejected calls."
+            ),
+        ),
+        invariants=(
+            (
+                "Source bytes, algorithm, attempt, version and cursor fences remain exact at "
+                "publication; stale or invalid findings cannot become semantic authority."
+            ),
+            (
+                "Native validation and framing run detached from catalog transactions; committed "
+                "Native outcomes precede Core terminal publication."
+            ),
+            (
+                "No source is replaced by a different prefix, and no private graph fact replaces "
+                "ordered Native schema or graph acceptance."
+            ),
+            (
+                "Every acquired catalog reader closes on success, early return, interruption and "
+                "rejection; rollback preserves the previous durable checkpoint."
+            ),
+        ),
+        limitations=(
+            (
+                "Core primitives are exclusive core_* metrics. Complete Native SQL, source, "
+                "filesystem, codec and lifecycle costs remain in mandatory independently "
+                "validated child records."
+            ),
+            (
+                "Primitive SQL/byte/codec counts exclude internal comparisons, JSON value "
+                "traversal, allocation, physical I/O and machine latency; timing remains an "
+                "observation."
+            ),
+            (
+                "This is one actual unit, not total-work qualification of the scheduler, archive "
+                "publication or complete member ingest."
+            ),
+        ),
+    )
+
+
+def _service_validation_advance_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
+    return (
+        ("stamp", _upload_journal_validation_stamp),
+        ("unit", SqlAlchemyCollectionUploadService._advance_provenance_journal_validation_unit),
+    )
+
+
+def _service_validation_advance_declaration() -> Declaration:
+    from riverhog_core.growth_bounds import bound_envelope
+
+    children = {
+        tag: growth_binding(operation) for tag, operation in _service_validation_advance_children()
+    }
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    def stamp(metric: str) -> Expression:
+        binding = children["stamp"]
+        return Expression(
+            "product",
+            terms=(
+                number(1, (("count", -1),)),
+                dimension("stamp_calls"),
+                bound_envelope(
+                    binding.operation,
+                    metric,
+                    {
+                        item.name: dimension("stamp_" + item.name)
+                        for item in binding.declaration.dimensions
+                    },
+                ),
+            ),
+        )
+
+    return Declaration(
+        id="riverhog-server.validation-service-advance.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            (
+                "riverhog_core.services.collection_uploads.SqlAlchemyCollectionUplo"
+                "adService._advance"
+                "_provenance_journal_validation"
+            ),
+        ),
+        scope=(
+            "complete stamped validation call with actual before/after snapshots and its real "
+            "validation unit"
+        ),
+        starts_at="receive the exact collection and journal key from service coordination",
+        ends_at=(
+            "return the actual durable stamp inequality, or propagate the real child rejection "
+            "without a fabricated after snapshot"
+        ),
+        dimensions=(
+            Dimension(
+                "stamp_operand_octets",
+                OCTETS,
+                (
+                    "Largest complete stamp tuple returned by the actual child and "
+                    "supplied as an "
+                    "operand to the builtin comparison; zero for absence."
+                ),
+            ),
+            *(
+                Dimension(
+                    tag + "_calls",
+                    COUNT,
+                    (
+                        "Actual child invocations, independently capped by the "
+                        "straight-line service "
+                        "call."
+                    ),
+                )
+                for tag in children
+            ),
+            *(
+                Dimension(
+                    tag + "_" + item.name,
+                    item.unit,
+                    (
+                        "Exact unit inputs, or a dominating envelope of actual "
+                        "stamp inputs; zero only "
+                        "when absent. "
+                    )
+                    + item.meaning,
+                )
+                for tag, binding in children.items()
+                for item in binding.declaration.dimensions
+            ),
+        ),
+        bounds=(
+            Bound(
+                "comparison_operations",
+                COUNT,
+                "upper",
+                number(1),
+                (
+                    "One real builtin tuple inequality, including a reflected comparison against "
+                    "absence; no comparison follows an exceptional child."
+                ),
+            ),
+            Bound(
+                "comparison_operand_fields",
+                COUNT,
+                "upper",
+                number(8),
+                (
+                    "At most two complete four-scalar source/capture/scan/job "
+                    "stamps are provided to "
+                    "the real comparison."
+                ),
+            ),
+            Bound(
+                "comparison_operand_octets",
+                OCTETS,
+                "upper",
+                scale(2, dimension("stamp_operand_octets")),
+                (
+                    "Charge complete operand controls independently of which tuple scalar first "
+                    "differs."
+                ),
+            ),
+            Bound(
+                "unscoped_operations",
+                COUNT,
+                "equal",
+                number(0),
+                (
+                    "SQL, filesystem, direct SQLite, codec and source hashing "
+                    "belong to the actual "
+                    "mandatory children."
+                ),
+            ),
+            Bound(
+                "stamp_sql_statements",
+                COUNT,
+                "upper",
+                stamp("sql_statements"),
+                (
+                    "Both heterogeneous point snapshots retain their actual inputs "
+                    "and independently "
+                    "validated full child costs."
+                ),
+            ),
+            Bound(
+                "stamp_returned_metadata_octets",
+                OCTETS,
+                "upper",
+                stamp("returned_metadata_octets"),
+                (
+                    "Full returned controls remain charged when the unit changes "
+                    "capture, scan, job "
+                    "or terminal state."
+                ),
+            ),
+            Bound(
+                "unit_native_owner_sql_statements",
+                COUNT,
+                "upper",
+                Expression(
+                    "delegate",
+                    name="unit",
+                    metric="native_owner_sql_statements",
+                    terms=(dimension("unit_calls"),),
+                    arguments=tuple(
+                        (item.name, dimension("unit_" + item.name))
+                        for item in children[("unit")].declaration.dimensions
+                    ),
+                ),
+                (
+                    "The actual unit input link retains every exclusive Core primitive and "
+                    "complete Native child cost in the mandatory hierarchical record."
+                ),
+            ),
+            *(
+                Bound(
+                    tag + "_calls",
+                    COUNT,
+                    "equal",
+                    dimension(tag + "_calls"),
+                    (
+                        "Every invoked child retains its actual execution sample, "
+                        "including a recorded "
+                        "rejection."
+                    ),
+                )
+                for tag in children
+            ),
+            Bound(
+                "stamp_calls_limit",
+                COUNT,
+                "upper",
+                number(2),
+                ("One before snapshot and one after snapshot; rejection prevents the latter."),
+            ),
+            Bound(
+                "unit_calls_limit",
+                COUNT,
+                "upper",
+                number(1),
+                ("Exactly one unit is attempted after the before snapshot succeeds."),
+            ),
+        ),
+        conditions=(
+            (
+                "The actual stamp child retains its current-attempt joins and indexes; the unit "
+                "retains its source and budget conditions."
+            ),
+            (
+                "Each heterogeneous stamp sample is independently validated and dominated by the "
+                "declared input envelope; the single unit input mapping is exact."
+            ),
+            (
+                "Only durable source/capture/scan/job state enters the four-field comparison; "
+                "complete counter widths are retained."
+            ),
+        ),
+        invariants=(
+            (
+                "The returned boolean is the actual before/after durable stamp inequality, "
+                "including unchanged or absent work."
+            ),
+            (
+                "A real unit rejection propagates unchanged; no after stamp or successful "
+                "progress is invented."
+            ),
+            (
+                "The owning children close their catalog snapshots before control returns to "
+                "coordination."
+            ),
+            (
+                "All Core and Native work remains in mandatory independently validated child "
+                "records, including source fences, rollback and acceptance authority."
+            ),
+        ),
+        limitations=(
+            (
+                "Operand extents count complete supplied metadata, not internal Python "
+                "scalar-comparison instructions or machine latency."
+            ),
+            (
+                "This call reports durable progress; total scheduler fairness, complete member "
+                "ingest and publication require their owning qualifications."
+            ),
+        ),
+    )
+
+
+def _declare_service_validation_unit_growth() -> None:
+    declare_growth(
+        _service_validation_unit_declaration(), delegates=_service_validation_unit_children()
+    )(SqlAlchemyCollectionUploadService._advance_provenance_journal_validation_unit)
+    declare_growth(
+        _service_validation_advance_declaration(), delegates=_service_validation_advance_children()
+    )(SqlAlchemyCollectionUploadService._advance_provenance_journal_validation)
+
+
+def _service_scheduler_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
+    from .upload_journal_validation_owner import UploadJournalValidationOwner
+    from .upload_journal_validation_retirement import UploadJournalValidationRetirement
+
+    return (
+        ("sweep", UploadJournalValidationOwner.release_stale),
+        ("keys", UploadJournalValidationOwner.active_keys),
+        ("retirement", UploadJournalValidationRetirement.advance),
+        ("select", _next_upload_journal_validation),
+        ("validation", SqlAlchemyCollectionUploadService._advance_provenance_journal_validation),
+        ("schedule", SqlAlchemyCollectionUploadService._schedule_finalization_if_ready),
+    )
+
+
+def _service_scheduler_declaration() -> Declaration:
+    from riverhog_core.growth_bounds import bound_envelope
+
+    children = {tag: growth_binding(operation) for tag, operation in _service_scheduler_children()}
+
+    def dimension(name: str) -> Expression:
+        return Expression("dimension", name=name)
+
+    def number(value: int, unit: tuple[tuple[str, int], ...] = COUNT) -> Expression:
+        return Expression("constant", value=value, unit=unit)
+
+    def add(*terms: Expression) -> Expression:
+        return Expression("sum", terms=terms)
+
+    def scale(value: int, term: Expression) -> Expression:
+        return Expression("product", terms=(number(value, ()), term))
+
+    def times(calls: Expression, term: Expression) -> Expression:
+        return Expression("product", terms=(number(1, (("count", -1),)), calls, term))
+
+    limit, concurrency = dimension("unit_limit"), dimension("configured_slots")
+    candidates = add(scale(2, concurrency), number(1))
+    probes = add(concurrency, number(1))
+    active_visits = times(limit, times(concurrency, add(concurrency, number(2))))
+    exclusions = times(limit, times(probes, candidates))
+    comparisons = times(
+        limit,
+        add(
+            Expression(
+                "product",
+                terms=(number(2, ()), concurrency, Expression("log2_ceil", terms=(probes,))),
+            ),
+            scale(2, concurrency),
+        ),
+    )
+    caps = {
+        "sweep": limit,
+        "keys": limit,
+        "retirement": limit,
+        "select": times(limit, probes),
+        "validation": times(limit, candidates),
+        "schedule": limit,
+    }
+    representative = {
+        "sweep": ("sql_statements", COUNT),
+        "keys": ("returned_keys", COUNT),
+        "retirement": ("outer_iterations", COUNT),
+        "select": ("sql_statements", COUNT),
+        "validation": ("comparison_operations", COUNT),
+        "schedule": ("readiness_calls", COUNT),
+    }
+    own = {
+        "outer_iterations": (
+            COUNT,
+            limit,
+            "Actual yielded outer iterations never exceed the nonnegative caller admission.",
+        ),
+        "fresh_iterations": (
+            COUNT,
+            times(limit, probes),
+            "Each eligible outer iteration requests at most C+1 exact fresh candidates.",
+        ),
+        "sort_calls": (COUNT, limit, "At most one actual warm-key sort per outer iteration."),
+        "active_key_visits": (
+            COUNT,
+            active_visits,
+            "One active-key sort input and at most C+1 active-key exclusion "
+            "expansions per outer iteration.",
+        ),
+        "active_key_octets": (
+            OCTETS,
+            times(active_visits, dimension("maximum_key_octets")),
+            "Charge complete keys supplied by each observed active-key iteration.",
+        ),
+        "ordering_comparisons": (
+            COUNT,
+            comparisons,
+            "Native tuple comparisons from the actual C-key sort and two optional "
+            "C-key cursor rotations.",
+        ),
+        "ordering_operand_octets": (
+            OCTETS,
+            scale(2, times(comparisons, dimension("maximum_key_octets"))),
+            "Both complete key operands remain charged regardless of the first differing scalar.",
+        ),
+        "exclusion_key_references": (
+            COUNT,
+            exclusions,
+            "Every actual constructed selector exclusion tuple contains at most "
+            "2C+1 keys across at most C+1 probes per outer iteration.",
+        ),
+        "exclusion_operand_octets": (
+            OCTETS,
+            times(exclusions, dimension("maximum_key_octets")),
+            "Complete actual exclusion controls are supplied to the real indexed selector.",
+        ),
+        "excluded_keys_per_call": (
+            COUNT,
+            candidates,
+            "Active and previously selected fresh keys remain within the explicit "
+            "scheduling admission.",
+        ),
+        "retirement_unit_limit_per_call": (
+            COUNT,
+            number(1),
+            "Cleanup-first and fallback retirement are mutually exclusive within "
+            "each outer iteration.",
+        ),
+        "progressed_units": (
+            COUNT,
+            limit,
+            "Only actual child progress increments the returned count, at most "
+            "once per outer iteration.",
+        ),
+        "unscoped_operations": (
+            COUNT,
+            number(0),
+            "Catalog, direct SQLite, filesystem, source interpretation and "
+            "publication remain with mandatory actual child calls.",
+        ),
+    }
+    return Declaration(
+        id="riverhog-server.validation-service-scheduler.growth/v1",
+        authority="riverhog-server",
+        subjects=(
+            "riverhog_core.services.collection_uploads.SqlAlchemyCollectionUploadSe"
+            "rvice.process_due_provenance_journal_validations",
+        ),
+        scope=(
+            "complete bounded service scheduling including stale release, actual "
+            "validation, readiness and retirement"
+        ),
+        starts_at="receive the finite caller admission on the configured owning service",
+        ends_at=(
+            "return actual progressed units or propagate a real child rejection, with "
+            "owned readers and nonblocking slot attempts accounted"
+        ),
+        dimensions=(
+            Dimension(
+                "unit_limit",
+                COUNT,
+                "Effective nonnegative caller range admission, independently of observed progress.",
+            ),
+            Dimension(
+                "configured_slots",
+                COUNT,
+                "Positive configured validation concurrency, matching the actual "
+                "live Native owner's capacity.",
+            ),
+            Dimension(
+                "maximum_key_octets",
+                OCTETS,
+                "Largest complete actual incoming cursor, active key or selected "
+                "fresh key presented to scheduling; independent of measured SQL or "
+                "byte costs.",
+            ),
+            *(
+                Dimension(
+                    tag + "_calls",
+                    COUNT,
+                    "Actual invocations independently capped by the finite scheduling loops.",
+                )
+                for tag in children
+            ),
+            *(
+                Dimension(
+                    tag + "_" + item.name,
+                    item.unit,
+                    "Dominating envelope of the actual heterogeneous child inputs; "
+                    "absent children may use zero. " + item.meaning,
+                )
+                for tag, binding in children.items()
+                for item in binding.declaration.dimensions
+            ),
+        ),
+        bounds=(
+            *(
+                Bound(
+                    metric,
+                    unit,
+                    "upper" if metric != "unscoped_operations" else "equal",
+                    expression,
+                    meaning,
+                )
+                for metric, (unit, expression, meaning) in own.items()
+            ),
+            *(
+                Bound(
+                    tag + "_" + metric,
+                    unit,
+                    "upper",
+                    times(
+                        dimension(tag + "_calls"),
+                        bound_envelope(
+                            children[tag].operation,
+                            metric,
+                            {
+                                item.name: dimension(tag + "_" + item.name)
+                                for item in children[tag].declaration.dimensions
+                            },
+                        ),
+                    ),
+                    "Actual independently validated child records retain all "
+                    "Core/Native/catalog/filesystem costs; this compact "
+                    "representative envelope avoids repeating unrelated primitive "
+                    "formulas.",
+                )
+                for tag, (metric, unit) in representative.items()
+            ),
+            *(
+                Bound(
+                    tag + "_calls",
+                    COUNT,
+                    "equal",
+                    dimension(tag + "_calls"),
+                    "Every actual invocation retains its complete independently "
+                    "validated child sample, including a recorded rejection.",
+                )
+                for tag in children
+            ),
+            *(
+                Bound(
+                    tag + "_calls_limit",
+                    COUNT,
+                    "upper",
+                    cap,
+                    "Straight-line cleanup branches, candidate admission and the "
+                    "first-progress break independently cap each child.",
+                )
+                for tag, cap in caps.items()
+            ),
+        ),
+        conditions=(
+            "The service and Native owner agree on positive configured "
+            "concurrency; the active-key snapshot contains at most that many "
+            "actual reservations.",
+            "Every child retains its source-owned input, index, budget, reader, "
+            "lease and capacity conditions; all actual inputs are dominated by "
+            "their declared envelopes.",
+            "The interpreter's maintained tuple ordering and O(C log C) builtin "
+            "sort apply to complete collection/journal scalar keys; no alternate "
+            "ordering authority is introduced.",
+            "Selector exclusion inputs remain within the database's explicit "
+            "statement capacity; capacity rejection never removes queued work or "
+            "silently omits a candidate.",
+        ),
+        invariants=(
+            "Cleanup-first and fallback cleanup each use the real retirement loop, "
+            "with at most one cleanup call in any outer iteration.",
+            "The actual keyset selector supplies fresh work; active slots retain "
+            "bounded warm priority and exact cursor rotation.",
+            "Busy or unchanged validation does not claim progress or prevent the "
+            "bounded attempt of another admitted candidate.",
+            "Readiness is scheduled only after the real stamped caller reports "
+            "durable progress; all existing source and Native acceptance fences "
+            "remain intact.",
+            "No coordinator step replaces archive, source, graph, schema or lease "
+            "authority supplied by its owning child.",
+        ),
+        limitations=(
+            "The selected control/operand primitives exclude physical list copies, "
+            "allocations, internal scalar-comparison instructions and machine "
+            "latency; timing remains an observation.",
+            "Complete child costs remain mandatory hierarchical evidence. A "
+            "one-call scheduler bound is not a complete-member ingest or "
+            "archive-publication qualification.",
+        ),
+    )
+
+
+def _declare_service_scheduler_growth() -> None:
+    declare_growth(_service_scheduler_declaration(), delegates=_service_scheduler_children())(
+        SqlAlchemyCollectionUploadService.process_due_provenance_journal_validations
+    )

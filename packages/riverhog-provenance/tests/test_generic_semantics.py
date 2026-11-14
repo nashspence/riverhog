@@ -763,13 +763,240 @@ def binding_projection(operation):
     return binding, projection, digest
 
 
-@pytest.mark.growth_witness(
-    "riverhog-generic-semantics-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._generic_semantics.GenericSemantics.advance",
-)
-def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+def semantic_child_dimensions(current, budget):
+    """Snapshot graph inputs on the unmeasured setup pager, before opening the cold one."""
+    from test_child_admission_growth import octets
+    from test_online_dag import graph_dimensions
+
+    state, prefix = current._load()
+    run = current.db.execute(
+        "SELECT run_id FROM dag_runs WHERE kind=?", (current.kind,)
+    ).fetchone()[0]
+    child = current._edge_work(replace(state, phase="edge", edge_run=run), prefix)
+    native = graph_dimensions(child.checker, budget)
+    retained = sum(
+        current.db.execute("SELECT count(*) FROM " + table).fetchone()[0]
+        for table in (
+            "journal_prefix",
+            "journal_semantic_edges",
+            "dag_runs",
+            "dag_levels",
+            "dag_edges",
+            "dag_incoming",
+            "dag_seen",
+            "dag_queue",
+            "dag_undo",
+            "assertions",
+            "changes",
+            "dag_retired",
+        )
+    )
+    old = child._admission_row()
+    graph = child._dag()
+    width = 8192 + 2 * octets(
+        (
+            child.binding,
+            child.attempt_id,
+            prefix,
+            old,
+            graph,
+            state.to_json(),
+            child.source,
+            child.target,
+        )
+    )
+    admission = False
+    if state.phase == "walk":
+        frame = json.loads(
+            current.db.execute(
+                "SELECT value FROM generic_semantic_frames WHERE attempt_id=? AND frame_id=?",
+                (current.attempt_id, state.top),
+            ).fetchone()[0]
+        )
+        assert frame["operation"] == "row" and frame["stage"] in {"0", "1", "2", "3"}
+        assert current.certificates is None
+        # Two fixed reference steps precede the row's graph handoff. These fixtures
+        # admit both references and enough bytes; a resumed row is already at stage3.
+        admission = int(frame["stage"]) <= 2 and budget >= 3 - int(frame["stage"])
+    result = {
+        "edge_retained_rows": retained,
+        "edge_metadata_row_octets": max(width, native["metadata_row_octets"]),
+        "graph_retained_rows": native["retained_rows"],
+        "graph_metadata_row_octets": native["metadata_row_octets"],
+        "edge_admission_calls": int(admission),
+        "edge_unit_calls": int(state.phase == "edge"),
+        "edge_result_calls": 0,
+        "graph_start_calls": 0,
+        "graph_transition_calls": 0,
+        "graph_application_calls": 0,
+    }
+    if state.phase == "edge":
+        edge_state = child.load()
+        result["graph_start_calls"] = int(edge_state.phase == "start")
+        result["edge_result_calls"] = int(edge_state.done)
+        result["graph_transition_calls"] = int(
+            edge_state.phase == "graph" and graph.work.phase != "complete"
+        )
+        result["graph_application_calls"] = (
+            result["graph_start_calls"] + result["graph_transition_calls"]
+        )
+    return result
+
+
+def semantic_child_input_dimensions(parent, operation):
+    from test_semantic_edge import child_input_dimensions
+
+    if operation.__qualname__.startswith("GenericSemantics."):
+        return {
+            dimension.name: parent[dimension.name]
+            for dimension in growth_binding(operation).declaration.dimensions
+        }
+    if operation.__qualname__.startswith("SemanticEdge."):
+        values = {
+            **parent,
+            "retained_rows": parent["edge_retained_rows"],
+            "metadata_row_octets": parent["edge_metadata_row_octets"],
+            "row_budget": 1 if operation.__name__ == "result" else parent["step_budget"],
+        }
+        return {
+            dimension.name: values[dimension.name]
+            for dimension in growth_binding(operation).declaration.dimensions
+        }
+    return child_input_dimensions(parent, operation)
+
+
+def semantic_operation_owner(operation):
+    from riverhog_provenance._online_dag import OnlineDag
+    from riverhog_provenance._semantic_edge import SemanticEdge
+
+    return {
+        "GenericSemantics": GenericSemantics,
+        "SemanticEdge": SemanticEdge,
+        "OnlineDag": OnlineDag,
+    }[operation.__qualname__.split(".")[0]]
+
+
+def measure_semantic_operation(
+    current,
+    *,
+    measured_operation,
+    step_budget,
+    byte_budget,
+    retained_rows,
+    metadata_row_octets,
+    child_dimensions=None,
+):
+    """Measure the actual nested calls without replacing the inclusive SQL/VM observers."""
+    from test_semantic_edge import complete_sample, observe_graph_tree, observed_work
+
+    db = current.db
+    binding = growth_binding(getattr(GenericSemantics, measured_operation))
+    if child_dimensions is None:
+        assert current.operation != "row" or current.kind not in {"derivation", "specialization"}
+        child_dimensions = {
+            dimension.name: 0
+            for dimension in binding.declaration.dimensions
+            if dimension.name
+            not in {"retained_rows", "step_budget", "byte_budget", "metadata_row_octets"}
+        }
+    dimensions = {
+        "retained_rows": retained_rows,
+        "step_budget": step_budget,
+        "byte_budget": byte_budget,
+        "metadata_row_octets": metadata_row_octets,
+        **child_dimensions,
+    }
+    with observe_graph_tree(
+        db,
+        binding,
+        dimensions,
+        child_dimensions=semantic_child_input_dimensions,
+        operation_owner=semantic_operation_owner,
+    ) as frame:
+        if measured_operation == "prepare":
+            before = db.total_changes
+            with db.observe():
+                batch = current.prepare(step_budget=step_budget, byte_budget=byte_budget)
+            assert not db.in_transaction and db.total_changes == before
+            current.commit(batch)
+        elif measured_operation == "_apply":
+            batch = current.prepare(step_budget=step_budget, byte_budget=byte_budget)
+            db.execute("BEGIN IMMEDIATE").close()
+            try:
+                with db.observe():
+                    after = current._apply(batch)
+                assert db.in_transaction and after == batch.after
+                db.commit()
+            except BaseException:
+                db.rollback()
+                raise
+        else:
+            assert measured_operation == "advance"
+            with db.observe():
+                current.advance(step_budget=step_budget, byte_budget=byte_budget)
+    # The observer has stopped; reuse its exact inclusive counters and statement slices.
+    primitive = observed_work(db, {key: 0 for key in db.metrics}, 0, 0)
+    primitive["changed_rows"] = db.metrics["changed_rows"]
+    return complete_sample(frame, primitive)
+
+
+def semantic_terminal_dimensions(current):
+    """Derive terminal child inputs on the unmeasured setup pager."""
+    state = current.load()
+    calls = 0
+    if state.phase == "rejected" and state.edge_run is not None:
+        failure = json.loads(state.failure)
+        calls = int(
+            current.operation == "row"
+            and current.kind in {"derivation", "specialization"}
+            and failure["operation"] == "row"
+            and failure["stage"] == "2"
+        )
+    if not calls:
+        return {"edge_retained_rows": 0, "edge_metadata_row_octets": 0, "edge_result_calls": 0}
+    assert (
+        current.db.execute("SELECT run_id FROM dag_runs WHERE kind=?", (current.kind,)).fetchone()[
+            0
+        ]
+        == state.edge_run
+    )
+    child = semantic_child_dimensions(current, 1)
+    return {
+        "edge_retained_rows": child["edge_retained_rows"],
+        "edge_metadata_row_octets": child["edge_metadata_row_octets"],
+        "edge_result_calls": 1,
+    }
+
+
+def measure_semantic_result(
+    current, dimensions, *, expected_exception=None, pattern=None, expected_message=None
+):
+    from test_semantic_edge import complete_sample, observe_graph_tree, observed_work
+
+    db = current.db
+    binding = growth_binding(GenericSemantics.result)
+    with observe_graph_tree(
+        db,
+        binding,
+        dimensions,
+        child_dimensions=semantic_child_input_dimensions,
+        operation_owner=semantic_operation_owner,
+    ) as frame:
+        with db.observe():
+            if expected_exception is None:
+                current.result()
+            else:
+                with pytest.raises(expected_exception, match=pattern) as actual:
+                    current.result()
+                if expected_message is not None:
+                    assert str(actual.value) == expected_message
+    primitive = observed_work(db, {key: 0 for key in db.metrics}, 0, 0)
+    primitive["changed_rows"] = db.metrics["changed_rows"]
+    return complete_sample(frame, primitive)
+
+
+def common_semantic_samples(tmp_path, catalog, measured_operation, *, samples):
+    binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
     phases = (
         "generic",
         "metadata-key",
@@ -792,7 +1019,6 @@ def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
         "done",
         "rejected",
     )
-    samples = []
     for phase in phases:
         regimes = [(1, 1), (15, 16), (16, 16), (17, 16), (129, 16), (1025, 64)]
         if phase in {"keys", "outputs", "done"}:
@@ -859,20 +1085,14 @@ def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
             with closing(connect(path, factory=CommonWorkConnection)) as db:
                 current = work(db, row, catalog)
                 byte_budget = 16 * 1024 * 1024
-                with db.observe() as metrics:
-                    current.advance(step_budget=budget, byte_budget=byte_budget)
-                sample = {
-                    "declaration": binding.declaration.id,
-                    "declaration_sha256": digest,
-                    "dimensions": {
-                        "retained_rows": retained,
-                        "step_budget": budget,
-                        "byte_budget": byte_budget,
-                        "metadata_row_octets": envelope,
-                    },
-                    "metrics": dict(metrics),
-                    "delegates": {},
-                }
+                sample = measure_semantic_operation(
+                    current,
+                    measured_operation=measured_operation,
+                    step_budget=budget,
+                    byte_budget=byte_budget,
+                    retained_rows=retained,
+                    metadata_row_octets=envelope,
+                )
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
                 assert db.execute("SELECT * FROM journal_prefix").fetchone() == prefix
@@ -890,27 +1110,65 @@ def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
                     require_reclaimed(suffix_db)
     from test_row_semantics import growth_samples as row_growth_samples
 
-    samples.extend(row_growth_samples(tmp_path, catalog))
+    samples.extend(row_growth_samples(tmp_path, catalog, measured_operation=measured_operation))
     from test_content_semantics import growth_samples as content_growth_samples
 
-    samples.extend(content_growth_samples(tmp_path, catalog))
+    samples.extend(content_growth_samples(tmp_path, catalog, measured_operation=measured_operation))
     from test_description_semantics import growth_samples as description_growth_samples
 
-    samples.extend(description_growth_samples(tmp_path, catalog))
+    samples.extend(
+        description_growth_samples(tmp_path, catalog, measured_operation=measured_operation)
+    )
     from test_observation_semantics import growth_samples as observation_growth_samples
 
-    samples.extend(observation_growth_samples(tmp_path, catalog))
+    samples.extend(
+        observation_growth_samples(tmp_path, catalog, measured_operation=measured_operation)
+    )
     from test_edge_row_semantics import growth_samples as edge_growth_samples
 
-    samples.extend(edge_growth_samples(tmp_path, catalog))
+    samples.extend(edge_growth_samples(tmp_path, catalog, measured_operation=measured_operation))
     from test_comparison_semantics import growth_samples as comparison_growth_samples
 
-    samples.extend(comparison_growth_samples(tmp_path, catalog))
+    samples.extend(
+        comparison_growth_samples(tmp_path, catalog, measured_operation=measured_operation)
+    )
     from test_locator_semantics import growth_samples as locator_growth_samples
 
-    samples.extend(locator_growth_samples(tmp_path, catalog))
+    samples.extend(locator_growth_samples(tmp_path, catalog, measured_operation=measured_operation))
     assert len(samples) == 1497
+
+
+@pytest.mark.growth_witness(
+    "riverhog-generic-semantics-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._generic_semantics.GenericSemantics.advance",
+)
+def test_actual_cold_common_semantic_units(tmp_path, catalog, record_property):
+    samples = []
     record_property("growth_samples", samples)
+    common_semantic_samples(tmp_path, catalog, "advance", samples=samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-generic-semantics-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._generic_semantics.GenericSemantics.prepare",
+)
+def test_actual_detached_common_semantic_plan(tmp_path, catalog, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    common_semantic_samples(tmp_path, catalog, "prepare", samples=samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-generic-semantics-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._generic_semantics.GenericSemantics._apply",
+)
+def test_actual_owner_transaction_common_semantic_application(tmp_path, catalog, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    common_semantic_samples(tmp_path, catalog, "_apply", samples=samples)
 
 
 def code_tree(code):
@@ -985,9 +1243,20 @@ def test_actual_semantic_atom_index_work(record_property):
         sample = {
             "declaration": binding.declaration.id,
             "declaration_sha256": digest,
-            "dimensions": {"input_items": items},
-            "metrics": {"indexed_containers": len(nodes.values), "python_opcode_events": events},
-            "delegates": {},
+            "dimensions": {
+                "input_items": items,
+                "coverage_calls": 0,
+                "coverage_rows": 0,
+                "coverage_key_octets": 0,
+            },
+            "metrics": {
+                "indexed_containers": len(nodes.values),
+                "python_opcode_events": events,
+                "coverage_indexed_rows": 0,
+                "coverage_retained_key_octets": 0,
+                "coverage_python_opcode_events": 0,
+            },
+            "delegates": {"coverage": []},
         }
         validate_execution_samples(projection, binding.declaration.id, [sample])
         samples.append(sample)

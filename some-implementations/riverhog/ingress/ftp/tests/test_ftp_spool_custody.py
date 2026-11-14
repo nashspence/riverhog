@@ -6,7 +6,6 @@ import json
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import closing
 from pathlib import Path
 from typing import Any
 
@@ -26,12 +25,14 @@ from riverhog_client.producer import ProducedCollection
 from riverhog_provenance_contracts import SOURCE_NAMING_VIEW_SCHEME
 
 from tests.provenance_observer import native_provenance_provider
+from tests.support.prepared_primary import settle_stub_publication
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
 
 
 def _config(tmp_path: Path) -> FtpSpoolConfig:
     return FtpSpoolConfig(
+        primary_state={"scope": {"service": "fixture-service", "account": "fixture-account"}},
         host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",
@@ -56,6 +57,7 @@ class _Producer:
     fail_once = False
 
     def __init__(self, _api: object, **kwargs: object) -> None:
+        self.primary_store = kwargs["primary_store"]
         self.kwargs = kwargs
 
     def publish(self, files: object, **kwargs: object) -> ProducedCollection:
@@ -78,6 +80,7 @@ class _Producer:
         if self.__class__.fail_once:
             self.__class__.fail_once = False
             raise ConnectionError("finalized response was lost")
+        settle_stub_publication(self.primary_store, materialized, collection_id=41)
         return ProducedCollection(
             collection_id=41,
             archive_root_sha256="a" * 64,
@@ -93,6 +96,7 @@ class _ControlledProducer:
     permanently_failing_paths: set[str] = set()
 
     def __init__(self, _api: object, **_kwargs: object) -> None:
+        self.primary_store = _kwargs["primary_store"]
         pass
 
     def publish(self, files: object, **_kwargs: object) -> ProducedCollection:
@@ -102,6 +106,9 @@ class _ControlledProducer:
         if not self.__class__.available or path in self.__class__.permanently_failing_paths:
             raise ConnectionError(f"publication unavailable for {path}")
         self.__class__.successes.append(path)
+        settle_stub_publication(
+            self.primary_store, materialized, collection_id=len(self.__class__.successes)
+        )
         return ProducedCollection(
             collection_id=len(self.__class__.successes),
             archive_root_sha256="a" * 64,
@@ -129,10 +136,10 @@ def _append_invalid_completion(source: SourceConfig, raw: bytes = b"invalid\n") 
 
 
 def _completion_event_rows(adapter: FtpSpool, source: SourceConfig) -> list[tuple[str, str]]:
-    with closing(adapter._open_state(source)) as connection:
+    with adapter._open_state(source) as connection:
         return [
             (str(event_id), str(claim_id))
-            for event_id, claim_id in connection.execute(
+            for event_id, claim_id in connection.all(
                 "SELECT event_id, claim_id FROM completion_events ORDER BY event_id"
             )
         ]
@@ -916,6 +923,45 @@ def test_status_pages_sources_without_claiming_an_exact_backlog_snapshot(tmp_pat
     assert following["next_page_token"] is None
 
 
+def test_status_observes_durable_claim_while_publication_is_blocked(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    config = _config(tmp_path)
+    source = config.sources[0]
+    content = b"exact custody during slow publication"
+    _completed_upload(source, "pending.bin", content)
+    entered = threading.Event()
+    release = threading.Event()
+
+    class BlockingProducer(_Producer):
+        calls: list[dict[str, Any]] = []
+
+        def publish(self, files: object, **kwargs: object) -> ProducedCollection:
+            entered.set()
+            assert release.wait(timeout=5)
+            return super().publish(files, **kwargs)
+
+    monkeypatch.setattr(landing, "CollectionProducer", BlockingProducer)
+    adapter = FtpSpool(object(), config)  # type: ignore[arg-type]
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        publication = executor.submit(adapter.run_once)
+        try:
+            assert entered.wait(timeout=5)
+            status = executor.submit(adapter.status).result(timeout=2)
+            observed = FtpSpoolStatus.model_validate(status)
+            assert observed.snapshot is False
+            assert observed.sources[0].claims == 1
+            assert observed.sources[0].claim_bytes == len(content)
+            assert observed.sources[0].completion_failures == 0
+            assert not list((source.root / ".a-riverhog-ftp-spool/receipts").glob("*.json"))
+        finally:
+            release.set()
+        assert publication.result(timeout=5)["completed"] == 1
+    assert FtpSpoolStatus.model_validate(adapter.status()).sources[0].claims == 0
+    assert len(list((source.root / ".a-riverhog-ftp-spool/receipts").glob("*.json"))) == 1
+
+
 def test_explicit_flush_is_the_same_bounded_claim_and_receipt_path(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -1134,10 +1180,8 @@ def test_completion_source_names_share_persisted_view_across_independent_observa
         config,
         provenance_observer=native_provenance_provider(),
     )
-    with closing(restarted._open_state(source)) as connection:
-        stored = connection.execute(
-            "SELECT value FROM adapter_state WHERE key = 'naming_view_id'"
-        ).fetchone()[0]
+    with restarted._open_state(source) as connection:
+        stored = connection.one("SELECT value FROM adapter_state WHERE key = 'naming_view_id'")[0]
     assert stored == naming_contexts[0]["identifiers"][0]["value"]["text"]
 
 

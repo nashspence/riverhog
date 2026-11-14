@@ -9,7 +9,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
-from riverhog_client import IncrementalCollectionProducer, ProducerStream
+from riverhog_client import IncrementalCollectionProducer, ProducerArtifactIdentity, ProducerStream
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     ARCHIVES_MANAGE,
@@ -38,7 +38,7 @@ from riverhog_core.ports.archive_objects import (
     WriteSession,
 )
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity, ArchiveReadStatus
-from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
+from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission, RetrievalCacheReceipt
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.archive_copy_jobs import SqlAlchemyArchiveCopyJobService
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
@@ -108,6 +108,34 @@ class _ArchiveCopyCache:
             expected_bytes=expected_bytes,
             write_token=session.write_token,
             admitted_at="2026-08-08T00:00:00.000000000Z",
+        )
+
+    def observe_completed_population(
+        self,
+        *,
+        owner: str,
+        source_store: str,
+        collection_id: int,
+        object_id: str,
+        expected_bytes: int,
+    ) -> RetrievalCacheReceipt | None:
+        _ = owner
+        completed = self.store.find_completed_write(
+            object_path=f"cache/{source_store}/{collection_id}/{object_id}",
+            expected_bytes=expected_bytes,
+            expected_content_type="application/octet-stream",
+            expected_metadata={},
+        )
+        if completed is None:
+            return None
+        return RetrievalCacheReceipt(
+            cache_store="memory",
+            object_path=completed.object_path,
+            revision=completed.revision,
+            stored_bytes=completed.bytes,
+            stored_sha256=None,
+            cached_at=completed.completed_at,
+            verified_at=completed.completed_at,
         )
 
     def resumable_object_store(self, **_: object) -> MemoryArchiveStore:
@@ -423,7 +451,9 @@ def test_upload_copy_intent_does_not_claim_a_separately_created_job(tmp_path: Pa
     assert service.get(COLLECTION_ID, destination_store="b2") == independent
 
 
-def test_upload_publication_atomically_queues_the_accepted_copy(tmp_path: Path) -> None:
+def test_upload_publication_atomically_queues_the_accepted_copy(
+    primary_store, tmp_path: Path
+) -> None:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     baseline = RuntimeConfig.for_testing(database_url=database_url)
     deep = replace(baseline.archive_store("archive"), name="deep", base_url="http://127.0.0.1/deep")
@@ -453,7 +483,7 @@ def test_upload_publication_atomically_queues_the_accepted_copy(tmp_path: Path) 
             AppKeyRecord(
                 id=COPY_INTENT_KEY,
                 app="producer",
-                token_sha256="d" * 64,
+                token_sha256=hashlib.sha256(b"copy-publication-fixture-token").hexdigest(),
                 created_at=now,
             )
         )
@@ -467,21 +497,20 @@ def test_upload_publication_atomically_queues_the_accepted_copy(tmp_path: Path) 
                     created_at=now,
                 )
             )
-    actor = Principal(
-        id="producer",
-        key_id=COPY_INTENT_KEY,
-        access=frozenset(
-            {
-                ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES),
-                ApplicationAccess(ARCHIVES_MANAGE, ALL_RESOURCES),
-            }
-        ),
-    )
+    from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
+
+    key_service = SqlAlchemyAppKeyService(config)
+    actor = key_service.authenticate("copy-publication-fixture-token")
+    assert actor is not None
     uploader = SqlAlchemyCollectionUploadService(config, registry)
     api = UploadServiceApi(uploader, actor)
     content = b"durable copy intent from accepted upload"
     producer = IncrementalCollectionProducer(
         api,
+        primary_store=primary_store,
+        member_inventory=lambda: (
+            ProducerArtifactIdentity("d" * 64, len(content), hashlib.sha256(content).hexdigest()),
+        ),
         producer_app="fixture",
         adapter_id="fixture/v1",
         adapter_version="1",

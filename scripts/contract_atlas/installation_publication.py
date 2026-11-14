@@ -42,7 +42,11 @@ def unpack_installation_index(
     assets: dict[str, dict[str, Any]],
     budget: int,
 ) -> dict[str, Any]:
-    from release_installation import INSTALLATION_FORMAT
+    from release_installation import (
+        INSTALLATION_FORMAT,
+        InstallationError,
+        validate_wheel_inventory,
+    )
 
     raw = manifest_path.read_bytes()
     manifest = json.loads(raw)
@@ -74,16 +78,24 @@ def unpack_installation_index(
     ):
         raise ContractAtlasError("published installation index has a different project inventory")
     base = f"https://github.com/{repository}/releases/download/{tag}/"
+    try:
+        validate_wheel_inventory(manifest["wheels"], version=tag[1:])
+    except InstallationError as exc:
+        raise ContractAtlasError("published installation wheel inventory is invalid") from exc
     for project_name, name in zip(projects, names, strict=True):
-        wheel = manifest["wheels"][project_name]
-        asset = safe_relative(wheel["asset"])
-        if (
-            asset not in assets
-            or assets[asset]["digest"] != "sha256:" + wheel["sha256"]
-            or assets[asset]["size"] != wheel["size"]
-            or _links(files[path + name + "/index.html"])
-            != [base + quote(asset) + "#sha256=" + wheel["sha256"]]
-        ):
+        expected_links = []
+        for wheel in manifest["wheels"][project_name]:
+            asset = safe_relative(wheel["asset"])
+            if (
+                asset not in assets
+                or assets[asset]["digest"] != "sha256:" + wheel["sha256"]
+                or assets[asset]["size"] != wheel["size"]
+            ):
+                raise ContractAtlasError(
+                    "published installation index differs from its wheel assets"
+                )
+            expected_links.append(base + quote(asset) + "#sha256=" + wheel["sha256"])
+        if _links(files[path + name + "/index.html"]) != expected_links:
             raise ContractAtlasError("published installation index differs from its wheel assets")
     return {
         "root": destination,

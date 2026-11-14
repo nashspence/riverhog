@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from dataclasses import replace
 from pathlib import Path
 
@@ -18,6 +19,7 @@ from riverhog_core.app_permissions import (
     Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
+from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionArchiveObjectUploadRecord,
@@ -41,7 +43,9 @@ from riverhog_protocol import (
 from riverhog_protocol.errors import NotFound
 from riverhog_protocol.manifest import artifact_set_identity_ordered
 from sqlalchemy import func, select
+from state_schema import read_snapshot
 
+from tests.support.finalization import drive_custody_turn
 from tests.support.upload_api import UploadServiceApi
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
@@ -75,12 +79,26 @@ class _CustodyApi:
         return {
             "collection_id": "42",
             "resumed": self.session_calls > 1,
+            "construction_identity_sha256": "c" * 64,
             "state": "open",
             "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
             "registration_constraints": {
                 "pack_member_bytes": "1024",
                 "raw_part_plaintext_bytes": "65536",
             },
+        }
+
+    def get_collection_upload_session(self, _collection_id):
+        return {
+            "collection_id": "42",
+            "state": "finalized" if self.completed is not None else "open",
+            "delivery_context_id": "urn:uuid:11111111-1111-4111-8111-111111111111",
+            "construction_identity_sha256": "c" * 64,
+            "registration_constraints": {
+                "pack_member_bytes": "1024",
+                "raw_part_plaintext_bytes": "65536",
+            },
+            **(self.completed or {}),
         }
 
     def add_collection_upload_session_tags(self, _collection_id, tags):
@@ -130,6 +148,8 @@ class _CustodyApi:
         }
 
     def get_collection_upload_session_artifact(self, _collection_id, artifact_id):
+        if artifact_id not in self.rows:
+            raise NotFound("artifact absent")
         row = self.rows[artifact_id]
         return {**row, "custody_receipt": self._receipt(row)}
 
@@ -167,6 +187,8 @@ class _CustodyApi:
         for binding in batch.bindings:
             assert self.bindings.setdefault(binding.artifact_id, binding) == binding
 
+        return batch
+
     def get_collection_upload_session_artifact_provenance_binding(
         self, _collection_id, artifact_id
     ):
@@ -174,8 +196,8 @@ class _CustodyApi:
             raise NotFound("binding absent")
         return self.bindings[artifact_id]
 
-    def set_collection_upload_session_materialization_decisions(self, *_args):
-        pass
+    def set_collection_upload_session_materialization_decisions(self, _collection_id, batch):
+        return batch
 
     def complete_collection_upload_session(self, _collection_id):
         identity = artifact_set_identity_ordered(
@@ -195,9 +217,14 @@ class _CustodyApi:
         return dict(self.completed)
 
 
-def _producer(api: _CustodyApi) -> IncrementalCollectionProducer:
+def _producer(api: _CustodyApi, primary_store) -> IncrementalCollectionProducer:
     return IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: (
+            ProducerArtifactIdentity(row["artifact_id"], int(row["bytes"]), row["sha256"])
+            for _key, row in sorted(api.rows.items())
+        ),
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
@@ -207,12 +234,19 @@ def _producer(api: _CustodyApi) -> IncrementalCollectionProducer:
     )
 
 
-def test_incremental_producer_stages_unbounded_logical_tags_in_bounded_requests() -> None:
+def test_incremental_producer_stages_unbounded_logical_tags_in_bounded_requests(
+    primary_store,
+) -> None:
     api = _CustodyApi()
     tags = tuple(f"classification/{index:04d}" for index in range(205))
 
     producer = IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: (
+            ProducerArtifactIdentity(row["artifact_id"], int(row["bytes"]), row["sha256"])
+            for _key, row in sorted(api.rows.items())
+        ),
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
@@ -232,13 +266,20 @@ def test_incremental_producer_stages_unbounded_logical_tags_in_bounded_requests(
     assert all(len(batch) <= COLLECTION_TAG_REQUEST_MEMBERS_MAX for batch in api.tag_batches)
 
 
-def test_incremental_producer_rejects_late_invalid_tags_before_remote_mutation() -> None:
+def test_incremental_producer_rejects_late_invalid_tags_before_remote_mutation(
+    primary_store,
+) -> None:
     api = _CustodyApi()
     tags = [*(f"classification/{index:04d}" for index in range(150)), " invalid"]
 
     with pytest.raises(ValueError):
         IncrementalCollectionProducer(
             api,  # type: ignore[arg-type]
+            primary_store=primary_store,
+            member_inventory=lambda: (
+                ProducerArtifactIdentity(row["artifact_id"], int(row["bytes"]), row["sha256"])
+                for _key, row in sorted(api.rows.items())
+            ),
             producer_app="fixture-target",
             adapter_id="fixture-target/v1",
             adapter_version="1.0.0",
@@ -249,7 +290,9 @@ def test_incremental_producer_rejects_late_invalid_tags_before_remote_mutation()
     assert api.session_calls == 0
 
 
-def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tmp_path):
+def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(
+    primary_store, tmp_path
+):
     api = _CustodyApi()
     source = tmp_path / "artifact.bin"
     payload = b"completed artifact"
@@ -258,7 +301,7 @@ def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tm
     identity = ProducerArtifactIdentity(
         artifact_id, len(payload), hashlib.sha256(payload).hexdigest()
     )
-    first = _producer(api)
+    first = _producer(api, primary_store)
     try:
         receipts = first.append_inputs(
             (ProducerFile(source, artifact_id, allow_missing_materialization_hint=True),)
@@ -267,7 +310,7 @@ def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tm
     finally:
         first.stop()
     source.unlink()
-    resumed = _producer(api)
+    resumed = _producer(api, primary_store)
     try:
         before_resume = api.registration_calls
         receipt = resumed.resume_artifact_custody(identity)
@@ -283,7 +326,9 @@ def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(tm
     assert api.completed is not None
 
 
-def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong(tmp_path):
+def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong(
+    primary_store, tmp_path
+):
     class WrongReceiptApi(_CustodyApi):
         def _receipt(self, row):
             primary = self.bindings.get(row["artifact_id"])
@@ -302,7 +347,7 @@ def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong
     api = WrongReceiptApi()
     source = tmp_path / "artifact.bin"
     source.write_bytes(b"completed artifact")
-    producer = _producer(api)
+    producer = _producer(api, primary_store)
     try:
         with pytest.raises(ValueError, match="upload member identity"):
             producer.append_inputs(
@@ -314,11 +359,11 @@ def test_incremental_producer_keeps_local_custody_when_receipt_identity_is_wrong
         producer.stop()
 
 
-def test_incremental_producer_keeps_equal_bytes_as_distinct_members(tmp_path):
+def test_incremental_producer_keeps_equal_bytes_as_distinct_members(primary_store, tmp_path):
     api = _CustodyApi()
     source = tmp_path / "source.bin"
     source.write_bytes(b"identical bytes")
-    producer = _producer(api)
+    producer = _producer(api, primary_store)
     try:
         producer.append_inputs(
             tuple(
@@ -360,20 +405,35 @@ def _bounded_service_api(
     )
     principal = Principal(
         id="fixture-target",
-        key_id="fixture-key",
+        key_id=None,
         access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
     )
     return UploadServiceApi(service, principal), store
 
 
 def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
+    primary_store,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_CONCURRENCY", "1")
     api, store = _bounded_service_api(tmp_path)
+    submit = api.service._archive_finalizer_work._submit
+    deferred = False
+
+    def defer_one_custody_claim(collection_id, selection, *args, **kwargs):
+        nonlocal deferred
+        if selection.startswith("artifact-custody:") and not deferred:
+            deferred = True
+            return "busy"
+        return submit(collection_id, selection, *args, **kwargs)
+
+    monkeypatch.setattr(api.service._archive_finalizer_work, "_submit", defer_one_custody_claim)
+    identities = {}
     producer = IncrementalCollectionProducer(
         api,  # type: ignore[arg-type]
+        primary_store=primary_store,
+        member_inventory=lambda: (identities[key] for key in sorted(identities)),
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
@@ -387,19 +447,36 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
         for index in range(25):
             artifact_id = f"{index:064x}"
             source = tmp_path / f"output-{index:04d}.bin"
-            source.write_bytes(f"artifact-{index}".encode())
+            content = f"artifact-{index}".encode()
+            source.write_bytes(content)
+            identities[artifact_id] = ProducerArtifactIdentity(
+                artifact_id, len(content), hashlib.sha256(content).hexdigest()
+            )
             local[artifact_id] = source
             high_water = max(high_water, sum(item.exists() for item in local.values()))
             receipts = producer.append_inputs(
                 (ProducerFile(source, artifact_id, allow_missing_materialization_hint=True),)
             )
-            # The production worker advances one durable custody milestone at
-            # a time. Drive it separately from the actual HTTP request path.
-            for _ in range(4):
-                if api.service.process_due_custody_receipts(limit=4) == 0:
+            # A claim may defer without progress while durable custody work remains.
+            # Wait for that work without consuming the pack's semantic turn allowance.
+            deadline = time.monotonic() + 300
+            progressed_turns = 0
+            while True:
+                with read_snapshot(api.service._session_factory) as session:
+                    pending = session.scalar(
+                        select(ArchiveWriteControlRecord.custody_due_count).where(
+                            ArchiveWriteControlRecord.collection_id == producer.collection_id
+                        )
+                    )
+                assert pending is not None
+                if pending == 0:
                     break
-            else:
-                raise AssertionError("the bounded pack custody window did not drain")
+                assert time.monotonic() < deadline, "the bounded pack custody window did not drain"
+                if drive_custody_turn(api.service, limit=4):
+                    progressed_turns += 1
+                    assert progressed_turns <= 4 * 4
+                else:
+                    time.sleep(0.01)
             receipts = (*receipts, *producer.reconcile_custody())
             for receipt in receipts:
                 owned = local.get(receipt.artifact.artifact_id)
@@ -420,6 +497,7 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
         producer.stop()
 
     assert result.receipt["state"] == "finalized"
+    assert deferred
     assert high_water <= 5  # four unsealed members plus the newly completed artifact
     assert not any(path.exists() for path in local.values())
     assert len([path for path in store.objects if "/volumes/" in path]) >= 7
@@ -439,6 +517,7 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
     ],
 )
 def test_native_ingest_preserves_members_across_registration_and_payload_regimes(
+    primary_store,
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     members: int,
@@ -499,6 +578,11 @@ def test_native_ingest_preserves_members_across_registration_and_payload_regimes
         expected[artifact_id] = (len(payload), hashlib.sha256(payload).hexdigest())
     producer = IncrementalCollectionProducer(
         api,
+        primary_store=primary_store,
+        member_inventory=lambda: (
+            ProducerArtifactIdentity(key, value[0], value[1])
+            for key, value in sorted(expected.items())
+        ),
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
@@ -542,3 +626,251 @@ def test_native_ingest_preserves_members_across_registration_and_payload_regimes
     finally:
         producer.stop()
         api.close()
+
+
+def test_stop_retains_owned_resources_until_the_heartbeat_worker_actually_exits():
+    import threading
+
+    producer = object.__new__(IncrementalCollectionProducer)
+    producer._operation_lock = threading.RLock()
+    producer._heartbeat_stop = threading.Event()
+    entered_join = threading.Event()
+    release_worker = threading.Event()
+    exited_worker = threading.Event()
+    released_source = threading.Event()
+    stopped = threading.Event()
+
+    class Source:
+        def close(self):
+            assert exited_worker.is_set()
+            released_source.set()
+
+    class LiveSources(dict):
+        live_values = dict.values
+
+    producer._sources = LiveSources(pending=Source())
+    producer._restored_sources = {}
+
+    def worker():
+        release_worker.wait()
+        exited_worker.set()
+
+    heartbeat = threading.Thread(target=worker)
+    heartbeat.start()
+    producer._heartbeat_thread = heartbeat
+    original_join = heartbeat.join
+    join_timeouts = []
+
+    def observed_join(timeout=None):
+        join_timeouts.append(timeout)
+        entered_join.set()
+        # A deadline that expires cannot authorize release of a live worker.
+        original_join(None if timeout is None else 0)
+
+    heartbeat.join = observed_join
+    failures = []
+
+    def stop():
+        try:
+            producer.stop()
+        except BaseException as exc:
+            failures.append(exc)
+        finally:
+            stopped.set()
+
+    stopper = threading.Thread(target=stop)
+    stopper.start()
+    try:
+        assert entered_join.wait(5)
+        assert join_timeouts == [None]
+        assert not released_source.is_set() and not stopped.is_set()
+        assert producer._heartbeat_thread is heartbeat
+    finally:
+        release_worker.set()
+        original_join(5)
+        stopper.join(5)
+    assert not heartbeat.is_alive() and not stopper.is_alive()
+    assert stopped.is_set() and released_source.is_set() and not failures
+    assert producer._heartbeat_thread is None and not producer._sources
+
+
+def test_resume_custody_rejects_every_changed_receipt_coordinate(primary_store, tmp_path):
+    from riverhog_canonical_json import canonical_json_sha256
+
+    class ChangedReceiptApi(_CustodyApi):
+        change = None
+
+        def _receipt(self, row):
+            value = super()._receipt(row)
+            if value is None or self.change is None:
+                return value
+            if self.change == "collection":
+                value["collection_id"] = "43"
+            elif self.change == "bytes":
+                value["bytes"] = str(int(value["bytes"]) + 1)
+            elif self.change == "sha256":
+                value["sha256"] = "1" * 64
+            elif self.change == "completion":
+                value["completion_requirement_sha256"] = "1" * 64
+            elif self.change == "delivery_association_id":
+                value["primary"][self.change] = "urn:uuid:ffffffff-4321-4321-8321-123456789abc"
+            else:
+                journal = value["primary"]["journal"]
+                if self.change == "journal_id":
+                    journal[self.change] = "urn:uuid:ffffffff-4321-4321-8321-123456789abc"
+                elif self.change == "prefix_bytes":
+                    journal[self.change] = str(int(journal[self.change]) + 1)
+                elif self.change == "prefix_sha256":
+                    journal[self.change] = "1" * 64
+                elif self.change == "sequence":
+                    journal["through"][self.change] = str(int(journal["through"][self.change]) + 1)
+                elif self.change == "entry_id":
+                    journal["through"][self.change] = (
+                        "urn:uuid:ffffffff-4321-4321-8321-123456789abc"
+                    )
+                else:
+                    journal["through"][self.change] = "1" * 64
+            value["receipt_sha256"] = canonical_json_sha256(
+                {key: item for key, item in value.items() if key != "receipt_sha256"}
+            )
+            # Every injected receipt remains a complete internally consistent document.
+            CollectionUploadArtifactCustodyReceiptDocument.model_validate(value)
+            return value
+
+    api = ChangedReceiptApi()
+    source = tmp_path / "source.bin"
+    content = b"original exact receipt"
+    source.write_bytes(content)
+    identity = ProducerArtifactIdentity("a" * 64, len(content), hashlib.sha256(content).hexdigest())
+    producer = _producer(api, primary_store)
+    try:
+        assert producer.append_inputs(
+            (ProducerFile(source, identity.artifact_id, allow_missing_materialization_hint=True),)
+        )
+        member = ArtifactMemberIdentityDocument.model_validate(
+            {
+                "artifact_id": identity.artifact_id,
+                "bytes": str(identity.bytes),
+                "sha256": identity.sha256,
+            }
+        )
+        original = primary_store.load_controls(member)
+        assert original.compact
+        source.unlink()
+        for coordinate in (
+            "collection",
+            "bytes",
+            "sha256",
+            "completion",
+            "delivery_association_id",
+            "journal_id",
+            "entry_id",
+            "sequence",
+            "json_sha256",
+            "prefix_bytes",
+            "prefix_sha256",
+        ):
+            api.change = coordinate
+            with pytest.raises(ValueError):
+                producer.resume_artifact_custody(identity)
+            assert primary_store.load_controls(member) == original
+        api.change = None
+        assert (
+            producer.resume_artifact_custody(identity).receipt.receipt_sha256
+            == original.custody.receipt_sha256
+        )
+        assert len(api.journals) == 1 and not source.exists()
+    finally:
+        producer.stop()
+
+
+def _completion_producer(api, primary_store, tmp_path):
+    source = tmp_path / "completion-member"
+    source.write_bytes(b"original completion member")
+    producer = _producer(api, primary_store)
+    try:
+        producer.append_inputs(
+            (ProducerFile(source, "a" * 64, allow_missing_materialization_hint=True),)
+        )
+    except BaseException:
+        producer.stop()
+        raise
+    return producer
+
+
+def test_completion_settles_retained_recovery_before_inventory(
+    primary_store, tmp_path, monkeypatch
+):
+    api = _CustodyApi()
+    producer = _completion_producer(api, primary_store, tmp_path)
+    recover = primary_store.recover_step
+    steps = []
+    inventory = producer._member_inventory
+
+    def pending():
+        steps.append(None)
+        return False if len(steps) < 4 else recover()
+
+    def selected_inventory():
+        assert len(steps) == 4
+        return inventory()
+
+    monkeypatch.setattr(primary_store, "recover_step", pending)
+    monkeypatch.setattr(producer, "_member_inventory", selected_inventory)
+    try:
+        result = producer.finish(timeout_seconds=30)
+    finally:
+        producer.stop()
+    assert result.collection_id == 42 and api.completed is not None
+    assert len(steps) == 4 and api.session_calls == 1
+
+
+def test_completion_recovery_progress_keeps_original_deadline_and_retry_authority(
+    primary_store, tmp_path, monkeypatch
+):
+    from riverhog_client import producer as owner
+
+    api = _CustodyApi()
+    producer = _completion_producer(api, primary_store, tmp_path)
+    clock, steps = [0.0], []
+
+    def pending():
+        steps.append(None)
+        clock[0] += 10.0
+        return False
+
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(owner.time, "monotonic", lambda: clock[0])
+            patch.setattr(primary_store, "recover_step", pending)
+            with pytest.raises(
+                TimeoutError, match="local recovery exceeded the completion deadline"
+            ):
+                producer.finish(timeout_seconds=30)
+        assert len(steps) == 3 and api.completed is None
+        assert producer.finish(timeout_seconds=30).collection_id == 42
+    finally:
+        producer.stop()
+    assert api.session_calls == 1
+
+
+def test_completion_recovery_failure_preserves_failure_and_retries_same_session(
+    primary_store, tmp_path, monkeypatch
+):
+    api = _CustodyApi()
+    producer = _completion_producer(api, primary_store, tmp_path)
+    failure = OSError("retained cleanup refused")
+
+    def failed():
+        raise failure
+
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(primary_store, "recover_step", failed)
+            with pytest.raises(OSError) as observed:
+                producer.finish(timeout_seconds=30)
+        assert observed.value is failure and api.completed is None
+        assert producer.finish(timeout_seconds=30).collection_id == 42
+    finally:
+        producer.stop()
+    assert api.session_calls == 1

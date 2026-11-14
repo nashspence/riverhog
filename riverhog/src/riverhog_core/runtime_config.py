@@ -15,9 +15,18 @@ from riverhog_archive_contracts import (
     normalize_passphrase_id,
 )
 from riverhog_protocol import CATALOG_SYNC_PAGE_SIZE_MAX
+from sqlalchemy.engine import make_url
 
+from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
+from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
+from riverhog_core.archive_input_grants import ArchiveInputGrants
+from riverhog_core.archive_write_grants import ArchiveWriteGrants
+from riverhog_core.cache_write_grants import CacheWriteGrants
+from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
 from riverhog_core.collection_plan import CollectionVolumePolicy
+from riverhog_core.journal_storage_grants import JournalStorageGrants
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
+from riverhog_core.registration_tuning import RegistrationTuning
 from riverhog_core.throughput import ArchiveThroughputTuning
 
 _BYTES_RE = re.compile(r"^(\d+(?:_\d+)*)([kmgt]i?b?|b)?$", re.IGNORECASE)
@@ -119,6 +128,9 @@ class RuntimeConfig:
     archive_passphrases: Mapping[str, str] = field(default_factory=dict, repr=False)
     archive_active_passphrase_id: str = ""
     archive_scrypt_work_factor: int = DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR
+    journal_validation_workspace: Path = Path("/scratch/journal-validation")
+    journal_validation_concurrency: int = 2
+    journal_storage: JournalStorageGrants = field(default_factory=JournalStorageGrants)
     archive_upload_sweep_interval: timedelta = field(default_factory=lambda: timedelta(seconds=30))
     collection_upload_custody_lease: timedelta = field(default_factory=lambda: timedelta(hours=1))
     retrieval_restore_poll_interval: timedelta = field(default_factory=lambda: timedelta(minutes=5))
@@ -134,6 +146,13 @@ class RuntimeConfig:
     catalog_sync_page_size_max: int = CATALOG_SYNC_PAGE_SIZE_MAX
     catalog_sync_history_reap_batch_size: int = 100
     bootstrap_token: str = field(default="", repr=False)
+    archive_input: ArchiveInputGrants = field(default_factory=ArchiveInputGrants)
+    archive_execution: ArchiveExecutionTuning = field(default_factory=ArchiveExecutionTuning)
+    archive_write: ArchiveWriteGrants = field(default_factory=ArchiveWriteGrants)
+    archive_cleanup: ArchiveCleanupGrants = field(default_factory=ArchiveCleanupGrants)
+    cleanup_execution: CleanupExecutionTuning = field(default_factory=CleanupExecutionTuning)
+    cache_write: CacheWriteGrants = field(default_factory=CacheWriteGrants)
+    registration: RegistrationTuning = field(default_factory=RegistrationTuning)
     volume_policy: CollectionVolumePolicy = field(default_factory=CollectionVolumePolicy)
     throughput_tuning: ArchiveThroughputTuning = field(default_factory=ArchiveThroughputTuning)
     range_policy: PackRangeRetrievalPolicy = field(default_factory=PackRangeRetrievalPolicy)
@@ -152,9 +171,25 @@ class RuntimeConfig:
         )
         values.setdefault("archive_active_passphrase_id", TEST_ARCHIVE_PASSPHRASE_ID)
         values.setdefault("browse_token_signing_key", TEST_BROWSE_TOKEN_SIGNING_KEY)
+        if values.get("database_url") and "journal_validation_workspace" not in values:
+            url = make_url(values["database_url"])
+            database_path = url.database
+            if url.get_backend_name() == "sqlite" and database_path not in (None, "", ":memory:"):
+                assert database_path is not None
+                database = Path(database_path).resolve()
+                values["journal_validation_workspace"] = database.with_name(
+                    database.name + ".journal-validation"
+                )
         return cls(**values)
 
     def __post_init__(self) -> None:
+        if not self.journal_validation_workspace.is_absolute():
+            raise ValueError("journal_validation_workspace must be an absolute retained directory")
+        if (
+            type(self.journal_validation_concurrency) is not int
+            or self.journal_validation_concurrency < 1
+        ):
+            raise ValueError("journal_validation_concurrency must be positive")
         if len(self.browse_token_signing_key.encode("utf-8")) < 32:
             raise ValueError("browse_token_signing_key_file must contain at least 32 bytes")
         if self.browse_token_lifetime.total_seconds() < 1:

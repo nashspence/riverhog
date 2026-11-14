@@ -472,6 +472,35 @@ def test_relational_state_projection_preserves_semantics_not_migration_operation
     }
 
 
+@pytest.mark.parametrize("dialect", ["sqlite", "postgresql"])
+def test_relational_state_projection_preserves_partial_unique_index_scope(dialect: str) -> None:
+    table = "CREATE TABLE items (id INTEGER PRIMARY KEY, scope TEXT, value TEXT, enabled INTEGER)"
+    predicate = "(enabled = 1 AND (value IS NOT NULL))"
+    index = f"CREATE UNIQUE INDEX ux_items_active ON items (scope, value) WHERE {predicate}"
+    projected = state_contract.relational_schema([table, index], dialect=dialect)
+
+    assert projected["unique_indexes"] == [
+        {
+            "name": "ux_items_active",
+            "table": "items",
+            "columns": ["scope", "value"],
+            "definition": index,
+            "predicate": predicate,
+        }
+    ]
+    with closing(sqlite3.connect(":memory:")) as connection:
+        connection.execute(table)
+        connection.execute(index)
+        connection.executemany(
+            "INSERT INTO items (scope, value, enabled) VALUES (?, ?, ?)",
+            [("a", "v", 0), ("a", "v", 0), ("a", "v", 1), ("a", None, 1), ("a", None, 1)],
+        )
+        with pytest.raises(sqlite3.IntegrityError):
+            connection.execute("INSERT INTO items (scope, value, enabled) VALUES ('a', 'v', 1)")
+        connection.execute("UPDATE items SET enabled = 0 WHERE value = 'v'")
+        connection.execute("INSERT INTO items (scope, value, enabled) VALUES ('a', 'v', 1)")
+
+
 def test_relational_state_projection_fails_closed_on_an_unknown_schema_operation() -> None:
     with pytest.raises(state_contract.StateContractError, match="unsupported SQL authority"):
         state_contract.relational_schema(

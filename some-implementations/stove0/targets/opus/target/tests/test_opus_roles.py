@@ -42,6 +42,7 @@ from stove0_target_support import (
 )
 
 from tests.fixtures.stove0_media import media_preflight_request
+from tests.support.prepared_primary import PRIMARY_STATE_POLICY
 
 
 def _sha(character: str) -> str:
@@ -61,6 +62,7 @@ def test_paired_opus_roles_share_image_identity_but_not_runtime_contracts(
         image_id=image_id,
     )
     target = OpusTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         state_root=tmp_path / "target-state",
         workspace_root=tmp_path / "target-workspace",
         source_revision="fixture",
@@ -108,6 +110,7 @@ def test_paired_opus_roles_share_image_identity_but_not_runtime_contracts(
 def test_opus_target_uses_configured_ffmpeg(monkeypatch: Any) -> None:
     configured: dict[str, object] = {}
     monkeypatch.setenv("STOVE0_FFMPEG_BIN", "fixture-ffmpeg")
+    monkeypatch.setenv("A_STOVE0_OPUS_TARGET_PRIMARY_STATE", PRIMARY_STATE_POLICY.model_dump_json())
     monkeypatch.setattr(opus_app, "_image_id", lambda _prefix: "sha256:" + _sha("9"))
     monkeypatch.setattr(opus_app, "_secret", lambda _prefix: "fixture-secret")
 
@@ -128,6 +131,7 @@ def test_opus_target_uses_configured_ffmpeg(monkeypatch: Any) -> None:
 
 def test_opus_preflight_fixes_exact_unbounded_metadata_projection(tmp_path: Path) -> None:
     target = OpusTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         state_root=tmp_path / "state",
         workspace_root=tmp_path / "workspace",
         source_revision="fixture",
@@ -193,6 +197,7 @@ def test_opus_preflight_fixes_exact_unbounded_metadata_projection(tmp_path: Path
 
 def test_opus_missing_canonical_hint_requires_an_explicit_output_decision(tmp_path: Path) -> None:
     target = OpusTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         state_root=tmp_path / "state",
         workspace_root=tmp_path / "workspace",
         source_revision="fixture",

@@ -78,7 +78,7 @@ from riverhog_protocol.collection_workflows import (
     processing_outcome_set_identity,
 )
 from riverhog_protocol.effect_settlement import ExternalEffectSettlement
-from riverhog_protocol.errors import Conflict, Forbidden, NotFound
+from riverhog_protocol.errors import Conflict, Forbidden
 from riverhog_protocol.no_output_settlement import NoOutputSettlement
 from riverhog_protocol.raw_ingress import ordered_raw_part_commitment
 from riverhog_provenance import (
@@ -90,11 +90,17 @@ from sqlalchemy import select
 
 from tests.operation_observer import OperationObserver, TimeoutNeutralTestClient
 from tests.provenance_observer import native_provenance_provider
+from tests.support.finalization import drive_custody_turn, drive_finalization_turn
+from tests.support.immutable_archive import MemoryImmutableArchiveStore
 from tests.support.qualification.live_archive_recovery import qualify_offline_history_recovery
 from tests.support.uploaded_archive import UploadedArchiveStore
 from tests.unit.archive_object_fixtures import archive_store_binding
 from tests.unit.db_helpers import sqlite_url
-from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
+from tests.unit.storage_incarnation_fixtures import (
+    fixture_storage_incarnation_id,
+    seed_storage_incarnation,
+)
+from tests.unit.test_collection_uploads import _ArchiveRanges
 
 SOURCE_ID = ArtifactId("1" * 64)
 OUTPUT_ID = ArtifactId("2" * 64)
@@ -105,9 +111,28 @@ def _tag_set_identity(*tags: str) -> str:
         return prepared.tag_set_identity
 
 
+def _uploaded_archive_binding(config, name):
+    store = UploadedArchiveStore(passphrases=config.archive_passphrases)
+    root = MemoryImmutableArchiveStore(
+        fixture_storage_incarnation_id("archive", name), backing=store
+    )
+    ranges = _ArchiveRanges(store, store, root)
+    store.read_stored = ranges.read_stored
+    return replace(
+        archive_store_binding(store, name=name),
+        immutable_objects=root,
+        immutable_writes=root,
+        object_ranges=ranges,
+    )
+
+
 def _container(tmp_path: Path, *, database_url: str | None = None) -> ServiceContainer:
     database_url = database_url or sqlite_url(tmp_path / "catalog.sqlite3")
-    baseline = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
+    baseline = RuntimeConfig.for_testing(
+        database_url=database_url,
+        archive_scrypt_work_factor=1,
+        journal_validation_workspace=tmp_path / "journal-validation",
+    )
     primary_config = replace(
         baseline.archive_store("archive"),
         name="primary",
@@ -131,12 +156,8 @@ def _container(tmp_path: Path, *, database_url: str | None = None) -> ServiceCon
         seed_storage_incarnation(session, "archive", "secondary")
     stores = ArchiveStoreRegistry(
         {
-            "primary": archive_store_binding(
-                UploadedArchiveStore(passphrases=config.archive_passphrases), name="primary"
-            ),
-            "secondary": archive_store_binding(
-                UploadedArchiveStore(passphrases=config.archive_passphrases), name="secondary"
-            ),
+            "primary": _uploaded_archive_binding(config, "primary"),
+            "secondary": _uploaded_archive_binding(config, "secondary"),
         }
     )
     allowances = SqlAlchemyDownloadAllowance(config, session_factory=session_factory)
@@ -216,14 +237,26 @@ class _LocalApi(ApiClient):
     transport: TestClient
     observer: OperationObserver | None
     workers: ServiceContainer | None
+    join_workers: bool
 
     def spawn(self):
-        return _api(self.transport, self.token, observer=self.observer, workers=self.workers)
+        return _api(
+            self.transport,
+            self.token,
+            observer=self.observer,
+            workers=self.workers,
+            join_workers=self.join_workers,
+        )
 
     def get_collection_upload_session(self, collection_id):
         if self.workers is not None:
-            self.workers.collection_uploads.process_due_custody_receipts()
-            self.workers.collection_uploads.process_due_finalizations()
+            if self.join_workers:
+                drive_custody_turn(self.workers.collection_uploads)
+                drive_finalization_turn(self.workers.collection_uploads)
+            else:
+                # Polling producers own their deadline; receive only completed owner work.
+                self.workers.collection_uploads.process_due_custody_receipts()
+                self.workers.collection_uploads.process_due_finalizations()
         return super().get_collection_upload_session(collection_id)
 
     def seal_collection_upload_session_provenance_journal(self, collection_id, journal_id):
@@ -238,6 +271,7 @@ def _api(
     *,
     observer: OperationObserver | None = None,
     workers: ServiceContainer | None = None,
+    join_workers: bool = True,
 ) -> ApiClient:
     api = _LocalApi(
         base_url="http://testserver",
@@ -251,6 +285,7 @@ def _api(
     api.transport = test_client
     api.observer = observer
     api.workers = workers
+    api.join_workers = join_workers
     api._request_client = bound  # type: ignore[assignment]
     api._download_client = bound  # type: ignore[assignment]
     return api
@@ -273,11 +308,12 @@ def _finalize_upload(
     for _ in range(256):
         if api.get_collection_upload_session(collection_id)["state"] == "finalized":
             return
-        assert container.collection_uploads.process_due_finalizations() == 1
+        drive_finalization_turn(container.collection_uploads)
     raise AssertionError("bounded collection finalization did not terminate")
 
 
 def test_riverhog_official_client_positive_disposable_lifecycle(
+    primary_store,
     tmp_path: Path,
 ) -> None:  # type: ignore[no-untyped-def]
     container = _container(tmp_path)
@@ -1111,6 +1147,8 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     def writer():
         return IncrementalDerivedCollectionWriter(
             target,
+            primary_store=primary_store,
+            member_inventory=lambda: (identity,),
             spec=spec,
             claim_id=claim_id,
             fence=claim_fence,
@@ -1143,7 +1181,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
             history_extent=BOUND_HISTORY_EXTENT,
         )
         for _ in range(64):
-            container.collection_uploads.process_due_custody_receipts()
+            drive_custody_turn(container.collection_uploads)
             receipts = early.producer.reconcile_custody()
             if receipts:
                 break
@@ -1221,9 +1259,17 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     published_retry = writer()
     try:
         assert published_retry.producer.collection_id == output_collection_id
-        # Publication retires the upload projection; the final root receipt resumes completion.
-        with pytest.raises(NotFound):
-            target.get_collection_upload_session_artifact(output_collection_id, OUTPUT_ID)
+        # Original member custody survives publication alongside the final-root receipt.
+        published_member = target.get_collection_upload_session_artifact(
+            output_collection_id, OUTPUT_ID
+        )
+        assert published_member["payload_sealed"] is True
+        assert published_member["custody_receipt"] == receipts[0].receipt.model_dump(mode="json")
+        published_custody = published_retry.producer.resume_artifact_custody(identity)
+        assert published_custody is not None
+        assert published_custody.receipt == receipts[0].receipt
+        assert published_custody.receipt.primary == primary
+        assert not output_payload_path.exists()
         replayed_output = published_retry.finish(
             execution_sha256=hashlib.sha256(execution_preimage).hexdigest(),
             disposition_set=disposition_identity,

@@ -14,6 +14,7 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import journal_store, validate_journal
 from riverhog_provenance._journal_prefix import PrefixState
 from riverhog_provenance._semantic_finish import (
+    FinishState,
     SemanticFinish,
     SemanticFinishCapacity,
     StaleSemanticFinish,
@@ -77,8 +78,8 @@ def create(path):
     )
     with closing(connect(path)) as db:
         db.execute(
-            "INSERT INTO frames VALUES (?,?,?)",
-            ("0", prior.json_bytes, canonical_json_bytes(prior.reference)),
+            "INSERT INTO frames VALUES (?,?,?,?)",
+            ("0", prior.json_bytes, canonical_json_bytes(prior.reference), prefix.sha256_state),
         )
         db.execute(
             "INSERT INTO journal_prefix VALUES (1,?,?,?)",
@@ -521,18 +522,26 @@ def test_native_wrapper_runs_the_private_phase_without_publishing_early(
     journal, catalog, monkeypatch
 ):
     observed = []
-    original = SemanticFinish.advance
+    original_prepare, original_apply = SemanticFinish.prepare, SemanticFinish._apply
 
-    def advance(self, **options):
-        prefix = self.db.execute("SELECT * FROM journal_prefix").fetchall()
-        before = self.load()
-        state = original(self, row_budget=1, byte_budget=options["byte_budget"])
-        assert self.db.execute("SELECT * FROM journal_prefix").fetchall() == prefix
+    def prepare(self, **options):
         assert not self.db.in_transaction
-        observed.append(before.phase)
+        changes = self.db.total_changes
+        batch = original_prepare(self, row_budget=1, byte_budget=options["byte_budget"])
+        assert self.db.total_changes == changes and not self.db.in_transaction
+        return batch
+
+    def apply(self, batch):
+        assert self.db.in_transaction
+        prefix = self.db.execute("SELECT * FROM journal_prefix").fetchall()
+        state = original_apply(self, batch)
+        assert self.db.execute("SELECT * FROM journal_prefix").fetchall() == prefix
+        assert self.db.in_transaction
+        observed.append(FinishState.from_json(batch.before_json).phase)
         return state
 
-    monkeypatch.setattr(SemanticFinish, "advance", advance)
+    monkeypatch.setattr(SemanticFinish, "prepare", prepare)
+    monkeypatch.setattr(SemanticFinish, "_apply", apply)
     with validate_journal(journal, catalog=catalog) as summary:
         assert summary.journal_sha256 == hashlib.sha256(journal).hexdigest()
     assert {"row", "lifecycle", "content", "externals"} <= set(observed)
@@ -675,6 +684,7 @@ class MeterConnection(sqlite3.Connection):
 
     @contextmanager
     def observe(self):
+        was_in_transaction = self.in_transaction
         self.metrics = {
             name: 0
             for name in (
@@ -722,7 +732,7 @@ class MeterConnection(sqlite3.Connection):
             self.set_progress_handler(None, 0)
             self.set_authorizer(None)
             self.metrics["changed_rows"] = self.total_changes - before
-        assert not self.in_transaction
+        assert self.in_transaction == was_in_transaction
         assert all(cursor.closed for _sql, _parameters, cursor in self.statements)
         for sql, parameters, _cursor in self.statements:
             if not sql.startswith(("SELECT", "UPDATE")):
@@ -732,18 +742,12 @@ class MeterConnection(sqlite3.Connection):
             assert "SEARCH" in plan and "SCAN" not in plan and "USE TEMP" not in plan, (sql, plan)
 
 
-@pytest.mark.growth_witness(
-    "riverhog-semantic-finish-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance._semantic_finish.SemanticFinish.advance",
-)
-def test_actual_cold_indexed_semantic_finish_work(tmp_path, record_property):
-    binding = growth_binding(SemanticFinish.advance)
+def semantic_finish_samples(tmp_path, measured_operation, *, samples):
+    binding = growth_binding(getattr(SemanticFinish, measured_operation))
     projection = project_bindings((binding,))
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
-    samples = []
     regimes = [
         (0, 0, 64, 0, 0),
         (1, 0, 1, 0, 0),
@@ -822,8 +826,26 @@ def test_actual_cold_indexed_semantic_finish_work(tmp_path, record_property):
             with closing(connect(path, factory=MeterConnection)) as db:
                 current = work(db)
                 admission = 100000 if payload else 65536
-                with db.observe() as metrics:
-                    current.advance(row_budget=quantum, byte_budget=admission)
+                unchanged = contents(db) if measured_operation != "advance" else None
+                if measured_operation == "prepare":
+                    with db.observe() as metrics:
+                        batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                    assert not db.in_transaction and batch.before_json == current.load().to_json()
+                elif measured_operation == "_apply":
+                    batch = current.prepare(row_budget=quantum, byte_budget=admission)
+                    db.execute("BEGIN IMMEDIATE").close()
+                    try:
+                        with db.observe() as metrics:
+                            after = current._apply(batch)
+                        assert db.in_transaction and after == batch.after
+                    finally:
+                        db.rollback()
+                else:
+                    assert measured_operation == "advance"
+                    with db.observe() as metrics:
+                        current.advance(row_budget=quantum, byte_budget=admission)
+                if unchanged is not None:
+                    assert contents(db) == unchanged
                 sample = {
                     "declaration": binding.declaration.id,
                     "declaration_sha256": digest,
@@ -840,7 +862,39 @@ def test_actual_cold_indexed_semantic_finish_work(tmp_path, record_property):
                 validate_execution_samples(projection, binding.declaration.id, [sample])
                 samples.append(sample)
     assert len(samples) == 70
+
+
+@pytest.mark.growth_witness(
+    "riverhog-semantic-finish-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._semantic_finish.SemanticFinish.advance",
+)
+def test_actual_cold_indexed_semantic_finish_work(tmp_path, record_property):
+    samples = []
     record_property("growth_samples", samples)
+    semantic_finish_samples(tmp_path, "advance", samples=samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-semantic-finish-plan-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._semantic_finish.SemanticFinish.prepare",
+)
+def test_actual_detached_semantic_finish_plan(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    semantic_finish_samples(tmp_path, "prepare", samples=samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-semantic-finish-application-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance._semantic_finish.SemanticFinish._apply",
+)
+def test_actual_owner_transaction_semantic_finish_application(tmp_path, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    semantic_finish_samples(tmp_path, "_apply", samples=samples)
 
 
 def test_changed_assertion_uuid_order_precedes_later_content_failure(tmp_path):

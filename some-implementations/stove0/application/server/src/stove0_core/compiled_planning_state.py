@@ -244,6 +244,8 @@ class CompiledPlanningState:
                 .mappings()
                 .one()
             )
+            if current["revision"] != expected_revision:
+                raise ConcurrentWorkUpdate("compiled planning changed concurrently")
             if current["scope_sha256"] is not None or current["phase"] != "inventory":
                 raise ValueError("compiled inventory cannot be rebound after planning begins")
             root = (

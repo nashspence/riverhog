@@ -4,6 +4,7 @@ import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 
+import pytest
 from riverhog_client.uploads import upload_collection_units
 from riverhog_protocol import (
     CollectionUploadUnitAssignmentDocument,
@@ -11,6 +12,7 @@ from riverhog_protocol import (
     CollectionUploadVolumeSummaryDocument,
     CollectionUploadWorkBatchDocument,
 )
+from riverhog_protocol.errors import Conflict
 
 
 @dataclass(frozen=True)
@@ -191,3 +193,68 @@ def test_progress_callback_does_not_block_upload_workers() -> None:
 
     assert _upload(api, concurrency=2, window=4, on_committed=committed) == 4
     assert callbacks == [1, 1, 1, 1]
+
+
+@pytest.mark.parametrize("pending_replies", [1, 3])
+def test_pending_upload_reuses_exact_input_until_custody_is_committed(
+    monkeypatch, pending_replies: int
+) -> None:
+    attempts: list[bytes] = []
+    content_reads: list[int] = []
+    committed: list[int] = []
+    delays: list[float] = []
+
+    class PendingApi(UploadApi):
+        def put_collection_upload_session_unit(self, *args, content, **kwargs):
+            attempts.append(content)
+            if len(attempts) <= pending_replies:
+                return self.volumes[0].units[0]
+            return super().put_collection_upload_session_unit(*args, content=content, **kwargs)
+
+    def content(_unit):
+        content_reads.append(1)
+        return bytes(bytearray(b"x"))
+
+    def delay(seconds):
+        assert committed == []
+        delays.append(seconds)
+
+    monkeypatch.setattr("riverhog_client.uploads.time.sleep", delay)
+    api = PendingApi([_volume(0, 1)], lambda *_: None)
+    assert (
+        upload_collection_units(
+            api,
+            1,
+            content_for_unit=content,
+            concurrency=1,
+            window=1,
+            on_committed=committed.append,
+        )
+        == 1
+    )
+    assert content_reads == [1]
+    assert len(attempts) == pending_replies + 1
+    assert all(item is attempts[0] for item in attempts)
+    assert delays == [float(2**index) for index in range(pending_replies)]
+    assert committed == [1]
+
+
+def test_pending_upload_does_not_report_custody_after_a_terminal_conflict(monkeypatch) -> None:
+    attempts = 0
+    committed: list[int] = []
+
+    class FencedApi(UploadApi):
+        def put_collection_upload_session_unit(self, *args, **kwargs):
+            nonlocal attempts
+            attempts += 1
+            if attempts == 1:
+                return self.volumes[0].units[0]
+            raise Conflict("archive write admission is closed")
+
+    monkeypatch.setattr("riverhog_client.uploads.time.sleep", lambda _: None)
+    api = FencedApi([_volume(0, 1)], lambda *_: None)
+    with pytest.raises(Conflict, match="admission is closed"):
+        _upload(api, concurrency=1, window=1, on_committed=committed.append)
+    assert attempts == 2
+    assert committed == []
+    assert api.committed == {api.volumes[0].summary.volume_id: 0}

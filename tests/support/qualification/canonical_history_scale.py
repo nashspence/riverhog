@@ -8,6 +8,7 @@ import sys
 import time
 import tracemalloc
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
@@ -17,15 +18,31 @@ from riverhog_api.app import create_app
 from riverhog_api.deps import ServiceContainer
 from riverhog_archive_contracts import (
     HistoryJournalAnchor,
+    MemberHistoryBinding,
     MemberHistoryBuilder,
     MemberHistoryPrimary,
     MemberHistoryRoot,
 )
-from riverhog_client import ApiClient
-from riverhog_client.producer import IncrementalCollectionProducer, ProducerFile
+from riverhog_client import (
+    ApiClient,
+    PrimaryScope,
+    PrimaryStatePolicy,
+    PrimaryStore,
+    ordered_primary_inventory,
+)
+from riverhog_client.producer import (
+    IncrementalCollectionProducer,
+    ProducerArtifactIdentity,
+    ProducerFile,
+)
 from riverhog_core.canonical_provenance_archive import PublishedCanonicalProvenance
 from riverhog_core.catalog_db import create_catalog_engine, session_scope
-from riverhog_core.catalog_models import CollectionArchiveObjectRecord, CollectionUploadRecord
+from riverhog_core.catalog_models import (
+    CollectionArchiveObjectRecord,
+    CollectionArtifactRecord,
+    CollectionRecord,
+    CollectionUploadRecord,
+)
 from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexGenerationRecord as Generation,
 )
@@ -46,6 +63,7 @@ from riverhog_provenance import (
 from sqlalchemy import delete, func, select, text
 from sqlalchemy.engine import make_url
 
+from tests.support.qualification.publication_geometry import PublicationGeometry, write_payload
 from tests.support.uploaded_archive import UploadedArchiveStore
 from tests.unit.test_operation_lifecycle_api import _api, _container
 
@@ -53,6 +71,8 @@ MAX_REBUILD_PEAK_BYTES = 64 * 1024 * 1024
 MAX_REBUILD_SECONDS = 900
 NATIVE_HTTP_TARGET_SECONDS = 5
 SHARED_PREDICATE = "https://example.invalid/qualification/member-evidence"
+PUBLICATION_POLL_SECONDS = 0.05
+PUBLICATION_TIMEOUT_SECONDS = 900
 
 
 @dataclass
@@ -67,25 +87,63 @@ class SharedHistoryFixture:
     logical_journal_bytes: int
     expected_snapshots: int
     shared_journal_id: str
+    payload_identities: dict[str, tuple[int, str]]
+    history_bindings: tuple[MemberHistoryBinding, ...]
+    archive_root_sha256: str
+    source_paths: tuple[Path, ...]
 
 
 def publish_shared_history(
-    directory: Path, *, members: int, database_url: str | None = None
+    directory: Path,
+    *,
+    members: int,
+    database_url: str | None = None,
+    geometry: PublicationGeometry | None = None,
+    progress: Callable[[dict[str, object]], None] | None = None,
+    finalization_timeout_seconds: int = PUBLICATION_TIMEOUT_SECONDS,
 ) -> SharedHistoryFixture:
-    """Publish independent primaries and one genuinely member-attached shared root."""
+    """Publish exact payloads, selected shared roots and retained/required history.
+
+    With no geometry, retain the dense shared-history rebuild workload.
+    Documentary endpoint count and shared-root attachment fanout are separate
+    input dimensions. Supplemental journals are retained on the first member.
+    Only explicitly referenced supplemental journals enter the shared root's
+    required closure.
+    """
+    if type(members) is not int or members < 1:
+        raise ValueError("publication requires a positive member count")
+    if geometry is not None and len(geometry.payload_sizes) != members:
+        raise ValueError("payload geometry differs from the exact collection size")
+    claim_members = (
+        members
+        if geometry is None or geometry.shared_claim_members is None
+        else geometry.shared_claim_members
+    )
+    fanout = members if geometry is None else geometry.shared_root_members
+
+    def emit(phase: str, **values: object) -> None:
+        if progress is not None:
+            progress({"phase": phase, **values})
+
+    if type(finalization_timeout_seconds) is not int or finalization_timeout_seconds <= 0:
+        raise ValueError("publication finalization deadline requires positive seconds")
     directory.mkdir(parents=True, exist_ok=True)
     container = _container(directory, database_url=database_url)
     container.bootstrap_token = "shared-history-qualification"
     transport = TestClient(create_app(container=container))
-    bootstrap = _api(transport, container.bootstrap_token, workers=container)
+    bootstrap = _api(transport, container.bootstrap_token, workers=container, join_workers=False)
     key = bootstrap.create_app_key(
         "shared-history-qualification", access=[{"permission": "*", "resource": "*"}]
     )
-    api = _api(transport, key["token"], workers=container)
+    api = _api(transport, key["token"], workers=container, join_workers=False)
     sources = []
+    payload_identities = {}
     for offset in range(members):
         source = directory / f"source-{offset}.bin"
-        source.write_bytes(f"exact payload {offset}".encode())
+        if geometry is None:
+            source.write_bytes(f"exact payload {offset}".encode())
+        else:
+            write_payload(source, member=offset, size=geometry.payload_sizes[offset])
         sources.append(
             ProducerFile(
                 source,
@@ -93,26 +151,56 @@ def publish_shared_history(
                 allow_missing_materialization_hint=True,
             )
         )
+        with source.open("rb") as stream:
+            digest = hashlib.file_digest(stream, "sha256").hexdigest()
+        payload_identities[str(sources[-1].artifact_id)] = (source.stat().st_size, digest)
     primaries = []
+    history_bindings = []
     claims = []
     who = new_id()
+    event_id = uuid4().hex
+    primary_policy = PrimaryStatePolicy(
+        scope=PrimaryScope(service="qualification-service", account="qualification-account")
+    )
+    primary_store = PrimaryStore(
+        directory / "prepared-primary",
+        allocation_id=event_id,
+        scope=primary_policy.scope,
+        limits=primary_policy.limits(),
+        initialize=True,
+    )
     producer = IncrementalCollectionProducer(
         api,
+        primary_store=primary_store,
+        member_inventory=lambda: ordered_primary_inventory(
+            primary_store,
+            (
+                ProducerArtifactIdentity(
+                    source.artifact_id,
+                    *payload_identities[str(source.artifact_id)],
+                )
+                for source in sources
+            ),
+        ),
         producer_app="shared-history-qualification",
         adapter_id="qualification-ingress/v1",
         adapter_version="1",
         ingest_source="qualification",
-        source_event_id=uuid4().hex,
+        source_event_id=event_id,
         use_cache=False,
     )
     try:
         # This witness measures history extent, independently of the PostgreSQL
         # upload-concurrency rail. Keep its SQLite unit fixture deterministic.
-        for source in sources:
+        emit("append-inputs", completed=0, members=members)
+        for count, source in enumerate(sources, 1):
             producer.append_inputs((source,))
+            if count == members or count & (count - 1) == 0:
+                emit("append-inputs", completed=count, members=members)
         collection_id = int(producer.collection_id)
         journal_bytes = 0
-        dependency_bytes = 0
+        dependency_sizes = []
+        first_endpoint = None
         for offset, source in enumerate(sources):
             binding = api.get_collection_upload_session_artifact_provenance_binding(
                 collection_id, source.artifact_id
@@ -123,23 +211,83 @@ def publish_shared_history(
             ) as chunks:
                 raw = b"".join(chunks)
             journal_bytes += len(raw)
-            summary = validate_journal(raw, require_profiles=False)
-            state = summary.graph_validation.objects[binding.delivery_association_id]["state"]
-            endpoint = external_reference(summary, state["object_id"])
-            for frame in summary.frames:
-                dependency_bytes += len(frame.encoded)
-                if frame.reference == endpoint["entry"]:
-                    break
-            claims.append(
-                assertion(
-                    "extension",
-                    who,
-                    subject=endpoint,
-                    property=SHARED_PREDICATE,
-                    value={"type": "text", "value": f"member-token-{offset:06d}:" + "x" * 2048},
-                )
-            )
+            prefix_bytes = 0
+            with validate_journal(raw, require_profiles=False) as summary:
+                state = summary.graph_validation.objects[binding.delivery_association_id]["state"]
+                endpoint = external_reference(summary, state["object_id"])
+                if first_endpoint is None:
+                    first_endpoint = endpoint
+                for frame in summary.frames:
+                    prefix_bytes += len(frame.encoded)
+                    if frame.reference == endpoint["entry"]:
+                        break
+                if offset < claim_members:
+                    claims.append(
+                        assertion(
+                            "extension",
+                            who,
+                            subject=endpoint,
+                            property=SHARED_PREDICATE,
+                            value={
+                                "type": "text",
+                                "value": f"member-token-{offset:06d}:" + "x" * 2048,
+                            },
+                        )
+                    )
+            dependency_sizes.append(prefix_bytes)
             primaries.append((source, binding))
+        emit("primary-history-received", members=members)
+        retained = []
+        supplemental_bytes = 0
+        required_bytes = 0
+        if geometry is not None:
+            assert first_endpoint is not None
+            for index in range(geometry.retained_journals):
+                recorder = new_id()
+                raw = create_journal(
+                    {
+                        "agents": [
+                            assertion(
+                                "agent",
+                                recorder,
+                                object_id=recorder,
+                                kind="software",
+                                name="retained history recorder",
+                            )
+                        ],
+                        "extensions": [
+                            assertion(
+                                "extension",
+                                recorder,
+                                subject=first_endpoint,
+                                property=SHARED_PREDICATE,
+                                value={"type": "text", "value": f"retained-journal-{index}"},
+                            )
+                        ],
+                    },
+                    recorded_by_agent_id=recorder,
+                )
+                with validate_journal(raw, require_profiles=False) as summary:
+                    retained.append(HistoryJournalAnchor.from_mapping(summary.anchor))
+                    if index < geometry.required_journals:
+                        required_bytes += len(raw)
+                        claims.append(
+                            assertion(
+                                "extension",
+                                who,
+                                subject=external_reference(summary, recorder),
+                                property=SHARED_PREDICATE,
+                                value={"type": "text", "value": f"required-journal-{index}"},
+                            )
+                        )
+                    api.upload_collection_upload_session_provenance_journal(
+                        collection_id,
+                        summary.journal_id,
+                        content=(raw,),
+                        byte_count=len(raw),
+                        sha256=hashlib.sha256(raw).hexdigest(),
+                    )
+                supplemental_bytes += len(raw)
         shared = create_journal(
             {
                 "agents": [
@@ -152,50 +300,80 @@ def publish_shared_history(
             recorded_by_agent_id=who,
         )
         shared_summary = validate_journal(shared, require_profiles=False)
-        api.upload_collection_upload_session_provenance_journal(
-            collection_id,
-            shared_summary.journal_id,
-            content=(shared,),
-            byte_count=len(shared),
-            sha256=hashlib.sha256(shared).hexdigest(),
-        )
-        for source, binding in primaries:
-            with MemberHistoryBuilder(
-                artifact_id=source.artifact_id,
-                bytes=source.source.stat().st_size,
-                sha256=hashlib.sha256(source.source.read_bytes()).hexdigest(),
-                primary=MemberHistoryPrimary.from_mapping(
-                    {
-                        "journal": binding.journal.model_dump(mode="json"),
-                        "delivery_association_id": binding.delivery_association_id,
-                    }
-                ),
-            ) as histories:
-                histories.add_root(
-                    MemberHistoryRoot(
-                        HistoryJournalAnchor.from_mapping(shared_summary.anchor), "bound"
-                    )
-                )
-                selected, descriptor = histories.seal()
-                for authority in (descriptor.roots, descriptor.imports):
-                    for page in histories.pages(authority):
-                        api.stage_collection_upload_session_history_structure(
-                            collection_id, page.to_json_bytes()
-                        )
-                api.stage_collection_upload_session_history_structure(
-                    collection_id, descriptor.to_json_bytes()
-                )
-                api.bind_collection_upload_session_member_histories(
-                    collection_id,
-                    MemberHistoryBindingBatchDocument.model_validate(
-                        {"bindings": [selected.to_mapping()]}
+        try:
+            api.upload_collection_upload_session_provenance_journal(
+                collection_id,
+                shared_summary.journal_id,
+                content=(shared,),
+                byte_count=len(shared),
+                sha256=hashlib.sha256(shared).hexdigest(),
+            )
+            for member, (source, binding) in enumerate(primaries):
+                with MemberHistoryBuilder(
+                    artifact_id=source.artifact_id,
+                    bytes=payload_identities[str(source.artifact_id)][0],
+                    sha256=payload_identities[str(source.artifact_id)][1],
+                    primary=MemberHistoryPrimary.from_mapping(
+                        {
+                            "journal": binding.journal.model_dump(mode="json"),
+                            "delivery_association_id": binding.delivery_association_id,
+                        }
                     ),
-                )
-        finalized = producer.finish(poll_seconds=0.05, timeout_seconds=900)
-        assert finalized.archive_root_sha256 is not None
+                ) as histories:
+                    if geometry is None or member < geometry.shared_root_members:
+                        histories.add_root(
+                            MemberHistoryRoot(
+                                HistoryJournalAnchor.from_mapping(shared_summary.anchor), "bound"
+                            )
+                        )
+                    if member == 0:
+                        for anchor in retained:
+                            histories.add_root(MemberHistoryRoot(anchor, "retained"))
+                    selected, descriptor = histories.seal()
+                    history_bindings.append(selected)
+                    for authority in (descriptor.roots, descriptor.imports):
+                        for page in histories.pages(authority):
+                            api.stage_collection_upload_session_history_structure(
+                                collection_id, page.to_json_bytes()
+                            )
+                    api.stage_collection_upload_session_history_structure(
+                        collection_id, descriptor.to_json_bytes()
+                    )
+                    api.bind_collection_upload_session_member_histories(
+                        collection_id,
+                        MemberHistoryBindingBatchDocument.model_validate(
+                            {"bindings": [selected.to_mapping()]}
+                        ),
+                    )
+                count = member + 1
+                if count == members or count & (count - 1) == 0:
+                    emit("member-histories-staged", completed=count, members=members)
+            assert all(source.source.exists() for source in sources)
+            emit("finalization", members=members)
+            finalized = producer.finish(
+                poll_seconds=PUBLICATION_POLL_SECONDS,
+                timeout_seconds=finalization_timeout_seconds,
+            )
+            assert finalized.archive_root_sha256 is not None
+            assert finalized.receipt["state"] == "finalized"
+        finally:
+            shared_summary.close()
     finally:
         producer.stop()
+        primary_store.close()
     with session_scope(container.session_factory) as session:
+        collection = session.get(CollectionRecord, collection_id)
+        assert collection is not None
+        assert collection.archive_root_sha256 == finalized.archive_root_sha256
+        rows = list(
+            session.scalars(
+                select(CollectionArtifactRecord).where(
+                    CollectionArtifactRecord.collection_id == collection_id
+                )
+            )
+        )
+        assert {row.artifact_id: (row.bytes, row.sha256) for row in rows} == payload_identities
+        assert all(row.custody_receipt_json for row in rows)
         state = session.get(State, collection_id)
         assert state is not None and state.active_build_id is not None
         generation = session.get(Generation, state.active_build_id)
@@ -224,10 +402,16 @@ def publish_shared_history(
         tuple(str(s.artifact_id) for s in sources),
         generation_id,
         len(shared),
-        journal_bytes + len(shared),
-        journal_bytes + (members - 1) * dependency_bytes + members * len(shared),
+        journal_bytes + len(shared) + supplemental_bytes,
+        journal_bytes
+        + fanout * (sum(dependency_sizes[:claim_members]) + len(shared) + required_bytes)
+        - sum(dependency_sizes[: min(fanout, claim_members)]),
         expected_snapshots,
         shared_summary.journal_id,
+        payload_identities,
+        tuple(history_bindings),
+        finalized.archive_root_sha256,
+        tuple(source.source for source in sources),
     )
 
 
