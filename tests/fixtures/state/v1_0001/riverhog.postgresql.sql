@@ -3244,4 +3244,29 @@ CREATE INDEX ix_provenance_index_generations_retirement ON collection_provenance
 
 CREATE INDEX ix_collection_processing_claims_output ON collection_processing_claims (output_collection_id, id);
 
+CREATE TABLE primary_facts_jobs (
+	workspace_id VARCHAR(32) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	construction TEXT NOT NULL,
+	epoch VARCHAR(64) NOT NULL,
+	owner_id VARCHAR(32) NOT NULL,
+	root_identity TEXT NOT NULL,
+	namespace_identity TEXT,
+	state VARCHAR NOT NULL,
+	version VARCHAR(32) NOT NULL,
+	failure TEXT,
+	PRIMARY KEY (workspace_id),
+	CONSTRAINT ck_primary_facts_state CHECK (state IN ('allocated','pinned','corpus','memo','directory')),
+	CONSTRAINT ck_primary_facts_unconfirmed CHECK (state != 'allocated' OR namespace_identity IS NULL),
+	CONSTRAINT ck_primary_facts_confirmed CHECK (state != 'pinned' OR namespace_identity IS NOT NULL),
+	CONSTRAINT ck_primary_facts_workspace_id CHECK (length(workspace_id) = 32 AND lower(workspace_id) = workspace_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(workspace_id,'0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0),
+	CONSTRAINT ck_primary_facts_owner_id CHECK (length(owner_id) = 32 AND lower(owner_id) = owner_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(owner_id,'0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0),
+	CONSTRAINT ck_primary_facts_version CHECK (length(version) = 32 AND lower(version) = version AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version,'0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0),
+	CONSTRAINT ck_primary_facts_jobs_epoch_hex CHECK (length(epoch) = 64 AND lower(epoch) = epoch AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(epoch, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+);
+
+CREATE INDEX ix_primary_facts_state_workspace ON primary_facts_jobs (state, workspace_id);
+
+CREATE UNIQUE INDEX uq_primary_facts_collection ON primary_facts_jobs (collection_id);
+
 INSERT INTO state_schema_revision (version_num) VALUES ('v1_0001');

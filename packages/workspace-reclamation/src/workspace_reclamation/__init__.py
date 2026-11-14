@@ -75,6 +75,7 @@ class FileReclamationOwner:
         self._closed = False
         self._path = b""
         self._names: tuple[bytes, ...] = ()
+        self._expected_directory_identity: tuple[int, int] | None = None
 
     @property
     def received(self) -> bool:
@@ -98,11 +99,22 @@ class FileReclamationOwner:
             self._execution.release()
 
     def reclaim(
-        self, directory: Path, *, names: tuple[str, ...], octet_budget: int
+        self,
+        directory: Path,
+        *,
+        names: tuple[str, ...],
+        octet_budget: int,
+        expected_directory_identity: tuple[int, int] | None = None,
     ) -> FileReclamationProgress:
         """Run one admitted original mutation and receive before returning it."""
         if type(octet_budget) is not int or octet_budget < 1:
             raise ValueError("workspace reclamation requires a positive octet budget")
+        if expected_directory_identity is not None and (
+            not isinstance(expected_directory_identity, tuple)
+            or len(expected_directory_identity) != 2
+            or any(type(value) is not int or value < 0 for value in expected_directory_identity)
+        ):
+            raise ValueError("workspace directory identity requires an exact device/inode pair")
         if not self._execution.acquire(blocking=False):
             raise BlockingIOError("the original extent executor still uses its borrows")
         try:
@@ -110,6 +122,7 @@ class FileReclamationOwner:
                 raise RuntimeError("extent disposal requires a fresh retained owner")
             self._names = _validate_names(names)
             self._path = _encode_directory(directory)
+            self._expected_directory_identity = expected_directory_identity
             self._attempted = True
             result = self._reclaim(octet_budget)
             self._receive()
@@ -134,6 +147,11 @@ class FileReclamationOwner:
             or stat.S_IMODE(identity.st_mode) != 0o700
         ):
             raise InvalidWorkspaceFiles("reclamation requires a private owned directory")
+        if (
+            self._expected_directory_identity is not None
+            and (identity.st_dev, identity.st_ino) != self._expected_directory_identity
+        ):
+            raise InvalidWorkspaceFiles("retired workspace directory was replaced")
         before = _files(descriptor, self._names)
         removed_octets = removed_files = 0
         if before:
@@ -411,6 +429,7 @@ def reclaim_retired_files(
     receiver: FileReclamationOwner,
     names: tuple[str, ...],
     octet_budget: int,
+    expected_directory_identity: tuple[int, int] | None = None,
 ) -> FileReclamationProgress:
     """Dispose one exact extent through a caller-retained original native owner.
 
@@ -419,7 +438,14 @@ def reclaim_retired_files(
     Successful progress includes positive native receiving. An exception keeps
     this exact receiver until its close succeeds; retrying close repeats no
     extent mutation. Worker join and charge withdrawal remain separate.
+    An optional held original device/inode pin is checked before any named-file
+    lookup or mutation, preventing a pathname replacement from borrowing custody.
     """
     if not isinstance(receiver, FileReclamationOwner):
         raise TypeError("file reclamation requires its retained original receiver")
-    return receiver.reclaim(directory, names=names, octet_budget=octet_budget)
+    return receiver.reclaim(
+        directory,
+        names=names,
+        octet_budget=octet_budget,
+        expected_directory_identity=expected_directory_identity,
+    )

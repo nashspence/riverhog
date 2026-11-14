@@ -41,6 +41,9 @@ from riverhog_core import (
     catalog_object_cleanup_models as _catalog_object_cleanup_models,  # noqa: E402,F401
 )
 from riverhog_core import (
+    catalog_primary_facts_models as _catalog_primary_facts_models,  # noqa: E402,F401
+)
+from riverhog_core import (
     catalog_provenance_index_models as _catalog_provenance_index_models,  # noqa: E402,F401
 )
 from riverhog_core import (

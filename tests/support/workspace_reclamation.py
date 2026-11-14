@@ -188,11 +188,17 @@ def observe_file_delegate(monkeypatch, module, projection, dimensions, metrics):
     child = growth_binding(actual)
     samples = []
 
-    def observed(directory, *, receiver, names, octet_budget):
+    def observed(directory, *, receiver, names, octet_budget, expected_directory_identity=None):
         before = dict(metrics)
         before_attempts = len(metrics.attempts)
         try:
-            return actual(directory, receiver=receiver, names=names, octet_budget=octet_budget)
+            return actual(
+                directory,
+                receiver=receiver,
+                names=names,
+                octet_budget=octet_budget,
+                expected_directory_identity=expected_directory_identity,
+            )
         finally:
             observed_metrics = ReclamationMetrics(
                 {name: metrics[name] - before[name] for name in metrics}

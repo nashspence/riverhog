@@ -63,7 +63,7 @@ from sqlalchemy import event, select, update
 from tests.unit.test_collection_upload_preparation import _case
 from tests.unit.test_collection_uploads import _bind_primary, _upload_provenance_journal
 from tests.unit.test_finalization_claim_readiness import _seal
-from tests.unit.test_selected_upload_journal_prefix import _finish, _owner, _state
+from tests.unit.test_selected_upload_journal_prefix import _advance_member, _finish, _owner, _state
 
 
 def _source_material(text_octets=0, *, journal_id=None):
@@ -456,7 +456,7 @@ def _terminal(case):
 
 def _prepare_terminal(case):
     for _ in range(case.members):
-        assert _owner(case).advance()
+        _advance_member(case)
     assert _state(case) == (case.members, False, None)
 
 
@@ -630,7 +630,7 @@ def test_complete_terminal_import_work_depends_on_distinct_source_not_fanout(
 def test_finalizer_checks_current_tail_after_the_selected_imported_primary(tmp_path, monkeypatch):
     material = _source_material()
     with _staged_imports(tmp_path, monkeypatch, material, fanout=1, members=1) as case:
-        assert _owner(case).advance()
+        _advance_member(case)
         assert _state(case) == (1, False, None)
         identity = material.primary.journal.journal_id
         with session_scope(case.factory) as session:

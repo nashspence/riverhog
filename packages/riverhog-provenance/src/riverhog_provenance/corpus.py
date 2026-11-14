@@ -30,6 +30,7 @@ from riverhog_provenance_contracts import canonical_document, require_canonical_
 from ._corpus_order import CorpusOrderProgress, _CorpusOrder
 from .common import fingerprint
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+from .corpus_selection import index_assertion, retire_assertion
 from .delivery import _delivery_projection, _selected_delivery_occurrence
 from .errors import JournalValidationCapacity, ProvenanceValidationError
 from .graph import iter_assertions
@@ -388,9 +389,9 @@ def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
         terms=(
             count(4),
             Expression("product", terms=(count(8, SCALAR), dimension("new_frames"))),
-            Expression("product", terms=(count(8, SCALAR), dimension("new_assertions"))),
+            Expression("product", terms=(count(75, SCALAR), dimension("new_assertions"))),
             dimension("new_references"),
-            Expression("product", terms=(count(2, SCALAR), dimension("new_retractions"))),
+            Expression("product", terms=(count(132, SCALAR), dimension("new_retractions"))),
         ),
     )
     return Declaration(
@@ -465,7 +466,8 @@ def _source_ingest_declaration(*, bounded: bool = False) -> Declaration:
                 COUNT,
                 "upper",
                 work,
-                "Includes corpus source/identity seeks, entry savepoints and all raw obligations.",
+                "Includes corpus source/identity seeks, entry savepoints, all raw obligations "
+                "and the fixed-width historical selector interval index.",
             ),
             Bound(
                 "native_anchor_calls",
@@ -1111,6 +1113,7 @@ class CanonicalCorpusValidator:
     def __init__(
         self,
         *,
+        directory: Path | None = None,
         connection_factory: Callable[..., sqlite3.Connection] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
     ) -> None:
@@ -1119,11 +1122,26 @@ class CanonicalCorpusValidator:
         A supplied factory owns any connection it does not return and the private
         directory named by its database path. The early callback retains this
         owner before schema work, including when a later close is unconfirmed.
+
+        Explicit placement requires the caller's factory, already registered
+        private namespace and original construction custody. The caller creates
+        the exact database exclusively and keeps its lease until storage has
+        received. Native creates no directory and never removes that namespace.
         """
+        if directory is not None and (
+            connection_factory is None or not Path(directory).is_absolute()
+        ):
+            raise ValueError(
+                "caller-owned corpus placement requires an absolute directory and factory"
+            )
         self._initialize_state()
         self._connection_factory = connection_factory
-        self._owns_directory = True
-        self._directory = Path(mkdtemp(prefix="riverhog-canonical-corpus-"))
+        self._owns_directory = directory is None
+        self._directory = (
+            Path(mkdtemp(prefix="riverhog-canonical-corpus-"))
+            if directory is None
+            else Path(directory)
+        )
         connect = sqlite3.connect if connection_factory is None else connection_factory
         try:
             self._db = connect(self._directory / "corpus.sqlite3")
@@ -1166,6 +1184,7 @@ class CanonicalCorpusValidator:
         self._dependency_pending: tuple[Any, ...] | None = None
         self._dependency_checked = 0
         self._orders: dict[str, _CorpusOrder] = {}
+        self._primary_selection_enabled = False
 
     def _initialize_schema(self) -> None:
         schema = (
@@ -1345,6 +1364,8 @@ class CanonicalCorpusValidator:
                         "UPDATE assertions SET retired=? WHERE journal=? AND assertion=?",
                         (document["sequence"], summary.journal_id, target["assertion_id"]),
                     )
+                    if self._primary_selection_enabled:
+                        retire_assertion(self, summary.journal_id, target["assertion_id"], sequence)
                 for _, assertion in iter_assertions(_body_assertions(document)):
                     encoded = canonical_document(assertion)
                     self._identity(assertion["assertion_id"], "assertion", encoded)
@@ -1365,6 +1386,8 @@ class CanonicalCorpusValidator:
                         "INSERT OR IGNORE INTO assertion_payloads VALUES (?, ?, ?)",
                         (summary.journal_id, assertion["assertion_id"], encoded),
                     )
+                    if self._primary_selection_enabled:
+                        index_assertion(self, summary.journal_id, assertion, sequence)
                     projection = _delivery_projection(assertion)
                     if projection is not None:
                         self._source_write(

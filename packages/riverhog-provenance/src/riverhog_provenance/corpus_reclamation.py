@@ -45,6 +45,7 @@ def reclaim_retired_corpus_workspace(
     *,
     receiver: FileReclamationOwner,
     octet_budget: int = 4 * 1024 * 1024,
+    expected_directory_identity: tuple[int, int] | None = None,
 ) -> CorpusReclamationProgress:
     """Dispose one admitted extent of an exclusively retired Native corpus.
 
@@ -56,7 +57,11 @@ def reclaim_retired_corpus_workspace(
     """
     try:
         progress = reclaim_retired_files(
-            directory, receiver=receiver, names=_FILES, octet_budget=octet_budget
+            directory,
+            receiver=receiver,
+            names=_FILES,
+            octet_budget=octet_budget,
+            expected_directory_identity=expected_directory_identity,
         )
     except InvalidWorkspaceFiles as error:
         raise StaleCorpusWorkspace(str(error)) from None

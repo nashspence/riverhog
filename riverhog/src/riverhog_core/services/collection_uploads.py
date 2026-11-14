@@ -520,6 +520,13 @@ class SqlAlchemyCollectionUploadService:
             concurrency=config.journal_validation_concurrency,
             construction_factory=self._journal_storage.journal,
         )
+        from .upload_primary_facts import UploadPrimaryFactsOwner
+
+        self._primary_facts = UploadPrimaryFactsOwner(
+            storage=self._journal_storage,
+            root=self._journal_validation_owner.root,
+            max_owners=config.archive_execution.retained_constructions,
+        )
         from .physical_execution import PhysicalExecutionOwner
 
         self._archive_execution = PhysicalExecutionOwner(config.archive_execution)
@@ -584,6 +591,7 @@ class SqlAlchemyCollectionUploadService:
             self._archive_terminal_observation,
             self._archive_finalizers,
             self._archive_invocations,
+            retire_preparation=self._primary_facts.retire,
         )
         from .archive_upload_terminal_registry import ArchiveUploadTerminalRegistry
 
@@ -615,6 +623,19 @@ class SqlAlchemyCollectionUploadService:
             receive_limit=config.archive_execution.retained_constructions,
             retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
         )
+        from .upload_primary_facts_retirement import UploadPrimaryFactsRetirement
+
+        self._primary_facts_retirement = UploadPrimaryFactsRetirement(
+            self._session_factory,
+            config.journal_validation_workspace,
+            owner_id=self._primary_facts.owner_id,
+            execution=self._archive_execution,
+            retention=self._archive_retention,
+            metadata_budget=config.registration.metadata_bytes_per_step,
+            receive_limit=config.archive_execution.retained_constructions,
+            retry_after=max(config.archive_upload_sweep_interval, timedelta(milliseconds=100)),
+        )
+        self._primary_facts_cleanup_turn = False
         self._journal_validation_cleanup_turn = False
         self._checkpoints = SqlAlchemyArchiveUploadCheckpointStore(
             config,
@@ -637,12 +658,16 @@ class SqlAlchemyCollectionUploadService:
         }
 
     def close(self) -> None:
+        self._primary_facts_retirement.close()
         self._journal_validation_retirement.close()
         self._archive_terminals.close()
         if self._cache_cleanup is not None:
             self._cache_cleanup.close()
         self._archive_invocations.close()
         self._archive_finalizers.close()
+        self._primary_facts.close()
+        if not self._primary_facts_retirement.receive_stopped():
+            raise Conflict("original primary preparation retirement receiving remains unconfirmed")
         if not self._journal_validation_retirement.receive_stopped():
             raise Conflict("original Native retirement receiving remains unconfirmed")
         self._journal_validation_owner.close()
@@ -3496,7 +3521,10 @@ class SqlAlchemyCollectionUploadService:
     def process_due_archive_uploads(self, *, limit: int = 1) -> int:
         if limit < 1:
             return 0
-        return self._archive_upload_maintenance.process_due(limit=limit)
+        # Shared maintenance receives originals without capturing a fresh slot
+        # ahead of whichever forward scheduler called it.
+        progressed = self._primary_facts_retirement.advance(limit=limit, admit=False)
+        return progressed + self._archive_upload_maintenance.process_due(limit=limit)
 
     def has_unreceived_archive_work(self) -> bool:
         """A local poll hint; this grants no provider closure or global quiescence."""
@@ -3508,6 +3536,10 @@ class SqlAlchemyCollectionUploadService:
         # Receive joined physical results and original workflow feedback before
         # any fresh candidate can acquire another durable claim.
         progressed = self.process_due_archive_uploads(limit=limit)
+        self._primary_facts_cleanup_turn = not self._primary_facts_cleanup_turn
+        cleanup_first = self._primary_facts_cleanup_turn
+        if cleanup_first:
+            progressed += self._primary_facts_retirement.advance(limit=limit)
         try:
             progressed += self._schedule_ready_finalizations(limit=max(100, limit))
         except OperationalError as error:
@@ -3518,6 +3550,11 @@ class SqlAlchemyCollectionUploadService:
         for collection_id in self._finalization_due.select(now, limit=limit):
             if self._submit_finalization_if_due(collection_id, now=now) == "submitted":
                 progressed += 1
+        if not cleanup_first:
+            # Alternate actual admission opportunities, not arbitrary maintenance
+            # polls: a long retired extent cannot monopolize the sole ordinary
+            # slot, even when custody and finalization poll in the same cycle.
+            progressed += self._primary_facts_retirement.advance(limit=limit)
         return progressed
 
     def _schedule_ready_finalizations(self, *, limit: int) -> int:
@@ -5031,123 +5068,101 @@ class SqlAlchemyCollectionUploadService:
                 binding = CollectionArtifactProvenanceBindingDocument.model_validate(
                     _provenance_binding_row(binding_row)
                 )
-                with validate_journal_chunks(
-                    _iter_upload_journal_chunks(
-                        session, journal, through_bytes=binding.journal.prefix_bytes
-                    ),
+                member = ArtifactMemberIdentityDocument.model_validate(
+                    {
+                        "artifact_id": row.artifact_id,
+                        "bytes": format_scalar("sequence63", row.bytes),
+                        "sha256": row.sha256,
+                    }
+                )
+                primary = self._primary_facts.verify(
+                    session,
+                    upload,
+                    member=member,
+                    binding=binding,
+                    result_resources=result_resources,
                     catalog=admission_provenance_catalog(),
-                    expected_anchor=binding.journal.model_dump(mode="json"),
-                    require_exact_tail=True,
-                    require_profiles=False,
-                ) as summary:
-                    member = ArtifactMemberIdentityDocument.model_validate(
-                        {
-                            "artifact_id": row.artifact_id,
-                            "bytes": format_scalar("sequence63", row.bytes),
-                            "sha256": row.sha256,
-                        }
-                    )
-                    verified = verify_member_binding(
-                        member=member,
-                        binding=binding,
-                        summary=summary,
-                        delivery_context_id=upload.delivery_context_id,
-                    )
-                    final = session.get(
-                        CollectionUploadMemberHistoryRecord, (collection_id, row.artifact_id)
-                    )
-                    if final is None:
-                        raise Conflict("final member history is missing")
-                    structural = session.get(
-                        CollectionUploadProvenanceStructureRecord,
-                        (collection_id, "provenance-history-" + final.history_sha256),
-                    )
-                    if structural is None:
-                        raise Conflict("final member history descriptor bytes are missing")
-                    history = provenance_volume_source.member_history_binding_row(
-                        final
-                    ).verify_descriptor(structural.content)
-                    expected_primary = MemberHistoryPrimary.from_mapping(
-                        {
-                            "journal": binding.journal.model_dump(mode="json"),
-                            "delivery_association_id": binding.delivery_association_id,
-                        }
-                    )
-                    if history.primary != expected_primary:
-                        raise Conflict(
-                            "final member history differs from the accepted early primary"
+                )
+                if primary is None:
+                    return True
+                verified = primary.verified
+                final = session.get(
+                    CollectionUploadMemberHistoryRecord, (collection_id, row.artifact_id)
+                )
+                if final is None:
+                    raise Conflict("final member history is missing")
+                structural = session.get(
+                    CollectionUploadProvenanceStructureRecord,
+                    (collection_id, "provenance-history-" + final.history_sha256),
+                )
+                if structural is None:
+                    raise Conflict("final member history descriptor bytes are missing")
+                history = provenance_volume_source.member_history_binding_row(
+                    final
+                ).verify_descriptor(structural.content)
+                expected_primary = MemberHistoryPrimary.from_mapping(
+                    {
+                        "journal": binding.journal.model_dump(mode="json"),
+                        "delivery_association_id": binding.delivery_association_id,
+                    }
+                )
+                if history.primary != expected_primary:
+                    raise Conflict("final member history differs from the accepted early primary")
+                verify_member_history_sets(
+                    history,
+                    root_pages=_iter_staged_history_pages(session, collection_id, history.roots),
+                    import_pages=_iter_staged_history_pages(
+                        session, collection_id, history.imports
+                    ),
+                )
+                for page in _iter_staged_history_pages(session, collection_id, history.roots):
+                    for selected in page.records:
+                        selected_anchor = MemberHistoryRoot.from_mapping(selected["value"]).journal
+                        if selected_anchor == history.primary.journal:
+                            continue
+                        selected_journal = session.get(
+                            CollectionUploadProvenanceJournalRecord,
+                            (collection_id, selected_anchor.journal_id),
                         )
-                    verify_member_history_sets(
-                        history,
-                        root_pages=_iter_staged_history_pages(
-                            session, collection_id, history.roots
-                        ),
-                        import_pages=_iter_staged_history_pages(
-                            session, collection_id, history.imports
-                        ),
-                    )
-                    for page in _iter_staged_history_pages(session, collection_id, history.roots):
-                        for selected in page.records:
-                            selected_anchor = MemberHistoryRoot.from_mapping(
-                                selected["value"]
-                            ).journal
-                            if selected_anchor == history.primary.journal:
-                                continue
-                            selected_journal = session.get(
-                                CollectionUploadProvenanceJournalRecord,
-                                (collection_id, selected_anchor.journal_id),
-                            )
-                            if selected_journal is None or selected_journal.state != "sealed":
-                                raise Conflict("selected member history root is absent or unsealed")
-                            verify_selected_upload_journal_prefix(
-                                session,
-                                self._journal_validation_owner.root,
-                                collection_id,
-                                selected_anchor,
-                                catalog=admission_provenance_catalog(),
-                                result_resources=result_resources,
-                            )
-                    validate_collection_production_records(
-                        summary.graph_validation.view,
-                        delivery_context_id=upload.delivery_context_id,
-                    )
-                    association = summary.graph_validation.objects[binding.delivery_association_id]
-                    binding_row.completion_output_id = validate_member_completion_requirement(
-                        summary.graph_validation.view,
-                        delivery_context_id=upload.delivery_context_id,
-                        state_id=association["state"]["object_id"],
-                        requirement=(
-                            None
-                            if upload.completion_requirement_json is None
-                            else CollectionCompletionRequirementDocument.model_validate_json(
-                                upload.completion_requirement_json
-                            )
-                        ),
-                    )
-                    decision = session.get(
-                        CollectionUploadArtifactMaterializationDecisionRecord,
-                        (collection_id, row.artifact_id),
-                    )
-                    if decision is None:
-                        raise MaterializationDecisionRequired(
-                            f"materialization decision is missing: {row.artifact_id}"
+                        if selected_journal is None or selected_journal.state != "sealed":
+                            raise Conflict("selected member history root is absent or unsealed")
+                        verify_selected_upload_journal_prefix(
+                            session,
+                            self._journal_validation_owner.root,
+                            collection_id,
+                            selected_anchor,
+                            catalog=admission_provenance_catalog(),
+                            result_resources=result_resources,
                         )
-                    expected_hint = (
-                        None
-                        if decision.hint_json is None
-                        else tuple(json.loads(decision.hint_json)["components"])
+                binding_row.completion_output_id = primary.completion_output_id
+                decision = session.get(
+                    CollectionUploadArtifactMaterializationDecisionRecord,
+                    (collection_id, row.artifact_id),
+                )
+                if decision is None:
+                    raise MaterializationDecisionRequired(
+                        f"materialization decision is missing: {row.artifact_id}"
                     )
-                    if expected_hint != verified.materialization_hint:
-                        raise Conflict("publication hint differs from the delivered Occurrence")
-                    if (expected_hint is None) != decision.allow_missing_materialization_hint:
-                        raise MaterializationDecisionRequired(
-                            "publication requires exactly one hint or explicit omission"
-                        )
-                    upload.provenance_validation_after_artifact_id = row.artifact_id
-                    upload.provenance_validation_next_artifact_order += 1
+                expected_hint = (
+                    None
+                    if decision.hint_json is None
+                    else tuple(json.loads(decision.hint_json)["components"])
+                )
+                if expected_hint != verified.materialization_hint:
+                    raise Conflict("publication hint differs from the delivered Occurrence")
+                if (expected_hint is None) != decision.allow_missing_materialization_hint:
+                    raise MaterializationDecisionRequired(
+                        "publication requires exactly one hint or explicit omission"
+                    )
+                upload.provenance_validation_after_artifact_id = row.artifact_id
+                upload.provenance_validation_next_artifact_order += 1
             return True
         if upload.provenance_validation_next_artifact_order != upload.artifact_count:
             raise Conflict("canonical provenance bindings do not cover the artifact set")
+        # Derived preparation owns no publication authority. Receive its actual
+        # resources before the separate complete current raw terminal barrier.
+        if not self._primary_facts.retire(session, collection_id):
+            return True
         # Member cursors retain provisional accepted-prefix facts. Resolve the
         # complete current raw histories before recording closure success.
         _validate_staged_canonical_journal_set(session, upload)

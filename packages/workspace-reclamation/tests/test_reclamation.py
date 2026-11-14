@@ -126,6 +126,56 @@ def test_replaced_inode_is_refused_before_extent_mutation(
     assert target.stat().st_size == 19 and (path / "original").stat().st_size == 17
 
 
+@pytest.mark.parametrize("replace_directory", [False, True])
+def test_held_directory_pin_precedes_every_named_file_probe(
+    tmp_path, monkeypatch, retained_file_receivers, replace_directory
+):
+    path = tmp_path / "retired"
+    path.mkdir(mode=0o700)
+    target = private_file(path, "data", 7)
+    target.write_bytes(b"original")
+    held = path.stat()
+    receiver = retained_file_receivers()
+    actual = workspace_reclamation._encode_directory
+
+    def encode(directory):
+        encoded = actual(directory)
+        path.rename(tmp_path / "original")
+        path.mkdir(mode=0o700)
+        private_file(path, "data", 11).write_bytes(b"replacement")
+        return encoded
+
+    def forbidden(*_args):
+        pytest.fail("replacement directory reached named-file probes")
+
+    if replace_directory:
+        monkeypatch.setattr(workspace_reclamation, "_encode_directory", encode)
+        monkeypatch.setattr(workspace_reclamation, "_files", forbidden)
+        with pytest.raises(InvalidWorkspaceFiles, match="directory was replaced"):
+            reclaim(
+                path,
+                names=("data",),
+                octet_budget=3,
+                receiver=receiver,
+                expected_directory_identity=(held.st_dev, held.st_ino),
+            )
+        assert not receiver.received
+        receiver.close()
+        assert receiver.received
+        assert target.read_bytes() == b"replacement"
+        assert (tmp_path / "original" / "data").read_bytes() == b"original"
+    else:
+        result = reclaim(
+            path,
+            names=("data",),
+            octet_budget=3,
+            receiver=receiver,
+            expected_directory_identity=(held.st_dev, held.st_ino),
+        )
+        assert result.removed_octets == 3 and receiver.received
+        assert target.read_bytes() == b"origi"
+
+
 @pytest.mark.parametrize("code", [errno.ENOSPC, errno.EDQUOT])
 def test_uncertain_unlink_sync_reconciles_actual_absence_without_reconstruction(
     tmp_path, monkeypatch, code, retained_file_receivers
