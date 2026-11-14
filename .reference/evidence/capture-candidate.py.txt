@@ -1,0 +1,367 @@
+"""Capture three actual tiny caller turns and existing observer receiving events."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib
+import json
+import os
+import platform
+import subprocess
+import sys
+import tempfile
+import traceback
+from collections import Counter
+from contextlib import ExitStack, closing, contextmanager
+from pathlib import Path
+from types import ModuleType
+from unittest.mock import patch
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--checkout", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--expected-source", required=True)
+    parser.add_argument("--uv", type=Path, required=True)
+    parser.add_argument("--extended", action="store_true")
+    args = parser.parse_args()
+    checkout, output = args.checkout.resolve(), args.output.resolve()
+    assert not output.is_relative_to(checkout)
+    output.mkdir(parents=True, exist_ok=False)
+    sys.path.insert(0, str(checkout))
+
+    from riverhog_canonical_json import canonical_json_bytes
+    from scripts.validation_identity import source_identity
+
+    def write(name, value):
+        (output / name).write_bytes(canonical_json_bytes(value))
+
+    def digest(value):
+        return hashlib.sha256(canonical_json_bytes(value)).hexdigest()
+
+    report = {
+        "format": "riverhog-observer-lifetime-capture/v1",
+        "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "source": source_identity(checkout),
+        "conditions": {
+            "python": platform.python_version(),
+            "executable": sys.executable,
+            "platform": platform.platform(),
+            "uv": subprocess.check_output([str(args.uv), "--version"], text=True).strip(),
+            "timing_run_id": os.environ.get("RIVERHOG_CI_RUN_ID"),
+            "timing_lane": os.environ.get("RIVERHOG_CI_LANE"),
+            "caller_turns": 3,
+            "caller_unit_batch_limit": 64 if args.extended else 4,
+            "include_descendants": args.extended,
+            "text_octets": 0,
+            "unrelated_rows": 0,
+            "fast_forward_calls": 0,
+            "case_generators": 0,
+            "capture_hooks": "Plain references and event metadata; no added hashing, JSON or tracing during observation.",
+            "elapsed_scope": "Whole actual capture, including product work, primitive instrumentation and observer evidence handling.",
+            "timing_target": None,
+        },
+        "cleanup": {"fixture_created": False, "fixture_removed": False},
+        "state": "running",
+    }
+    write("run.json", report)
+    events, caller_roots, storages = [], [], []
+    turn, scratch, status = 0, None, 1
+    original_profile, original_trace = sys.getprofile(), sys.gettrace()
+    try:
+        assert report["source"] == {"source_sha": args.expected_source, "source_clean": True}
+        assert platform.python_version() == "3.12.3"
+        assert report["conditions"]["uv"].split()[:2] == ["uv", "0.11.24"]
+
+        import riverhog_growth_contracts as growth
+        from tests.support import growth_batch
+        from tests.unit import test_upload_journal_service_caller_growth as callers
+        from tests.unit import test_upload_journal_service_coordination_growth as coordination
+        from tests.unit import test_upload_journal_service_unit_growth as units
+
+        provenance_tests = checkout / "packages/riverhog-provenance/tests"
+        sys.path.insert(0, str(provenance_tests))
+        lifecycle, session_tests = units.native.opening.native_helpers()
+        replay_tests = importlib.import_module("test_entry_replay_growth")
+        advance_tests = importlib.import_module("test_entry_replay_advance_growth")
+        preparation = importlib.import_module("test_preparation_growth")
+        root_admit = replay_tests.EntryReplay.admit
+        original_project = growth.project_bindings
+        original_compile = growth._projection_contexts
+        original_reader = growth.validate_execution_samples
+        original_observer = replay_tests.observe_replay
+        original_coordination_sample = coordination.sample
+        original_preparation_sample = preparation.sample
+        report["public_reader_sha256"] = hashlib.sha256(Path(growth.__file__).read_bytes()).hexdigest()
+        report["imports"] = {
+            module.__name__: str(Path(module.__file__).resolve())
+            for module in (
+                growth, growth_batch, callers, coordination, units, lifecycle, session_tests,
+                replay_tests, advance_tests, preparation,
+            )
+        }
+        assert all(Path(path).is_relative_to(checkout) for path in report["imports"].values())
+
+        def event(kind, **fields):
+            identity = len(events)
+            events.append({"event": identity, "turn": turn, "kind": kind, **fields})
+            return identity
+
+        def project_wrapper(module_name):
+            def project(bindings):
+                identity = event("projection-begin", module=module_name, bindings=tuple(bindings))
+                result = original_project(bindings)
+                event(
+                    "projection-return", original_event=identity,
+                    declaration_ids=tuple(result["declarations"]),
+                )
+                return result
+            return project
+
+        def compile_projection(projection):
+            identity = event("compilation-begin")
+            result = original_compile(projection)
+            event("compilation-return", original_event=identity, declaration_ids=tuple(result))
+            return result
+
+        def reader_wrapper(module_name):
+            def read(projection, identity, samples):
+                invocation = event(
+                    "validation-begin", module=module_name, declaration=identity,
+                    sample_refs=tuple(samples),
+                )
+                result = original_reader(projection, identity, samples)
+                event("validation-return", original_event=invocation)
+                return result
+            return read
+
+        def observer_wrapper(module_name):
+            @contextmanager
+            def observe(*values, **options):
+                operation = options.get("root_operation", root_admit)
+                identity = event(
+                    "observer-construction-begin", module=module_name, operation_ref=operation,
+                    dimensions_ref=values[2],
+                )
+                with original_observer(*values, **options) as (frame, complete):
+                    event("observer-ready", original_event=identity)
+
+                    def completed(observed, primitive):
+                        invocation = event("observer-completion-begin", original_event=identity)
+                        result = complete(observed, primitive)
+                        event(
+                            "observer-completion-return", original_event=invocation,
+                            observer_event=identity, sample_ref=result,
+                        )
+                        return result
+
+                    try:
+                        yield frame, completed
+                    finally:
+                        event("observer-body-exit", original_event=identity)
+                event("observer-context-closed", original_event=identity)
+            return observe
+
+        def sample_wrapper(module_name, original):
+            def sample(operation, *values, **options):
+                identity = event(
+                    "emission-begin", module=module_name, operation_ref=operation,
+                    admitted_to_batch=options.get("batch") is not None,
+                )
+                result = original(operation, *values, **options)
+                event("emission-return", original_event=identity, sample_ref=result)
+                return result
+            return sample
+
+        modules = []
+        for module in tuple(sys.modules.values()):
+            if not isinstance(module, ModuleType):
+                continue
+            filename = getattr(module, "__file__", None)
+            if filename and Path(filename).resolve().is_relative_to(checkout):
+                if all(module is not current for current in modules):
+                    modules.append(module)
+        aliases = []
+        for module in modules:
+            for name, original, factory in (
+                ("project_bindings", original_project, project_wrapper),
+                ("validate_execution_samples", original_reader, reader_wrapper),
+                ("observe_replay", original_observer, observer_wrapper),
+            ):
+                if getattr(module, name, None) is original:
+                    aliases.append((module, name, original, factory(module.__name__)))
+            for original in (original_coordination_sample, original_preparation_sample):
+                if getattr(module, "sample", None) is original:
+                    aliases.append((module, "sample", original, sample_wrapper(module.__name__, original)))
+        report["observed_aliases"] = [module.__name__ + "." + name for module, name, _, _ in aliases]
+        write("run.json", report)
+        print("begin exactly three real caller turns", flush=True)
+
+        with tempfile.TemporaryDirectory(prefix="observer-lifetime-") as temporary:
+            scratch = Path(temporary)
+            assert not scratch.is_relative_to(checkout)
+            report["cleanup"].update(fixture_created=True, fixture_path=str(scratch))
+            with ExitStack() as patches:
+                for module, name, original, replacement in aliases:
+                    patches.enter_context(patch.object(module, name, replacement))
+                patches.enter_context(patch.object(growth, "_projection_contexts", compile_projection))
+                cases = units.real_case(scratch / "case", text_octets=0, unrelated=0)
+                with closing(cases):
+                    case, current = next(cases)
+                    with growth_batch.SampleBatch(
+                        (callers.ROOT, units.ROOT), limit=64 if args.extended else 4,
+                        **({"include_descendants": True} if args.extended else {}),
+                    ) as batch:
+                        recorder = callers.Recorder(case, current, batch=batch)
+                        for turn in range(1, 4):
+                            identity = event("caller-turn-begin")
+                            result, sample = recorder.measure()
+                            assert type(result) is bool
+                            assert sample["metrics"]["stamp_calls"] == 2
+                            assert sample["metrics"]["unit_calls"] == 1
+                            assert len(sample["delegates"]["unit"]) == 1
+                            assert case.engine.pool.checkedout() == 0
+                            caller_roots.append(sample)
+                            event("caller-turn-return", original_event=identity, progressed=result, sample_ref=sample)
+                            for slot in current._journal_validation_owner._slots.values():
+                                if slot.session is not None:
+                                    storage = slot.session._store._storage
+                                    if all(storage is not prior for prior in storages):
+                                        storages.append(storage)
+                    assert batch.validated_samples == (122 if args.extended else 6)
+                    assert batch.validation_calls > 0
+                    if not args.extended:
+                        assert batch.validation_calls == 4
+                    assert batch.state == "closed"
+                    assert not any((batch._pending, batch._source, batch._roots, batch._digests))
+                    assert batch._projection_bytes is None
+                    assert not getattr(batch, "_sources", {})
+                    assert recorder.active is False and recorder.units.context is None
+                    assert recorder.units.native_recorder is not None
+                    assert not recorder.units.native_recorder.work_contexts
+                    assert case.engine.pool.checkedout() == 0
+                    report["fixture"] = {
+                        "source_octets": len(case.raw),
+                        "caller_turns": len(caller_roots),
+                        "native_owner_calls": recorder.units.native_calls,
+                        "batch_validated_samples": batch.validated_samples,
+                        "batch_validation_calls": batch.validation_calls,
+                        "batch_scope_closed_and_released": True,
+                    }
+                report["cleanup"]["fixture_generator_closed"] = cases.gi_frame is None
+                report["cleanup"]["checked_out_after_close"] = case.engine.pool.checkedout()
+                report["cleanup"]["native_storage_closed"] = [bool(storage._closed) for storage in storages]
+                assert report["cleanup"]["fixture_generator_closed"]
+                assert report["cleanup"]["checked_out_after_close"] == 0
+                assert all(report["cleanup"]["native_storage_closed"])
+            for module, name, original, _ in aliases:
+                assert getattr(module, name) is original
+            assert growth._projection_contexts is original_compile
+            assert sys.getprofile() is original_profile and sys.gettrace() is original_trace
+        report["cleanup"]["fixture_removed"] = not scratch.exists()
+        assert report["cleanup"]["fixture_removed"]
+        print("original fixture and observer scopes closed; serializing retained references", flush=True)
+
+        retained_samples, sample_tokens = [], {}
+
+        def token(sample):
+            key = id(sample)
+            if key not in sample_tokens:
+                sample_tokens[key] = len(retained_samples)
+                retained_samples.append(sample)
+            return sample_tokens[key]
+
+        def operation_data(operation):
+            binding = growth.growth_binding(operation)
+            return {
+                "operation": operation.__module__ + "." + operation.__qualname__,
+                "declaration": binding.declaration.id,
+            }
+
+        serialized_events = []
+        for record in events:
+            row = dict(record)
+            if "declaration_ids" in row:
+                row["declaration_ids"] = list(row["declaration_ids"])
+            if "bindings" in row:
+                row["source_operations"] = [operation_data(binding.operation) for binding in row.pop("bindings")]
+            if "operation_ref" in row:
+                row["source_operation"] = operation_data(row.pop("operation_ref"))
+            if "dimensions_ref" in row:
+                row["dimensions"] = row.pop("dimensions_ref")
+            if "sample_ref" in row:
+                row["sample"] = token(row.pop("sample_ref"))
+            if "sample_refs" in row:
+                row["samples"] = [token(sample) for sample in row.pop("sample_refs")]
+            serialized_events.append(row)
+
+        def walk(sample):
+            yield sample
+            for rows in sample["delegates"].values():
+                for child in rows:
+                    yield from walk(child)
+
+        samples = [
+            {"sample": index, "sha256": digest(sample), "nodes": sum(1 for _ in walk(sample)), "value": sample}
+            for index, sample in enumerate(retained_samples)
+        ]
+        validations = [row for row in serialized_events if row["kind"] == "validation-begin"]
+        returned = {row["original_event"] for row in serialized_events if row["kind"] == "validation-return"}
+        assert returned == {row["event"] for row in validations}
+        constructions = [row for row in serialized_events if row["kind"] == "observer-construction-begin"]
+        closed = {row["original_event"] for row in serialized_events if row["kind"] == "observer-context-closed"}
+        assert closed == {row["event"] for row in constructions}
+        node_counts = Counter(
+            node["declaration"]
+            for row in validations
+            for index in row["samples"]
+            for node in walk(retained_samples[index])
+        )
+        caller_node_counts = Counter(node["declaration"] for root in caller_roots for node in walk(root))
+        report["summary"] = {
+            "events": len(serialized_events),
+            "retained_root_objects": len(retained_samples),
+            "public_validation_calls": len(validations),
+            "public_validation_root_occurrences": sum(len(row["samples"]) for row in validations),
+            "public_validation_nested_node_occurrences": sum(node_counts.values()),
+            "validation_nodes_by_declaration": dict(node_counts),
+            "observer_constructions": len(constructions),
+            "observer_constructions_by_declaration": dict(Counter(row["source_operation"]["declaration"] for row in constructions)),
+            "projection_calls": sum(row["kind"] == "projection-begin" for row in serialized_events),
+            "compilation_calls": sum(row["kind"] == "compilation-begin" for row in serialized_events),
+            "caller_roots": [token(root) for root in caller_roots],
+            "caller_nested_node_occurrences": sum(caller_node_counts.values()),
+            "caller_nodes_by_declaration": dict(caller_node_counts),
+        }
+        assert len(retained_samples) == len(samples)
+        assert len(retained_samples) == 122
+        assert report["summary"]["public_validation_root_occurrences"] == 122
+        assert report["summary"]["public_validation_nested_node_occurrences"] == 1078
+        write("samples.json", {"format": "riverhog-observer-literal-samples/v1", "samples": samples})
+        write("events.json", {"format": "riverhog-observer-lifetime-events/v1", "events": serialized_events})
+        report["samples_sha256"] = hashlib.sha256((output / "samples.json").read_bytes()).hexdigest()
+        report["events_sha256"] = hashlib.sha256((output / "events.json").read_bytes()).hexdigest()
+        report["primitive_observation_hooks_restored"] = True
+        report["state"] = "completed"
+        status = 0
+    except BaseException as error:
+        report["state"] = "failed"
+        report["error"] = {"type": type(error).__name__, "message": str(error)}
+        traceback.print_exc()
+    finally:
+        if scratch is not None:
+            report["cleanup"]["fixture_removed"] = not scratch.exists()
+        report["source_end"] = source_identity(checkout)
+        if report["source_end"] != report["source"]:
+            report["state"] = "source-changed"
+            status = 1
+        report["exit_status"] = status
+        write("run.json", report)
+        print("original child final status", status, "cleanup", json.dumps(report["cleanup"], sort_keys=True), flush=True)
+    return status
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

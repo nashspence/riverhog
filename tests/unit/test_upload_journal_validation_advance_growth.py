@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import importlib
 import json
 import os
@@ -13,14 +12,9 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_core.services import upload_journal_validation_owner as owner
-from riverhog_growth_contracts import (
-    growth_binding,
-    project_bindings,
-    validate_execution_samples,
-)
+from riverhog_growth_contracts import growth_binding, validate_execution_samples
 from riverhog_provenance._entry_replay import EntryReplay
 from riverhog_provenance.journal_store import JournalStore
 from sqlalchemy import select
@@ -176,8 +170,8 @@ class Lock(release.Lock):
 
 
 class Recorder(opening.Recorder):
-    def __init__(self, case):
-        super().__init__(case)
+    def __init__(self, case, *, batch=None):
+        super().__init__(case, batch=batch)
         self.helpers = opening.native_helpers()
         self.lifecycle, self.native_tests = self.helpers
         self.pool_held = False
@@ -237,20 +231,7 @@ class Recorder(opening.Recorder):
             reads.SOURCE_EXACT,
             reads.CAPTURE,
         }
-        for function in self.functions:
-            binding = growth_binding(function)
-            self.bindings[function] = binding
-            projection = project_bindings((binding,))
-            self.projections[function] = projection
-            self.digests.update(
-                {
-                    identity: hashlib.sha256(canonical_json_bytes(value)).hexdigest()
-                    for identity, value in projection["declarations"].items()
-                }
-            )
-            for bound in binding.declaration.bounds:
-                self.full.setdefault(bound.metric, 0)
-                self.application.setdefault(bound.metric, 0)
+        self.prepare_sources(self.functions)
         self.full.setdefault("slot_lock_releases", 0)
 
     def add(self, metric, amount=1):
@@ -476,6 +457,16 @@ class Recorder(opening.Recorder):
             self.records[operation].append(sample)
 
     def validate(self, operation, sample):
+        if self.batch is not None:
+            try:
+                with self.paused():
+                    self.batch.receive(operation, sample)
+            except ValueError as error:
+                self.failures.append(
+                    {"scope": "growth-batch-receiving", "error_class": type(error).__name__}
+                )
+                raise EvidenceFailure("growth batch receiving failed") from error
+            return
         try:
             validate_execution_samples(
                 self.projections[operation], growth_binding(operation).declaration.id, [sample]
@@ -673,6 +664,7 @@ class Recorder(opening.Recorder):
                 failed_operations=(EntryReplay.advance, JournalStore._check_entry_recording)
                 if self.recording_error is not None
                 else (),
+                batch=self.batch,
             ) as (
                 frame,
                 complete,

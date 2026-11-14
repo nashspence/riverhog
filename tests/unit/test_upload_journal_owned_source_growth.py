@@ -151,6 +151,7 @@ class Recorder:
         application=APPLICATION,
         locations=None,
         payload_operations=None,
+        batch=None,
     ):
         self.application_functions = application
         self.locations = {
@@ -164,16 +165,27 @@ class Recorder:
         }
         self.payload_operations = payload_operations or {}
         self.operation, self.inputs = operation, inputs
-        self.bindings = {function: growth_binding(function) for function in functions}
-        self.projection = project_bindings((self.bindings[operation],))
-        self.digests = {
-            identity: hashlib.sha256(canonical_json_bytes(value)).hexdigest()
-            for identity, value in self.projection["declarations"].items()
-        }
+        self.batch = batch
+        self.digests = {}
+        self.bindings = {function: self.source_binding(function) for function in functions}
+        self.projection = None
+        if batch is None:
+            self.projection = project_bindings((self.bindings[operation],))
+            self.digests = {
+                identity: hashlib.sha256(canonical_json_bytes(value)).hexdigest()
+                for identity, value in self.projection["declarations"].items()
+            }
         self.full = {name: 0 for name in BASE_METRICS}
         self.application = {name: 0 for name in BASE_METRICS}
         self.active, self.executing_application = False, False
         self.stack, self.native, self.cursors, self.statements = [], [], [], []
+
+    def source_binding(self, operation):
+        if self.batch is None:
+            return growth_binding(operation)
+        binding, digest = self.batch.source(operation)
+        self.digests[binding.declaration.id] = digest
+        return binding
 
     def invoke(self, function, action):
         binding = self.bindings[function]

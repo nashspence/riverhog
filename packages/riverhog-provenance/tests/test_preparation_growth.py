@@ -112,7 +112,9 @@ class Recorder:
             yield
 
 
-def sample(operation, dimensions, recorder):
+def sample(operation, dimensions, recorder, *, batch=None):
+    if batch is not None:
+        return batch.sample(operation, dimensions, recorder.metrics)
     binding = growth_binding(operation)
     projection = project_bindings((binding,))
     result = {

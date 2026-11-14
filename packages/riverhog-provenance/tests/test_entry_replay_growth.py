@@ -261,14 +261,20 @@ def observe_replay(
     inclusive_operation=None,
     operation_aliases=None,
     failed_operations=(),
+    batch=None,
 ):
-    binding = growth_binding(root_operation)
-    projection = project_bindings((binding,))
-    sample_hash = hashlib.sha256
-    digests = {
-        identity: sample_hash(canonical_json_bytes(value)).hexdigest()
-        for identity, value in projection["declarations"].items()
-    }
+    def get_binding(operation):
+        return growth_binding(operation) if batch is None else batch.source(operation)[0]
+
+    binding = get_binding(root_operation)
+    digests = {}
+    if batch is None:
+        projection = project_bindings((binding,))
+        sample_hash = hashlib.sha256
+        digests = {
+            identity: sample_hash(canonical_json_bytes(value)).hexdigest()
+            for identity, value in projection["declarations"].items()
+        }
 
     def frame(owner, inputs):
         return {
@@ -284,7 +290,7 @@ def observe_replay(
         for _name, operation in parent.delegates:
             if operation not in operations:
                 operations.add(operation)
-                pending.append(growth_binding(operation))
+                pending.append(get_binding(operation))
 
     def complete(observed, primitive):
         metrics = dict(primitive)
@@ -319,7 +325,9 @@ def observe_replay(
         declaration = observed["binding"].declaration
         return {
             "declaration": declaration.id,
-            "declaration_sha256": digests[declaration.id],
+            "declaration_sha256": digests[declaration.id]
+            if batch is None
+            else batch.source(observed["binding"].operation)[1],
             "dimensions": observed["dimensions"],
             "metrics": {bound.metric: metrics[bound.metric] for bound in declaration.bounds},
             "delegates": observed["delegates"],
@@ -429,7 +437,7 @@ def observe_replay(
             else:
                 assert args[0].db is db
                 inputs = {}
-                for item in growth_binding(operation).declaration.dimensions:
+                for item in get_binding(operation).declaration.dimensions:
                     ledger_rows = (
                         operation.__qualname__.startswith("ValidationLedger.")
                         and item.name == "retained_rows"
@@ -446,7 +454,7 @@ def observe_replay(
             if len(tags) != 1 and delegate_selector is not None:
                 tags = [delegate_selector(parent, operation, args, kwargs, tags)]
             assert len(tags) == 1
-            observed = frame(growth_binding(operation), inputs)
+            observed = frame(get_binding(operation), inputs)
             before, changes, start = dict(db.metrics), db.total_changes, len(db.statements)
             first_rotation = rotations[0]
             stack.append(observed)

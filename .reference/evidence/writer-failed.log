@@ -1,0 +1,24 @@
+begin exactly three real caller turns
+original fixture and observer scopes closed; serializing retained references
+Traceback (most recent call last):
+  File "/workspace/scratch/21c38f9cc56d/observer_lifetime_capture.py", line 329, in main
+    write("events.json", {"format": "riverhog-observer-lifetime-events/v1", "events": serialized_events})
+  File "/workspace/scratch/21c38f9cc56d/observer_lifetime_capture.py", line 38, in write
+    (output / name).write_bytes(canonical_json_bytes(value))
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py", line 131, in canonical_json_bytes
+    prepared, _ = _prepare(value, slow_containers)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py", line 84, in _prepare
+    prepared, child_fast = _prepare(item, slow_containers)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py", line 72, in _prepare
+    prepared, child_fast = _prepare(item, slow_containers)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py", line 84, in _prepare
+    prepared, child_fast = _prepare(item, slow_containers)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py", line 90, in _prepare
+    raise CanonicalJsonError("shape", "identity input must contain JSON values")
+riverhog_canonical_json.CanonicalJsonError: shape: identity input must contain JSON values
+original child final status 1 cleanup {"checked_out_after_close": 0, "fixture_created": true, "fixture_generator_closed": true, "fixture_path": "/workspace/scratch/21c38f9cc56d/observer-lifetime-tmp/observer-lifetime-imeacgtv", "fixture_removed": true, "native_storage_closed": [true]}

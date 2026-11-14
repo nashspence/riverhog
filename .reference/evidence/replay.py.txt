@@ -1,0 +1,654 @@
+"""Replay retained observer work, with no new product turns or inferred metrics.
+
+The two routes run on one exact clean proposal. The legacy route reproduces
+the adopted receiving policy, not the performance of the original source.
+The original three-turn capture remains separate baseline evidence.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib
+import inspect
+import json
+import os
+import platform
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import traceback
+from collections import Counter, defaultdict
+from contextlib import ExitStack, contextmanager, nullcontext
+from copy import deepcopy
+from functools import wraps
+from pathlib import Path
+from types import ModuleType, SimpleNamespace
+from unittest.mock import patch
+
+
+CAPTURE_SOURCE = "6e80898a793532beff7a1718effc0618e2472d58"
+SAMPLES_SHA256 = "a9e69163ba9aac6c5cefd4f582c609997217421528840694449f24007f6c2b20"
+EVENTS_SHA256 = "5e559ea611938996d6b47df6588e4a9f2fb7c5f5623a0942b13cf1f144333a25"
+READER_SHA256 = "1adc9766c8d0c97cf97ce926695e6c38dc7d50458725e8947b57bfc94c90e376"
+CATEGORIES = (
+    "declaration_projection_and_compilation",
+    "source_digest_and_sample_seal_verification",
+    "sample_bounds_and_composition_validation",
+    "primitive_instrumentation_setup_and_teardown",
+    "observer_orchestration_and_replay_dispatch",
+)
+
+
+class ExclusiveTimers:
+    """Attribute each instrumented interval to only the top stack category."""
+
+    def __init__(self):
+        self.totals = {name: [0, 0] for name in CATEGORIES}
+        self.stack = []
+        self.previous = None
+        self.wall_clock, self.cpu_clock = time.perf_counter_ns, time.process_time_ns
+
+    def tick(self):
+        current = self.wall_clock(), self.cpu_clock()
+        if self.previous is not None and self.stack:
+            total = self.totals[self.stack[-1]]
+            total[0] += current[0] - self.previous[0]
+            total[1] += current[1] - self.previous[1]
+        self.previous = current
+
+    @contextmanager
+    def scope(self, name):
+        self.tick()
+        self.stack.append(name)
+        try:
+            yield
+        finally:
+            self.tick()
+            assert self.stack.pop() == name
+
+    def report(self):
+        assert not self.stack
+        return {
+            name: {"wall_ns": value[0], "cpu_ns": value[1]}
+            for name, value in self.totals.items()
+        }
+
+
+def walk(sample):
+    yield sample
+    for children in sample["delegates"].values():
+        for child in children:
+            yield from walk(child)
+
+
+def operation_name(operation):
+    return operation.__module__ + "." + operation.__qualname__
+
+
+def build_actions(events):
+    """Collapse nested capture events already performed by real helper calls."""
+    assert [event["event"] for event in events] == list(range(len(events)))
+    ends = {
+        (event["kind"], event["original_event"]): event
+        for event in events
+        if "original_event" in event
+    }
+    actions, constructor_projects = [], []
+    position = 0
+    native_prefix = "tests.unit.test_upload_journal_"
+    native_modules = {
+        native_prefix + "owned_source_growth",
+        native_prefix + "validation_open_growth",
+        native_prefix + "validation_advance_growth",
+    }
+    while position < len(events):
+        event = events[position]
+        kind = event["kind"]
+        if kind == "projection-begin" and event["module"] == native_prefix + "owned_source_growth":
+            assert not constructor_projects
+            start = position
+            while position < len(events):
+                current = events[position]
+                if current["kind"] != "projection-begin" or current["module"] not in native_modules:
+                    break
+                constructor_projects.append(current)
+                position = ends["projection-return", position]["event"] + 1
+            actions.append({"kind": "native-constructor", "event": start})
+            continue
+        if kind == "emission-begin":
+            end = ends["emission-return", position]
+            actions.append({**event, "sample": end["sample"]})
+            position = end["event"] + 1
+            continue
+        if kind == "observer-construction-begin":
+            actions.append(event)
+            position = ends["observer-ready", position]["event"] + 1
+            continue
+        if kind == "observer-context-closed":
+            actions.append(event)
+        elif kind == "observer-completion-begin":
+            end = ends["observer-completion-return", position]
+            actions.append({**event, "sample": end["sample"]})
+            position = end["event"] + 1
+            continue
+        elif kind == "validation-begin":
+            if event["module"] != "tests.support.growth_batch":
+                assert event["module"] in native_modules, event
+                actions.append(event)
+            position = ends["validation-return", position]["event"] + 1
+            continue
+        elif kind == "projection-begin":
+            if event["module"] == "tests.support.growth_batch":
+                assert position == 0
+            else:
+                assert event["module"] == native_prefix + "validation_open_growth", event
+                actions.append({**event, "kind": "opening-projection"})
+            position = ends["projection-return", position]["event"] + 1
+            continue
+        else:
+            assert kind in {"caller-turn-begin", "caller-turn-return", "observer-body-exit"}, event
+        position += 1
+    assert len(constructor_projects) == 46
+    assert Counter(row["kind"] for row in actions) == {
+        "native-constructor": 1,
+        "emission-begin": 16,
+        "observer-construction-begin": 8,
+        "observer-context-closed": 8,
+        "observer-completion-begin": 8,
+        "validation-begin": 106,
+        "opening-projection": 1,
+    }
+    return actions, constructor_projects
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--checkout", type=Path, required=True)
+    parser.add_argument("--input", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--expected-source", required=True)
+    parser.add_argument("--uv", type=Path, required=True)
+    args = parser.parse_args()
+    checkout, output, inputs = args.checkout.resolve(), args.output.resolve(), args.input.resolve()
+    assert not output.is_relative_to(checkout)
+    output.mkdir(parents=True, exist_ok=False)
+    shutil.copyfile(__file__, output / "replay-script.py")
+    sys.path.insert(0, str(checkout))
+    sys.path.insert(0, str(checkout / "packages/riverhog-provenance/tests"))
+
+    from riverhog_canonical_json import canonical_json_bytes
+    from scripts.validation_identity import source_identity
+
+    raw_hash = hashlib.sha256
+
+    def write(name, value):
+        (output / name).write_bytes(canonical_json_bytes(value))
+
+    report = {
+        "format": "riverhog-observer-lifetime-helper-replay/v1",
+        "script_sha256": raw_hash(Path(__file__).read_bytes()).hexdigest(),
+        "source": source_identity(checkout),
+        "capture_source_sha": CAPTURE_SOURCE,
+        "conditions": {
+            "python": platform.python_version(),
+            "executable": sys.executable,
+            "platform": platform.platform(),
+            "uv": subprocess.check_output([str(args.uv), "--version"], text=True).strip(),
+            "timing_run_id": os.environ.get("RIVERHOG_CI_RUN_ID"),
+            "timing_lane": os.environ.get("RIVERHOG_CI_LANE"),
+            "fresh_product_fixture": False,
+            "fresh_product_turns": 0,
+            "retained_actual_turns": 3,
+            "elapsed_observations_per_route": 1,
+            "instrumented_passes_per_route": 1,
+            "timing_target": None,
+            "legacy_limit": 4,
+            "extended_limit": 64,
+            "comparison": "Legacy routing on proposal versus extended routing on the same proposal.",
+            "workload": "Literal retained samples and event order from three actual tiny caller turns; no product bodies are called.",
+            "scope": "Owner admission, actual Native metadata constructor, actual observer setup/completion, Core emitters, former validation sites, seals, all flushes, and owner release.",
+            "excluded": "Imports, input decoding/copying, canonical equality checks, report serialization, and product execution.",
+            "instrumented_categories": "Exclusive stack timers only in the diagnostic pass; the residual category includes observer bookkeeping, dispatch, and measurement overhead.",
+            "primitive_instrumentation": "Actual observe_replay wrappers are installed and restored with recording=False; literal primitive observations are not remeasured.",
+            "pause_scope": "Recorder.paused runs with empty dbs and native_recorder=None; populated product pause/resource accounting is not reproduced.",
+            "ordering": ["instrumented:legacy", "instrumented:extended", "elapsed:legacy", "elapsed:extended"],
+        },
+        "measurements": {},
+        "cleanup": {"profile_scratch_created": False, "profile_scratch_removed": False},
+        "state": "running",
+    }
+    write("run.json", report)
+    status, scratch = 1, None
+    try:
+        assert report["source"] == {"source_sha": args.expected_source, "source_clean": True}
+        assert platform.python_version() == "3.12.3"
+        assert report["conditions"]["uv"].split()[:2] == ["uv", "0.11.24"]
+        assert os.environ.get("TMPDIR")
+        assert not Path(os.environ["TMPDIR"]).resolve().is_relative_to(checkout)
+
+        import riverhog_canonical_json as canonical
+        import riverhog_growth_contracts as growth
+        from tests.support import growth_batch
+        from tests.unit import test_upload_journal_service_caller_growth as callers
+        from tests.unit import test_upload_journal_service_coordination_growth as coordination
+        from tests.unit import test_upload_journal_service_unit_growth as units
+
+        native = units.native
+        lifecycle, session_tests = native.opening.native_helpers()
+        replay = importlib.import_module("test_entry_replay_growth")
+        preparation = importlib.import_module("test_preparation_growth")
+        advance = importlib.import_module("test_entry_replay_advance_growth")
+        modules = []
+        for module in tuple(sys.modules.values()):
+            if not isinstance(module, ModuleType):
+                continue
+            filename = getattr(module, "__file__", None)
+            if filename and Path(filename).resolve().is_relative_to(checkout):
+                if all(module is not prior for prior in modules):
+                    modules.append(module)
+        report["imports"] = {
+            module.__name__: str(Path(module.__file__).resolve())
+            for module in (canonical, growth, growth_batch, callers, coordination, units,
+                           native, lifecycle, session_tests, replay, preparation, advance)
+        }
+        assert all(Path(path).is_relative_to(checkout) for path in report["imports"].values())
+        report["public_reader_sha256"] = raw_hash(Path(growth.__file__).read_bytes()).hexdigest()
+        assert report["public_reader_sha256"] == READER_SHA256
+
+        samples_bytes, events_bytes = (inputs / "samples.json").read_bytes(), (inputs / "events.json").read_bytes()
+        assert raw_hash(samples_bytes).hexdigest() == SAMPLES_SHA256
+        assert raw_hash(events_bytes).hexdigest() == EVENTS_SHA256
+        sample_document, event_document = json.loads(samples_bytes), json.loads(events_bytes)
+        assert canonical_json_bytes(sample_document) == samples_bytes
+        assert canonical_json_bytes(event_document) == events_bytes
+        assert sample_document["format"] == "riverhog-observer-literal-samples/v1"
+        assert event_document["format"] == "riverhog-observer-lifetime-events/v1"
+        sample_rows, events = sample_document["samples"], event_document["events"]
+        assert [row["sample"] for row in sample_rows] == list(range(122))
+        expected_bytes = [canonical_json_bytes(row["value"]) for row in sample_rows]
+        for row, encoded in zip(sample_rows, expected_bytes, strict=True):
+            assert raw_hash(encoded).hexdigest() == row["sha256"]
+            assert sum(1 for _ in walk(row["value"])) == row["nodes"]
+        validation_events = [row for row in events if row["kind"] == "validation-begin"]
+        expected_tokens = Counter(token for row in validation_events for token in row["samples"])
+        assert expected_tokens == Counter(range(122))
+        expected_nodes = Counter(
+            node["declaration"]
+            for row in validation_events
+            for token in row["samples"]
+            for node in walk(sample_rows[token]["value"])
+        )
+        assert len(validation_events) == 120 and sum(expected_nodes.values()) == 1078
+        actions, constructor_projects = build_actions(events)
+        report["inputs"] = {
+            "samples_sha256": SAMPLES_SHA256,
+            "events_sha256": EVENTS_SHA256,
+            "event_count": len(events),
+            "action_count": len(actions),
+            "root_occurrences": 122,
+            "nested_node_occurrences": 1078,
+            "actual_observer_constructions": 8,
+            "literal_core_emissions": 16,
+            "native_constructor_projection_events": len(constructor_projects),
+            "roots_by_declaration": dict(Counter(row["value"]["declaration"] for row in sample_rows)),
+            "nodes_by_declaration": dict(expected_nodes),
+        }
+        write("action-plan.json", {"format": "riverhog-observer-replay-actions/v1", "actions": actions})
+
+        def closure(root_operations):
+            pending, found = list(root_operations), {}
+            while pending:
+                operation = pending.pop()
+                if operation in found:
+                    continue
+                binding = growth.growth_binding(operation)
+                found[operation] = binding
+                pending.extend(child for _, child in binding.delegates)
+            return found
+
+        bindings = closure((callers.ROOT, units.ROOT))
+        operation_ids = {binding.declaration.id: operation for operation, binding in bindings.items()}
+        operations = {operation_name(operation): operation for operation in bindings}
+        assert len(bindings) == len(operation_ids) == len(operations) == 100
+        for event in events:
+            descriptions = event.get("source_operations", [])
+            if "source_operation" in event:
+                descriptions = [*descriptions, event["source_operation"]]
+            for description in descriptions:
+                operation = operations[description["operation"]]
+                assert bindings[operation].declaration.id == description["declaration"]
+        owners, source_descriptors = {}, []
+        for operation in bindings:
+            owner = importlib.import_module(operation.__module__)
+            for part in operation.__qualname__.split(".")[:-1]:
+                owner = getattr(owner, part)
+            descriptor = inspect.getattr_static(owner, operation.__name__)
+            unwrapped = descriptor.__func__ if isinstance(descriptor, (classmethod, staticmethod)) else descriptor
+            assert unwrapped is operation, operation_name(operation)
+            owners[operation] = owner
+            source_descriptors.append((owner, operation.__name__, descriptor))
+        expected_projection_sources = [
+            tuple(operations[item["operation"]] for item in event["source_operations"])
+            for event in events if event["kind"] == "projection-begin"
+        ]
+
+        originals = {
+            "project": growth.project_bindings,
+            "compile": growth._projection_contexts,
+            "read": growth.validate_execution_samples,
+            "node": growth._validate_sample,
+            "units": growth._expression_unit,
+            "canonical": canonical.canonical_json_bytes,
+            "hash": hashlib.sha256,
+            "loads": json.loads,
+        }
+        original_profile, original_trace = sys.getprofile(), sys.gettrace()
+        primitive_identity = (hashlib.sha256, json.loads, json.dumps, replay.ContractCatalog.validate,
+                              replay.sha_owner._rotr)
+
+        @contextmanager
+        def instrument(timers, counts, reader_receipts, projection_receipts):
+            category_compile, category_source, category_samples = CATEGORIES[:3]
+
+            def categorized(category, function, counter=None):
+                @wraps(function)
+                def invoke(*values, **options):
+                    with timers.scope(category):
+                        if counter is not None:
+                            counts[counter] += 1
+                        return function(*values, **options)
+                return invoke
+
+            def project(bindings):
+                with timers.scope(category_compile):
+                    counts["projection_calls"] += 1
+                    projection_receipts.append(tuple(binding.operation for binding in bindings))
+                    return originals["project"](bindings)
+
+            def compile_projection(projection):
+                with timers.scope(category_compile):
+                    counts["compilation_calls"] += 1
+                    counts["compiled_declaration_occurrences"] += len(projection["declarations"])
+                    return originals["compile"](projection)
+
+            def read(projection, identity, samples):
+                with timers.scope(category_samples):
+                    counts["public_reader_calls"] += 1
+                    result = originals["read"](projection, identity, samples)
+                    reader_receipts.append((identity, len(projection["declarations"]), tuple(samples)))
+                    return result
+
+            def node(context, dimensions, metrics):
+                result = originals["node"](context, dimensions, metrics)
+                counts["validated_node_occurrences"] += 1
+                counts["node:" + context.declaration.id] += 1
+                return result
+
+            def expression_unit(*values, **options):
+                counts["expression_unit_traversals"] += 1
+                return originals["units"](*values, **options)
+
+            class TimedHash:
+                def __init__(self, value):
+                    self.value = value
+
+                def __getattr__(self, name):
+                    return getattr(self.value, name)
+
+                def digest(self):
+                    with timers.scope(category_source):
+                        return self.value.digest()
+
+                def hexdigest(self):
+                    with timers.scope(category_source):
+                        return self.value.hexdigest()
+
+                def update(self, data):
+                    with timers.scope(category_source):
+                        return self.value.update(data)
+
+                def copy(self):
+                    with timers.scope(category_source):
+                        return TimedHash(self.value.copy())
+
+            def hash_value(*values, **options):
+                with timers.scope(category_source):
+                    counts["sha256_constructions"] += 1
+                    return TimedHash(originals["hash"](*values, **options))
+
+            replacements = []
+            for module in modules:
+                for name, original, replacement in (
+                    ("project_bindings", originals["project"], project),
+                    ("validate_execution_samples", originals["read"], read),
+                    ("canonical_json_bytes", originals["canonical"],
+                     categorized(category_source, originals["canonical"], "canonical_encodings")),
+                ):
+                    if getattr(module, name, None) is original:
+                        replacements.append((module, name, original, replacement))
+            with ExitStack() as patches:
+                for module, name, _original, replacement in replacements:
+                    patches.enter_context(patch.object(module, name, replacement))
+                for name, replacement in (("_projection_contexts", compile_projection),
+                                          ("_validate_sample", node),
+                                          ("_expression_unit", expression_unit)):
+                    patches.enter_context(patch.object(growth, name, replacement))
+                for name, category, counter in (
+                    ("source", category_source, "source_lookups"),
+                    ("_current", category_source, "whole_source_checks"),
+                    ("_projection", category_compile, "private_subprojections"),
+                ):
+                    original = getattr(growth_batch.SampleBatch, name)
+                    patches.enter_context(patch.object(
+                        growth_batch.SampleBatch, name, categorized(category, original, counter)
+                    ))
+                patches.enter_context(patch.object(hashlib, "sha256", hash_value))
+                patches.enter_context(patch.object(json, "loads", categorized(
+                    category_compile, originals["loads"], "snapshot_decodings"
+                )))
+                yield
+            for module, name, original, _replacement in replacements:
+                assert getattr(module, name) is original
+            assert growth._projection_contexts is originals["compile"]
+            assert growth._validate_sample is originals["node"]
+            assert growth._expression_unit is originals["units"]
+            assert hashlib.sha256 is originals["hash"] and json.loads is originals["loads"]
+
+        def replay_route(route, diagnostic):
+            extended = route == "extended"
+            values = [deepcopy(row["value"]) for row in sample_rows]
+            prepared = deepcopy(actions)
+            for action in prepared:
+                if "source_operation" in action:
+                    action["operation"] = operations[action["source_operation"]["operation"]]
+                if action["kind"] == "observer-construction-begin":
+                    action["operation_owners"] = {
+                        operation: owners[operation] for operation in closure((action["operation"],))
+                    }
+            timers, counts, reader_receipts, projection_receipts = ExclusiveTimers(), Counter(), [], []
+            observer_states, generated, used_tokens, native_recorder = {}, [], [], None
+            dbs, opening_projection = [], None
+            owner = None
+            gate = instrument(timers, counts, reader_receipts, projection_receipts) if diagnostic else nullcontext()
+            scope = timers.scope if diagnostic else lambda _name: nullcontext()
+            with gate:
+                wall_start, cpu_start = time.perf_counter_ns(), time.process_time_ns()
+                with scope(CATEGORIES[-1]):
+                    owner = growth_batch.SampleBatch(
+                        (callers.ROOT, units.ROOT), limit=64 if extended else 4,
+                        include_descendants=extended,
+                    )
+                    with owner:
+                        with ExitStack() as observation_scopes:
+                            for action in prepared:
+                                kind = action["kind"]
+                                if kind == "native-constructor":
+                                    assert native_recorder is None
+                                    native_recorder = native.Recorder(None, batch=owner if extended else None)
+                                elif kind == "emission-begin":
+                                    token, operation = action["sample"], action["operation"]
+                                    literal = values[token]
+                                    selected_owner = owner if extended or action["admitted_to_batch"] else None
+                                    module = sys.modules[action["module"]]
+                                    if module is preparation:
+                                        result = module.sample(
+                                            operation, literal["dimensions"],
+                                            SimpleNamespace(metrics=literal["metrics"]), batch=selected_owner,
+                                        )
+                                    else:
+                                        result = module.sample(
+                                            operation, literal["dimensions"], literal["metrics"],
+                                            literal["delegates"], batch=selected_owner,
+                                        )
+                                    values[token] = result
+                                    generated.append(token)
+                                    used_tokens.append(token)
+                                elif kind == "observer-construction-begin":
+                                    db = SimpleNamespace(recording=False, metrics=Counter())
+                                    dbs.append(db)
+                                    with scope(CATEGORIES[3]):
+                                        manager = replay.observe_replay(
+                                            db, SimpleNamespace(), action["dimensions"],
+                                            root_operation=action["operation"],
+                                            operation_owners=action["operation_owners"],
+                                            batch=owner if extended else None,
+                                        )
+                                        child_scope = ExitStack()
+                                        observation_scopes.enter_context(child_scope)
+                                        frame, complete = child_scope.enter_context(manager)
+                                    observer_states[action["event"]] = (child_scope, frame, complete)
+                                elif kind == "observer-context-closed":
+                                    with scope(CATEGORIES[3]):
+                                        observer_states[action["original_event"]][0].close()
+                                elif kind == "observer-completion-begin":
+                                    _child_scope, frame, complete = observer_states[action["original_event"]]
+                                    token = action["sample"]
+                                    literal = values[token]
+                                    frame["delegates"] = literal["delegates"]
+                                    values[token] = complete(frame, literal["metrics"])
+                                    generated.append(token)
+                                elif kind == "opening-projection":
+                                    if not extended:
+                                        operation = operations[action["source_operations"][0]["operation"]]
+                                        opening_projection = native.opening.project_bindings(
+                                            (growth.growth_binding(operation),)
+                                        )
+                                elif kind == "validation-begin":
+                                    assert len(action["samples"]) == 1
+                                    token = action["samples"][0]
+                                    operation = operation_ids[action["declaration"]]
+                                    literal = values[token]
+                                    if action["module"] == native.opening.__name__ and not extended:
+                                        assert opening_projection is not None
+                                        native.opening.validate_execution_samples(
+                                            opening_projection, action["declaration"], [literal]
+                                        )
+                                        opening_projection = None
+                                    else:
+                                        native_recorder.validate(operation, literal)
+                                    used_tokens.append(token)
+                                else:
+                                    raise AssertionError(kind)
+                    assert not native_recorder.active and not native_recorder.work_contexts
+                    assert native_recorder.native_recorder is None and not native_recorder.dbs
+                    native_recorder = None
+                    observer_states.clear()
+                cpu_ns = time.process_time_ns() - cpu_start
+                wall_ns = time.perf_counter_ns() - wall_start
+            assert owner.state == "closed"
+            assert not any((owner._pending, owner._source, owner._roots, owner._digests, owner._sources))
+            assert owner._projection_bytes is None
+            assert owner.validated_samples == (122 if extended else 6)
+            if not extended:
+                assert owner.validation_calls == 4
+            assert len(dbs) == 8 and all(db.recording is False and not db.metrics for db in dbs)
+            assert len(generated) == 24 and len(set(generated)) == 24
+            assert Counter(used_tokens) == expected_tokens
+            assert [canonical_json_bytes(value) for value in values] == expected_bytes
+            assert primitive_identity == (
+                hashlib.sha256, json.loads, json.dumps, replay.ContractCatalog.validate, replay.sha_owner._rotr
+            )
+            assert sys.getprofile() is original_profile and sys.gettrace() is original_trace
+            assert all(inspect.getattr_static(module, name) is descriptor
+                       for module, name, descriptor in source_descriptors)
+            result = {
+                "scope": "legacy routing on proposal" if not extended else "extended routing on proposal",
+                "wall_ns": wall_ns,
+                "cpu_ns": cpu_ns,
+                "canonical_samples_equal": True,
+                "exact_original_site_root_occurrences": len(used_tokens),
+                "core_emissions": 16,
+                "native_observer_completions": 8,
+                "batch_validated_samples": owner.validated_samples,
+                "batch_public_reader_calls": owner.validation_calls,
+                "batch_closed_and_released": True,
+                "primitive_wrappers_restored": True,
+                "all_source_operation_descriptors_restored": True,
+                "new_product_operations": 0,
+                "active_primitive_observations": 0,
+            }
+            if diagnostic:
+                tokens = {id(value): token for token, value in enumerate(values)}
+                received = Counter(tokens[id(value)] for _declaration, _size, samples in reader_receipts for value in samples)
+                assert received == expected_tokens
+                checked_nodes = Counter({key.removeprefix("node:"): value for key, value in counts.items() if key.startswith("node:")})
+                assert checked_nodes == expected_nodes
+                assert counts["validated_node_occurrences"] == 1078
+                if not extended:
+                    assert counts["projection_calls"] == 66, counts
+                    assert counts["compilation_calls"] == 186, counts
+                    assert counts["public_reader_calls"] == 120, counts
+                    assert projection_receipts == expected_projection_sources
+                    result["projection_operation_order_matches_capture"] = True
+                else:
+                    assert projection_receipts == [tuple((callers.ROOT, units.ROOT))]
+                result["counts"] = {key: value for key, value in counts.items() if not key.startswith("node:")}
+                result["counts"]["public_reader_root_occurrences"] = sum(received.values())
+                result["nodes_by_declaration"] = dict(checked_nodes)
+                result["exclusive_categories"] = timers.report()
+                result["public_reader_receipts"] = [
+                    {"declaration": declaration, "projection_declarations": size,
+                     "samples": [tokens[id(value)] for value in samples]}
+                    for declaration, size, samples in reader_receipts
+                ]
+            return result
+
+        write("run.json", report)
+        with tempfile.TemporaryDirectory(prefix="observer-lifetime-replay-") as temporary:
+            scratch = Path(temporary)
+            assert not scratch.is_relative_to(checkout)
+            report["cleanup"].update(profile_scratch_created=True, profile_scratch_path=str(scratch))
+            for diagnostic in (True, False):
+                for route in ("legacy", "extended"):
+                    name = ("instrumented:" if diagnostic else "elapsed:") + route
+                    print("begin", name, "literal retained observer work; no product fixture", flush=True)
+                    result = replay_route(route, diagnostic)
+                    report["measurements"][name] = result
+                    write("run.json", report)
+                    print("completed", name, "wall_ns", result["wall_ns"], "cpu_ns", result["cpu_ns"], flush=True)
+        report["cleanup"]["profile_scratch_removed"] = not scratch.exists()
+        assert report["cleanup"]["profile_scratch_removed"]
+        report["state"] = "completed"
+        status = 0
+    except BaseException as error:
+        report["state"] = "failed"
+        report["error"] = {"type": type(error).__name__, "message": str(error)}
+        traceback.print_exc()
+    finally:
+        if scratch is not None:
+            report["cleanup"]["profile_scratch_removed"] = not scratch.exists()
+        report["source_end"] = source_identity(checkout)
+        if report["source_end"] != report["source"]:
+            report["state"] = "source-changed"
+            status = 1
+        report["exit_status"] = status
+        write("run.json", report)
+        print("original child final status", status, "cleanup", json.dumps(report["cleanup"], sort_keys=True), flush=True)
+    return status
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

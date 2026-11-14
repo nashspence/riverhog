@@ -76,29 +76,45 @@ def native_helpers():
 
 
 class Recorder(fences.Recorder):
-    def __init__(self, case):
-        super().__init__(fences.OWNED_CURRENT, {}, functions=FUNCTIONS, locations=LOCATIONS)
+    def __init__(self, case, *, batch=None):
+        super().__init__(
+            fences.OWNED_CURRENT, {}, functions=FUNCTIONS, locations=LOCATIONS, batch=batch
+        )
         self.case = case
         self.records = defaultdict(list)
         self.native_recorder = None
         self.inside_native = False
         self.projections = {}
-        for operation in (*FUNCTIONS, OPEN, NATIVE, PROGRESS):
-            binding = growth_binding(operation)
-            projection = project_bindings((binding,))
-            self.projections[operation] = projection
-            self.digests.update(
-                {
-                    identity: hashlib.sha256(canonical_json_bytes(value)).hexdigest()
-                    for identity, value in projection["declarations"].items()
-                }
-            )
-            for bound in binding.declaration.bounds:
-                self.full.setdefault(bound.metric, 0)
-                self.application.setdefault(bound.metric, 0)
+        self.prepare_sources((*FUNCTIONS, OPEN, NATIVE, PROGRESS))
         self.lease_values = defaultdict(int)
         self.lease_active = False
         self.own_path_probes = 0
+
+    def prepare_sources(self, operations):
+        for operation in operations:
+            binding = self.source_binding(operation)
+            self.bindings[operation] = binding
+            if self.batch is None:
+                projection = project_bindings((binding,))
+                self.projections[operation] = projection
+                self.digests.update(
+                    {
+                        identity: hashlib.sha256(canonical_json_bytes(value)).hexdigest()
+                        for identity, value in projection["declarations"].items()
+                    }
+                )
+            for bound in binding.declaration.bounds:
+                self.full.setdefault(bound.metric, 0)
+                self.application.setdefault(bound.metric, 0)
+
+    def validate(self, operation, sample):
+        if self.batch is None:
+            validate_execution_samples(
+                self.projections[operation], self.bindings[operation].declaration.id, [sample]
+            )
+        else:
+            with self.paused():
+                self.batch.receive(operation, sample)
 
     def codec_recording(self):
         return self.active and (not self.inside_native or not self.native_recorder.recording)
@@ -239,7 +255,7 @@ class Recorder(fences.Recorder):
             node["metrics"] = {
                 bound.metric: values[bound.metric] for bound in binding.declaration.bounds
             }
-            validate_execution_samples(self.projections[function], binding.declaration.id, [node])
+            self.validate(function, node)
             if self.stack:
                 parent, parent_node = self.stack[-1]
                 tags = [tag for tag, child in growth_binding(parent).delegates if child is function]
@@ -573,6 +589,7 @@ class Recorder(fences.Recorder):
         lifecycle, session_tests = self.helpers
         if self.native_recorder is None:
             base = lifecycle.LifecycleRecorder
+            recorder = self
 
             class NativeRecorder(base):
                 def measured(self, operation, catalog, dimensions, invoke):
@@ -583,7 +600,7 @@ class Recorder(fences.Recorder):
                         if child in seen:
                             continue
                         seen.add(child)
-                        binding = growth_binding(child)
+                        binding = recorder.source_binding(child)
                         for bound in binding.declaration.bounds:
                             self.metrics.setdefault(bound.metric, 0)
                         pending.extend(child for _tag, child in binding.delegates)
@@ -594,10 +611,10 @@ class Recorder(fences.Recorder):
                     def inputs(parent, child, _args, _kwargs):
                         tags = [
                             tag
-                            for tag, candidate in growth_binding(operation).delegates
+                            for tag, candidate in recorder.source_binding(operation).delegates
                             if candidate is child
                         ]
-                        fields = growth_binding(child).declaration.dimensions
+                        fields = recorder.source_binding(child).declaration.dimensions
                         if tags and all(tags[0] + "_" + item.name in parent for item in fields):
                             return {item.name: parent[tags[0] + "_" + item.name] for item in fields}
                         return {item.name: parent[item.name] for item in fields}
@@ -612,6 +629,7 @@ class Recorder(fences.Recorder):
                         operation_owners={
                             session_tests._checkpoint_progress: session_tests.session_owner
                         },
+                        batch=recorder.batch,
                     ) as (frame, complete):
                         self.recording = True
                         try:
@@ -636,11 +654,14 @@ class Recorder(fences.Recorder):
                             lifecycle_call_limit=sum(map(len, frame["delegates"].values())),
                         )
                     sample = complete(frame, work)
-                    validate_execution_samples(
-                        project_bindings((growth_binding(operation),)),
-                        growth_binding(operation).declaration.id,
-                        [sample],
-                    )
+                    if recorder.batch is None:
+                        validate_execution_samples(
+                            project_bindings((growth_binding(operation),)),
+                            growth_binding(operation).declaration.id,
+                            [sample],
+                        )
+                    else:
+                        recorder.validate(operation, sample)
                     return result, sample, error
 
             self.native_recorder = NativeRecorder()
@@ -818,7 +839,7 @@ class Recorder(fences.Recorder):
             "metrics": metrics,
             "delegates": children,
         }
-        validate_execution_samples(self.projections[OPEN], binding.declaration.id, [sample])
+        self.validate(OPEN, sample)
         return result, error, sample
 
 

@@ -277,6 +277,7 @@ class UnitRecorder:
         self.case = case
         self.current = current
         self.batch = batch
+        self.inline_batch = batch if batch is not None and batch.include_descendants else None
         self.native_recorder = None
         self.context = None
         self.core = None
@@ -352,7 +353,11 @@ class UnitRecorder:
                 )
                 return result
             finally:
-                self.children[tag].append(self.preparation.sample(operation, dimensions, recorder))
+                self.children[tag].append(
+                    self.preparation.sample(
+                        operation, dimensions, recorder, batch=self.inline_batch
+                    )
+                )
 
     def framed(self, cursor, chunk, **kwargs):
         visited = 0
@@ -382,7 +387,9 @@ class UnitRecorder:
             assert all(
                 not isinstance(value, (str, bytes)) for value in asdict(result.cursor).values()
             )
-            self.children["framing"].append(sample(CHILDREN["framing"], dimensions, metrics))
+            self.children["framing"].append(
+                sample(CHILDREN["framing"], dimensions, metrics, batch=self.inline_batch)
+            )
         return result
 
     def advanced(self, selected, work, *, catalog, budget=None):
@@ -398,7 +405,7 @@ class UnitRecorder:
         self.case.certificate_binding = provider.binding.to_json()
         if self.native_recorder is None:
             native.populate(self.case)
-            self.native_recorder = native.Recorder(self.case)
+            self.native_recorder = native.Recorder(self.case, batch=self.inline_batch)
         try:
             result, observed = self.native_recorder.measure(
                 selected, cold=False, budget=budget or native.owner.JournalValidationBudget()
@@ -410,6 +417,8 @@ class UnitRecorder:
             self.start()
 
     def measure(self, collection_id=1, journal_id=JOURNAL, *, interrupt=False, expected_error=None):
+        if self.batch is not None:
+            self.batch.source(ROOT)
         dimensions = inputs(self.case.engine, self.case.raw)
         dimensions["metadata_row_octets"] = max(
             dimensions["metadata_row_octets"], octets((collection_id, journal_id))

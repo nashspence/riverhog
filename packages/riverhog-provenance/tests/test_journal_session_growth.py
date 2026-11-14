@@ -13,7 +13,7 @@ from pathlib import Path
 from tempfile import mkdtemp
 
 import pytest
-from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+from riverhog_growth_contracts import growth_binding
 from riverhog_provenance import _session_input as input_owner
 from riverhog_provenance import framing as framing_owner
 from riverhog_provenance import journal_session as session_owner
@@ -35,6 +35,7 @@ from test_entry_replay_growth import admission_histories as admission_histories
 from test_semantic_edge import observed_work
 from test_semantic_owner import snapshot
 
+from tests.support.growth_batch import SampleBatch
 from tests.support.sqlite_observation import observe_admitted_scope
 
 
@@ -146,7 +147,7 @@ class CallerChunks(Iterator):
 
 
 @contextmanager
-def session_observer(session, dimensions, operation, *, failed_operations=()):
+def session_observer(session, dimensions, operation, *, failed_operations=(), batch=None):
     db = session._store.db
     framing = framing_owner.advance_journal_framing
     borrow = JournalSummary.borrow
@@ -262,6 +263,7 @@ def session_observer(session, dimensions, operation, *, failed_operations=()):
             kernel_hook=kernel,
             failed_operations=failed_operations,
             primitive_hook=primitive,
+            batch=batch,
         ) as observed:
             yield observed
 
@@ -899,8 +901,22 @@ def invoke(session, operation, budget):
 def checkpoint_samples(
     root, catalog, cases, *, operation, samples, early=False, journal_constructions
 ):
-    binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    with SampleBatch((operation,), limit=4) as batch:
+        _checkpoint_samples(
+            root,
+            catalog,
+            cases,
+            operation=operation,
+            samples=samples,
+            early=early,
+            journal_constructions=journal_constructions,
+            batch=batch,
+        )
+
+
+def _checkpoint_samples(
+    root, catalog, cases, *, operation, samples, early, journal_constructions, batch
+):
     for ordinal, case in enumerate(cases):
         phase = case["before"].checkpoint.phase
         result_operation = operation is JournalValidationSession.result
@@ -990,7 +1006,7 @@ def checkpoint_samples(
                         from riverhog_provenance import _entry_replay as replay_owner
 
                         patch.setattr(replay_owner, "uuid4", lambda: SimpleNamespace(hex="f" * 32))
-                        with session_observer(current, dimensions, operation) as (
+                        with session_observer(current, dimensions, operation, batch=batch) as (
                             observed,
                             complete,
                         ):
@@ -1013,7 +1029,7 @@ def checkpoint_samples(
                         index_python_opcode_events=db.all_node_opcodes,
                     )
                     sample = complete(observed, work)
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    batch.receive(operation, sample)
                     samples.append(sample)
                     assert snapshot(db) == expected_rows
                     if result_operation:
