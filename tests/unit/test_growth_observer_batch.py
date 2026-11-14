@@ -90,6 +90,7 @@ def assert_released(batch):
     assert batch.state == "closed"
     assert not batch._pending
     assert not batch._source
+    assert not batch._sources
     assert not batch._roots
     assert not batch._digests
     assert batch._projection_bytes is None
@@ -407,7 +408,7 @@ def test_serialized_samples_remain_independently_validated_after_close():
     assert_released(batch)
 
 
-def test_actual_caller_and_unit_turns_share_a_bounded_observer_batch(tmp_path, monkeypatch):
+def _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, *, include_descendants):
     from tests.unit import test_upload_journal_service_caller_growth as callers
     from tests.unit import test_upload_journal_service_coordination_growth as coordination
     from tests.unit import test_upload_journal_service_unit_growth as units
@@ -417,7 +418,11 @@ def test_actual_caller_and_unit_turns_share_a_bounded_observer_batch(tmp_path, m
     roots = []
     with closing(cases):
         case, current = next(cases)
-        with SampleBatch((callers.ROOT, units.ROOT), limit=4) as batch:
+        with SampleBatch(
+            (callers.ROOT, units.ROOT),
+            limit=64 if include_descendants else 4,
+            include_descendants=include_descendants,
+        ) as batch:
             recorder = callers.Recorder(case, current, batch=batch)
             for _ in range(3):
                 result, sample = recorder.measure()
@@ -425,17 +430,32 @@ def test_actual_caller_and_unit_turns_share_a_bounded_observer_batch(tmp_path, m
                 assert len(sample["delegates"]["unit"]) == 1
                 roots.append(sample)
                 assert case.engine.pool.checkedout() == 0
-        assert batch.validated_samples == 6
-        assert batch.validation_calls == 4
+        assert batch.validated_samples == (122 if include_descendants else 6)
+        assert batch.validation_calls == (46 if include_descendants else 4)
         expected = {
             growth.growth_binding(callers.ROOT).declaration.id: 3,
             growth.growth_binding(units.ROOT).declaration.id: 3,
         }
-        assert Counter(identity for identity, samples in calls for _ in samples) == expected
-        received = {id(sample) for _, samples in calls for sample in samples}
-        assert received == {
+        counts = Counter(identity for identity, samples in calls for _ in samples)
+        assert all(counts[identity] == count for identity, count in expected.items())
+        validation_roots = [sample for _, samples in calls for sample in samples]
+        received = {id(sample) for sample in validation_roots}
+        caller_unit_roots = {
             id(sample) for root in roots for sample in (root, root["delegates"]["unit"][0])
         }
+        assert caller_unit_roots <= received
+        if include_descendants:
+
+            def nodes(sample):
+                return 1 + sum(
+                    nodes(child) for children in sample["delegates"].values() for child in children
+                )
+
+            assert len(validation_roots) == len(received) == 122
+            assert sum(nodes(sample) for sample in validation_roots) == 1078
+        else:
+            assert counts == expected
+            assert received == caller_unit_roots
         for root in roots:
             for operation, sample in (
                 (callers.ROOT, root),
@@ -449,3 +469,11 @@ def test_actual_caller_and_unit_turns_share_a_bounded_observer_batch(tmp_path, m
         assert case.engine.pool.checkedout() == 0
     assert cases.gi_frame is None
     assert case.engine.pool.checkedout() == 0
+
+
+def test_actual_caller_and_unit_turns_share_a_bounded_observer_batch(tmp_path, monkeypatch):
+    _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, include_descendants=False)
+
+
+def test_actual_caller_and_unit_turns_receive_every_descendant(tmp_path, monkeypatch):
+    _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, include_descendants=True)
