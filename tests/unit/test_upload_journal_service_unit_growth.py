@@ -273,9 +273,10 @@ def inputs(engine, raw):
 
 
 class UnitRecorder:
-    def __init__(self, case, current):
+    def __init__(self, case, current, *, batch=None):
         self.case = case
         self.current = current
+        self.batch = batch
         self.native_recorder = None
         self.context = None
         self.core = None
@@ -483,7 +484,7 @@ class UnitRecorder:
                 child["metrics"][selected_metric] for child in children
             )
         self.explain()
-        return sample(ROOT, dimensions, metrics, self.children)
+        return sample(ROOT, dimensions, metrics, self.children, batch=self.batch)
 
     def explain(self):
         from riverhog_core.catalog_models import (

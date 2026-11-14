@@ -1,0 +1,7 @@
+actual fixture starting
+actual fixture closed and scratch removed
+project_bindings {"expression_unit_entries": 68785, "uninstrumented_cpu_seconds": 1.5017030670000011, "uninstrumented_wall_seconds": 1.5039430599999832}
+validate_projection {"expression_unit_entries": 68785, "uninstrumented_cpu_seconds": 1.5241965509999957, "uninstrumented_wall_seconds": 1.528677904999995}
+three_single_execution_validations {"expression_unit_entries": 206355, "uninstrumented_cpu_seconds": 5.467304448, "uninstrumented_wall_seconds": 5.480916727000022}
+one_three_root_execution_batch {"expression_unit_entries": 68785, "uninstrumented_cpu_seconds": 2.542782654, "uninstrumented_wall_seconds": 2.545669785999962}
+original child final status 0 cleanup {"checked_out_after_close": 0, "fixture_created": true, "fixture_generator_closed": true, "fixture_path": "/workspace/scratch/21c38f9cc56d/observer-reference-tmp/observer-caller-fv60fc6i", "fixture_removed": true}

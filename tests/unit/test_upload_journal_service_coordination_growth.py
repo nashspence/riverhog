@@ -32,7 +32,9 @@ from tests.unit.test_upload_journal_validation_jobs_growth import Recorder
 from tests.unit.test_upload_journal_validation_retirement_catalog_growth import fields
 
 
-def sample(operation, dimensions, metrics, children=None):
+def sample(operation, dimensions, metrics, children=None, *, batch=None):
+    if batch is not None:
+        return batch.sample(operation, dimensions, metrics, children)
     binding = growth_binding(operation)
     projection = project_bindings((binding,))
     observed = {

@@ -1,0 +1,64 @@
+"""Reconstitute the exact archived input in a new external directory."""
+
+import hashlib
+import json
+import platform
+import sys
+from pathlib import Path
+
+checkout = Path.cwd().resolve()
+sys.path.insert(0, str(checkout))
+
+import riverhog_growth_contracts as growth
+from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core.services import collection_uploads as owner
+from scripts.validation_identity import source_identity
+
+destination = Path(sys.argv[1]).resolve()
+expected_source = sys.argv[2]
+retained = checkout / ".reference/evidence"
+assert platform.python_version() == "3.12.3"
+assert not destination.is_relative_to(checkout) and not destination.exists()
+for module in (growth, owner):
+    assert Path(module.__file__).resolve().is_relative_to(checkout)
+source = source_identity(checkout)
+assert source == {"source_sha": expected_source, "source_clean": True}
+
+sample_bytes = (retained / "sample.json").read_bytes()
+run_bytes = (retained / "baseline-run.json").read_bytes()
+sample, run = json.loads(sample_bytes), json.loads(run_bytes)
+assert canonical_json_bytes(sample) == sample_bytes
+assert canonical_json_bytes(run) == run_bytes
+assert hashlib.sha256(sample_bytes).hexdigest() == (
+    "bb2a6cc9702d15c805fdb32d84ed14ea864162a31a623a7f412fcb011ff9f37f"
+)
+assert hashlib.sha256(run_bytes).hexdigest() == (
+    "70e03621b22864976619a68111473942e87c1f0a494fcd4ecc6a9842d8be5257"
+)
+assert run["state"] == "completed" and run["exit_status"] == 0
+assert run["source"] == run["source_end"] == {
+    "source_clean": True,
+    "source_sha": "8c80903818b386f50ddce8cd316cb3d93ec8cc51",
+}
+
+operation = owner.SqlAlchemyCollectionUploadService._advance_provenance_journal_validation
+binding = growth.growth_binding(operation)
+projection = growth.project_bindings((binding,))
+projection_bytes = canonical_json_bytes(projection)
+projection_digest = hashlib.sha256(projection_bytes).hexdigest()
+assert len(projection["declarations"]) == 100
+assert projection_digest == (
+    "f8eae73e293eac5e9ed7dcf01d706d9176d4f198e13ef61203d06d0df41c0ef1"
+)
+assert projection_digest == run["projection_sha256"]
+assert sample["declaration"] == binding.declaration.id
+growth.validate_execution_samples(projection, binding.declaration.id, [sample])
+assert source_identity(checkout) == source
+
+destination.mkdir(parents=True, exist_ok=False)
+(destination / "projection.json").write_bytes(projection_bytes)
+(destination / "sample.json").write_bytes(sample_bytes)
+(destination / "run.json").write_bytes(run_bytes)
+print("Regenerated and independently validated input:", destination)
+print("Projection SHA-256:", projection_digest)
+print("Regenerating source:", source["source_sha"])

@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/21c38f9cc56d/observer_reference_profile.py", line 72, in main
+    assert report["conditions"]["uv"] == "uv 0.11.24"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+original child final status 1 cleanup {"fixture_created": false, "fixture_removed": false}

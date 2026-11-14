@@ -1,0 +1,73 @@
+{
+  "actual_case_assertions": {
+    "batch_limit": 4,
+    "caller_samples": 3,
+    "caller_turns": 3,
+    "canonical_parity_samples": 6,
+    "checked_out_after_close": 0,
+    "fixture_generator_closed": true,
+    "unit_samples": 3,
+    "unrelated_rows": 0,
+    "validated_samples": 6,
+    "validation_calls": 4
+  },
+  "cleanup": {
+    "all_removed": true,
+    "empty_parent_removed": true,
+    "removed_directories": [
+      "/workspace/scratch/21c38f9cc56d/riverhog/pytest-of-agent/pytest-0",
+      "/workspace/scratch/21c38f9cc56d/riverhog/pytest-of-agent/pytest-1",
+      "/workspace/scratch/21c38f9cc56d/riverhog/pytest-of-agent/pytest-2"
+    ]
+  },
+  "format": "observer-batch-focused-test-result/v1",
+  "inherited_TMPDIR": "/tmp",
+  "interpreter": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+  "runs": [
+    {
+      "arguments": [
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/test_growth_compilation_reuse.py"
+      ],
+      "exit_status": 0,
+      "passed": 52,
+      "pytest_elapsed_seconds": 0.49
+    },
+    {
+      "arguments": [
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/test_growth_observer_batch.py",
+        "-k",
+        "not actual_caller"
+      ],
+      "deselected": 1,
+      "exit_status": 0,
+      "passed": 33,
+      "pytest_elapsed_seconds": 0.47
+    },
+    {
+      "arguments": [
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/test_growth_observer_batch.py::test_actual_caller_and_unit_turns_share_a_bounded_observer_batch"
+      ],
+      "exit_status": 0,
+      "passed": 1,
+      "pytest_elapsed_seconds": 86.64
+    }
+  ],
+  "source_files_after_test_sha256": {
+    "tests/support/growth_batch.py": "6c1b39cdadb5bf24ea20077dbffbf8a7acdd5fec01c4155a9a94cb222afb5957",
+    "tests/unit/test_growth_compilation_reuse.py": "9c11b819ff02b074645cae3d84d44858faa860d741971856357121867dc19295",
+    "tests/unit/test_growth_observer_batch.py": "adddb56de932962f6781902862e3a7a1c1f5c24d4a9d9785b638509445832262",
+    "tests/unit/test_upload_journal_service_caller_growth.py": "71f2e8b3debb8a6de9b9091b86b2ead35c03e2222776d06900725a199e7be2d2",
+    "tests/unit/test_upload_journal_service_coordination_growth.py": "cc4890d0ea9ee79183fc01ca9030b104fe295a9e3f9cb3b70709da88fcc203ee",
+    "tests/unit/test_upload_journal_service_unit_growth.py": "5ffd19c5caa1cf8e131aeb2094c33d22cdea5014708cafa1e88f60a163174636"
+  },
+  "working_directory": "/workspace/scratch/21c38f9cc56d/riverhog"
+}

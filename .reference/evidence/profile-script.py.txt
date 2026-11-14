@@ -1,0 +1,243 @@
+"""Finite observation of one maintained caller declaration and actual execution sample."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import platform
+import subprocess
+import sys
+import tempfile
+import time
+import traceback
+from contextlib import closing
+from pathlib import Path
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--checkout", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--expected-source", required=True)
+    parser.add_argument("--uv", type=Path, required=True)
+    parser.add_argument("--reference-input", type=Path)
+    args = parser.parse_args()
+    checkout, output = args.checkout.resolve(), args.output.resolve()
+    assert not output.is_relative_to(checkout)
+    output.mkdir(parents=True, exist_ok=False)
+    sys.path.insert(0, str(checkout))
+
+    from riverhog_canonical_json import canonical_json_bytes
+    from scripts.validation_identity import source_identity
+
+    def write(name, value):
+        (output / name).write_bytes(canonical_json_bytes(value))
+
+    def digest(value):
+        return hashlib.sha256(canonical_json_bytes(value)).hexdigest()
+
+    report = {
+        "format": "riverhog-observer-compilation-reference/v1",
+        "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "source": source_identity(checkout),
+        "conditions": {
+            "python": platform.python_version(),
+            "executable": sys.executable,
+            "platform": platform.platform(),
+            "uv": subprocess.check_output([str(args.uv), "--version"], text=True).strip(),
+            "timing_run_id": os.environ.get("RIVERHOG_CI_RUN_ID"),
+            "timing_lane": os.environ.get("RIVERHOG_CI_LANE"),
+            "repeat_count": 3,
+            "fixture_maximum_caller_turns": 3,
+            "text_octets": 0,
+            "unrelated_rows": 0,
+            "elapsed_observation_repetitions": 1,
+            "timing_target": None,
+        },
+        "measurements": {},
+        "cleanup": {"fixture_created": False, "fixture_removed": False},
+        "state": "running",
+    }
+    write("run.json", report)
+    status = 1
+    temporary = None
+    try:
+        assert report["source"] == {
+            "source_sha": args.expected_source,
+            "source_clean": True,
+        }, report["source"]
+        assert platform.python_version() == "3.12.3"
+        assert report["conditions"]["uv"].split()[:2] == ["uv", "0.11.24"]
+        import riverhog_growth_contracts as growth
+        from riverhog_core.services import collection_uploads as owner
+
+        operation = owner.SqlAlchemyCollectionUploadService._advance_provenance_journal_validation
+        binding = growth.growth_binding(operation)
+        pending, seen, edge_count = [binding], {}, 0
+        while pending:
+            selected = pending.pop()
+            identity = selected.declaration.id
+            if identity in seen:
+                assert seen[identity].operation is selected.operation
+                continue
+            seen[identity] = selected
+            edge_count += len(selected.delegates)
+            pending.extend(growth.growth_binding(child) for _, child in selected.delegates)
+        assert len(seen) == 100 and edge_count == 142
+        report["root"] = {
+            "operation": operation.__module__ + "." + operation.__qualname__,
+            "declaration": binding.declaration.id,
+            "declarations": len(seen),
+            "delegate_edges": edge_count,
+        }
+        report["imports"] = {
+            "growth": str(Path(growth.__file__).resolve()),
+            "caller": str(Path(owner.__file__).resolve()),
+        }
+        for path in report["imports"].values():
+            assert Path(path).is_relative_to(checkout), path
+
+        projection = growth.project_bindings((binding,))
+        if args.reference_input is None:
+            from tests.unit import test_upload_journal_service_caller_growth as callers
+            from tests.unit import test_upload_journal_service_unit_growth as units
+
+            report["imports"]["recorder"] = str(Path(callers.__file__).resolve())
+            report["imports"]["fixture"] = str(Path(units.__file__).resolve())
+            temporary = tempfile.TemporaryDirectory(prefix="observer-caller-")
+            scratch = Path(temporary.name)
+            assert not scratch.is_relative_to(checkout)
+            report["cleanup"].update(fixture_created=True, fixture_path=str(scratch))
+            print("actual fixture starting", flush=True)
+            with closing(units.real_case(scratch / "case", text_octets=0, unrelated=0)) as cases:
+                case, current = next(cases)
+                recorder = callers.Recorder(case, current)
+                observed = None
+                for turn in range(1, 4):
+                    result, candidate = recorder.measure()
+                    assert result is True
+                    assert candidate["metrics"]["stamp_calls"] == 2
+                    assert candidate["metrics"]["unit_calls"] == 1
+                    unit_samples = candidate["delegates"]["unit"]
+                    framing = [
+                        row
+                        for unit in unit_samples
+                        for row in unit["delegates"]["framing"]
+                    ]
+                    if any(row["metrics"]["visited_octets"] > 0 for row in framing):
+                        observed = candidate
+                        break
+                assert observed is not None, "three actual turns yielded no positive framing work"
+                assert case.engine.pool.checkedout() == 0
+                report["fixture"] = {
+                    "caller_turns": turn,
+                    "returned_progress": result,
+                    "source_octets": len(case.raw),
+                    "framing_samples": len(framing),
+                    "framing_visited_octets": sum(row["metrics"]["visited_octets"] for row in framing),
+                    "checked_out_catalog_connections": case.engine.pool.checkedout(),
+                    "native_owner_calls": recorder.units.native_calls,
+                }
+            report["cleanup"]["fixture_generator_closed"] = True
+            report["cleanup"]["checked_out_after_close"] = case.engine.pool.checkedout()
+            assert case.engine.pool.checkedout() == 0
+            temporary.cleanup()
+            report["cleanup"]["fixture_removed"] = not scratch.exists()
+            assert report["cleanup"]["fixture_removed"]
+            temporary = None
+            print("actual fixture closed and scratch removed", flush=True)
+        else:
+            reference = args.reference_input.resolve()
+            retained_projection = json.loads((reference / "projection.json").read_bytes())
+            observed = json.loads((reference / "sample.json").read_bytes())
+            assert projection == retained_projection, "current source changed normative declarations"
+            report["reference_input"] = {
+                "directory": str(reference),
+                "run_sha256": hashlib.sha256((reference / "run.json").read_bytes()).hexdigest(),
+            }
+            report["cleanup"]["fixture_removed"] = True
+
+        report["projection_sha256"] = digest(projection)
+        report["sample_sha256"] = digest(observed)
+        write("projection.json", projection)
+        write("sample.json", observed)
+        growth.validate_execution_samples(projection, binding.declaration.id, [observed])
+
+        def three_single_validations():
+            for _ in range(3):
+                growth.validate_execution_samples(projection, binding.declaration.id, [observed])
+
+        operations = {
+            "project_bindings": lambda: growth.project_bindings((binding,)),
+            "validate_projection": lambda: growth.validate_projection(projection),
+            "three_single_execution_validations": three_single_validations,
+            "one_three_root_execution_batch": lambda: growth.validate_execution_samples(
+                projection, binding.declaration.id, [observed, observed, observed]
+            ),
+        }
+        for name, action in operations.items():
+            counter = [0]
+            original = growth._expression_unit
+
+            def counted(*values, **keywords):
+                counter[0] += 1
+                return original(*values, **keywords)
+
+            growth._expression_unit = counted
+            try:
+                action()
+            finally:
+                growth._expression_unit = original
+            wall_start, cpu_start = time.perf_counter(), time.process_time()
+            action()
+            cpu_seconds = time.process_time() - cpu_start
+            wall_seconds = time.perf_counter() - wall_start
+            report["measurements"][name] = {
+                "expression_unit_entries": counter[0],
+                "uninstrumented_cpu_seconds": cpu_seconds,
+                "uninstrumented_wall_seconds": wall_seconds,
+            }
+            write("run.json", report)
+            print(name, json.dumps(report["measurements"][name], sort_keys=True), flush=True)
+
+        def sample_shape(row):
+            children = [
+                child for rows in row["delegates"].values() for child in rows
+            ]
+            shapes = [sample_shape(child) for child in children]
+            return {
+                "nodes": 1 + sum(shape["nodes"] for shape in shapes),
+                "depth": 1 + max((shape["depth"] for shape in shapes), default=0),
+            }
+
+        report["sample_shape"] = sample_shape(observed)
+        assert report["sample_shape"]["depth"] >= 3
+        report["state"] = "completed"
+        status = 0
+    except BaseException as error:
+        report["state"] = "failed"
+        report["error"] = {"type": type(error).__name__, "message": str(error)}
+        traceback.print_exc()
+    finally:
+        if temporary is not None:
+            scratch = Path(temporary.name)
+            try:
+                temporary.cleanup()
+                report["cleanup"]["fixture_removed"] = not scratch.exists()
+            except BaseException as error:
+                report["cleanup"]["error"] = type(error).__name__ + ": " + str(error)
+                status = 1
+        report["source_end"] = source_identity(checkout)
+        if report["source_end"] != report["source"]:
+            report["state"] = "source-changed"
+            status = 1
+        report["exit_status"] = status
+        write("run.json", report)
+        print("original child final status", status, "cleanup", json.dumps(report["cleanup"], sort_keys=True), flush=True)
+    return status
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
