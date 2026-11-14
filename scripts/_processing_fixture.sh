@@ -26,7 +26,9 @@ configure_processing_fixture() {
   smoke_completion_timeout=$((600 + 480 * smoke_file_count))
   case "${lane}" in
     processing-overlap) smoke_completion_timeout=3600 ;;
-    processing-e2e) smoke_completion_timeout=4800 ;;
+    # Both E2E routes execute on a single-job target. Budget completion for
+    # both serialized jobs and parent settlement within the outer lane limit.
+    processing-e2e) smoke_completion_timeout=7200 ;;
   esac
   smoke_observation_timeout=$((300 + 60 * smoke_file_count))
   smoke_admission_timeout=$((smoke_observation_timeout + 600))
