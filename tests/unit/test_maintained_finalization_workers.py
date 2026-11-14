@@ -79,9 +79,16 @@ def test_maintained_failure_keeps_original_claim_and_receives_exact_report(
         _until(case, prior, lambda upload: upload.archive_tree_sha256 is not None)
         service = case.service
         service._requeue_finalization_step(prior)
-        with _lose_ack(monkeypatch, "report", committed):
-            assert service.process_due_finalizations() >= 1
-            _join(case)
+        with _lose_ack(monkeypatch, "report", committed) as fault:
+            deadline = monotonic() + 120
+            while True:
+                assert service.process_due_finalizations() >= 0
+                _join(case)
+                if fault["fired"]:
+                    break
+                assert monotonic() < deadline, "the original report was not reached: " + repr(
+                    _routing_snapshot(case)
+                )
         context = service._archive_finalizers._contexts[case.collection_id]
         original = context.owner
         pipeline = original._original
