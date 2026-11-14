@@ -267,6 +267,8 @@ def growth_binding(operation: Callable[..., Any]) -> Binding:
 class _Context:
     declaration: Declaration
     delegates: dict[str, _Context]
+    dimension_units: dict[str, Unit] | None = None
+    bounds_by_metric: dict[str, Bound] | None = None
 
 
 def _source_context(binding: Binding, stack: tuple[str, ...] = ()) -> _Context:
@@ -286,7 +288,9 @@ def _expression_unit(
     expression: Expression, context: _Context, stack: tuple[str, ...], relation: str
 ) -> Unit:
     declaration = context.declaration
-    dimensions = {d.name: d.unit for d in declaration.dimensions}
+    dimensions = context.dimension_units
+    if dimensions is None:
+        dimensions = {d.name: d.unit for d in declaration.dimensions}
     if expression.op == "constant":
         return expression.unit
     if expression.op == "dimension":
@@ -310,13 +314,17 @@ def _expression_unit(
     if child.declaration.id in stack:
         raise ValueError("growth composition has cyclic delegates")
     arguments = dict(expression.arguments)
-    child_dimensions = {d.name: d.unit for d in child.declaration.dimensions}
+    child_dimensions = child.dimension_units
+    if child_dimensions is None:
+        child_dimensions = {d.name: d.unit for d in child.declaration.dimensions}
     if set(arguments) != set(child_dimensions) or any(
         _expression_unit(arguments[name], context, stack, "equal") != unit
         for name, unit in child_dimensions.items()
     ):
         raise ValueError("growth delegate dimension mapping is incomplete or incompatible")
-    bounds = {b.metric: b for b in child.declaration.bounds}
+    bounds = child.bounds_by_metric
+    if bounds is None:
+        bounds = {b.metric: b for b in child.declaration.bounds}
     if expression.metric not in bounds:
         raise ValueError("growth delegate metric is not declared")
     bound = bounds[expression.metric]
@@ -516,7 +524,12 @@ def _projection_contexts(projection: object) -> dict[str, _Context]:
             invariants=tuple(row["invariants"]),
             limitations=tuple(row["limitations"]),
         )
-        contexts[identity] = _Context(declaration, {})
+        contexts[identity] = _Context(
+            declaration,
+            {},
+            dimension_units={d.name: d.unit for d in declaration.dimensions},
+            bounds_by_metric={b.metric: b for b in declaration.bounds},
+        )
         if not isinstance(row["delegates"], Mapping):
             raise ValueError("growth delegates require exact named declarations")
         references = {}
