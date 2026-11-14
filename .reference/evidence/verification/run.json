@@ -1,0 +1,331 @@
+{
+  "cleanup": {
+    "temporary_created": true,
+    "temporary_removed": true
+  },
+  "commands": [
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "scripts.ci_timing",
+        "--basetemp",
+        "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/temporary/pytest",
+        "-o",
+        "cache_dir=/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/temporary/pytest-cache",
+        "tests/unit/test_growth_observer_lifetime.py",
+        "tests/unit/test_growth_observer_batch.py",
+        "tests/unit/test_growth_declarations.py",
+        "tests/unit/test_validation_witnesses.py",
+        "tests/unit/test_private_growth_discovery.py",
+        "-k",
+        "not actual_caller_and_unit_turns_share_a_bounded_observer_batch"
+      ],
+      "driver_elapsed_seconds": 23.811870481999904,
+      "elapsed_seconds": 23.51370043299994,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/focused-tests-lane.json",
+      "lane_receipt_sha256": "97e3686c883eb142d215e8ad896e0013101d5d1a537785a02c48b7ee7abe2f36",
+      "log": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/focused-tests.log",
+      "log_sha256": "25b34358bb567f2ae9ab827e7432b09529d48ffd0a771b73266be9f1c7e243c5",
+      "name": "focused-tests",
+      "original_exit_status": 0,
+      "pytest": {
+        "call_outcomes": {
+          "passed": 162
+        },
+        "elapsed_seconds": 21.284008555999208,
+        "excluded_test_executed": false,
+        "exit_status": 0,
+        "phase_outcomes": {
+          "call:passed": 162,
+          "setup:passed": 162,
+          "teardown:passed": 162
+        },
+        "receipt": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/pytest-receipts/pytest/observer-lifetime-focused-tests/c215cc3d00e94d85836fa7be27c212e4/6fc01b1d08034dd59ec69a189475d50e/controller.json",
+        "receipt_sha256": "4ceaad0f644ef257b11202b174ad877f19b7e3ca9bd9d80e9b8714e5b37095b3",
+        "recorded_tests": 162
+      },
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "started_at": "2026-11-14T17:27:05.513411+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-lifetime-focused-tests",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/focused-tests-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "scripts.ci_timing",
+        "--basetemp",
+        "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/temporary/pytest",
+        "-o",
+        "cache_dir=/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/temporary/pytest-cache",
+        "tests/unit/test_growth_observer_lifetime.py",
+        "tests/unit/test_growth_observer_batch.py",
+        "tests/unit/test_growth_declarations.py",
+        "tests/unit/test_validation_witnesses.py",
+        "tests/unit/test_private_growth_discovery.py",
+        "-k",
+        "not actual_caller_and_unit_turns_share_a_bounded_observer_batch"
+      ],
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "driver_elapsed_seconds": 1.407218735999777,
+      "elapsed_seconds": 0.971360241000184,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/ruff-lane.json",
+      "lane_receipt_sha256": "7fbbc1fcbd8e9a2c446eb7ff10e3c60ccdc123c3adf938c95853b0e181078deb",
+      "log": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/ruff.log",
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "name": "ruff",
+      "original_exit_status": 0,
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "started_at": "2026-11-14T17:27:29.394063+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-lifetime-ruff",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/ruff-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "driver_elapsed_seconds": 0.6704010739995283,
+      "elapsed_seconds": 0.4017835650001871,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/format-lane.json",
+      "lane_receipt_sha256": "929d42efaaa231b1ca5c89cbddadc163805dc93a604702ce5d73125c4f93355a",
+      "log": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/format.log",
+      "log_sha256": "5466e24d9b0ffacc5877a696ddedc03edf50046bf830c953f4895f8b59c8511a",
+      "name": "format",
+      "original_exit_status": 0,
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "started_at": "2026-11-14T17:27:30.872546+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-lifetime-format",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/format-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "reuse",
+        "lint"
+      ],
+      "driver_elapsed_seconds": 1.9711756930000774,
+      "elapsed_seconds": 1.6858013640003264,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/reuse-lane.json",
+      "lane_receipt_sha256": "7adebbf6a9a8fbb55024db990011cbb08033d9d8398a844d2d9be528bfe1819b",
+      "log": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/reuse.log",
+      "log_sha256": "03194067c538296658fe7011419300f7855d84021328597c1ed9b034eadf1322",
+      "name": "reuse",
+      "original_exit_status": 0,
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "started_at": "2026-11-14T17:27:31.581788+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-lifetime-reuse",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/reuse-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "-m",
+        "reuse",
+        "lint"
+      ],
+      "wrapper_exit_status": 0
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/run_mypy.py"
+      ],
+      "driver_elapsed_seconds": 50.03239918500003,
+      "elapsed_seconds": 49.75651161600035,
+      "lane_receipt": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/mypy-lane.json",
+      "lane_receipt_sha256": "1a4d55b2349ef739f593bba807151ae53d408ffe4d3cc24aa92ad8ef43627943",
+      "log": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/mypy.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "mypy",
+      "original_exit_status": 0,
+      "source_after": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "source_before": {
+        "source_clean": true,
+        "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+      },
+      "started_at": "2026-11-14T17:27:33.610271+00:00",
+      "state": "completed",
+      "timed_command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/ci_timing.py",
+        "run",
+        "--lane",
+        "observer-lifetime-mypy",
+        "--output",
+        "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/mypy-lane.json",
+        "--",
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+        "scripts/run_mypy.py"
+      ],
+      "wrapper_exit_status": 0
+    }
+  ],
+  "conditions": {
+    "additional_product_fixture": false,
+    "attempts_per_command": 1,
+    "basetemp": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/temporary/pytest",
+    "excluded_test": "actual_caller_and_unit_turns_share_a_bounded_observer_batch",
+    "expected_test_count": null,
+    "focused_tests": [
+      "tests/unit/test_growth_observer_lifetime.py",
+      "tests/unit/test_growth_observer_batch.py",
+      "tests/unit/test_growth_declarations.py",
+      "tests/unit/test_validation_witnesses.py",
+      "tests/unit/test_private_growth_discovery.py"
+    ],
+    "sequential": true,
+    "temporary_directory": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/temporary",
+    "timing_directory": "/workspace/scratch/21c38f9cc56d/observer-lifetime-verification/pytest-receipts",
+    "timing_target": null
+  },
+  "driver_sha256": "d8162307af1dc048608717113bd77a164442eeb7b257e6c53cba009df17f615e",
+  "elapsed_seconds": 78.42604865799967,
+  "exit_status": 0,
+  "expected_source": {
+    "source_clean": true,
+    "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+  },
+  "format": "external-observer-lifetime-verification/v1",
+  "repository": "/workspace/scratch/21c38f9cc56d/riverhog",
+  "source": {
+    "source_clean": true,
+    "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+  },
+  "source_end": {
+    "source_clean": true,
+    "source_sha": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86"
+  },
+  "started_at": "2026-11-14T17:27:05.351826+00:00",
+  "state": "completed",
+  "tool_pins": {
+    "all_pins_match": true,
+    "checkout_venv": "/workspace/scratch/21c38f9cc56d/riverhog/.venv",
+    "checkout_venv_matches": true,
+    "expected": {
+      "mypy": "2.3.0",
+      "pytest": "9.1.1",
+      "pytest-cov": "7.1.0",
+      "pytest-instafail": "0.5.0",
+      "pytest-xdist": "3.8.0",
+      "python": "3.12.3",
+      "reuse": "6.2.0",
+      "ruff": "0.16.0",
+      "uv": "0.11.24"
+    },
+    "interpreter": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+    "interpreter_prefix": "/workspace/scratch/21c38f9cc56d/riverhog/.venv",
+    "mise_sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d",
+    "observed": {
+      "mypy": "2.3.0",
+      "pytest": "9.1.1",
+      "pytest-cov": "7.1.0",
+      "pytest-instafail": "0.5.0",
+      "pytest-xdist": "3.8.0",
+      "python": "3.12.3",
+      "reuse": "6.2.0",
+      "ruff": "0.16.0",
+      "uv": "0.11.24"
+    },
+    "uv_lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+    "uv_probe": {
+      "executable": "/workspace/scratch/21c38f9cc56d/bin/uv",
+      "exit_status": 0,
+      "stderr": "",
+      "stdout": "uv 0.11.24 (x86_64-unknown-linux-gnu)\n"
+    }
+  }
+}

@@ -1,0 +1,399 @@
+"""Verify one exact clean observer proposal without rerunning retained product turns.
+
+Run this driver with the checkout's .venv/bin/python and pinned uv on PATH.
+Each selected command executes once, sequentially, through the maintained
+timing wrapper. Logs and receipts survive cleanup of the owned temporary tree.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib.metadata
+import json
+import os
+import platform
+import re
+import shutil
+import subprocess
+import sys
+import time
+import tomllib
+import traceback
+from collections import Counter
+from contextlib import contextmanager
+from datetime import UTC, datetime
+from pathlib import Path
+
+FOCUSED_TESTS = (
+    "tests/unit/test_growth_observer_lifetime.py",
+    "tests/unit/test_growth_observer_batch.py",
+    "tests/unit/test_growth_declarations.py",
+    "tests/unit/test_validation_witnesses.py",
+    "tests/unit/test_private_growth_discovery.py",
+)
+EXCLUDED_TEST = "actual_caller_and_unit_turns_share_a_bounded_observer_batch"
+DISTRIBUTIONS = (
+    "pytest",
+    "pytest-cov",
+    "pytest-instafail",
+    "pytest-xdist",
+    "ruff",
+    "reuse",
+    "mypy",
+)
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def write_json(path, value):
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(json.dumps(value, sort_keys=True, indent=2) + "\n")
+    temporary.replace(path)
+
+
+def file_digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+@contextmanager
+def child_log(path):
+    """Retain inherited child output while the maintained helper owns its join."""
+    sys.stdout.flush()
+    sys.stderr.flush()
+    saved_stdout, saved_stderr = os.dup(1), os.dup(2)
+    try:
+        with path.open("xb") as destination:
+            os.dup2(destination.fileno(), 1)
+            os.dup2(destination.fileno(), 2)
+            try:
+                yield
+            finally:
+                sys.stdout.flush()
+                sys.stderr.flush()
+    finally:
+        os.dup2(saved_stdout, 1)
+        os.dup2(saved_stderr, 2)
+        os.close(saved_stdout)
+        os.close(saved_stderr)
+
+
+def tool_pins(repo):
+    mise = tomllib.loads((repo / "mise.toml").read_text())
+    lock = tomllib.loads((repo / "uv.lock").read_text())
+    expected = {"python": mise["tools"]["python"], "uv": mise["tools"]["uv"]}
+    observed = {"python": platform.python_version()}
+    for name in DISTRIBUTIONS:
+        versions = {row["version"] for row in lock["package"] if row["name"] == name}
+        require(len(versions) == 1, f"the exact source has no unique {name} lock pin")
+        expected[name] = versions.pop()
+        try:
+            observed[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            observed[name] = None
+    uv = shutil.which("uv")
+    uv_probe = {"executable": uv, "exit_status": None, "stdout": "", "stderr": ""}
+    if uv is not None:
+        result = subprocess.run([uv, "--version"], capture_output=True, text=True, check=False)
+        uv_probe.update(exit_status=result.returncode, stdout=result.stdout, stderr=result.stderr)
+        words = result.stdout.split()
+        observed["uv"] = words[1] if result.returncode == 0 and words[:1] == ["uv"] else None
+    else:
+        observed["uv"] = None
+    return {
+        "expected": expected,
+        "observed": observed,
+        "all_pins_match": observed == expected,
+        "interpreter": sys.executable,
+        "interpreter_prefix": sys.prefix,
+        "checkout_venv": str(repo / ".venv"),
+        "checkout_venv_matches": Path(sys.prefix).resolve() == (repo / ".venv").resolve(),
+        "uv_probe": uv_probe,
+        "mise_sha256": file_digest(repo / "mise.toml"),
+        "uv_lock_sha256": file_digest(repo / "uv.lock"),
+    }
+
+
+def pytest_summary(timing_root, lane, expected_source):
+    records = sorted(
+        (timing_root / "pytest" / lane["lane"] / lane["run_id"]).glob("*/controller.json")
+    )
+    require(len(records) == 1, "focused pytest requires one completed controller timing receipt")
+    path = records[0]
+    receipt = json.loads(path.read_bytes())
+    require(receipt["format"] == "riverhog-ci-pytest-timing/v3", "unexpected pytest timing format")
+    require(
+        {name: receipt[name] for name in expected_source} == expected_source
+        and receipt["source_end"] == expected_source,
+        "pytest timing receipt does not describe the exact clean source",
+    )
+    require(
+        receipt["run_id"] == lane["run_id"] and receipt["lane"] == lane["lane"],
+        "pytest timing owner differs",
+    )
+    require(receipt["exit_status"] == lane["exit_status"], "pytest and original child exits differ")
+    tests = receipt["tests"]
+    require(isinstance(tests, dict) and bool(tests), "pytest timing has no observed test records")
+    require(
+        not any(EXCLUDED_TEST in nodeid for nodeid in tests), "the excluded caller test executed"
+    )
+    call_outcomes, phase_outcomes = Counter(), Counter()
+    for phases in tests.values():
+        for phase, result in phases.items():
+            phase_outcomes[phase + ":" + result["outcome"]] += 1
+        call = phases.get("call")
+        if call is not None:
+            outcome = call["outcome"]
+            if call.get("expected_failure"):
+                outcome = "xpassed" if outcome == "passed" else "xfailed"
+            call_outcomes[outcome] += 1
+    return {
+        "receipt": str(path),
+        "receipt_sha256": file_digest(path),
+        "recorded_tests": len(tests),
+        "call_outcomes": dict(call_outcomes),
+        "phase_outcomes": dict(phase_outcomes),
+        "elapsed_seconds": receipt["elapsed_seconds"],
+        "exit_status": receipt["exit_status"],
+        "excluded_test_executed": False,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repo", type=Path, required=True)
+    parser.add_argument("--expected-sha", required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    args = parser.parse_args()
+    repo, output = args.repo.resolve(), args.out.resolve()
+    require(
+        re.fullmatch(r"[0-9a-f]{40}", args.expected_sha) is not None,
+        "expected SHA must be the full lowercase commit identity",
+    )
+    require(not output.is_relative_to(repo), "verification output must be outside the checkout")
+    require(
+        not Path(__file__).resolve().is_relative_to(repo),
+        "verification driver must remain outside the checkout",
+    )
+    output.mkdir(parents=True, exist_ok=False)
+    shutil.copyfile(__file__, output / "verification-driver.py")
+    sys.path.insert(0, str(repo))
+    from scripts.validation_identity import source_identity
+    from scripts.validation_process import ValidationInterrupted, run_validation_child
+
+    expected_source = {"source_sha": args.expected_sha, "source_clean": True}
+    temporary, timing_root = output / "temporary", output / "pytest-receipts"
+    python = repo / ".venv/bin/python"
+    basetemp = temporary / "pytest"
+    environment = {
+        **os.environ,
+        "TMPDIR": str(temporary / "tmp"),
+        "RIVERHOG_CI_TIMING_DIR": str(timing_root),
+        "RUFF_CACHE_DIR": str(temporary / "ruff-cache"),
+        "MYPY_CACHE_DIR": str(temporary / "mypy-cache"),
+    }
+    checks = (
+        (
+            "focused-tests",
+            [
+                str(python),
+                "-m",
+                "pytest",
+                "-q",
+                "-p",
+                "scripts.ci_timing",
+                "--basetemp",
+                str(basetemp),
+                "-o",
+                "cache_dir=" + str(temporary / "pytest-cache"),
+                *FOCUSED_TESTS,
+                "-k",
+                "not " + EXCLUDED_TEST,
+            ],
+        ),
+        ("ruff", [str(python), "-m", "ruff", "check", "."]),
+        ("format", [str(python), "-m", "ruff", "format", "--check", "."]),
+        ("reuse", [str(python), "-m", "reuse", "lint"]),
+        ("mypy", [str(python), "scripts/run_mypy.py"]),
+    )
+    report = {
+        "format": "external-observer-lifetime-verification/v1",
+        "driver_sha256": file_digest(Path(__file__)),
+        "expected_source": expected_source,
+        "source": source_identity(repo),
+        "repository": str(repo),
+        "started_at": datetime.now(UTC).isoformat(),
+        "state": "running",
+        "commands": [],
+        "conditions": {
+            "sequential": True,
+            "attempts_per_command": 1,
+            "focused_tests": list(FOCUSED_TESTS),
+            "excluded_test": EXCLUDED_TEST,
+            "expected_test_count": None,
+            "timing_target": None,
+            "additional_product_fixture": False,
+            "timing_directory": str(timing_root),
+            "basetemp": str(basetemp),
+            "temporary_directory": str(temporary),
+        },
+        "cleanup": {"temporary_created": False, "temporary_removed": False},
+    }
+    status, started, temporary_owned = 1, time.monotonic(), False
+    write_json(output / "run.json", report)
+    try:
+        require(
+            report["source"] == expected_source,
+            "verification requires the exact clean source before any gate",
+        )
+        require(
+            Path(source_identity.__code__.co_filename).resolve()
+            == repo / "scripts/validation_identity.py",
+            "source identity helper comes from another checkout",
+        )
+        report["tool_pins"] = tool_pins(repo)
+        write_json(output / "run.json", report)
+        require(
+            report["tool_pins"]["checkout_venv_matches"],
+            "run verification with the checkout's .venv/bin/python",
+        )
+        require(
+            report["tool_pins"]["all_pins_match"],
+            "installed tools differ from this source's mise/uv lock pins",
+        )
+        temporary.mkdir(exist_ok=False)
+        temporary_owned = True
+        (temporary / "tmp").mkdir()
+        report["cleanup"]["temporary_created"] = True
+        status = 0
+        for name, command in checks:
+            before = source_identity(repo)
+            require(before == expected_source, "source changed before " + name)
+            lane_path, log_path = output / (name + "-lane.json"), output / (name + ".log")
+            lane_name = "observer-lifetime-" + name
+            wrapped = [
+                str(python),
+                "scripts/ci_timing.py",
+                "run",
+                "--lane",
+                lane_name,
+                "--output",
+                str(lane_path),
+                "--",
+                *command,
+            ]
+            record = {
+                "name": name,
+                "command": command,
+                "timed_command": wrapped,
+                "log": str(log_path),
+                "lane_receipt": str(lane_path),
+                "source_before": before,
+                "started_at": datetime.now(UTC).isoformat(),
+                "state": "running",
+                "wrapper_exit_status": None,
+                "original_exit_status": None,
+            }
+            report["commands"].append(record)
+            write_json(output / "run.json", report)
+            print("starting", name, "log", log_path, flush=True)
+            command_started = time.monotonic()
+            try:
+                with child_log(log_path):
+                    record["wrapper_exit_status"] = run_validation_child(
+                        wrapped, cwd=repo, env=environment
+                    )
+                record["state"] = "completed"
+            except ValidationInterrupted as error:
+                record.update(state="interrupted", interruption_signal=error.signum)
+                raise
+            except BaseException as error:
+                record.update(
+                    state="execution-error", error_class=type(error).__name__, error=str(error)
+                )
+                raise
+            finally:
+                record["driver_elapsed_seconds"] = time.monotonic() - command_started
+                record["source_after"] = source_identity(repo)
+                if log_path.exists():
+                    record["log_sha256"] = file_digest(log_path)
+                try:
+                    lane = json.loads(lane_path.read_bytes())
+                    require(
+                        lane["format"] == "riverhog-ci-lane-timing/v1",
+                        "unexpected command timing format",
+                    )
+                    require(lane["lane"] == lane_name, "command timing lane differs")
+                    require(
+                        {key: lane[key] for key in expected_source} == expected_source,
+                        "command timing source differs",
+                    )
+                    require(type(lane["exit_status"]) is int, "original command exit is missing")
+                    record["original_exit_status"] = lane["exit_status"]
+                    record["lane_receipt_sha256"] = file_digest(lane_path)
+                    record["elapsed_seconds"] = lane["elapsed_seconds"]
+                    if record["wrapper_exit_status"] is not None:
+                        require(
+                            record["wrapper_exit_status"] == lane["exit_status"] % 256,
+                            "timing wrapper and original command exits differ",
+                        )
+                    if name == "focused-tests":
+                        record["pytest"] = pytest_summary(timing_root, lane, expected_source)
+                except (OSError, ValueError, KeyError, TypeError) as error:
+                    record["evidence_error"] = {"type": type(error).__name__, "message": str(error)}
+                write_json(output / "run.json", report)
+            if (
+                record["wrapper_exit_status"] != 0
+                or record["original_exit_status"] != 0
+                or "evidence_error" in record
+            ):
+                status = 1
+            require(record["source_after"] == expected_source, "source changed during " + name)
+            print(
+                name,
+                "wrapper_exit",
+                record["wrapper_exit_status"],
+                "original_exit",
+                record["original_exit_status"],
+                flush=True,
+            )
+        report["state"] = "completed" if status == 0 else "failed"
+    except ValidationInterrupted as error:
+        status = 128 + error.signum
+        report.update(state="interrupted", interruption_signal=error.signum)
+    except BaseException as error:
+        status = 1
+        report.update(state="failed", error={"type": type(error).__name__, "message": str(error)})
+        traceback.print_exc()
+    finally:
+        if temporary_owned:
+            try:
+                shutil.rmtree(temporary)
+                report["cleanup"]["temporary_removed"] = not temporary.exists()
+            except OSError as error:
+                status = 1
+                report["cleanup"]["error"] = {"type": type(error).__name__, "message": str(error)}
+                report["state"] = "cleanup-failed"
+        report["source_end"] = source_identity(repo)
+        if report["source_end"] != expected_source:
+            status, report["state"] = 1, "source-changed"
+        report["elapsed_seconds"] = time.monotonic() - started
+        report["exit_status"] = status
+        write_json(output / "run.json", report)
+        print(
+            "verification final status",
+            status,
+            "source",
+            report["source_end"],
+            "temporary_removed",
+            report["cleanup"]["temporary_removed"],
+            flush=True,
+        )
+    return status
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

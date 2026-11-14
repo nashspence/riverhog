@@ -1,0 +1,9 @@
+begin instrumented:legacy literal retained observer work; no product fixture
+completed instrumented:legacy wall_ns 27110750035 cpu_ns 27039716732
+begin instrumented:extended literal retained observer work; no product fixture
+completed instrumented:extended wall_ns 20334163557 cpu_ns 20254414480
+begin elapsed:legacy literal retained observer work; no product fixture
+completed elapsed:legacy wall_ns 24991175260 cpu_ns 24919032733
+begin elapsed:extended literal retained observer work; no product fixture
+completed elapsed:extended wall_ns 22320676168 cpu_ns 22211837929
+original child final status 0 cleanup {"profile_scratch_created": true, "profile_scratch_path": "/workspace/scratch/21c38f9cc56d/observer-lifetime-helper-replay-tmp/observer-lifetime-replay-siyn35gx", "profile_scratch_removed": true}

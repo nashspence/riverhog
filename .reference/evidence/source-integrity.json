@@ -1,0 +1,97 @@
+{
+  "append_policy": "Only .reference files may differ from the tested implementation; executable source is frozen.",
+  "audited_base": "6e80898a793532beff7a1718effc0618e2472d58",
+  "format": "external-observer-lifetime-source-integrity/v1",
+  "only_changed_executable_paths": [
+    "packages/riverhog-provenance/tests/test_entry_replay_advance_growth.py",
+    "packages/riverhog-provenance/tests/test_entry_replay_growth.py",
+    "packages/riverhog-provenance/tests/test_journal_session_growth.py",
+    "packages/riverhog-provenance/tests/test_preparation_growth.py",
+    "tests/support/growth_batch.py",
+    "tests/unit/test_growth_observer_lifetime.py",
+    "tests/unit/test_upload_journal_owned_source_growth.py",
+    "tests/unit/test_upload_journal_service_caller_growth.py",
+    "tests/unit/test_upload_journal_service_coordination_growth.py",
+    "tests/unit/test_upload_journal_service_unit_growth.py",
+    "tests/unit/test_upload_journal_validation_advance_growth.py",
+    "tests/unit/test_upload_journal_validation_open_growth.py"
+  ],
+  "public_reader_sha256": "1adc9766c8d0c97cf97ce926695e6c38dc7d50458725e8947b57bfc94c90e376",
+  "source_clean_before_evidence_append": true,
+  "test_support_files": [
+    {
+      "base_blob": "1b5b17aa68ea3ac667e61d3b8adc4126db7ddbe1",
+      "path": "packages/riverhog-provenance/tests/test_entry_replay_advance_growth.py",
+      "sha256": "4edf2bb2cdfa38512e63e214a31e1fc6eb636c862e2678ede4fce676931887a4",
+      "tested_blob": "96b27ee4bd94968c327c572fb7edce6130c8b3dc"
+    },
+    {
+      "base_blob": "2fc80cfea028dbd1a8d82cd90fb5f41549676e76",
+      "path": "packages/riverhog-provenance/tests/test_entry_replay_growth.py",
+      "sha256": "d44d0f1bf5f75b02ce406012a08950e7812bc51b13f43c8153cfd7f0d36a7e50",
+      "tested_blob": "de95bf90d416604107261ca9565f204bd272a4bb"
+    },
+    {
+      "base_blob": "564a0133995600d92423563d6fad8e2c1efdfe65",
+      "path": "packages/riverhog-provenance/tests/test_journal_session_growth.py",
+      "sha256": "3bae342d34cbcc5b6577a94f62c4b003d8791acae9c6c5363908a62cbfb3c2b2",
+      "tested_blob": "53bf8d84e945989a647ed2558f3445ae9583f6b2"
+    },
+    {
+      "base_blob": "53320b260e4d9b36b8b7e628f089047e9cc1881f",
+      "path": "packages/riverhog-provenance/tests/test_preparation_growth.py",
+      "sha256": "53c273fe91a7985541ed60e39cc3a3f3c3146c7fba3d44d60c992f42b404bab6",
+      "tested_blob": "4f0cf57275aa64054fedfdc18b7f5dcf28cdc6c6"
+    },
+    {
+      "base_blob": "238a8b031fecb77266fe588093dbb62c68568d88",
+      "path": "tests/support/growth_batch.py",
+      "sha256": "87ccc6657a2a3dbab1bf74652aea86a9495a316be2ded7808836f9bd4cf58b5f",
+      "tested_blob": "7f1e0ef38b0db7261deee87593c47a1b0c5442f3"
+    },
+    {
+      "base_blob": null,
+      "path": "tests/unit/test_growth_observer_lifetime.py",
+      "sha256": "fb0d1bf81aa66a72a1b915dcc8cd104dcade0c32e6b0151c691471f8e85dbacc",
+      "tested_blob": "92ccc4f5c9c5b4a6a5e9ecff07fb56aeb12320fe"
+    },
+    {
+      "base_blob": "7aaae177fc6b2d24076d3bd65f7649e6309bc9d2",
+      "path": "tests/unit/test_upload_journal_owned_source_growth.py",
+      "sha256": "82288786096ef37df1d11687eb459116d94dc69d552e342f9470d2d484eb2875",
+      "tested_blob": "ffff59b7409b8c4b62a071a76da8303dc02a2b3b"
+    },
+    {
+      "base_blob": "82c0f9dadd820c54457b66e99dc8f84ab988eac3",
+      "path": "tests/unit/test_upload_journal_service_caller_growth.py",
+      "sha256": "e5c700e84c373b22c3e1ed89eba2a5b20068259f5401d1e940af012ac3629f8b",
+      "tested_blob": "a89aa3767d18fafc1fee2d0c761d8693e502bf50"
+    },
+    {
+      "base_blob": "09c9c9b3c9bdc35ea1abda06d8d751e2dc4c3a79",
+      "path": "tests/unit/test_upload_journal_service_coordination_growth.py",
+      "sha256": "0df45158813d74845c541efe351391aff09ba9a93c27a4846927a9b1b3929461",
+      "tested_blob": "7e22d3d34d584c25a7c79d7f9507563fe5ec3e97"
+    },
+    {
+      "base_blob": "cd016ff9360afe318a261c2a89deaace02406c3c",
+      "path": "tests/unit/test_upload_journal_service_unit_growth.py",
+      "sha256": "61b989bb902ea95427987ad2650bc41b1720f05f6466b3eb309e955e7f7de009",
+      "tested_blob": "b0ba9f0bc083918dbda7954b056ae3890e47d828"
+    },
+    {
+      "base_blob": "b101a0ec4e4ed31478e7b12b1846d814a69d5d77",
+      "path": "tests/unit/test_upload_journal_validation_advance_growth.py",
+      "sha256": "42a37b66702f58222cd7b1d2d4674e237447d28c03e9287f23a89568b0c4fa0c",
+      "tested_blob": "38fc347b30a9f877ee9ce2c97140e25677c12db1"
+    },
+    {
+      "base_blob": "c45d2cf2708ebeef8f43bc7c7e89dd02bde65dab",
+      "path": "tests/unit/test_upload_journal_validation_open_growth.py",
+      "sha256": "beb1e1e655ee9f229621271363693baa2789acd701af16fd634bd526ef4f55db",
+      "tested_blob": "7d350571d4bd8755d91527038a0df399f931c5d9"
+    }
+  ],
+  "tested_implementation": "3e27e21b66da365b3b5385a1cefa2eaf47e3cc86",
+  "tested_tree": "871444add3653a813187399f69189182098b85e5"
+}

@@ -1,0 +1,11 @@
+starting focused-tests log /workspace/scratch/21c38f9cc56d/observer-lifetime-verification/focused-tests.log
+focused-tests wrapper_exit 0 original_exit 0
+starting ruff log /workspace/scratch/21c38f9cc56d/observer-lifetime-verification/ruff.log
+ruff wrapper_exit 0 original_exit 0
+starting format log /workspace/scratch/21c38f9cc56d/observer-lifetime-verification/format.log
+format wrapper_exit 0 original_exit 0
+starting reuse log /workspace/scratch/21c38f9cc56d/observer-lifetime-verification/reuse.log
+reuse wrapper_exit 0 original_exit 0
+starting mypy log /workspace/scratch/21c38f9cc56d/observer-lifetime-verification/mypy.log
+mypy wrapper_exit 0 original_exit 0
+verification final status 0 source {'source_sha': '3e27e21b66da365b3b5385a1cefa2eaf47e3cc86', 'source_clean': True} temporary_removed True

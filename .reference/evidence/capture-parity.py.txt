@@ -1,0 +1,213 @@
+"""Compare retained observer captures; never import or execute product/test code."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from collections import Counter, defaultdict, deque
+from pathlib import Path
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def canonical(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"))
+
+
+def walk(node):
+    yield node
+    for children in node["delegates"].values():
+        for child in children:
+            yield from walk(child)
+
+
+def leaf_differences(left, right, path=()):
+    require(type(left) is type(right), "sample value types differ at " + repr(path))
+    if isinstance(left, dict):
+        require(left.keys() == right.keys(), "sample field sets differ at " + repr(path))
+        for key in sorted(left):
+            yield from leaf_differences(left[key], right[key], (*path, key))
+    elif isinstance(left, list):
+        require(len(left) == len(right), "delegate cardinalities differ at " + repr(path))
+        for index, (first, second) in enumerate(zip(left, right, strict=True)):
+            yield from leaf_differences(first, second, (*path, index))
+    elif left != right:
+        yield path, left, right
+
+
+def read_capture(directory):
+    files = {name: directory / (name + ".json") for name in ("run", "samples", "events")}
+    values = {name: json.loads(path.read_bytes()) for name, path in files.items()}
+    run, samples, events = values["run"], values["samples"]["samples"], values["events"]["events"]
+    require(run["state"] == "completed" and run["exit_status"] == 0, "capture did not complete")
+    require(run["source"] == run["source_end"], "capture source changed")
+    require(run["source"]["source_clean"] is True, "capture source is not clean")
+    for name in ("samples", "events"):
+        require(digest(files[name]) == run[name + "_sha256"], "capture file hash differs")
+    require(
+        [row["sample"] for row in samples] == list(range(len(samples))),
+        "sample tokens do not identify their array positions",
+    )
+    for row in samples:
+        require(
+            hashlib.sha256(canonical(row["value"]).encode()).hexdigest() == row["sha256"],
+            "sample value hash differs",
+        )
+        require(row["nodes"] == sum(1 for _ in walk(row["value"])), "sample node count differs")
+    nodes = [node for row in samples for node in walk(row["value"])]
+    roots_by_declaration = dict(sorted(Counter(row["value"]["declaration"] for row in samples).items()))
+    nodes_by_declaration = dict(sorted(Counter(node["declaration"] for node in nodes).items()))
+    require(nodes_by_declaration == run["summary"]["validation_nodes_by_declaration"], "summary inventory differs")
+    validation_events = [event for event in events if event["kind"] == "validation-begin"]
+    received_tokens = Counter(token for event in validation_events for token in event["samples"])
+    require(received_tokens == Counter({row["sample"]: 1 for row in samples}), "root validation coverage differs")
+    paired_events = {}
+    for name in ("projection", "compilation", "validation", "emission", "caller-turn"):
+        starts = Counter(event["event"] for event in events if event["kind"] == name + "-begin")
+        returns = Counter(event["original_event"] for event in events if event["kind"] == name + "-return")
+        paired_events[name] = starts == returns
+        require(paired_events[name], "unmatched capture event: " + name)
+    declarations = defaultdict(set)
+    for node in nodes:
+        declarations[node["declaration"]].add(node["declaration_sha256"])
+    require(all(len(values) == 1 for values in declarations.values()), "declaration digest is inconsistent")
+    constructions = [
+        {key: event[key] for key in ("turn", "module", "source_operation", "dimensions")}
+        for event in events if event["kind"] == "observer-construction-begin"
+    ]
+    projection = next(event["declaration_ids"] for event in events if event["kind"] == "projection-return")
+    information = {
+        "directory": str(directory),
+        "inputs": {name: {"path": str(path), "sha256": digest(path)} for name, path in files.items()},
+        "source": run["source"],
+        "source_end": run["source_end"],
+        "conditions": run["conditions"],
+        "cleanup": run["cleanup"],
+        "fixture": run["fixture"],
+        "counts": {
+            "roots": len(samples), "nodes": len(nodes),
+            "root_declarations": len(roots_by_declaration), "node_declarations": len(nodes_by_declaration),
+            "projections": run["summary"]["projection_calls"],
+            "compilations": run["summary"]["compilation_calls"],
+            "public_readers": len(validation_events), "observer_constructions": len(constructions),
+            "caller_roots": len(run["summary"]["caller_roots"]),
+            "caller_nodes": run["summary"]["caller_nested_node_occurrences"],
+        },
+        "root_declaration_inventory": roots_by_declaration,
+        "node_declaration_inventory": nodes_by_declaration,
+        "integrity": {
+            "input_hashes_match_recorded_hashes": True, "sample_value_hashes_match": True,
+            "sample_node_counts_match": True, "summary_node_inventory_matches": True,
+            "each_root_publicly_validated_exactly_once": True, "matched_begin_return_events": paired_events,
+            "primitive_observation_hooks_restored": run["primitive_observation_hooks_restored"],
+        },
+    }
+    return information, samples, constructions, projection, run["public_reader_sha256"], declarations
+
+
+def compare(baseline_directory, candidate_directory):
+    baseline = read_capture(baseline_directory)
+    candidate = read_capture(candidate_directory)
+    left, right = baseline[1], candidate[1]
+    exact_candidates = defaultdict(deque)
+    for row in right:
+        exact_candidates[canonical(row["value"])].append(row)
+    exact_pairs, unmatched_left = [], []
+    for row in left:
+        available = exact_candidates[canonical(row["value"])]
+        if available:
+            exact_pairs.append([row["sample"], available.popleft()["sample"]])
+        else:
+            unmatched_left.append(row)
+    unmatched_right = [row for rows in exact_candidates.values() for row in rows]
+    remaining = defaultdict(list)
+    for row in unmatched_right:
+        remaining[(row["value"]["declaration"], row["nodes"])].append(row)
+    differing_pairs = []
+    for row in unmatched_left:
+        key = row["value"]["declaration"], row["nodes"]
+        matches = remaining[key]
+        require(len(matches) == 1, "unmatched declaration/node-count pairing is ambiguous")
+        match = matches.pop()
+        differences = []
+        for path, before, after in leaf_differences(row["value"], match["value"]):
+            owner = row["value"]
+            for part in path[:-2]:
+                owner = owner[part]
+            differences.append({
+                "path": "/" + "/".join(str(part).replace("~", "~0").replace("/", "~1") for part in path),
+                "node_declaration": owner.get("declaration") if isinstance(owner, dict) else None,
+                "section": path[-2] if len(path) >= 2 else None,
+                "baseline": before, "candidate": after,
+            })
+        differing_pairs.append({
+            "baseline_sample": row["sample"], "candidate_sample": match["sample"],
+            "declaration": key[0], "nodes": key[1], "differences": differences,
+        })
+    require(not any(remaining.values()), "candidate roots remain unmatched")
+    invariants = {
+        "root_declaration_inventory_equal": baseline[0]["root_declaration_inventory"] == candidate[0]["root_declaration_inventory"],
+        "node_declaration_inventory_equal": baseline[0]["node_declaration_inventory"] == candidate[0]["node_declaration_inventory"],
+        "observed_declaration_digests_equal": baseline[5] == candidate[5],
+        "observer_construction_metadata_equal": baseline[2] == candidate[2],
+        "initial_union_declaration_order_equal": baseline[3] == candidate[3],
+        "public_reader_source_hash_equal": baseline[4] == candidate[4],
+        "matched_root_field_sets_and_delegate_cardinalities_equal": True,
+    }
+    require(all(invariants.values()), "a capture parity invariant differs")
+    return {
+        "format": "external-observer-lifetime-capture-parity/v1",
+        "analysis_scope": "Deterministic JSON/hash comparison only; no product, fixture, test or profile execution.",
+        "comparison_script": {"path": str(Path(__file__).resolve()), "sha256": digest(Path(__file__))},
+        "baseline": baseline[0], "candidate": candidate[0],
+        "invariants": invariants,
+        "initial_union_declarations": len(baseline[3]),
+        "public_reader_sha256": baseline[4],
+        "matching": {
+            "method": "Match exact canonical root values first; pair remaining roots only when declaration and total node count identify one candidate; recursively compare every field and delegate position without normalization.",
+            "literal_root_matches": len(exact_pairs), "differing_root_matches": len(differing_pairs),
+            "literal_root_pairs": exact_pairs, "differing_root_pairs": differing_pairs,
+            "differing_leaf_occurrences": sum(len(pair["differences"]) for pair in differing_pairs),
+            "path_convention": "Each difference path is an RFC 6901 pointer relative to the root row's value; sample tokens equal samples-array indexes.",
+        },
+        "interpretation": {
+            "observed_fixture_path_bytes": {
+                "baseline": len(baseline[0]["cleanup"]["fixture_path"].encode()),
+                "candidate": len(candidate[0]["cleanup"]["fixture_path"].encode()),
+            },
+            "path_length": "Observed candidate fixture path is 10 bytes longer. Lease root-path dimensions are +10, lease native-control bytes +20, lease path bytes +30, and associated returned-metadata counts +10. Their attribution to the different fixture path is consistent with these observed lengths; no journal bytes were compared.",
+            "json_length": "Observed replay-admission encoded_json_octets is 28979 versus 28978, propagated to Native/Core parent aggregates. Incidental runtime metadata length is a consistent, inferred cause, not established by comparison of the underlying journals.",
+            "instrumentation": "No other literal field differences were found. In particular hash counters, SQL counts, VM instructions and delegate cardinalities match; the retained observations show no evidence of instrumentation pollution.",
+            "timing_boundary": "These are separate actual product captures with distinct generated fixtures and timing runs, different temporary-path lengths, and different batch scope/limits (baseline limit 4, candidate limit 64 with descendants). Their elapsed scope includes product work, primitive instrumentation and observer evidence handling. They are not a matched replay of identical retained samples; elapsed differences cannot isolate observer cost or establish a whole-census speedup. Deterministic work counts and sample parity are the supported comparison here.",
+        },
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--baseline", type=Path, required=True)
+    parser.add_argument("--candidate", type=Path, required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    args = parser.parse_args()
+    report = compare(args.baseline.resolve(), args.candidate.resolve())
+    with args.out.open("x") as destination:
+        destination.write(json.dumps(report, sort_keys=True, indent=2) + "\n")
+    print(json.dumps({
+        "receipt": str(args.out.resolve()), "receipt_sha256": digest(args.out),
+        "script_sha256": report["comparison_script"]["sha256"],
+        "literal_root_matches": report["matching"]["literal_root_matches"],
+        "differing_root_matches": report["matching"]["differing_root_matches"],
+        "differing_leaf_occurrences": report["matching"]["differing_leaf_occurrences"],
+    }, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

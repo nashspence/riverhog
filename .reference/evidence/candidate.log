@@ -1,0 +1,3 @@
+begin exactly three real caller turns
+original fixture and observer scopes closed; serializing retained references
+original child final status 0 cleanup {"checked_out_after_close": 0, "fixture_created": true, "fixture_generator_closed": true, "fixture_path": "/workspace/scratch/21c38f9cc56d/observer-lifetime-candidate-tmp/observer-lifetime-_qeq2vr2", "fixture_removed": true, "native_storage_closed": [true]}
