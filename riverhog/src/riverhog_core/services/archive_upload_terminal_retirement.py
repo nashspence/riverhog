@@ -46,8 +46,10 @@ class ArchiveUploadTerminalRetirement:
     remain with their original owners.
 
     This releases unused local staging after positive terminal closure, even
-    when the abandoned forward step never succeeded. It leaves preparations,
-    provider state, cache ownership, registration and original results intact.
+    when the abandoned forward step never succeeded. It leaves archive write
+    preparations, provider state, independent cache ownership, registration and
+    original results intact. Derived primary facts receive through their own
+    optional retirement owner only after the forward originals have drained.
     It performs no provider IO, joins, constructors or terminal confirmation.
     """
 
@@ -57,11 +59,14 @@ class ArchiveUploadTerminalRetirement:
         observation: ArchiveUploadTerminalObservation,
         finalizers: ArchiveFinalizerRegistry,
         invocations: ArchiveUploadInvocationRegistry,
+        *,
+        retire_preparation: Callable[[int], bool] | None = None,
     ) -> None:
         self._factory = factory
         self._observation = observation
         self._finalizers = finalizers
         self._invocations = invocations
+        self._retire_preparation = retire_preparation
 
     def retire(
         self,
@@ -120,6 +125,11 @@ class ArchiveUploadTerminalRetirement:
                     != "untracked"
                     for owner in (self._finalizers, self._invocations)
                 )
+                if not pending and self._retire_preparation is not None:
+                    # This runs inside the joined terminal worker, after exact
+                    # forward originals have received. A failed close retains
+                    # the same preparation owner and its capacity for retry.
+                    pending = not self._retire_preparation(collection_id)
                 stopped = not pending and terminal.phase in {
                     "refused-sealed",
                     "needs-reconfirmation",

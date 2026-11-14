@@ -20,7 +20,7 @@ _KINDS = ("member-histories", "provenance-closure", "artifact-tree")
 
 
 @contextmanager
-def _original(tmp_path, monkeypatch, kind, *, database_url=None):
+def _original(tmp_path, monkeypatch, kind, *, database_url=None, prepare_member=False):
     monkeypatch.setattr(service_module, "_FINALIZATION_FILE_BATCH", 1)
     with _case(tmp_path, "segment", artifact_count=2, database_url=database_url) as case:
         for index in (1, 2):
@@ -33,6 +33,8 @@ def _original(tmp_path, monkeypatch, kind, *, database_url=None):
             assert case.service._stage_next_member_histories(case.collection_id)
             assert case.service._stage_next_member_histories(case.collection_id)
             assert not case.service._stage_next_member_histories(case.collection_id)
+            if prepare_member:
+                _prepare_primary_turn(case, claim, monkeypatch)
         owner = case.service._catalog_finalization_owner(claim, kind=kind)
         yield case, claim, owner
 
@@ -40,6 +42,33 @@ def _original(tmp_path, monkeypatch, kind, *, database_url=None):
 def _cursor(case, owner):
     with session_scope(case.factory) as session:
         return owner._cursor(session.get(Upload, case.collection_id))
+
+
+def _prepare_primary_turn(case, claim, monkeypatch):
+    """Finish fixture preparation before faulting the next member-changing turn.
+
+    All preparation goes through real catalog owners. Stop at the actual facts
+    owner's successful result while leaving the member cursor untouched, so the
+    next original exercises the catalog commit/rollback distinction itself.
+    """
+    actual, ready = case.service._primary_facts.verify, False
+
+    def prepare(*args, **kwargs):
+        nonlocal ready
+        ready = actual(*args, **kwargs) is not None
+        return None
+
+    with monkeypatch.context() as patch:
+        patch.setattr(case.service._primary_facts, "verify", prepare)
+        for _ in range(128):
+            owner = case.service._catalog_finalization_owner(claim, kind="provenance-closure")
+            before = _cursor(case, owner)
+            assert owner.advance() is True
+            assert _cursor(case, owner) == before
+            assert not owner.has_pending and not owner.result_resources.pending
+            if ready:
+                return
+    pytest.fail("fixed primary fixture preparation did not reach its member turn")
 
 
 @contextmanager
@@ -66,7 +95,11 @@ def test_original_catalog_batch_survives_commit_reply_loss(tmp_path, monkeypatch
 
 
 def _assert_original_catalog_batch(tmp_path, monkeypatch, kind, committed, *, database_url=None):
-    with _original(tmp_path, monkeypatch, kind, database_url=database_url) as (case, claim, owner):
+    with _original(tmp_path, monkeypatch, kind, database_url=database_url, prepare_member=True) as (
+        case,
+        claim,
+        owner,
+    ):
         actual = owner._advance
         calls = []
 
@@ -89,6 +122,8 @@ def _assert_original_catalog_batch(tmp_path, monkeypatch, kind, committed, *, da
         # A duplicate cannot silently select the second real member.
         assert owner.advance() is True and _cursor(case, owner) == after
         assert len(calls) == (1 if committed else 2)
+        if kind == "provenance-closure":
+            _prepare_primary_turn(case, claim, monkeypatch)
         replacement = case.service._catalog_finalization_owner(claim, kind=kind)
         assert replacement.advance() is True
         assert _cursor(case, replacement) != after
@@ -170,7 +205,7 @@ def test_pending_original_cannot_advance_a_replacement_claim(tmp_path, monkeypat
 def test_terminal_selection_allows_original_receiving_but_not_a_new_catalog_batch(
     tmp_path, monkeypatch, kind, committed
 ):
-    with _original(tmp_path, monkeypatch, kind) as (case, claim, owner):
+    with _original(tmp_path, monkeypatch, kind, prepare_member=True) as (case, claim, owner):
         with _lose_commit_reply(monkeypatch, committed=committed):
             with pytest.raises(OSError):
                 owner.advance()

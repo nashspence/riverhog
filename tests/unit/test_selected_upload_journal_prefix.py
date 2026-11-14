@@ -45,7 +45,7 @@ from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import delete, update
 
 from tests.support.validation_workspace import leased_workspace
-from tests.unit.test_archive_catalog_finalizer import _lose_commit_reply
+from tests.unit.test_archive_catalog_finalizer import _lose_commit_reply, _prepare_primary_turn
 from tests.unit.test_collection_upload_preparation import _case
 from tests.unit.test_collection_uploads import _bind_primary, _upload_provenance_journal
 from tests.unit.test_finalization_claim_readiness import _seal
@@ -159,7 +159,7 @@ def _state(case):
 
 def _finish(case):
     owners = []
-    for _ in range(case.members + 2):
+    for _ in range(128 * case.members + 2):
         owner = _owner(case)
         owners.append(owner)
         if not owner.advance():
@@ -169,6 +169,20 @@ def _finish(case):
     assert _state(case) == (case.members, True, None)
     assert all(not owner.has_pending and not owner.result_resources.pending for owner in owners)
     return owners
+
+
+def _advance_member(case):
+    before = _state(case)
+    for _ in range(128):
+        owner = _owner(case)
+        assert owner.advance() is True
+        assert not owner.has_pending and not owner.result_resources.pending
+        after = _state(case)
+        if after[0] != before[0]:
+            assert after == (before[0] + 1, False, None)
+            return
+        assert after == before
+    pytest.fail("fixed selected-prefix fixture did not finish the next member")
 
 
 @pytest.mark.parametrize("fanout", [1, 4])
@@ -266,7 +280,10 @@ def test_complete_finalization_reuses_selected_semantics_independently_of_fanout
                     observe_validation(module.validate_journal_chunks, label),
                 )
             owners = _finish(case)
-        assert len(owners) == case.members + 2
+        preparation_turns = sum(
+            owner._before == owner._after and owner._result is True for owner in owners
+        )
+        assert len(owners) == case.members + 2 + preparation_turns
         assert len(selected) == fanout
         for measured in selected:
             assert {
@@ -283,13 +300,12 @@ def test_complete_finalization_reuses_selected_semantics_independently_of_fanout
         ]
         assert all(row["native_advances"] > 0 for row in validations)
         assert sum(row["native_advances"] for row in validations) == len(advances)
-        assert len(validations) == 3 * case.members + 2
+        assert len(validations) == 2 * case.members + 2
         per_journal = {case.shared_anchor.journal_id: len(shared)}
         for primary in case.primaries:
             rows = [row for row in validations if row["journal_id"] == primary.journal_id]
             expected = primary.binding.journal.model_dump(mode="json")
             assert [(row["owner"], row["anchor"]) for row in rows] == [
-                ("finalizer", expected),
                 ("finalizer", expected),
                 ("closure", expected),
             ]
@@ -313,6 +329,7 @@ def test_complete_finalization_reuses_selected_semantics_independently_of_fanout
                 "shared_source_octets": len(case.shared_raw),
                 "distinct_selected_anchors": 1,
                 "complete_units": len(owners),
+                "primary_preparation_units": preparation_turns,
                 "selected_proof_calls": len(selected),
                 "selected_result_openings": sum(row["opens"] for row in selected),
                 "selected_anchor_lookups": sum(row["anchor_lookups"] for row in selected),
@@ -332,7 +349,7 @@ def test_changed_raw_selected_bytes_cannot_cross_the_complete_closure_barrier(
     tmp_path, monkeypatch
 ):
     with _shared_finalization(tmp_path, monkeypatch, members=2, fanout=2, text_octets=32) as case:
-        assert _owner(case).advance()
+        _advance_member(case)
 
         def source_metadata(session):
             journal = session.get(Journal, (case.collection_id, case.shared_anchor.journal_id))
@@ -352,7 +369,7 @@ def test_changed_raw_selected_bytes_cannot_cross_the_complete_closure_barrier(
             assert valid.journal_bytes == case.shared_anchor.prefix_bytes
             assert valid.anchor != case.shared_anchor.to_mapping()
         # Frozen semantic evidence does not authorize current raw archive bytes.
-        assert _owner(case).advance()
+        _advance_member(case)
         assert _state(case) == (2, False, None)
         # The full raw pass rejects the broken tail link before prefix selection.
         with pytest.raises(
@@ -369,7 +386,7 @@ def test_changed_raw_selected_bytes_cannot_cross_the_complete_closure_barrier(
 
 def test_selected_proof_reopens_after_service_restart_without_revalidation(tmp_path, monkeypatch):
     with _shared_finalization(tmp_path, monkeypatch, members=2, fanout=2) as case:
-        assert _owner(case).advance()
+        _advance_member(case)
         previous = case.service
         previous.close()
         current = service_owner.SqlAlchemyCollectionUploadService(
@@ -403,6 +420,7 @@ def test_selected_proof_reopens_after_service_restart_without_revalidation(tmp_p
 @pytest.mark.parametrize("committed", [False, True])
 def test_selected_proof_keeps_the_original_catalog_commit_outcome(tmp_path, monkeypatch, committed):
     with _shared_finalization(tmp_path, monkeypatch, members=2, fanout=2) as case:
+        _prepare_primary_turn(case, case.claim, monkeypatch)
         owner = _owner(case)
         actual = prefix_owner.open_upload_journal_result
         openings = []
