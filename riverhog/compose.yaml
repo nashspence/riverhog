@@ -14,7 +14,15 @@ services:
     profiles: ["development"]
     image: cgr.dev/chainguard/minio:latest@sha256:7df55d002b698e4494a131b848dd553361bbe58b7e19f62d9623c29af1ba9ccf
     user: "0:0"
-    command: ["--quiet", "--anonymous", "server", "/data"]
+    command:
+      - --quiet
+      - --anonymous
+      - server
+      - --address
+      - ":9000"
+      - --console-address
+      - ":9001"
+      - /data
     environment:
       MINIO_ROOT_USER: ${RIVERHOG_S3_FIXTURE_ACCESS_KEY_ID:-riverhog-test-key}
       MINIO_ROOT_PASSWORD: ${RIVERHOG_S3_FIXTURE_SECRET_ACCESS_KEY:-riverhog-test-secret}
