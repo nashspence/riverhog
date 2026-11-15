@@ -119,9 +119,9 @@ def test_each_call_freshly_reads_changed_metadata_and_private_contexts(monkeypat
     original = growth._projection_contexts
     decoded = []
 
-    def compile_projection(value):
+    def compile_projection(value, **kwargs):
         assert all(value is not prior for prior in decoded)
-        contexts = original(value)
+        contexts = original(value, **kwargs)
         decoded.append(value)
         return contexts
 

@@ -126,9 +126,9 @@ def test_bounded_batch_checks_every_root_without_compiling_each_emission(monkeyp
     compilations = []
     original = growth._projection_contexts
 
-    def compile_projection(projection):
+    def compile_projection(projection, **kwargs):
         compilations.append(projection)
-        return original(projection)
+        return original(projection, **kwargs)
 
     monkeypatch.setattr(growth, "_projection_contexts", compile_projection)
     with SampleBatch((binding.operation,), limit=3) as batch:
@@ -157,9 +157,9 @@ def test_each_flush_uses_one_private_complete_projection_from_admitted_bytes(
     compile_original = growth._projection_contexts
     compilations, received = [], []
 
-    def compile_projection(projection):
+    def compile_projection(projection, **kwargs):
         compilations.append(projection)
-        return compile_original(projection)
+        return compile_original(projection, **kwargs)
 
     def containers(value):
         if isinstance(value, dict):

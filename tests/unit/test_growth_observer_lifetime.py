@@ -224,9 +224,9 @@ def test_later_flush_does_not_reuse_a_prior_readers_mutable_projection(monkeypat
     original = growth._projection_contexts
     projections = []
 
-    def compile_projection(projection):
+    def compile_projection(projection, **kwargs):
         assert all(projection is not prior for prior in projections)
-        result = original(projection)
+        result = original(projection, **kwargs)
         projections.append(projection)
         return result
 

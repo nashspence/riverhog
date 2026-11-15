@@ -342,6 +342,72 @@ def _expression_unit(
     return bound.unit
 
 
+def _literal_expression_unit(
+    expression: Expression,
+    context: _Context,
+    relation: str,
+    proven_metrics: set[tuple[str, str]],
+) -> Unit:
+    # Only the private decoded graph uses this route. Its complete delegate
+    # graph has already passed cycle/depth checks. Prove each metric body once,
+    # but check every incoming use before consulting that invocation's proof.
+    declaration = context.declaration
+    dimensions = context.dimension_units
+    if dimensions is None:
+        dimensions = {d.name: d.unit for d in declaration.dimensions}
+    if expression.op == "constant":
+        return expression.unit
+    if expression.op == "dimension":
+        if expression.name not in dimensions:
+            raise ValueError("growth expression references an unknown dimension")
+        return dimensions[expression.name]
+    units = tuple(
+        _literal_expression_unit(term, context, relation, proven_metrics)
+        for term in expression.terms
+    )
+    if expression.op == "product":
+        return _product_units(units)
+    if expression.op in {"sum", "maximum"}:
+        if len(set(units)) != 1:
+            raise ValueError("growth expression adds incompatible dimensions")
+        return units[0]
+    if expression.op == "log2_ceil":
+        if units[0] not in (SCALAR, COUNT):
+            raise ValueError("growth logarithm requires a scalar or count")
+        return SCALAR
+    if expression.name not in context.delegates or units != (COUNT,):
+        raise ValueError("growth delegate lacks an owned call-count binding")
+    child = context.delegates[expression.name]
+    arguments = dict(expression.arguments)
+    child_dimensions = child.dimension_units
+    if child_dimensions is None:
+        child_dimensions = {d.name: d.unit for d in child.declaration.dimensions}
+    if set(arguments) != set(child_dimensions) or any(
+        _literal_expression_unit(arguments[name], context, "equal", proven_metrics) != unit
+        for name, unit in child_dimensions.items()
+    ):
+        raise ValueError("growth delegate dimension mapping is incomplete or incompatible")
+    bounds = child.bounds_by_metric
+    if bounds is None:
+        bounds = {b.metric: b for b in child.declaration.bounds}
+    if expression.metric not in bounds:
+        raise ValueError("growth delegate metric is not declared")
+    bound = bounds[expression.metric]
+    if (relation == "equal" and bound.relation != "equal") or (
+        relation == "upper" and bound.relation == "big_o"
+    ):
+        raise ValueError("growth delegate cannot establish the stronger parent relation")
+    key = (child.declaration.id, bound.metric)
+    if key not in proven_metrics:
+        if (
+            _literal_expression_unit(bound.expression, child, bound.relation, proven_metrics)
+            != bound.unit
+        ):
+            raise ValueError("growth delegate expression contradicts its metric unit")
+        proven_metrics.add(key)
+    return bound.unit
+
+
 def declare_growth(
     declaration: Declaration, *, delegates: tuple[tuple[str, Callable[..., Any]], ...] = ()
 ) -> Callable[[F], F]:
@@ -460,7 +526,9 @@ def _read_expression(value: object, budget: list[int], *, depth: int = 0) -> Exp
     )
 
 
-def _projection_contexts(projection: object) -> dict[str, _Context]:
+def _projection_contexts(
+    projection: object, *, _literal_units: bool = False
+) -> dict[str, _Context]:
     root = _fields(projection, {"format", "cost_model", "declarations"})
     if root["format"] != FORMAT or root["cost_model"] != COST_MODEL:
         raise ValueError("growth projection has an unknown format or cost model")
@@ -584,6 +652,21 @@ def _projection_contexts(projection: object) -> dict[str, _Context]:
         if subjects.intersection(context.declaration.subjects):
             raise ValueError("growth public subject has multiple declaration owners")
         subjects.update(context.declaration.subjects)
+    if _literal_units:
+        proven_metrics: set[tuple[str, str]] = set()
+        for identity, context in contexts.items():
+            for metric_bound in context.declaration.bounds:
+                key = (identity, metric_bound.metric)
+                if key not in proven_metrics:
+                    if (
+                        _literal_expression_unit(
+                            metric_bound.expression, context, metric_bound.relation, proven_metrics
+                        )
+                        != metric_bound.unit
+                    ):
+                        raise ValueError("growth projected metric has incompatible units")
+                    proven_metrics.add(key)
+        return contexts
     for identity, context in contexts.items():
         for metric_bound in context.declaration.bounds:
             if (
@@ -719,7 +802,7 @@ def validate_execution_roots(projection_json: bytes, groups: object) -> None:
     projection = parse_identity_json(projection_json)
     if canonical_json_bytes(projection) != projection_json:
         raise ValueError("growth metadata input must be canonical JSON bytes")
-    contexts = _projection_contexts(projection)
+    contexts = _projection_contexts(projection, _literal_units=True)
     rows = _fields(projection, {"format", "cost_model", "declarations"})["declarations"]
     if type(groups) is not list or not groups:
         raise ValueError("growth evidence requires nonempty ordered root groups")
