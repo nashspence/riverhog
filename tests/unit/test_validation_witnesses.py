@@ -303,6 +303,77 @@ def test_actual_delegated_execution_produces_standalone_normative_evidence(
     assert [len(sample["delegates"]["leaf"]) for sample in evidence[0]["samples"]] == [7, 17]
 
 
+def test_numeric_receipt_survives_equivalent_metadata_json_representations():
+    import hashlib
+
+    from scripts.validation_numeric import numeric_validation_receipt
+    from scripts.validation_witnesses import (
+        _validate_growth_execution,
+        operation_projection,
+        validate_growth_execution,
+    )
+
+    projection, declaration = operation_projection(
+        "riverhog_client.hash_raw_source_chunks", numeric_policy=NUMERIC_POLICY
+    )
+    source = {"source_sha": "a" * 40, "source_clean": True}
+    # A zero-input literal exercises the real multi-metric metadata reader;
+    # this fixture establishes no product execution or throughput claim.
+    record = {
+        "format": "riverhog-growth-execution/v1",
+        "source": source,
+        "source_end": source,
+        "run_id": "literal-representation",
+        "session_id": "literal-representation",
+        "node_id": "literal-zero-input",
+        "owner_sha256": "b" * 64,
+        "declaration": declaration,
+        "outcomes": {
+            phase: {"seconds": 0.0, "outcome": "passed", "expected_failure": False}
+            for phase in ("setup", "call", "teardown")
+        },
+        "samples": [
+            {
+                "declaration": declaration["id"],
+                "declaration_sha256": declaration["sha256"],
+                "dimensions": {"payload_octets": 0, "input_chunks": 0, "parts": 0},
+                "metrics": {
+                    "payload_hash_input_octets": 0,
+                    "hash_input_octets": 0,
+                    "digest_spool_octets": 0,
+                    "iterator_pulls": 1,
+                    "part_commitment_calls": 0,
+                },
+                "delegates": {"commitment": []},
+            }
+        ],
+        "numeric_policy": numeric_policy_identity(NUMERIC_POLICY),
+        "numeric_validation": None,
+    }
+    usage = _validate_growth_execution(
+        projection, record, source=source, numeric_policy=NUMERIC_POLICY
+    )
+    record["numeric_validation"] = numeric_validation_receipt(NUMERIC_POLICY, source, usage)
+
+    def reversed_objects(value):
+        if isinstance(value, dict):
+            return {key: reversed_objects(item) for key, item in reversed(list(value.items()))}
+        if isinstance(value, list):
+            return [reversed_objects(item) for item in value]
+        return value
+
+    encoded = canonical_json_bytes(projection)
+    assert hashlib.sha256(encoded).hexdigest() == declaration["projection_sha256"]
+    for equivalent in (json.loads(encoded), reversed_objects(projection)):
+        assert canonical_json_bytes(equivalent) == encoded
+        assert (
+            validate_growth_execution(
+                equivalent, record, source=source, numeric_policy=NUMERIC_POLICY
+            )
+            == usage
+        )
+
+
 @pytest.mark.parametrize("defect", ["missing", "usage", "source", "policy", "reader"])
 def test_retained_numeric_validation_receipt_is_exact_source_and_reader_bound(
     executed_declared_witness, monkeypatch, defect

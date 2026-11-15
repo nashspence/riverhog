@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import inspect
+import json
 import math
 import re
 from collections.abc import Mapping, Sequence
@@ -200,10 +201,11 @@ def _validate_growth_execution(
         selected[child] = declarations[child]
         pending.extend(row["declaration"] for row in declarations[child]["delegates"].values())
     owned_projection = {**projection, "declarations": selected}
+    owned_projection_bytes = canonical_json_bytes(owned_projection)
     if binding != {
         "id": identity,
         "sha256": hashlib.sha256(canonical_json_bytes(declarations[identity])).hexdigest(),
-        "projection_sha256": hashlib.sha256(canonical_json_bytes(owned_projection)).hexdigest(),
+        "projection_sha256": hashlib.sha256(owned_projection_bytes).hexdigest(),
     }:
         raise ValueError("growth execution normative declaration or reachable composition is stale")
     outcomes = evidence["outcomes"]
@@ -222,8 +224,14 @@ def _validate_growth_execution(
         )
     ):
         raise ValueError("growth execution has incomplete or failed assertion phases")
+    # The normative digest fixes one JSON representation for numeric accounting.
+    # Source and serialized dictionaries can have equal contents but different
+    # insertion order or shared objects, which change the meter's debit sequence.
     return validate_execution_samples(
-        owned_projection, identity, evidence["samples"], numeric_policy=numeric_policy
+        json.loads(owned_projection_bytes),
+        identity,
+        evidence["samples"],
+        numeric_policy=numeric_policy,
     )
 
 
