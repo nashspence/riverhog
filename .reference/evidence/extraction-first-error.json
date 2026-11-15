@@ -1,0 +1,13 @@
+{
+  "cause": "EntryPreparation.prepare preserves before_json but after_state is null; actual EntryPreparation._apply return carries the after phase/version.",
+  "correction": "Use each actual matching _apply.state; when prepare.after_state exists, require exact equality.",
+  "error": "AttributeError: NoneType object has no attribute get",
+  "format": "offline-extraction-error/v1",
+  "original_exit_status": 1,
+  "product_calls": 0,
+  "product_imports": 0,
+  "script_bytes": 20193,
+  "script_sha256": "44203920c35a5d0c4312af825f54e7b6e07f7d86c0204a93f470f9697274b211",
+  "site": "per-frame child prepare transition extraction: child[after_state].get(phase)",
+  "summary_emitted": false
+}

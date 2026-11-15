@@ -1,0 +1,170 @@
+{
+  "audited_source": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+  "audited_tree": "98cf298e60e4ba9c178229eae907e164265f6e48",
+  "checks": {
+    "all_passed": true,
+    "byte_identical_preserved_failed_extractor_in_json": true,
+    "byte_identical_relocated_analysis_files": 10,
+    "distinct_source_files": 49,
+    "exact_changed_historical_paths": [
+      "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py",
+      "packages/riverhog-provenance/tests/test_validation_checkpoint.py"
+    ],
+    "exact_comment_bodies": 5,
+    "explicit_source_ranges": 51,
+    "historical_candidate_pairs_reconciled": [
+      [
+        100,
+        101
+      ],
+      [
+        207,
+        208
+      ],
+      [
+        225,
+        226
+      ],
+      [
+        332,
+        333
+      ],
+      [
+        472,
+        473
+      ]
+    ],
+    "historical_controls_reconciled": 479,
+    "historical_execution_receipts": 2,
+    "historical_finish_prepares": 101,
+    "historical_literal_inputs_and_oracles": 6,
+    "historical_raw_bytes": 3240236,
+    "historical_raw_matches_published_gzip": true,
+    "historical_raw_sha256": "019236fdc3b227d49753b54e79915b62d45cf44e788283d3843411611b33c00b",
+    "historical_retained_commit_api_calls": 482,
+    "installed_metadata_and_lock_versions": 9,
+    "live_comment_readback": "Root compared all five bodies and URLs to connector results before this check",
+    "offline_extractor_ast_and_stdlib_imports": true,
+    "packet_json_parsed": true,
+    "pinned_github_source_links": 90,
+    "pinned_uv_binary_hash": true,
+    "product_paths_equal_base": true,
+    "relative_markdown_links": 39,
+    "reported_new_diagnostic_raw_not_claimed_verified": true,
+    "source_link_check_scope": "Exact local Git objects and full line bounds, not remote URL transport",
+    "source_pin_occurrences": 84,
+    "subtree_relationships": 9,
+    "trailing_whitespace_lines": 0,
+    "unsupported_local_uri_markdown_links": 0,
+    "untracked_product_paths": 0
+  },
+  "classification": "Actual finite static packet/source and historical-JSON reconciliation; no product execution",
+  "command": ".venv/bin/python -B /workspace/scratch/21c38f9cc56d/verify-native-granularity-packet.py",
+  "completed_utc": "2026-11-15T08:41:35.667716+00:00",
+  "elapsed_seconds": 1.475652428001922,
+  "file_snapshot": [
+    {
+      "bytes": 23006,
+      "path": ".reference/DESIGN.md",
+      "sha256": "8de9d0c1bdbd6d0a074f3701255c199d3c9560200dbbc3b6842f2553f38783ff"
+    },
+    {
+      "bytes": 10073,
+      "path": ".reference/EVIDENCE.md",
+      "sha256": "8f858bc20551b8e0efe0486aa05c4a10ee863e19e6861b3b28feca6310a36e03"
+    },
+    {
+      "bytes": 4565,
+      "path": ".reference/HANDOFF.md",
+      "sha256": "312aaf56cf3e9e6061543e4e37d1f21569cb90611738ecfcf8eaeb70e7254419"
+    },
+    {
+      "bytes": 31651,
+      "path": ".reference/INVENTORY.md",
+      "sha256": "16251cffe3995a0ed057ba68ba9a57a44f726bcb8a377d094372a57161dcdc2c"
+    },
+    {
+      "bytes": 26607,
+      "path": ".reference/PROTOCOL.md",
+      "sha256": "02fc03828a4a5f00de5b6cfa2bb4e8f037846e37c380ad6455d84672c6603bf0"
+    },
+    {
+      "bytes": 23740,
+      "path": ".reference/VALIDATION.md",
+      "sha256": "c62d320294a0e8b68ea43c623c4a1a13c0da4ab1fd33ac0d7a636905f11b7eca"
+    },
+    {
+      "bytes": 23505,
+      "path": ".reference/evidence/context.json",
+      "sha256": "0711b9338fc44279e412a17251fb38d7a8b5e71fbe55f5e43f949aa59fa59933"
+    },
+    {
+      "bytes": 690,
+      "path": ".reference/evidence/extraction-first-error.json",
+      "sha256": "c448a25476ad3b3ef78f5a36132d2d98747a4237eaa9bd51ee03157a33e55a86"
+    },
+    {
+      "bytes": 21693,
+      "path": ".reference/evidence/extraction-first.json",
+      "sha256": "55264f7436a8e11c9b10e3978a138a557643e076a21989f895555635417380d9"
+    },
+    {
+      "bytes": 215460,
+      "path": ".reference/evidence/growth-inventory.json",
+      "sha256": "55725597d81c37fefc4faf6623e41fa86a18708b846413f8768b5cff303ef166"
+    },
+    {
+      "bytes": 20256,
+      "path": ".reference/evidence/protocol-audit.json",
+      "sha256": "3c33dd77d09ea774436c40b42bb95eb279b4fbe40421e8deea7e30b355ff4c70"
+    },
+    {
+      "bytes": 2836,
+      "path": ".reference/evidence/qualification-comment.json",
+      "sha256": "e37739af31511462694184ff922ab76c0bdd9cdd35b8d443af99004dc5002553"
+    },
+    {
+      "bytes": 21281,
+      "path": ".reference/evidence/reconcile_inventory.py",
+      "sha256": "520902d661cd1c6b957f049c82b402ea3fc152686832306fe9a03b32de244192"
+    },
+    {
+      "bytes": 6241,
+      "path": ".reference/evidence/request.md",
+      "sha256": "d98cb1743fed719470e64dfbf59c1fdff94b64985be9a2a4b7af777bdd956167"
+    },
+    {
+      "bytes": 49976,
+      "path": ".reference/evidence/source-audit.json",
+      "sha256": "bb210c4767fb94ef3a8bd7e17a51ba1db303199f138630c57670a594e2d5dd8f"
+    }
+  ],
+  "final_review": {
+    "core_c1_limit": "Defeats hidden Native loops; immediate return can still preserve next recording readiness check",
+    "direct_static_witness": "Missing or replaced completed child loses existing fresh rejection under direct fold",
+    "independent_review_areas": [
+      "Native transaction and custody",
+      "Historical inventory and growth",
+      "Source and maintained-test audit"
+    ],
+    "one_selected_edge": "Final SemanticFinish application plus parent finish-to-recording promotion",
+    "runtime_change_proposed": false,
+    "schema_change_proved_necessary": false,
+    "speedup_or_guaranteed_saved_commits_established": false
+  },
+  "format": "riverhog-native-granularity-static-packet-verification/v1",
+  "product_activity": {
+    "archive_publications": 0,
+    "benchmarks": 0,
+    "calls": 0,
+    "ci": 0,
+    "diagnostic_runs": 0,
+    "fault_injection_runs": 0,
+    "fixtures": 0,
+    "imports": 0,
+    "test_collection": 0,
+    "test_execution": 0
+  },
+  "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+  "verifier_sha256": "7dd5e65e5b4ff67c9d9f6f055525ead3b30ad0ccd423aec38a258daf93fcc2c3"
+}
