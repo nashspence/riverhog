@@ -1,0 +1,6 @@
+{
+  "format": "riverhog-numeric-qualification-profile/v1",
+  "profile": "qualification",
+  "max_work": 907920445364,
+  "max_integer_bits": 84
+}

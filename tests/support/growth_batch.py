@@ -8,7 +8,13 @@ from collections import defaultdict
 from collections.abc import Mapping
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_roots
+from riverhog_growth_contracts import (
+    NumericWorkPolicy,
+    growth_binding,
+    project_binding,
+    project_bindings,
+    validate_execution_roots,
+)
 
 
 class SampleBatch:
@@ -21,9 +27,12 @@ class SampleBatch:
     retaining both preserves checks when that parent fails before it emits.
     """
 
-    def __init__(self, operations, *, limit, include_descendants=False):
+    def __init__(self, operations, *, limit, numeric_policy, include_descendants=False):
         if type(limit) is not int or limit < 1:
             raise ValueError("growth batch requires a positive root admission")
+        if type(numeric_policy) is not NumericWorkPolicy:
+            raise ValueError("growth batch requires an exact numeric work policy")
+        numeric_policy = NumericWorkPolicy(numeric_policy.max_work, numeric_policy.max_integer_bits)
         if (
             not isinstance(operations, tuple)
             or not operations
@@ -34,6 +43,7 @@ class SampleBatch:
             raise ValueError("growth descendant admission requires an explicit boolean")
         self.operations, self.limit = operations, limit
         self.include_descendants = include_descendants
+        self.numeric_policy = numeric_policy
         self.state = "new"
         self.validated_samples = self.validation_calls = 0
         self.validation_attempts = self.validation_groups = 0
@@ -49,7 +59,7 @@ class SampleBatch:
         self.state = "active"
         try:
             roots = tuple(growth_binding(operation) for operation in self.operations)
-            projection = project_bindings(roots)
+            projection = project_bindings(roots, numeric_policy=self.numeric_policy)
             self._projection_header_bytes = canonical_json_bytes({**projection, "declarations": {}})
             self._declaration_bytes = {
                 identity: canonical_json_bytes(row)
@@ -111,7 +121,12 @@ class SampleBatch:
                 or binding.operation is not operation
                 or binding.declaration is not declaration
                 or binding.delegates is not delegates
-                or hashlib.sha256(canonical_json_bytes(binding.project())).digest() != expected
+                or hashlib.sha256(
+                    canonical_json_bytes(
+                        project_binding(binding, numeric_policy=self.numeric_policy)
+                    )
+                ).digest()
+                != expected
             ):
                 raise ValueError("growth batch source binding or declaration changed")
 
@@ -184,7 +199,9 @@ class SampleBatch:
                 ]
                 projection = self._projection()
                 self.validation_attempts += 1
-                validate_execution_roots(projection, schedule)
+                # Every finite flush owns its allowance; source admission has
+                # its own earlier invocation under the same owned policy.
+                validate_execution_roots(projection, schedule, numeric_policy=self.numeric_policy)
                 self.validation_calls += 1
                 self.validation_groups += len(schedule)
                 self._current()

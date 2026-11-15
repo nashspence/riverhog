@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 import sys
 from contextlib import ExitStack, contextmanager
@@ -19,6 +20,7 @@ from riverhog_provenance import replay_binding as codec_owner
 from riverhog_provenance.constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from sqlalchemy import delete, event, insert, select, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import Frame, retained
 from tests.unit.test_journal_replay_binding import Scan, ready
 from tests.unit.test_journal_summary_consumers import source
@@ -158,9 +160,10 @@ def source_cases(tmp_path_factory):
 
 class ReadRecorder:
     def __init__(self, case, operation, dimensions):
+        self.numeric_policy = numeric_policy_from_environment(os.environ)
         self.case, self.operation, self.dimensions = case, operation, dimensions
         self.root_binding = growth_binding(operation)
-        self.projection = project_bindings((self.root_binding,))
+        self.projection = project_bindings((self.root_binding,), numeric_policy=self.numeric_policy)
         self.bindings = {id(operation): self.root_binding}
         self.roles = {
             id(operation): "root",
@@ -544,7 +547,10 @@ def measured_read(catalog, case, operation, offset, size, cache, *, stale=False)
         else:
             assert recorder.transport_reads == []
         validate_execution_samples(
-            recorder.projection, recorder.root_binding.declaration.id, [recorder.sample]
+            recorder.projection,
+            recorder.root_binding.declaration.id,
+            [recorder.sample],
+            numeric_policy=recorder.numeric_policy,
         )
         return recorder.sample
     finally:

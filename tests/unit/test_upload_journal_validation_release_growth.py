@@ -25,6 +25,7 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import JournalValidationSession
 from sqlalchemy import event, select
 
+from scripts.validation_numeric import numeric_policy_from_environment, numeric_policy_snapshot
 from tests.support.sqlite_observation import observed_connection_type
 from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_journal_capture import advance, retained
@@ -114,7 +115,12 @@ class Lock:
 
 
 class Recorder:
-    def __init__(self):
+    def __init__(self, *, numeric_policy=None):
+        self.numeric_policy = (
+            numeric_policy_from_environment(os.environ)
+            if numeric_policy is None
+            else numeric_policy_snapshot(numeric_policy)
+        )
         self.active, self.pool_held, self.native_active, self.in_callback = (
             False,
             False,
@@ -130,7 +136,7 @@ class Recorder:
         self.metadata = {}
         for operation in (DROP, CLOSE, NATIVE_CLOSE):
             binding = growth_binding(operation)
-            projection = project_bindings((binding,))
+            projection = project_bindings((binding,), numeric_policy=self.numeric_policy)
             self.metadata[operation] = (
                 binding,
                 projection,
@@ -451,9 +457,13 @@ class Recorder:
                 )
         sample = self.sample(operation, dimensions, self.values, self.delegates)
         validate_execution_samples(
-            project_bindings((growth_binding(operation),)),
+            project_bindings(
+                (growth_binding(operation),),
+                numeric_policy=self.numeric_policy,
+            ),
             growth_binding(operation).declaration.id,
             [sample],
+            numeric_policy=self.numeric_policy,
         )
         assert not self.pool_held
         assert all(

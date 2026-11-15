@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import sqlite3
 import subprocess
@@ -39,6 +40,8 @@ from riverhog_provenance._journal_prefix import (
 )
 from riverhog_provenance_contracts import ContractCatalog, ProvenanceContractBinding
 from sha256_continuation import CheckpointSHA256
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 @pytest.fixture
@@ -576,7 +579,9 @@ def test_actual_cold_prefix_preparation_work_and_shared_hash_composition(
     binding = growth_binding(JournalPrefix.prepare)
     update_binding = growth_binding(CheckpointSHA256.update_bytes)
     compression_binding = growth_binding(sha_owner.sha256_compress)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample_hash = hashlib.sha256
 
     def sample(owner, dimensions, metrics, delegates):
@@ -738,7 +743,12 @@ def test_actual_cold_prefix_preparation_work_and_shared_hash_composition(
                     patch.setattr(hashlib, "sha256", native)
                     prepared = current.prepare(candidate, catalog)
             observed = sample(binding, dimensions, metrics, {"source_update": updates})
-            validate_execution_samples(projection, binding.declaration.id, [observed])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [observed],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(observed)
             assert len(updates) == 1
             assert current.load() == state
@@ -943,7 +953,9 @@ def publication_histories(tmp_path_factory, catalog):
 
 def publication_sample(frame, primitive):
     binding = frame["binding"]
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     metrics = dict(primitive)
     for bound in binding.declaration.bounds:
         if bound.metric.startswith(("prefix_", "padding_")):
@@ -962,7 +974,12 @@ def publication_sample(frame, primitive):
         "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
         "delegates": frame["delegates"],
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

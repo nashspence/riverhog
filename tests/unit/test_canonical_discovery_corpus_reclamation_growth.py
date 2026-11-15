@@ -14,6 +14,7 @@ from riverhog_provenance import JournalValidationCapacity
 from riverhog_provenance import corpus_reclamation as native
 from sqlalchemy import update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.support.retirement_namespace import lease_retiring_journal_workspace
 from tests.support.workspace_reclamation import (
@@ -194,7 +195,9 @@ def test_measured_original_corpus_reclamation(
     tmp_path, fixed_inputs, catalog_templates, record_property
 ):
     binding = growth_binding(owner.reclaim_discovery_corpus)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     variants = (
         "truncate",
@@ -290,7 +293,12 @@ def test_measured_original_corpus_reclamation(
                     assert not recorder.live
                     sample = combined_sample(recorder, projection, binding, dimensions, children)
                     try:
-                        validate_execution_samples(projection, binding.declaration.id, [sample])
+                        validate_execution_samples(
+                            projection,
+                            binding.declaration.id,
+                            [sample],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
+                        )
                     except ValueError:
                         record_property(
                             "failed_corpus_reclamation_metrics",

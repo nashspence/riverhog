@@ -5,6 +5,7 @@ from __future__ import annotations
 import builtins
 import hashlib
 import inspect
+import os
 import sys
 import threading
 from collections import OrderedDict, defaultdict
@@ -24,6 +25,7 @@ from riverhog_core.services.upload_journal_validation_retirement import (
 )
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit import test_physical_workspace_execution_growth as execution
 from tests.unit import test_upload_journal_validation_retirement_catalog_growth as catalog
 from tests.unit import test_upload_journal_validation_retirement_growth as units
@@ -51,6 +53,7 @@ FORMAT = journal.format_retirement_blocker
 
 class PhaseEvidence:
     def __init__(self, case, original, *, cold=False, error=None, text=None, fault=None):
+        self.numeric_policy = numeric_policy_from_environment(os.environ)
         self.case, self.original = case, original
         self.cold, self.error, self.text, self.fault = cold, error, text, fault
         self.local = threading.local()
@@ -134,7 +137,9 @@ class PhaseEvidence:
     def emit(self, operation, inputs, metrics, children):
         binding = growth_binding(operation)
         if operation not in self.projections:
-            self.projections[operation] = project_bindings((binding,))
+            self.projections[operation] = project_bindings(
+                (binding,), numeric_policy=self.numeric_policy
+            )
         projection = self.projections[operation]
         dimensions, values = dict(inputs), dict(metrics)
         for tag, child in binding.delegates:
@@ -163,7 +168,12 @@ class PhaseEvidence:
                     row["dimensions"][k] <= dimensions[tag + "_" + k] for k in row["dimensions"]
                 )
         try:
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=self.numeric_policy,
+            )
         except ValueError as error:
             raise AssertionError(
                 (binding.declaration.id, str(error), dimensions, sample["metrics"])

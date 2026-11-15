@@ -4,6 +4,7 @@ import copy
 import hashlib
 import inspect
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -31,6 +32,8 @@ from riverhog_provenance.journal_store import JournalStore
 from riverhog_provenance_contracts import PROFILE, profile_reference
 from sha256_continuation import CheckpointSHA256
 from test_semantic_edge import WorkConnection
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def identity(ordinal):
@@ -756,7 +759,9 @@ class CommonWorkConnection(WorkConnection):
 
 def binding_projection(operation):
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -1093,7 +1098,12 @@ def common_semantic_samples(tmp_path, catalog, measured_operation, *, samples):
                     retained_rows=retained,
                     metadata_row_octets=envelope,
                 )
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 assert db.execute("SELECT * FROM journal_prefix").fetchone() == prefix
                 # Verify the exact suffix independently of the measured cold unit.
@@ -1258,7 +1268,12 @@ def test_actual_semantic_atom_index_work(record_property):
             },
             "delegates": {"coverage": []},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
     assert len(samples) == 9
     record_property("growth_samples", samples)

@@ -546,8 +546,10 @@ def advance_fixture(case, catalog, budget, *, cold, measured=False):
         yield current
 
 
-def advance_samples(root, catalog, build, graphs, *, samples, early=False, checkpoints=None):
-    with SampleBatch((EntryReplay.advance,), limit=4) as batch:
+def advance_samples(
+    root, catalog, build, graphs, *, samples, numeric_policy, early=False, checkpoints=None
+):
+    with SampleBatch((EntryReplay.advance,), limit=4, numeric_policy=numeric_policy) as batch:
         _advance_samples(
             root,
             catalog,
@@ -633,8 +635,15 @@ def _advance_samples(root, catalog, build, graphs, *, samples, early, checkpoint
     operation="riverhog_provenance._entry_replay.EntryReplay.advance",
 )
 def test_actual_whole_entry_advance(
-    tmp_path, catalog, admission_histories, graph_histories, record_property
+    tmp_path, catalog, admission_histories, graph_histories, record_property, numeric_policy
 ):
     samples = []
     record_property("growth_samples", samples)
-    advance_samples(tmp_path, catalog, admission_histories, graph_histories, samples=samples)
+    advance_samples(
+        tmp_path,
+        catalog,
+        admission_histories,
+        graph_histories,
+        samples=samples,
+        numeric_policy=numeric_policy,
+    )

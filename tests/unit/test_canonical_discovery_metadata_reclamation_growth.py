@@ -12,6 +12,7 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from sqlalchemy import update
 from workspace_reclamation import FileReclamationOwner
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.support.workspace_reclamation import execution_sample, observe_reclamation
 from tests.unit import test_canonical_discovery_metadata_growth as basis
@@ -119,7 +120,9 @@ def file_delegate(recorder, projection, dimensions, samples, *, fault=False):
 def test_measured_metadata_extents(tmp_path, fixed_inputs, catalog_templates, record_property):
     admission, _ = fixed_inputs
     binding = growth_binding(owner.reclaim_discovery_metadata)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     variants = (
         "extent-1",
@@ -243,7 +246,12 @@ def test_measured_metadata_extents(tmp_path, fixed_inputs, catalog_templates, re
                             key = "files_" + name
                             observed["metrics"][key] = observed["metrics"].get(key, 0) + value
                     try:
-                        validate_execution_samples(projection, binding.declaration.id, [observed])
+                        validate_execution_samples(
+                            projection,
+                            binding.declaration.id,
+                            [observed],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
+                        )
                     except ValueError:
                         record_property("failed_metadata_extent_primitives", observed)
                         raise

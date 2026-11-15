@@ -9,6 +9,7 @@ import pytest
 import workspace_reclamation as receiving
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.retained_resource import fault_native as fault_native
 from tests.support.workspace_reclamation import execution_sample, observe_reclamation
 
@@ -45,7 +46,9 @@ def test_actual_native_and_python_work_includes_complete_control_widths(
     tmp_path, monkeypatch, record_property
 ):
     binding = growth_binding(receiving.FileReclamationOwner.reclaim)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     for population in (0, 17, 257):
         for candidates in (0, 1, 17, 129):
@@ -80,7 +83,12 @@ def test_actual_native_and_python_work_includes_complete_control_widths(
                         assert metrics["open_calls"] == metrics["close_calls"] == 1 + bool(present)
                         assert metrics["encoded_directory_octets"] == dimensions["directory_octets"]
                         sample = execution_sample(binding, projection, dimensions, metrics, {})
-                        validate_execution_samples(projection, binding.declaration.id, [sample])
+                        validate_execution_samples(
+                            projection,
+                            binding.declaration.id,
+                            [sample],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
+                        )
                         samples.append(sample)
     record_property("growth_samples", samples)
 
@@ -97,7 +105,9 @@ def test_original_receiving_does_no_extent_or_namespace_work_on_retries(
     monkeypatch.setattr(receiving, "Resource", native.Resource)
     monkeypatch.setattr(receiving, "Borrow", native.Borrow)
     binding = growth_binding(receiving.FileReclamationOwner.close)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     for width in (1, 17, 129):
         for slot in ("_directory", "_file"):
@@ -118,7 +128,12 @@ def test_original_receiving_does_no_extent_or_namespace_work_on_retries(
                         owner.close()
                     assert owner.received
                     sample = execution_sample(binding, projection, dimensions, metrics, {})
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                 assert (path / "data").stat().st_size == 14
                 assert (

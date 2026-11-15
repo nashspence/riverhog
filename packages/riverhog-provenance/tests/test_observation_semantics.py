@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import os
 from contextlib import closing
 
 import pytest
@@ -18,6 +19,8 @@ from test_generic_semantics import (
     snapshot,
     work,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 CASES = (
     "valid",
@@ -565,7 +568,12 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
                     metadata_row_octets=envelope,
                 )
                 metrics = sample["metrics"]
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 assert metrics["source_payload_octets"] == metrics["adjacency_rows"] == 0
                 samples.append(sample)
             with closing(memory_copy(path)) as db:
@@ -658,7 +666,12 @@ def test_actual_observation_coverage_index_is_linear_in_rows_and_key_bytes(recor
             },
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
     record_property("growth_samples", samples)
 
@@ -939,7 +952,12 @@ def test_actual_cold_terminal_result_is_read_only_and_reconstructs_native_failur
                 metrics = sample["metrics"]
                 assert snapshot(db) == before
                 assert metrics["changed_rows"] == metrics["source_payload_octets"] == 0
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
     from test_edge_row_semantics import terminal_growth_samples
 

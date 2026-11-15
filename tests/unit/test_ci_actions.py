@@ -15,6 +15,7 @@ from riverhog_canonical_json import require_canonical_json
 
 from scripts import ci_actions, ci_make, ci_qualification, ci_timing
 from scripts.validation_evidence import ValidationWork
+from scripts.validation_numeric import numeric_policy_conditions, qualification_numeric_policy
 
 
 def run_record():
@@ -281,7 +282,11 @@ def actual_make_execution(tmp_path_factory):
         ],
         check=True,
     )
-    work = ValidationWork("fixture", ("make", "compile"))
+    work = ValidationWork(
+        "fixture",
+        ("make", "compile"),
+        conditions=numeric_policy_conditions(qualification_numeric_policy()),
+    )
     receipt = root / "receipt.json"
     with pytest.MonkeyPatch.context() as patch:
         patch.chdir(source)

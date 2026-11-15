@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from contextlib import ExitStack, contextmanager
 from functools import partial
@@ -18,6 +19,7 @@ from riverhog_provenance import InvalidJournalGraphCertificate, JournalValidatio
 from riverhog_provenance.constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from sqlalchemy import select
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_journal_capture import Frame, retained
 from tests.unit.test_journal_summary_consumers import source
@@ -273,7 +275,10 @@ def measure(case, current, certificates, mode, offset, size, *, cold, kind=None)
         assert recorder.transport_reads == []
     assert snapshot(case.engine) == before
     validate_execution_samples(
-        recorder.projection, growth_binding(function).declaration.id, [recorder.sample]
+        recorder.projection,
+        growth_binding(function).declaration.id,
+        [recorder.sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
     )
     return recorder.sample
 

@@ -18,6 +18,8 @@ from riverhog_provenance import epoch_boundaries as epochs
 from riverhog_provenance import topology_facts as topology
 from riverhog_provenance.constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 
+from scripts.validation_numeric import numeric_policy_from_environment
+
 
 class UnavailableSource(OSError):
     pass
@@ -116,7 +118,9 @@ def sample(operation, dimensions, recorder, *, batch=None):
     if batch is not None:
         return batch.sample(operation, dimensions, recorder.metrics)
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     result = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -128,7 +132,12 @@ def sample(operation, dimensions, recorder, *, batch=None):
         },
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [result])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [result],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return result
 
 

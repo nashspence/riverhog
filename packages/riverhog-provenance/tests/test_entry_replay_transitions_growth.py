@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from contextlib import closing, contextmanager
 from copy import deepcopy
@@ -33,6 +34,8 @@ from test_entry_replay_row_growth import node_inputs
 from test_journal_lifecycle import lifecycle_graph
 from test_semantic_edge import observed_work
 from test_semantic_owner import snapshot
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 ROW_TRANSITIONS = (
     (REGIMES[0], "plain"),
@@ -337,7 +340,12 @@ def transition_samples(
                 sample = complete(observed, work)
                 binding = growth_binding(operation)
                 validate_execution_samples(
-                    project_bindings((binding,)), binding.declaration.id, [sample]
+                    project_bindings(
+                        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+                    ),
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
                 )
                 samples.append(sample)
                 assert result == expected == current.ledger.load()

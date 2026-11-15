@@ -22,6 +22,7 @@ from riverhog_core.services.physical_execution import PhysicalWorkspaceExecution
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalValidationCapacity
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.journal_retirement import cleanups as cleanups
 from tests.support.retirement_namespace import observe_retained_namespace
 from tests.support.workspace_reclamation import ReclamationMetrics, execution_sample
@@ -52,10 +53,17 @@ class EvidenceFailure(RuntimeError):
 
 def sample(operation, inputs, metrics, delegates=None):
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     if operation is workspace_reclamation.reclaim_retired_files:
         result = execution_sample(binding, projection, inputs, metrics, delegates or {})
-        validate_execution_samples(projection, binding.declaration.id, [result])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [result],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         return result
     result = {
         "declaration": binding.declaration.id,
@@ -69,7 +77,12 @@ def sample(operation, inputs, metrics, delegates=None):
         "delegates": {} if delegates is None else delegates,
     }
     try:
-        validate_execution_samples(projection, binding.declaration.id, [result])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [result],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
     except ValueError as error:
         raise EvidenceFailure(
             "actual retirement composition violates its source-owned bounds"

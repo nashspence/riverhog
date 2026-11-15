@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -26,6 +27,8 @@ from riverhog_provenance._correction_projection import (
     CorrectionWork,
     StaleCorrectionWork,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 TABLES = ("maps", "findings", "fixities", "lifecycle_extrema")
 
@@ -630,13 +633,20 @@ def execution_sample(binding, projection, dimensions, metrics):
         "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 
 def retirement_unit_samples(tmp_path, operation):
     binding = growth_binding(getattr(CorrectionWork, operation))
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     for table in TABLES:
         for count, quantum in ((0, 1), (1, 1), (17, 16), (129, 64), (1025, 64)):
             path = tmp_path / f"retire-{table}-{count}.sqlite3"
@@ -713,7 +723,9 @@ def test_cold_retirement_records_actual_indexed_row_byte_and_vm_work(tmp_path, r
 
 def seeding_unit_samples(tmp_path, operation):
     binding = growth_binding(getattr(CorrectionWork, operation))
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     for active_count, retired_count in (
         (0, 0),
         (1, 1),

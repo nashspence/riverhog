@@ -136,6 +136,7 @@ def test_lane_timing_preserves_command_failure_and_writes_canonical_observation(
 
 
 def test_pytest_timing_measures_per_worker_session_fixture_duplication(tmp_path: Path) -> None:
+    (tmp_path / "pytest.ini").write_text("[pytest]\n")
     (tmp_path / "conftest.py").write_text(
         "import pytest\n@pytest.fixture(scope='session')\ndef expensive():\n    return 1\n"
     )

@@ -19,6 +19,8 @@ from riverhog_provenance import (
 from test_journal_result import completed, history
 from test_journal_result_opening import failed_open
 
+from scripts.validation_numeric import numeric_policy_from_environment
+
 CLOSE = JournalResultOpening.close
 
 
@@ -94,7 +96,9 @@ def observe(source, monkeypatch):
 
 def sample(dimensions, metrics):
     binding = growth_binding(CLOSE)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     result = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -104,7 +108,12 @@ def sample(dimensions, metrics):
         "metrics": dict(metrics),
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [result])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [result],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return result
 
 

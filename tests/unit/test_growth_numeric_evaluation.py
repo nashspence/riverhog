@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 from collections.abc import Mapping
 from dataclasses import replace
 
 import pytest
 import riverhog_growth_contracts as growth
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_growth_context_lookups import (
     _action,
     _case,
@@ -359,7 +361,9 @@ def test_numeric_evaluation_preserves_each_public_invocation(case):
             if "expected_error" in action:
                 assert str(caught.value) == action["expected_error"]
         else:
-            assert invoke_context_action(growth, projection, action) is None
+            assert isinstance(
+                invoke_context_action(growth, projection, action), growth.NumericWorkUsage
+            )
         assert json.dumps([projection, action], sort_keys=True, allow_nan=False) == before
 
 
@@ -422,6 +426,7 @@ class _ComparedName(str):
 
 def numeric_callback_outcome(reader, name):
     """Run public callback controls with fresh reader types and restore every source edit."""
+    numeric_policy = numeric_policy_from_environment(os.environ)
     parent, leaf = lookup_bindings(reader)
     projection = _projection(leaf)
     dimensions = {"items": 3, "width": 4, "spare": 0}
@@ -453,7 +458,9 @@ def numeric_callback_outcome(reader, name):
         if name.startswith("metrics-"):
             kind = _CallbackDict if name == "metrics-dict-mutation" else _CallbackMapping
             observed = kind(metrics, on_get=invalidate_unused("visits"))
-            return reader.validate_sample(projection, leaf.declaration.id, dimensions, observed)
+            return reader.validate_sample(
+                projection, leaf.declaration.id, dimensions, observed, numeric_policy=numeric_policy
+            )
         if name.startswith("dimensions-"):
             kind = _CallbackDict if name == "dimensions-dict-mutation" else _CallbackMapping
             observed = kind(dimensions, on_get=invalidate_unused("items"))
@@ -464,7 +471,9 @@ def numeric_callback_outcome(reader, name):
                         observed["spare"] = True
 
                 observed.on_get = mutate
-            return reader.validate_sample(projection, leaf.declaration.id, observed, metrics)
+            return reader.validate_sample(
+                projection, leaf.declaration.id, observed, metrics, numeric_policy=numeric_policy
+            )
         if name in {
             "metadata-dimension-name-hash",
             "metadata-metric-name-hash",
@@ -507,22 +516,30 @@ def numeric_callback_outcome(reader, name):
                 leaf.declaration.id,
                 dimensions,
                 _CallbackMapping(metrics, on_values=arm),
+                numeric_policy=numeric_policy,
             )
         if name in {"source-bound-replacement", "source-child-bound-replacement"}:
             selected = parent if name == "source-child-bound-replacement" else leaf
             values = {**dimensions, "calls": 2} if selected is parent else dimensions
             observed = _CallbackMapping(values, on_values=replace_bounds)
-            return reader.evaluate_bound(selected, "visits", observed)
+            return reader.evaluate_bound(
+                selected, "visits", observed, numeric_policy=numeric_policy
+            )
         if name == "source-bound-removal":
 
             def remove_bound():
                 object.__setattr__(leaf.declaration, "bounds", original[1:])
 
             return reader.evaluate_bound(
-                leaf, "visits", _CallbackMapping(dimensions, on_values=remove_bound)
+                leaf,
+                "visits",
+                _CallbackMapping(dimensions, on_values=remove_bound),
+                numeric_policy=numeric_policy,
             )
         if name == "source-metric-before-dimensions":
-            return reader.evaluate_bound(leaf, "absent", {**dimensions, "spare": True})
+            return reader.evaluate_bound(
+                leaf, "absent", {**dimensions, "spare": True}, numeric_policy=numeric_policy
+            )
         if name in {"source-big-o-invalid-dimensions", "source-big-o-valid-dimensions"}:
             object.__setattr__(
                 leaf.declaration, "bounds", (replace(original[0], relation="big_o"), *original[1:])
@@ -532,20 +549,30 @@ def numeric_callback_outcome(reader, name):
                 if name == "source-big-o-invalid-dimensions"
                 else dimensions
             )
-            return reader.evaluate_bound(leaf, "visits", values)
+            return reader.evaluate_bound(leaf, "visits", values, numeric_policy=numeric_policy)
         if name == "source-between-calls":
-            before = reader.evaluate_bound(leaf, "visits", dimensions)
+            before = reader.evaluate_bound(
+                leaf, "visits", dimensions, numeric_policy=numeric_policy
+            )
             replace_bounds()
-            after = reader.evaluate_bound(leaf, "visits", dimensions)
-            reader.validate_sample(projection, leaf.declaration.id, dimensions, metrics)
+            after = reader.evaluate_bound(leaf, "visits", dimensions, numeric_policy=numeric_policy)
+            reader.validate_sample(
+                projection, leaf.declaration.id, dimensions, metrics, numeric_policy=numeric_policy
+            )
             object.__setattr__(leaf.declaration, "bounds", original)
-            restored = reader.evaluate_bound(leaf, "visits", dimensions)
+            restored = reader.evaluate_bound(
+                leaf, "visits", dimensions, numeric_policy=numeric_policy
+            )
             return [before, after, restored]
         raise AssertionError(name)
 
     try:
         try:
-            outcome = {"kind": "return", "value": invoke()}
+            result = invoke()
+            outcome = {
+                "kind": "return",
+                "value": None if isinstance(result, reader.NumericWorkUsage) else result,
+            }
         except Exception as error:
             outcome = {"kind": "error", "type": type(error).__name__, "message": str(error)}
     finally:
@@ -563,9 +590,12 @@ NUMERIC_CALLBACK_EXPECTATIONS = (
     ("metadata-metric-name-hash", BOUND_ERROR),
     ("metadata-string-subclasses-accepted", None),
     ("observation-name-comparison", BOUND_ERROR),
-    ("source-bound-replacement", 6),
-    ("source-child-bound-replacement", 12),
-    ("source-bound-removal", "growth metric is not declared"),
+    ("source-bound-replacement", "growth numeric work refused: unsupported_changed_source_record"),
+    (
+        "source-child-bound-replacement",
+        "growth numeric work refused: unsupported_changed_source_record",
+    ),
+    ("source-bound-removal", "growth numeric work refused: unsupported_changed_source_record"),
     ("source-metric-before-dimensions", "growth metric is not declared"),
     ("source-big-o-invalid-dimensions", DIMENSIONS_ERROR),
     ("source-big-o-valid-dimensions", SOURCE_ASYMPTOTIC_ERROR),
@@ -574,12 +604,14 @@ NUMERIC_CALLBACK_EXPECTATIONS = (
 
 
 @pytest.mark.parametrize("name, expected", NUMERIC_CALLBACK_EXPECTATIONS)
-def test_numeric_callbacks_keep_live_source_and_validation_order(name, expected):
+def test_numeric_callbacks_preserve_admitted_reads_and_refuse_changed_source_shape(name, expected):
     outcome = numeric_callback_outcome(growth, name)
     if isinstance(expected, str):
         assert outcome == {
             "kind": "error",
-            "type": "ValueError",
+            "type": "NumericWorkRefused"
+            if expected.startswith("growth numeric work refused:")
+            else "ValueError",
             "message": expected,
             "source_restored": True,
         }

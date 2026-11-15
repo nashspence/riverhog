@@ -25,6 +25,7 @@ from test_journal_session_growth import native_session_checkpoints as native_ses
 from test_semantic_edge import observed_work, parameter_octets
 from test_semantic_owner import snapshot
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.sqlite_observation import observed_connection_type
 
 
@@ -134,6 +135,7 @@ class LifecycleConnection(sqlite3.Connection):
 
 class LifecycleRecorder:
     def __init__(self, *, initializing=False):
+        self.numeric_policy = numeric_policy_from_environment(os.environ)
         self.recording = False
         self.native_resources = []
         self.native_baselines = {}
@@ -494,9 +496,13 @@ class LifecycleRecorder:
             )
         sample = complete(frame, primitive)
         validate_execution_samples(
-            project_bindings((growth_binding(operation),)),
+            project_bindings(
+                (growth_binding(operation),),
+                numeric_policy=self.numeric_policy,
+            ),
             growth_binding(operation).declaration.id,
             [sample],
+            numeric_policy=self.numeric_policy,
         )
         return result, sample
 

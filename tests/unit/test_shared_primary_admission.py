@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from collections import defaultdict
 from contextlib import contextmanager, nullcontext
 from types import SimpleNamespace
@@ -67,6 +68,7 @@ from riverhog_provenance.corpus_selection import HistoricalSelection
 from sqlalchemy import event, select
 from workspace_reclamation import FileReclamationOwner
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_archive_catalog_finalizer import _lose_commit_reply
@@ -600,7 +602,9 @@ def _runtime_work(monkeypatch):
             self.metrics["source_frame_octets"] - source_before["source_frame_octets"]
         )
         binding = growth_binding(actual_turn)
-        projection = project_bindings((binding,))
+        projection = project_bindings(
+            (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+        )
         journal = session.get(Journal, (upload.collection_id, kwargs["binding"].journal.journal_id))
         sample = {
             "declaration": binding.declaration.id,
@@ -614,7 +618,12 @@ def _runtime_work(monkeypatch):
             "metrics": selected,
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         measured.samples.append(sample)
         return result
 

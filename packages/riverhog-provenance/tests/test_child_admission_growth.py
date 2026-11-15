@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import closing, contextmanager
 from dataclasses import asdict, is_dataclass, replace
@@ -20,6 +21,8 @@ from riverhog_provenance._generic_semantics import GenericSemantics
 from riverhog_provenance._semantic_edge import SemanticEdge
 from test_generic_semantics import connect, identity
 from test_semantic_owner import assert_uncommitted_hidden, snapshot
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 REGIMES = ((0, 1), (17, 1), (129, 17), (4097, 129))
 HEADERS = {
@@ -294,7 +297,9 @@ def samples_for(tmp_path, catalog, family, measured_operation, *, samples):
                             db.rollback()
                     assert snapshot(db) == before
                     binding = growth_binding(getattr(type(current), measured_operation))
-                    projection = project_bindings((binding,))
+                    projection = project_bindings(
+                        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+                    )
                     sample = {
                         "declaration": binding.declaration.id,
                         "declaration_sha256": hashlib.sha256(
@@ -304,7 +309,12 @@ def samples_for(tmp_path, catalog, family, measured_operation, *, samples):
                         "metrics": metrics,
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                     db.execute("BEGIN IMMEDIATE").close()
                     try:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import replace
@@ -20,6 +21,7 @@ from riverhog_provenance import InvalidJournalGraphCertificate
 from riverhog_provenance import replay_binding as codec_owner
 from sqlalchemy import event, select
 
+from scripts.validation_numeric import numeric_policy_from_environment, numeric_policy_snapshot
 from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_upload_journal_certificate_lifecycle_growth import TABLES
 from tests.unit.test_upload_journal_source_growth import octets, source_metadata_octets
@@ -152,7 +154,15 @@ class Recorder:
         locations=None,
         payload_operations=None,
         batch=None,
+        numeric_policy=None,
     ):
+        if batch is not None:
+            if numeric_policy is not None and numeric_policy != batch.numeric_policy:
+                raise ValueError("growth recorder policy differs from its admitted batch")
+            numeric_policy = batch.numeric_policy
+        elif numeric_policy is None:
+            numeric_policy = numeric_policy_from_environment(os.environ)
+        self.numeric_policy = numeric_policy_snapshot(numeric_policy)
         self.application_functions = application
         self.locations = {
             SOURCE: (owner._OwnedSource, "verify_source"),
@@ -170,7 +180,10 @@ class Recorder:
         self.bindings = {function: self.source_binding(function) for function in functions}
         self.projection = None
         if batch is None:
-            self.projection = project_bindings((self.bindings[operation],))
+            self.projection = project_bindings(
+                (self.bindings[operation],),
+                numeric_policy=self.numeric_policy,
+            )
             self.digests = {
                 identity: hashlib.sha256(canonical_json_bytes(value)).hexdigest()
                 for identity, value in self.projection["declarations"].items()
@@ -518,7 +531,10 @@ def measure(case, current, certificates, mode, *, cold, kind=None):
         assert isinstance(caught, error)
     assert snapshot(case.engine) == before
     validate_execution_samples(
-        recorder.projection, growth_binding(function).declaration.id, [recorder.sample]
+        recorder.projection,
+        growth_binding(function).declaration.id,
+        [recorder.sample],
+        numeric_policy=recorder.numeric_policy,
     )
     return recorder.sample
 

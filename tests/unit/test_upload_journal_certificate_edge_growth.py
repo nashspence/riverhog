@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from contextlib import ExitStack, contextmanager
 from types import SimpleNamespace
 
@@ -19,6 +20,7 @@ from riverhog_provenance.errors import JournalValidationCapacity
 from riverhog_provenance.graph_certificates import InvalidJournalGraphCertificate
 from sqlalchemy import select, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_epoch_union import edge, raw_edges, uid
 from tests.unit.test_journal_topology_capture import entry, raw_journal
@@ -211,6 +213,7 @@ def oracle(case, request):
 
 class EdgeRecorder(Recorder):
     def __init__(self, inputs):
+        self.numeric_policy = numeric_policy_from_environment(os.environ)
         super().__init__()
         self.inputs, self.children = inputs, []
         self.metrics["validated_identity_octets"] = 0
@@ -223,7 +226,7 @@ class EdgeRecorder(Recorder):
             source_payload_octets=0,
         )
         binding = growth_binding(function)
-        projection = project_bindings((binding,))
+        projection = project_bindings((binding,), numeric_policy=self.numeric_policy)
         return {
             "declaration": binding.declaration.id,
             "declaration_sha256": hashlib.sha256(
@@ -304,7 +307,7 @@ def measure(case, function, request, *, cold, calls=1, error=None):
     }
     recorder = EdgeRecorder(inputs)
     binding = growth_binding(function)
-    projection = project_bindings((binding,))
+    projection = project_bindings((binding,), numeric_policy=recorder.numeric_policy)
     result = None
     with recorder.observe(case.engine, cold=cold):
         if function is owner.UploadJournalGraphCertificates.edge:
@@ -350,7 +353,12 @@ def measure(case, function, request, *, cold, calls=1, error=None):
     else:
         assert len(recorder.children) == 1 and result == expected_row
         sample = recorder.children[0]
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=recorder.numeric_policy,
+    )
     return sample
 
 

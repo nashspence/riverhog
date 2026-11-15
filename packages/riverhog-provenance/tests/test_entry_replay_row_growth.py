@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import inspect
+import os
 import sqlite3
 import sys
 from contextlib import closing, contextmanager
@@ -25,6 +26,8 @@ from test_entry_replay_publication_growth import restore
 from test_generic_semantics import code_tree
 from test_semantic_edge import WorkCursor, WorkRows, observed_work
 from test_semantic_owner import snapshot
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 ROW_CASES = (
     *((regime, "extensions", 0) for regime in REGIMES if regime[3] != "checkpoint"),
@@ -311,7 +314,9 @@ def row_observer(current, case):
 
 def row_samples(catalog, build, *, samples, cases=ROW_CASES):
     binding = growth_binding(EntryReplay._row)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     for specification in cases:
         for cold in (False, True):
             with row_fixture(build, specification, catalog, cold=cold) as (current, case):
@@ -331,7 +336,12 @@ def row_samples(catalog, build, *, samples, cases=ROW_CASES):
                     ),
                 )
                 sample = complete(observed, primitive)
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 assert result == case["row"] and result is current._current.row
                 assert (result is case["row"]) is (not cold)

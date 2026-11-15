@@ -3,11 +3,14 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 from dataclasses import replace
 
 import pytest
 import riverhog_growth_contracts as growth
 from riverhog_canonical_json import canonical_json_bytes
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def _binding(reader, name, dimensions, bounds, *, delegates=()):
@@ -128,14 +131,23 @@ def invoke_context_action(reader, projection, action):
     """Dispatch public calls without interpreting declarations or expected results."""
     entrypoint = action["entrypoint"]
     if entrypoint == "validate_projection":
-        return reader.validate_projection(projection)
+        return reader.validate_projection(
+            projection, numeric_policy=numeric_policy_from_environment(os.environ)
+        )
     if entrypoint == "validate_sample":
         return reader.validate_sample(
-            projection, action["declaration_id"], action["dimensions"], action["metrics"]
+            projection,
+            action["declaration_id"],
+            action["dimensions"],
+            action["metrics"],
+            numeric_policy=numeric_policy_from_environment(os.environ),
         )
     if entrypoint == "validate_execution_samples":
         return reader.validate_execution_samples(
-            projection, action["declaration_id"], action["samples"]
+            projection,
+            action["declaration_id"],
+            action["samples"],
+            numeric_policy=numeric_policy_from_environment(os.environ),
         )
     raise AssertionError(entrypoint)
 
@@ -582,7 +594,9 @@ def test_context_lookups_preserve_public_reader_behavior(case):
             with pytest.raises(ValueError):
                 invoke_context_action(growth, projection, action)
         else:
-            assert invoke_context_action(growth, projection, action) is None
+            assert isinstance(
+                invoke_context_action(growth, projection, action), growth.NumericWorkUsage
+            )
         assert json.dumps([projection, action], sort_keys=True, allow_nan=False) == before
 
 
@@ -623,24 +637,53 @@ def test_source_contexts_stay_fresh_and_separate_from_parsed_metadata(defect):
     case = source_lookup_case(growth, defect)
     binding, projection = case["binding"], case["projection"]
     before = canonical_json_bytes(projection)
-    assert growth.evaluate_bound(binding, "visits", case["dimensions"]) == 6
+    assert (
+        growth.evaluate_bound(
+            binding,
+            "visits",
+            case["dimensions"],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
+        == 6
+    )
     try:
         object.__setattr__(case["target"], case["field"], case["replacement"])
         with pytest.raises(ValueError):
-            growth.evaluate_bound(binding, "visits", case["dimensions"])
+            growth.evaluate_bound(
+                binding,
+                "visits",
+                case["dimensions"],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
         growth.validate_sample(
-            projection, binding.declaration.id, case["dimensions"], case["metrics"]
+            projection,
+            binding.declaration.id,
+            case["dimensions"],
+            case["metrics"],
+            numeric_policy=numeric_policy_from_environment(os.environ),
         )
         assert canonical_json_bytes(projection) == before
     finally:
         object.__setattr__(case["target"], case["field"], case["original"])
-    assert growth.evaluate_bound(binding, "visits", case["dimensions"]) == 6
+    assert (
+        growth.evaluate_bound(
+            binding,
+            "visits",
+            case["dimensions"],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
+        == 6
+    )
 
 
 def test_projected_sources_preserve_exact_ownership_and_alias_deduplication():
     _, leaf = lookup_bindings()
     _, other = lookup_bindings()
     assert leaf.operation is not other.operation and leaf.project() == other.project()
-    assert growth.project_bindings((leaf, leaf)) == _projection(leaf)
+    assert growth.project_bindings(
+        (leaf, leaf), numeric_policy=numeric_policy_from_environment(os.environ)
+    ) == _projection(leaf)
     with pytest.raises(ValueError, match="multiple source owners"):
-        growth.project_bindings((leaf, other))
+        growth.project_bindings(
+            (leaf, other), numeric_policy=numeric_policy_from_environment(os.environ)
+        )

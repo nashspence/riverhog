@@ -211,7 +211,15 @@ def executed_raw_source_growth(tmp_path_factory):
         "RIVERHOG_CI_TIMING_DIR": str(output),
     }
     observed = subprocess.run(
-        [sys.executable, "-m", "pytest", "-q", "-p", "scripts.ci_timing"],
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "--basetemp=" + str(temporary / "pytest"),
+            "-p",
+            "scripts.ci_timing",
+        ],
         cwd=root,
         env=env,
         capture_output=True,
@@ -223,10 +231,12 @@ def executed_raw_source_growth(tmp_path_factory):
     # Resolve and verify against the same checkout that actually executed; the
     # parent interpreter retains its own workspace imports.
     collect = """
+import os
 import sys
 from pathlib import Path
 from riverhog_canonical_json import canonical_json_bytes
 from scripts.validation_witnesses import collect_test_witnesses
+from scripts.validation_numeric import numeric_policy_from_environment
 root, output = Path(sys.argv[1]), Path(sys.argv[2])
 source, destination = sys.argv[3], Path(sys.argv[4])
 evidence = []
@@ -234,6 +244,7 @@ results = collect_test_witnesses(
     tuple((output / "pytest").glob("*/native-owner-execution/*/*.json")), root=root,
     expected=("riverhog-raw-source-primitive-work/v1",), source_sha=source,
     run_id="native-owner-execution", evidence=evidence,
+    numeric_policy=numeric_policy_from_environment(os.environ),
 )
 assert results == {"riverhog-raw-source-primitive-work/v1": "pass"}
 destination.write_bytes(canonical_json_bytes(evidence))

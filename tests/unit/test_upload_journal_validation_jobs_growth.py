@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 from contextlib import ExitStack, contextmanager
 from dataclasses import asdict, replace
@@ -17,6 +18,7 @@ from riverhog_core.services.upload_journal_validation_owner import UploadJournal
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import delete, select, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import CatalogRecorder
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_epoch_union import uid
@@ -225,7 +227,9 @@ def measure(
     if inspect is not None:
         inspect(result)
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -237,7 +241,12 @@ def measure(
         },
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return result, sample
 
 

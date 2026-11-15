@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import replace
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from riverhog_core.services.upload_journal_validation_owner import UploadJournal
 from riverhog_growth_contracts import Expression, declare_growth, evaluate_bound, growth_binding
 
 from scripts.growth_contract import source_bindings
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 @pytest.mark.parametrize("value", [1, 17, 1025])
@@ -40,8 +42,16 @@ def test_compacted_envelopes_preserve_complete_actual_owner_bounds(value):
     current = growth_binding(operation)
     dimensions = {name: value for name in arguments}
     for bound in original.declaration.bounds:
-        assert evaluate_bound(current, bound.metric, dimensions) == evaluate_bound(
-            original, bound.metric, dimensions
+        assert evaluate_bound(
+            current,
+            bound.metric,
+            dimensions,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) == evaluate_bound(
+            original,
+            bound.metric,
+            dimensions,
+            numeric_policy=numeric_policy_from_environment(os.environ),
         )
 
 

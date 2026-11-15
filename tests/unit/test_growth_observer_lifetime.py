@@ -4,6 +4,7 @@ import copy
 import hashlib
 import importlib
 import json
+import os
 from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
@@ -14,6 +15,7 @@ import riverhog_growth_contracts as growth
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import OCTETS, Expression, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support import growth_batch
 from tests.support.growth_batch import SampleBatch
 from tests.unit.test_growth_observer_batch import (
@@ -54,7 +56,9 @@ def test_source_lookup_reuses_exact_metadata_without_compilation_or_codecs(monke
     def forbidden(*_args, **_kwargs):
         raise AssertionError("metadata lookup repeated compilation, serialization, or hashing")
 
-    with SampleBatch((parent.operation,), limit=4) as batch:
+    with SampleBatch(
+        (parent.operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+    ) as batch:
         with monkeypatch.context() as patch:
             patch.setattr(growth_batch, "project_bindings", forbidden)
             patch.setattr(growth, "_projection_contexts", forbidden)
@@ -72,7 +76,12 @@ def test_source_lookup_reuses_exact_metadata_without_compilation_or_codecs(monke
 @pytest.mark.parametrize("include_descendants", [False, True])
 def test_source_access_and_receiving_authority_are_distinct(include_descendants):
     parent, child = parent_bindings()
-    batch = SampleBatch((parent.operation,), limit=4, include_descendants=include_descendants)
+    batch = SampleBatch(
+        (parent.operation,),
+        limit=4,
+        include_descendants=include_descendants,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     if include_descendants:
         with batch:
             assert batch.source(child.operation)[0] is child
@@ -90,7 +99,12 @@ def test_source_access_and_receiving_authority_are_distinct(include_descendants)
 @pytest.mark.parametrize("value", [None, 0, 1, "true"])
 def test_descendant_admission_requires_an_explicit_boolean(value):
     with pytest.raises(ValueError):
-        SampleBatch((leaf_binding().operation,), limit=4, include_descendants=value)
+        SampleBatch(
+            (leaf_binding().operation,),
+            limit=4,
+            include_descendants=value,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
 
 
 @pytest.mark.parametrize("action", ["source", "receive"])
@@ -98,7 +112,12 @@ def test_same_identity_foreign_operation_is_not_in_the_admitted_closure(action):
     original, foreign = leaf_binding(), leaf_binding()
     assert original.project() == foreign.project()
     with pytest.raises(ValueError):
-        with SampleBatch((original.operation,), limit=4, include_descendants=True) as batch:
+        with SampleBatch(
+            (original.operation,),
+            limit=4,
+            include_descendants=True,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             if action == "source":
                 batch.source(foreign.operation)
             else:
@@ -111,7 +130,9 @@ def test_receive_preserves_the_complete_supplied_sample(monkeypatch):
     calls = observed_validations(monkeypatch)
     sample = literal_sample(parent, children={"leaf": [literal_sample(child)]})
     before = canonical_json_bytes(sample)
-    with SampleBatch((parent.operation,), limit=4) as batch:
+    with SampleBatch(
+        (parent.operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+    ) as batch:
         batch.receive(parent.operation, sample)
         assert canonical_json_bytes(sample) == before
     assert calls == [(parent.declaration.id, (sample,))]
@@ -182,7 +203,11 @@ def test_receive_rejects_inexact_or_invalid_samples_without_repair(defect):
         sample["metrics"]["visits"] = 4
     before = copy.deepcopy(sample)
     with pytest.raises(ValueError):
-        with SampleBatch((binding.operation,), limit=4) as batch:
+        with SampleBatch(
+            (binding.operation,),
+            limit=4,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             batch.receive(binding.operation, sample)
     assert sample == before
     assert batch.validated_samples == 0
@@ -194,7 +219,7 @@ def test_all_groups_read_one_complete_admitted_projection(monkeypatch):
     original = growth_batch.validate_execution_roots
     received = []
 
-    def validate(projection, groups):
+    def validate(projection, groups, *, numeric_policy):
         decoded = json.loads(projection)
         assert set(decoded["declarations"]) == {
             item.declaration.id for item in (root, middle, child, unused)
@@ -203,11 +228,16 @@ def test_all_groups_read_one_complete_admitted_projection(monkeypatch):
             child.declaration.id,
             middle.declaration.id,
         ]
-        original(projection, groups)
+        original(projection, groups, numeric_policy=numeric_policy)
         received.append(projection)
 
     monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
-    with SampleBatch((root.operation,), limit=4, include_descendants=True) as batch:
+    with SampleBatch(
+        (root.operation,),
+        limit=4,
+        include_descendants=True,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    ) as batch:
         child_sample = literal_sample(child)
         batch.receive(child.operation, child_sample)
         batch.receive(
@@ -231,7 +261,12 @@ def test_later_flush_does_not_reuse_a_prior_readers_mutable_projection(monkeypat
         return result
 
     monkeypatch.setattr(growth, "_projection_contexts", compile_projection)
-    with SampleBatch((root.operation,), limit=1, include_descendants=True) as batch:
+    with SampleBatch(
+        (root.operation,),
+        limit=1,
+        include_descendants=True,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    ) as batch:
         batch.receive(child.operation, literal_sample(child, items=2, visits=2))
         # The first flush's decoded graph is no longer an authority.
         projections[-1]["format"] = "changed after validation"
@@ -245,7 +280,12 @@ def test_initial_admission_checks_unused_metadata_before_receiving_any_leaf():
     root, _, _, unused = source_graph()
     bound = unused.declaration.bounds[0]
     previous = bound.unit
-    batch = SampleBatch((root.operation,), limit=4, include_descendants=True)
+    batch = SampleBatch(
+        (root.operation,),
+        limit=4,
+        include_descendants=True,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     try:
         object.__setattr__(bound, "unit", OCTETS)
         with pytest.raises(ValueError):
@@ -265,16 +305,21 @@ def test_leaf_receiving_keeps_source_checks_for_unselected_metadata(monkeypatch,
     def mutate():
         object.__setattr__(unused.declaration, "invariants", ("Changed unused completion scope.",))
 
-    def validate(projection, groups):
+    def validate(projection, groups, *, numeric_policy):
         assert child.declaration.id in json.loads(projection)["declarations"]
-        original(projection, groups)
+        original(projection, groups, numeric_policy=numeric_policy)
         mutate()
 
     if during_reader:
         monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
     try:
         with pytest.raises(ValueError, match="source binding"):
-            with SampleBatch((root.operation,), limit=4, include_descendants=True) as batch:
+            with SampleBatch(
+                (root.operation,),
+                limit=4,
+                include_descendants=True,
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            ) as batch:
                 batch.receive(child.operation, literal_sample(child))
                 if not during_reader:
                     mutate()
@@ -288,7 +333,12 @@ def test_leaf_receiving_keeps_source_checks_for_unselected_metadata(monkeypatch,
 def test_caught_source_or_receiving_failures_cannot_exit_green(monkeypatch, action):
     parent, child = parent_bindings()
     with pytest.raises(ValueError, match="previously failed scope"):
-        with SampleBatch((parent.operation,), limit=4, include_descendants=True) as batch:
+        with SampleBatch(
+            (parent.operation,),
+            limit=4,
+            include_descendants=True,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             with monkeypatch.context() as patch:
                 with pytest.raises(ValueError):
                     if action == "source":
@@ -309,7 +359,12 @@ def test_existing_child_obligation_survives_an_unfinished_parent(valid):
     failure = RuntimeError("parent did not complete")
     expected = RuntimeError if valid else ValueError
     with pytest.raises(expected) as caught:
-        with SampleBatch((parent.operation,), limit=4, include_descendants=True) as batch:
+        with SampleBatch(
+            (parent.operation,),
+            limit=4,
+            include_descendants=True,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             batch.receive(child.operation, literal_sample(child, visits=3 if valid else 4))
             raise failure
     if valid:
@@ -324,7 +379,12 @@ def test_existing_child_obligation_survives_an_unfinished_parent(valid):
 def test_later_received_observation_is_not_an_acceptance_cache_hit():
     parent, child = parent_bindings()
     with pytest.raises(ValueError, match="declared growth bound"):
-        with SampleBatch((parent.operation,), limit=1, include_descendants=True) as batch:
+        with SampleBatch(
+            (parent.operation,),
+            limit=1,
+            include_descendants=True,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             batch.receive(child.operation, literal_sample(child))
             assert batch.validated_samples == 1
             batch.receive(child.operation, literal_sample(child, visits=4))
@@ -336,7 +396,9 @@ def test_later_received_observation_is_not_an_acceptance_cache_hit():
 @pytest.mark.parametrize("closed", [False, True])
 def test_metadata_and_receiving_reject_work_outside_the_owned_scope(action, closed):
     binding = leaf_binding()
-    batch = SampleBatch((binding.operation,), limit=4)
+    batch = SampleBatch(
+        (binding.operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     if closed:
         with batch:
             pass
@@ -352,14 +414,28 @@ def test_metadata_and_receiving_reject_work_outside_the_owned_scope(action, clos
 def test_received_samples_keep_independent_serialized_validation_after_close():
     parent, child = parent_bindings()
     sample = literal_sample(parent, children={"leaf": [literal_sample(child)]})
-    with SampleBatch((parent.operation,), limit=4) as batch:
+    with SampleBatch(
+        (parent.operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+    ) as batch:
         batch.receive(parent.operation, sample)
     retained = json.loads(canonical_json_bytes([sample]))
-    projection = growth.project_bindings((parent,))
-    validate_execution_samples(projection, parent.declaration.id, retained)
+    projection = growth.project_bindings(
+        (parent,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
+    validate_execution_samples(
+        projection,
+        parent.declaration.id,
+        retained,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     retained[0]["delegates"]["leaf"][0]["metrics"]["visits"] = 4
     with pytest.raises(ValueError, match="declared growth bound"):
-        validate_execution_samples(projection, parent.declaration.id, retained)
+        validate_execution_samples(
+            projection,
+            parent.declaration.id,
+            retained,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
     assert_released(batch)
 
 
@@ -398,7 +474,9 @@ def test_native_metadata_and_completion_do_not_record_observer_work(monkeypatch)
         raise AssertionError("observer construction repeated source projection")
 
     db = Recording()
-    with SampleBatch((operation,), limit=4) as batch:
+    with SampleBatch(
+        (operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+    ) as batch:
         with monkeypatch.context() as patch:
             patch.setattr(native, "project_bindings", forbidden)
             for _ in range(3):
@@ -454,14 +532,19 @@ def test_core_receiving_and_automatic_flush_run_with_observers_paused(monkeypatc
     original = growth_batch.validate_execution_roots
     calls = []
 
-    def validate(projection, groups):
+    def validate(projection, groups, *, numeric_policy):
         assert not recorder.active and not recorder.lease_active
         assert not recorder.native_recorder.recording and not db.recording
-        original(projection, groups)
+        original(projection, groups, numeric_policy=numeric_policy)
         calls.extend(identity for identity, _samples in groups)
 
     monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
-    with SampleBatch((binding.operation,), limit=1, include_descendants=True) as batch:
+    with SampleBatch(
+        (binding.operation,),
+        limit=1,
+        include_descendants=True,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    ) as batch:
         recorder.batch = batch
         recorder.validate(binding.operation, literal_sample(binding))
         assert recorder.active and recorder.lease_active
@@ -480,7 +563,12 @@ def test_core_delayed_failure_retains_batch_scope_and_cannot_exit_green():
     recorder.native_recorder = None
     recorder.dbs, recorder.failures = [], []
     with pytest.raises(ValueError, match="previously failed scope"):
-        with SampleBatch((binding.operation,), limit=2, include_descendants=True) as batch:
+        with SampleBatch(
+            (binding.operation,),
+            limit=2,
+            include_descendants=True,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             recorder.batch = batch
             recorder.validate(binding.operation, literal_sample(binding, visits=4))
             with pytest.raises(core.EvidenceFailure) as caught:

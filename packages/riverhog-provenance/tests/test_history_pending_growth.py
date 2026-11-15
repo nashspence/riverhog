@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
@@ -17,6 +18,8 @@ from riverhog_archive_contracts import (
 )
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 HISTORY = history.MemberHistoryClosure._pending_history
 SNAPSHOT = history.MemberHistoryClosure._pending_snapshot
@@ -122,7 +125,9 @@ def measure(current, recorder, operation, dimensions, monkeypatch):
         result = operation(current)
     assert recorder.metrics["closed_cursors"] == 1
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -134,7 +139,12 @@ def measure(current, recorder, operation, dimensions, monkeypatch):
         },
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return result, sample
 
 

@@ -12,6 +12,7 @@ from riverhog_core.canonical_discovery_corpus_reclamation import reclaim_discove
 from riverhog_core.canonical_discovery_retired_metadata import RetiredDiscoveryMetadata
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.support.retirement_namespace import lease_retiring_journal_workspace
 from tests.support.workspace_reclamation import execution_sample
@@ -131,7 +132,9 @@ def test_measured_journals_root_receiving(
 ):
     admission, _ = fixed_inputs
     binding = growth_binding(owner.reclaim_discovery_journals_root)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     variants = (
         "absent",
@@ -217,7 +220,12 @@ def test_measured_journals_root_receiving(
                             assert "SCAN " not in plan and "TEMP B-TREE" not in plan, plan
                     observed = sample(recorder, projection, binding, dimensions)
                     try:
-                        validate_execution_samples(projection, binding.declaration.id, [observed])
+                        validate_execution_samples(
+                            projection,
+                            binding.declaration.id,
+                            [observed],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
+                        )
                     except ValueError:
                         record_property("failed_root_primitives", observed)
                         raise

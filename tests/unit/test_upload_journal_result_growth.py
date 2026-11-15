@@ -17,6 +17,7 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import JournalFrame, encode_entry, iter_journal_frames, new_id
 from sqlalchemy import event, func, insert, select
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.sqlite_observation import observe_admitted_scope
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
@@ -163,7 +164,9 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
     binding = growth_binding(owner.open_upload_journal_result)
     native_binding = growth_binding(owner.open_retained_journal_result)
     assert dict(binding.delegates)["native"] is owner.open_retained_journal_result
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     record_property("growth_samples", samples)
     connect = sqlite3.connect
@@ -544,5 +547,10 @@ def test_sealed_result_admission_records_catalog_native_and_lease_work(
                     assert result.journal_sha256 == hashlib.sha256(raw).hexdigest()
                     assert result.anchor["through"]["sequence"] == str(frames - 1)
                 measured = sample(binding, projection, dimensions, metrics, {"native": children})
-                validate_execution_samples(projection, binding.declaration.id, [measured])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [measured],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(measured)

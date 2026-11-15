@@ -13,6 +13,7 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import JournalValidationCapacity
 from riverhog_provenance import journal_reclamation as native
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.support.retirement_namespace import lease_retiring_journal_workspace
 from tests.support.validation_workspace import leased_workspace
@@ -217,7 +218,9 @@ def combined_sample(recorder, projection, binding, dimensions, children):
 def test_measured_child_reclamation(tmp_path, fixed_inputs, catalog_templates, record_property):
     admission, _ = fixed_inputs
     binding = growth_binding(owner.reclaim_discovery_child)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     variants = (
         "truncate",
@@ -302,7 +305,12 @@ def test_measured_child_reclamation(tmp_path, fixed_inputs, catalog_templates, r
                     assert not recorder.live
                     sample = combined_sample(recorder, projection, binding, dimensions, children)
                     try:
-                        validate_execution_samples(projection, binding.declaration.id, [sample])
+                        validate_execution_samples(
+                            projection,
+                            binding.declaration.id,
+                            [sample],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
+                        )
                     except ValueError:
                         record_property(
                             "failed_child_reclamation_metrics",

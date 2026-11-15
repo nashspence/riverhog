@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import ExitStack, contextmanager
 from types import SimpleNamespace
@@ -16,6 +17,7 @@ from riverhog_provenance import replay_binding as binding_owner
 from riverhog_provenance import topology_checkpoint
 from sqlalchemy import event, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_epoch_union import edge, raw_edges
 from tests.unit.test_upload_journal_certificates import ready
@@ -301,7 +303,9 @@ def certificate_cases(tmp_path_factory):
 def measure(case, operation, action, *, cold):
     inputs, manifest, expected_digest, before = dimensions(case)
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -320,7 +324,12 @@ def measure(case, operation, action, *, cold):
         "metrics": metrics,
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return result, sample
 
 

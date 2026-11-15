@@ -12,6 +12,7 @@ from riverhog_core.catalog_discovery_validation_models import DiscoveryValidatio
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.support.retirement_namespace import refuse_native_child_resource
 from tests.support.validation_workspace import leased_workspace
@@ -131,7 +132,9 @@ def test_measured_complete_original_retirement_turn(
     tmp_path, fixed_inputs, catalog_templates, record_property
 ):
     binding = growth_binding(owner.DiscoveryRetirementTurn.advance)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     variants = (
         "children",
@@ -223,7 +226,10 @@ def test_measured_complete_original_retirement_turn(
                         observed = sample(recorder, projection, binding, dimensions)
                         try:
                             validate_execution_samples(
-                                projection, binding.declaration.id, [observed]
+                                projection,
+                                binding.declaration.id,
+                                [observed],
+                                numeric_policy=numeric_policy_from_environment(os.environ),
                             )
                         except ValueError:
                             record_property("failed_turn_primitives", observed)
@@ -279,7 +285,9 @@ def test_measured_dependent_child_close_receiving(case, monkeypatch, record_prop
         assert metadata is not None and metadata._child_handles.uncertain
         assert turn._custody.verify_current()
         binding = growth_binding(owner.RetiredDiscoveryMetadata.close)
-        projection = project_bindings((binding,))
+        projection = project_bindings(
+            (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+        )
         with recorder.observe(case, cold=True), direct_primitives(recorder):
             metadata.close()
         assert metadata._closed and not metadata._child_handles._callbacks
@@ -297,7 +305,12 @@ def test_measured_dependent_child_close_receiving(case, monkeypatch, record_prop
         )
         assert observed["metrics"]["close_calls"] >= 3
         assert observed["metrics"]["core_closed_connections"] == 1
-        validate_execution_samples(projection, binding.declaration.id, [observed])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [observed],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         record_property("growth_samples", [observed])
     finally:
         turn.close()

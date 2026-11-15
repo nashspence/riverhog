@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from collections import defaultdict
 from types import SimpleNamespace
@@ -19,6 +20,8 @@ from riverhog_provenance import (
     validate_journal,
 )
 from test_corpus_source_growth import source_reads
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def populated(corpus, count):
@@ -331,7 +334,9 @@ def test_actual_dependency_calls_bound_visits_and_payloads_without_repeated_comp
 ):
     operation = CanonicalCorpusValidator.advance_dependencies
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     for count, rows, octets in ((0, 1, 256), (1, 1, 256), (17, 7, 256), (129, 17, 4096)):
         with CanonicalCorpusValidator() as corpus:
@@ -382,7 +387,12 @@ def test_actual_dependency_calls_bound_visits_and_payloads_without_repeated_comp
                 == 9 * count + 3
             )
             assert all(cursor.closed for cursor in observer.cursors)
-    validate_execution_samples(projection, binding.declaration.id, samples)
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        samples,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     record_property("growth_samples", samples)
 
 

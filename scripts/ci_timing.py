@@ -19,11 +19,18 @@ from uuid import uuid4
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
+from riverhog_growth_contracts import NumericWorkPolicy, NumericWorkRefused
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.validation_identity import source_identity as source_identity
+from scripts.validation_numeric import (
+    numeric_policy_from_conditions,
+    numeric_policy_from_environment,
+    numeric_policy_identity,
+    numeric_refusal_receipt,
+)
 from scripts.validation_process import ValidationInterrupted, run_validation_child
 from scripts.validation_resources import validation_storage_budget
 
@@ -60,6 +67,11 @@ class PytestTiming:
         self.growth_witnesses: dict[str, dict[str, object]] = {}
         self.growth_observations: dict[str, object] = {}
         self.growth_samples: dict[str, object] = {}
+        self.numeric_policy: NumericWorkPolicy | None = None
+        self.numeric_identity: dict[str, str] | None = None
+        if any(key.startswith("RIVERHOG_VALIDATION_NUMERIC_") for key in os.environ):
+            self.numeric_policy = numeric_policy_from_environment(os.environ)
+            self.numeric_identity = numeric_policy_identity(self.numeric_policy)
 
     def pytest_collection_finish(self, session: pytest.Session) -> None:
         import hashlib
@@ -67,6 +79,9 @@ class PytestTiming:
         for item in session.items:
             marker = item.get_closest_marker("growth_witness")
             if marker is not None:
+                if self.numeric_policy is None:
+                    self.numeric_policy = numeric_policy_from_environment(os.environ)
+                    self.numeric_identity = numeric_policy_identity(self.numeric_policy)
                 self.growth_witnesses[item.nodeid] = {
                     "id": marker.args[0],
                     "source_sha256": hashlib.sha256(item.path.read_bytes()).hexdigest(),
@@ -75,7 +90,9 @@ class PytestTiming:
                 if operation is not None:
                     from scripts.validation_witnesses import operation_projection
 
-                    _, declaration = operation_projection(operation, root=session.config.rootpath)
+                    _, declaration = operation_projection(
+                        operation, root=session.config.rootpath, numeric_policy=self.numeric_policy
+                    )
                     self.growth_witnesses[item.nodeid]["declaration"] = declaration
 
     @pytest.hookimpl(optionalhook=True)
@@ -238,6 +255,7 @@ class PytestTiming:
                 "growth_witnesses": self.growth_witnesses,
                 "growth_observations": self.growth_observations,
                 "growth_samples": self.growth_samples,
+                "numeric_policy": self.numeric_identity,
             },
         )
 
@@ -366,6 +384,7 @@ def execute_validation(
                         expected=owned.growth_witnesses,
                         source_sha=str(source["source_sha"]),
                         run_id=invocation,
+                        numeric_policy=numeric_policy_from_conditions(dict(owned.conditions)),
                         evidence=evidence,
                     )
                     if evidence:
@@ -379,6 +398,19 @@ def execute_validation(
             if growth_collector is not None:
                 try:
                     growth_results = growth_collector(work, run_id)
+                except NumericWorkRefused as error:
+                    if state == "completed":
+                        try:
+                            record["numeric_refusal"] = numeric_refusal_receipt(
+                                error,
+                                numeric_policy=numeric_policy_from_conditions(
+                                    dict(work.conditions)
+                                ),
+                            )
+                        except Exception:
+                            state = "evidence-failed"
+                        else:
+                            state = "numeric-refused"
                 except Exception:
                     if state == "completed":
                         state = "evidence-failed"

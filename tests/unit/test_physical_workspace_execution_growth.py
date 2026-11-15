@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import asdict, is_dataclass
@@ -9,6 +10,7 @@ from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.services import physical_execution as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.support.workspace_reclamation import execution_sample
 from tests.unit.test_physical_workspace_execution import key
@@ -173,7 +175,12 @@ def seed(pool, count, target, receiver, *, start=1):
 
 def sample(binding, projection, dimensions, metrics):
     value = execution_sample(binding, projection, dimensions, metrics, {})
-    validate_execution_samples(projection, binding.declaration.id, [value])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [value],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return value
 
 
@@ -184,7 +191,9 @@ def sample(binding, projection, dimensions, metrics):
 )
 def test_measured_workspace_submission(tmp_path, monkeypatch, record_property):
     binding = growth_binding(owner.PhysicalExecutionOwner.try_submit_workspace)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     for retained in (1, 17, 1025):
         for control in (1, 17, 1025):
@@ -254,7 +263,9 @@ def test_measured_workspace_submission(tmp_path, monkeypatch, record_property):
 )
 def test_measured_workspace_receiving(monkeypatch, record_property):
     binding = growth_binding(owner.PhysicalExecutionOwner.collect_workspace)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     for retained in (1, 17, 1025):
         for control in (1, 17, 1025):

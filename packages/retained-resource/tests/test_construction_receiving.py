@@ -11,6 +11,8 @@ from pathlib import Path
 
 from retained_resource import Borrow, Resource
 
+from scripts.validation_numeric import numeric_policy_from_environment
+
 FAULT_EXTENSION = None
 
 
@@ -297,7 +299,9 @@ def test_actual_sync_growth_is_independent_of_population_and_extent(tmp_path, re
     from tests.support.workspace_reclamation import execution_sample
 
     binding = growth_binding(sync)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     for population in (0, 17, 257):
         root = tmp_path / str(population)
@@ -330,7 +334,12 @@ def test_actual_sync_growth_is_independent_of_population_and_extent(tmp_path, re
                     metrics,
                     {},
                 )
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 resource.close()
     record_property("growth_samples", samples)

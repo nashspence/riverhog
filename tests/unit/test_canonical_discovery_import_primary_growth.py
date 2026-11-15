@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sys
 from contextlib import contextmanager
 from dataclasses import replace
@@ -21,6 +22,7 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance import ProvenanceValidationError
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import observe_metadata, write
 from tests.unit.test_canonical_discovery_primary_work import imported_primary, primary_work
 
@@ -110,7 +112,9 @@ def observe(db, owner, frame_type, monkeypatch):
 
 def sample(dims, metrics):
     binding = growth_binding(verify_history_import_primary)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     result = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -121,16 +125,32 @@ def sample(dims, metrics):
         "delegates": {},
     }
     try:
-        validate_execution_samples(projection, binding.declaration.id, [result])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [result],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
     except ValueError as error:
         violations = [
             {
                 "metric": bound.metric,
                 "actual": result["metrics"][bound.metric],
-                "bound": evaluate_bound(binding, bound.metric, dims),
+                "bound": evaluate_bound(
+                    binding,
+                    bound.metric,
+                    dims,
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                ),
             }
             for bound in binding.declaration.bounds
-            if result["metrics"][bound.metric] > evaluate_bound(binding, bound.metric, dims)
+            if result["metrics"][bound.metric]
+            > evaluate_bound(
+                binding,
+                bound.metric,
+                dims,
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
         ]
         raise AssertionError(violations) from error
     return result

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import closing, contextmanager
 
@@ -16,6 +17,8 @@ from test_entry_replay_growth import admission_histories as admission_histories
 from test_entry_replay_publication_growth import restore
 from test_semantic_edge import WorkCursor, observed_work
 from test_semantic_owner import snapshot
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 _METADATA = "SELECT ordinal,sha256,length(value) FROM journal_validation_frame WHERE singleton=1"
 _PAYLOAD = "SELECT value FROM journal_validation_frame WHERE singleton=1"
@@ -123,7 +126,9 @@ def restoration_fixture(build, regime, catalog, *, cold):
 
 def restoration_samples(catalog, build, *, samples, regimes=REGIMES):
     binding = growth_binding(EntryReplay._entry)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     for regime in regimes:
         for cold in (False, True):
             with restoration_fixture(build, regime, catalog, cold=cold) as (current, case):
@@ -136,7 +141,12 @@ def restoration_samples(catalog, build, *, samples, regimes=REGIMES):
                 primitive = observed_work(db, {key: 0 for key in db.metrics}, 0, 0)
                 primitive["changed_rows"] = db.metrics["changed_rows"]
                 sample = complete(observed, primitive)
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 assert result is current._current
                 assert (result.frame, result.prepared, result.document, result.source) == (

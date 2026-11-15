@@ -899,9 +899,9 @@ def invoke(session, operation, budget):
 
 
 def checkpoint_samples(
-    root, catalog, cases, *, operation, samples, early=False, journal_constructions
+    root, catalog, cases, *, operation, samples, numeric_policy, early=False, journal_constructions
 ):
-    with SampleBatch((operation,), limit=4) as batch:
+    with SampleBatch((operation,), limit=4, numeric_policy=numeric_policy) as batch:
         _checkpoint_samples(
             root,
             catalog,
@@ -1093,7 +1093,7 @@ def native_session_checkpoints(
     operation="riverhog_provenance.journal_session._checkpoint_progress",
 )
 def test_actual_checkpoint_progress_encoding(
-    catalog, native_session_checkpoints, record_property, *, journal_constructions
+    catalog, native_session_checkpoints, record_property, numeric_policy, *, journal_constructions
 ):
     root, cases = native_session_checkpoints
     samples = []
@@ -1104,6 +1104,7 @@ def test_actual_checkpoint_progress_encoding(
         cases,
         operation=_checkpoint_progress,
         samples=samples,
+        numeric_policy=numeric_policy,
         journal_constructions=journal_constructions,
     )
 
@@ -1114,7 +1115,7 @@ def test_actual_checkpoint_progress_encoding(
     operation="riverhog_provenance.journal_session.JournalValidationSession.advance",
 )
 def test_actual_session_source_and_native_advance(
-    catalog, native_session_checkpoints, record_property, *, journal_constructions
+    catalog, native_session_checkpoints, record_property, numeric_policy, *, journal_constructions
 ):
     root, cases = native_session_checkpoints
     samples = []
@@ -1125,6 +1126,7 @@ def test_actual_session_source_and_native_advance(
         cases,
         operation=JournalValidationSession.advance,
         samples=samples,
+        numeric_policy=numeric_policy,
         journal_constructions=journal_constructions,
     )
 
@@ -1135,7 +1137,7 @@ def test_actual_session_source_and_native_advance(
     operation="riverhog_provenance.journal_session.JournalValidationSession.progress",
 )
 def test_actual_session_progress(
-    catalog, native_session_checkpoints, record_property, *, journal_constructions
+    catalog, native_session_checkpoints, record_property, numeric_policy, *, journal_constructions
 ):
     root, cases = native_session_checkpoints
     samples = []
@@ -1146,6 +1148,7 @@ def test_actual_session_progress(
         cases,
         operation=JournalValidationSession.progress,
         samples=samples,
+        numeric_policy=numeric_policy,
         journal_constructions=journal_constructions,
     )
 
@@ -1156,7 +1159,7 @@ def test_actual_session_progress(
     operation="riverhog_provenance.journal_session.JournalValidationSession.result",
 )
 def test_actual_session_result_borrow(
-    catalog, native_session_checkpoints, record_property, *, journal_constructions
+    catalog, native_session_checkpoints, record_property, numeric_policy, *, journal_constructions
 ):
     root, cases = native_session_checkpoints
     samples = []
@@ -1167,6 +1170,7 @@ def test_actual_session_result_borrow(
         cases,
         operation=JournalValidationSession.result,
         samples=samples,
+        numeric_policy=numeric_policy,
         journal_constructions=journal_constructions,
     )
 

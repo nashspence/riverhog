@@ -63,6 +63,26 @@ def validate_phase_costs(row: Mapping[str, object]) -> None:
         raise ValueError("phase costs contradict measured invocation wall time")
 
 
+def validate_numeric_refusal(value: object, conditions: Mapping[str, object]) -> None:
+    if (
+        not isinstance(value, dict)
+        or set(value)
+        != {"reason", "operation", "max_work", "max_integer_bits", "consumed", "requested"}
+        or any(type(item) is not str for item in value.values())
+        or not value["reason"]
+        or len(value["reason"]) > 128
+        or not value["operation"]
+        or len(value["operation"]) > 128
+        or any(
+            re.fullmatch(r"0|[1-9][0-9]*", value[key]) is None
+            for key in ("max_work", "max_integer_bits", "consumed", "requested")
+        )
+        or value["max_work"] != conditions.get("growth_numeric_max_work")
+        or value["max_integer_bits"] != conditions.get("growth_numeric_max_integer_bits")
+    ):
+        raise ValueError("numeric refusal is not bound to the owned resource conditions")
+
+
 @dataclass(frozen=True)
 class ValidationWork:
     """Required work; an optional speed goal never enters its required definition."""
@@ -211,7 +231,7 @@ def validate_evidence_records(
         "started_monotonic_seconds",
         "observed_conditions",
     }
-    advisory_fields = {"advisory_target", "profiling_target"}
+    optional_fields = {"advisory_target", "profiling_target", "numeric_refusal"}
     seen: set[str] = set()
     comparisons: dict[str, object] = {}
     functional: dict[str, int] = {}
@@ -220,7 +240,7 @@ def validate_evidence_records(
         if (
             not isinstance(row, dict)
             or not required_fields <= row.keys()
-            or (row.keys() - required_fields - advisory_fields)
+            or (row.keys() - required_fields - optional_fields)
             or row.get("format") != "riverhog-ci-validation-evidence/v2"
         ):
             raise ValueError("invalid validation evidence format")
@@ -234,6 +254,11 @@ def validate_evidence_records(
             raise ValueError("unexpected or duplicate validation workload")
         if definition != definitions[name]:
             raise ValueError("required workload, boundary, conditions or growth bindings differ")
+        refusal = row.get("numeric_refusal")
+        if ("numeric_refusal" in row) != (row["state"] == "numeric-refused"):
+            raise ValueError("numeric refusal receipt contradicts the execution state")
+        if "numeric_refusal" in row:
+            validate_numeric_refusal(refusal, definition["conditions"])
         if row["state"] != "completed":
             raise ValueError("validation execution is incomplete")
         validate_phase_costs(row)

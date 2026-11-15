@@ -22,6 +22,12 @@ from riverhog_canonical_json import canonical_json_bytes
 
 from scripts.ci_unit import CI_SHARDS, SHARDS, UNIT_PARTITIONS, ci_unit_command, unit_partition
 from scripts.validation_evidence import ValidationWork
+from scripts.validation_numeric import (
+    bind_numeric_environment,
+    numeric_policy_conditions,
+    numeric_policy_from_conditions,
+    qualification_numeric_policy,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_TARGETS = (
@@ -119,6 +125,8 @@ NATIVE_TESTS = (
 
 def validation_workloads(*, names: Sequence[str] | None = None) -> tuple[ValidationWork, ...]:
     """Derive required work; optional speed goals do not authorize or gate execution."""
+    numeric_policy = qualification_numeric_policy()
+    numeric_conditions = numeric_policy_conditions(numeric_policy)
     work = [ValidationWork(name, ("make", name)) for name in REPOSITORY_TARGETS]
     from scripts.ci_make import maintained_make_targets
 
@@ -254,12 +262,15 @@ def validation_workloads(*, names: Sequence[str] | None = None) -> tuple[Validat
 
     declarations = {}
     for witness in witnesses:
-        if witness.operation is not None:
-            _, binding = operation_projection(witness.operation, root=ROOT)
+        if witness.operation is not None and any(applies(item.name, witness) for item in work):
+            _, binding = operation_projection(
+                witness.operation, root=ROOT, numeric_policy=numeric_policy
+            )
             declarations[witness.id] = (binding["id"], binding["projection_sha256"])
     return tuple(
         replace(
             item,
+            conditions=(*item.conditions, *numeric_conditions),
             growth_witnesses=tuple(
                 witness.id for witness in witnesses if applies(item.name, witness)
             ),
@@ -295,7 +306,11 @@ def require_validation_work(names: Sequence[str]) -> tuple[ValidationWork, ...]:
         if work is None:
             if not has_image_pattern or re.fullmatch(r"build-[a-zA-Z0-9_-]+", name) is None:
                 raise ValueError(f"unknown maintained validation workload: {name}")
-            work = ValidationWork(name, ("make", name))
+            work = ValidationWork(
+                name,
+                ("make", name),
+                conditions=numeric_policy_conditions(qualification_numeric_policy()),
+            )
         selected.append(work)
     return tuple(selected)
 
@@ -329,6 +344,13 @@ def validation_environment(work: ValidationWork, run_id: str) -> dict[str, str]:
             raise ValueError("qualified work has Make execution overrides")
         environment.pop(variable, None)
     environment.pop("UNIT_PARTITION", None)
+    conditions = dict(work.conditions)
+    if work.growth_witnesses or any(key.startswith("growth_numeric_") for key in conditions):
+        bind_numeric_environment(environment, numeric_policy_from_conditions(conditions))
+    else:
+        for key in tuple(environment):
+            if key.startswith("RIVERHOG_VALIDATION_NUMERIC_"):
+                environment.pop(key)
     environment.update(RIVERHOG_CI_LANE=work.name, RIVERHOG_CI_RUN_ID=run_id)
     return environment
 

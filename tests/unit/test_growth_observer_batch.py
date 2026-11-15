@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 from collections import Counter
 from contextlib import closing
 from dataclasses import replace
@@ -22,6 +23,7 @@ from riverhog_growth_contracts import (
     validate_execution_samples,
 )
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support import growth_batch
 from tests.support.growth_batch import SampleBatch
 
@@ -112,8 +114,8 @@ def observed_validations(monkeypatch):
     calls = []
     original = growth_batch.validate_execution_roots
 
-    def validate(projection, groups):
-        original(projection, groups)
+    def validate(projection, groups, *, numeric_policy):
+        original(projection, groups, numeric_policy=numeric_policy)
         calls.extend((identity, tuple(samples)) for identity, samples in groups)
 
     monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
@@ -131,7 +133,9 @@ def test_bounded_batch_checks_every_root_without_compiling_each_emission(monkeyp
         return original(projection, **kwargs)
 
     monkeypatch.setattr(growth, "_projection_contexts", compile_projection)
-    with SampleBatch((binding.operation,), limit=3) as batch:
+    with SampleBatch(
+        (binding.operation,), limit=3, numeric_policy=numeric_policy_from_environment(os.environ)
+    ) as batch:
         assert len(compilations) == 1
         for items in range(1, 9):
             batch.sample(binding.operation, {"items": items}, {"visits": items})
@@ -152,7 +156,9 @@ def test_each_flush_uses_one_private_complete_projection_from_admitted_bytes(
     monkeypatch, parent_first
 ):
     parent, child, unused = projection_bindings()
-    expected = canonical_json_bytes(project_bindings((parent,)))
+    expected = canonical_json_bytes(
+        project_bindings((parent,), numeric_policy=numeric_policy_from_environment(os.environ))
+    )
     original = growth_batch.validate_execution_roots
     compile_original = growth._projection_contexts
     compilations, received = [], []
@@ -171,10 +177,10 @@ def test_each_flush_uses_one_private_complete_projection_from_admitted_bytes(
             for item in value:
                 yield from containers(item)
 
-    def validate(projection, groups):
+    def validate(projection, groups, *, numeric_policy):
         assert type(projection) is bytes and projection == expected
         before = len(compilations)
-        original(projection, groups)
+        original(projection, groups, numeric_policy=numeric_policy)
         assert len(compilations) == before + 1
         current = tuple(containers(compilations[-1]))
         assert {id(item) for item in current}.isdisjoint(
@@ -190,7 +196,12 @@ def test_each_flush_uses_one_private_complete_projection_from_admitted_bytes(
 
     monkeypatch.setattr(growth, "_projection_contexts", compile_projection)
     monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
-    with SampleBatch((parent.operation,), limit=2, include_descendants=True) as batch:
+    with SampleBatch(
+        (parent.operation,),
+        limit=2,
+        include_descendants=True,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    ) as batch:
         assert isinstance(batch._projection_header_bytes, bytes)
         assert set(batch._declaration_bytes) == {
             binding.declaration.id for binding in (parent, child, unused)
@@ -217,24 +228,30 @@ def test_equal_projected_rows_still_require_separate_source_admissions(monkeypat
     first, second = leaf_binding(), leaf_binding()
     assert first.operation is not second.operation
     assert first.project() == second.project()
-    expected = canonical_json_bytes(project_bindings((first,)))
+    expected = canonical_json_bytes(
+        project_bindings((first,), numeric_policy=numeric_policy_from_environment(os.environ))
+    )
     original_project = growth_batch.project_bindings
     original_validate = growth_batch.validate_execution_roots
     admissions, projections = [], []
 
-    def project(bindings):
+    def project(bindings, *, numeric_policy):
         admissions.append(bindings)
-        return original_project(bindings)
+        return original_project(bindings, numeric_policy=numeric_policy)
 
-    def validate(projection, groups):
+    def validate(projection, groups, *, numeric_policy):
         assert type(projection) is bytes and projection == expected
-        original_validate(projection, groups)
+        original_validate(projection, groups, numeric_policy=numeric_policy)
         projections.append(projection)
 
     monkeypatch.setattr(growth_batch, "project_bindings", project)
     monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
     for binding in (first, second):
-        with SampleBatch((binding.operation,), limit=1) as batch:
+        with SampleBatch(
+            (binding.operation,),
+            limit=1,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             assert batch.source(binding.operation)[0] is binding
             batch.receive(binding.operation, literal_sample(binding))
         assert batch.validated_samples == batch.validation_calls == 1
@@ -249,7 +266,12 @@ def test_empty_exit_checks_unused_source_metadata_and_releases_projection(after_
     previous = unused.declaration.invariants
     try:
         with pytest.raises(ValueError, match="source binding"):
-            with SampleBatch((parent.operation,), limit=1, include_descendants=True) as batch:
+            with SampleBatch(
+                (parent.operation,),
+                limit=1,
+                include_descendants=True,
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            ) as batch:
                 if after_flush:
                     batch.receive(child.operation, literal_sample(child))
                 assert not batch._pending
@@ -263,7 +285,11 @@ def test_empty_exit_checks_unused_source_metadata_and_releases_projection(after_
 def test_completed_child_and_parent_are_independently_received(monkeypatch):
     parent, child = parent_bindings()
     calls = observed_validations(monkeypatch)
-    with SampleBatch((parent.operation, child.operation), limit=4) as batch:
+    with SampleBatch(
+        (parent.operation, child.operation),
+        limit=4,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    ) as batch:
         observed_child = batch.sample(child.operation, {"items": 3}, {"visits": 3})
         observed_parent = batch.sample(
             parent.operation, {"items": 3}, {"visits": 3}, {"leaf": [observed_child]}
@@ -282,7 +308,11 @@ def test_completed_child_is_checked_when_parent_dies_before_emitting(monkeypatch
     calls = observed_validations(monkeypatch)
     failure = RuntimeError("parent did not complete")
     with pytest.raises(RuntimeError) as caught:
-        with SampleBatch((parent.operation, child.operation), limit=4) as batch:
+        with SampleBatch(
+            (parent.operation, child.operation),
+            limit=4,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             observed = batch.sample(child.operation, {"items": 3}, {"visits": 3})
             raise failure
     assert caught.value is failure
@@ -295,7 +325,11 @@ def test_invalid_orphan_is_rejected_and_retains_parent_failure_context():
     parent, child = parent_bindings()
     failure = RuntimeError("parent did not complete")
     with pytest.raises(ValueError, match="declared growth bound") as caught:
-        with SampleBatch((parent.operation, child.operation), limit=4) as batch:
+        with SampleBatch(
+            (parent.operation, child.operation),
+            limit=4,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             batch.sample(child.operation, {"items": 3}, {"visits": 4})
             raise failure
     assert caught.value.__context__ is failure
@@ -306,7 +340,11 @@ def test_invalid_orphan_is_rejected_and_retains_parent_failure_context():
 def test_later_invalid_root_is_checked_after_an_earlier_flush():
     binding = leaf_binding()
     with pytest.raises(ValueError, match="declared growth bound"):
-        with SampleBatch((binding.operation,), limit=2) as batch:
+        with SampleBatch(
+            (binding.operation,),
+            limit=2,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             batch.sample(binding.operation, {"items": 1}, {"visits": 1})
             batch.sample(binding.operation, {"items": 2}, {"visits": 2})
             assert batch.validated_samples == 2
@@ -322,7 +360,9 @@ def test_semantically_identical_source_binding_replacement_is_rejected(monkeypat
     replacement = replace(binding)
     assert replacement == binding and replacement is not binding
     with pytest.raises(ValueError, match="source binding"):
-        with SampleBatch((parent.operation,), limit=4) as batch:
+        with SampleBatch(
+            (parent.operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+        ) as batch:
             batch.sample(
                 parent.operation,
                 {"items": 3},
@@ -342,7 +382,11 @@ def test_same_identity_delegate_substitution_is_rejected():
     before = canonical_json_bytes(parent.project())
     try:
         with pytest.raises(ValueError, match="source binding"):
-            with SampleBatch((parent.operation,), limit=4) as batch:
+            with SampleBatch(
+                (parent.operation,),
+                limit=4,
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            ) as batch:
                 batch.sample(
                     parent.operation,
                     {"items": 3},
@@ -365,7 +409,11 @@ def test_forced_frozen_source_mutation_is_rejected(defect):
     value = replace(original) if defect == "declaration-object" else ("Changed completion scope.",)
     try:
         with pytest.raises(ValueError, match="source binding"):
-            with SampleBatch((parent.operation,), limit=4) as batch:
+            with SampleBatch(
+                (parent.operation,),
+                limit=4,
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            ) as batch:
                 batch.sample(
                     parent.operation,
                     {"items": 3},
@@ -382,7 +430,9 @@ def test_forced_frozen_source_mutation_is_rejected(defect):
 def test_completed_sample_mutation_is_rejected_before_receiving(defect):
     parent, child = parent_bindings()
     with pytest.raises(ValueError, match="completed growth sample changed"):
-        with SampleBatch((parent.operation,), limit=4) as batch:
+        with SampleBatch(
+            (parent.operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+        ) as batch:
             leaf = literal_sample(child)
             sample = batch.sample(parent.operation, {"items": 3}, {"visits": 3}, {"leaf": [leaf]})
             if defect == "observations":
@@ -398,7 +448,9 @@ def test_completed_sample_mutation_is_rejected_before_receiving(defect):
 def test_capture_owns_primitive_observations():
     binding = leaf_binding()
     dimensions, metrics = {"items": 3}, {"visits": 3}
-    with SampleBatch((binding.operation,), limit=4) as batch:
+    with SampleBatch(
+        (binding.operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+    ) as batch:
         sample = batch.sample(binding.operation, dimensions, metrics)
         dimensions["items"] = metrics["visits"] = 4
     assert sample["dimensions"] == {"items": 3}
@@ -411,7 +463,11 @@ def test_caught_admission_failure_cannot_complete_the_scope(monkeypatch, defect)
     binding = leaf_binding()
     other = graph_binding("unadmitted", graph_bound(Expression("dimension", name="items")))
     with pytest.raises(ValueError, match="previously failed scope"):
-        with SampleBatch((binding.operation,), limit=4) as batch:
+        with SampleBatch(
+            (binding.operation,),
+            limit=4,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             with monkeypatch.context() as patch:
                 if defect == "source":
                     patch.setattr(binding.operation, "__riverhog_growth__", replace(binding))
@@ -431,7 +487,11 @@ def test_malformed_observation_mappings_are_rejected(field):
     dimensions = [("items", 3)] if field == "dimensions" else {"items": 3}
     metrics = [("visits", 3)] if field == "metrics" else {"visits": 3}
     with pytest.raises(ValueError):
-        with SampleBatch((binding.operation,), limit=4) as batch:
+        with SampleBatch(
+            (binding.operation,),
+            limit=4,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             batch.sample(binding.operation, dimensions, metrics)
     assert_released(batch)
 
@@ -439,7 +499,11 @@ def test_malformed_observation_mappings_are_rejected(field):
 def test_caught_validation_failure_cannot_complete_the_scope():
     binding = leaf_binding()
     with pytest.raises(ValueError, match="previously failed scope"):
-        with SampleBatch((binding.operation,), limit=1) as batch:
+        with SampleBatch(
+            (binding.operation,),
+            limit=1,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        ) as batch:
             with pytest.raises(ValueError, match="declared growth bound"):
                 batch.sample(binding.operation, {"items": 3}, {"visits": 4})
     assert_released(batch)
@@ -448,19 +512,29 @@ def test_caught_validation_failure_cannot_complete_the_scope():
 @pytest.mark.parametrize("limit", [True, 0, -1, 1.0])
 def test_batch_requires_positive_integer_admission(limit):
     with pytest.raises(ValueError, match="positive root admission"):
-        SampleBatch((leaf_binding().operation,), limit=limit)
+        SampleBatch(
+            (leaf_binding().operation,),
+            limit=limit,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
 
 
 def test_batch_requires_fixed_distinct_operations():
     operation = leaf_binding().operation
     for operations in ((), [operation], (operation, operation)):
         with pytest.raises(ValueError, match="distinct source operations"):
-            SampleBatch(operations, limit=1)
+            SampleBatch(
+                operations, limit=1, numeric_policy=numeric_policy_from_environment(os.environ)
+            )
 
 
 def test_failed_entry_releases_its_source_closure():
     first, duplicate = leaf_binding(), leaf_binding()
-    batch = SampleBatch((first.operation, duplicate.operation), limit=1)
+    batch = SampleBatch(
+        (first.operation, duplicate.operation),
+        limit=1,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     with pytest.raises(ValueError, match="multiple source owners"):
         with batch:
             pytest.fail("duplicate source owners entered the batch")
@@ -469,7 +543,9 @@ def test_failed_entry_releases_its_source_closure():
 
 def test_nested_entry_and_reentry_are_rejected():
     binding = leaf_binding()
-    batch = SampleBatch((binding.operation,), limit=4)
+    batch = SampleBatch(
+        (binding.operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     with batch:
         with pytest.raises(ValueError, match="original scope"):
             with batch:
@@ -486,7 +562,9 @@ def test_nested_entry_and_reentry_are_rejected():
 @pytest.mark.parametrize("action", ["sample", "flush"])
 def test_batch_rejects_work_outside_its_active_scope(state, action):
     binding = leaf_binding()
-    batch = SampleBatch((binding.operation,), limit=4)
+    batch = SampleBatch(
+        (binding.operation,), limit=4, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     if state == "closed":
         with batch:
             pass
@@ -500,15 +578,31 @@ def test_batch_rejects_work_outside_its_active_scope(state, action):
 
 def test_serialized_samples_remain_independently_validated_after_close():
     parent, child = parent_bindings()
-    with SampleBatch((parent.operation, child.operation), limit=4) as batch:
+    with SampleBatch(
+        (parent.operation, child.operation),
+        limit=4,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    ) as batch:
         leaf = batch.sample(child.operation, {"items": 3}, {"visits": 3})
         sample = batch.sample(parent.operation, {"items": 3}, {"visits": 3}, {"leaf": [leaf]})
     retained = json.loads(canonical_json_bytes([sample]))
-    projection = project_bindings((parent,))
-    validate_execution_samples(projection, parent.declaration.id, retained)
+    projection = project_bindings(
+        (parent,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
+    validate_execution_samples(
+        projection,
+        parent.declaration.id,
+        retained,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     retained[0]["delegates"]["leaf"][0]["metrics"]["visits"] = 4
     with pytest.raises(ValueError, match="declared growth bound"):
-        validate_execution_samples(projection, parent.declaration.id, retained)
+        validate_execution_samples(
+            projection,
+            parent.declaration.id,
+            retained,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
     assert_released(batch)
 
 
@@ -526,6 +620,7 @@ def _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, *, include_
             (callers.ROOT, units.ROOT),
             limit=64 if include_descendants else 4,
             include_descendants=include_descendants,
+            numeric_policy=numeric_policy_from_environment(os.environ),
         ) as batch:
             recorder = callers.Recorder(case, current, batch=batch)
             for _ in range(3):

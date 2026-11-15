@@ -19,6 +19,7 @@ from riverhog_core.journal_validation_workspace_lease import ValidationWorkspace
 from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.validation_workspace import leased_workspace
 
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX workspace lease backend")
@@ -276,7 +277,9 @@ def measure(
     value, caught = None, None
     operation = owner.lease_journal_validation_workspace
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     inputs = {
         "root_path_octets": len(os.fsencode(root)),
         "workspace_identity_octets": len(identity.encode()),
@@ -324,7 +327,12 @@ def measure(
         "metrics": recorder.metrics,
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 
@@ -481,7 +489,9 @@ def measure_custody(custody, root, *, expected):
     recorder = Recorder()
     recorder.root = root
     binding = growth_binding(owner.ValidationWorkspaceCustody.verify_current)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     with recorder.observe():
         assert custody.verify_current() is expected
     sample = {
@@ -498,7 +508,12 @@ def measure_custody(custody, root, *, expected):
         },
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

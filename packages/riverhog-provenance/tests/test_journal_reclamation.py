@@ -12,6 +12,7 @@ from riverhog_provenance import reclaim_retired_journal_workspace as reclaim
 from riverhog_provenance.errors import JournalValidationCapacity
 from riverhog_provenance.journal_store import InvalidJournalWorkspace
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.workspace_reclamation import (
     execution_sample,
     observe_file_delegate,
@@ -168,7 +169,9 @@ def test_native_reclamation_records_actual_file_work(
     tmp_path, monkeypatch, record_property, retained_file_receivers
 ):
     binding = growth_binding(reclaim)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     names = (
         "snapshot.sqlite3-journal",
         "snapshot.sqlite3-wal",
@@ -210,6 +213,11 @@ def test_native_reclamation_records_actual_file_work(
                     metrics,
                     {"files": children},
                 )
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
     record_property("growth_samples", samples)

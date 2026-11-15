@@ -9,12 +9,15 @@ from pathlib import Path
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_growth_contracts import NumericWorkPolicy, NumericWorkRefused
 
+from scripts.validation_numeric import numeric_environment, numeric_policy_identity
 from scripts.validation_witnesses import collect_test_witnesses, discover_test_witnesses
 
 ROOT = Path(__file__).resolve().parents[2]
 IDENTITY = "example-payload-visits/v1"
 RUN = "actual-witness-execution"
+NUMERIC_POLICY = NumericWorkPolicy(10_000_000, 64)
 
 
 @pytest.fixture(scope="module")
@@ -55,10 +58,19 @@ def executed_witness(tmp_path_factory):
         subprocess.run(command, cwd=root, check=True, capture_output=True)
     source_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     observed = subprocess.run(
-        [sys.executable, "-m", "pytest", "-q", "-p", "scripts.ci_timing"],
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "scripts.ci_timing",
+            "--basetemp=" + str(temporary / "pytest-temp"),
+        ],
         cwd=root,
         env={
             **os.environ,
+            **numeric_environment(NUMERIC_POLICY),
             "PYTHONPATH": str(ROOT),
             "RIVERHOG_CI_RUN_ID": RUN,
             "RIVERHOG_CI_LANE": "unit",
@@ -77,7 +89,12 @@ def executed_witness(tmp_path_factory):
 def test_actual_pytest_execution_supplies_source_bound_owner_observations(executed_witness):
     root, paths, source = executed_witness
     assert collect_test_witnesses(
-        paths, root=root, expected=(IDENTITY,), source_sha=source, run_id=RUN
+        paths,
+        root=root,
+        expected=(IDENTITY,),
+        source_sha=source,
+        run_id=RUN,
+        numeric_policy=NUMERIC_POLICY,
     ) == {IDENTITY: "pass"}
 
 
@@ -108,7 +125,12 @@ def test_invalid_required_owner_artifact_never_becomes_a_growth_pass(
     path.write_bytes(canonical_json_bytes(record))
     with pytest.raises(ValueError):
         collect_test_witnesses(
-            (path,), root=root, expected=(IDENTITY,), source_sha=source, run_id=RUN
+            (path,),
+            root=root,
+            expected=(IDENTITY,),
+            source_sha=source,
+            run_id=RUN,
+            numeric_policy=NUMERIC_POLICY,
         )
 
 
@@ -116,7 +138,12 @@ def test_duplicate_actual_owner_execution_is_rejected(executed_witness):
     root, paths, source = executed_witness
     with pytest.raises(ValueError, match="duplicate"):
         collect_test_witnesses(
-            (*paths, *paths), root=root, expected=(IDENTITY,), source_sha=source, run_id=RUN
+            (*paths, *paths),
+            root=root,
+            expected=(IDENTITY,),
+            source_sha=source,
+            run_id=RUN,
+            numeric_policy=NUMERIC_POLICY,
         )
 
 
@@ -167,6 +194,8 @@ import hashlib
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings
+from scripts.validation_numeric import numeric_policy_from_environment
+import os
 from test_witness_fixture_owner import parent, leaf
 
 @pytest.mark.growth_witness(
@@ -175,7 +204,9 @@ from test_witness_fixture_owner import parent, leaf
 def test_actual_visits(record_property):
     binding = growth_binding(parent)
     child = growth_binding(leaf)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     def sample(owner, members, visits, delegates):
         return {
             "declaration": owner.declaration.id,
@@ -212,10 +243,19 @@ def test_actual_visits(record_property):
         subprocess.run(command, cwd=root, check=True, capture_output=True)
     source = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     observed = subprocess.run(
-        [sys.executable, "-m", "pytest", "-q", "-p", "scripts.ci_timing"],
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "scripts.ci_timing",
+            "--basetemp=" + str(temporary / "pytest-temp"),
+        ],
         cwd=root,
         env={
             **os.environ,
+            **numeric_environment(NUMERIC_POLICY),
             "PYTHONPATH": os.pathsep.join((str(root), str(ROOT))),
             "RIVERHOG_CI_RUN_ID": RUN,
             "RIVERHOG_CI_LANE": "unit",
@@ -246,13 +286,63 @@ def test_actual_delegated_execution_produces_standalone_normative_evidence(
         source_sha=source,
         run_id=RUN,
         evidence=evidence,
+        numeric_policy=NUMERIC_POLICY,
     ) == {"declared-visits/v1": "pass"}
-    projection, _ = operation_projection("test_witness_fixture_owner.parent", root=root)
-    assert len(evidence) == 1
-    validate_growth_execution(
-        projection, evidence[0], source={"source_sha": source, "source_clean": True}
+    projection, _ = operation_projection(
+        "test_witness_fixture_owner.parent", root=root, numeric_policy=NUMERIC_POLICY
     )
+    assert len(evidence) == 1
+    usage = validate_growth_execution(
+        projection,
+        evidence[0],
+        source={"source_sha": source, "source_clean": True},
+        numeric_policy=NUMERIC_POLICY,
+    )
+    assert usage.consumed > 0 and usage.metric_calls > 0
+    assert evidence[0]["numeric_policy"] == numeric_policy_identity(NUMERIC_POLICY)
     assert [len(sample["delegates"]["leaf"]) for sample in evidence[0]["samples"]] == [7, 17]
+
+
+@pytest.mark.parametrize("defect", ["missing", "usage", "source", "policy", "reader"])
+def test_retained_numeric_validation_receipt_is_exact_source_and_reader_bound(
+    executed_declared_witness, monkeypatch, defect
+):
+    from scripts.validation_witnesses import operation_projection, validate_growth_execution
+
+    root, paths, source = executed_declared_witness
+    monkeypatch.syspath_prepend(str(root))
+    evidence = []
+    collect_test_witnesses(
+        paths,
+        root=root,
+        expected=("declared-visits/v1",),
+        source_sha=source,
+        run_id=RUN,
+        evidence=evidence,
+        numeric_policy=NUMERIC_POLICY,
+    )
+    projection, _ = operation_projection(
+        "test_witness_fixture_owner.parent", root=root, numeric_policy=NUMERIC_POLICY
+    )
+    record = evidence[0]
+    receipt = record["numeric_validation"]
+    if defect == "missing":
+        record["numeric_validation"] = None
+    elif defect == "usage":
+        receipt["usage"]["consumed"] = str(int(receipt["usage"]["consumed"]) + 1)
+    elif defect == "source":
+        receipt["source"]["source_sha"] = "0" * 40
+    elif defect == "policy":
+        receipt["numeric_policy"]["max_work"] = str(NUMERIC_POLICY.max_work + 1)
+    else:
+        receipt["numeric_policy"]["reader_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="numeric work receipt"):
+        validate_growth_execution(
+            projection,
+            record,
+            source={"source_sha": source, "source_clean": True},
+            numeric_policy=NUMERIC_POLICY,
+        )
 
 
 @pytest.mark.parametrize(
@@ -267,6 +357,10 @@ def test_actual_delegated_execution_produces_standalone_normative_evidence(
         "delegate-bound",
         "delegate-digest",
         "source-end",
+        "numeric-work",
+        "numeric-width",
+        "numeric-reader",
+        "numeric-missing",
     ],
 )
 def test_required_declared_evidence_rejects_stale_missing_or_contradictory_execution(
@@ -294,13 +388,26 @@ def test_required_declared_evidence_rejects_stale_missing_or_contradictory_execu
         sample["delegates"]["leaf"][0]["metrics"]["visits"] += 1
     elif defect == "delegate-digest":
         sample["delegates"]["leaf"][0]["declaration_sha256"] = "b" * 64
-    else:
+    elif defect == "source-end":
         record["source_end"]["source_clean"] = False
+    elif defect == "numeric-work":
+        record["numeric_policy"]["max_work"] = str(NUMERIC_POLICY.max_work + 1)
+    elif defect == "numeric-width":
+        record["numeric_policy"]["max_integer_bits"] = str(NUMERIC_POLICY.max_integer_bits + 1)
+    elif defect == "numeric-reader":
+        record["numeric_policy"]["reader_sha256"] = "0" * 64
+    else:
+        record.pop("numeric_policy")
     path = tmp_path / "invalid-declared.json"
     path.write_bytes(canonical_json_bytes(record))
     with pytest.raises(ValueError):
         collect_test_witnesses(
-            (path,), root=root, expected=("declared-visits/v1",), source_sha=source, run_id=RUN
+            (path,),
+            root=root,
+            expected=("declared-visits/v1",),
+            source_sha=source,
+            run_id=RUN,
+            numeric_policy=NUMERIC_POLICY,
         )
 
 
@@ -308,7 +415,52 @@ def test_declaration_outside_required_checkout_cannot_supply_a_source_binding(tm
     from scripts.validation_witnesses import operation_projection
 
     with pytest.raises(ValueError, match="outside"):
-        operation_projection("riverhog_client.hash_raw_source_chunks", root=tmp_path)
+        operation_projection(
+            "riverhog_client.hash_raw_source_chunks", root=tmp_path, numeric_policy=NUMERIC_POLICY
+        )
+
+
+def test_collector_receives_original_numeric_refusal_after_completed_witness(
+    executed_declared_witness, monkeypatch
+):
+    import riverhog_growth_contracts
+
+    root, paths, source = executed_declared_witness
+    monkeypatch.syspath_prepend(str(root))
+    before = paths[0].read_bytes()
+    assert json.loads(before)["exit_status"] == 0
+    refusal = NumericWorkRefused(
+        "work_allowance_exhausted",
+        operation="metric_dispatch",
+        limit=NUMERIC_POLICY.max_work,
+        consumed=NUMERIC_POLICY.max_work - 1,
+        max_integer_bits=NUMERIC_POLICY.max_integer_bits,
+        requested=10,
+    )
+    calls = []
+
+    def refuse(projection, identity, samples, *, numeric_policy):
+        assert numeric_policy == NUMERIC_POLICY
+        assert identity == "fixture.parent.growth/v1"
+        calls.append(len(samples))
+        raise refusal
+
+    monkeypatch.setattr(riverhog_growth_contracts, "validate_execution_samples", refuse)
+    evidence = []
+    with pytest.raises(NumericWorkRefused) as received:
+        collect_test_witnesses(
+            paths,
+            root=root,
+            expected=("declared-visits/v1",),
+            source_sha=source,
+            run_id=RUN,
+            numeric_policy=NUMERIC_POLICY,
+            evidence=evidence,
+        )
+    assert received.value is refusal
+    assert calls == [2]
+    assert evidence == []
+    assert paths[0].read_bytes() == before
 
 
 def test_growth_witness_source_requires_identity_and_gate_binding(tmp_path):
@@ -379,7 +531,15 @@ def executed_parametrized_witness(executed_declared_witness, tmp_path_factory, r
     ):
         subprocess.run(command, cwd=root, check=True, capture_output=True)
     source = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
-    command = [sys.executable, "-m", "pytest", "-q", "-p", "scripts.ci_timing"]
+    command = [
+        sys.executable,
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "scripts.ci_timing",
+        "--basetemp=" + str(temporary / "pytest-temp"),
+    ]
     if request.param:
         command.extend(("-n", str(request.param), "--dist=load"))
     observed = subprocess.run(
@@ -387,6 +547,7 @@ def executed_parametrized_witness(executed_declared_witness, tmp_path_factory, r
         cwd=root,
         env={
             **os.environ,
+            **numeric_environment(NUMERIC_POLICY),
             "PYTHONPATH": os.pathsep.join((str(root), str(ROOT))),
             "RIVERHOG_CI_RUN_ID": RUN,
             "RIVERHOG_CI_LANE": "unit",
@@ -415,6 +576,7 @@ def test_every_actual_parametrized_case_supplies_declared_evidence(
         source_sha=source,
         run_id=RUN,
         evidence=evidence,
+        numeric_policy=NUMERIC_POLICY,
     ) == {"declared-visits/v1": "pass", "parametrized-observations/v1": "pass"}
     assert len({row["node_id"] for row in evidence}) == 3
     assert sorted(row["samples"][0]["dimensions"]["members"] for row in evidence) == [7, 17, 1025]
@@ -485,4 +647,5 @@ def test_parametrized_evidence_requires_all_cases_exactly_once(
             expected=("declared-visits/v1",),
             source_sha=source,
             run_id=RUN,
+            numeric_policy=NUMERIC_POLICY,
         )

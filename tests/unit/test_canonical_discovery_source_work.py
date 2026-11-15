@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from dataclasses import replace
 
@@ -21,6 +22,7 @@ from riverhog_core.canonical_discovery_source_work import (
     prepare_lexical_source_page,
 )
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import (
     KEY,
     ORIGIN,
@@ -334,7 +336,9 @@ def test_measured_source_pages_bound_sql_hashing_and_output_on_native_atoms(
     from tests.support.canonical_discovery import native_profile_fixture
 
     binding = growth_binding(prepare_lexical_source_page)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -403,7 +407,12 @@ def test_measured_source_pages_bound_sql_hashing_and_output_on_native_atoms(
                             "metrics": dict(recorder.metrics),
                             "delegates": {},
                         }
-                        validate_execution_samples(projection, binding.declaration.id, [sample])
+                        validate_execution_samples(
+                            projection,
+                            binding.declaration.id,
+                            [sample],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
+                        )
                         samples.append(sample)
                     else:
                         page = prepare_lexical_source_page(db, KEY, source, action_budget=budget)

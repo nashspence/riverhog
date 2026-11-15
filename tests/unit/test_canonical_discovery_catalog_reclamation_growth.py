@@ -10,6 +10,7 @@ from riverhog_core.catalog_discovery_validation_models import DiscoveryValidatio
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import CatalogRecorder, octets
 from tests.support.validation_workspace import leased_workspace
 from tests.support.workspace_reclamation import execution_sample
@@ -29,7 +30,9 @@ pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX original physi
 )
 def test_measured_exact_catalog_deletion(cases, record_property):
     binding = growth_binding(jobs.delete_retired_discovery_job)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     for case in cases:
         case.root.parent.chmod(0o700)
@@ -101,7 +104,12 @@ def test_measured_exact_catalog_deletion(cases, record_property):
                     },
                     {},
                 )
-                validate_execution_samples(projection, binding.declaration.id, [observed])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [observed],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(observed)
     record_property("growth_samples", samples)
     record_property(

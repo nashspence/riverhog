@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import errno
 import hashlib
+import os
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import replace
@@ -20,6 +21,8 @@ from test_journal_session_lifecycle_growth import (
     observe_replay,
     observed_work,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 OPEN = JournalValidationSession.open_retained.__func__
 
@@ -117,7 +120,12 @@ def measure(directory, source, catalog, kind, *, journal_constructions):
         )
         sample = complete(frame, primitive)
         validate_execution_samples(
-            project_bindings((growth_binding(OPEN),)), growth_binding(OPEN).declaration.id, [sample]
+            project_bindings(
+                (growth_binding(OPEN),), numeric_policy=numeric_policy_from_environment(os.environ)
+            ),
+            growth_binding(OPEN).declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
         )
     expected = (
         IncompleteSourceError

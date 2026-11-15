@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from contextlib import ExitStack
 from dataclasses import asdict, replace
 from functools import partial
@@ -26,6 +27,7 @@ from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import delete, select, update
 from sqlalchemy.orm import sessionmaker
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import CatalogRecorder, octets
 from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_jobs import (  # noqa: F401
@@ -326,7 +328,9 @@ def measure(case, mode, variant, cold):
                 owner.DiscoveryJob.read(session.get(Job, result.workspace_id))
             )
     binding = growth_binding(getattr(owner, mode))
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -338,7 +342,12 @@ def measure(case, mode, variant, cold):
         },
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

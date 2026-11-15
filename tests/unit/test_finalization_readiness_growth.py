@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from types import SimpleNamespace
 
 import pytest
@@ -19,6 +20,7 @@ from riverhog_core.services.archive_write_admission import initialize_archive_wr
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import delete
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import JOURNAL
@@ -220,7 +222,9 @@ def measure(case, dimensions, *, error=None):
     )
     metrics["sealed_count_calls_limit"] = metrics["sealed_count_calls"]
     binding = growth_binding(owner._ready_for_finalization)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -230,7 +234,12 @@ def measure(case, dimensions, *, error=None):
         "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return returned, sample
 
 

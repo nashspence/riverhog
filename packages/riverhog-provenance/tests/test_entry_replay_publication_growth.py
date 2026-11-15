@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import closing, contextmanager
 from copy import deepcopy
@@ -32,6 +33,8 @@ from test_entry_replay_growth import (
 from test_entry_replay_growth import admission_histories as admission_histories
 from test_semantic_edge import observed_work
 from test_semantic_owner import assert_uncommitted_hidden, snapshot
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 # History/current widths, exact native checkpoint padding and anchor-position regimes.
 PUBLICATION_CASES = (
@@ -220,7 +223,9 @@ def assert_published(current, case):
 
 def publication_samples(catalog, build, *, samples, cases=PUBLICATION_CASES):
     binding = growth_binding(EntryReplay._publish)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     for specification in cases:
         with publication_fixture(build, specification, catalog) as (store, case):
             with measured_store(store, case, catalog) as (current, path):
@@ -232,7 +237,12 @@ def publication_samples(catalog, build, *, samples, cases=PUBLICATION_CASES):
                 primitive = observed_work(store.db, {key: 0 for key in store.db.metrics}, 0, 0)
                 primitive["changed_rows"] = store.db.metrics["changed_rows"]
                 sample = complete(observed, primitive)
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 assert result.checkpoint == case["after"]
                 with closing(sqlite3.connect(path)) as reader:

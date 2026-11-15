@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from dataclasses import replace
 
@@ -38,6 +39,7 @@ from riverhog_core.provenance_archive_read import (
     ProvenanceArchiveReadError,
 )
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import RecordedConnection, write
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
 
@@ -284,7 +286,9 @@ def _measured(tmp_path, monkeypatch, record_property, *, prepare):
     authenticate_metadata(db, key, admission, reader)
     owner = ArchiveMemberRegistration(admission, reader)
     binding = growth_binding(prepare_archive_member if prepare else apply_archive_member)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -325,7 +329,12 @@ def _measured(tmp_path, monkeypatch, record_property, *, prepare):
             },
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
         if prepare:
             with write(db):

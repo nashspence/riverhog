@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import replace
@@ -17,6 +18,7 @@ from riverhog_provenance import replay_binding as codec_owner
 from riverhog_provenance_contracts import ContractCatalog
 from sqlalchemy import create_engine, event, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_replay_binding import Scan, pack, ready
@@ -243,7 +245,12 @@ def observe_current(
     measured = sample(
         binding, digests[binding.declaration.id], dimensions, metrics, {"probe": children}
     )
-    validate_execution_samples(projection, binding.declaration.id, [measured])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [measured],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return measured
 
 
@@ -256,7 +263,9 @@ def test_actual_source_currentness_composes_the_probe_and_binding_codec(tmp_path
     operation = UploadJournalValidationSource.verify_current
     binding, probe_binding = growth_binding(operation), growth_binding(replay._probe)
     assert dict(binding.delegates) == {"probe": replay._probe}
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digests = {
         item.declaration.id: hashlib.sha256(
             canonical_json_bytes(projection["declarations"][item.declaration.id])

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import random
 import sqlite3
 import subprocess
@@ -15,6 +16,8 @@ import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance._online_dag import OnlineDag, StaleDagWork, install
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 KINDS = ("derivation", "specialization")
 PHASES = (
@@ -594,7 +597,9 @@ def seeded_growth_graph(dag, count, *, cycle):
 
 def graph_sample(method, dimensions, metrics):
     binding = growth_binding(method)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -604,7 +609,12 @@ def graph_sample(method, dimensions, metrics):
         "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

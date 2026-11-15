@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 
 import pytest
@@ -15,6 +16,8 @@ from riverhog_provenance import (
 )
 from test_corpus_order_growth import Recorder, edges_for, insert
 from test_corpus_source_growth import source_reads
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def ready(corpus):
@@ -260,7 +263,9 @@ def test_whole_validation_resumes_an_existing_partial_order_instead_of_restartin
 )
 def test_actual_ordering_quanta_bound_payload_and_sql_work(monkeypatch, record_property):
     binding = growth_binding(CanonicalCorpusValidator.advance_order)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -300,5 +305,10 @@ def test_actual_ordering_quanta_bound_payload_and_sql_work(monkeypatch, record_p
                 else:
                     pytest.fail("ordering continuation did not complete")
                 corpus._close_orders()
-    validate_execution_samples(projection, binding.declaration.id, samples)
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        samples,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     record_property("growth_samples", samples)

@@ -1,15 +1,20 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from types import SimpleNamespace
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_growth_contracts import NumericWorkPolicy
 
 from scripts import ci_qualification as qualification
 from scripts import ci_timing as timing
+from scripts.validation_numeric import numeric_policy_conditions
 from tests.unit.test_validation_evidence import RUN, SOURCE, row
+
+NUMERIC_POLICY = NumericWorkPolicy(10_000_000, 64)
 
 
 @pytest.fixture(autouse=True)
@@ -18,6 +23,10 @@ def isolated_make_execution_environment(monkeypatch: pytest.MonkeyPatch) -> None
 
     for variable in ("MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES"):
         monkeypatch.delenv(variable, raising=False)
+    for variable in tuple(os.environ):
+        if variable.startswith("RIVERHOG_VALIDATION_NUMERIC_"):
+            monkeypatch.delenv(variable)
+    monkeypatch.setattr(qualification, "qualification_numeric_policy", lambda: NUMERIC_POLICY)
 
 
 @pytest.mark.parametrize(
@@ -64,7 +73,10 @@ def test_running_attempt_records_start_and_conditions_before_execution(tmp_path,
 
 
 @pytest.mark.parametrize("name", ["lint", "unit", "build", "stove0-scale"])
-def test_required_work_needs_no_target_or_approval_state(name):
+def test_required_work_needs_no_target_or_approval_state(name, monkeypatch):
+    from scripts import validation_witnesses
+
+    monkeypatch.setattr(validation_witnesses, "discover_test_witnesses", lambda _: ())
     result = qualification.require_validation_work([name])
     assert result[0].name == name
     assert "timing_policy" not in result[0].definition()
@@ -133,7 +145,13 @@ def test_cli_evidence_absence_not_optional_target_absence_fails(tmp_path, monkey
 def test_runner_records_once_without_speed_gate_and_preserves_growth(
     tmp_path, monkeypatch, target, growth, capsys
 ):
-    work = qualification.ValidationWork("test", ("true",), target, growth_witnesses=("bound",))
+    work = qualification.ValidationWork(
+        "test",
+        ("true",),
+        target,
+        conditions=numeric_policy_conditions(NUMERIC_POLICY),
+        growth_witnesses=("bound",),
+    )
     monkeypatch.setattr(qualification, "validation_workloads", lambda **_selection: (work,))
     monkeypatch.setattr(
         timing, "source_identity", lambda _: {"source_sha": SOURCE, "source_clean": True}
@@ -273,7 +291,8 @@ def test_qualification_resolves_only_growth_operations_owned_by_requested_work(
     monkeypatch.setattr(validation_witnesses, "discover_test_witnesses", lambda _: witnesses)
     calls = []
 
-    def project(operation, *, root):
+    def project(operation, *, root, numeric_policy):
+        assert numeric_policy == NUMERIC_POLICY
         calls.append(operation)
         return {}, {"id": operation + ".growth/v1", "projection_sha256": "c" * 64}
 
@@ -296,3 +315,111 @@ def test_qualification_resolves_only_growth_operations_owned_by_requested_work(
         assert by_name["unit"].growth_declarations == (("unrelated.step.growth/v1", "c" * 64),)
     if "build" in by_name:
         assert by_name["build"].growth_witnesses == by_name["build"].growth_declarations == ()
+
+
+@pytest.fixture
+def partition_witnesses(monkeypatch):
+    from scripts import validation_witnesses
+    from scripts.validation_witnesses import TestWitness
+
+    witnesses = (
+        TestWitness("one/v1", "tests/one.py::test_one", ("unit-unit",), "a" * 64, "owned.one"),
+        TestWitness("two/v1", "tests/two.py::test_two", ("unit-unit",), "b" * 64, "owned.two"),
+        TestWitness("alias/v1", "tests/one.py::test_alias", ("unit-unit",), "a" * 64, "owned.one"),
+        TestWitness(
+            "explicit/v1",
+            "tests/two.py::test_explicit",
+            ("unit-unit-1",),
+            "b" * 64,
+            "owned.explicit",
+        ),
+    )
+    monkeypatch.setattr(validation_witnesses, "discover_test_witnesses", lambda _: witnesses)
+    monkeypatch.setattr(
+        qualification,
+        "unit_partition",
+        lambda node: "1" if node.startswith("tests/one.py") else "2",
+    )
+    return witnesses
+
+
+@pytest.mark.parametrize(
+    ("names", "operations", "identities"),
+    [
+        (
+            ("unit-unit-1",),
+            ["owned.one", "owned.one", "owned.explicit"],
+            [("one/v1", "alias/v1", "explicit/v1")],
+        ),
+        (
+            ("unit-unit-2", "unit-unit-1"),
+            ["owned.one", "owned.two", "owned.one", "owned.explicit"],
+            [("two/v1",), ("one/v1", "alias/v1", "explicit/v1")],
+        ),
+        (
+            ("unit-unit",),
+            ["owned.one", "owned.two", "owned.one"],
+            [("one/v1", "two/v1", "alias/v1")],
+        ),
+        (
+            ("unit-unit-2", "unit-unit"),
+            ["owned.one", "owned.two", "owned.one"],
+            [("two/v1",), ("one/v1", "two/v1", "alias/v1")],
+        ),
+    ],
+)
+def test_partition_preparation_preserves_owned_reads_order_aliases_and_mixed_selection(
+    monkeypatch, partition_witnesses, names, operations, identities
+):
+    from scripts import validation_witnesses
+
+    calls = []
+
+    def project(operation, *, root, numeric_policy):
+        assert numeric_policy == NUMERIC_POLICY
+        calls.append(operation)
+        return {}, {"id": operation + ".growth/v1", "projection_sha256": "c" * 64}
+
+    monkeypatch.setattr(validation_witnesses, "operation_projection", project)
+    work = qualification.require_validation_work(names)
+    assert tuple(item.name for item in work) == names
+    assert calls == operations
+    assert [item.growth_witnesses for item in work] == identities
+    by_identity = {witness.id: witness for witness in partition_witnesses}
+    for item in work:
+        assert item.growth_declarations == tuple(
+            sorted(
+                {
+                    (by_identity[identity].operation + ".growth/v1", "c" * 64)
+                    for identity in item.growth_witnesses
+                }
+            )
+        )
+
+
+@pytest.mark.parametrize("part", ["1", "2"])
+def test_partition_preparation_ignores_unowned_invalid_source_but_receives_owned_failure(
+    monkeypatch, partition_witnesses, part
+):
+    from scripts import validation_witnesses
+
+    original = ValueError("invalid current operation source")
+    calls = []
+
+    def project(operation, *, root, numeric_policy):
+        assert numeric_policy == NUMERIC_POLICY
+        calls.append(operation)
+        if operation == "owned.two":
+            raise original
+        return {}, {"id": operation + ".growth/v1", "projection_sha256": "c" * 64}
+
+    monkeypatch.setattr(validation_witnesses, "operation_projection", project)
+    if part == "1":
+        work = qualification.require_validation_work(("unit-unit-1",))
+        assert work[0].growth_witnesses == ("one/v1", "alias/v1", "explicit/v1")
+        assert calls == ["owned.one", "owned.one", "owned.explicit"]
+    else:
+        with pytest.raises(ValueError) as received:
+            qualification.require_validation_work(("unit-unit-2",))
+        assert received.value is original
+        assert calls == ["owned.two"]

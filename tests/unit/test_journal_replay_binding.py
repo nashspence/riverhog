@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -20,6 +21,7 @@ from riverhog_provenance_contracts import ContractCatalog, ProvenanceContractBin
 from riverhog_provenance_contracts import schemas as schemas_owner
 from sqlalchemy import event, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_epoch_rank import finish as finish_rank
 from tests.unit.test_journal_epoch_rank import prepared
@@ -330,7 +332,9 @@ def test_unprepared_current_source_differs_from_a_stale_source(tmp_path):
 )
 def test_actual_replay_binding_metadata_probe_work(tmp_path, monkeypatch, record_property):
     binding = growth_binding(replay._probe)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -467,6 +471,11 @@ def test_actual_replay_binding_metadata_probe_work(tmp_path, monkeypatch, record
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     record_property("growth_samples", samples)

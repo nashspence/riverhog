@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import subprocess
 import sys
 from contextlib import contextmanager
@@ -24,6 +25,7 @@ from riverhog_provenance import (
 from sqlalchemy import delete, event, func, select, update
 from sqlalchemy.orm import Session, sessionmaker
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.db_helpers import sqlite_url
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_staged_journal_range import (
@@ -414,7 +416,9 @@ def test_capture_loads_and_commits_only_admitted_rows_and_closes_readers(tmp_pat
 )
 def test_native_framing_records_actual_octet_and_position_work(monkeypatch, record_property):
     binding = growth_binding(advance_journal_framing)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration = projection["declarations"][binding.declaration.id]
     samples = []
     for content, byte_budget, frame_budget in [
@@ -463,6 +467,11 @@ def test_native_framing_records_actual_octet_and_position_work(monkeypatch, reco
             },
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
     record_property("growth_samples", samples)

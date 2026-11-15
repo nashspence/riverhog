@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import closing, contextmanager
 from dataclasses import replace
@@ -25,6 +26,8 @@ from riverhog_provenance.journal_session import JournalValidationSession
 from riverhog_provenance.journal_store import InvalidJournalWorkspace, JournalStore
 from test_journal_graph_certificates import Certificates
 from test_retained_journal_session import ATTEMPT, OwnedSource, directory, finish
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def completed(tmp_path, journal, catalog, *, certified=False, journal_constructions):
@@ -159,7 +162,9 @@ def test_retained_result_admission_records_actual_work(
     tmp_path, journal, graph, who, catalog, monkeypatch, record_property, *, journal_constructions
 ):
     binding = growth_binding(open_retained_journal_result)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration = projection["declarations"][binding.declaration.id]
     samples = []
     record_property("growth_samples", samples)
@@ -320,7 +325,12 @@ def test_retained_result_admission_records_actual_work(
             "metrics": metrics,
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
 
 

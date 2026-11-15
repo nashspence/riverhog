@@ -42,10 +42,10 @@ DIRECT = set(fences.BASE_METRICS) | {
 
 
 class Recorder(release.Recorder):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *, numeric_policy=None):
+        super().__init__(numeric_policy=numeric_policy)
         binding = growth_binding(SWEEP)
-        projection = project_bindings((binding,))
+        projection = project_bindings((binding,), numeric_policy=self.numeric_policy)
         self.metadata[SWEEP] = (
             binding,
             projection,
@@ -90,7 +90,10 @@ class Recorder(release.Recorder):
                     )
             node = self.sample(DROP, dimensions, metrics, children)
             validate_execution_samples(
-                self.metadata[DROP][1], growth_binding(DROP).declaration.id, [node]
+                self.metadata[DROP][1],
+                growth_binding(DROP).declaration.id,
+                [node],
+                numeric_policy=self.numeric_policy,
             )
             self.drops.append(node)
             self.dropped.append(key)
@@ -137,7 +140,7 @@ class Recorder(release.Recorder):
                 current.concurrency if item.name in {"configured_slots", "pending_slots"} else 1
             )
         self.envelopes = dimensions
-        source_recorder = fences.Recorder(SOURCE, {})
+        source_recorder = fences.Recorder(SOURCE, {}, numeric_policy=self.numeric_policy)
         pool = release.Pool(self)
         pool.update(current._slots)
         current._slots = pool
@@ -197,9 +200,13 @@ class Recorder(release.Recorder):
                         for name, value in record["dimensions"].items()
                     )
                     validate_execution_samples(
-                        project_bindings((growth_binding(operation),)),
+                        project_bindings(
+                            (growth_binding(operation),),
+                            numeric_policy=self.numeric_policy,
+                        ),
                         record["declaration"],
                         [record],
+                        numeric_policy=self.numeric_policy,
                     )
             metrics = {}
             for bound in growth_binding(SWEEP).declaration.bounds:
@@ -224,7 +231,10 @@ class Recorder(release.Recorder):
                     )
             sample = self.sample(SWEEP, dimensions, metrics, children)
             validate_execution_samples(
-                self.metadata[SWEEP][1], growth_binding(SWEEP).declaration.id, [sample]
+                self.metadata[SWEEP][1],
+                growth_binding(SWEEP).declaration.id,
+                [sample],
+                numeric_policy=self.numeric_policy,
             )
             blocked = {key for key, _slot in held}
             expected = {

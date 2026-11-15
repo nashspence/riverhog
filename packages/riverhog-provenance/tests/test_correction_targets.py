@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import sqlite3
 import subprocess
 import sys
@@ -30,6 +31,8 @@ from riverhog_provenance._journal_prefix import PrefixState
 from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal import JournalFrame
 from sha256_continuation import CheckpointSHA256
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def identity(ordinal):
@@ -641,7 +644,9 @@ class WorkConnection(sqlite3.Connection):
 
 def target_unit_samples(tmp_path, operation):
     binding = growth_binding(getattr(CorrectionTargets, operation))
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     regimes = [
         (1, 0, 1, True),
         (1, 1, 1, False),
@@ -725,7 +730,12 @@ def target_unit_samples(tmp_path, operation):
                     },
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 yield sample
 
 

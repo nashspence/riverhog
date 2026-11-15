@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import subprocess
 import sys
 from contextlib import closing
@@ -49,6 +50,8 @@ from test_generic_semantics import (
     work,
     workspace_rows,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 CASES = (
     "valid",
@@ -519,7 +522,12 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
                     metadata_row_octets=envelope,
                 )
                 metrics = sample["metrics"]
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 assert metrics["source_payload_octets"] == metrics["adjacency_rows"] == 0
                 assert snapshot(db)["journal_prefix"] == [tuple(prefix)]
@@ -583,7 +591,12 @@ def test_actual_cold_description_metadata_work(tmp_path, record_property):
                         "metrics": dict(metrics),
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
     assert len(samples) == 105
     record_property("growth_samples", samples)

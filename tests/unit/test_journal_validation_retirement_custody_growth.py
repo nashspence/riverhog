@@ -16,6 +16,7 @@ from riverhog_core import journal_validation_retirement as owner
 from riverhog_core.retained_workspace_handles import RetainedWorkspaceHandles
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.retirement_namespace import observe_retained_namespace
 from tests.unit import test_journal_validation_workspace_growth as basis
 
@@ -170,7 +171,9 @@ def measure(
         if body_error is not None:
             assert caught is body_error
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -183,7 +186,12 @@ def measure(
         "metrics": recorder.metrics,
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

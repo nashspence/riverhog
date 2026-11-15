@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from dataclasses import replace
 
@@ -42,6 +43,7 @@ from riverhog_core.canonical_discovery_history_work import (
 )
 from riverhog_core.canonical_discovery_member_work import archive_member_progress
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import metadata_octets, observe_metadata, write
 from tests.unit.test_canonical_discovery_history_work import fixture
 
@@ -279,7 +281,9 @@ def _measured(mode, tmp_path, monkeypatch, record_property):
         "apply": apply_corpus_import,
     }[mode]
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -444,7 +448,12 @@ def _measured(mode, tmp_path, monkeypatch, record_property):
                         },
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                     db.close()
     finally:

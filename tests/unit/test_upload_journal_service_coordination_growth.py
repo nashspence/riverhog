@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from contextlib import contextmanager
 from types import SimpleNamespace
 
@@ -23,6 +24,7 @@ from riverhog_growth_contracts import (
 )
 from sqlalchemy import delete, event, select
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit import test_finalization_readiness_growth as readiness
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
@@ -36,7 +38,9 @@ def sample(operation, dimensions, metrics, children=None, *, batch=None):
     if batch is not None:
         return batch.sample(operation, dimensions, metrics, children)
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     observed = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -46,7 +50,12 @@ def sample(operation, dimensions, metrics, children=None, *, batch=None):
         "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
         "delegates": children or {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [observed])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [observed],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return observed
 
 

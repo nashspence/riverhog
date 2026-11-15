@@ -3,6 +3,7 @@ from __future__ import annotations
 import builtins
 import hashlib
 import json
+import os
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
@@ -24,6 +25,8 @@ from riverhog_provenance import (
 from riverhog_provenance import journal as owner
 from riverhog_provenance.journal_store import InvalidJournalWorkspace
 from test_journal_result import completed, history
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 ROOT = owner.JournalSummary.anchor_at
 PADDING = sha_owner.sha256_compress
@@ -145,7 +148,9 @@ class Recorder:
 
 
 def record(binding, dimensions, metrics, delegates=None):
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -155,7 +160,12 @@ def record(binding, dimensions, metrics, delegates=None):
         "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
         "delegates": delegates or {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

@@ -170,8 +170,8 @@ class Lock(release.Lock):
 
 
 class Recorder(opening.Recorder):
-    def __init__(self, case, *, batch=None):
-        super().__init__(case, batch=batch)
+    def __init__(self, case, *, batch=None, numeric_policy=None):
+        super().__init__(case, batch=batch, numeric_policy=numeric_policy)
         self.helpers = opening.native_helpers()
         self.lifecycle, self.native_tests = self.helpers
         self.pool_held = False
@@ -469,7 +469,10 @@ class Recorder(opening.Recorder):
             return
         try:
             validate_execution_samples(
-                self.projections[operation], growth_binding(operation).declaration.id, [sample]
+                self.projections[operation],
+                growth_binding(operation).declaration.id,
+                [sample],
+                numeric_policy=self.numeric_policy,
             )
         except ValueError as error:
             record = {"declaration": sample["declaration"], "error_class": type(error).__name__}

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import sqlite3
 import subprocess
 import sys
@@ -34,6 +35,8 @@ from riverhog_provenance._journal_prefix import PrefixState
 from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal import JournalFrame, _identity_signature
 from sha256_continuation import CheckpointSHA256
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def identity(ordinal):
@@ -882,7 +885,9 @@ class WorkConnection(sqlite3.Connection):
 
 def staging_unit_samples(tmp_path, operation):
     binding = growth_binding(getattr(AssertionStaging, operation))
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -1098,7 +1103,12 @@ def staging_unit_samples(tmp_path, operation):
                     },
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 yield sample
     if operation == "advance":
         from test_comparison_semantics import staging_growth_samples as comparison_staging_samples

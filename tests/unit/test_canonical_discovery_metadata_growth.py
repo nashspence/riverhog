@@ -25,6 +25,7 @@ from riverhog_provenance_contracts import ContractCatalog
 from sha256_continuation import CheckpointSHA256
 from sqlalchemy.orm import sessionmaker
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import CatalogRecorder, octets
 from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_jobs import fixed_inputs as fixed_inputs
@@ -95,6 +96,7 @@ class CoreConnection(sqlite3.Connection):
 
 class Recorder:
     def __init__(self):
+        self.numeric_policy = numeric_policy_from_environment(os.environ)
         self.active = False
         self.metrics = defaultdict(int)
         self.statements = []
@@ -339,7 +341,7 @@ class Recorder:
             metrics.get("hashed_octets", 0) + self.catalog.metrics["hashed_octets"]
         )
         binding = growth_binding(getattr(implementation, operation))
-        projection = project_bindings((binding,))
+        projection = project_bindings((binding,), numeric_policy=self.numeric_policy)
         sample = {
             "declaration": binding.declaration.id,
             "declaration_sha256": hashlib.sha256(
@@ -352,7 +354,12 @@ class Recorder:
             "delegates": {},
         }
         try:
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=self.numeric_policy,
+            )
         except ValueError as error:
             raise AssertionError(
                 {"operation": operation, "dimensions": dimensions, "metrics": sample["metrics"]}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import replace
@@ -28,6 +29,8 @@ from riverhog_core.canonical_discovery_fact_work import (
     initialize_fact_work,
     stage_fact_segment,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 SOURCE = hashlib.sha256(b"exact admitted journal source").hexdigest()
 ORIGIN = hashlib.sha256(b"exact verified entry header").hexdigest()
@@ -363,7 +366,9 @@ def test_segment_transition_reads_only_exact_work_across_backlogs(
     )
 
     binding = growth_binding(stage_fact_segment)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -452,7 +457,12 @@ def test_segment_transition_reads_only_exact_work_across_backlogs(
                         "metrics": dict(recorder.metrics),
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     records.append(sample)
                 finally:
                     current.set_authorizer(None)

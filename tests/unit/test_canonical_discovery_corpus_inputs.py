@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import sqlite3
 from dataclasses import replace
@@ -32,6 +33,7 @@ from riverhog_core.canonical_discovery_corpus_inputs import (
 from riverhog_core.canonical_discovery_journal_work import QualifiedJournalSource, StaleJournalTask
 from riverhog_provenance import validate_journal
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import (
     MeasuredConnection,
     corrected_journal_fixture,
@@ -302,7 +304,9 @@ def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode, sourc
         "membership": inputs.corpus_source_admitted,
     }[mode]
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -447,7 +451,12 @@ def _measured_inputs(tmp_path, native, monkeypatch, record_property, mode, sourc
                     "metrics": recorder.metrics,
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 if mode == "prepare":
                     assert result.anchor == owner.anchor

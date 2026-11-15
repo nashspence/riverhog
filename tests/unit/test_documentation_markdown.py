@@ -3,12 +3,14 @@
 import argparse
 import copy
 import importlib
+import os
 import re
 import sys
 from pathlib import Path
 
 import pytest
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.documentation_fixtures import PARAMETER, ROOT_TARGET, SCHEMA, closure, document, png
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
@@ -359,7 +361,10 @@ def test_growth_declarations_are_authored_contract_subjects_with_delegate_contex
     from riverhog_growth_contracts import growth_binding, project_bindings
 
     code = closure()
-    projection = project_bindings((growth_binding(hash_raw_source_chunks),))
+    projection = project_bindings(
+        (growth_binding(hash_raw_source_chunks),),
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     code["external_contract"]["growth"] = projection
     parent = "riverhog-client.raw-source-hashing.growth/v1"
     child = "riverhog-protocol.raw-part-commitment.growth/v1"

@@ -3,6 +3,7 @@ from __future__ import annotations
 import builtins
 import hashlib
 import itertools
+import os
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
@@ -25,6 +26,8 @@ from riverhog_provenance import (
     reference,
     validate_journal,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 ORDER = corpus.CanonicalCorpusValidator._acyclic
 
@@ -220,7 +223,9 @@ def measure(current, edges, kind, monkeypatch, *, cyclic=False):
         else:
             ORDER(current, kind)
     binding = growth_binding(ORDER)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -232,7 +237,12 @@ def measure(current, edges, kind, monkeypatch, *, cyclic=False):
         },
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     assert recorder.metrics["source_edge_rows"] == len(edges)
     assert recorder.metrics["seed_vertex_rows"] == sample["dimensions"]["vertices"]
     if not cyclic:

@@ -40,6 +40,7 @@ class Recorder:
     def __init__(self, case, current):
         self.case, self.current = case, current
         self.caller = callers.Recorder(case, current)
+        self.numeric_policy = self.caller.numeric_policy
         self.active, self.depth = False, 0
         case.readers = 0
         case.root = current._journal_validation_retirement.root
@@ -87,7 +88,7 @@ class Recorder:
 
     def sweep(self, selected):
         with self.child():
-            recorder = sweeps.Recorder()
+            recorder = sweeps.Recorder(numeric_policy=self.numeric_policy)
             old_lock, old_slots = selected._lock, selected._slots
             old_slot_locks = {id(slot): slot.lock for slot in old_slots.values()}
             callbacks, live = [], []

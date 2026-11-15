@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import importlib
 import inspect
+import os
 import sys
 
 import pytest
 
 from scripts.growth_contract import declaration_projection, source_analysis, source_bindings
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 @pytest.fixture
@@ -77,8 +79,16 @@ def test_private_source_declarations_share_projection_without_public_exports(pri
     binding = source_bindings({}, packages=packages)
     assert len(binding) == 5
     assert len({id(row.operation) for row in binding}) == 5
-    projection = declaration_projection({}, packages=packages)
-    audit = source_analysis(root, {}, projection, packages=packages)
+    projection = declaration_projection(
+        {}, packages=packages, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
+    audit = source_analysis(
+        root,
+        {},
+        projection,
+        packages=packages,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     assert len(projection["declarations"]) == 5 and audit["coverage"] == {}
     assert {row["source"]["path"] for row in audit["declarations"].values()} == {
         implementation.relative_to(root).as_posix(),
@@ -139,8 +149,16 @@ def test_context_manager_discovery_keeps_callable_and_owning_source(private_owne
     with selected.operation() as value:
         assert value == "owned" and module.CALLS == ["entered"]
     assert module.CALLS == ["entered", "closed"]
-    projection = declaration_projection({}, packages=packages)
-    audit = source_analysis(root, {}, projection, packages=packages)
+    projection = declaration_projection(
+        {}, packages=packages, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
+    audit = source_analysis(
+        root,
+        {},
+        projection,
+        packages=packages,
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     entry = audit["declarations"][selected.declaration.id]
     assert entry["source"]["path"] == implementation.relative_to(root).as_posix()
     assert entry["source"]["symbol"] == "_lease"
@@ -152,14 +170,22 @@ def test_context_manager_trace_rejects_a_foreign_wrapped_body(private_owner, mon
     module = importlib.import_module("private_growth_owner._implementation")
     surface = {"private_growth_owner._implementation._lease": {"contract": {"kind": "function"}}}
     packages = {"private_growth_owner": initializer}
-    projection = declaration_projection(surface, packages=packages)
+    projection = declaration_projection(
+        surface, packages=packages, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
 
     def foreign_body():
         yield "foreign"
 
     monkeypatch.setattr(module._lease, "__wrapped__", foreign_body)
     with pytest.raises(ValueError, match="outside the authoritative checkout"):
-        source_analysis(root, surface, projection, packages=packages)
+        source_analysis(
+            root,
+            surface,
+            projection,
+            packages=packages,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
 
 
 def test_context_manager_qualification_uses_owner_without_replacing_callable(private_owner):
@@ -173,7 +199,9 @@ def test_context_manager_qualification_uses_owner_without_replacing_callable(pri
     assert not inspect.getfile(operation).startswith(str(root))
     assert inspect.getfile(inspect.unwrap(operation)) == str(implementation)
     projection, reference = operation_projection(
-        "private_growth_owner._implementation._lease", root=root
+        "private_growth_owner._implementation._lease",
+        root=root,
+        numeric_policy=numeric_policy_from_environment(os.environ),
     )
     assert reference["id"] == "fixture.private-context.growth/v1"
     assert set(projection["declarations"]) == {reference["id"]}
@@ -196,4 +224,8 @@ def test_context_manager_qualification_rejects_foreign_underlying_source(
 
     monkeypatch.setattr(module._lease, "__wrapped__", foreign_body)
     with pytest.raises(ValueError, match="outside the required checkout"):
-        operation_projection("private_growth_owner._implementation._lease", root=root)
+        operation_projection(
+            "private_growth_owner._implementation._lease",
+            root=root,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )

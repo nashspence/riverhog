@@ -76,9 +76,14 @@ def native_helpers():
 
 
 class Recorder(fences.Recorder):
-    def __init__(self, case, *, batch=None):
+    def __init__(self, case, *, batch=None, numeric_policy=None):
         super().__init__(
-            fences.OWNED_CURRENT, {}, functions=FUNCTIONS, locations=LOCATIONS, batch=batch
+            fences.OWNED_CURRENT,
+            {},
+            functions=FUNCTIONS,
+            locations=LOCATIONS,
+            batch=batch,
+            numeric_policy=numeric_policy,
         )
         self.case = case
         self.records = defaultdict(list)
@@ -95,7 +100,7 @@ class Recorder(fences.Recorder):
             binding = self.source_binding(operation)
             self.bindings[operation] = binding
             if self.batch is None:
-                projection = project_bindings((binding,))
+                projection = project_bindings((binding,), numeric_policy=self.numeric_policy)
                 self.projections[operation] = projection
                 self.digests.update(
                     {
@@ -110,7 +115,10 @@ class Recorder(fences.Recorder):
     def validate(self, operation, sample):
         if self.batch is None:
             validate_execution_samples(
-                self.projections[operation], self.bindings[operation].declaration.id, [sample]
+                self.projections[operation],
+                self.bindings[operation].declaration.id,
+                [sample],
+                numeric_policy=self.numeric_policy,
             )
         else:
             with self.paused():
@@ -656,9 +664,13 @@ class Recorder(fences.Recorder):
                     sample = complete(frame, work)
                     if recorder.batch is None:
                         validate_execution_samples(
-                            project_bindings((growth_binding(operation),)),
+                            project_bindings(
+                                (growth_binding(operation),),
+                                numeric_policy=recorder.numeric_policy,
+                            ),
                             growth_binding(operation).declaration.id,
                             [sample],
+                            numeric_policy=recorder.numeric_policy,
                         )
                     else:
                         recorder.validate(operation, sample)

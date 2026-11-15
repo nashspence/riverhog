@@ -10,6 +10,7 @@ from riverhog_core import canonical_discovery_corpus_source as owner
 from riverhog_core.canonical_discovery_archive_work import StaleArchiveTask
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.unit.test_canonical_discovery_corpus_source import seed
 from tests.unit.test_canonical_discovery_metadata_growth import (
@@ -60,7 +61,9 @@ def record(operation, dimensions, storage, core):
     }.items():
         metrics[target] = storage.catalog.metrics[source]
     binding = growth_binding(getattr(owner.DiscoveryCorpusSource, operation))
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -72,7 +75,12 @@ def record(operation, dimensions, storage, core):
         },
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

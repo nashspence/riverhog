@@ -12,6 +12,7 @@ from riverhog_core.services import upload_journal_validation_owner as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalValidationSession
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_upload_journal_source_growth import octets
 
 RESERVE, KEYS = (
@@ -144,7 +145,9 @@ def measure(current, recorder, operation, selected, *, closed=False):
         "input_key_octets": octets(selected) if operation is RESERVE else 0,
         "retained_key_octets": sum(octets(value) for value in keys),
     }
-    projection = project_bindings((growth_binding(operation),))
+    projection = project_bindings(
+        (growth_binding(operation),), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     binding = growth_binding(operation)
     result, failure = None, None
     with observe(recorder, operation):
@@ -178,7 +181,12 @@ def measure(current, recorder, operation, selected, *, closed=False):
         "metrics": recorder.metrics,
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

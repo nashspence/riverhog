@@ -25,6 +25,7 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_protocol.errors import Conflict
 from sqlalchemy import event, select
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.unit.test_archive_upload_execution import _joined
 from tests.unit.test_primary_facts_lifecycle import (
@@ -45,7 +46,9 @@ from tests.unit.test_primary_facts_lifecycle import (
 
 def sample(operation, dimensions, metrics):
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     result = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -57,7 +60,12 @@ def sample(operation, dimensions, metrics):
         },
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [result])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [result],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return result
 
 

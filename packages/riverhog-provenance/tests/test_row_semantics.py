@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import sqlite3
 import subprocess
 import sys
@@ -34,6 +35,8 @@ from test_generic_semantics import (
     work,
     workspace_rows,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def reference(kind, ordinal, *, external=False):
@@ -732,7 +735,12 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
                     metadata_row_octets=envelope,
                     child_dimensions=child_dimensions,
                 )
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 assert db.execute("SELECT * FROM journal_prefix").fetchone() == prefix
                 with closing(sqlite3.connect(":memory:")) as suffix_db:

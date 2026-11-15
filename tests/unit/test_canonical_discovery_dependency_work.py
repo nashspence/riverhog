@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from contextlib import ExitStack, closing
 from dataclasses import replace
@@ -37,6 +38,7 @@ from riverhog_provenance import (
     validate_journal,
 )
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery import native_scalar_fixture
 from tests.support.canonical_discovery_work import MeasuredConnection, metadata_octets, write
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
@@ -481,7 +483,9 @@ def measured_queue_operation(mode, owned, monkeypatch, record_property):
         "apply": owner.apply_corpus_dependency,
     }[mode]
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -688,7 +692,12 @@ def measured_queue_operation(mode, owned, monkeypatch, record_property):
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
         finally:
             candidate.close()

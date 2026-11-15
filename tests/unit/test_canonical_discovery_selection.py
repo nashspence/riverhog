@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from contextlib import closing
 from dataclasses import replace
@@ -44,6 +45,7 @@ from riverhog_core.canonical_discovery_journal_extraction import JournalFactExtr
 from riverhog_core.canonical_discovery_journal_work import JournalTaskKey
 from riverhog_provenance import validate_journal
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import corrected_journal_fixture, write
 from tests.support.provenance_archive import archive_reader_fixture
 from tests.unit.test_canonical_discovery_dependency_work import run as finish_dependencies
@@ -561,7 +563,9 @@ def _measured(mode, tmp_path, snapshots, monkeypatch, record_property):
         "membership": owner.corpus_selection_admitted,
     }[mode]
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -685,7 +689,12 @@ def _measured(mode, tmp_path, snapshots, monkeypatch, record_property):
                             },
                             "delegates": {},
                         }
-                        validate_execution_samples(projection, binding.declaration.id, [sample])
+                        validate_execution_samples(
+                            projection,
+                            binding.declaration.id,
+                            [sample],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
+                        )
                         samples.append(sample)
                         regimes.append(
                             {
@@ -785,7 +794,9 @@ def test_measured_dense_original_source_index_coordinates(
     from tests.support.canonical_discovery_work import metadata_octets, observe_metadata
 
     binding = growth_binding(owner._next)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -910,7 +921,12 @@ def test_measured_dense_original_source_index_coordinates(
                             "delegates": {},
                         }
                         try:
-                            validate_execution_samples(projection, binding.declaration.id, [sample])
+                            validate_execution_samples(
+                                projection,
+                                binding.declaration.id,
+                                [sample],
+                                numeric_policy=numeric_policy_from_environment(os.environ),
+                            )
                         except ValueError as error:
                             raise AssertionError(
                                 (phase, width, reopen, position, sample)

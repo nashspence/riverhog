@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import sqlite3
 from contextlib import closing
 
@@ -19,6 +20,8 @@ from riverhog_provenance import (
     reference,
     validate_journal,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 class ObservedCursor(sqlite3.Cursor):
@@ -182,7 +185,9 @@ def test_correction_rebuilds_exact_effective_selection_and_preserves_original_fr
 )
 def test_native_metadata_retirement_records_actual_bounded_work(monkeypatch, record_property):
     binding = growth_binding(journal_store.JournalStore._reset_changed_assertions)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration = projection["declarations"][binding.declaration.id]
     samples = []
     connect = journal_store.sqlite3.connect
@@ -243,7 +248,12 @@ def test_native_metadata_retirement_records_actual_bounded_work(monkeypatch, rec
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
         finally:
             current.close()

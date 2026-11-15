@@ -13,6 +13,7 @@ from riverhog_core import canonical_discovery_parent_reclamation as owner
 from riverhog_core.catalog_discovery_validation_models import DiscoveryValidationJobRecord as Row
 from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.retained_resource import fault_native as fault_native
 from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_canonical_discovery_corpus_jobs import case as case
@@ -284,7 +285,9 @@ def test_close_refusal_retains_owner_and_kernel_custody_until_actual_receiving(
     job = prefix(case)
     retained = owner.DiscoveryParentRetirement(case.factory, job, case.root)
     binding = growth_binding(owner.DiscoveryParentRetirement.close)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     close = retained._close_owned
 
@@ -306,7 +309,12 @@ def test_close_refusal_retains_owner_and_kernel_custody_until_actual_receiving(
             observed = execution_sample(
                 binding, projection, {"retained_descriptors": occupied}, metrics, {}
             )
-            validate_execution_samples(projection, binding.declaration.id, [observed])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [observed],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(observed)
 
     retained._close_owned = measured_close

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import closing
 from dataclasses import replace
@@ -22,6 +23,7 @@ from riverhog_core.canonical_discovery_journal_work import (
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import validate_journal
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import (
     ADMISSION,
     MeasuredConnection,
@@ -189,7 +191,9 @@ def test_measured_original_cursor_seeks_past_dense_completed_source_coordinates(
 ):
     db, key, _, _, _ = owned
     binding = growth_binding(next_source_assertion)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -259,7 +263,12 @@ def test_measured_original_cursor_seeks_past_dense_completed_source_coordinates(
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
         db.execute("DELETE FROM discovery_journal_assertions WHERE source_group='zz-dense'")
     record_property("growth_samples", samples)

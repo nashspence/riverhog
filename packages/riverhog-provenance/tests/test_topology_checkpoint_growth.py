@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sys
 from contextlib import contextmanager
 from types import CodeType, SimpleNamespace
@@ -10,6 +11,8 @@ from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import topology_checkpoint as owner
 from riverhog_provenance.topology_facts import TopologyArrayCursor, TopologyFrameCursor
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 ENCODE = owner.TopologyCaptureCheckpoint.to_json
 DECODE = owner.TopologyCaptureCheckpoint.from_json.__func__
@@ -72,7 +75,9 @@ def observe(operation, monkeypatch):
 
 def sample(operation, dimensions, metrics):
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     result = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -82,7 +87,12 @@ def sample(operation, dimensions, metrics):
         "metrics": metrics,
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [result])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [result],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return result
 
 

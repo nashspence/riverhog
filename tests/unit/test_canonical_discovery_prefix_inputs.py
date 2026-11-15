@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import closing
 from dataclasses import replace
@@ -20,6 +21,7 @@ from riverhog_core.canonical_discovery_journal_work import StaleJournalTask
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalSummary, validate_journal
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import (
     MeasuredConnection,
     corrected_journal_fixture,
@@ -220,7 +222,9 @@ def _measure(owned, native, tmp_path, monkeypatch, record_property, mode):
     }
     operation = operations[mode]
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -367,7 +371,12 @@ def _measure(owned, native, tmp_path, monkeypatch, record_property, mode):
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
             if cache == "reopened":
                 db.close()

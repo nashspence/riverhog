@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -22,6 +23,8 @@ from riverhog_provenance._semantic_finish import (
 from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal import JournalFrame
 from sha256_continuation import CheckpointSHA256
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def identity(ordinal):
@@ -744,7 +747,9 @@ class MeterConnection(sqlite3.Connection):
 
 def semantic_finish_samples(tmp_path, measured_operation, *, samples):
     binding = growth_binding(getattr(SemanticFinish, measured_operation))
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -859,7 +864,12 @@ def semantic_finish_samples(tmp_path, measured_operation, *, samples):
                     },
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
     assert len(samples) == 70
 

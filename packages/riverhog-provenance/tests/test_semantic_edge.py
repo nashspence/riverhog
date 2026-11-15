@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -36,6 +37,8 @@ from riverhog_provenance.journal import JournalFrame
 from riverhog_provenance.journal_store import JournalStore
 from sha256_continuation import CheckpointSHA256
 from test_online_dag import graph_dimensions
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def identity(ordinal):
@@ -721,7 +724,9 @@ def observed_work(db, before, changes, start):
 
 def complete_sample(frame, primitive):
     binding = frame["binding"]
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     metrics = dict(primitive)
     for bound in binding.declaration.bounds:
         if not bound.metric.startswith(("graph_", "edge_", "checkpoint_")):
@@ -742,7 +747,12 @@ def complete_sample(frame, primitive):
         "metrics": metrics,
         "delegates": frame["delegates"],
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

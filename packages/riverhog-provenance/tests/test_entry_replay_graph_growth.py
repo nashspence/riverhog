@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from contextlib import closing, contextmanager
 from copy import deepcopy
@@ -34,6 +35,8 @@ from test_generic_semantics import identity
 from test_online_dag import graph_dimensions
 from test_semantic_edge import observed_work
 from test_semantic_owner import snapshot
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 GRAPH_CASES = (
     *((count, 1, 2, 64) for count in (0, 1, 17, 64, 129, 1025)),
@@ -346,7 +349,9 @@ def graph_fixture(case, catalog, *, rows, tight=False, measured=False):
 
 def graph_samples(catalog, build, *, samples, specifications=GRAPH_CASES):
     binding = growth_binding(EntryReplay._graph_step)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     for specification in specifications:
         for case in build(specification):
             kind, stage, _retired, bucket = case["key"]
@@ -382,7 +387,12 @@ def graph_samples(catalog, build, *, samples, specifications=GRAPH_CASES):
                     )
                     primitive["changed_rows"] = current.db.metrics["changed_rows"]
                     sample = complete(observed, primitive)
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                     assert result == expected == current.ledger.load()
                     assert not current.db.in_transaction and snapshot(current.db) == expected_rows

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from copy import deepcopy
 
 import pytest
@@ -31,6 +32,7 @@ from test_journal_session_growth import (
     snapshot,
 )
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.sqlite_observation import observe_admitted_scope
 
 ADVANCE = JournalValidationSession.advance
@@ -137,9 +139,13 @@ def recording_samples(root, catalog, *, samples, large=True, journal_constructio
                         )
                         sample = complete(frame, work)
                         validate_execution_samples(
-                            project_bindings((growth_binding(ADVANCE),)),
+                            project_bindings(
+                                (growth_binding(ADVANCE),),
+                                numeric_policy=numeric_policy_from_environment(os.environ),
+                            ),
                             growth_binding(ADVANCE).declaration.id,
                             [sample],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
                         )
                     samples.append(sample)
                     assert session._failure is rejected.value and not session._closed

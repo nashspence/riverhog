@@ -12,6 +12,7 @@ from retained_resource import Borrow, Resource
 from retained_resource.growth import acquire, receive
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.retained_resource import fault_native as fault_native
 from tests.support.workspace_reclamation import execution_sample
 
@@ -207,7 +208,9 @@ def test_creation_measures_actual_native_entries_and_full_control_operands(
     tmp_path, record_property
 ):
     bindings = tuple(growth_binding(operation) for operation in (acquire, receive))
-    projection = project_bindings(bindings)
+    projection = project_bindings(
+        bindings, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     for backlog in (1, 17, 1025):
         root = tmp_path / str(backlog)
@@ -256,7 +259,12 @@ def test_creation_measures_actual_native_entries_and_full_control_operands(
                                 metrics,
                                 {},
                             )
-                            validate_execution_samples(projection, binding.declaration.id, [sample])
+                            validate_execution_samples(
+                                projection,
+                                binding.declaration.id,
+                                [sample],
+                                numeric_policy=numeric_policy_from_environment(os.environ),
+                            )
                             samples.append(sample)
                         assert owner.received and owner.metrics["close_calls"] == 1
                         target.unlink()

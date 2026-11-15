@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from contextlib import contextmanager
 from dataclasses import asdict
 from types import SimpleNamespace
@@ -12,6 +13,7 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import graph_certificates, replay_binding
 from sqlalchemy import event, insert, select, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.unit.test_upload_journal_result import JOURNAL, Job, Journal, sealed, source_owner
 
@@ -120,7 +122,9 @@ def observe(session, operation, monkeypatch):
 
 def sample(operation, dimensions, metrics):
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     result = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -130,7 +134,12 @@ def sample(operation, dimensions, metrics):
         "metrics": dict(metrics),
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [result])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [result],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return result
 
 

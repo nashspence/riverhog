@@ -3,12 +3,14 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 from collections import Counter
 
 import pytest
 import riverhog_growth_contracts as growth
 from riverhog_canonical_json import canonical_json_bytes
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_growth_numeric_evaluation import (
     NUMERIC_CALLBACK_EXPECTATIONS,
     numeric_callback_outcome,
@@ -107,7 +109,11 @@ def _groups(projection):
 
 
 def _validate(projection):
-    growth.validate_execution_roots(canonical_json_bytes(projection), _groups(projection))
+    growth.validate_execution_roots(
+        canonical_json_bytes(projection),
+        _groups(projection),
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
 
 
 def _graph(shape, size):
@@ -259,7 +265,9 @@ def _same_metadata_rejection(projection, monkeypatch, *, match=None):
     raw = canonical_json_bytes(projection)
     # Canonical decoding gives both readers exactly the same declaration order.
     with pytest.raises(ValueError, match=match) as original:
-        growth.validate_projection(json.loads(raw))
+        growth.validate_projection(
+            json.loads(raw), numeric_policy=numeric_policy_from_environment(os.environ)
+        )
 
     def no_sample(*_args):
         raise AssertionError("sample validation preceded complete metadata validation")
@@ -267,7 +275,9 @@ def _same_metadata_rejection(projection, monkeypatch, *, match=None):
     with monkeypatch.context() as patch:
         patch.setattr(growth, "_validate_sample", no_sample)
         with pytest.raises(type(original.value)) as literal:
-            growth.validate_execution_roots(raw, _groups(projection))
+            growth.validate_execution_roots(
+                raw, _groups(projection), numeric_policy=numeric_policy_from_environment(os.environ)
+            )
     assert str(literal.value) == str(original.value)
 
 
@@ -448,8 +458,12 @@ def test_mixed_graph_and_expression_depth_keeps_existing_recursion_headroom():
     # Canonical order reaches the entire mixed-depth path before any child proof.
     projection = _projection(*rows)
     raw = canonical_json_bytes(projection)
-    growth.validate_projection(json.loads(raw))
-    growth.validate_execution_roots(raw, _groups(projection))
+    growth.validate_projection(
+        json.loads(raw), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
+    growth.validate_execution_roots(
+        raw, _groups(projection), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
 
 
 def test_literal_proofs_do_not_survive_an_invocation(monkeypatch):
@@ -457,16 +471,22 @@ def test_literal_proofs_do_not_survive_an_invocation(monkeypatch):
     raw = canonical_json_bytes(projection)
     groups = _groups(projection)
     expressions, metrics = _count_unit_work(monkeypatch)
-    growth.validate_execution_roots(raw, groups)
+    growth.validate_execution_roots(
+        raw, groups, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     first_count = sum(expressions.values())
     first_metrics = metrics.copy()
-    growth.validate_execution_roots(raw, groups)
+    growth.validate_execution_roots(
+        raw, groups, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     assert sum(expressions.values()) == first_count * 2
     assert metrics == {key: count * 2 for key, count in first_metrics.items()}
     changed = projection["declarations"][_identity("node_0")]["bounds"]["visits"]
     changed["expression"] = _dimension("absent")
     _same_metadata_rejection(projection, monkeypatch, match="unknown dimension")
-    growth.validate_execution_roots(raw, groups)
+    growth.validate_execution_roots(
+        raw, groups, numeric_policy=numeric_policy_from_environment(os.environ)
+    )
 
 
 @pytest.mark.parametrize(
@@ -481,13 +501,24 @@ def test_mapping_apis_never_use_private_literal_proofs(entrypoint, monkeypatch):
 
     monkeypatch.setattr(growth, "_literal_expression_unit", forbidden)
     if entrypoint == "validate_projection":
-        growth.validate_projection(projection)
+        growth.validate_projection(
+            projection, numeric_policy=numeric_policy_from_environment(os.environ)
+        )
     elif entrypoint == "validate_sample":
         growth.validate_sample(
-            projection, identity, samples[0]["dimensions"], samples[0]["metrics"]
+            projection,
+            identity,
+            samples[0]["dimensions"],
+            samples[0]["metrics"],
+            numeric_policy=numeric_policy_from_environment(os.environ),
         )
     else:
-        growth.validate_execution_samples(projection, identity, samples)
+        growth.validate_execution_samples(
+            projection,
+            identity,
+            samples,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
 
 
 @pytest.mark.parametrize("name, expected", NUMERIC_CALLBACK_EXPECTATIONS)
@@ -500,7 +531,9 @@ def test_callback_apis_never_borrow_private_literal_proofs(name, expected, monke
     if isinstance(expected, str):
         assert outcome == {
             "kind": "error",
-            "type": "ValueError",
+            "type": "NumericWorkRefused"
+            if expected.startswith("growth numeric work refused:")
+            else "ValueError",
             "message": expected,
             "source_restored": True,
         }

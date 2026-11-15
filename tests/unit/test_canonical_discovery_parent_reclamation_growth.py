@@ -11,6 +11,7 @@ from riverhog_core.catalog_discovery_validation_models import DiscoveryValidatio
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.unit import test_canonical_discovery_metadata_growth as basis
 from tests.unit.test_canonical_discovery_child_reclamation_growth import direct_primitives
@@ -35,7 +36,9 @@ def measure_parent_receiving(
         else owner.DiscoveryParentRetirement.reclaim
     )
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     variants = (
         "prefix",
@@ -185,7 +188,12 @@ def measure_parent_receiving(
                     assert not recorder.statements
                     observed = sample(recorder, projection, binding, dimensions)
                     try:
-                        validate_execution_samples(projection, binding.declaration.id, [observed])
+                        validate_execution_samples(
+                            projection,
+                            binding.declaration.id,
+                            [observed],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
+                        )
                     except ValueError:
                         record_property("failed_parent_primitives", observed)
                         raise

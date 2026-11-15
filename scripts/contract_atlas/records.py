@@ -16,6 +16,7 @@ if str(Path(__file__).resolve().parents[2]) not in sys.path:
 import extent_contract
 from riverhog_growth_contracts import validate_projection as validate_growth_projection
 
+from scripts.validation_numeric import qualification_numeric_policy
 from scripts.validation_witnesses import validate_growth_execution
 
 from .model import ContractAtlasError, DiscoveredContract, canonical_sha256, pointer_value
@@ -282,7 +283,9 @@ def validate_closure(closure: Mapping[str, object]) -> None:
     if not isinstance(external, Mapping):
         raise ContractAtlasError("contract closure has no external contract")
     try:
-        validate_growth_projection(external["growth"])
+        validate_growth_projection(
+            external["growth"], numeric_policy=qualification_numeric_policy()
+        )
     except (ValueError, KeyError, TypeError) as error:
         raise ContractAtlasError("contract closure has invalid growth declarations") from error
     extents = external.get("extents")
@@ -459,8 +462,14 @@ def _validate_growth_analysis(closure: Mapping[str, object], audit: Mapping[str,
         raise ContractAtlasError("growth audit execution status contradicts retained observations")
     seen = set()
     try:
+        numeric_policy = qualification_numeric_policy()
         for record in rows:
-            validate_growth_execution(growth, record, source=analysis["source_identity"])
+            validate_growth_execution(
+                growth,
+                record,
+                source=analysis["source_identity"],
+                numeric_policy=numeric_policy,
+            )
             key = (record["run_id"], record["session_id"], record["node_id"])
             if key in seen:
                 raise ValueError("duplicate growth execution evidence")

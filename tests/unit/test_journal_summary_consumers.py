@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
@@ -17,6 +18,8 @@ from riverhog_provenance import (
     reference,
     validate_journal,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def source(text_octets=0, *, journal_id=None):
@@ -69,7 +72,9 @@ def test_native_archive_corpus_eviction_releases_only_its_owned_lease():
 )
 def test_native_summary_borrow_records_actual_work(monkeypatch, record_property):
     binding = growth_binding(JournalSummary.borrow)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration = projection["declarations"][binding.declaration.id]
     samples = []
     connect = journal_store.sqlite3.connect
@@ -110,7 +115,12 @@ def test_native_summary_borrow_records_actual_work(monkeypatch, record_property)
                     "metrics": counts,
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
     record_property("growth_samples", samples)
 

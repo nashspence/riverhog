@@ -10,7 +10,13 @@ from pathlib import Path
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_growth_contracts import Binding, growth_binding, project_bindings
+from riverhog_growth_contracts import (
+    Binding,
+    NumericWorkPolicy,
+    growth_binding,
+    project_binding,
+    project_bindings,
+)
 
 from scripts.validation_identity import source_identity
 
@@ -101,9 +107,14 @@ def source_bindings(
 
 
 def declaration_projection(
-    surfaces: Mapping[str, Mapping[str, object]], *, packages: Mapping[str, Path] | None = None
+    surfaces: Mapping[str, Mapping[str, object]],
+    *,
+    numeric_policy: NumericWorkPolicy,
+    packages: Mapping[str, Path] | None = None,
 ) -> dict[str, object]:
-    return project_bindings(source_bindings(surfaces, packages=packages))
+    return project_bindings(
+        source_bindings(surfaces, packages=packages), numeric_policy=numeric_policy
+    )
 
 
 def source_analysis(
@@ -111,10 +122,14 @@ def source_analysis(
     surfaces: Mapping[str, Mapping[str, object]],
     projection: Mapping[str, object],
     *,
+    numeric_policy: NumericWorkPolicy,
     packages: Mapping[str, Path] | None = None,
 ) -> dict[str, object]:
     bindings = source_bindings(surfaces, packages=packages)
-    if declaration_projection(surfaces, packages=packages) != projection:
+    if (
+        declaration_projection(surfaces, packages=packages, numeric_policy=numeric_policy)
+        != projection
+    ):
         raise ValueError("growth projection differs from its current source declarations")
     pending = list(bindings)
     owned: dict[str, Binding] = {}
@@ -145,7 +160,7 @@ def source_analysis(
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
             },
             "declaration_sha256": hashlib.sha256(
-                canonical_json_bytes(binding.project())
+                canonical_json_bytes(project_binding(binding, numeric_policy=numeric_policy))
             ).hexdigest(),
             "delegates": {
                 name: growth_binding(operation).declaration.id

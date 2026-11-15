@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import contextmanager
 from dataclasses import replace
@@ -20,6 +21,8 @@ from riverhog_core.canonical_discovery_commitment import (
     initialize_commitment_work,
     prepare_commitment_step,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 KEY = CommitmentKey("build", "tree", "worker", "a" * 64, "b" * 64)
 
@@ -401,7 +404,9 @@ def test_actual_preparation_has_fixed_reads_and_one_pair_hash_across_frontiers(
     )
 
     binding = growth_binding(prepare_commitment_step)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -435,7 +440,12 @@ def test_actual_preparation_has_fixed_reads_and_one_pair_hash_across_frontiers(
                     "metrics": dict(recorder.metrics),
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 with write(db):
                     progress = apply_commitment_step(db, KEY, prepared)

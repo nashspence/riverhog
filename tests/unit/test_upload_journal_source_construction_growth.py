@@ -20,6 +20,7 @@ from riverhog_provenance_contracts import ContractCatalog
 from riverhog_provenance_contracts import schemas as catalog_owner
 from sqlalchemy import event
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_upload_journal_source_growth import octets
 from tests.unit.test_upload_journal_source_ports_growth import build_cases
 
@@ -122,7 +123,9 @@ def observe(case, catalog, metrics):
 
 def measure(catalog, case):
     binding = growth_binding(CONSTRUCT)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     expected = replay._binding(case.work, catalog)
     metrics = {bound.metric: 0 for bound in binding.declaration.bounds}
     dimensions = {
@@ -144,7 +147,12 @@ def measure(catalog, case):
         "metrics": metrics,
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

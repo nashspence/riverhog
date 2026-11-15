@@ -33,6 +33,7 @@ class Recorder:
         self.batch = batch
         self.inline_batch = batch if batch is not None and batch.include_descendants else None
         self.units = units.UnitRecorder(case, current, batch=batch)
+        self.numeric_policy = self.units.numeric_policy
         self.active, self.depth = False, 0
 
     @contextmanager

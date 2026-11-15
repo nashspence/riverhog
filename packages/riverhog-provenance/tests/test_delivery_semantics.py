@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import subprocess
 import sys
 from contextlib import closing
@@ -59,6 +60,8 @@ from test_generic_semantics import (
     workspace_rows,
 )
 from test_generic_semantics import work as semantic_work
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 KINDS = ("context", "observation")
 MODES = (
@@ -477,7 +480,9 @@ def test_common_outputs_use_native_map_identity_codec(tmp_path, catalog):
 )
 def test_actual_cold_delivery_metadata_reads(tmp_path, record_property):
     binding = growth_binding(read_delivery_metadata)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -508,7 +513,12 @@ def test_actual_cold_delivery_metadata_reads(tmp_path, record_property):
                 "metrics": dict(metrics),
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     assert len(samples) == 128
     record_property("growth_samples", samples)
@@ -679,7 +689,12 @@ def test_cold_delivery_uniqueness_uses_only_its_indexed_slot(tmp_path, catalog, 
             metadata_row_octets=envelope,
         )
         metrics = sample["metrics"]
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         assert metrics["source_payload_octets"] == metrics["adjacency_rows"] == 0
         finish(current, budget=1)
         current.result()

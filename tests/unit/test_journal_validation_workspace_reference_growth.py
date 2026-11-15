@@ -10,6 +10,7 @@ from riverhog_core import journal_validation_workspace as kernel
 from riverhog_core import journal_validation_workspace_reference as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_journal_validation_workspace_reference import CloseFault, held
 
@@ -73,7 +74,9 @@ def observe(monkeypatch, custody, *, post_loss=False, reference=None):
 
 def sample(operation, dimensions, metrics):
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     result = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -83,7 +86,12 @@ def sample(operation, dimensions, metrics):
         "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [result])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [result],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return result
 
 

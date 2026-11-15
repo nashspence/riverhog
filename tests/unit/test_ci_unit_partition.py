@@ -323,10 +323,14 @@ def partition_source(tmp_path_factory):
 def test_real_partition_executes_only_its_exact_nodes_and_supplies_growth_evidence(
     partition_source, part
 ):
+    from scripts.validation_numeric import numeric_environment, qualification_numeric_policy
     from scripts.validation_witnesses import collect_test_witnesses
 
+    numeric_policy = qualification_numeric_policy()
     source, output, modules, sha = partition_source
     run = "partition-" + part
+    temporary = output.parent / (run + "-temporary")
+    temporary.mkdir()
     environment = {
         key: value
         for key, value in os.environ.items()
@@ -349,9 +353,11 @@ def test_real_partition_executes_only_its_exact_nodes_and_supplies_growth_eviden
         cwd=source,
         env={
             **environment,
+            **numeric_environment(numeric_policy),
             "PYTHONPATH": str(ROOT),
             "RIVERHOG_CI_TIMING_DIR": str(output),
             "RIVERHOG_CI_RUN_ID": run,
+            "TMPDIR": str(temporary),
         },
         text=True,
         capture_output=True,
@@ -364,7 +370,12 @@ def test_real_partition_executes_only_its_exact_nodes_and_supplies_growth_eviden
             assert module + "::test_actual_witness" not in result.stdout
     paths = tuple((output / "pytest").glob(f"*/{run}/*/*.json"))
     assert collect_test_witnesses(
-        paths, root=source, expected=(run,), source_sha=sha, run_id=run
+        paths,
+        root=source,
+        expected=(run,),
+        source_sha=sha,
+        run_id=run,
+        numeric_policy=numeric_policy,
     ) == {run: "pass"}
 
 

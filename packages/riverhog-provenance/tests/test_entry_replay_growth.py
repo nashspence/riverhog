@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import sqlite3
 from contextlib import closing, contextmanager, nullcontext
@@ -38,6 +39,8 @@ from test_entry_replay import ATTEMPT, owned_summary
 from test_journal_prefix import checkpoint_frame
 from test_semantic_edge import WorkConnection, observed_work
 from test_semantic_owner import snapshot
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 # Prior history, historical payload, current payload, native kind, worker epoch, source width.
 REGIMES = (
@@ -269,7 +272,9 @@ def observe_replay(
     binding = get_binding(root_operation)
     digests = {}
     if batch is None:
-        projection = project_bindings((binding,))
+        projection = project_bindings(
+            (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+        )
         sample_hash = hashlib.sha256
         digests = {
             identity: sample_hash(canonical_json_bytes(value)).hexdigest()
@@ -530,7 +535,9 @@ def observe_replay(
 
 def admission_samples(tmp_path, catalog, build, *, samples, regimes=REGIMES):
     binding = growth_binding(EntryReplay.admit)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     for regime in regimes:
         case = build(regime)
         candidate = case["candidate"]
@@ -581,7 +588,12 @@ def admission_samples(tmp_path, catalog, build, *, samples, regimes=REGIMES):
             primitive = observed_work(store.db, {key: 0 for key in store.db.metrics}, 0, 0)
             primitive["changed_rows"] = store.db.metrics["changed_rows"]
             sample = complete(observed, primitive)
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
             assert admitted.checkpoint == after and current.ledger.load() == admitted
             assert not store.db.in_transaction and current.prefix.load() == case["state"]

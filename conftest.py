@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
@@ -9,6 +10,30 @@ from tests.support.native_construction import journal_constructions as journal_c
 from tests.support.native_construction import (
     module_journal_constructions as module_journal_constructions,
 )
+
+
+@pytest.fixture
+def numeric_policy(request):
+    """Use the qualification runner's explicit evidence resource condition."""
+    from scripts.validation_numeric import (
+        numeric_policy_from_environment,
+        numeric_policy_identity,
+        numeric_policy_snapshot,
+        qualification_numeric_policy,
+    )
+
+    supplied = numeric_policy_from_environment(os.environ)
+    recorder = request.config.pluginmanager.get_plugin("riverhog-ci-timing-recorder")
+    if recorder is not None and recorder.numeric_policy is not None:
+        owned = numeric_policy_snapshot(recorder.numeric_policy)
+        if supplied != owned or numeric_policy_identity(supplied) != recorder.numeric_identity:
+            raise ValueError("qualification numeric resources changed after producer admission")
+        return owned
+    if request.node.get_closest_marker("growth_witness") is not None and recorder is not None:
+        raise ValueError("growth witness has no admitted qualification numeric resources")
+    if supplied != qualification_numeric_policy():
+        raise ValueError("numeric resources differ from the owned qualification profile")
+    return numeric_policy_snapshot(supplied)
 
 
 @pytest.fixture(autouse=True)

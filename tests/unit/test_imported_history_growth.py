@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
@@ -22,6 +23,7 @@ from riverhog_provenance import (
 from riverhog_provenance import corpus as corpus_owner
 from sqlalchemy import func, select
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.unit.test_imported_history_finalization import _source_material
 from tests.unit.test_upload_journal_result import JOURNAL, Job, Journal, sealed, source_owner
@@ -39,7 +41,9 @@ DELIVERY = CanonicalCorpusValidator.selected_delivery_support
 
 def _sample(operation, dimensions, metrics, delegates=None):
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -49,7 +53,12 @@ def _sample(operation, dimensions, metrics, delegates=None):
         "metrics": {bound.metric: metrics[bound.metric] for bound in binding.declaration.bounds},
         "delegates": delegates or {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
@@ -274,6 +275,14 @@ def inputs(engine, raw):
 
 class UnitRecorder:
     def __init__(self, case, current, *, batch=None):
+        from scripts.validation_numeric import (
+            numeric_policy_from_environment,
+            numeric_policy_snapshot,
+        )
+
+        self.numeric_policy = numeric_policy_snapshot(
+            numeric_policy_from_environment(os.environ) if batch is None else batch.numeric_policy
+        )
         self.case = case
         self.current = current
         self.batch = batch
@@ -405,7 +414,9 @@ class UnitRecorder:
         self.case.certificate_binding = provider.binding.to_json()
         if self.native_recorder is None:
             native.populate(self.case)
-            self.native_recorder = native.Recorder(self.case, batch=self.inline_batch)
+            self.native_recorder = native.Recorder(
+                self.case, batch=self.inline_batch, numeric_policy=self.numeric_policy
+            )
         try:
             result, observed = self.native_recorder.measure(
                 selected, cold=False, budget=budget or native.owner.JournalValidationBudget()

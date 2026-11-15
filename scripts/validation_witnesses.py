@@ -13,6 +13,13 @@ from pathlib import Path
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
+from riverhog_growth_contracts import NumericWorkPolicy, NumericWorkUsage
+
+from scripts.validation_numeric import (
+    numeric_policy_identity,
+    numeric_policy_snapshot,
+    numeric_validation_receipt,
+)
 
 
 @dataclass(frozen=True)
@@ -79,15 +86,15 @@ def discover_test_witnesses(root: Path) -> tuple[TestWitness, ...]:
 
 
 def operation_projection(
-    subject: str, *, root: Path | None = None
+    subject: str, *, numeric_policy: NumericWorkPolicy, root: Path | None = None
 ) -> tuple[dict[str, object], dict[str, str]]:
     """Resolve the normative owner from trusted source, never from an artifact."""
-    from riverhog_growth_contracts import growth_binding, project_bindings
+    from riverhog_growth_contracts import growth_binding, project_binding, project_bindings
 
     from scripts.growth_contract import resolve_operation
 
     binding = growth_binding(resolve_operation(subject))
-    projection = project_bindings((binding,))
+    projection = project_bindings((binding,), numeric_policy=numeric_policy)
     pending, seen = [binding], set()
     while pending:
         current = pending.pop()
@@ -101,14 +108,38 @@ def operation_projection(
         pending.extend(growth_binding(operation) for _, operation in current.delegates)
     return projection, {
         "id": binding.declaration.id,
-        "sha256": hashlib.sha256(canonical_json_bytes(binding.project())).hexdigest(),
+        "sha256": hashlib.sha256(
+            canonical_json_bytes(project_binding(binding, numeric_policy=numeric_policy))
+        ).hexdigest(),
         "projection_sha256": hashlib.sha256(canonical_json_bytes(projection)).hexdigest(),
     }
 
 
 def validate_growth_execution(
-    projection: Mapping[str, Any], evidence: object, *, source: Mapping[str, object]
-) -> None:
+    projection: Mapping[str, Any],
+    evidence: object,
+    *,
+    source: Mapping[str, object],
+    numeric_policy: NumericWorkPolicy,
+) -> NumericWorkUsage:
+    """Recheck an owned execution and its recorded source-bound numeric consumption."""
+    numeric_policy = numeric_policy_snapshot(numeric_policy)
+    usage = _validate_growth_execution(
+        projection, evidence, source=source, numeric_policy=numeric_policy
+    )
+    assert isinstance(evidence, Mapping)
+    if evidence["numeric_validation"] != numeric_validation_receipt(numeric_policy, source, usage):
+        raise ValueError("growth execution numeric work receipt is missing or contradictory")
+    return usage
+
+
+def _validate_growth_execution(
+    projection: Mapping[str, Any],
+    evidence: object,
+    *,
+    source: Mapping[str, object],
+    numeric_policy: NumericWorkPolicy,
+) -> NumericWorkUsage:
     """Check a retained execution record against standalone normative data and source.
 
     The collecting gate verifies artifact custody and source-owned test identity;
@@ -116,6 +147,8 @@ def validate_growth_execution(
     """
     from riverhog_growth_contracts import validate_execution_samples
 
+    numeric_policy = numeric_policy_snapshot(numeric_policy)
+    numeric_identity = numeric_policy_identity(numeric_policy)
     source_sha = source.get("source_sha")
     fields = {
         "format",
@@ -128,9 +161,13 @@ def validate_growth_execution(
         "declaration",
         "outcomes",
         "samples",
+        "numeric_policy",
+        "numeric_validation",
     }
     if not isinstance(evidence, Mapping) or set(evidence) != fields:
         raise ValueError("growth execution record has missing or unknown evidence fields")
+    if evidence["numeric_policy"] != numeric_identity:
+        raise ValueError("growth execution numeric resources or reader identity differ")
     if (
         evidence["format"] != "riverhog-growth-execution/v1"
         or source.get("source_clean") is not True
@@ -185,7 +222,9 @@ def validate_growth_execution(
         )
     ):
         raise ValueError("growth execution has incomplete or failed assertion phases")
-    validate_execution_samples(owned_projection, identity, evidence["samples"])
+    return validate_execution_samples(
+        owned_projection, identity, evidence["samples"], numeric_policy=numeric_policy
+    )
 
 
 def collect_test_witnesses(
@@ -195,6 +234,7 @@ def collect_test_witnesses(
     expected: Sequence[str],
     source_sha: str,
     run_id: str,
+    numeric_policy: NumericWorkPolicy,
     evidence: list[dict[str, object]] | None = None,
 ) -> dict[str, str]:
     """Verify actual assertion execution and source-bound primitive observations.
@@ -202,6 +242,8 @@ def collect_test_witnesses(
     Test results support their explicitly owned test scope. Product conformance
     still requires an independently declared obligation and its Audit binding.
     """
+    numeric_policy = numeric_policy_snapshot(numeric_policy)
+    numeric_identity = numeric_policy_identity(numeric_policy)
     declarations = {witness.id: witness for witness in discover_test_witnesses(root)}
     if set(expected) - declarations.keys():
         raise ValueError("required growth witness has no source owner")
@@ -212,6 +254,7 @@ def collect_test_witnesses(
             not isinstance(row, dict)
             or row.get("format") != "riverhog-ci-pytest-timing/v3"
             or row.get("run_id") != run_id
+            or row.get("numeric_policy") != numeric_identity
         ):
             raise ValueError("invalid or stale growth execution artifact")
         records.append(row)
@@ -251,7 +294,9 @@ def collect_test_witnesses(
         }
         projection = None
         if witness.operation is not None:
-            projection, declaration = operation_projection(witness.operation, root=root)
+            projection, declaration = operation_projection(
+                witness.operation, root=root, numeric_policy=numeric_policy
+            )
             required_binding["declaration"] = declaration
         for rows in selected_sessions:
             collections = [
@@ -302,11 +347,19 @@ def collect_test_witnesses(
                         "declaration": declaration,
                         "outcomes": report,
                         "samples": samples.get(node),
+                        "numeric_policy": record["numeric_policy"],
+                        "numeric_validation": None,
                     }
-                    validate_growth_execution(
+                    usage = _validate_growth_execution(
                         projection,
                         execution,
                         source={"source_sha": source_sha, "source_clean": True},
+                        numeric_policy=numeric_policy,
+                    )
+                    execution["numeric_validation"] = numeric_validation_receipt(
+                        numeric_policy,
+                        {"source_sha": source_sha, "source_clean": True},
+                        usage,
                     )
                     if evidence is not None:
                         evidence.append(execution)

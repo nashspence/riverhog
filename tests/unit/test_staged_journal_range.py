@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import contextmanager
 from types import SimpleNamespace
@@ -29,6 +30,7 @@ from riverhog_protocol import COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX as E
 from sqlalchemy import delete, event, update
 from sqlalchemy.orm import Session
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.db_helpers import sqlite_url
 
 JOURNAL = "urn:uuid:11111111-1111-4111-8111-111111111111"
@@ -248,7 +250,9 @@ def test_tail_overrun_is_an_error_and_reopen_resumes_exact_range(tmp_path, monke
 )
 def test_native_indexed_range_records_actual_work(tmp_path, monkeypatch, record_property):
     binding = growth_binding(owner.upload_journal_range_bytes)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration = projection["declarations"][binding.declaration.id]
     samples = []
     for count, first_octets, offset, size in (
@@ -341,6 +345,11 @@ def test_native_indexed_range_records_actual_work(tmp_path, monkeypatch, record_
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     record_property("growth_samples", samples)

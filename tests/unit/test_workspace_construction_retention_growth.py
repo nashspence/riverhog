@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from contextlib import contextmanager
 from dataclasses import replace
 
@@ -8,6 +9,7 @@ from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
 from riverhog_core.services import archive_construction_retention as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import octets
 from tests.support.workspace_reclamation import execution_sample
 from tests.unit.test_workspace_construction_retention import key, retain
@@ -103,7 +105,9 @@ def exercise(record_property, *, retire):
         else owner.ArchiveConstructionRetention.try_retain_workspace
     )
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     samples = []
     for retained in (1, 17, 1025):
         for control in (1, 17, 1025):
@@ -174,7 +178,12 @@ def exercise(record_property, *, retire):
                     metrics,
                     {},
                 )
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
     record_property("growth_samples", samples)
     record_property(

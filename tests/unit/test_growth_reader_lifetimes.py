@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import gc
+import os
 import sys
 import types
 import weakref
@@ -10,6 +11,7 @@ import pytest
 import riverhog_growth_contracts as growth
 from riverhog_canonical_json import canonical_json_bytes
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_growth_numeric_evaluation import (
     NUMERIC_CALLBACK_EXPECTATIONS,
     numeric_callback_outcome,
@@ -39,15 +41,26 @@ def profile_calls(callback):
 
 def invoke(projection, identity, samples, *, literal):
     if literal:
-        growth.validate_execution_roots(canonical_json_bytes(projection), [(identity, samples)])
+        growth.validate_execution_roots(
+            canonical_json_bytes(projection),
+            [(identity, samples)],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
     else:
-        growth.validate_execution_samples(projection, identity, samples)
+        growth.validate_execution_samples(
+            projection,
+            identity,
+            samples,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
 
 
 @pytest.mark.parametrize("literal", [False, True])
 def test_successful_reader_scopes_release_recursive_functions_and_originals(literal):
     leaf = leaf_binding()
-    projection = growth.project_bindings((leaf,))
+    projection = growth.project_bindings(
+        (leaf,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     dimensions = WeakDict(items=3)
     original = WeakDict(literal_sample(leaf))
     original["dimensions"] = dimensions
@@ -89,7 +102,9 @@ def test_successful_reader_scopes_release_recursive_functions_and_originals(lite
 @pytest.mark.parametrize("literal", [False, True])
 def test_original_exception_owns_its_traceback_and_original_values(literal):
     leaf = leaf_binding()
-    projection = growth.project_bindings((leaf,))
+    projection = growth.project_bindings(
+        (leaf,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
 
     class OriginalStop(BaseException):
         pass
@@ -136,7 +151,9 @@ def test_original_exception_owns_its_traceback_and_original_values(literal):
 
 def test_reader_does_not_request_or_configure_collection(monkeypatch):
     leaf = leaf_binding()
-    projection = growth.project_bindings((leaf,))
+    projection = growth.project_bindings(
+        (leaf,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     before = gc.isenabled(), gc.get_threshold(), gc.get_debug()
 
     def forbidden(*_args, **_kwargs):
@@ -153,7 +170,9 @@ def test_reader_does_not_request_or_configure_collection(monkeypatch):
     ):
         monkeypatch.setattr(gc, name, forbidden)
     growth.validate_execution_roots(
-        canonical_json_bytes(projection), [(leaf.declaration.id, [literal_sample(leaf)])]
+        canonical_json_bytes(projection),
+        [(leaf.declaration.id, [literal_sample(leaf)])],
+        numeric_policy=numeric_policy_from_environment(os.environ),
     )
     assert (gc.isenabled(), gc.get_threshold(), gc.get_debug()) == before
 
@@ -170,7 +189,9 @@ def test_recursive_checker_keeps_direct_python_frames(literal):
         )
         original = literal_sample(parent, children={"child": [original]})
         current = parent
-    projection = growth.project_bindings((current,))
+    projection = growth.project_bindings(
+        (current,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     callers = []
 
     def profile(frame, event, _arg):
@@ -195,7 +216,9 @@ def test_recursion_ownership_preserves_mapping_and_source_callbacks(name, expect
     if isinstance(expected, str):
         assert result == {
             "kind": "error",
-            "type": "ValueError",
+            "type": "NumericWorkRefused"
+            if expected.startswith("growth numeric work refused:")
+            else "ValueError",
             "message": expected,
             "source_restored": True,
         }

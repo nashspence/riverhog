@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from contextlib import closing, contextmanager
 
@@ -14,6 +15,8 @@ from riverhog_provenance._changed_assertions import (
 )
 from test_assertion_staging import connect, create, identity
 from test_entry_preparation import logical_octets, owner
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 class Cursor(sqlite3.Cursor):
@@ -248,7 +251,9 @@ def test_native_row_checks_observe_no_open_assertion_cursor(journal, catalog, mo
 )
 def test_actual_cold_changed_assertion_admission(tmp_path, record_property):
     binding = growth_binding(read_changed_assertion)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -283,6 +288,11 @@ def test_actual_cold_changed_assertion_admission(tmp_path, record_property):
                 "metrics": dict(metrics),
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     record_property("growth_samples", samples)

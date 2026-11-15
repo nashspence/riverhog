@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import ExitStack, contextmanager
 from dataclasses import replace
@@ -93,6 +94,7 @@ from riverhog_provenance import (
 )
 from riverhog_provenance_contracts import ContractCatalog
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import RecordedConnection, write
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
 
@@ -584,7 +586,9 @@ def growth_sample(operation, dimensions, metrics):
     )
 
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -596,7 +600,12 @@ def growth_sample(operation, dimensions, metrics):
         },
         "delegates": {},
     }
-    validate_execution_samples(projection, binding.declaration.id, [sample])
+    validate_execution_samples(
+        projection,
+        binding.declaration.id,
+        [sample],
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     return sample
 
 

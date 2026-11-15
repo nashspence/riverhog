@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import subprocess
 import sys
 from dataclasses import replace
@@ -14,6 +15,7 @@ from riverhog_provenance import topology_facts as neutral
 from riverhog_provenance.topology_checkpoint import TopologyCaptureCheckpoint
 from sqlalchemy import delete, event, select, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_epoch_scan import finish as finish_epochs
 from tests.unit.test_journal_summary_consumers import source
@@ -416,7 +418,9 @@ def test_late_topology_failure_never_outranks_an_earlier_native_error(
 )
 def test_actual_topology_item_scanning_never_revisits_committed_prefix(record_property):
     binding = growth_binding(neutral._scan_item)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -462,6 +466,11 @@ def test_actual_topology_item_scanning_never_revisits_committed_prefix(record_pr
             "metrics": {**metrics, "returned_octets": len(actual)},
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
     record_property("growth_samples", samples)

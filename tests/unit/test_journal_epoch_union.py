@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 import subprocess
 import sys
@@ -16,6 +17,7 @@ from riverhog_provenance import epoch_union as neutral
 from riverhog_provenance import parse_journal, validate_journal
 from sqlalchemy import delete, event, select, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_epoch_scan import ObservedWindow
 from tests.unit.test_journal_summary_consumers import source
@@ -411,7 +413,9 @@ def test_cyclic_later_union_does_not_replace_an_earlier_native_prefix_error(
 )
 def test_actual_neutral_delta_work(record_property):
     binding = growth_binding(neutral.plan_epoch_union_additions)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -484,7 +488,12 @@ def test_actual_neutral_delta_work(record_property):
             },
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
     record_property("growth_samples", samples)
 
@@ -496,7 +505,9 @@ def test_actual_neutral_delta_work(record_property):
 )
 def test_actual_indexed_active_seed_work(tmp_path, monkeypatch, record_property):
     binding = growth_binding(union._active_seed)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -618,6 +629,11 @@ def test_actual_indexed_active_seed_work(tmp_path, monkeypatch, record_property)
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     record_property("growth_samples", samples)

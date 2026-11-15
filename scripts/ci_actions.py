@@ -52,6 +52,7 @@ else:
 from scripts.ci_make import owned_execution_spans, validate_make_receipt
 from scripts.ci_unit import CI_SHARDS, UNIT_PARTITIONS
 from scripts.validation_evidence import ValidationWork, runner_platform, validate_evidence_records
+from scripts.validation_numeric import numeric_policy_from_conditions
 from scripts.validation_resources import validation_storage_budget
 from scripts.validation_witnesses import collect_test_witnesses
 
@@ -419,6 +420,7 @@ def verify_ci_artifacts(
                 expected=work.growth_witnesses,
                 source_sha=source_sha,
                 run_id=run_identity,
+                numeric_policy=numeric_policy_from_conditions(dict(work.conditions)),
             )
             if actual != receipt["growth_results"]:
                 raise ValueError("summary contradicts actual owner evidence")

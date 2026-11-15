@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
@@ -9,6 +10,8 @@ import pytest
 import riverhog_core.canonical_discovery_relevance as owner
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 STATE = owner.MemberRelevance._pending_state
 VIEW = owner.MemberRelevance._pending_view
@@ -115,7 +118,9 @@ def samples(monkeypatch, operation):
     records = []
     table, fields, index = relation(operation)
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -150,7 +155,12 @@ def samples(monkeypatch, operation):
                     },
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 records.append(sample)
                 if expected_row is not None:
                     relevance.db.execute(

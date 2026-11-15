@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sqlite3
 from contextlib import closing
 
@@ -20,6 +21,8 @@ from test_generic_semantics import (
     snapshot,
     work,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def subject(mode="matching"):
@@ -680,7 +683,12 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
                         retained_rows=retained,
                         metadata_row_octets=width,
                     )
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                     assert db.execute("SELECT * FROM journal_prefix").fetchone() == prefix
                     with closing(sqlite3.connect(":memory:")) as suffix_db:
@@ -762,7 +770,12 @@ def finding_undo_growth_samples(tmp_path, catalog, *, measured_operation="advanc
                 retained_rows=retained,
                 metadata_row_octets=width,
             )
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
             assert (
                 db.execute("SELECT 1 FROM findings WHERE key=?", (notice_text,)).fetchone() is None
@@ -838,7 +851,12 @@ def terminal_growth_samples(tmp_path, catalog):
                     pattern=COMPARISON_ERRORS.get(mode),
                 )
                 assert owned(db) == before
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
     assert len(samples) == 54
     return samples
@@ -951,7 +969,12 @@ def staging_growth_samples(tmp_path):
                         },
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                     assert db.execute("SELECT * FROM journal_prefix").fetchone() == prefix
                     with closing(sqlite3.connect(":memory:")) as suffix_db:
@@ -1071,7 +1094,12 @@ def test_actual_cold_description_fixity_metadata_work(tmp_path, record_property)
                         "metrics": dict(metrics),
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
     assert len(samples) == 77
     record_property("growth_samples", samples)

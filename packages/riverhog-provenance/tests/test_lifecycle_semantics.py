@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import subprocess
 import sys
 from contextlib import closing
@@ -28,6 +29,8 @@ from test_generic_semantics import (
     work,
     workspace_rows,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 KINDS = ("usage", "generation", "invalidation")
 FAULTS = (
@@ -442,5 +445,10 @@ def test_cold_lifecycle_unit_uses_metadata_with_independent_aggregate_history(
             metadata_row_octets=envelope,
         )
         metrics = sample["metrics"]
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         assert metrics["source_payload_octets"] == metrics["adjacency_rows"] == 0

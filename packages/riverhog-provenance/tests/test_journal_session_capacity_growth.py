@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import pytest
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalValidationCapacity, JournalValidationSession, parse_journal
@@ -15,6 +17,7 @@ from test_journal_session_growth import (
     snapshot,
 )
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.sqlite_observation import observe_admitted_scope
 
 ADVANCE = JournalValidationSession.advance
@@ -82,9 +85,13 @@ def capacity_samples(root, catalog, raw_source, *, samples, large=True, journal_
                         )
                         sample = complete(frame, work)
                         validate_execution_samples(
-                            project_bindings((growth_binding(ADVANCE),)),
+                            project_bindings(
+                                (growth_binding(ADVANCE),),
+                                numeric_policy=numeric_policy_from_environment(os.environ),
+                            ),
                             growth_binding(ADVANCE).declaration.id,
                             [sample],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
                         )
                     samples.append(sample)
                     assert snapshot(db) == original

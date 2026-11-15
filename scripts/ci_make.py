@@ -13,10 +13,11 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from uuid import uuid4
 
 from riverhog_canonical_json import require_canonical_json
+from riverhog_growth_contracts import NumericWorkRefused
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -28,9 +29,11 @@ else:
 
 from scripts.validation_evidence import (
     validate_measurement_context,
+    validate_numeric_refusal,
     validate_phase_costs,
     validation_path_identity,
 )
+from scripts.validation_numeric import NumericConfigurationError, numeric_refusal_receipt
 from scripts.validation_process import ValidationInterrupted, run_validation_child
 from scripts.validation_resources import validation_storage_budget
 
@@ -318,6 +321,8 @@ def observe_make(makefile: Path, goals: Sequence[str]) -> int:
         parameters["UNIT_PARTITION"] = os.environ["UNIT_PARTITION"]
     try:
         definitions = make_work_definitions(goals, parameters)
+    except (NumericConfigurationError, NumericWorkRefused):
+        raise
     except (ValueError, KeyError):
         definitions = []
         parameters = {name: "unverified" for name in parameters}
@@ -368,6 +373,13 @@ def observe_make(makefile: Path, goals: Sequence[str]) -> int:
         "RIVERHOG_VALIDATION_MAKE_SPAN": span,
         "RIVERHOG_CI_RUN_ID": run_id,
     }
+    from scripts.validation_numeric import bind_numeric_environment, numeric_policy_from_conditions
+
+    for definition in definitions:
+        conditions = definition.get("conditions")
+        if not isinstance(conditions, dict):
+            raise ValueError("owning Make work has no numeric resource conditions")
+        bind_numeric_environment(env, numeric_policy_from_conditions(conditions))
     execution_started = time.monotonic()
     state, status = "completed", 2
     try:
@@ -400,10 +412,25 @@ def observe_make(makefile: Path, goals: Sequence[str]) -> int:
                             expected=witness_ids(definition),
                             source_sha=str(source["source_sha"]),
                             run_id=run_id,
+                            numeric_policy=numeric_policy_from_conditions(
+                                cast(Mapping[str, str], definition["conditions"])
+                            ),
                         )
                         if definition["growth_witnesses"]
                         else {}
                     )
+        except NumericWorkRefused as error:
+            try:
+                record["numeric_refusal"] = numeric_refusal_receipt(
+                    error,
+                    numeric_policy=numeric_policy_from_conditions(
+                        cast(Mapping[str, str], definitions[0]["conditions"])
+                    ),
+                )
+            except Exception:
+                state = "evidence-failed"
+            else:
+                state = "numeric-refused"
         except (ValueError, OSError, TypeError, KeyError):
             state = "evidence-failed"
         after = source_identity(root)
@@ -476,8 +503,20 @@ def validate_make_receipt(
         "recipes",
         "growth_results",
     }
+    if record.get("state") == "numeric-refused":
+        fields.add("numeric_refusal")
     if set(record) != fields or type(record["qualification_eligible"]) is not bool:
         raise ValueError("missing or unexpected Make receipt fields")
+    if "numeric_refusal" in record:
+        definitions = record["work_definitions"]
+        if (
+            not isinstance(definitions, list)
+            or not definitions
+            or not isinstance(definitions[0], dict)
+            or not isinstance(definitions[0].get("conditions"), dict)
+        ):
+            raise ValueError("refused Make work has no owned numeric resource conditions")
+        validate_numeric_refusal(record["numeric_refusal"], definitions[0]["conditions"])
     conditions = record["observed_conditions"]
     if not isinstance(conditions, dict) or set(conditions) != {
         "platform",

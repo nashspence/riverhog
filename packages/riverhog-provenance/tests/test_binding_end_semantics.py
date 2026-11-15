@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import subprocess
 import sys
 from contextlib import closing
@@ -43,6 +44,8 @@ from test_generic_semantics import (
 from test_generic_semantics import (
     work as semantic_work,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 MODES = (
     "unbounded",
@@ -600,7 +603,12 @@ def test_cold_binding_end_step_has_independent_retained_set_history(tmp_path, ca
             metadata_row_octets=16384,
         )
         metrics = sample["metrics"]
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         assert metrics["source_payload_octets"] == metrics["adjacency_rows"] == 0
         assert snapshot(db)["journal_prefix"] == before
         finish(current, budget=1)
@@ -616,7 +624,9 @@ def test_cold_binding_end_step_has_independent_retained_set_history(tmp_path, ca
 )
 def test_actual_cold_binding_time_reads(tmp_path, record_property):
     binding = growth_binding(read_binding_time)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -638,7 +648,12 @@ def test_actual_cold_binding_time_reads(tmp_path, record_property):
                 "metrics": dict(metrics),
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     assert len(samples) == 80
     record_property("growth_samples", samples)

@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import inspect
 import json
+import os
 import sqlite3
 import sys
 from contextlib import closing, contextmanager
@@ -48,6 +49,8 @@ from test_generic_semantics import (
 )
 from test_semantic_edge import observed_work
 from test_semantic_owner import snapshot
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 FAMILIES = {
     "entry": replay_owner.EntryPreparation,
@@ -799,7 +802,9 @@ def child_observer(current, case, dimensions):
 
 def child_samples(root, catalog, build, *, samples, specifications=TRAJECTORIES, early=False):
     binding = growth_binding(EntryReplay._child_step)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     checkpoints = trajectories(root, catalog, build, specifications)
     for ordinal, case in enumerate(checkpoints):
         generic = case["family"] == "generic"
@@ -880,7 +885,12 @@ def child_samples(root, catalog, build, *, samples, specifications=TRAJECTORIES,
                         ),
                     )
                     sample = complete(observed, work)
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                     assert result == expected == current.ledger.load()
                     assert snapshot(current.db) == expected_rows

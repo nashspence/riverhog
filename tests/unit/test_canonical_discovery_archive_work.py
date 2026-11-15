@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from dataclasses import replace
 
@@ -35,6 +36,7 @@ from riverhog_core.provenance_archive_read import (
 )
 from riverhog_provenance import validate_journal, validate_journal_chunks
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery import native_scalar_fixture
 from tests.support.canonical_discovery_work import write
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
@@ -293,7 +295,9 @@ def test_measured_metadata_preparation_reads_and_hashes_one_next_descriptor(
     root = root_for(objects)
     admission = discovery_archive_admission(root)
     binding = growth_binding(prepare_archive_descriptor)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -337,7 +341,12 @@ def test_measured_metadata_preparation_reads_and_hashes_one_next_descriptor(
             },
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
         with write(db):
             apply_archive_descriptor(db, key, admission, page)
@@ -365,7 +374,9 @@ def test_measured_metadata_apply_has_fixed_sql_and_no_source_hashing(
     reader, objects, _, _ = archive_reader_fixture()
     admission = discovery_archive_admission(root_for(objects))
     binding = growth_binding(apply_archive_descriptor)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -397,7 +408,12 @@ def test_measured_metadata_apply_has_fixed_sql_and_no_source_hashing(
             },
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
     db.close()
     record_property("growth_samples", samples)
@@ -481,7 +497,9 @@ def test_measured_segment_selection_uses_detached_point_reads(tmp_path, record_p
     db, key = open_work(tmp_path / "segment-selection.sqlite", admission)
     drive(db, key, admission, reader)
     binding = growth_binding(archive_journal_segment)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -500,7 +518,12 @@ def test_measured_segment_selection_uses_detached_point_reads(tmp_path, record_p
             },
             "delegates": {},
         }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(sample)
         if selected is None:
             break

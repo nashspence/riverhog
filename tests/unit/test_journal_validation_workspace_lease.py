@@ -11,6 +11,7 @@ from retained_resource import Resource
 from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.retained_resource import fault_native as fault_native
 from tests.support.workspace_reclamation import execution_sample
 
@@ -125,7 +126,10 @@ def test_receiving_native_work_is_independent_of_reference_and_namespace_populat
     tmp_path, record_property
 ):
     operations = (ValidationWorkspaceLease.finish, ValidationWorkspaceLease.close)
-    projection = project_bindings(tuple(growth_binding(operation) for operation in operations))
+    projection = project_bindings(
+        tuple(growth_binding(operation) for operation in operations),
+        numeric_policy=numeric_policy_from_environment(os.environ),
+    )
     samples = []
     for backlog in (1, 17, 1025):
         root = tmp_path / str(backlog)
@@ -171,7 +175,12 @@ def test_receiving_native_work_is_independent_of_reference_and_namespace_populat
                         metrics,
                         {},
                     )
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
 
                 observe(ValidationWorkspaceLease.finish)

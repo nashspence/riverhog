@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sqlite3
 from contextlib import ExitStack, closing
 from dataclasses import replace
@@ -59,6 +60,7 @@ from riverhog_core.canonical_discovery_snapshot_work import (
 )
 from riverhog_provenance import validate_journal
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery_work import corrected_journal_fixture, write
 from tests.support.provenance_archive import archive_reader_fixture, discovery_archive_admission
 from tests.unit.test_canonical_discovery_corpus_inputs import commit_input
@@ -512,7 +514,9 @@ def _projection(operation):
     from riverhog_growth_contracts import growth_binding, project_bindings
 
     binding = growth_binding(operation)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -634,7 +638,12 @@ def _measured(mode, tmp_path, qualified, original, monkeypatch, record_property)
                             if mode == "apply":
                                 db.commit()
                         sample = _sample(db, binding, digest, recorder.metrics, prepared=page)
-                        validate_execution_samples(projection, binding.declaration.id, [sample])
+                        validate_execution_samples(
+                            projection,
+                            binding.declaration.id,
+                            [sample],
+                            numeric_policy=numeric_policy_from_environment(os.environ),
+                        )
                         samples.append(sample)
                         regimes.append(
                             {
@@ -759,7 +768,12 @@ def test_measured_original_root_partial_index_seeks(
                             if result is not None:
                                 assert result[0] == roots[offset][0]
                             sample = _sample(db, binding, digest, recorder.metrics)
-                            validate_execution_samples(projection, binding.declaration.id, [sample])
+                            validate_execution_samples(
+                                projection,
+                                binding.declaration.id,
+                                [sample],
+                                numeric_policy=numeric_policy_from_environment(os.environ),
+                            )
                             samples.append(sample)
                             regimes.append(
                                 {

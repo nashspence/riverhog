@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
 import sqlite3
 from dataclasses import replace
 from uuid import uuid4
@@ -40,6 +41,7 @@ from riverhog_provenance import (
     validate_journal,
 )
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.canonical_discovery import native_scalar_fixture
 from tests.support.canonical_discovery_work import (
     ADMISSION,
@@ -321,7 +323,9 @@ def test_measured_journal_pages_bound_core_reads_and_actions(tmp_path, record_pr
     )
 
     binding = growth_binding(prepare_journal_page)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -346,7 +350,12 @@ def test_measured_journal_pages_bound_core_reads_and_actions(tmp_path, record_pr
                         },
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                     with write(db):
                         apply_journal_page(db, key, source, page)
@@ -410,7 +419,9 @@ def test_measured_journal_page_apply_bounds_atomic_child_registration(
     )
 
     binding = growth_binding(apply_journal_page)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -445,7 +456,12 @@ def test_measured_journal_page_apply_bounds_atomic_child_registration(
                         },
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
             db.close()
     record_property("growth_samples", samples)
@@ -501,7 +517,9 @@ def test_measured_pending_child_skips_completed_registration_rows(
     )
 
     binding = growth_binding(pending_journal_assertion)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_sha = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -571,7 +589,12 @@ def test_measured_pending_child_skips_completed_registration_rows(
                         },
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
             db.close()
     record_property("growth_samples", samples)

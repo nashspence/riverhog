@@ -32,6 +32,7 @@ from sha256_continuation import CheckpointSHA256
 from sqlalchemy.orm import sessionmaker
 from sqlite_admission import SqliteCleanupPending
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import CatalogRecorder, octets
 from tests.support.sqlite_observation import observed_connection_type
 from tests.unit.test_canonical_discovery_corpus_source import seed
@@ -141,6 +142,7 @@ class Slots(dict):
 
 class Recorder:
     def __init__(self):
+        self.numeric_policy = numeric_policy_from_environment(os.environ)
         self.active = False
         self.metrics = defaultdict(int)
         self.statements = []
@@ -532,7 +534,7 @@ class Recorder:
             active_slots=max(dimensions["active_slots"], self.maximum_slots),
         )
         binding = growth_binding(root)
-        projection = project_bindings((binding,))
+        projection = project_bindings((binding,), numeric_policy=self.numeric_policy)
         sample = {
             "declaration": binding.declaration.id,
             "declaration_sha256": hashlib.sha256(
@@ -545,17 +547,32 @@ class Recorder:
             "delegates": {},
         }
         try:
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=self.numeric_policy,
+            )
         except ValueError as error:
             violations = [
                 {
                     "metric": bound.metric,
                     "actual": sample["metrics"][bound.metric],
-                    "bound": evaluate_bound(binding, bound.metric, dimensions),
+                    "bound": evaluate_bound(
+                        binding,
+                        bound.metric,
+                        dimensions,
+                        numeric_policy=self.numeric_policy,
+                    ),
                 }
                 for bound in binding.declaration.bounds
                 if sample["metrics"][bound.metric]
-                > evaluate_bound(binding, bound.metric, dimensions)
+                > evaluate_bound(
+                    binding,
+                    bound.metric,
+                    dimensions,
+                    numeric_policy=self.numeric_policy,
+                )
             ]
             raise AssertionError(violations) from error
         return sample
@@ -763,7 +780,10 @@ def exercise_case(case, qualified, retained, width, cold, mode, samples):
         samples[-1]["metrics"]["pool_result_octets"] = octets(keys)
         binding = growth_binding(root)
         validate_execution_samples(
-            project_bindings((binding,)), binding.declaration.id, [samples[-1]]
+            project_bindings((binding,), numeric_policy=case.rec.numeric_policy),
+            binding.declaration.id,
+            [samples[-1]],
+            numeric_policy=case.rec.numeric_policy,
         )
     elif mode == "work":
 
