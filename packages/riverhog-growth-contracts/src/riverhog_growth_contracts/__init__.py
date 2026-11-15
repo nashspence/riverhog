@@ -6,6 +6,7 @@ import hashlib
 import re
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from functools import partial
 from typing import Any, Literal, TypeVar
 
 from riverhog_canonical_json import canonical_json_bytes, parse_identity_json
@@ -633,13 +634,17 @@ def _projection_contexts(
 
     heights: dict[str, int] = {}
 
-    def visit(context: _Context, stack: tuple[str, ...]) -> int:
+    # Explicit recursion releases the height map with this compilation.
+    def visit(recurse: Callable[..., int], context: _Context, stack: tuple[str, ...]) -> int:
         identity = context.declaration.id
         if identity in stack or len(stack) >= 64:
             raise ValueError("growth composition is cyclic or exceeds the reader depth budget")
         if identity not in heights:
             heights[identity] = 1 + max(
-                (visit(child, (*stack, identity)) for child in context.delegates.values()),
+                (
+                    recurse(recurse, child, (*stack, identity))
+                    for child in context.delegates.values()
+                ),
                 default=0,
             )
         if heights[identity] + len(stack) > 64:
@@ -648,7 +653,7 @@ def _projection_contexts(
 
     subjects: set[str] = set()
     for context in contexts.values():
-        visit(context, ())
+        visit(visit, context, ())
         if subjects.intersection(context.declaration.subjects):
             raise ValueError("growth public subject has multiple declaration owners")
         subjects.update(context.declaration.subjects)
@@ -723,7 +728,10 @@ def _execution_root_checker(
     rows: Mapping[str, Any],
     declaration_digest: Callable[[str], str] | None = None,
 ) -> Callable[[str, object, int, list[int]], None]:
-    def check(identity: str, sample: object, depth: int, budget: list[int]) -> None:
+    # The returned callable owns this walker; the walker must not own itself.
+    def check(
+        recurse: Callable[..., None], identity: str, sample: object, depth: int, budget: list[int]
+    ) -> None:
         budget[0] -= 1
         if depth > 64 or budget[0] < 0 or identity not in contexts:
             raise ValueError("growth sample exceeds the reader budget or has no declared owner")
@@ -748,9 +756,10 @@ def _execution_root_checker(
             if not isinstance(child_samples, list):
                 raise ValueError("growth delegate samples require actual invocation records")
             for child_sample in child_samples:
-                check(child.declaration.id, child_sample, depth + 1, budget)
+                recurse(recurse, child.declaration.id, child_sample, depth + 1, budget)
 
-        def composition(expression: Expression) -> None:
+        # A completed walk must not retain the original sample in a self-cycle.
+        def composition(recurse: Callable[..., None], expression: Expression) -> None:
             if expression.op == "delegate":
                 child_samples = delegates[expression.name]
                 count = _evaluate_expression(expression.terms[0], context, row["dimensions"])
@@ -763,14 +772,14 @@ def _execution_root_checker(
                 ):
                     raise ValueError("actual delegate calls contradict the declared composition")
             for term in expression.terms:
-                composition(term)
+                recurse(recurse, term)
             for _, argument in expression.arguments:
-                composition(argument)
+                recurse(recurse, argument)
 
         for bound in context.declaration.bounds:
-            composition(bound.expression)
+            composition(composition, bound.expression)
 
-    return check
+    return partial(check, check)
 
 
 def validate_execution_samples(projection: object, declaration_id: str, samples: object) -> None:
@@ -855,12 +864,14 @@ def _evaluate(context: _Context, metric: str, dimensions: Mapping[str, int]) -> 
 def _evaluate_expression(
     expression: Expression, context: _Context, dimensions: Mapping[str, int]
 ) -> int:
-    def evaluate(expression: Expression) -> int:
+    # A self-capturing local function would retain contexts and dimensions
+    # until cyclic collection, even after successful evaluation returns.
+    def evaluate(recurse: Callable[..., int], expression: Expression) -> int:
         if expression.op == "constant":
             return expression.value
         if expression.op == "dimension":
             return dimensions[expression.name]
-        values = tuple(evaluate(term) for term in expression.terms)
+        values = tuple(recurse(recurse, term) for term in expression.terms)
         if expression.op == "sum":
             return sum(values)
         if expression.op == "product":
@@ -875,10 +886,10 @@ def _evaluate_expression(
                 raise ValueError("growth logarithm requires a positive argument")
             return (values[0] - 1).bit_length()
         child = context.delegates[expression.name]
-        arguments = {name: evaluate(term) for name, term in expression.arguments}
+        arguments = {name: recurse(recurse, term) for name, term in expression.arguments}
         return values[0] * _evaluate(child, expression.metric, arguments)
 
-    return evaluate(expression)
+    return evaluate(evaluate, expression)
 
 
 __all__ = [
