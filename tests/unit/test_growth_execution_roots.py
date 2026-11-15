@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from collections import Counter
 
 import pytest
 import riverhog_growth_contracts as growth
@@ -201,3 +202,91 @@ def test_literal_execution_controls_keep_existing_results(case):
         else:
             with pytest.raises(ValueError):
                 growth.validate_execution_roots(canonical_json_bytes(projection), groups)
+
+
+def test_literal_row_identity_work_depends_on_distinct_rows_per_invocation(monkeypatch):
+    parent, child = parent_bindings()
+    leaf = literal_sample(child)
+    root = literal_sample(parent, children={"leaf": [leaf]})
+    raw = metadata(parent)
+    groups = [(child.declaration.id, [leaf, leaf]), (parent.declaration.id, [root, root])]
+    encoded = Counter()
+    checked = []
+    original_encode = growth.canonical_json_bytes
+    original_validate = growth._validate_sample
+
+    def encode(value):
+        if isinstance(value, dict) and "bounds" in value:
+            encoded[value["id"]] += 1
+        return original_encode(value)
+
+    def validate(context, dimensions, metrics):
+        checked.append(context.declaration.id)
+        return original_validate(context, dimensions, metrics)
+
+    monkeypatch.setattr(growth, "canonical_json_bytes", encode)
+    monkeypatch.setattr(growth, "_validate_sample", validate)
+    for _ in range(2):
+        growth.validate_execution_roots(raw, groups)
+    assert encoded == {child.declaration.id: 2, parent.declaration.id: 2}
+    assert (
+        checked
+        == [
+            child.declaration.id,
+            child.declaration.id,
+            parent.declaration.id,
+            child.declaration.id,
+            parent.declaration.id,
+            child.declaration.id,
+        ]
+        * 2
+    )
+
+
+@pytest.mark.parametrize("change", ["digest", "metrics", "delegates"])
+def test_later_root_acceptance_stays_live_after_literal_row_identity(monkeypatch, change):
+    leaf = leaf_binding()
+    first, second = literal_sample(leaf), literal_sample(leaf)
+    original = growth._validate_sample
+
+    def validate(context, dimensions, metrics):
+        if dimensions is first["dimensions"]:
+            if change == "digest":
+                second["declaration_sha256"] = "0" * 64
+            elif change == "metrics":
+                second["metrics"]["visits"] = 4
+            else:
+                second["delegates"]["unexpected"] = []
+        return original(context, dimensions, metrics)
+
+    monkeypatch.setattr(growth, "_validate_sample", validate)
+    with pytest.raises(ValueError):
+        growth.validate_execution_roots(metadata(leaf), [(leaf.declaration.id, [first, second])])
+
+
+@pytest.mark.parametrize("literal", [False, True])
+def test_declaration_identity_is_fresh_after_metadata_changes(monkeypatch, literal):
+    leaf = leaf_binding()
+    projection = growth.project_bindings((leaf,))
+    first, second = literal_sample(leaf), literal_sample(leaf)
+    original = growth._validate_sample
+
+    def validate(context, dimensions, metrics):
+        if dimensions is first["dimensions"]:
+            projection["declarations"][leaf.declaration.id]["subjects"] = ["fixture.changed"]
+        return original(context, dimensions, metrics)
+
+    monkeypatch.setattr(growth, "_validate_sample", validate)
+    if literal:
+        # Caller metadata aliases cannot change an invocation's private literal rows.
+        growth.validate_execution_roots(
+            canonical_json_bytes(projection), [(leaf.declaration.id, [first, second])]
+        )
+        with pytest.raises(ValueError, match="declaration digest"):
+            growth.validate_execution_roots(
+                canonical_json_bytes(projection), [(leaf.declaration.id, [second])]
+            )
+    else:
+        # The mapping API still observes metadata changes between original roots.
+        with pytest.raises(ValueError, match="declaration digest"):
+            growth.validate_execution_samples(projection, leaf.declaration.id, [first, second])

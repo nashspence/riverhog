@@ -636,7 +636,9 @@ def _validate_sample(
 
 
 def _execution_root_checker(
-    contexts: dict[str, _Context], rows: Mapping[str, Any]
+    contexts: dict[str, _Context],
+    rows: Mapping[str, Any],
+    declaration_digest: Callable[[str], str] | None = None,
 ) -> Callable[[str, object, int, list[int]], None]:
     def check(identity: str, sample: object, depth: int, budget: list[int]) -> None:
         budget[0] -= 1
@@ -645,10 +647,10 @@ def _execution_root_checker(
         row = _fields(
             sample, {"declaration", "declaration_sha256", "dimensions", "metrics", "delegates"}
         )
-        if (
-            row["declaration"] != identity
-            or row["declaration_sha256"]
-            != hashlib.sha256(canonical_json_bytes(rows[identity])).hexdigest()
+        if row["declaration"] != identity or row["declaration_sha256"] != (
+            hashlib.sha256(canonical_json_bytes(rows[identity])).hexdigest()
+            if declaration_digest is None
+            else declaration_digest(identity)
         ):
             raise ValueError("growth sample has a stale or mismatched declaration digest")
         if not isinstance(row["dimensions"], Mapping) or not isinstance(row["metrics"], Mapping):
@@ -732,7 +734,16 @@ def validate_execution_roots(projection_json: bytes, groups: object) -> None:
         ):
             raise ValueError("growth root group requires an identity and completed sample list")
         schedule.append((group[0], tuple(group[1])))
-    check = _execution_root_checker(contexts, rows)
+    # Only this invocation owns the decoded literal rows. Reuse their identity
+    # representation; each original sample still supplies a fresh digest/value.
+    digests: dict[str, str] = {}
+
+    def declaration_digest(identity: str) -> str:
+        if identity not in digests:
+            digests[identity] = hashlib.sha256(canonical_json_bytes(rows[identity])).hexdigest()
+        return digests[identity]
+
+    check = _execution_root_checker(contexts, rows, declaration_digest)
     for identity, samples in schedule:
         for sample in samples:
             check(identity, sample, 0, [65536])
