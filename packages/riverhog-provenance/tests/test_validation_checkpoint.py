@@ -180,6 +180,48 @@ def test_prefix_and_parent_share_exact_commit_and_rollback(tmp_path, journal):
         assert ledger(db).load() == target
 
 
+@pytest.mark.parametrize("operation", ["load", "_fence", "_publish"])
+@pytest.mark.parametrize("corruption", ["noncanonical", "source-position", "unknown-field"])
+def test_warm_parent_rechecks_corrupt_prefix_before_read_or_publication(
+    tmp_path, journal, operation, corruption
+):
+    path = tmp_path / "parent.sqlite3"
+    create(path)
+    with closing(connect(path)) as db:
+        publish(db, parse_journal(journal)[0])
+        parent = ledger(db)
+        before = parent.load()
+        assert parent.load() == before
+        raw = before.prefix[2]
+        if corruption == "noncanonical":
+            changed = raw + " "
+        else:
+            value = json.loads(raw)
+            if corruption == "source-position":
+                value["byte_count"] = str(int(value["byte_count"]) + 1)
+            else:
+                value["unowned"] = True
+            changed = canonical_json_bytes(value).decode()
+        db.execute("UPDATE journal_prefix SET checkpoint=?", (changed,)).close()
+        db.commit()
+        original = snapshot(db)
+        if operation != "load":
+            db.execute("BEGIN IMMEDIATE").close()
+        try:
+            with pytest.raises(RuntimeError, match="invalid retained journal prefix checkpoint"):
+                if operation == "load":
+                    parent.load()
+                elif operation == "_fence":
+                    parent._fence(before)
+                else:
+                    parent._publish(
+                        before, replace(before.checkpoint, version=before.checkpoint.version + 1)
+                    )
+            assert snapshot(db) == original
+        finally:
+            db.rollback()
+
+
 @pytest.mark.parametrize("change", ["worker", "version", "prefix"])
 def test_stale_parent_cannot_publish_a_prepared_prefix(tmp_path, journal, change):
     path = tmp_path / "parent.sqlite3"

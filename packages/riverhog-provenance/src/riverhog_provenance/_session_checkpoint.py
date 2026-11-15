@@ -413,7 +413,7 @@ class ValidationLedger:
         if self.db.in_transaction:
             raise RuntimeError("validation preparation requires a closed owner transaction")
 
-    def _prefix(self) -> tuple[str, bytes, str]:
+    def _prefix(self) -> tuple[tuple[str, bytes, str], PrefixState]:
         with closing(
             self.db.execute(
                 "SELECT substr(attempt_id,1,33),substr(binding,1,?),substr(checkpoint,1,?) "
@@ -444,14 +444,14 @@ class ValidationLedger:
                 or previous[0] != state.previous_json.encode()
             ):
                 raise StaleValidationCheckpoint("validation prefix predecessor link changed")
-        return row[0], row[1], row[2]
+        return (row[0], row[1], row[2]), state
 
     @declare_growth(_checkpoint_declaration("_initialize"))
     def _initialize(self) -> ValidationSnapshot:
         if not self.db.in_transaction:
             raise RuntimeError("validation initialization requires an owner transaction")
-        prefix = self._prefix()
-        if PrefixState.from_json(prefix[2]).frame_count:
+        prefix, accepted = self._prefix()
+        if accepted.frame_count:
             raise RuntimeError("validation initialization requires an empty accepted prefix")
         state = ValidationCheckpoint()
         self.db.execute(
@@ -504,11 +504,8 @@ class ValidationLedger:
         if row is None:
             raise StaleValidationCheckpoint("validation attempt, inputs or worker changed")
         state = ValidationCheckpoint.from_json(row[0])
-        prefix = self._prefix()
-        if (
-            tuple(row[1:]) != prefix
-            or PrefixState.from_json(prefix[2]).frame_count != state.frame_ordinal
-        ):
+        prefix, accepted = self._prefix()
+        if tuple(row[1:]) != prefix or accepted.frame_count != state.frame_ordinal:
             raise StaleValidationCheckpoint("validation accepted-prefix marker changed")
         return ValidationSnapshot(state, prefix)
 
@@ -539,8 +536,9 @@ class ValidationLedger:
         # Validate even internally constructed state before retaining it.
         ValidationCheckpoint.from_json(after.to_json())
         selected = before.prefix if prefix is None else prefix
+        current, _accepted = self._prefix()
         if (
-            selected != self._prefix()
+            selected != current
             or PrefixState.from_json(selected[2]).frame_count != after.frame_ordinal
         ):
             raise StaleValidationCheckpoint("validation publication lost its exact prefix")
