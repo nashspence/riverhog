@@ -1,0 +1,78 @@
+{
+  "cases": [],
+  "cooperative_cap_reached": false,
+  "cooperative_workload_cap_seconds": 120.0,
+  "failure": {
+    "family": "builtins.AssertionError",
+    "message": ""
+  },
+  "format": "riverhog-native-phase-probe/v1",
+  "historical_418_catalog_attempts": "unclassified; this Native-only probe does not observe the historical Core catalog run",
+  "intended_exit_code": 1,
+  "limitations": [
+    "One instrumented Native-only observation; no timing baseline, throughput, peak memory, or parallelism measurement.",
+    "Fixture construction and ordinary oracle validation include real Native work; their raw disposable SQLite has no admitted-SQL coverage here.",
+    "Method scopes and retained DBAPI leaves include instrumentation overhead. Inclusive times overlap; only exclusive same-thread scopes are disjoint within their enclosing stages.",
+    "Admitted DBAPI leaf intervals include original admission/currentness checks and driver work, not isolated SQLite engine time or database-wait attribution.",
+    "execute/executemany/executescript are separate leaf-attempt kinds; executemany parameters are never consumed for counting. Returned rows are not engine row visits.",
+    "Commit/rollback counters cover explicit methods only; implicit context-manager transactions are outside that counter. executescript is one DBAPI attempt, not its expanded statements; the SQL table label is only a surface classifier.",
+    "read_window calls the maintained source read_exact; nested exact reads are explicitly labeled and must not be added again to window bytes.",
+    "Exception families belong only to this probe. Historical 931f01e Core catalog 418 raised attempts remain unclassified.",
+    "The cooperative 120-second cap prevents further work at safe boundaries. An entered synchronous owner call is not force-closed and may return after the cap. Original cleanup/join may also finish later; there is no hard-kill promise."
+  ],
+  "observation": {
+    "admitted_dbapi": [],
+    "advances": [],
+    "hook_identities_restored": false,
+    "hooks": [],
+    "returned_row_types": [],
+    "scopes": [
+      {
+        "calls": 1,
+        "case": "setup",
+        "exclusive_thread_cpu_ns": 3382,
+        "exclusive_wall_ns": 2918,
+        "operation": "stage.ordinary_original_receiving",
+        "parent": "none",
+        "phase": "outside-advance",
+        "returned": 1,
+        "stage": "ordinary_original_receiving",
+        "thread_cpu_ns": 3382,
+        "wall_ns": 2918
+      }
+    ],
+    "source_calls": [],
+    "stages": [
+      {
+        "case": "setup",
+        "outcome": "returned",
+        "process_cpu_ns": 52172,
+        "stage": "ordinary_original_receiving",
+        "thread_cpu_ns": 50706,
+        "wall_ns": 56654
+      }
+    ]
+  },
+  "ordinary_resources": {
+    "cleanup_errors": [],
+    "retained_original_handles": 0,
+    "storage_received": []
+  },
+  "script_sha256": "8470ad7a660d6f370c276ab89c30b063bb5d3584ba0a92752dbdd52b1c498204",
+  "source_end": {
+    "source_clean": true,
+    "source_sha": "3b47cbba770c31eb1487b50f7e3b16533c10e827"
+  },
+  "source_start": {
+    "source_clean": true,
+    "source_sha": "3b47cbba770c31eb1487b50f7e3b16533c10e827"
+  },
+  "status": "failed",
+  "temporary": {
+    "directory": "/workspace/scratch/21c38f9cc56d/native-phase-diagnostic-temporary/native-phase-probe-skprd6wz",
+    "original_resources_received": true,
+    "outer_tmp_entries": [],
+    "owner_removed_workspace": true
+  },
+  "whole_child_before_receipt_seconds": 0.2508752479989198
+}

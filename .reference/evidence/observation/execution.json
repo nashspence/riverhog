@@ -1,0 +1,47 @@
+{
+  "cleanup": {
+    "remaining_entries": [],
+    "temporary_created": true,
+    "temporary_removed": true
+  },
+  "command": [
+    "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+    "-B",
+    "scripts/ci_timing.py",
+    "run",
+    "--lane",
+    "native-phase-diagnostic",
+    "--output",
+    "/workspace/scratch/21c38f9cc56d/native-phase-diagnostic-r2-lane.json",
+    "--",
+    "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+    "-B",
+    "/workspace/scratch/21c38f9cc56d/native_phase_probe.py",
+    "--repo",
+    "/workspace/scratch/21c38f9cc56d/riverhog",
+    "--output",
+    "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2",
+    "--temporary-root",
+    "/workspace/scratch/21c38f9cc56d/native-phase-diagnostic-r2-temporary",
+    "--uv",
+    "/workspace/scratch/21c38f9cc56d/bin/uv",
+    "--expected-source",
+    "3b47cbba770c31eb1487b50f7e3b16533c10e827",
+    "--cap-seconds",
+    "120"
+  ],
+  "elapsed_seconds": 13.771763867000118,
+  "format": "external-native-phase-execution/v1",
+  "launcher_exit_status": 0,
+  "launcher_sha256": "e9d10e658e031e8a60608a8658cc47d25e7565aeba75816b9d02c8334ee93d33",
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "original_child_exit_status": 0,
+  "source_after": {
+    "source_clean": true,
+    "source_sha": "3b47cbba770c31eb1487b50f7e3b16533c10e827"
+  },
+  "source_before": {
+    "source_clean": true,
+    "source_sha": "3b47cbba770c31eb1487b50f7e3b16533c10e827"
+  }
+}

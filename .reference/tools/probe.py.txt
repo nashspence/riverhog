@@ -1,0 +1,906 @@
+"""One finite Native-only observation; no publication or throughput comparison.
+
+The three histories follow the maintained conftest/test_journal examples.
+Only retained-session work has method/DBAPI counters. Builder and ordinary
+validate_journal oracle work have separate complete stage clocks, not invented
+raw-SQL coverage. No SQL text, parameters, or historical error classification.
+"""
+
+from __future__ import annotations
+
+import argparse
+import copy
+import hashlib
+import inspect
+import json
+import os
+import re
+import shutil
+import sqlite3
+import subprocess
+import sys
+import tempfile
+import time
+import traceback
+from collections import Counter, defaultdict
+from contextlib import contextmanager
+from dataclasses import asdict
+from functools import wraps
+from pathlib import Path
+
+SOURCE = "3b47cbba770c31eb1487b50f7e3b16533c10e827"
+ATTEMPT = "d" * 32
+EXECUTIONS = {"execute", "executemany", "executescript"}
+FETCHES = {"fetchone", "fetchmany", "fetchall", "__next__"}
+CHILDREN = {
+    "EntryPreparation",
+    "AssertionStaging",
+    "CorrectionTargets",
+    "CorrectionWork",
+    "GenericSemantics",
+    "SemanticFinish",
+}
+
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def family(error):
+    return type(error).__module__ + "." + type(error).__qualname__
+
+
+def snapshot(value):
+    state = value.checkpoint
+    return {
+        key: getattr(state, key)
+        for key in ("phase", "version", "frame_ordinal", "row_after", "row_key", "child_id")
+    }
+
+
+class ProbeDeadline(TimeoutError):
+    pass
+
+
+class Deadline:
+    """Stop starting work at safe boundaries; never force-close an owner call."""
+
+    def __init__(self, began, seconds):
+        self.until = began + seconds
+        self.fired = False
+
+    def check(self):
+        if time.perf_counter() >= self.until:
+            self.fired = True
+            raise ProbeDeadline("finite Native diagnostic deadline reached at a safe boundary")
+
+
+def returned_state(value):
+    if value is None:
+        return None
+    if hasattr(value, "work"):
+        return {"phase": value.work.phase, "version": value.version}
+    if hasattr(value, "phase"):
+        return {"phase": value.phase, "version": value.version}
+    return None
+
+
+class Recorder:
+    def __init__(self):
+        self.case, self.stage = "setup", "outside"
+        self.stack, self.stages, self.advances, self.sources = [], [], [], []
+        self.current = None
+        self.scopes, self.sql = defaultdict(Counter), defaultdict(Counter)
+        self.source_counts, self.rows = Counter(), Counter()
+        self.hooks, self.restored = [], False
+
+    @contextmanager
+    def span(self, label):
+        frame = {"label": label, "children_wall": 0, "children_cpu": 0}
+        parent = self.stack[-1]["label"] if self.stack else "none"
+        self.stack.append(frame)
+        wall, cpu = time.perf_counter_ns(), time.thread_time_ns()
+        outcome, raised = "returned", None
+        try:
+            yield
+        except StopIteration:
+            outcome = "exhausted"
+            raise
+        except BaseException as error:
+            outcome, raised = "raised", family(error)
+            raise
+        finally:
+            wall = time.perf_counter_ns() - wall
+            cpu = time.thread_time_ns() - cpu
+            assert self.stack.pop() is frame
+            exclusive_wall, exclusive_cpu = (
+                wall - frame["children_wall"],
+                cpu - frame["children_cpu"],
+            )
+            assert exclusive_wall >= 0 and exclusive_cpu >= 0
+            values = Counter(
+                calls=1,
+                wall_ns=wall,
+                thread_cpu_ns=cpu,
+                exclusive_wall_ns=exclusive_wall,
+                exclusive_thread_cpu_ns=exclusive_cpu,
+            )
+            values[outcome] += 1
+            if raised is not None:
+                values["raised_family:" + raised] += 1
+            if self.current is None:
+                self.scopes[self.case, self.stage, "outside-advance", label, parent].update(values)
+            else:
+                self.current["scope_totals"][label, parent].update(values)
+            if self.stack:
+                self.stack[-1]["children_wall"] += wall
+                self.stack[-1]["children_cpu"] += cpu
+
+    @contextmanager
+    def stage_scope(self, name):
+        before = self.stage
+        self.stage = name
+        wall, cpu, thread = time.perf_counter_ns(), time.process_time_ns(), time.thread_time_ns()
+        row = {"case": self.case, "stage": name, "outcome": "returned"}
+        try:
+            with self.span("stage." + name):
+                yield
+        except BaseException as error:
+            row.update(outcome="raised", exception_family=family(error))
+            raise
+        finally:
+            row.update(
+                wall_ns=time.perf_counter_ns() - wall,
+                process_cpu_ns=time.process_time_ns() - cpu,
+                thread_cpu_ns=time.thread_time_ns() - thread,
+            )
+            self.stages.append(row)
+            self.stage = before
+
+    def method(self, original, label):
+        @wraps(original)
+        def call(*args, **kwargs):
+            with self.span(label):
+                result = original(*args, **kwargs)
+                if label == "ValidationLedger.load" and self.current is not None:
+                    observed = snapshot(result)
+                    self.current["ledger_loads"].append(observed)
+                    if self.current["before"] is None:
+                        self.current["before"] = observed
+                if label == "EntryReplay._row":
+                    self.rows[self.case, "returned_row_type", result["type"]] += 1
+                if self.current is not None and label.split(".", 1)[0] in CHILDREN:
+                    observed = {
+                        "operation": label,
+                        "arguments": dict(kwargs),
+                        "returned_none": result is None,
+                        "state": returned_state(result),
+                        "after_state": returned_state(getattr(result, "after", None)),
+                    }
+                    before_json = getattr(result, "before_json", None)
+                    if before_json is not None:
+                        assert type(before_json) is str
+                        observed["before_json"] = before_json
+                    self.current["child_returns"].append(observed)
+                if self.current is not None and label.startswith("OnlineDag."):
+                    plan = getattr(result, "plan", result)
+                    self.current["graph_plan_returns"].append(
+                        {
+                            "operation": label,
+                            "returned_none": result is None,
+                            "adjacency_visits": getattr(plan, "adjacency_visits", None),
+                            "before_state": returned_state(getattr(plan, "before", None)),
+                            "work_phase": getattr(getattr(plan, "work", None), "phase", None),
+                        }
+                    )
+                return result
+
+        return call
+
+    def start(self, original):
+        @wraps(original)
+        def call(owner, before, budget):
+            entry = {
+                "phase": before.checkpoint.phase,
+                "version": before.checkpoint.version,
+                "frame_ordinal": before.checkpoint.frame_ordinal,
+                "rows": budget.rows,
+                "octets": budget.octets,
+                "spent_before": owner._spent,
+                "caller": self.stack[-1]["label"] if self.stack else "none",
+                "argument_was_previous_budget": owner._budget is budget,
+            }
+            with self.span("EntryReplay._start"):
+                try:
+                    return original(owner, before, budget)
+                finally:
+                    entry.update(
+                        spent_after=owner._spent,
+                        budget_is_argument_after=owner._budget is budget,
+                    )
+                    if self.current is not None:
+                        self.current["starts"].append(entry)
+
+        return call
+
+    def advance(self, original, deadline):
+        @wraps(original)
+        def call(owner, budget, *args, **kwargs):
+            deadline.check()
+            assert self.current is None
+            row = {
+                "case": self.case,
+                "ordinal": len(self.advances),
+                "budget": asdict(budget),
+                "before": None,
+                "returned": None,
+                "ledger_loads": [],
+                "starts": [],
+                "child_returns": [],
+                "graph_plan_returns": [],
+                "scope_totals": defaultdict(Counter),
+                "sql": defaultdict(Counter),
+            }
+            self.current = row
+            try:
+                with self.span("JournalValidationSession.advance"):
+                    result = original(owner, budget, *args, **kwargs)
+                    row["returned"] = asdict(result)
+                    return result
+            except BaseException as error:
+                row["exception_family"] = family(error)
+                raise
+            finally:
+                phase = row["before"]["phase"] if row["before"] is not None else "before-load"
+                totals = row.pop("scope_totals")
+                row["method_calls"] = dict(Counter({k[0]: 0 for k in totals}))
+                for (label, parent), counts in totals.items():
+                    self.scopes[self.case, self.stage, phase, label, parent].update(counts)
+                    row["method_calls"][label] += counts["calls"]
+                sql = row.pop("sql")
+                row["dbapi_calls"] = dict(Counter())
+                for key, counts in sql.items():
+                    self.sql[self.case, self.stage, phase, *key].update(counts)
+                    operation = key[0]
+                    row["dbapi_calls"][operation] = (
+                        row["dbapi_calls"].get(operation, 0) + counts["calls"]
+                    )
+                self.advances.append(row)
+                self.current = None
+
+        return call
+
+    def source(self, original, label):
+        @wraps(original)
+        def call(*args, **kwargs):
+            parent = self.stack[-1]["label"] if self.stack else "none"
+            with self.span(label):
+                result = original(*args, **kwargs)
+                record = {
+                    "case": self.case,
+                    "stage": self.stage,
+                    "advance": None if self.current is None else self.current["ordinal"],
+                    "operation": label,
+                    "parent": parent,
+                    "arguments": list(args[1:]),
+                }
+                if type(result) is bytes:
+                    record["returned_octets"] = len(result)
+                else:
+                    assert type(result) is bool
+                    record["returned_current"] = result
+                self.sources.append(record)
+                self.source_counts[self.case, label, parent] += 1
+                return result
+
+        return call
+
+    def cursor(self, original):
+        @wraps(original)
+        def call(cursor, method, *args):
+            assert method in EXECUTIONS | FETCHES
+            owner = self.stack[-1]["label"] if self.stack else "none"
+            verb, table = "none", "none"
+            if method in EXECUTIONS:
+                # Classify only SQL structure; never retain SQL or parameters.
+                sql = args[0]
+                verb = sql.lstrip().split(None, 1)[0].upper()
+                match = re.search(
+                    r"\b(?:FROM|INTO|UPDATE|TABLE)\s+(?:IF\s+NOT\s+EXISTS\s+)?([A-Za-z_][A-Za-z_0-9]*)",
+                    sql,
+                    re.I,
+                )
+                table = "unclassified" if match is None else match.group(1)
+            counts = Counter(calls=1)
+            with self.span("dbapi." + method):
+                try:
+                    result = original(cursor, method, *args)
+                    counts["returned"] += 1
+                    if method in ("fetchall", "fetchmany"):
+                        counts["returned_rows"] += len(result)
+                    elif method == "fetchone":
+                        counts["returned_rows"] += result is not None
+                    elif method == "__next__":
+                        counts["returned_rows"] += 1
+                    return result
+                except StopIteration:
+                    counts["exhausted"] += 1
+                    raise
+                except BaseException as error:
+                    counts["raised_family:" + family(error)] += 1
+                    if isinstance(error, sqlite3.Error):
+                        counts[
+                            "sqlite_errorname:" + str(getattr(error, "sqlite_errorname", None))
+                        ] += 1
+                    raise
+                finally:
+                    key = (method, owner, verb, table)
+                    if self.current is None:
+                        self.sql[self.case, self.stage, "outside-advance", *key].update(counts)
+                    else:
+                        self.current["sql"][key].update(counts)
+
+        return call
+
+    def transaction(self, original):
+        @wraps(original)
+        def call(connection, method):
+            assert method in {"commit", "rollback"}
+            owner = self.stack[-1]["label"] if self.stack else "none"
+            counts = Counter(calls=1)
+            with self.span("dbapi." + method):
+                try:
+                    result = original(connection, method)
+                    counts["returned"] += 1
+                    return result
+                except BaseException as error:
+                    counts["raised_family:" + family(error)] += 1
+                    raise
+                finally:
+                    key = (method, owner, "none", "none")
+                    if self.current is None:
+                        self.sql[self.case, self.stage, "outside-advance", *key].update(counts)
+                    else:
+                        self.current["sql"][key].update(counts)
+
+        return call
+
+    def report(self):
+        assert not self.stack and self.current is None
+        return {
+            "stages": self.stages,
+            "scopes": [
+                dict(zip(("case", "stage", "phase", "operation", "parent"), key, strict=True))
+                | dict(value)
+                for key, value in sorted(self.scopes.items())
+            ],
+            "admitted_dbapi": [
+                dict(
+                    zip(
+                        ("case", "stage", "phase", "operation", "owner", "verb", "table"),
+                        key,
+                        strict=True,
+                    )
+                )
+                | dict(value)
+                for key, value in sorted(self.sql.items())
+            ],
+            "advances": self.advances,
+            "source_calls": self.sources,
+            "returned_row_types": [
+                {"case": key[0], "kind": key[1], "type": key[2], "calls": count}
+                for key, count in sorted(self.rows.items())
+            ],
+            "hooks": self.hooks,
+            "hook_identities_restored": self.restored,
+        }
+
+
+@contextmanager
+def instrument(recorder, deadline, source_type, session_type, entry, ledger, sqlite_owner):
+    originals = []
+
+    def patch(owner, name, wrapper):
+        original = inspect.getattr_static(owner, name)
+        assert inspect.isfunction(original)
+        had_local = name in vars(owner)
+        replacement = wrapper(original)
+        originals.append((owner, name, original, had_local))
+        setattr(owner, name, replacement)
+        recorder.hooks.append(
+            {"owner": owner.__module__ + "." + owner.__qualname__, "method": name}
+        )
+
+    try:
+        with recorder.stage_scope("instrumentation_setup"):
+            patch(session_type, "advance", lambda f: recorder.advance(f, deadline))
+            for name in ("result", "close", "_finish", "_move"):
+                patch(
+                    session_type,
+                    name,
+                    lambda f, n=name: recorder.method(f, "JournalValidationSession." + n),
+                )
+            patch(entry.EntryReplay, "_start", recorder.start)
+            for name in (
+                "advance",
+                "admit",
+                "_entry",
+                "_row",
+                "_admit_row",
+                "_child",
+                "_child_step",
+                "_graph_step",
+                "_lifecycle",
+                "_publish",
+                "_commit",
+            ):
+                patch(
+                    entry.EntryReplay,
+                    name,
+                    lambda f, n=name: recorder.method(f, "EntryReplay." + n),
+                )
+            for name in ("initialize", "load", "_prefix", "_fence", "_publish"):
+                patch(ledger, name, lambda f, n=name: recorder.method(f, "ValidationLedger." + n))
+            retained_input = sys.modules[session_type.__module__].RetainedInput
+            for name in ("synchronize", "scan", "frame", "admitted"):
+                patch(
+                    retained_input,
+                    name,
+                    lambda f, n=name: recorder.method(f, "RetainedInput." + n),
+                )
+            for name in ("load", "prepare", "prepare_publication", "_apply"):
+                patch(
+                    entry.JournalPrefix,
+                    name,
+                    lambda f, n=name: recorder.method(f, "JournalPrefix." + n),
+                )
+            for name in (
+                "_prepare_start",
+                "_prepare",
+                "_prepare_retirement",
+                "_prepare_replacement",
+            ):
+                patch(
+                    entry.OnlineDag,
+                    name,
+                    lambda f, n=name: recorder.method(f, "OnlineDag." + n),
+                )
+            for name in ("read_window", "read_exact", "verify_current"):
+                patch(source_type, name, lambda f, n=name: recorder.source(f, "source." + n))
+            for owner in (
+                entry.EntryPreparation,
+                entry.AssertionStaging,
+                entry.CorrectionTargets,
+                entry.CorrectionWork,
+                entry.GenericSemantics,
+                entry.SemanticFinish,
+            ):
+                for name in ("prepare_admission", "prepare", "load", "_admit", "_apply", "result"):
+                    if hasattr(owner, name):
+                        patch(
+                            owner,
+                            name,
+                            lambda f, n=name, o=owner: recorder.method(f, o.__name__ + "." + n),
+                        )
+            patch(sqlite_owner._Cursor, "_call", recorder.cursor)
+            patch(sqlite_owner._Connection, "_transaction", recorder.transaction)
+        yield
+    finally:
+        with recorder.stage_scope("instrumentation_restoration"):
+            for owner, name, original, had_local in reversed(originals):
+                if had_local:
+                    setattr(owner, name, original)
+                else:
+                    delattr(owner, name)
+                assert inspect.getattr_static(owner, name) is original
+            recorder.restored = True
+
+
+def build_histories(native, catalog, retain, deadline):
+    deadline.check()
+    observed = native.BoundedSourceObserver(catalog=catalog).observe(
+        native.BytesSource(b"opaque primary bytes\x00\xff")
+    )
+    deadline.check()
+    who = observed.observer_agent_id
+    initial = native.create_journal(
+        observed.graph_fragment(), recorded_by_agent_id=who, catalog=catalog, on_storage_open=retain
+    )
+    deadline.check()
+    checkpoint = native.append_checkpoint(
+        initial,
+        recorded_by_agent_id=who,
+        purpose="urn:test:handoff",
+        catalog=catalog,
+        on_storage_open=retain,
+    )
+    deadline.check()
+    with native.validate_journal(initial, catalog=catalog, on_storage_open=retain) as old:
+        deadline.check()
+        agent = old.graph["agents"][0]
+        changed = copy.deepcopy(agent)
+        changed["assertion_id"], changed["name"] = native.new_id(), "Corrected label"
+        deadline.check()
+        correction = native.append_correction(
+            initial,
+            [native.assertion_reference(old, agent["assertion_id"])],
+            reason="spelling",
+            recorded_by_agent_id=who,
+            assertions={"agents": [changed]},
+            catalog=catalog,
+            on_storage_open=retain,
+        )
+        deadline.check()
+    assert checkpoint.startswith(initial) and correction.startswith(initial)
+    return [("initial", initial), ("checkpoint", checkpoint), ("correction", correction)]
+
+
+def run_case(
+    name,
+    raw,
+    expected,
+    *,
+    recorder,
+    deadline,
+    directory,
+    source_type,
+    constructions_type,
+    session_type,
+    budget,
+    catalog,
+):
+    recorder.case = name
+    deadline.check()
+    constructions, handles, readers = constructions_type(), [], []
+    source = source_type(raw, catalog)
+    binding = source.binding
+    result = {"name": name, "complete": False, "cleanup": {"received": False}}
+    recorder.case_results.append(result)
+    errors = []
+    path = directory / name
+    path.mkdir(mode=0o700)
+    try:
+        with recorder.stage_scope("retained_setup"):
+            original = constructions.retain()
+            session = session_type.open_retained(
+                path,
+                source,
+                construction=original,
+                attempt_id=ATTEMPT,
+                worker_epoch=0,
+                create=True,
+                catalog=catalog,
+                on_storage_open=handles.append,
+            )
+            assert handles == [session]
+            result["graph_certificates_present"] = session._replay.certificates is not None
+            deadline.check()
+        with recorder.stage_scope("retained_advances"):
+            while True:
+                deadline.check()
+                progress = session.advance(budget)
+                deadline.check()
+                if progress.complete:
+                    break
+        deadline.check()
+        with recorder.stage_scope("terminal_materialization"):
+            reader = session.result()
+            readers.append(reader)
+            materialized = reader.materialize()
+            exact = b"".join(frame.encoded for frame in reader.frames)
+            result.update(
+                materialized=materialized,
+                journal_sha256=reader.journal_sha256,
+                journal_bytes=reader.journal_bytes,
+                progress=asdict(progress),
+            )
+            assert materialized == expected
+            assert exact == raw
+            assert reader.journal_sha256 == digest(raw)
+            assert reader.journal_bytes == len(raw)
+            assert source.binding is binding and source.current is True
+            deadline.check()
+            result["complete"] = True
+    except BaseException as error:
+        result["failure"] = {"family": family(error), "message": str(error)}
+        raise
+    finally:
+        # Original cleanup remains outside the cooperative workload cap.
+        active_error = sys.exc_info()[1]
+        with recorder.stage_scope("original_cleanup"):
+            for owner in reversed(readers + handles):
+                try:
+                    owner.close()
+                except BaseException as error:
+                    errors.append(
+                        {"operation": type(owner).__name__ + ".close", "family": family(error)}
+                    )
+            try:
+                constructions.close()
+            except BaseException as error:
+                errors.append({"operation": "JournalConstructions.close", "family": family(error)})
+            status = asdict(constructions.admission.status)
+            result["cleanup"] = {
+                "received": False,
+                "errors": errors,
+                "admission_status": status,
+                "construction_frames_remaining": len(constructions.frames),
+                "session_storage_received": [handle.storage_received for handle in handles],
+                "retained_snapshot_exists_before_owner_removal": (
+                    path / "snapshot.sqlite3"
+                ).is_file(),
+            }
+            received = (
+                not errors
+                and not constructions.frames
+                and not any(
+                    status[key] for key in ("connections", "cursors", "blobs", "operations")
+                )
+                and all(handle.storage_received for handle in handles)
+            )
+            result["cleanup"]["received"] = received
+            if not received and active_error is None:
+                raise RuntimeError("original Native resources remain unreceived")
+    return result
+
+
+def main():
+    began = time.perf_counter()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--repo", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--uv", type=Path, required=True)
+    parser.add_argument("--temporary-root", type=Path, required=True)
+    parser.add_argument("--expected-source", default=SOURCE)
+    parser.add_argument("--cap-seconds", type=float, default=120)
+    args = parser.parse_args()
+    assert 0 < args.cap_seconds <= 120
+    repo, output, temporary = (p.resolve() for p in (args.repo, args.output, args.temporary_root))
+    assert repo not in output.parents and repo not in temporary.parents
+    assert output != repo and temporary != repo
+    assert Path(os.environ["TMPDIR"]).resolve() == temporary
+    output.mkdir(parents=True, exist_ok=True)
+    assert not any(output.iterdir()), "retain the original output; use a fresh directory"
+    temporary.mkdir(parents=True, exist_ok=True)
+    script = Path(__file__).resolve().read_bytes()
+    (output / "probe.py.txt").write_bytes(script)
+    sys.path[:0] = [str(repo), str(repo / "packages/riverhog-provenance/tests")]
+    from scripts.validation_identity import source_identity
+
+    report = {
+        "format": "riverhog-native-phase-probe/v1",
+        "status": "incomplete",
+        "script_sha256": digest(script),
+        "source_start": source_identity(repo),
+        "source_end": None,
+        "cooperative_workload_cap_seconds": args.cap_seconds,
+        "historical_418_catalog_attempts": (
+            "unclassified; this Native-only probe does not observe the historical Core catalog run"
+        ),
+    }
+    work = Path(tempfile.mkdtemp(prefix="native-phase-probe-", dir=temporary))
+    prior_tmp, prior_tempdir = os.environ["TMPDIR"], tempfile.tempdir
+    os.environ["TMPDIR"], tempfile.tempdir = str(work), str(work)
+    recorder = Recorder()
+    recorder.case_results = []
+    ordinary_handles = []
+    deadline = Deadline(began, args.cap_seconds)
+    code = 1
+    try:
+        deadline.check()
+        assert report["source_start"] == {"source_sha": args.expected_source, "source_clean": True}
+        assert args.expected_source == SOURCE
+        assert sys.version_info[:3] == (3, 12, 3)
+        uv = subprocess.run([str(args.uv), "--version"], check=True, text=True, capture_output=True)
+        assert uv.stdout.split()[:2] == ["uv", "0.11.24"]
+        import riverhog_provenance as native
+        import sqlite_admission as sqlite_owner
+        from riverhog_provenance import _entry_replay as entry
+        from riverhog_provenance._session_checkpoint import ValidationLedger
+        from riverhog_provenance.journal_session import (
+            JournalValidationBudget,
+            JournalValidationSession,
+        )
+        from riverhog_provenance_contracts import ContractCatalog
+        from test_retained_journal_session import OwnedSource
+
+        from tests.support.native_construction import JournalConstructions
+
+        owners = [
+            native,
+            entry,
+            sys.modules[ValidationLedger.__module__],
+            sys.modules[JournalValidationSession.__module__],
+            sqlite_owner,
+            sys.modules[OwnedSource.__module__],
+            sys.modules[JournalConstructions.__module__],
+        ]
+        source_files = {}
+        for owner in owners:
+            path = Path(owner.__file__).resolve()
+            assert repo in path.parents
+            source_files[str(path.relative_to(repo))] = digest(path.read_bytes())
+        for name in (
+            "uv.lock",
+            "mise.toml",
+            "scripts/ci_timing.py",
+            "packages/riverhog-provenance/tests/conftest.py",
+            "packages/riverhog-provenance/tests/test_journal.py",
+        ):
+            source_files[name] = digest((repo / name).read_bytes())
+        report.update(
+            python=sys.version,
+            executable=sys.executable,
+            uv=uv.stdout.strip(),
+            uv_sha256=digest(args.uv.read_bytes()),
+            sqlite_version=sqlite3.sqlite_version,
+            source_files=source_files,
+        )
+        budget = JournalValidationBudget()
+        assert budget.rows == 64 and budget.source_octets == 65536
+        report["budget"] = asdict(budget)
+        with recorder.stage_scope("fixture_construction"):
+            deadline.check()
+            catalog = ContractCatalog()
+            deadline.check()
+            histories = build_histories(native, catalog, ordinary_handles.append, deadline)
+            deadline.check()
+        expected, inputs = {}, []
+        for name, raw in histories:
+            deadline.check()
+            recorder.case = name
+            with recorder.stage_scope("ordinary_validation_oracle"):
+                with native.validate_journal(
+                    raw, catalog=catalog, on_storage_open=ordinary_handles.append
+                ) as summary:
+                    deadline.check()
+                    expected[name] = summary.materialize()
+                    assert summary.journal_sha256 == digest(raw)
+                    assert summary.journal_bytes == len(raw)
+                    deadline.check()
+            (output / (name + ".jsonseq")).write_bytes(raw)
+            materialized = json.dumps(
+                expected[name], sort_keys=True, separators=(",", ":"), allow_nan=False
+            ).encode()
+            (output / (name + "-expected.json")).write_bytes(materialized)
+            frames = native.parse_journal(raw)
+            inputs.append(
+                {
+                    "name": name,
+                    "bytes": len(raw),
+                    "sha256": digest(raw),
+                    "expected_sha256": digest(materialized),
+                    "frames": len(frames),
+                    "frame_kinds": [frame.document["entry_kind"] for frame in frames],
+                    "authored_assertions_by_frame": [
+                        {
+                            key: len(rows)
+                            for key, rows in frame.document["body"].get("assertions", {}).items()
+                            if isinstance(rows, list)
+                        }
+                        for frame in frames
+                    ],
+                    "effective_assertions_by_family": {
+                        key: len(rows)
+                        for key, rows in expected[name]["effective_assertions"].items()
+                        if isinstance(rows, list)
+                    },
+                    "retracted_assertions": len(expected[name]["retracted_assertion_ids"]),
+                }
+            )
+        report["inputs"] = inputs
+        recorder.case = "all-retained-cases"
+        with instrument(
+            recorder,
+            deadline,
+            OwnedSource,
+            JournalValidationSession,
+            entry,
+            ValidationLedger,
+            sqlite_owner,
+        ):
+            for name, raw in histories:
+                run_case(
+                    name,
+                    raw,
+                    expected[name],
+                    recorder=recorder,
+                    deadline=deadline,
+                    directory=work,
+                    source_type=OwnedSource,
+                    constructions_type=JournalConstructions,
+                    session_type=JournalValidationSession,
+                    budget=budget,
+                    catalog=catalog,
+                )
+        assert len(recorder.case_results) == 3 and all(
+            row["complete"] for row in recorder.case_results
+        )
+        report["status"], code = "complete", 0
+    except ProbeDeadline as error:
+        report["failure"] = {"family": family(error), "message": str(error)}
+        report["status"], code = "deadline-incomplete", 3
+    except BaseException as error:
+        report["failure"] = {"family": family(error), "message": str(error)}
+        report["status"], code = "failed", 1
+        traceback.print_exc()
+    finally:
+        ordinary_cleanup_errors = []
+        ordinary_unique = list({id(owner): owner for owner in ordinary_handles}.values())
+        with recorder.stage_scope("ordinary_original_receiving"):
+            for owner in reversed(ordinary_unique):
+                try:
+                    owner.close()
+                except BaseException as error:
+                    ordinary_cleanup_errors.append({"family": family(error), "message": str(error)})
+        report["ordinary_resources"] = {
+            "retained_original_handles": len(ordinary_unique),
+            "cleanup_errors": ordinary_cleanup_errors,
+            "storage_received": [owner.storage_received for owner in ordinary_unique],
+        }
+        os.environ["TMPDIR"], tempfile.tempdir = prior_tmp, prior_tempdir
+        report["source_end"] = source_identity(repo)
+        if report["source_end"] != report["source_start"]:
+            report["source_changed"] = True
+            report["status"], code = "failed", 1
+        report["observation"] = recorder.report()
+        for result in recorder.case_results:
+            materialized = result.pop("materialized", None)
+            if materialized is not None:
+                result["materialized_sha256"] = digest(
+                    json.dumps(
+                        materialized, sort_keys=True, separators=(",", ":"), allow_nan=False
+                    ).encode()
+                )
+        report["cases"] = recorder.case_results
+        resources_received = (
+            not ordinary_cleanup_errors
+            and all(owner.storage_received for owner in ordinary_unique)
+            and all(row["cleanup"].get("received") is True for row in recorder.case_results)
+        )
+        if not resources_received:
+            report["status"], code = "cleanup-incomplete", 1
+        report["temporary"] = {
+            "directory": str(work),
+            "original_resources_received": resources_received,
+        }
+        if resources_received:
+            shutil.rmtree(work)
+        report["temporary"].update(
+            owner_removed_workspace=not work.exists(),
+            outer_tmp_entries=sorted(p.name for p in temporary.iterdir()),
+        )
+        report["whole_child_before_receipt_seconds"] = time.perf_counter() - began
+        report["cooperative_cap_reached"] = deadline.fired
+        report["intended_exit_code"] = code
+        report["limitations"] = [
+            "One instrumented Native-only observation; no timing baseline, throughput, "
+            "peak memory, or parallelism measurement.",
+            "Fixture construction and ordinary oracle validation include real Native work; "
+            "their raw disposable SQLite has no admitted-SQL coverage here.",
+            "Method scopes and retained DBAPI leaves include instrumentation overhead. "
+            "Inclusive times overlap; only exclusive same-thread scopes are disjoint "
+            "within their enclosing stages.",
+            "Admitted DBAPI leaf intervals include original admission/currentness checks "
+            "and driver work, not isolated SQLite engine time or database-wait attribution.",
+            "execute/executemany/executescript are separate leaf-attempt kinds; executemany "
+            "parameters are never consumed for counting. Returned rows are not engine row visits.",
+            "Commit/rollback counters cover explicit methods only; implicit context-manager "
+            "transactions are outside that counter. executescript is one DBAPI attempt, "
+            "not its expanded statements; the SQL table label is only a surface classifier.",
+            "read_window calls the maintained source read_exact; nested exact reads are "
+            "explicitly labeled and must not be added again to window bytes.",
+            "Exception families belong only to this probe. Historical 931f01e Core catalog "
+            "418 raised attempts remain unclassified.",
+            "The cooperative 120-second cap prevents further work at safe boundaries. "
+            "An entered synchronous owner call is not force-closed and may return after "
+            "the cap. Original cleanup/join may also finish later; there is no hard-kill promise.",
+        ]
+        (output / "run.json").write_text(
+            json.dumps(report, sort_keys=True, indent=2, allow_nan=False) + "\n"
+        )
+    return code
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

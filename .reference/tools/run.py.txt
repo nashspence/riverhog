@@ -1,0 +1,98 @@
+"""Retain an original child status and owned temporary cleanup for a focused run."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import sys
+import time
+import traceback
+from contextlib import contextmanager
+from pathlib import Path
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--repo", type=Path, required=True)
+parser.add_argument("--expected-source", required=True)
+parser.add_argument("--prefix", type=Path, required=True)
+parser.add_argument("command", nargs=argparse.REMAINDER)
+a = parser.parse_args()
+repo, prefix = a.repo.resolve(), a.prefix.resolve()
+assert not prefix.is_relative_to(repo)
+sys.path.insert(0, str(repo))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from scripts.validation_identity import source_identity  # noqa: E402
+from scripts.validation_process import run_validation_child  # noqa: E402
+
+
+@contextmanager
+def child_log(path):
+    """Retain inherited child output while the maintained helper owns its join."""
+    sys.stdout.flush()
+    sys.stderr.flush()
+    saved_stdout, saved_stderr = os.dup(1), os.dup(2)
+    try:
+        with path.open("xb") as destination:
+            os.dup2(destination.fileno(), 1)
+            os.dup2(destination.fileno(), 2)
+            try:
+                yield
+            finally:
+                sys.stdout.flush()
+                sys.stderr.flush()
+    finally:
+        os.dup2(saved_stdout, 1)
+        os.dup2(saved_stderr, 2)
+        os.close(saved_stdout)
+        os.close(saved_stderr)
+
+
+command = a.command[1:] if a.command[:1] == ["--"] else a.command
+expected = {"source_sha": a.expected_source, "source_clean": True}
+log, receipt, temporary = (
+    Path(str(prefix) + suffix) for suffix in (".log", "-execution.json", "-temporary")
+)
+assert not any(p.exists() for p in (log, receipt, temporary))
+report = {
+    "format": "external-native-phase-execution/v1",
+    "launcher_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    "command": command,
+    "source_before": source_identity(repo),
+    "original_child_exit_status": None,
+    "cleanup": {"temporary_created": False, "temporary_removed": False},
+}
+started, status = time.monotonic(), 1
+try:
+    assert report["source_before"] == expected
+    temporary.mkdir()
+    report["cleanup"]["temporary_created"] = True
+    environment = {**os.environ, "TMPDIR": str(temporary), "PYTHONDONTWRITEBYTECODE": "1"}
+    with child_log(log):
+        report["original_child_exit_status"] = run_validation_child(
+            command, cwd=repo, env=environment
+        )
+    status = report["original_child_exit_status"]
+except BaseException as error:
+    report["error"] = {"type": type(error).__name__, "message": str(error)}
+    traceback.print_exc()
+finally:
+    if report["cleanup"]["temporary_created"]:
+        remaining = sorted(path.name for path in temporary.iterdir())
+        report["cleanup"]["remaining_entries"] = remaining
+        if not remaining:
+            temporary.rmdir()
+            report["cleanup"]["temporary_removed"] = True
+        else:
+            report["cleanup"]["preserved_for_review"] = True
+            status = 1
+    report["source_after"] = source_identity(repo)
+    if report["source_after"] != expected:
+        status = 1
+    report["elapsed_seconds"] = time.monotonic() - started
+    report["launcher_exit_status"] = status
+    if log.exists():
+        report["log_sha256"] = hashlib.sha256(log.read_bytes()).hexdigest()
+    receipt.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+    print(json.dumps(report, sort_keys=True), flush=True)
+raise SystemExit(status)

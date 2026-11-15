@@ -1,0 +1,1328 @@
+{
+  "all_reconciliation_guards_passed": true,
+  "analysis_script": {
+    "bytes": 17180,
+    "path": "/workspace/scratch/21c38f9cc56d/native_phase_reconcile.py",
+    "sha256": "e2da5a148f5558d23b743bcd965004aa6f74372be7ab14ef9bc03f5771a746a2"
+  },
+  "cases": [
+    {
+      "all_parent_versions_advance_exactly_one": true,
+      "all_retained_advance_execute_attempts": 1955,
+      "captured_double_load_fields_equal": true,
+      "double_start_and_load_advances": 103,
+      "double_start_reservations_reset_equal": true,
+      "explicit_commits": 108,
+      "frames": [
+        {
+          "active_rows_selected": 6,
+          "base_terms": {
+            "active_row_control": 24,
+            "entry_prepares": 3,
+            "finish_prepares": 25,
+            "fixed_frame_control": 10,
+            "generic_prepares": 18,
+            "inactive_row_selections": 0,
+            "staging_prepares": 3,
+            "typed_row_control": 8,
+            "typed_row_prepares": 12
+          },
+          "child_prepare_byte_budget_range": [
+            33565568,
+            33567984
+          ],
+          "child_prepare_quantum_values": [
+            64
+          ],
+          "child_prepare_transitions": [
+            {
+              "after_phase": "stage",
+              "before_phase": "observers",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "stage",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "observers",
+              "before_phase": "stage",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "changes",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "changes",
+              "before_phase": "entry",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "entry",
+              "before_phase": "journal",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "outputs",
+              "before_phase": "keys",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "outputs",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "keys",
+              "before_phase": "walk",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "outputs",
+              "before_phase": "keys",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "outputs",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "keys",
+              "before_phase": "walk",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "externals",
+              "before_phase": "content",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "row",
+              "before_phase": "externals",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "content",
+              "before_phase": "lifecycle",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "row",
+              "calls": 1,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "lifecycle",
+              "before_phase": "row",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            }
+          ],
+          "correction_terms": {},
+          "graph_adjacency_visits": 0,
+          "graph_plan_return_counts": [],
+          "inactive_rows_selected": 0,
+          "kind": "journal_init",
+          "observed_replay_invocations": 103,
+          "ordinal": 0,
+          "parent_phase_counts": {
+            "entry": 4,
+            "entry-admission": 1,
+            "finish": 26,
+            "finish-admission": 1,
+            "frame": 2,
+            "generic": 24,
+            "generic-admission": 6,
+            "lifecycle": 6,
+            "publish": 1,
+            "recording": 1,
+            "row": 16,
+            "row-admission": 4,
+            "row-admit": 7,
+            "staging": 4,
+            "staging-admission": 1
+          },
+          "predicted_replay_invocations": 103,
+          "typed_row_children": 4
+        }
+      ],
+      "input": {
+        "authored_assertions_by_frame": [
+          {
+            "activities": 1,
+            "agents": 1,
+            "artifacts": 1,
+            "descriptions": 1,
+            "occurrences": 1,
+            "states": 1
+          }
+        ],
+        "bytes": 4913,
+        "effective_assertions_by_family": {
+          "activities": 1,
+          "agents": 1,
+          "artifacts": 1,
+          "descriptions": 1,
+          "occurrences": 1,
+          "states": 1
+        },
+        "expected_sha256": "2ba28f24706d8b22e6c5d275856831ef54345ce9664577291374d8be457b7031",
+        "frame_kinds": [
+          "journal_init"
+        ],
+        "frames": 1,
+        "name": "initial",
+        "retracted_assertions": 0,
+        "sha256": "edfb3a62b20d3257235fe5b76f1fe9b2cd544f1ea316442918611098324c715d"
+      },
+      "ledger_fences": 107,
+      "ledger_loads_within_advances": 210,
+      "ledger_prefix_calls": 424,
+      "ledger_publications": 107,
+      "name": "initial",
+      "observed_session_advances": 107,
+      "parent_control_execute_attempts_including_begin": 965,
+      "parent_control_execute_attempts_predicted": 965,
+      "predicted_session_advances": 107,
+      "routes": {
+        "entry_advance": 102,
+        "frame_admission": 1,
+        "scan": 1,
+        "synchronize_publication": 1,
+        "terminal_completion": 1,
+        "terminal_movement": 1
+      },
+      "single_start_and_load_advances": 4,
+      "source": {
+        "direct_exact_frame_calls": 1,
+        "direct_exact_frame_octets": 4911,
+        "direct_exact_receipts": [
+          {
+            "advance": 1,
+            "arguments": [
+              1,
+              4911
+            ],
+            "case": "initial",
+            "operation": "source.read_exact",
+            "parent": "RetainedInput.frame",
+            "returned_octets": 4911,
+            "stage": "retained_advances"
+          }
+        ],
+        "framing_consumed_octets": 4913,
+        "leaf_read_exact_calls_including_windows": 2,
+        "leaf_read_exact_returned_octets": 9824,
+        "source_current_checks_including_open_and_finish": 109,
+        "window_calls": 1,
+        "window_overread_octets": 0,
+        "window_receipts": [
+          {
+            "advance": 0,
+            "arguments": [
+              0,
+              4913
+            ],
+            "case": "initial",
+            "operation": "source.read_window",
+            "parent": "RetainedInput.scan",
+            "returned_octets": 4913,
+            "stage": "retained_advances"
+          }
+        ],
+        "window_returned_octets": 4913
+      },
+      "starts": 210,
+      "terminal_freeze_commits": 1
+    },
+    {
+      "all_parent_versions_advance_exactly_one": true,
+      "all_retained_advance_execute_attempts": 2288,
+      "captured_double_load_fields_equal": true,
+      "double_start_and_load_advances": 119,
+      "double_start_reservations_reset_equal": true,
+      "explicit_commits": 126,
+      "frames": [
+        {
+          "active_rows_selected": 6,
+          "base_terms": {
+            "active_row_control": 24,
+            "entry_prepares": 3,
+            "finish_prepares": 25,
+            "fixed_frame_control": 10,
+            "generic_prepares": 18,
+            "inactive_row_selections": 0,
+            "staging_prepares": 3,
+            "typed_row_control": 8,
+            "typed_row_prepares": 12
+          },
+          "child_prepare_byte_budget_range": [
+            33565568,
+            33567984
+          ],
+          "child_prepare_quantum_values": [
+            64
+          ],
+          "child_prepare_transitions": [
+            {
+              "after_phase": "stage",
+              "before_phase": "observers",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "stage",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "observers",
+              "before_phase": "stage",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "changes",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "changes",
+              "before_phase": "entry",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "entry",
+              "before_phase": "journal",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "outputs",
+              "before_phase": "keys",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "outputs",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "keys",
+              "before_phase": "walk",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "outputs",
+              "before_phase": "keys",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "outputs",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "keys",
+              "before_phase": "walk",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "externals",
+              "before_phase": "content",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "row",
+              "before_phase": "externals",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "content",
+              "before_phase": "lifecycle",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "row",
+              "calls": 1,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "lifecycle",
+              "before_phase": "row",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            }
+          ],
+          "correction_terms": {},
+          "graph_adjacency_visits": 0,
+          "graph_plan_return_counts": [],
+          "inactive_rows_selected": 0,
+          "kind": "journal_init",
+          "observed_replay_invocations": 103,
+          "ordinal": 0,
+          "parent_phase_counts": {
+            "entry": 4,
+            "entry-admission": 1,
+            "finish": 26,
+            "finish-admission": 1,
+            "frame": 2,
+            "generic": 24,
+            "generic-admission": 6,
+            "lifecycle": 6,
+            "publish": 1,
+            "recording": 1,
+            "row": 16,
+            "row-admission": 4,
+            "row-admit": 7,
+            "staging": 4,
+            "staging-admission": 1
+          },
+          "predicted_replay_invocations": 103,
+          "typed_row_children": 4
+        },
+        {
+          "active_rows_selected": 0,
+          "base_terms": {
+            "active_row_control": 0,
+            "entry_prepares": 4,
+            "finish_prepares": 1,
+            "fixed_frame_control": 10,
+            "generic_prepares": 0,
+            "inactive_row_selections": 0,
+            "staging_prepares": 1,
+            "typed_row_control": 0,
+            "typed_row_prepares": 0
+          },
+          "child_prepare_byte_budget_range": [
+            33563152,
+            33563184
+          ],
+          "child_prepare_quantum_values": [
+            64
+          ],
+          "child_prepare_transitions": [
+            {
+              "after_phase": "done",
+              "before_phase": "stage",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "changes",
+              "before_phase": "changes",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "changes",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "changes",
+              "before_phase": "entry",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "entry",
+              "before_phase": "journal",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "row",
+              "calls": 1,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            }
+          ],
+          "correction_terms": {},
+          "graph_adjacency_visits": 0,
+          "graph_plan_return_counts": [],
+          "inactive_rows_selected": 0,
+          "kind": "checkpoint",
+          "observed_replay_invocations": 16,
+          "ordinal": 1,
+          "parent_phase_counts": {
+            "entry": 5,
+            "entry-admission": 1,
+            "finish": 2,
+            "finish-admission": 1,
+            "frame": 3,
+            "publish": 1,
+            "recording": 1,
+            "row-admit": 1,
+            "staging": 2,
+            "staging-admission": 1
+          },
+          "predicted_replay_invocations": 16,
+          "typed_row_children": 0
+        }
+      ],
+      "input": {
+        "authored_assertions_by_frame": [
+          {
+            "activities": 1,
+            "agents": 1,
+            "artifacts": 1,
+            "descriptions": 1,
+            "occurrences": 1,
+            "states": 1
+          },
+          {}
+        ],
+        "bytes": 5903,
+        "effective_assertions_by_family": {
+          "activities": 1,
+          "agents": 1,
+          "artifacts": 1,
+          "descriptions": 1,
+          "occurrences": 1,
+          "states": 1
+        },
+        "expected_sha256": "ce37ede22defbe5bb11d6eaffac76ff4a180c468d1f9c548ab180a502dc251ea",
+        "frame_kinds": [
+          "journal_init",
+          "checkpoint"
+        ],
+        "frames": 2,
+        "name": "checkpoint",
+        "retracted_assertions": 0,
+        "sha256": "f7d458d9a591d540d1da29e3eeca92851ed2b9f21a00fdc4cae00e296535246f"
+      },
+      "ledger_fences": 125,
+      "ledger_loads_within_advances": 244,
+      "ledger_prefix_calls": 494,
+      "ledger_publications": 125,
+      "name": "checkpoint",
+      "observed_session_advances": 125,
+      "parent_control_execute_attempts_including_begin": 1193,
+      "parent_control_execute_attempts_predicted": 1193,
+      "predicted_session_advances": 125,
+      "routes": {
+        "entry_advance": 117,
+        "frame_admission": 2,
+        "scan": 2,
+        "synchronize_publication": 2,
+        "terminal_completion": 1,
+        "terminal_movement": 1
+      },
+      "single_start_and_load_advances": 6,
+      "source": {
+        "direct_exact_frame_calls": 2,
+        "direct_exact_frame_octets": 5899,
+        "direct_exact_receipts": [
+          {
+            "advance": 108,
+            "arguments": [
+              1,
+              4911
+            ],
+            "case": "checkpoint",
+            "operation": "source.read_exact",
+            "parent": "RetainedInput.frame",
+            "returned_octets": 4911,
+            "stage": "retained_advances"
+          },
+          {
+            "advance": 213,
+            "arguments": [
+              4914,
+              988
+            ],
+            "case": "checkpoint",
+            "operation": "source.read_exact",
+            "parent": "RetainedInput.frame",
+            "returned_octets": 988,
+            "stage": "retained_advances"
+          }
+        ],
+        "framing_consumed_octets": 5903,
+        "leaf_read_exact_calls_including_windows": 4,
+        "leaf_read_exact_returned_octets": 12792,
+        "source_current_checks_including_open_and_finish": 127,
+        "window_calls": 2,
+        "window_overread_octets": 990,
+        "window_receipts": [
+          {
+            "advance": 107,
+            "arguments": [
+              0,
+              5903
+            ],
+            "case": "checkpoint",
+            "operation": "source.read_window",
+            "parent": "RetainedInput.scan",
+            "returned_octets": 5903,
+            "stage": "retained_advances"
+          },
+          {
+            "advance": 212,
+            "arguments": [
+              4913,
+              990
+            ],
+            "case": "checkpoint",
+            "operation": "source.read_window",
+            "parent": "RetainedInput.scan",
+            "returned_octets": 990,
+            "stage": "retained_advances"
+          }
+        ],
+        "window_returned_octets": 6893
+      },
+      "starts": 244,
+      "terminal_freeze_commits": 1
+    },
+    {
+      "all_parent_versions_advance_exactly_one": true,
+      "all_retained_advance_execute_attempts": 5011,
+      "captured_double_load_fields_equal": true,
+      "double_start_and_load_advances": 241,
+      "double_start_reservations_reset_equal": true,
+      "explicit_commits": 248,
+      "frames": [
+        {
+          "active_rows_selected": 6,
+          "base_terms": {
+            "active_row_control": 24,
+            "entry_prepares": 3,
+            "finish_prepares": 25,
+            "fixed_frame_control": 10,
+            "generic_prepares": 18,
+            "inactive_row_selections": 0,
+            "staging_prepares": 3,
+            "typed_row_control": 8,
+            "typed_row_prepares": 12
+          },
+          "child_prepare_byte_budget_range": [
+            33565568,
+            33567984
+          ],
+          "child_prepare_quantum_values": [
+            64
+          ],
+          "child_prepare_transitions": [
+            {
+              "after_phase": "stage",
+              "before_phase": "observers",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "stage",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "observers",
+              "before_phase": "stage",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "changes",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "changes",
+              "before_phase": "entry",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "entry",
+              "before_phase": "journal",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "outputs",
+              "before_phase": "keys",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "outputs",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "keys",
+              "before_phase": "walk",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "outputs",
+              "before_phase": "keys",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "outputs",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "keys",
+              "before_phase": "walk",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "externals",
+              "before_phase": "content",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "row",
+              "before_phase": "externals",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "content",
+              "before_phase": "lifecycle",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "row",
+              "calls": 1,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "lifecycle",
+              "before_phase": "row",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            }
+          ],
+          "correction_terms": {},
+          "graph_adjacency_visits": 0,
+          "graph_plan_return_counts": [],
+          "inactive_rows_selected": 0,
+          "kind": "journal_init",
+          "observed_replay_invocations": 103,
+          "ordinal": 0,
+          "parent_phase_counts": {
+            "entry": 4,
+            "entry-admission": 1,
+            "finish": 26,
+            "finish-admission": 1,
+            "frame": 2,
+            "generic": 24,
+            "generic-admission": 6,
+            "lifecycle": 6,
+            "publish": 1,
+            "recording": 1,
+            "row": 16,
+            "row-admission": 4,
+            "row-admit": 7,
+            "staging": 4,
+            "staging-admission": 1
+          },
+          "predicted_replay_invocations": 103,
+          "typed_row_children": 4
+        },
+        {
+          "active_rows_selected": 6,
+          "base_terms": {
+            "active_row_control": 24,
+            "entry_prepares": 4,
+            "finish_prepares": 25,
+            "fixed_frame_control": 10,
+            "generic_prepares": 18,
+            "inactive_row_selections": 0,
+            "staging_prepares": 1,
+            "typed_row_control": 8,
+            "typed_row_prepares": 12
+          },
+          "child_prepare_byte_budget_range": [
+            33560768,
+            33563184
+          ],
+          "child_prepare_quantum_values": [
+            64
+          ],
+          "child_prepare_transitions": [
+            {
+              "after_phase": "done",
+              "before_phase": "stage",
+              "calls": 1,
+              "owner": "AssertionStaging",
+              "parent_phase": "staging"
+            },
+            {
+              "after_phase": "apply",
+              "before_phase": "apply",
+              "calls": 1,
+              "owner": "CorrectionTargets",
+              "parent_phase": "targets"
+            },
+            {
+              "after_phase": "clean",
+              "before_phase": "apply",
+              "calls": 1,
+              "owner": "CorrectionTargets",
+              "parent_phase": "targets"
+            },
+            {
+              "after_phase": "clean",
+              "before_phase": "clean",
+              "calls": 1,
+              "owner": "CorrectionTargets",
+              "parent_phase": "targets"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "clean",
+              "calls": 1,
+              "owner": "CorrectionTargets",
+              "parent_phase": "targets"
+            },
+            {
+              "after_phase": "apply",
+              "before_phase": "verify",
+              "calls": 1,
+              "owner": "CorrectionTargets",
+              "parent_phase": "targets"
+            },
+            {
+              "after_phase": "verify",
+              "before_phase": "verify",
+              "calls": 1,
+              "owner": "CorrectionTargets",
+              "parent_phase": "targets"
+            },
+            {
+              "after_phase": "fixities",
+              "before_phase": "findings",
+              "calls": 1,
+              "owner": "CorrectionWork",
+              "parent_phase": "retire"
+            },
+            {
+              "after_phase": "fixities",
+              "before_phase": "fixities",
+              "calls": 1,
+              "owner": "CorrectionWork",
+              "parent_phase": "retire"
+            },
+            {
+              "after_phase": "lifecycle_extrema",
+              "before_phase": "fixities",
+              "calls": 1,
+              "owner": "CorrectionWork",
+              "parent_phase": "retire"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "lifecycle_extrema",
+              "calls": 1,
+              "owner": "CorrectionWork",
+              "parent_phase": "retire"
+            },
+            {
+              "after_phase": "findings",
+              "before_phase": "maps",
+              "calls": 1,
+              "owner": "CorrectionWork",
+              "parent_phase": "retire"
+            },
+            {
+              "after_phase": "maps",
+              "before_phase": "maps",
+              "calls": 1,
+              "owner": "CorrectionWork",
+              "parent_phase": "retire"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "seed",
+              "calls": 1,
+              "owner": "CorrectionWork",
+              "parent_phase": "seed"
+            },
+            {
+              "after_phase": "seed",
+              "before_phase": "seed",
+              "calls": 1,
+              "owner": "CorrectionWork",
+              "parent_phase": "seed"
+            },
+            {
+              "after_phase": "changes",
+              "before_phase": "changes",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "changes",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "changes",
+              "before_phase": "entry",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "entry",
+              "before_phase": "journal",
+              "calls": 1,
+              "owner": "EntryPreparation",
+              "parent_phase": "entry"
+            },
+            {
+              "after_phase": "outputs",
+              "before_phase": "keys",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "outputs",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "keys",
+              "before_phase": "walk",
+              "calls": 6,
+              "owner": "GenericSemantics",
+              "parent_phase": "generic"
+            },
+            {
+              "after_phase": "outputs",
+              "before_phase": "keys",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "outputs",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "keys",
+              "before_phase": "walk",
+              "calls": 4,
+              "owner": "GenericSemantics",
+              "parent_phase": "row"
+            },
+            {
+              "after_phase": "externals",
+              "before_phase": "content",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "row",
+              "before_phase": "externals",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "content",
+              "before_phase": "lifecycle",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "done",
+              "before_phase": "row",
+              "calls": 1,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            },
+            {
+              "after_phase": "lifecycle",
+              "before_phase": "row",
+              "calls": 6,
+              "owner": "SemanticFinish",
+              "parent_phase": "finish"
+            }
+          ],
+          "correction_terms": {
+            "aggregate_retire_prepares": 6,
+            "derivation_non_none_retirement_plans": 6,
+            "fixed_correction_control": 10,
+            "seed_prepares": 2,
+            "specialization_non_none_retirement_plans": 6,
+            "target_prepares": 6
+          },
+          "graph_adjacency_visits": 0,
+          "graph_plan_return_counts": [
+            {
+              "adjacency_visits": null,
+              "calls": 2,
+              "operation": "OnlineDag._prepare_replacement",
+              "returned_none": false
+            },
+            {
+              "adjacency_visits": 0,
+              "calls": 12,
+              "operation": "OnlineDag._prepare_retirement",
+              "returned_none": false
+            },
+            {
+              "adjacency_visits": null,
+              "calls": 2,
+              "operation": "OnlineDag._prepare_retirement",
+              "returned_none": true
+            }
+          ],
+          "inactive_rows_selected": 0,
+          "kind": "correction",
+          "observed_replay_invocations": 138,
+          "ordinal": 1,
+          "parent_phase_counts": {
+            "derivation-replace": 1,
+            "derivation-retire": 7,
+            "entry": 5,
+            "entry-admission": 1,
+            "finish": 26,
+            "finish-admission": 1,
+            "frame": 3,
+            "generic": 24,
+            "generic-admission": 6,
+            "lifecycle": 6,
+            "publish": 1,
+            "recording": 1,
+            "retire": 7,
+            "retire-admission": 1,
+            "row": 16,
+            "row-admission": 4,
+            "row-admit": 7,
+            "seed": 3,
+            "seed-admission": 1,
+            "specialization-replace": 1,
+            "specialization-retire": 7,
+            "staging": 2,
+            "staging-admission": 1,
+            "targets": 7,
+            "targets-admission": 1
+          },
+          "predicted_replay_invocations": 138,
+          "typed_row_children": 4
+        }
+      ],
+      "input": {
+        "authored_assertions_by_frame": [
+          {
+            "activities": 1,
+            "agents": 1,
+            "artifacts": 1,
+            "descriptions": 1,
+            "occurrences": 1,
+            "states": 1
+          },
+          {
+            "agents": 1
+          }
+        ],
+        "bytes": 6193,
+        "effective_assertions_by_family": {
+          "activities": 1,
+          "agents": 1,
+          "artifacts": 1,
+          "descriptions": 1,
+          "occurrences": 1,
+          "states": 1
+        },
+        "expected_sha256": "25638b6a91f7a7cde9866eb72491a65bf50f11d5695467bac6ffd0e339b403f0",
+        "frame_kinds": [
+          "journal_init",
+          "correction"
+        ],
+        "frames": 2,
+        "name": "correction",
+        "retracted_assertions": 1,
+        "sha256": "13a6649c82ad86c945ef7f79fce9366c6f7a8c73be77f900582320c6b52e4bb9"
+      },
+      "ledger_fences": 247,
+      "ledger_loads_within_advances": 488,
+      "ledger_prefix_calls": 982,
+      "ledger_publications": 247,
+      "name": "correction",
+      "observed_session_advances": 247,
+      "parent_control_execute_attempts_including_begin": 2779,
+      "parent_control_execute_attempts_predicted": 2779,
+      "predicted_session_advances": 247,
+      "routes": {
+        "entry_advance": 239,
+        "frame_admission": 2,
+        "scan": 2,
+        "synchronize_publication": 2,
+        "terminal_completion": 1,
+        "terminal_movement": 1
+      },
+      "single_start_and_load_advances": 6,
+      "source": {
+        "direct_exact_frame_calls": 2,
+        "direct_exact_frame_octets": 6189,
+        "direct_exact_receipts": [
+          {
+            "advance": 233,
+            "arguments": [
+              1,
+              4911
+            ],
+            "case": "correction",
+            "operation": "source.read_exact",
+            "parent": "RetainedInput.frame",
+            "returned_octets": 4911,
+            "stage": "retained_advances"
+          },
+          {
+            "advance": 338,
+            "arguments": [
+              4914,
+              1278
+            ],
+            "case": "correction",
+            "operation": "source.read_exact",
+            "parent": "RetainedInput.frame",
+            "returned_octets": 1278,
+            "stage": "retained_advances"
+          }
+        ],
+        "framing_consumed_octets": 6193,
+        "leaf_read_exact_calls_including_windows": 4,
+        "leaf_read_exact_returned_octets": 13662,
+        "source_current_checks_including_open_and_finish": 249,
+        "window_calls": 2,
+        "window_overread_octets": 1280,
+        "window_receipts": [
+          {
+            "advance": 232,
+            "arguments": [
+              0,
+              6193
+            ],
+            "case": "correction",
+            "operation": "source.read_window",
+            "parent": "RetainedInput.scan",
+            "returned_octets": 6193,
+            "stage": "retained_advances"
+          },
+          {
+            "advance": 337,
+            "arguments": [
+              4913,
+              1280
+            ],
+            "case": "correction",
+            "operation": "source.read_window",
+            "parent": "RetainedInput.scan",
+            "returned_octets": 1280,
+            "stage": "retained_advances"
+          }
+        ],
+        "window_returned_octets": 7473
+      },
+      "starts": 488,
+      "terminal_freeze_commits": 1
+    }
+  ],
+  "format": "riverhog-native-phase-offline-reconciliation-v1",
+  "input_artifacts": [
+    {
+      "bytes": 3240236,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/run.json",
+      "sha256": "019236fdc3b227d49753b54e79915b62d45cf44e788283d3843411611b33c00b"
+    },
+    {
+      "bytes": 3510,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation/run.json",
+      "sha256": "0e2717eb4b4291584d70ba4ad92a7412060a2772f9649f100349fdabd4c75b15"
+    },
+    {
+      "bytes": 37444,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/probe.py.txt",
+      "sha256": "65070c82c5904a3ec7e8ff7ce289f6eb11256f03576b919f1a4cdc114f76600a"
+    },
+    {
+      "bytes": 4913,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/initial.jsonseq",
+      "sha256": "edfb3a62b20d3257235fe5b76f1fe9b2cd544f1ea316442918611098324c715d"
+    },
+    {
+      "bytes": 4617,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/initial-expected.json",
+      "sha256": "2ba28f24706d8b22e6c5d275856831ef54345ce9664577291374d8be457b7031"
+    },
+    {
+      "bytes": 5903,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/checkpoint.jsonseq",
+      "sha256": "f7d458d9a591d540d1da29e3eeca92851ed2b9f21a00fdc4cae00e296535246f"
+    },
+    {
+      "bytes": 4617,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/checkpoint-expected.json",
+      "sha256": "ce37ede22defbe5bb11d6eaffac76ff4a180c468d1f9c548ab180a502dc251ea"
+    },
+    {
+      "bytes": 6193,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/correction.jsonseq",
+      "sha256": "13a6649c82ad86c945ef7f79fce9366c6f7a8c73be77f900582320c6b52e4bb9"
+    },
+    {
+      "bytes": 4660,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/correction-expected.json",
+      "sha256": "25638b6a91f7a7cde9866eb72491a65bf50f11d5695467bac6ffd0e339b403f0"
+    }
+  ],
+  "limitations": [
+    "All counts here are the instrumented retained-session scopes; builder/oracle work has separate stage timing and no such method/SQL counts.",
+    "The archived run records intended_exit_code; original child/lane process receipts remain the outer controller owner's evidence.",
+    "Matching double-load fields cover only the captured phase/version/frame/row/child-ID fields, not an independently compared full prefix snapshot.",
+    "A non-None graph retirement plan can contain only a control transition and no deleted key; zero adjacency visits alone does not mean zero plan work.",
+    "Source window plus direct atom bytes is the physical leaf-read sum; nested read_exact window deliveries are not added again.",
+    "These three tiny histories with no graph certificates do not establish graph-growth, restart, capacity, cancellation, concurrency or historical-publication behavior."
+  ],
+  "limited_timing_context": {
+    "interpretation": "One instrumented observation; hook overhead included; no removal-speedup or historical-publication inference.",
+    "retained_advance_stage_process_cpu_seconds": 3.090955373,
+    "start_calls_exclusive_thread_cpu_seconds": 0.029825738
+  },
+  "method": "stdlib-only analysis of archived JSON/bytes; no product imports, tests, profile replay or workload execution",
+  "preflight": {
+    "excluded_from_workload_totals": true,
+    "input_sha256": "0e2717eb4b4291584d70ba4ad92a7412060a2772f9649f100349fdabd4c75b15",
+    "intended_exit_code": 1,
+    "recorded_advances": 0,
+    "recorded_handles": 0,
+    "status": "failed"
+  },
+  "source": "3b47cbba770c31eb1487b50f7e3b16533c10e827",
+  "totals": {
+    "all_retained_advance_execute_attempts": 9254,
+    "double_start_and_load_advances": 463,
+    "explicit_commits": 482,
+    "ledger_fences": 479,
+    "ledger_loads_within_advances": 942,
+    "ledger_publications": 479,
+    "observed_session_advances": 479,
+    "parent_control_execute_attempts_including_begin": 4937,
+    "predicted_session_advances": 479,
+    "single_start_and_load_advances": 16,
+    "starts": 942,
+    "terminal_freeze_commits": 3
+  }
+}

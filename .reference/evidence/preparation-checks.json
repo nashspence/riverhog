@@ -1,0 +1,55 @@
+{
+  "checks": [
+    {
+      "elapsed_seconds": 0.05142058100318536,
+      "exit_status": 0,
+      "file": "native_phase_probe.py",
+      "kind": "ast-and-compile-without-execution",
+      "sha256": "65070c82c5904a3ec7e8ff7ce289f6eb11256f03576b919f1a4cdc114f76600a"
+    },
+    {
+      "elapsed_seconds": 0.0014925819996278733,
+      "exit_status": 0,
+      "file": "native_phase_run.py",
+      "kind": "ast-and-compile-without-execution",
+      "sha256": "e9d10e658e031e8a60608a8658cc47d25e7565aeba75816b9d02c8334ee93d33"
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/ruff",
+        "--version"
+      ],
+      "elapsed_seconds": 0.13922556000034092,
+      "exit_status": 0,
+      "stderr": "",
+      "stdout": "ruff 0.16.0\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/ruff",
+        "check",
+        "/workspace/scratch/21c38f9cc56d/native_phase_probe.py",
+        "/workspace/scratch/21c38f9cc56d/native_phase_run.py"
+      ],
+      "elapsed_seconds": 0.08054321900272043,
+      "exit_status": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/ruff",
+        "format",
+        "--check",
+        "/workspace/scratch/21c38f9cc56d/native_phase_probe.py",
+        "/workspace/scratch/21c38f9cc56d/native_phase_run.py"
+      ],
+      "elapsed_seconds": 0.03045037699484965,
+      "exit_status": 0,
+      "stderr": "",
+      "stdout": "2 files already formatted\n"
+    }
+  ],
+  "format": "external-native-phase-preparation-checks/v1",
+  "purpose": "Static checks of the two external diagnostic scripts only; no product imports or tests"
+}

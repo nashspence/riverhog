@@ -1,0 +1,978 @@
+{
+  "accepted_current_growth_pins": {
+    "growth_reader": {
+      "bytes": 31352,
+      "current_git_blob": "75f8b5f8f57317e6a01cec1eec5dffad710149a6",
+      "expected_sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40",
+      "historical_equality_claimed": false,
+      "lines": 769,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py",
+      "sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40",
+      "working_matches_current_git_blob": true
+    },
+    "owning_helper_tests": {
+      "bytes": 24417,
+      "current_git_blob": "06d476dce173cf77632cc347ffbe526b94db544d",
+      "expected_sha256": "9a4c1b37b04b3b42507869677ce3abb5d89ca7abfee432efab1689adb49d1874",
+      "historical_equality_claimed": false,
+      "lines": 589,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_growth_observer_batch.py",
+      "sha256": "9a4c1b37b04b3b42507869677ce3abb5d89ca7abfee432efab1689adb49d1874",
+      "working_matches_current_git_blob": true
+    },
+    "private_projection_helper": {
+      "bytes": 9777,
+      "current_git_blob": "07e824cb9cc15622f812bf9b77dee1c615987f0b",
+      "expected_sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8",
+      "historical_equality_claimed": false,
+      "lines": 217,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/growth_batch.py",
+      "sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8",
+      "working_matches_current_git_blob": true
+    }
+  },
+  "comparison_receipt": {
+    "argv": [
+      "git",
+      "diff",
+      "--name-only",
+      "931f01e65d8849835774a97ffbd2954ae6802ce5",
+      "3b47cbba770c31eb1487b50f7e3b16533c10e827",
+      "--",
+      "packages/riverhog-provenance/src",
+      "riverhog/src/riverhog_core",
+      "riverhog/src/riverhog_api",
+      "packages/riverhog-client/src",
+      "packages/state-schema/src",
+      "tests/support/qualification",
+      "AGENTS.md",
+      "README.md",
+      "mise.lock",
+      "mise.toml",
+      "packages/riverhog-client/src/riverhog_client/client.py",
+      "packages/riverhog-client/src/riverhog_client/producer.py",
+      "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "pyproject.toml",
+      "riverhog/src/riverhog_api/app.py",
+      "riverhog/src/riverhog_api/routers/collections.py",
+      "riverhog/src/riverhog_core/runtime_config.py",
+      "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "tests/operation_observer.py",
+      "tests/support/qualification/canonical_history_scale.py",
+      "tests/unit/test_operation_lifecycle_api.py",
+      "uv.lock"
+    ],
+    "exit_code": 0,
+    "meaning": "No changed tracked path in the listed runtime subtrees, publication helpers or cited guide/source files; this does not assert equality of the complete repository.",
+    "stderr": "",
+    "stdout": ""
+  },
+  "format": "riverhog-native-phase-source-audit-v1",
+  "generated_utc": "2026-11-15T00:46:07.609264+00:00",
+  "historical_evidence": {
+    "current_request_comment": {
+      "body_sha256": "e3f213d169a243e6a4fd88ecfb98bae835e3a8bab654ca9530c59f6faf17ded1",
+      "id": 6885293536,
+      "url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6885293536"
+    },
+    "exact_extended_931_recorder": {
+      "availability": "Not located in the bounded available-scratch review reported by the evidence reviewer; no exact 931 recorder source is supplied to this audit.",
+      "independently_revalidated_here": false
+    },
+    "interpretation_limits": [
+      "The comment expressly says 418 raised catalog attempts have no captured error-family attribution; this audit does not classify them as contention, product failure or waste.",
+      "428 hook-observed lifetimes are not active-worker counts, observed parallelism or utilization; 427 request count does not establish a one-to-one mapping.",
+      "400 stamped Core calls, 399 owner advances and four openings cannot establish available ready work or missed parallelism.",
+      "Inclusive Native and Core times overlap and must not be summed.",
+      "One exact-source observation without a matching throughput reference establishes no speedup or whole-path growth closure.",
+      "Prior observer-publication reference-handoff artifacts concern reference publication and are not receipts for this Native publication run."
+    ],
+    "older_62211ac_observer": {
+      "limits": "No birth/death interval, ready/queue/runnable-state or simultaneous-active-worker trace was identified in that older method; no older output is substituted for 931 data.",
+      "method_review_provenance": "Sibling evidence reviewer inspected its thread-local first-selected-hook registration and aggregate timing scopes.",
+      "usage": "Method context only; it is not the exact extended 931 recorder or the source of the 931 observations."
+    },
+    "publication_comment": {
+      "body_sha256": "11d1e64d883d049df49d1aeaa0ad23eea01700082a830319fa7c8c03ff47c753",
+      "id": 6879735829,
+      "source_commit": "931f01e65d8849835774a97ffbd2954ae6802ce5",
+      "url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6879735829"
+    },
+    "raw_931_output_and_original_execution_receipts": {
+      "availability": "Not located in the available bounded review; original exits, cleanup, observer hashes and publication counts are reported by the supplied comment, not rederived here.",
+      "independently_revalidated_here": false
+    },
+    "retained_count_source_note": "The historical publication comment supplies the listed counts except the total 51,377 catalog attempts, which the supplied current request comment 6885293536 reports for that same historical run.",
+    "retained_count_sources": {
+      "catalog_execution_attempts": {
+        "comment_id": 6885293536,
+        "independently_rederived_here": false
+      },
+      "core_owner_advances": {
+        "comment_id": 6879735829,
+        "independently_rederived_here": false
+      },
+      "hook_observed_anyio_worker_lifetimes": {
+        "comment_id": 6879735829,
+        "independently_rederived_here": false
+      },
+      "native_advances": {
+        "comment_id": 6879735829,
+        "independently_rederived_here": false
+      },
+      "native_advances_by_role": {
+        "comment_id": 6879735829,
+        "independently_rederived_here": false
+      },
+      "raised_catalog_attempts": {
+        "comment_id": 6879735829,
+        "independently_rederived_here": false
+      },
+      "retained_native_opens": {
+        "comment_id": 6879735829,
+        "independently_rederived_here": false
+      },
+      "stamped_core_calls": {
+        "comment_id": 6879735829,
+        "independently_rederived_here": false
+      },
+      "testclient_requests": {
+        "comment_id": 6879735829,
+        "independently_rederived_here": false
+      }
+    },
+    "retained_published_counts": {
+      "catalog_execution_attempts": 51377,
+      "core_owner_advances": 399,
+      "hook_observed_anyio_worker_lifetimes": 428,
+      "native_advances": 9843,
+      "native_advances_by_role": {
+        "anyio_worker": 199,
+        "main_thread": 7329,
+        "physical_execution": 2315
+      },
+      "raised_catalog_attempts": 418,
+      "retained_native_opens": 4,
+      "stamped_core_calls": 400,
+      "testclient_requests": 427
+    },
+    "static_core_analysis_note": {
+      "bytes": 20674,
+      "lines": 134,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-core-analysis.md",
+      "sha256": "239d344e1dcb66e825c556a2edbc0aca20d8c2b4474063b9363526c395d744f2"
+    },
+    "supplied_current_request": {
+      "bytes": 6267,
+      "lines": 27,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-request.md",
+      "sha256": "4c3065ae60d0fe84fdb80c92ef93d164e04a31cb27ce64817d3a5f6005159e45"
+    },
+    "supplied_issue_evidence": {
+      "bytes": 23942,
+      "lines": 27,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-issue-evidence.json",
+      "sha256": "042faefceb1e4ba6bd8ed08561f70a9ccaabfb0a997eba08ba2ee837e1dfc1f9"
+    }
+  },
+  "installed_dependencies": {
+    "anyio": {
+      "installed_version": "4.14.2",
+      "installed_version_matches_lock": true,
+      "metadata": {
+        "bytes": 4645,
+        "lines": 107,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/anyio-4.14.2.dist-info/METADATA",
+        "sha256": "c5e6fc4dfd833319913b287be7a30d9935e9208c7ef917630621855aaac4d419"
+      },
+      "source_modules": [
+        {
+          "bytes": 19265,
+          "lines": 582,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/anyio/from_thread.py",
+          "sha256": "258b1b68268807f222b7a90d86d5d2b5e246b783dc43b9dcab49c8a5c7a522b8"
+        },
+        {
+          "bytes": 104400,
+          "lines": 3136,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py",
+          "sha256": "78ad23f0f2343bbcb76d7f1c501b1a7e858ff30b1747eb333fa722c8fe0c9249"
+        }
+      ],
+      "uv_lock_citation": {
+        "end_line": 1273,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+        "start_line": 1272
+      },
+      "uv_lock_version": "4.14.2",
+      "version_method": "Read installed dist-info METADATA as text; no dependency module imported."
+    },
+    "fastapi": {
+      "installed_version": "0.141.1",
+      "installed_version_matches_lock": true,
+      "metadata": {
+        "bytes": 27029,
+        "lines": 617,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/fastapi-0.141.1.dist-info/METADATA",
+        "sha256": "1010c29547b4026bdb3cd1c406e0570b9d79bb448b5a61fa4d5bb5a5eb0b752c"
+      },
+      "source_modules": [
+        {
+          "bytes": 255632,
+          "lines": 6447,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/fastapi/routing.py",
+          "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+        }
+      ],
+      "uv_lock_citation": {
+        "end_line": 1633,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+        "start_line": 1632
+      },
+      "uv_lock_version": "0.141.1",
+      "version_method": "Read installed dist-info METADATA as text; no dependency module imported."
+    },
+    "httpx": {
+      "installed_version": "0.28.1",
+      "installed_version_matches_lock": true,
+      "metadata": {
+        "bytes": 7052,
+        "lines": 203,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/httpx-0.28.1.dist-info/METADATA",
+        "sha256": "febb9b0f8f3e80d57c8199c304f35c4336e8581d1d18d7983c92766b82793b25"
+      },
+      "source_modules": [
+        {
+          "bytes": 65714,
+          "lines": 2019,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/httpx/_client.py",
+          "sha256": "c43f941baefe58c91e96d00039e1868fe719d91453026d7db1647194563bff8d"
+        }
+      ],
+      "uv_lock_citation": {
+        "end_line": 1881,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+        "start_line": 1880
+      },
+      "uv_lock_version": "0.28.1",
+      "version_method": "Read installed dist-info METADATA as text; no dependency module imported."
+    },
+    "starlette": {
+      "installed_version": "1.3.1",
+      "installed_version_matches_lock": true,
+      "metadata": {
+        "bytes": 6370,
+        "lines": 178,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette-1.3.1.dist-info/METADATA",
+        "sha256": "d83ccd9665eb05d1f9393c75e209cb353990731a6215a609a0f1c5c0a6286c9a"
+      },
+      "source_modules": [
+        {
+          "bytes": 28356,
+          "lines": 748,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/testclient.py",
+          "sha256": "52a9e32222a492b368339cabf0357163de2ed7e80959d7f3e88299c5b8c4eb4c"
+        },
+        {
+          "bytes": 1701,
+          "lines": 59,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/concurrency.py",
+          "sha256": "3e9e245d060ef39716c58ed754db7995c62f8581d4aaec8b82e09e73b84a2a83"
+        }
+      ],
+      "uv_lock_citation": {
+        "end_line": 3552,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+        "start_line": 3551
+      },
+      "uv_lock_version": "1.3.1",
+      "version_method": "Read installed dist-info METADATA as text; no dependency module imported."
+    }
+  },
+  "installed_source_citations": [
+    {
+      "end_line": 353,
+      "finding": "The in-process transport enters its portal factory and calls the ASGI app for each request.",
+      "id": "starlette_request_portal",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/testclient.py",
+      "sha256": "52a9e32222a492b368339cabf0357163de2ed7e80959d7f3e88299c5b8c4eb4c",
+      "start_line": 350
+    },
+    {
+      "end_line": 379,
+      "finding": "TestClient subclasses httpx.Client and starts with portal=None.",
+      "id": "starlette_portal_default",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/testclient.py",
+      "sha256": "52a9e32222a492b368339cabf0357163de2ed7e80959d7f3e88299c5b8c4eb4c",
+      "start_line": 376
+    },
+    {
+      "end_line": 427,
+      "finding": "A retained portal is reused if present; otherwise each factory scope starts and exits a blocking portal.",
+      "id": "starlette_portal_factory",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/testclient.py",
+      "sha256": "52a9e32222a492b368339cabf0357163de2ed7e80959d7f3e88299c5b8c4eb4c",
+      "start_line": 421
+    },
+    {
+      "end_line": 718,
+      "finding": "TestClient.__enter__ retains a portal and starts/waits for ASGI lifespan startup. __exit__ closes the stack, including the registered shutdown callback.",
+      "id": "starlette_context_lifespan",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/testclient.py",
+      "sha256": "52a9e32222a492b368339cabf0357163de2ed7e80959d7f3e88299c5b8c4eb4c",
+      "start_line": 678
+    },
+    {
+      "end_line": 748,
+      "finding": "The context sends the ASGI lifespan shutdown message and waits for completion or failure.",
+      "id": "starlette_context_shutdown",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/testclient.py",
+      "sha256": "52a9e32222a492b368339cabf0357163de2ed7e80959d7f3e88299c5b8c4eb4c",
+      "start_line": 734
+    },
+    {
+      "end_line": 560,
+      "finding": "start_blocking_portal starts a new event loop in a new daemon thread; exiting the context asks the portal to stop and joins its thread.",
+      "id": "anyio_portal_thread",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/anyio/from_thread.py",
+      "sha256": "258b1b68268807f222b7a90d86d5d2b5e246b783dc43b9dcab49c8a5c7a522b8",
+      "start_line": 503
+    },
+    {
+      "end_line": 354,
+      "finding": "FastAPI dispatches a synchronous endpoint through run_in_threadpool; coroutine endpoints are awaited directly.",
+      "id": "fastapi_sync_endpoint",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/fastapi/routing.py",
+      "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55",
+      "start_line": 344
+    },
+    {
+      "end_line": 34,
+      "finding": "run_in_threadpool awaits anyio.to_thread.run_sync.",
+      "id": "starlette_sync_threadpool",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/concurrency.py",
+      "sha256": "3e9e245d060ef39716c58ed754db7995c62f8581d4aaec8b82e09e73b84a2a83",
+      "start_line": 32
+    },
+    {
+      "end_line": 2641,
+      "finding": "The asyncio backend sets up worker/idle-worker state for the event-loop context, acquires a limiter, creates or reuses a worker, and arranges worker.stop on root-task completion before awaiting the queued result.",
+      "id": "anyio_worker_scope",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py",
+      "sha256": "78ad23f0f2343bbcb76d7f1c501b1a7e858ff30b1747eb333fa722c8fe0c9249",
+      "start_line": 2583
+    },
+    {
+      "end_line": 1304,
+      "finding": "HTTPX Client context entry and exit manage the transport lifetime; the Starlette override adds portal and ASGI-lifespan handling.",
+      "id": "httpx_client_context",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/httpx/_client.py",
+      "sha256": "c43f941baefe58c91e96d00039e1868fe719d91453026d7db1647194563bff8d",
+      "start_line": 1275
+    }
+  ],
+  "method": {
+    "artifact_is_test_or_benchmark_receipt": false,
+    "dependency_modules_imported": false,
+    "dependency_sources_copied_into_artifact": false,
+    "product_operations_executed": 0,
+    "publication_runs_executed": 0,
+    "repository_files_modified": false,
+    "scope": "Read-only git object, working-source, lock and installed-source inspection; external JSON artifact only.",
+    "tests_executed": 0
+  },
+  "repository": {
+    "branch": "reference/external/991-native-phase-cost",
+    "clean_before_and_after": true,
+    "current_commit": "3b47cbba770c31eb1487b50f7e3b16533c10e827",
+    "current_root_tree": "6608d6932b67d9161469d56b09b14070937691c7",
+    "head_verified_before_and_after": true,
+    "historical_publication_commit": "931f01e65d8849835774a97ffbd2954ae6802ce5",
+    "historical_root_tree": "e897f7920acef22d9ab04fbb54291f19f51dcf04",
+    "path": "/workspace/scratch/21c38f9cc56d/riverhog",
+    "status_after": "",
+    "status_before": "",
+    "whole_repository_equality_claimed": false
+  },
+  "repository_source_citations": [
+    {
+      "end_line": 138,
+      "finding": "The maintained publication helper constructs TestClient and authenticated wrappers with join_workers=False without entering a TestClient context.",
+      "id": "publication_unentered_testclients",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/qualification/canonical_history_scale.py",
+      "sha256": "e9b111ea0ae9aa16182ff5ce29d32e105e83573827b0c47ae29d8f19a63ca48e",
+      "start_line": 128
+    },
+    {
+      "end_line": 75,
+      "finding": "PUBLICATION_POLL_SECONDS is 0.05; this is a finalization polling parameter.",
+      "id": "publication_finalization_cadence",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/qualification/canonical_history_scale.py",
+      "sha256": "e9b111ea0ae9aa16182ff5ce29d32e105e83573827b0c47ae29d8f19a63ca48e",
+      "start_line": 70
+    },
+    {
+      "end_line": 355,
+      "finding": "The helper passes PUBLICATION_POLL_SECONDS and its explicit finalization timeout to producer.finish.",
+      "id": "publication_finish_parameters",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/qualification/canonical_history_scale.py",
+      "sha256": "e9b111ea0ae9aa16182ff5ce29d32e105e83573827b0c47ae29d8f19a63ca48e",
+      "start_line": 351
+    },
+    {
+      "end_line": 291,
+      "finding": "Each authenticated _api constructs another unentered TestClient and stores the timeout-neutral wrapper as request and download client.",
+      "id": "api_authenticated_client_construction",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_operation_lifecycle_api.py",
+      "sha256": "18776fb41d02bbdfcaebdc4824677b730b7f6509ccd198290340a165d0784b91",
+      "start_line": 268
+    },
+    {
+      "end_line": 265,
+      "finding": "With join_workers=False, status polls drive ordinary custody/finalization coordinators; each local seal first offers the journal coordinator a direct turn before making the HTTP request.",
+      "id": "direct_coordinator_before_http_seal",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_operation_lifecycle_api.py",
+      "sha256": "18776fb41d02bbdfcaebdc4824677b730b7f6509ccd198290340a165d0784b91",
+      "start_line": 251
+    },
+    {
+      "end_line": 72,
+      "finding": "The adapter forwards request/stream calls and close; it does not enter the underlying TestClient lifespan.",
+      "id": "timeout_neutral_forwarding",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/operation_observer.py",
+      "sha256": "5b84e59640a96bec023d4f60609508c04eabdacdc8ea94c077170c7d71058619",
+      "start_line": 21
+    },
+    {
+      "end_line": 1642,
+      "finding": "The SDK repeats the seal call immediately while the returned journal status is validating; this loop has no 50 ms sleep.",
+      "id": "immediate_sdk_journal_poll",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-client/src/riverhog_client/client.py",
+      "sha256": "918d52350956f0a5028a570a948f395f8a86f0c2360426a56273391016a67736",
+      "start_line": 1631
+    },
+    {
+      "end_line": 757,
+      "finding": "The producer finalization-status loop checks its deadline and sleeps max(0.05, poll_seconds) before each subsequent status call.",
+      "id": "producer_finalization_sleep",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-client/src/riverhog_client/producer.py",
+      "sha256": "d92fa6186abeee36ec2de028a548c4579ebb60b12cb796c20fe4bac1db638916",
+      "start_line": 744
+    },
+    {
+      "end_line": 789,
+      "finding": "Custody draining uses the same deadline and sleeps only when a member remains waiting.",
+      "id": "producer_custody_sleep",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-client/src/riverhog_client/producer.py",
+      "sha256": "d92fa6186abeee36ec2de028a548c4579ebb60b12cb796c20fe4bac1db638916",
+      "start_line": 766
+    },
+    {
+      "end_line": 607,
+      "finding": "The seal endpoint is a synchronous function delegating to the Core service.",
+      "id": "synchronous_seal_route",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/routers/collections.py",
+      "sha256": "137cc8d06d78c1e3e3707f9863b33b4a0f710518623c418121b8b31212f86078",
+      "start_line": 598
+    },
+    {
+      "end_line": 2127,
+      "finding": "An active seal calls the stamped validation unit after its transaction; the stamp reads before and after one unit. Terminal states return earlier.",
+      "id": "core_seal_and_stamped_unit",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/collection_uploads.py",
+      "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf",
+      "start_line": 2112
+    },
+    {
+      "end_line": 2251,
+      "finding": "The ordinary coordinator defaults to limit=1, selects warm/fresh candidates, and tries candidates sequentially until progress; this method does not fan out native work.",
+      "id": "bounded_sequential_coordinator",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/collection_uploads.py",
+      "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf",
+      "start_line": 2209
+    },
+    {
+      "end_line": 133,
+      "finding": "The ordinary journal_validation_concurrency default is 2.",
+      "id": "ordinary_journal_capacity",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/runtime_config.py",
+      "sha256": "a902d8256912fc1cdbe9f18905e155c5d9c794a34f97a54d9bf9a829fb73ddbb",
+      "start_line": 131
+    },
+    {
+      "end_line": 183,
+      "finding": "for_testing installs dummy secrets and derives a SQLite workspace path; it leaves ordinary journal concurrency and Native budget defaults unless callers override them.",
+      "id": "testing_defaults",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/runtime_config.py",
+      "sha256": "a902d8256912fc1cdbe9f18905e155c5d9c794a34f97a54d9bf9a829fb73ddbb",
+      "start_line": 164
+    },
+    {
+      "end_line": 63,
+      "finding": "The source port requires current source/job-fence verification without scanning source contents and conveys no authority for client-supplied checkpoints or databases.",
+      "id": "source_fence_contract",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+      "start_line": 45
+    },
+    {
+      "end_line": 75,
+      "finding": "The ordinary budget is rows=64, source_octets=65536, and octets=4*PROVENANCE_JOURNAL_ENTRY_BYTES_MAX+65536.",
+      "id": "ordinary_native_budget",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+      "start_line": 66
+    },
+    {
+      "end_line": 383,
+      "finding": "Application lifespan creates archive, retrieval-restore and retrieval-cache tasks and cancels/awaits them during shutdown; an owned app container is then closed.",
+      "id": "lifespan_starts_background_owners",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/app.py",
+      "sha256": "fb3776d921576a7ee8625837364c29fdf5305f792aea53e77c6dea27d092e1c0",
+      "start_line": 343
+    },
+    {
+      "end_line": 239,
+      "finding": "The archive task begins with delay=0 and startup_recovery=True, then invokes maintenance through asyncio.to_thread under its operation lock.",
+      "id": "initial_archive_sweep",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/app.py",
+      "sha256": "fb3776d921576a7ee8625837364c29fdf5305f792aea53e77c6dea27d092e1c0",
+      "start_line": 189
+    },
+    {
+      "end_line": 185,
+      "finding": "Full archive maintenance includes a provenance-journal validation turn and other ordinary owner work.",
+      "id": "maintenance_journal_turn",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/app.py",
+      "sha256": "fb3776d921576a7ee8625837364c29fdf5305f792aea53e77c6dea27d092e1c0",
+      "start_line": 171
+    }
+  ],
+  "root_guide_and_lock_pins": {
+    "AGENTS.md": {
+      "bytes": 15153,
+      "current_git_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+      "historical_git_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+      "identical_to_historical": true,
+      "lines": 172,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/AGENTS.md",
+      "sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3",
+      "working_matches_current_git_blob": true
+    },
+    "README.md": {
+      "bytes": 8659,
+      "current_git_blob": "3a045b5713a34daf7a3f1a7c0b6b6543a45989bc",
+      "historical_git_blob": "3a045b5713a34daf7a3f1a7c0b6b6543a45989bc",
+      "identical_to_historical": true,
+      "lines": 111,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/README.md",
+      "sha256": "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2",
+      "working_matches_current_git_blob": true
+    },
+    "mise.lock": {
+      "bytes": 5503,
+      "current_git_blob": "2f0d2ac0e3f23f1364f1a3594430d04481f6e8bc",
+      "historical_git_blob": "2f0d2ac0e3f23f1364f1a3594430d04481f6e8bc",
+      "identical_to_historical": true,
+      "lines": 114,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/mise.lock",
+      "sha256": "4cc8be44172720c07ef6585d104961c718cf108952e587a4fa627e00e1d699db",
+      "working_matches_current_git_blob": true
+    },
+    "mise.toml": {
+      "bytes": 450,
+      "current_git_blob": "478821801c5d3cef31353ca5535c6ebed65fbbbc",
+      "historical_git_blob": "478821801c5d3cef31353ca5535c6ebed65fbbbc",
+      "identical_to_historical": true,
+      "lines": 14,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/mise.toml",
+      "sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d",
+      "working_matches_current_git_blob": true
+    },
+    "pyproject.toml": {
+      "bytes": 7499,
+      "current_git_blob": "fbffc8f88664852081da13b4a6411a6465308d51",
+      "historical_git_blob": "fbffc8f88664852081da13b4a6411a6465308d51",
+      "identical_to_historical": true,
+      "lines": 191,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/pyproject.toml",
+      "sha256": "393c618205afb2234fa7518b4f4762112e09c1959b641fc1344e74bf285c2631",
+      "working_matches_current_git_blob": true
+    },
+    "uv.lock": {
+      "bytes": 439763,
+      "current_git_blob": "d68e459476062f5cf2a211a24ab8abf361c3d349",
+      "historical_git_blob": "d68e459476062f5cf2a211a24ab8abf361c3d349",
+      "identical_to_historical": true,
+      "lines": 4249,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+      "sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+      "working_matches_current_git_blob": true
+    }
+  },
+  "source_file_pins": {
+    "AGENTS.md": {
+      "bytes": 15153,
+      "current_git_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+      "historical_git_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+      "identical_to_historical": true,
+      "lines": 172,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/AGENTS.md",
+      "sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3",
+      "working_matches_current_git_blob": true
+    },
+    "README.md": {
+      "bytes": 8659,
+      "current_git_blob": "3a045b5713a34daf7a3f1a7c0b6b6543a45989bc",
+      "historical_git_blob": "3a045b5713a34daf7a3f1a7c0b6b6543a45989bc",
+      "identical_to_historical": true,
+      "lines": 111,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/README.md",
+      "sha256": "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2",
+      "working_matches_current_git_blob": true
+    },
+    "mise.lock": {
+      "bytes": 5503,
+      "current_git_blob": "2f0d2ac0e3f23f1364f1a3594430d04481f6e8bc",
+      "historical_git_blob": "2f0d2ac0e3f23f1364f1a3594430d04481f6e8bc",
+      "identical_to_historical": true,
+      "lines": 114,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/mise.lock",
+      "sha256": "4cc8be44172720c07ef6585d104961c718cf108952e587a4fa627e00e1d699db",
+      "working_matches_current_git_blob": true
+    },
+    "mise.toml": {
+      "bytes": 450,
+      "current_git_blob": "478821801c5d3cef31353ca5535c6ebed65fbbbc",
+      "historical_git_blob": "478821801c5d3cef31353ca5535c6ebed65fbbbc",
+      "identical_to_historical": true,
+      "lines": 14,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/mise.toml",
+      "sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d",
+      "working_matches_current_git_blob": true
+    },
+    "packages/riverhog-client/src/riverhog_client/client.py": {
+      "bytes": 109544,
+      "current_git_blob": "62d241719635d77924bcaabdc734a9246bc3bc84",
+      "historical_git_blob": "62d241719635d77924bcaabdc734a9246bc3bc84",
+      "identical_to_historical": true,
+      "lines": 2815,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-client/src/riverhog_client/client.py",
+      "sha256": "918d52350956f0a5028a570a948f395f8a86f0c2360426a56273391016a67736",
+      "working_matches_current_git_blob": true
+    },
+    "packages/riverhog-client/src/riverhog_client/producer.py": {
+      "bytes": 58226,
+      "current_git_blob": "f03292ba6d1aef05ef74a2ee886d98bf8af5d2f6",
+      "historical_git_blob": "f03292ba6d1aef05ef74a2ee886d98bf8af5d2f6",
+      "identical_to_historical": true,
+      "lines": 1405,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-client/src/riverhog_client/producer.py",
+      "sha256": "d92fa6186abeee36ec2de028a548c4579ebb60b12cb796c20fe4bac1db638916",
+      "working_matches_current_git_blob": true
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py": {
+      "bytes": 62566,
+      "current_git_blob": "4800b2dce7a25d8f555c37870e13386f5cee23b2",
+      "historical_git_blob": "4800b2dce7a25d8f555c37870e13386f5cee23b2",
+      "identical_to_historical": true,
+      "lines": 1611,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+      "working_matches_current_git_blob": true
+    },
+    "pyproject.toml": {
+      "bytes": 7499,
+      "current_git_blob": "fbffc8f88664852081da13b4a6411a6465308d51",
+      "historical_git_blob": "fbffc8f88664852081da13b4a6411a6465308d51",
+      "identical_to_historical": true,
+      "lines": 191,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/pyproject.toml",
+      "sha256": "393c618205afb2234fa7518b4f4762112e09c1959b641fc1344e74bf285c2631",
+      "working_matches_current_git_blob": true
+    },
+    "riverhog/src/riverhog_api/app.py": {
+      "bytes": 25903,
+      "current_git_blob": "44440c31af9834c38f6837bea395e2f28ea3633a",
+      "historical_git_blob": "44440c31af9834c38f6837bea395e2f28ea3633a",
+      "identical_to_historical": true,
+      "lines": 641,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/app.py",
+      "sha256": "fb3776d921576a7ee8625837364c29fdf5305f792aea53e77c6dea27d092e1c0",
+      "working_matches_current_git_blob": true
+    },
+    "riverhog/src/riverhog_api/routers/collections.py": {
+      "bytes": 35649,
+      "current_git_blob": "7563f72fcffe503f1fcd9efe1f563195c8a74c2c",
+      "historical_git_blob": "7563f72fcffe503f1fcd9efe1f563195c8a74c2c",
+      "identical_to_historical": true,
+      "lines": 963,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/routers/collections.py",
+      "sha256": "137cc8d06d78c1e3e3707f9863b33b4a0f710518623c418121b8b31212f86078",
+      "working_matches_current_git_blob": true
+    },
+    "riverhog/src/riverhog_core/runtime_config.py": {
+      "bytes": 21884,
+      "current_git_blob": "fdba4986f83766d8e499f96085bf0e6163724c99",
+      "historical_git_blob": "fdba4986f83766d8e499f96085bf0e6163724c99",
+      "identical_to_historical": true,
+      "lines": 421,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/runtime_config.py",
+      "sha256": "a902d8256912fc1cdbe9f18905e155c5d9c794a34f97a54d9bf9a829fb73ddbb",
+      "working_matches_current_git_blob": true
+    },
+    "riverhog/src/riverhog_core/services/collection_uploads.py": {
+      "bytes": 445404,
+      "current_git_blob": "25129310ed6e42e0e56cce1587361caedd617b50",
+      "historical_git_blob": "25129310ed6e42e0e56cce1587361caedd617b50",
+      "identical_to_historical": true,
+      "lines": 10333,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/collection_uploads.py",
+      "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf",
+      "working_matches_current_git_blob": true
+    },
+    "tests/operation_observer.py": {
+      "bytes": 7643,
+      "current_git_blob": "4acabe0b0f6cdc95204cf889c7c15e5749aafd15",
+      "historical_git_blob": "4acabe0b0f6cdc95204cf889c7c15e5749aafd15",
+      "identical_to_historical": true,
+      "lines": 203,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/operation_observer.py",
+      "sha256": "5b84e59640a96bec023d4f60609508c04eabdacdc8ea94c077170c7d71058619",
+      "working_matches_current_git_blob": true
+    },
+    "tests/support/qualification/canonical_history_scale.py": {
+      "bytes": 25169,
+      "current_git_blob": "2ffd93428bce2cf42f2d4f7f004e35c3a9d1cfc3",
+      "historical_git_blob": "2ffd93428bce2cf42f2d4f7f004e35c3a9d1cfc3",
+      "identical_to_historical": true,
+      "lines": 600,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/qualification/canonical_history_scale.py",
+      "sha256": "e9b111ea0ae9aa16182ff5ce29d32e105e83573827b0c47ae29d8f19a63ca48e",
+      "working_matches_current_git_blob": true
+    },
+    "tests/unit/test_operation_lifecycle_api.py": {
+      "bytes": 70580,
+      "current_git_blob": "ff6f31a4fb6cf02b931973e8acf6e94e6030f2fb",
+      "historical_git_blob": "ff6f31a4fb6cf02b931973e8acf6e94e6030f2fb",
+      "identical_to_historical": true,
+      "lines": 1715,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_operation_lifecycle_api.py",
+      "sha256": "18776fb41d02bbdfcaebdc4824677b730b7f6509ccd198290340a165d0784b91",
+      "working_matches_current_git_blob": true
+    },
+    "uv.lock": {
+      "bytes": 439763,
+      "current_git_blob": "d68e459476062f5cf2a211a24ab8abf361c3d349",
+      "historical_git_blob": "d68e459476062f5cf2a211a24ab8abf361c3d349",
+      "identical_to_historical": true,
+      "lines": 4249,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+      "sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+      "working_matches_current_git_blob": true
+    }
+  },
+  "static_transport_conclusions": [
+    {
+      "basis": [
+        "publication_unentered_testclients",
+        "api_authenticated_client_construction",
+        "timeout_neutral_forwarding",
+        "starlette_request_portal",
+        "starlette_portal_default",
+        "starlette_portal_factory"
+      ],
+      "classification": "Source-derived mechanism; no new runtime measurement.",
+      "finding": "The maintained fixture uses unentered TestClients. The installed transport therefore starts a new blocking portal for each request when portal remains None."
+    },
+    {
+      "basis": [
+        "synchronous_seal_route",
+        "fastapi_sync_endpoint",
+        "starlette_sync_threadpool",
+        "anyio_portal_thread",
+        "anyio_worker_scope"
+      ],
+      "classification": "Source-derived explanation and explicitly limited inference.",
+      "finding": "Synchronous API handling uses AnyIO worker execution whose pool state is tied to the event-loop context. Per-request portal scopes can cause repeated worker lifetime setup; the published aggregate does not identify exact request-to-worker correspondence or simultaneous utilization."
+    },
+    {
+      "basis": [
+        "starlette_context_lifespan",
+        "lifespan_starts_background_owners",
+        "initial_archive_sweep",
+        "maintenance_journal_turn"
+      ],
+      "classification": "Source-derived lifecycle caveat; no transport change recommended without lifecycle-equivalent evidence.",
+      "finding": "Changing the fixture to a context-managed TestClient is not a semantics-neutral portal reuse: it also starts app lifespan, including immediate startup maintenance and background owner work."
+    },
+    {
+      "basis": [
+        "publication_finalization_cadence",
+        "publication_finish_parameters",
+        "producer_finalization_sleep",
+        "immediate_sdk_journal_poll",
+        "direct_coordinator_before_http_seal",
+        "core_seal_and_stamped_unit",
+        "bounded_sequential_coordinator"
+      ],
+      "classification": "Source sequence verified; exact attribution of 399/199 historical counts remains unmeasured.",
+      "finding": "The 50 ms cadence governs producer finalization/status polling, while journal sealing repeats immediately while validating. Each local seal offers a direct coordinator turn before the synchronous HTTP service turn; aggregate counts cannot prove which exact selected owner progressed."
+    }
+  ],
+  "tool_and_lock_versions": {
+    "locked_verification_tools": {
+      "mypy": {
+        "citation": {
+          "end_line": 2191,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+          "start_line": 2190
+        },
+        "version": "2.3.0"
+      },
+      "pytest": {
+        "citation": {
+          "end_line": 2561,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+          "start_line": 2560
+        },
+        "version": "9.1.1"
+      },
+      "reuse": {
+        "citation": {
+          "end_line": 2756,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+          "start_line": 2755
+        },
+        "version": "6.2.0"
+      },
+      "ruff": {
+        "citation": {
+          "end_line": 3421,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+          "start_line": 3420
+        },
+        "version": "0.16.0"
+      }
+    },
+    "metadata_extraction_commands": [
+      "git",
+      "Python stdlib metadata-extraction script"
+    ],
+    "metadata_extraction_python": {
+      "executable": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/bin/python",
+      "version": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]"
+    },
+    "mise_config_tools": {
+      "age": "1.3.1",
+      "http:exiftool": {
+        "bin": "exiftool",
+        "checksum": "sha256:87d3317882fdae9cb4dcfe57a96a378d0132ffc02c731315bf128b19ddcf7aac",
+        "size": 8653399,
+        "strip_components": "1",
+        "url": "https://github.com/exiftool/exiftool/archive/refs/tags/13.59.tar.gz",
+        "version": "13.59"
+      },
+      "minisign": "0.12",
+      "python": "3.12.3",
+      "rclone": "1.75.0",
+      "uv": "0.11.24"
+    },
+    "mise_locked_tools": {
+      "age": [
+        {
+          "backend": "aqua:FiloSottile/age",
+          "version": "1.3.1"
+        }
+      ],
+      "http:exiftool": [
+        {
+          "backend": "http:exiftool",
+          "version": "13.59"
+        }
+      ],
+      "minisign": [
+        {
+          "backend": "aqua:jedisct1/minisign",
+          "version": "0.12"
+        }
+      ],
+      "python": [
+        {
+          "backend": "core:python",
+          "version": "3.12.3"
+        }
+      ],
+      "rclone": [
+        {
+          "backend": "aqua:rclone/rclone",
+          "version": "1.75.0"
+        }
+      ],
+      "uv": [
+        {
+          "backend": "aqua:astral-sh/uv",
+          "version": "0.11.24"
+        }
+      ]
+    },
+    "test_lint_or_type_check_commands_executed": false,
+    "uv_lock_requires_python": ">=3.12"
+  },
+  "unchanged_source_trees": [
+    {
+      "changed_paths": [],
+      "current_git_tree": "373b170cef926a0a7ac357998ea1dd8ec155c35b",
+      "historical_git_tree": "373b170cef926a0a7ac357998ea1dd8ec155c35b",
+      "identical": true,
+      "path": "packages/riverhog-provenance/src",
+      "role": "native_runtime",
+      "tracked_file_count": 66
+    },
+    {
+      "changed_paths": [],
+      "current_git_tree": "78fcfec69fda60db77f9d81ef8376eae177dda9a",
+      "historical_git_tree": "78fcfec69fda60db77f9d81ef8376eae177dda9a",
+      "identical": true,
+      "path": "riverhog/src/riverhog_core",
+      "role": "core_runtime",
+      "tracked_file_count": 360
+    },
+    {
+      "changed_paths": [],
+      "current_git_tree": "18b23ccf8a9e1cb0679a5b2038b60fcc74e1acaf",
+      "historical_git_tree": "18b23ccf8a9e1cb0679a5b2038b60fcc74e1acaf",
+      "identical": true,
+      "path": "riverhog/src/riverhog_api",
+      "role": "api_runtime",
+      "tracked_file_count": 32
+    },
+    {
+      "changed_paths": [],
+      "current_git_tree": "2ef5efaa4e6cb05b31a49b692c1eda7628a7f320",
+      "historical_git_tree": "2ef5efaa4e6cb05b31a49b692c1eda7628a7f320",
+      "identical": true,
+      "path": "packages/riverhog-client/src",
+      "role": "sdk_runtime",
+      "tracked_file_count": 61
+    },
+    {
+      "changed_paths": [],
+      "current_git_tree": "0f698d071a12d491d30d87d8880a4bfcf29d6fcb",
+      "historical_git_tree": "0f698d071a12d491d30d87d8880a4bfcf29d6fcb",
+      "identical": true,
+      "path": "packages/state-schema/src",
+      "role": "state_schema_runtime",
+      "tracked_file_count": 3
+    },
+    {
+      "changed_paths": [],
+      "current_git_tree": "42417df34bcf3e93cb0e25b7c61f8466f731b5b7",
+      "historical_git_tree": "42417df34bcf3e93cb0e25b7c61f8466f731b5b7",
+      "identical": true,
+      "path": "tests/support/qualification",
+      "role": "publication_helpers",
+      "tracked_file_count": 10
+    }
+  ]
+}

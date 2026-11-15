@@ -1,0 +1,436 @@
+{
+  "artifact_pins": {
+    "completed_execution_receipt": {
+      "bytes": 1490,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-diagnostic-r2-execution.json",
+      "sha256": "e282dd372c3c0aede2641d18b10a67992297d3cb01b710a4cbe60f1305975c85"
+    },
+    "completed_lane_receipt": {
+      "bytes": 245,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-diagnostic-r2-lane.json",
+      "sha256": "c20131e342cb7df4fceffefafe5c4e4939f6000b992a06712e997842f19c2c4c"
+    },
+    "completed_log": {
+      "bytes": 0,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-diagnostic-r2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "completed_probe_copy": {
+      "bytes": 37444,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/probe.py.txt",
+      "sha256": "65070c82c5904a3ec7e8ff7ce289f6eb11256f03576b919f1a4cdc114f76600a"
+    },
+    "completed_probe_receipt": {
+      "bytes": 3240236,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/run.json",
+      "sha256": "019236fdc3b227d49753b54e79915b62d45cf44e788283d3843411611b33c00b"
+    },
+    "current_launcher": {
+      "bytes": 3620,
+      "path": "/workspace/scratch/21c38f9cc56d/native_phase_run.py",
+      "sha256": "e9d10e658e031e8a60608a8658cc47d25e7565aeba75816b9d02c8334ee93d33"
+    },
+    "current_probe": {
+      "bytes": 37444,
+      "path": "/workspace/scratch/21c38f9cc56d/native_phase_probe.py",
+      "sha256": "65070c82c5904a3ec7e8ff7ce289f6eb11256f03576b919f1a4cdc114f76600a"
+    },
+    "first_execution_receipt": {
+      "bytes": 1481,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-diagnostic-execution.json",
+      "sha256": "931c9094ae6b17df1f53ba9747789f3c1cdc85a5a33011348a60d7b391a95ecd"
+    },
+    "first_lane_receipt": {
+      "bytes": 246,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-diagnostic-lane.json",
+      "sha256": "2fd7c7d57b69546aeeabe42c8563461a482d5b6444e49b41f998b147d4716c3d"
+    },
+    "first_log": {
+      "bytes": 222,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-diagnostic.log",
+      "sha256": "2e0139b6a1b8c1719bb26c1206931ca5f7afec756e6a2f006ba66fe9b32e8340"
+    },
+    "first_probe_copy": {
+      "bytes": 37435,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation/probe.py.txt",
+      "sha256": "8470ad7a660d6f370c276ab89c30b063bb5d3584ba0a92752dbdd52b1c498204"
+    },
+    "first_probe_receipt": {
+      "bytes": 3510,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation/run.json",
+      "sha256": "0e2717eb4b4291584d70ba4ad92a7412060a2772f9649f100349fdabd4c75b15"
+    },
+    "original_static_audit": {
+      "bytes": 44242,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-source-audit.json",
+      "sha256": "28f100116ac8c1e72e8fa1812c3e45393aadc598510fa9e6e0e182fbaa00276c"
+    }
+  },
+  "authorized_retry_delta": {
+    "exact_single_line_substitution_verified": true,
+    "new_assertion": "assert uv.stdout.split()[:2] == [\"uv\", \"0.11.24\"]",
+    "old_assertion": "assert uv.stdout.strip() == \"uv 0.11.24\"",
+    "only_difference_between_archived_probe_copies": "Version check changed from exact whole stdout to first two whitespace-separated tokens.",
+    "uv_binary": {
+      "bytes": 61335552,
+      "path": "/workspace/scratch/21c38f9cc56d/bin/uv",
+      "sha256": "144d6cf48bc4dfda52cc48b42320bbfac5562a2da10c856a8a6ce9b3e8ad1b2e"
+    },
+    "whole_uv_stdout_recorded": "uv 0.11.24 (x86_64-unknown-linux-gnu)"
+  },
+  "completed_attempt": {
+    "admitted_dbapi_attempt_counts": {
+      "__next__": 58,
+      "commit": 497,
+      "execute": 9524,
+      "executescript": 12,
+      "fetchall": 254,
+      "fetchmany": 24,
+      "fetchone": 7453
+    },
+    "admitted_dbapi_raised_exception_families": {},
+    "all_recorded_elapsed_intervals_less_than_cap": true,
+    "all_retained_cases_received": true,
+    "cases": [
+      {
+        "admission_final_zero_fields": {
+          "blobs": 0,
+          "closing_connections": 0,
+          "connections": 0,
+          "cursors": 0,
+          "operations": 0,
+          "unreturned_blobs": 0,
+          "unreturned_connections": 0
+        },
+        "admission_peaks": {
+          "blob_peak": 0,
+          "connection_peak": 1,
+          "cursor_peak": 1,
+          "operation_peak": 1
+        },
+        "all_input_and_materialization_digests_agree": true,
+        "cleanup_received": true,
+        "complete": true,
+        "construction_frames_remaining": 0,
+        "expected_materialization": {
+          "bytes": 4617,
+          "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/initial-expected.json",
+          "sha256": "2ba28f24706d8b22e6c5d275856831ef54345ce9664577291374d8be457b7031"
+        },
+        "frame_kinds": [
+          "journal_init"
+        ],
+        "frames": 1,
+        "graph_certificates_present": false,
+        "input": {
+          "bytes": 4913,
+          "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/initial.jsonseq",
+          "sha256": "edfb3a62b20d3257235fe5b76f1fe9b2cd544f1ea316442918611098324c715d"
+        },
+        "materialized_receipt_sha256": "2ba28f24706d8b22e6c5d275856831ef54345ce9664577291374d8be457b7031",
+        "name": "initial",
+        "retained_advances_observed": 107,
+        "session_storage_received": [
+          true
+        ],
+        "terminal_version": 107
+      },
+      {
+        "admission_final_zero_fields": {
+          "blobs": 0,
+          "closing_connections": 0,
+          "connections": 0,
+          "cursors": 0,
+          "operations": 0,
+          "unreturned_blobs": 0,
+          "unreturned_connections": 0
+        },
+        "admission_peaks": {
+          "blob_peak": 0,
+          "connection_peak": 1,
+          "cursor_peak": 1,
+          "operation_peak": 1
+        },
+        "all_input_and_materialization_digests_agree": true,
+        "cleanup_received": true,
+        "complete": true,
+        "construction_frames_remaining": 0,
+        "expected_materialization": {
+          "bytes": 4617,
+          "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/checkpoint-expected.json",
+          "sha256": "ce37ede22defbe5bb11d6eaffac76ff4a180c468d1f9c548ab180a502dc251ea"
+        },
+        "frame_kinds": [
+          "journal_init",
+          "checkpoint"
+        ],
+        "frames": 2,
+        "graph_certificates_present": false,
+        "input": {
+          "bytes": 5903,
+          "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/checkpoint.jsonseq",
+          "sha256": "f7d458d9a591d540d1da29e3eeca92851ed2b9f21a00fdc4cae00e296535246f"
+        },
+        "materialized_receipt_sha256": "ce37ede22defbe5bb11d6eaffac76ff4a180c468d1f9c548ab180a502dc251ea",
+        "name": "checkpoint",
+        "retained_advances_observed": 125,
+        "session_storage_received": [
+          true
+        ],
+        "terminal_version": 125
+      },
+      {
+        "admission_final_zero_fields": {
+          "blobs": 0,
+          "closing_connections": 0,
+          "connections": 0,
+          "cursors": 0,
+          "operations": 0,
+          "unreturned_blobs": 0,
+          "unreturned_connections": 0
+        },
+        "admission_peaks": {
+          "blob_peak": 0,
+          "connection_peak": 1,
+          "cursor_peak": 1,
+          "operation_peak": 1
+        },
+        "all_input_and_materialization_digests_agree": true,
+        "cleanup_received": true,
+        "complete": true,
+        "construction_frames_remaining": 0,
+        "expected_materialization": {
+          "bytes": 4660,
+          "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/correction-expected.json",
+          "sha256": "25638b6a91f7a7cde9866eb72491a65bf50f11d5695467bac6ffd0e339b403f0"
+        },
+        "frame_kinds": [
+          "journal_init",
+          "correction"
+        ],
+        "frames": 2,
+        "graph_certificates_present": false,
+        "input": {
+          "bytes": 6193,
+          "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/correction.jsonseq",
+          "sha256": "13a6649c82ad86c945ef7f79fce9366c6f7a8c73be77f900582320c6b52e4bb9"
+        },
+        "materialized_receipt_sha256": "25638b6a91f7a7cde9866eb72491a65bf50f11d5695467bac6ffd0e339b403f0",
+        "name": "correction",
+        "retained_advances_observed": 247,
+        "session_storage_received": [
+          true
+        ],
+        "terminal_version": 247
+      }
+    ],
+    "child_before_receipt_seconds": 12.992226597001718,
+    "cooperative_cap_reached": false,
+    "cooperative_cap_seconds": 120.0,
+    "hook_identities_restored": true,
+    "lane_elapsed_seconds": 13.399518318998162,
+    "launcher_elapsed_seconds": 13.771763867000118,
+    "launcher_exit": 0,
+    "log_bytes": 0,
+    "observed_advance_exceptions": 0,
+    "ordinary_budget": {
+      "octets": 33619968,
+      "rows": 64,
+      "source_octets": 65536
+    },
+    "ordinary_original_handles_received": 20,
+    "ordinary_receiving_errors": [],
+    "original_lane_exit": 0,
+    "original_probe_exit": 0,
+    "outer_tmpdir_absent": true,
+    "probe_intended_exit": 0,
+    "probe_workspace_absent": true,
+    "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+    "retained_advances_observed": 479,
+    "sqlite_version": "3.45.1",
+    "status": "complete",
+    "unique_hooks": 71,
+    "uv": "uv 0.11.24 (x86_64-unknown-linux-gnu)"
+  },
+  "first_attempt": {
+    "child_before_receipt_seconds": 0.2508752479989198,
+    "failure": {
+      "family": "builtins.AssertionError",
+      "message": ""
+    },
+    "hooks_installed": 0,
+    "lane_elapsed_seconds": 0.38050864300021203,
+    "launcher_elapsed_seconds": 0.8214118590040016,
+    "launcher_exit": 1,
+    "original_handles": 0,
+    "original_lane_exit": 1,
+    "original_probe_exit": 1,
+    "original_receipts_and_failure_log_retained": true,
+    "probe_and_outer_scratch_absent": true,
+    "retained_advances": 0,
+    "source_clean_at_start_and_end": true,
+    "status": "failed",
+    "work_observation": "uv version whole-string assertion failed before Native imports; no fixture construction stage, Native hooks, source calls, retained advances or handles were observed."
+  },
+  "format": "riverhog-native-phase-receipt-review-v1",
+  "limitations": [
+    "This is one completed instrumented tiny Native workload after a setup-only failed launch. It is not another publication, a broad suite, a throughput baseline or a parallelism measurement.",
+    "479 retained advances are the instrumented retained-session count. Fixture construction and ordinary oracle verification perform additional real Native work outside these method/DBAPI counters; no total Native count for the complete child is asserted.",
+    "All three retained cases lack graph certificates. Their Native cost cannot be substituted for the source/certificate-fenced Core publication path.",
+    "The cap is cooperative and cleanup/join is unbounded by that advisory cap. This received execution finished inside 120 seconds; the scripts do not promise a hard deadline.",
+    "The three elapsed intervals are nested observations with different boundaries and must not be added.",
+    "DBAPI counters measure selected admitted method attempts, including admission and driver overhead; they do not isolate database wait or SQLite engine work. Explicit transaction methods only are counted; executescript is not expanded into statements, and returned rows are not engine row visits.",
+    "No raised admitted DBAPI exception was observed in this tiny workload. Historical 418 raised catalog attempts remain unclassified.",
+    "This is an independent artifact/receipt review, not a re-execution of materialization, cleanup or Native validation."
+  ],
+  "original_static_audit_preserved": {
+    "bytes_unchanged": true,
+    "method_scope": "The earlier audit remains the original static snapshot. Its no-tests/no-product-run method assertions were not rewritten after this separately received diagnostic.",
+    "sha256": "28f100116ac8c1e72e8fa1812c3e45393aadc598510fa9e6e0e182fbaa00276c"
+  },
+  "result": "All reviewed receipts and retained artifact checks agree; no material issue found.",
+  "review_method": {
+    "actions": "Read retained JSON/log/source files; calculate SHA256; compare pinned Git bytes and working paths; write this external review only.",
+    "materialization_check": "Stored oracle bytes match input expected digest and retained-case materialization digest. The pinned executed script also asserts exact dictionary equality and reconstructed frame-byte equality before marking each case complete.",
+    "materialization_reexecuted": false,
+    "native_or_probe_modules_imported_by_reviewer": false,
+    "product_runs_started_by_reviewer": 0,
+    "tests_run_by_reviewer": 0
+  },
+  "reviewed_utc": "2026-11-15T01:00:54.802722+00:00",
+  "source_identity": {
+    "accepted_growth_pins_still_match": {
+      "growth_reader": {
+        "bytes": 31352,
+        "current_git_blob": "75f8b5f8f57317e6a01cec1eec5dffad710149a6",
+        "expected_sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40",
+        "historical_equality_claimed": false,
+        "lines": 769,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py",
+        "sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40",
+        "working_matches_current_git_blob": true
+      },
+      "owning_helper_tests": {
+        "bytes": 24417,
+        "current_git_blob": "06d476dce173cf77632cc347ffbe526b94db544d",
+        "expected_sha256": "9a4c1b37b04b3b42507869677ce3abb5d89ca7abfee432efab1689adb49d1874",
+        "historical_equality_claimed": false,
+        "lines": 589,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_growth_observer_batch.py",
+        "sha256": "9a4c1b37b04b3b42507869677ce3abb5d89ca7abfee432efab1689adb49d1874",
+        "working_matches_current_git_blob": true
+      },
+      "private_projection_helper": {
+        "bytes": 9777,
+        "current_git_blob": "07e824cb9cc15622f812bf9b77dee1c615987f0b",
+        "expected_sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8",
+        "historical_equality_claimed": false,
+        "lines": 217,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/growth_batch.py",
+        "sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8",
+        "working_matches_current_git_blob": true
+      }
+    },
+    "current_packaging_note": "Root began authorized .reference/ evidence packaging during this review. Current changes are limited to that directory; the completed diagnostic receipts retain their original clean 3b47 identity.",
+    "installed_dependency_metadata_and_source_hashes_still_match": true,
+    "lane_identity_matches": true,
+    "launcher_start_and_end_match": true,
+    "probe_start_and_end_match": true,
+    "receipted_source": {
+      "source_clean": true,
+      "source_sha": "3b47cbba770c31eb1487b50f7e3b16533c10e827"
+    },
+    "receipted_source_file_hashes": [
+      {
+        "path": "mise.toml",
+        "sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/__init__.py",
+        "sha256": "5abc393eeef183a35c38d7413d298e2f1448276a975c0a710bb2871ac6cb8838",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/_entry_replay.py",
+        "sha256": "a60a71676f75c8d814ce5d419b385a06e223a7ffd51da82b00b5a78b1069c365",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py",
+        "sha256": "9fa6c4cccc78f867d685310a6b563b5264be6c22f65d159128a9b6b8505751e8",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+        "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "packages/riverhog-provenance/tests/conftest.py",
+        "sha256": "70764534be4db75d7a9cc010d4ec4fea35b790e2b02d837b33e1a92d668d01e0",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "packages/riverhog-provenance/tests/test_journal.py",
+        "sha256": "707a1753b8fb77ca8e065b51f569b1aedd019393fde4c2014bca73ad5dc8c2b6",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "packages/riverhog-provenance/tests/test_retained_journal_session.py",
+        "sha256": "ef4e5bd0ec1d68de24068d0ded48c057d1821d8d6b02a25267db24c4892407b5",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "packages/sqlite-admission/src/sqlite_admission/__init__.py",
+        "sha256": "059495b6f92aff6a38dcb3fe282d8d3c0f8f2ad8120f89f408ac87c805a89d05",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "scripts/ci_timing.py",
+        "sha256": "094484571186e28601ed7da51511d4bd59182dd5bd98c138868e82bd216c8895",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "tests/support/native_construction.py",
+        "sha256": "b09812842f7b1b486a1657a101e153a4ca6ec28c3a813b3cd2431b156af8ab0a",
+        "working_equals_receipted_commit": true
+      },
+      {
+        "path": "uv.lock",
+        "sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+        "working_equals_receipted_commit": true
+      }
+    ],
+    "review_current_changed_paths": [
+      ".reference/COORDINATION.md",
+      ".reference/NATIVE.md",
+      ".reference/evidence/context/comments.json",
+      ".reference/evidence/context/request.md",
+      ".reference/evidence/observation/checkpoint-expected.json",
+      ".reference/evidence/observation/checkpoint.jsonseq",
+      ".reference/evidence/observation/correction-expected.json",
+      ".reference/evidence/observation/correction.jsonseq",
+      ".reference/evidence/observation/execution.json",
+      ".reference/evidence/observation/initial-expected.json",
+      ".reference/evidence/observation/initial.jsonseq",
+      ".reference/evidence/observation/lane.json",
+      ".reference/evidence/observation/output.log",
+      ".reference/evidence/observation/raw-identity.json",
+      ".reference/evidence/observation/run.json.gz",
+      ".reference/evidence/preflight/execution.json",
+      ".reference/evidence/preflight/lane.json",
+      ".reference/evidence/preflight/output.log",
+      ".reference/evidence/preflight/probe.py.txt",
+      ".reference/evidence/preflight/run.json",
+      ".reference/evidence/source-audit.json",
+      ".reference/tools/probe.py.txt",
+      ".reference/tools/run.py.txt"
+    ],
+    "review_current_head": "3b47cbba770c31eb1487b50f7e3b16533c10e827",
+    "review_current_non_reference_changed_paths": [],
+    "review_current_status_porcelain": "?? .reference/COORDINATION.md\n?? .reference/NATIVE.md\n?? .reference/evidence/context/comments.json\n?? .reference/evidence/context/request.md\n?? .reference/evidence/observation/checkpoint-expected.json\n?? .reference/evidence/observation/checkpoint.jsonseq\n?? .reference/evidence/observation/correction-expected.json\n?? .reference/evidence/observation/correction.jsonseq\n?? .reference/evidence/observation/execution.json\n?? .reference/evidence/observation/initial-expected.json\n?? .reference/evidence/observation/initial.jsonseq\n?? .reference/evidence/observation/lane.json\n?? .reference/evidence/observation/output.log\n?? .reference/evidence/observation/raw-identity.json\n?? .reference/evidence/observation/run.json.gz\n?? .reference/evidence/preflight/execution.json\n?? .reference/evidence/preflight/lane.json\n?? .reference/evidence/preflight/output.log\n?? .reference/evidence/preflight/probe.py.txt\n?? .reference/evidence/preflight/run.json\n?? .reference/evidence/source-audit.json\n?? .reference/tools/probe.py.txt\n?? .reference/tools/run.py.txt\n",
+    "review_initial_git_read_was_clean_at_source": true,
+    "static_audit_source_file_pins_still_match": 16
+  }
+}

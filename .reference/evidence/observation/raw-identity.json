@@ -1,0 +1,9 @@
+{
+  "decoded_bytes": 3240236,
+  "decoded_sha256": "019236fdc3b227d49753b54e79915b62d45cf44e788283d3843411611b33c00b",
+  "encoding": "gzip; original unmodified UTF-8 JSON bytes",
+  "file": "run.json.gz",
+  "format": "external-native-phase-raw-identity/v1",
+  "source_clean": true,
+  "source_sha": "3b47cbba770c31eb1487b50f7e3b16533c10e827"
+}

@@ -1,0 +1,205 @@
+"""Offline reconciliation of the one retained Native probe; imports no product code."""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from collections import Counter
+from pathlib import Path
+
+EXPECTED_RUN = '019236fdc3b227d49753b54e79915b62d45cf44e788283d3843411611b33c00b'
+SOURCE = '3b47cbba770c31eb1487b50f7e3b16533c10e827'
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def record(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': sha(raw)}
+
+
+def counts(rows):
+    out = Counter()
+    for row in rows:
+        out.update(row['method_calls'])
+    return out
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', type=Path, required=True)
+    parser.add_argument('--preflight', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    raw = args.input.read_bytes()
+    assert sha(raw) == EXPECTED_RUN
+    run = json.loads(raw)
+    preflight = json.loads(args.preflight.read_bytes())
+    assert run['source_start'] == run['source_end'] == {'source_sha': SOURCE, 'source_clean': True}
+    assert run['status'] == 'complete' and run['intended_exit_code'] == 0
+    assert run['budget'] == {'rows': 64, 'source_octets': 65536, 'octets': 33619968}
+    assert run['cooperative_cap_reached'] is False
+    assert run['observation']['hook_identities_restored'] is True
+    assert run['temporary']['original_resources_received'] is True
+    assert run['temporary']['owner_removed_workspace'] is True
+    assert run['temporary']['outer_tmp_entries'] == []
+    assert preflight['status'] == 'failed' and preflight['intended_exit_code'] == 1
+    assert not preflight['observation']['advances']
+    assert preflight['ordinary_resources']['retained_original_handles'] == 0
+    archived_probe = args.input.parent / 'probe.py.txt'
+    assert record(archived_probe)['sha256'] == run['script_sha256']
+    observation = run['observation']
+    cases = []
+    artifacts = [record(args.input), record(args.preflight), record(archived_probe)]
+    for inventory in run['inputs']:
+        name = inventory['name']
+        completed = next(row for row in run['cases'] if row['name'] == name)
+        assert completed['complete'] is True and completed['cleanup']['received'] is True
+        assert completed['graph_certificates_present'] is False
+        source_file = args.input.parent / (name + '.jsonseq')
+        expected_file = args.input.parent / (name + '-expected.json')
+        source_raw = source_file.read_bytes()
+        assert sha(source_raw) == inventory['sha256'] == completed['journal_sha256']
+        assert len(source_raw) == inventory['bytes'] == completed['journal_bytes']
+        assert sha(expected_file.read_bytes()) == inventory['expected_sha256'] == completed['materialized_sha256']
+        artifacts += [record(source_file), record(expected_file)]
+        advances = [row for row in observation['advances'] if row['case'] == name]
+        method = counts(advances)
+        routes = Counter()
+        scan_consumed, previous_cursor, double, single = 0, 0, 0, 0
+        predicted_prefix_reference_probes = 0
+        for row in advances:
+            before, after, call = row['before'], row['returned'], row['method_calls']
+            assert 'exception_family' not in row
+            assert after['version'] == before['version'] + 1
+            assert call['ValidationLedger._fence'] == call['ValidationLedger._publish'] == 1
+            inner = call.get('EntryReplay.admit', 0) + call.get('EntryReplay.advance', 0)
+            assert inner in (0, 1)
+            expected = 1 + inner
+            assert len(row['starts']) == len(row['ledger_loads']) == expected
+            assert call['EntryReplay._start'] == call['ValidationLedger.load'] == expected
+            assert call['ValidationLedger._prefix'] == expected + 2
+            for start in row['starts']:
+                assert start['rows'] == 64 and start['octets'] == 33619968
+                assert start['budget_is_argument_after'] is True
+            if inner:
+                double += 1
+                assert row['ledger_loads'][0] == row['ledger_loads'][1]
+                assert row['starts'][0]['spent_after'] == row['starts'][1]['spent_before'] == row['starts'][1]['spent_after']
+            else:
+                single += 1
+            consumed = after['source_octets'] - previous_cursor
+            assert consumed >= 0
+            previous_cursor = after['source_octets']
+            if call.get('RetainedInput.scan'):
+                routes['scan'] += 1
+                scan_consumed += consumed
+            else:
+                assert consumed == 0
+                if call.get('EntryReplay.admit'):
+                    routes['frame_admission'] += 1
+                elif call.get('EntryReplay.advance'):
+                    routes['entry_advance'] += 1
+                elif before['phase'] == 'frame' and after['phase'] == 'source':
+                    routes['synchronize_publication'] += 1
+                elif before['phase'] == 'frame' and after['phase'] == 'terminal':
+                    routes['terminal_movement'] += 1
+                elif before['phase'] == 'terminal' and after['phase'] == 'done':
+                    routes['terminal_completion'] += 1
+                else:
+                    raise AssertionError(('unclassified route', row))
+            predicted_prefix_reference_probes += (expected + 1) * int(before['frame_ordinal'] > 0) + int(after['accepted_frames'] > 0)
+        assert routes['synchronize_publication'] == routes['frame_admission'] == inventory['frames']
+        assert routes['terminal_movement'] == routes['terminal_completion'] == 1
+        assert scan_consumed == previous_cursor == inventory['bytes']
+        frames = []
+        for ordinal, kind in enumerate(inventory['frame_kinds']):
+            part = [row for row in advances if row['before']['frame_ordinal'] == ordinal]
+            calls = counts(part)
+            active = sum(row['before']['phase'] == 'row-admit' and row['returned']['phase'] == 'generic-admission' for row in part)
+            inactive = sum(row['before']['phase'] == 'row-admit' and row['returned']['phase'] == 'row-admit' for row in part)
+            typed = sum(row['before']['phase'] == 'row-admission' for row in part)
+            assert active == sum(row['before']['phase'] == 'generic-admission' for row in part)
+            prepare = Counter()
+            transitions = Counter()
+            graph_returns = Counter()
+            graph_non_none = Counter()
+            graph_visits = 0
+            byte_budgets, quanta = [], set()
+            for row in part:
+                parent_phase = row['before']['phase']
+                for child in row['child_returns']:
+                    if not child['operation'].endswith('.prepare'):
+                        continue
+                    owner = child['operation'].split('.')[0]
+                    prepare[owner, parent_phase] += 1
+                    before = json.loads(child['before_json'])
+                    applied = [item['state'] for item in row['child_returns'] if item['operation'] == owner + '._apply']
+                    assert len(applied) == 1
+                    after = applied[0]
+                    if child['after_state'] is not None:
+                        assert child['after_state'] == after
+                    assert after['version'] == int(before['version']) + 1
+                    transitions[owner, parent_phase, before['phase'], after['phase']] += 1
+                    arguments = child['arguments']
+                    quanta.add(arguments.get('row_budget', arguments.get('step_budget')))
+                    byte_budgets.append(arguments['byte_budget'])
+                for plan in row['graph_plan_returns']:
+                    graph_returns[plan['operation'], plan['returned_none'], plan['adjacency_visits']] += 1
+                    if plan['operation'] == 'OnlineDag._prepare_retirement' and not plan['returned_none']:
+                        graph_non_none[parent_phase.split('-')[0]] += 1
+                    if plan['adjacency_visits'] is not None:
+                        graph_visits += plan['adjacency_visits']
+            assert quanta <= {64}
+            p_entry = prepare['EntryPreparation', 'entry']
+            p_staging = prepare['AssertionStaging', 'staging']
+            p_finish = prepare['SemanticFinish', 'finish']
+            p_generic = prepare['GenericSemantics', 'generic']
+            p_row = prepare['GenericSemantics', 'row']
+            base_terms = {'fixed_frame_control': 10, 'entry_prepares': p_entry, 'staging_prepares': p_staging, 'finish_prepares': p_finish, 'inactive_row_selections': inactive, 'active_row_control': 4 * active, 'generic_prepares': p_generic, 'typed_row_control': 2 * typed, 'typed_row_prepares': p_row}
+            correction_terms = {}
+            if kind == 'correction':
+                correction_terms = {'fixed_correction_control': 10, 'target_prepares': prepare['CorrectionTargets', 'targets'], 'aggregate_retire_prepares': prepare['CorrectionWork', 'retire'], 'seed_prepares': prepare['CorrectionWork', 'seed'], 'derivation_non_none_retirement_plans': graph_non_none['derivation'], 'specialization_non_none_retirement_plans': graph_non_none['specialization']}
+            observed = calls['EntryReplay.admit'] + calls['EntryReplay.advance']
+            predicted = sum(base_terms.values()) + sum(correction_terms.values())
+            assert observed == predicted
+            frames.append({'ordinal': ordinal, 'kind': kind, 'active_rows_selected': active, 'inactive_rows_selected': inactive, 'typed_row_children': typed, 'base_terms': base_terms, 'correction_terms': correction_terms, 'predicted_replay_invocations': predicted, 'observed_replay_invocations': observed, 'parent_phase_counts': dict(Counter(row['before']['phase'] for row in part)), 'child_prepare_transitions': [{'owner': key[0], 'parent_phase': key[1], 'before_phase': key[2], 'after_phase': key[3], 'calls': value} for key, value in sorted(transitions.items())], 'child_prepare_quantum_values': sorted(quanta), 'child_prepare_byte_budget_range': [min(byte_budgets), max(byte_budgets)], 'graph_plan_return_counts': [{'operation': key[0], 'returned_none': key[1], 'adjacency_visits': key[2], 'calls': value} for key, value in sorted(graph_returns.items(), key=lambda item: str(item[0]))], 'graph_adjacency_visits': graph_visits})
+        source_calls = [row for row in observation['source_calls'] if row['case'] == name]
+        windows = [row for row in source_calls if row['operation'] == 'source.read_window']
+        via_window = [row for row in source_calls if row['operation'] == 'source.read_exact' and row['parent'] == 'source.read_window']
+        direct = [row for row in source_calls if row['operation'] == 'source.read_exact' and row['parent'] == 'RetainedInput.frame']
+        fingerprint = lambda row: (row['advance'], tuple(row['arguments']), row['returned_octets'])
+        assert Counter(map(fingerprint, windows)) == Counter(map(fingerprint, via_window))
+        assert len(windows) == routes['scan'] and len(direct) == inventory['frames']
+        window_bytes = sum(row['returned_octets'] for row in windows)
+        direct_bytes = sum(row['returned_octets'] for row in direct)
+        assert direct_bytes == inventory['bytes'] - 2 * inventory['frames']
+        verify = [row for row in source_calls if row['operation'] == 'source.verify_current']
+        assert len(verify) == len(advances) + 2 and all(row['returned_current'] for row in verify)
+        sql = [row for row in observation['admitted_dbapi'] if row['case'] == name and row['stage'] == 'retained_advances']
+        executions = [row for row in sql if row['operation'] == 'execute']
+        parent_sql = sum(row['calls'] for row in executions if row['owner'].startswith('ValidationLedger.') or row['verb'] == 'BEGIN')
+        predicted_control = method['ValidationLedger.load'] + method['ValidationLedger._fence'] + method['ValidationLedger._publish'] + method['ValidationLedger._prefix'] + predicted_prefix_reference_probes + len(advances)
+        assert parent_sql == predicted_control
+        assert sum(row['calls'] for row in executions if row['owner'] == 'ValidationLedger._prefix' and row['table'] == 'frames') == predicted_prefix_reference_probes
+        explicit_commits = sum(row['calls'] for row in sql if row['operation'] == 'commit')
+        freeze_commits = sum(row['calls'] for row in sql if row['operation'] == 'commit' and row['owner'] == 'JournalValidationSession._finish')
+        assert freeze_commits == 1 and explicit_commits == len(advances) + freeze_commits
+        assert not any(any(key.startswith('raised_family:') for key in row) for row in sql)
+        predicted_session = routes['scan'] + inventory['frames'] + sum(frame['predicted_replay_invocations'] for frame in frames) + 2
+        assert predicted_session == len(advances)
+        cases.append({'name': name, 'input': inventory, 'routes': dict(routes), 'observed_session_advances': len(advances), 'predicted_session_advances': predicted_session, 'single_start_and_load_advances': single, 'double_start_and_load_advances': double, 'starts': method['EntryReplay._start'], 'ledger_loads_within_advances': method['ValidationLedger.load'], 'ledger_fences': method['ValidationLedger._fence'], 'ledger_publications': method['ValidationLedger._publish'], 'explicit_commits': explicit_commits, 'terminal_freeze_commits': freeze_commits, 'ledger_prefix_calls': method['ValidationLedger._prefix'], 'parent_control_execute_attempts_including_begin': parent_sql, 'parent_control_execute_attempts_predicted': predicted_control, 'all_retained_advance_execute_attempts': sum(row['calls'] for row in executions), 'captured_double_load_fields_equal': True, 'double_start_reservations_reset_equal': True, 'all_parent_versions_advance_exactly_one': True, 'frames': frames, 'source': {'window_calls': len(windows), 'window_returned_octets': window_bytes, 'framing_consumed_octets': scan_consumed, 'window_overread_octets': window_bytes - scan_consumed, 'direct_exact_frame_calls': len(direct), 'direct_exact_frame_octets': direct_bytes, 'leaf_read_exact_calls_including_windows': len(via_window) + len(direct), 'leaf_read_exact_returned_octets': window_bytes + direct_bytes, 'source_current_checks_including_open_and_finish': len(verify), 'window_receipts': windows, 'direct_exact_receipts': direct}})
+    summary = {'format': 'riverhog-native-phase-offline-reconciliation-v1', 'source': SOURCE, 'analysis_script': record(Path(__file__).resolve()), 'input_artifacts': artifacts, 'method': 'stdlib-only analysis of archived JSON/bytes; no product imports, tests, profile replay or workload execution', 'preflight': {'input_sha256': sha(args.preflight.read_bytes()), 'status': preflight['status'], 'intended_exit_code': preflight['intended_exit_code'], 'recorded_advances': 0, 'recorded_handles': 0, 'excluded_from_workload_totals': True}, 'cases': cases, 'totals': {key: sum(case[key] for case in cases) for key in ('observed_session_advances', 'predicted_session_advances', 'single_start_and_load_advances', 'double_start_and_load_advances', 'starts', 'ledger_loads_within_advances', 'ledger_fences', 'ledger_publications', 'explicit_commits', 'terminal_freeze_commits', 'parent_control_execute_attempts_including_begin', 'all_retained_advance_execute_attempts')}, 'all_reconciliation_guards_passed': True, 'limitations': ['All counts here are the instrumented retained-session scopes; builder/oracle work has separate stage timing and no such method/SQL counts.', 'The archived run records intended_exit_code; original child/lane process receipts remain the outer controller owner\'s evidence.', 'Matching double-load fields cover only the captured phase/version/frame/row/child-ID fields, not an independently compared full prefix snapshot.', 'A non-None graph retirement plan can contain only a control transition and no deleted key; zero adjacency visits alone does not mean zero plan work.', 'Source window plus direct atom bytes is the physical leaf-read sum; nested read_exact window deliveries are not added again.', 'These three tiny histories with no graph certificates do not establish graph-growth, restart, capacity, cancellation, concurrency or historical-publication behavior.']}
+    summary['limited_timing_context'] = {
+        'start_calls_exclusive_thread_cpu_seconds': sum(row['exclusive_thread_cpu_ns'] for row in observation['scopes'] if row['stage'] == 'retained_advances' and row['operation'] == 'EntryReplay._start') / 1e9,
+        'retained_advance_stage_process_cpu_seconds': sum(row['process_cpu_ns'] for row in observation['stages'] if row['stage'] == 'retained_advances') / 1e9,
+        'interpretation': 'One instrumented observation; hook overhead included; no removal-speedup or historical-publication inference.',
+    }
+    args.output.write_text(json.dumps(summary, indent=2, sort_keys=True) + '\n')
+    print(json.dumps({'output': record(args.output), 'totals': summary['totals'], 'guards_passed': True}))
+
+
+if __name__ == '__main__':
+    main()
