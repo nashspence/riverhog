@@ -1,0 +1,70 @@
+{
+  "audited_base": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+  "audited_base_tree": "98cf298e60e4ba9c178229eae907e164265f6e48",
+  "files": [
+    {
+      "bytes": 9896,
+      "path": ".reference/EVIDENCE.md",
+      "sha256": "3353c5e3fea7591e13de4d7171a315e0c355f2a97d4308f923641238d8672fb0"
+    },
+    {
+      "bytes": 27460,
+      "path": ".reference/FEASIBILITY.md",
+      "sha256": "4a080374876cdcc031d3bc9751a529dfdb0e83b1f96ce34eb3db9218632768dd"
+    },
+    {
+      "bytes": 4658,
+      "path": ".reference/HANDOFF.md",
+      "sha256": "f2e5d00c76932ee24769519ea2139e733e7542aa0fe2a53f48c7fc307da346bd"
+    },
+    {
+      "bytes": 41283,
+      "path": ".reference/MEASUREMENT.md",
+      "sha256": "be542e35bf90c26a3c4c5b57bf24e73ff4b437f7dbfad97a4787defb70effeea"
+    },
+    {
+      "bytes": 26357,
+      "path": ".reference/OCCUPANCY.md",
+      "sha256": "1ff6b3c9cd630136e3251f941b14d61a59b9093d6036050cc67c04304b418ae0"
+    },
+    {
+      "bytes": 30809,
+      "path": ".reference/OWNERSHIP.md",
+      "sha256": "b4966510dc3e734877fae0fbd06aacffe4a5bcc95873abdf57db2ad072cf5b5d"
+    },
+    {
+      "bytes": 10323,
+      "path": ".reference/evidence/context.json",
+      "sha256": "0cb37fd8c8c678b177696a234297b90d55bc04c39d6a691ed57775013f266ab1"
+    },
+    {
+      "bytes": 26858,
+      "path": ".reference/evidence/growth-inventory.json",
+      "sha256": "62d3ad8d5168e2d7f14b8c72e432e85ea3cd31bf9861476a98befa6115c6eaad"
+    },
+    {
+      "bytes": 26378,
+      "path": ".reference/evidence/ownership-audit.json",
+      "sha256": "797e2cf516a113e9187180cf423db3d77f86ba98a83b8c91439bf6d40c38171f"
+    },
+    {
+      "bytes": 21450,
+      "path": ".reference/evidence/packet-verification.json",
+      "sha256": "1d505121b24e928f24db51588ded8d73e7e92d0ca646f2ee8b229bfcfa0bd5fb"
+    },
+    {
+      "bytes": 4974,
+      "path": ".reference/evidence/request.md",
+      "sha256": "a5dac3b1d9ef4280242ece0c7542930454d768e868ca2d80d630ed7267428dd9"
+    },
+    {
+      "bytes": 45219,
+      "path": ".reference/evidence/source-audit.json",
+      "sha256": "4b7700ec83ea29b51f0d380bfdb99531f7307f86597e3c83ffd665a505623e00"
+    }
+  ],
+  "format": "riverhog-external-ready-occupancy-reference-manifest/v1",
+  "reference_branch": "reference/external/991-ready-occupancy",
+  "scope": "Static reference only. All product paths equal the audited base; no runtime/probe execution or optimization.",
+  "self_exclusion": "Manifest excludes itself. Its hash and actual published reference commit are recorded in the owning #991 handoff."
+}

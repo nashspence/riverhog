@@ -1,0 +1,814 @@
+{
+  "analysis": {
+    "external_artifacts_only": true,
+    "fixtures_or_probes": false,
+    "interval_reconciler_executed": false,
+    "kind": "static source and supplied-report analysis",
+    "product_calls": false,
+    "product_imports": false,
+    "repository_edits_by_this_analysis": false,
+    "runtime_occupancy_events": 0,
+    "test_collection_or_execution": false
+  },
+  "artifact": {
+    "bytes": 30809,
+    "path": "/workspace/scratch/21c38f9cc56d/ready-occupancy-ownership.md",
+    "sha256": "b4966510dc3e734877fae0fbd06aacffe4a5bcc95873abdf57db2ad072cf5b5d"
+  },
+  "builder": {
+    "bytes": 9383,
+    "path": "/workspace/scratch/21c38f9cc56d/ready_occupancy_ownership_receipt.py",
+    "sha256": "c28de6f6fab4787fdd3fb13c5e8564831431e9e10fae85776337d317817e2fb0"
+  },
+  "conclusions": {
+    "demonstrated_avoidable_serialization": false,
+    "legal_maintained_two_key_setup_exists": true,
+    "one_step_per_step_adoption_preserved": true,
+    "proved_absence_of_avoidable_serialization": false,
+    "runtime_change_recommended": false,
+    "two_key_fixture_executed": false,
+    "whole_path_or_g10_g12_g13_closure": false,
+    "why_no_run": "A few synchronous Core calls cannot by themselves establish overlapping fresh-ready lifetime and idle authorized executor capacity."
+  },
+  "format": "ready-occupancy-static-ownership-v1",
+  "fresh_observation_boundaries": [
+    {
+      "meaning": "Validating catalog row or retained slot inventory; no ready lifetime.",
+      "refs": [
+        "S24",
+        "S02"
+      ],
+      "stage": "candidate"
+    },
+    {
+      "meaning": "Actual chain completed for exact Work; separate fresh checks, not an atomic snapshot.",
+      "refs": [
+        "S01"
+      ],
+      "stage": "core_ready_to_attempt"
+    },
+    {
+      "meaning": "Exact slot plus per-key lock obtained; later lease/currentness/capacity checks remain.",
+      "refs": [
+        "S02"
+      ],
+      "stage": "local_reservation"
+    },
+    {
+      "meaning": "Actual lease and worker claim, not permission to skip subsequent checks.",
+      "refs": [
+        "S02",
+        "S09"
+      ],
+      "stage": "workspace_worker"
+    },
+    {
+      "meaning": "Actual invocation only; internal source, ledger, budget and SQLite checks still follow.",
+      "refs": [
+        "S23"
+      ],
+      "stage": "native_invocation_entry"
+    },
+    {
+      "meaning": "Distinct actual phase/progress and exact CAS outcomes.",
+      "refs": [
+        "S23",
+        "S09",
+        "S02"
+      ],
+      "stage": "native_progress_then_catalog_adoption"
+    },
+    {
+      "meaning": "Each owner receives its original; physical collection and semantic/resource retention are separate.",
+      "refs": [
+        "S02",
+        "S15",
+        "S16",
+        "S17"
+      ],
+      "stage": "original_receiving"
+    }
+  ],
+  "inputs": [
+    {
+      "bytes": 4974,
+      "path": "/workspace/scratch/21c38f9cc56d/ready-occupancy-request.md",
+      "sha256": "a5dac3b1d9ef4280242ece0c7542930454d768e868ca2d80d630ed7267428dd9"
+    },
+    {
+      "bytes": 10323,
+      "path": "/workspace/scratch/21c38f9cc56d/ready-occupancy-context.json",
+      "sha256": "0cb37fd8c8c678b177696a234297b90d55bc04c39d6a691ed57775013f266ab1"
+    }
+  ],
+  "installed_dependency_sources": [
+    {
+      "bytes": 255632,
+      "id": "L01",
+      "imported": false,
+      "installed_metadata": {
+        "bytes": 27029,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/fastapi-0.141.1.dist-info/METADATA",
+        "sha256": "1010c29547b4026bdb3cd1c406e0570b9d79bb448b5a61fa4d5bb5a5eb0b752c"
+      },
+      "installed_version": "0.141.1",
+      "lines": [
+        [
+          344,
+          354
+        ]
+      ],
+      "package": "fastapi",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/fastapi/routing.py",
+      "sha256": "7b1ef65fb6b209445dc43be070a23324b7879aef9c6b9f63e6968234b7723b55"
+    },
+    {
+      "bytes": 104400,
+      "id": "L02",
+      "imported": false,
+      "installed_metadata": {
+        "bytes": 4645,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/anyio-4.14.2.dist-info/METADATA",
+        "sha256": "c5e6fc4dfd833319913b287be7a30d9935e9208c7ef917630621855aaac4d419"
+      },
+      "installed_version": "4.14.2",
+      "lines": [
+        [
+          2583,
+          2641
+        ]
+      ],
+      "package": "anyio",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py",
+      "sha256": "78ad23f0f2343bbcb76d7f1c501b1a7e858ff30b1747eb333fa722c8fe0c9249"
+    },
+    {
+      "bytes": 28356,
+      "id": "L03",
+      "imported": false,
+      "installed_metadata": {
+        "bytes": 6370,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette-1.3.1.dist-info/METADATA",
+        "sha256": "d83ccd9665eb05d1f9393c75e209cb353990731a6215a609a0f1c5c0a6286c9a"
+      },
+      "installed_version": "1.3.1",
+      "lines": [
+        [
+          351,
+          356
+        ],
+        [
+          421,
+          427
+        ],
+        [
+          678,
+          718
+        ]
+      ],
+      "package": "starlette",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/testclient.py",
+      "sha256": "52a9e32222a492b368339cabf0357163de2ed7e80959d7f3e88299c5b8c4eb4c"
+    },
+    {
+      "bytes": 1701,
+      "id": "L04",
+      "imported": false,
+      "installed_metadata": {
+        "bytes": 6370,
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette-1.3.1.dist-info/METADATA",
+        "sha256": "d83ccd9665eb05d1f9393c75e209cb353990731a6215a609a0f1c5c0a6286c9a"
+      },
+      "installed_version": "1.3.1",
+      "lines": [
+        [
+          32,
+          34
+        ]
+      ],
+      "package": "starlette",
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette/concurrency.py",
+      "sha256": "3e9e245d060ef39716c58ed754db7995c62f8581d4aaec8b82e09e73b84a2a83"
+    }
+  ],
+  "references": [
+    {
+      "id": "S01",
+      "lines": [
+        2122,
+        2251
+      ],
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py"
+    },
+    {
+      "id": "S02",
+      "lines": [
+        1836,
+        2122
+      ],
+      "path": "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py"
+    },
+    {
+      "id": "S03",
+      "lines": [
+        234,
+        291
+      ],
+      "path": "tests/unit/test_operation_lifecycle_api.py"
+    },
+    {
+      "id": "S04",
+      "lines": [
+        593,
+        607
+      ],
+      "path": "riverhog/src/riverhog_api/routers/collections.py"
+    },
+    {
+      "id": "S05",
+      "lines": [
+        105,
+        384
+      ],
+      "path": "riverhog/src/riverhog_api/app.py"
+    },
+    {
+      "id": "S06",
+      "lines": [
+        303,
+        369
+      ],
+      "path": "tests/unit/test_upload_journal_validation_owner.py"
+    },
+    {
+      "id": "S07",
+      "lines": [
+        2086,
+        2127
+      ],
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py"
+    },
+    {
+      "id": "S08",
+      "lines": [
+        402,
+        465
+      ],
+      "path": "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py"
+    },
+    {
+      "id": "S09",
+      "lines": [
+        433,
+        544
+      ],
+      "path": "riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py"
+    },
+    {
+      "id": "S10",
+      "lines": [
+        124,
+        152
+      ],
+      "path": "riverhog/src/riverhog_core/runtime_config.py"
+    },
+    {
+      "id": "S11",
+      "lines": [
+        128,
+        363
+      ],
+      "path": "tests/support/qualification/canonical_history_scale.py"
+    },
+    {
+      "id": "S12",
+      "lines": [
+        1589,
+        1642
+      ],
+      "path": "packages/riverhog-client/src/riverhog_client/client.py"
+    },
+    {
+      "id": "S13",
+      "lines": [
+        13,
+        36
+      ],
+      "path": "tests/support/finalization.py"
+    },
+    {
+      "id": "S14",
+      "lines": [
+        518,
+        1047
+      ],
+      "path": "packages/riverhog-client/src/riverhog_client/producer.py"
+    },
+    {
+      "id": "S15",
+      "lines": [
+        120,
+        408
+      ],
+      "path": "riverhog/src/riverhog_core/services/physical_execution.py"
+    },
+    {
+      "id": "S16",
+      "lines": [
+        16,
+        65
+      ],
+      "path": "riverhog/src/riverhog_core/services/archive_finalizer_progress.py"
+    },
+    {
+      "id": "S17",
+      "lines": [
+        90,
+        253
+      ],
+      "path": "riverhog/src/riverhog_core/services/archive_upload_maintenance.py"
+    },
+    {
+      "id": "S18",
+      "lines": [
+        75,
+        131
+      ],
+      "path": "riverhog/src/riverhog_core/catalog_db.py"
+    },
+    {
+      "id": "S19",
+      "lines": [
+        3520,
+        3583
+      ],
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py"
+    },
+    {
+      "id": "S20",
+      "lines": [
+        102,
+        171
+      ],
+      "path": "riverhog/src/riverhog_core/services/archive_finalizer_work.py"
+    },
+    {
+      "id": "S21",
+      "lines": [
+        370,
+        425
+      ],
+      "path": "riverhog/src/riverhog_core/services/archive_finalizer_registry.py"
+    },
+    {
+      "id": "S22",
+      "lines": [
+        3968,
+        4048
+      ],
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py"
+    },
+    {
+      "id": "S23",
+      "lines": [
+        1513,
+        1584
+      ],
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py"
+    },
+    {
+      "id": "S24",
+      "lines": [
+        7874,
+        7928
+      ],
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py"
+    },
+    {
+      "id": "S25",
+      "lines": [
+        9,
+        43
+      ],
+      "path": "riverhog/src/riverhog_core/archive_execution_tuning.py"
+    },
+    {
+      "id": "S26",
+      "lines": [
+        95,
+        220
+      ],
+      "path": "riverhog/src/riverhog_core/services/archive_finalizer_registry.py"
+    },
+    {
+      "id": "S27",
+      "lines": [
+        66,
+        79
+      ],
+      "path": "riverhog/src/riverhog_core/services/archive_write_admission.py"
+    },
+    {
+      "id": "S28",
+      "lines": [
+        602,
+        631
+      ],
+      "path": "riverhog/src/riverhog_core/services/archive_upload_invocations.py"
+    },
+    {
+      "id": "S29",
+      "lines": [
+        128,
+        190
+      ],
+      "path": "riverhog/src/riverhog_core/services/archive_upload_drain.py"
+    },
+    {
+      "id": "S30",
+      "lines": [
+        327,
+        336
+      ],
+      "path": "packages/riverhog-client/src/riverhog_client/producer.py"
+    },
+    {
+      "id": "S31",
+      "lines": [
+        21,
+        79
+      ],
+      "path": "riverhog/src/riverhog_core/services/archive_finalization_admission.py"
+    },
+    {
+      "id": "S32",
+      "lines": [
+        3735,
+        3844
+      ],
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py"
+    }
+  ],
+  "routes": [
+    {
+      "capacity": "Retained journal slots, not worker count",
+      "executor_owned_by_route": false,
+      "id": "ordinary_core",
+      "opportunity": "Synchronous caller thread",
+      "refs": [
+        "S01",
+        "S02",
+        "S10"
+      ]
+    },
+    {
+      "id": "fixture_sdk_coordinator",
+      "opportunity": "Direct scheduler then selected HTTP, serial SDK journals; separate heartbeat thread",
+      "refs": [
+        "S03",
+        "S11",
+        "S12",
+        "S14"
+      ]
+    },
+    {
+      "id": "selected_http",
+      "opportunity": "Actual transport AnyIO synchronous-endpoint invocation",
+      "refs": [
+        "S04",
+        "S07",
+        "L01",
+        "L02",
+        "L04"
+      ]
+    },
+    {
+      "id": "application_lifespan",
+      "opportunity": "Serialized archive to_thread calls plus separate restore/cache tasks",
+      "refs": [
+        "S05",
+        "L03"
+      ]
+    },
+    {
+      "id": "physical_archive_work",
+      "opportunity": "Retained original Thread/Future, admitted global and target lane limits",
+      "physical_slot_release": "After actual exit, join and done future at _collect; later semantic retention is separate",
+      "refs": [
+        "S15",
+        "S25",
+        "S26"
+      ]
+    }
+  ],
+  "source": {
+    "all_cited_working_files_match_audited_blobs": true,
+    "commit": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+    "inspection_scope": "Cited source lines and pinned installed dependency implementation only; no full source census.",
+    "reference_branch": "reference/external/991-ready-occupancy",
+    "repository": "/workspace/scratch/21c38f9cc56d/riverhog",
+    "tree": "98cf298e60e4ba9c178229eae907e164265f6e48"
+  },
+  "source_files": [
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/collection_uploads.py",
+      "bytes": 445404,
+      "git_blob": "25129310ed6e42e0e56cce1587361caedd617b50",
+      "line_count": 10333,
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_validation_owner.py",
+      "bytes": 83238,
+      "git_blob": "f520c6b3e727e3d5a0fea595762e3dd659100baf",
+      "line_count": 2165,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py",
+      "sha256": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_operation_lifecycle_api.py",
+      "bytes": 70580,
+      "git_blob": "ff6f31a4fb6cf02b931973e8acf6e94e6030f2fb",
+      "line_count": 1715,
+      "path": "tests/unit/test_operation_lifecycle_api.py",
+      "sha256": "18776fb41d02bbdfcaebdc4824677b730b7f6509ccd198290340a165d0784b91",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/routers/collections.py",
+      "bytes": 35649,
+      "git_blob": "7563f72fcffe503f1fcd9efe1f563195c8a74c2c",
+      "line_count": 963,
+      "path": "riverhog/src/riverhog_api/routers/collections.py",
+      "sha256": "137cc8d06d78c1e3e3707f9863b33b4a0f710518623c418121b8b31212f86078",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/app.py",
+      "bytes": 25903,
+      "git_blob": "44440c31af9834c38f6837bea395e2f28ea3633a",
+      "line_count": 641,
+      "path": "riverhog/src/riverhog_api/app.py",
+      "sha256": "fb3776d921576a7ee8625837364c29fdf5305f792aea53e77c6dea27d092e1c0",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_upload_journal_validation_owner.py",
+      "bytes": 17873,
+      "git_blob": "2ad8407877db3717c964317a6172ba20ef4135ec",
+      "line_count": 415,
+      "path": "tests/unit/test_upload_journal_validation_owner.py",
+      "sha256": "89ea5c08950393bb5f846d0cce9f0270ad497e607c881f40250e953c3df9bb44",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py",
+      "bytes": 22266,
+      "git_blob": "c9d368d356a5297270a4d60c26484a450f17bba7",
+      "line_count": 630,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py",
+      "sha256": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/runtime_config.py",
+      "bytes": 21884,
+      "git_blob": "fdba4986f83766d8e499f96085bf0e6163724c99",
+      "line_count": 421,
+      "path": "riverhog/src/riverhog_core/runtime_config.py",
+      "sha256": "a902d8256912fc1cdbe9f18905e155c5d9c794a34f97a54d9bf9a829fb73ddbb",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/qualification/canonical_history_scale.py",
+      "bytes": 25169,
+      "git_blob": "2ffd93428bce2cf42f2d4f7f004e35c3a9d1cfc3",
+      "line_count": 600,
+      "path": "tests/support/qualification/canonical_history_scale.py",
+      "sha256": "e9b111ea0ae9aa16182ff5ce29d32e105e83573827b0c47ae29d8f19a63ca48e",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-client/src/riverhog_client/client.py",
+      "bytes": 109544,
+      "git_blob": "62d241719635d77924bcaabdc734a9246bc3bc84",
+      "line_count": 2815,
+      "path": "packages/riverhog-client/src/riverhog_client/client.py",
+      "sha256": "918d52350956f0a5028a570a948f395f8a86f0c2360426a56273391016a67736",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/finalization.py",
+      "bytes": 1705,
+      "git_blob": "ea542f3c0667a404c7969a225b603d7140e4b18c",
+      "line_count": 36,
+      "path": "tests/support/finalization.py",
+      "sha256": "4708fec7dbb839f5e8cd4bb7894a40c9d8692054ef3ef228e89f2cbf2004ffd1",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-client/src/riverhog_client/producer.py",
+      "bytes": 58226,
+      "git_blob": "f03292ba6d1aef05ef74a2ee886d98bf8af5d2f6",
+      "line_count": 1405,
+      "path": "packages/riverhog-client/src/riverhog_client/producer.py",
+      "sha256": "d92fa6186abeee36ec2de028a548c4579ebb60b12cb796c20fe4bac1db638916",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/physical_execution.py",
+      "bytes": 15891,
+      "git_blob": "ef161cde4353ef80401796a526702f1b2c8d7b73",
+      "line_count": 412,
+      "path": "riverhog/src/riverhog_core/services/physical_execution.py",
+      "sha256": "fdba1ac2bceb0b7cf60c93c60c4bf9ae7952cbed7b7cd4f0b702a94f7f81ecbc",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/archive_finalizer_progress.py",
+      "bytes": 2380,
+      "git_blob": "cadf0bd18e86483e3594689b6e05fd9c35b98659",
+      "line_count": 66,
+      "path": "riverhog/src/riverhog_core/services/archive_finalizer_progress.py",
+      "sha256": "0dff58a8f4849231e9963e325d3826ec668970e3d4ca0744f98d2b98ab60c76e",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/archive_upload_maintenance.py",
+      "bytes": 11202,
+      "git_blob": "97f8f64fccd4716b6d29844b89e2d54953dd0714",
+      "line_count": 253,
+      "path": "riverhog/src/riverhog_core/services/archive_upload_maintenance.py",
+      "sha256": "bd518fb19e9faf713c71a643bbee5f7e3eeddc60141ce46718d878ab552d1ceb",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/catalog_db.py",
+      "bytes": 12386,
+      "git_blob": "fae03621048c7ee59f4600e5107cc84b1c9837f4",
+      "line_count": 336,
+      "path": "riverhog/src/riverhog_core/catalog_db.py",
+      "sha256": "bf5cec0630fc63886f1b352ef2a1cc398b2fd72b8835a95262d2d0760c258b56",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/archive_finalizer_work.py",
+      "bytes": 9129,
+      "git_blob": "d3ba71155c69ce4f7846920974bafa9b6a9bc82c",
+      "line_count": 249,
+      "path": "riverhog/src/riverhog_core/services/archive_finalizer_work.py",
+      "sha256": "ed5a544039b2137f075666184868f18b4278a3391bbe400fecd26070f380f00d",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/archive_finalizer_registry.py",
+      "bytes": 23071,
+      "git_blob": "a66aad307298d549852ec03ddaaa518dc5bd23a1",
+      "line_count": 557,
+      "path": "riverhog/src/riverhog_core/services/archive_finalizer_registry.py",
+      "sha256": "00b4653750fb3b71a57fac7300c430bcd53700f4954061674bfb36d6f9dfdf2b",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "bytes": 62566,
+      "git_blob": "4800b2dce7a25d8f555c37870e13386f5cee23b2",
+      "line_count": 1611,
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/archive_execution_tuning.py",
+      "bytes": 1655,
+      "git_blob": "a9d1be8b36b7aebd66c6a69a4d73a6b9893d9e08",
+      "line_count": 43,
+      "path": "riverhog/src/riverhog_core/archive_execution_tuning.py",
+      "sha256": "31a0128ae424565d0932b63ec2bb5d7e93ecc65ea5e1254e8315e0a37185cc91",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/archive_write_admission.py",
+      "bytes": 34290,
+      "git_blob": "f4c9ca23c553e1a55fe6a25896e38e83dfeb8240",
+      "line_count": 790,
+      "path": "riverhog/src/riverhog_core/services/archive_write_admission.py",
+      "sha256": "0fc77ad0a5e0ed2e20f98b479d199b86e30f84244b0322baed27e149301610bc",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/archive_upload_invocations.py",
+      "bytes": 28982,
+      "git_blob": "8178596be0d6dd0fc43b9e1fbf51e9a00ba6aa71",
+      "line_count": 710,
+      "path": "riverhog/src/riverhog_core/services/archive_upload_invocations.py",
+      "sha256": "f3e3e577e6f207d8ba8160cc613241bcc6e7b0cae268becbe048e51c52b96102",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/archive_upload_drain.py",
+      "bytes": 8346,
+      "git_blob": "eb69d6ef1944a3936d6363530b7e80732b42467d",
+      "line_count": 208,
+      "path": "riverhog/src/riverhog_core/services/archive_upload_drain.py",
+      "sha256": "efb990ca6e99a7333c53997e3458955efb1741ad0d6c48551bc8fc57e211a993",
+      "working_file_matches_audited_blob": true
+    },
+    {
+      "absolute_path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/archive_finalization_admission.py",
+      "bytes": 3415,
+      "git_blob": "b533a56d4df2a45cdce5a8e74dbed4e1371f9009",
+      "line_count": 79,
+      "path": "riverhog/src/riverhog_core/services/archive_finalization_admission.py",
+      "sha256": "3a58cb4d6dbe5a32dc98e5b4946c1157a512f90c37bab02b411592bbfa8d11b0",
+      "working_file_matches_audited_blob": true
+    }
+  ],
+  "supplied_diagnostic_report": {
+    "concurrent_critical_path_claim": false,
+    "excluded": [
+      "later retries",
+      "connection work",
+      "coordination",
+      "rollback",
+      "receiving"
+    ],
+    "historical_418_metadata_inferred": false,
+    "interval_end": "Entry to SQLAlchemy error callback",
+    "owning_comment_id": 6890015223,
+    "parent_buckets_are_caller_attribution": false,
+    "reported_error_type": "sqlite3.OperationalError",
+    "reported_execute_attempts": 51811,
+    "reported_failed_attempt_thread_cpu_ms": 12.768,
+    "reported_failed_attempt_wall_ms": 18.41,
+    "reported_parameter_free_statement": "BEGIN IMMEDIATE",
+    "reported_parent_buckets": {
+      "no_instrumented_parent": 163,
+      "producer.finish": 302
+    },
+    "reported_profile_sha256": "bdee7c0313e257933888f0fc6058e8387def8c30c1e5f44c3256897d8bd5ee6a",
+    "reported_raised_attempts": 465,
+    "reported_raw_sha256": "5da872016fae26039c92c53d36ec3281374e71b2b8475281cca72d55b8187390",
+    "reported_sqlite_errorcode": 5,
+    "status": "Reported by receiving owner; raw/profile bytes not received or revalidated here."
+  },
+  "writer_candidate_families": [
+    {
+      "disposition": "Classified contention returns already received progress",
+      "family": "schedule_ready_finalizations",
+      "refs": [
+        "S19"
+      ]
+    },
+    {
+      "disposition": "Classified contention returns busy",
+      "family": "finalizer_custody_registration",
+      "refs": [
+        "S20",
+        "S22"
+      ]
+    },
+    {
+      "disposition": "Outer prior progress or local False, retaining originals",
+      "family": "maintenance_retirement",
+      "refs": [
+        "S17"
+      ]
+    },
+    {
+      "disposition": "Opted-in classified contention returns busy; otherwise propagates",
+      "family": "terminal_fence",
+      "refs": [
+        "S21",
+        "S28",
+        "S29"
+      ]
+    },
+    {
+      "disposition": "Known busy feedback omitted; original semantic exception remains primary",
+      "family": "retained_failure_feedback",
+      "refs": [
+        "S22"
+      ]
+    },
+    {
+      "disposition": "Failed transaction leaves admission unresolved and propagates to retained original",
+      "family": "original_finalization_admission",
+      "refs": [
+        "S31",
+        "S32"
+      ]
+    },
+    {
+      "disposition": "Default immediate writer; no local classified-busy conversion",
+      "family": "selected_journal_seal",
+      "refs": [
+        "S07"
+      ]
+    }
+  ],
+  "writer_candidate_scope": "Narrow static possibilities only; not a census or assignment of any reported attempt."
+}

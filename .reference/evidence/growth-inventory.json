@@ -1,0 +1,605 @@
+{
+  "activity": {
+    "actual_runtime_event_traces": 0,
+    "diagnostic_or_profile_runs": 0,
+    "fixture_creations": 0,
+    "method": "Read source and supplied reports; stdlib-only hash/JSON metadata generation and read-only git checks.",
+    "product_calls": 0,
+    "project_imports": 0,
+    "repository_files_edited_by_this_agent": 0,
+    "runtime_reconciler_executions": 0,
+    "test_collection_or_execution": 0
+  },
+  "bounded_observer_design": {
+    "cap_is_hard_operation_or_cleanup_deadline": false,
+    "cooperative_workload_cap_seconds_if_later_chosen": 120,
+    "diagnostic_memory_is_production_memory": false,
+    "envelope_form": "fixed setup + sum(source-derived event caps for every admitted possible child) + exact original tail/receiving allowance; full widths charged",
+    "max_encoded_bytes": null,
+    "max_events": null,
+    "numeric_bound_status": "Must be derived for the actually selected hook set and tiny fixture before any execution; no observer/run chosen here.",
+    "overhead_subtraction_by_guess": false,
+    "planned_bound_action": "Stop new harness admission at safe boundary before event/tail reservation would be exceeded.",
+    "scope": "Finite declared boundary events plus actual child evidence; not all machine activity.",
+    "silent_ring_overwrite_or_sampling": false,
+    "unexpected_overflow": "Preserve captured prefix and explicit first coverage-loss marker; mark incomplete and reject whole-interval occupancy claims; preserve entered product flow and original receiving."
+  },
+  "classification": "Static source and reported evidence; conditional schema only, no executed trace or reconciler.",
+  "conditional_fixture": {
+    "actual_candidate_or_native_count": null,
+    "actual_input_bytes_or_hashes": null,
+    "configured_retained_slots": 2,
+    "distinct_journal_keys": 2,
+    "execute_whole_test": false,
+    "existing_whole_test_loop_guard": 1000,
+    "generic_candidate_cap_for_L4_C2": 20,
+    "generic_candidate_cap_formula": "L*(2*C+1)",
+    "generic_owner_and_native_call_cap": 20,
+    "per_call_limit": 1,
+    "possible_scheduler_calls": 4,
+    "preserves": [
+      "ordinary setup and per-step budgets",
+      "all fresh checks",
+      "Native phases/commits",
+      "per-step catalog adoption",
+      "retirement/finalization opportunities",
+      "original receiving"
+    ],
+    "source_test": "tests/unit/test_upload_journal_validation_owner.py:324-369",
+    "status": "Static feasible recipe, not constructed or executed.",
+    "tighter_two_key_bound_claimed": false,
+    "would_establish_without_extra_authority": "Actual bounded dispatch/invocation/refusal ordering for that chosen fixture only.",
+    "would_not_establish": "Continuously admissible unselected key plus idle authorized executor; throughput or correction/DAG growth."
+  },
+  "decision": {
+    "existing_one_step_and_per_step_adoption_preserved": true,
+    "negative_claim_scope": "Avoidable ready-work serialization is not demonstrated, not disproved.",
+    "reason": "A few synchronous Core turns cannot establish a continuously eligible unselected key and an idle authorized executor. Core has no Native worker pool or submission queue.",
+    "run_now": false,
+    "runtime_optimization_proposed": false
+  },
+  "format": "non-authoritative-ready-occupancy-static-inventory/v1",
+  "growth_resource_limits": {
+    "G10_G12_G13_or_all_cost_clearance": false,
+    "composition": "Exclusive parent + actual inclusive non-overlapping children; every child independently validated including earlier completed/rejected work.",
+    "correction_or_nontrivial_DAG_qualification": false,
+    "native_calls_per_existing_owner": 1,
+    "ordinary_native_budget": {
+      "rows": 64,
+      "source_window_octets": 65536,
+      "work_octets": 33619968
+    },
+    "ordinary_native_budget_is_complete_core_or_memory_bound": false,
+    "physical_slot_release": "Actual worker exit, join, done original Future and _collect; downstream semantic/construction receiving distinct.",
+    "resource_defaults": {
+      "journal_file_records": 2,
+      "retained_journal_slots": 2,
+      "shared_connections": 8,
+      "shared_cursors": 32,
+      "shared_operations": 4
+    },
+    "resource_scope": "Operation/cursor own receiving; storage/connection/lease may persist through independent readers; cumulative turnover distinct from peak live grants.",
+    "scheduler_caps": {
+      "outer_iterations": "L",
+      "retirement": "L",
+      "schedule": "L",
+      "select": "L*(C+1)",
+      "validation": "L*(2*C+1)"
+    },
+    "service_owner_calls_per_unit": 1
+  },
+  "interval_inference_rules": {
+    "avoidability_requires": [
+      "Exact independent key with valid eligibility lifetime",
+      "Actual offer to relevant scheduling owner",
+      "Known available authorized execution grant over interval",
+      "No unresolved original/resource/dependency/writer refusal explaining gap",
+      "Complete relevant event coverage",
+      "Owning dispatch policy supports the claimed alternative"
+    ],
+    "continuous_ready_requires": "Source-owned lifetime or complete owner-authorized invalidation coverage; otherwise interval unknown.",
+    "future_done_is_join": false,
+    "join_is_semantic_or_resource_receiving": false,
+    "point_eligibility_extends_automatically": false,
+    "queue_interval_requires": "Actual matching original admission/queue registration marker before start, plus actual body entry; distinguish no-backlog startup delay.",
+    "submit_return_is_admission_timestamp": false,
+    "thread_cpu_is_occupancy": false,
+    "unknown_policy": "Report explicit unknown/censoring; never infer zero wait, zero occupancy or successful receiving.",
+    "unused_retained_slots_are_idle_workers": false,
+    "worker_may_enter_before_submit_returns": true
+  },
+  "offline_reconciler_requirements": [
+    "No product imports/execution/regeneration or mutable catalog rereads",
+    "Verify provenance, limits, exact sequence/clock and coverage",
+    "Reject cross-original, duplicate, reused or fabricated identity links",
+    "Match actual call enter/return/raise and actual branch decisions",
+    "Allow worker entry/completion before submit return",
+    "Separate Future settlement, body exit, original join, physical collection and downstream receiving",
+    "Reconcile every actual child and refusal once under existing metric ownership",
+    "Compute only intervals with actual owned endpoints and valid authority",
+    "Keep original exits separate from derived reconciliation status"
+  ],
+  "proposed_event_schema": {
+    "fields": {
+      "authority_refs": {
+        "meaning": "Actual check/progress records, with no implied validity beyond owner lifetime.",
+        "type": "bounded token list"
+      },
+      "call_id": {
+        "meaning": "One actual operation occurrence.",
+        "type": "local invocation token"
+      },
+      "coverage": {
+        "meaning": "No missing endpoint repaired by inference.",
+        "type": "complete|left-censored|right-censored|unknown|observer-bound-exhausted"
+      },
+      "database_code": {
+        "meaning": "Actual driver field, not inferred from a message.",
+        "type": "optional actual integer/code"
+      },
+      "error_family": {
+        "meaning": "No exception message or formatted repr.",
+        "type": "optional type module/qualname"
+      },
+      "error_token": {
+        "meaning": "Links the same raised occurrence to its actual outer handler.",
+        "type": "optional exact error occurrence"
+      },
+      "event": {
+        "meaning": "Actual observed source boundary, not an inferred intermediate action.",
+        "type": "closed enum"
+      },
+      "future_token": {
+        "meaning": "Absent when no Future is exposed; never a fabricated handle.",
+        "type": "optional original-Future token"
+      },
+      "key_token": {
+        "meaning": "Exact collection/journal/attempt; nullable before selection.",
+        "type": "optional exact-key token"
+      },
+      "monotonic_ns": {
+        "meaning": "One monotonic observer-process domain; no wall-clock substitution.",
+        "type": "nonnegative integer or canonical decimal string"
+      },
+      "original_token": {
+        "meaning": "Original owned lifetime, never reconstructed equality.",
+        "type": "optional original-object token"
+      },
+      "outcome": {
+        "meaning": "Return/raise category without substituting the product result.",
+        "type": "original disposition category"
+      },
+      "owner_site": {
+        "meaning": "Exact operation/branch; unavailable branch remains unknown.",
+        "type": "pinned source-site token"
+      },
+      "parent_call_id": {
+        "meaning": "Cross-thread links require an actual original submission link.",
+        "type": "optional local invocation token"
+      },
+      "phase": {
+        "meaning": "Already held or returned state; no added read for observation.",
+        "type": "actual enum or unknown"
+      },
+      "resource_token": {
+        "meaning": "Separate admission and receiving scope for each owned resource.",
+        "type": "optional original-resource token"
+      },
+      "route_token": {
+        "meaning": "Exact actual caller route; not inferred from outer span bucket.",
+        "type": "local token or unknown"
+      },
+      "sample_refs": {
+        "meaning": "Actual independently validated children, including rejected/earlier completed work.",
+        "type": "bounded sample-occurrence links"
+      },
+      "seq": {
+        "meaning": "Strict append sequence; no duplicate or silently omitted record.",
+        "type": "nonnegative integer"
+      },
+      "source_token": {
+        "meaning": "Captured source identity/version/bytes/digest/cursor/bindings; not cached authority.",
+        "type": "optional exact-source token"
+      },
+      "statement_family": {
+        "meaning": "Parameter-free statement identity, not SQL parameters or arbitrary SQL text.",
+        "type": "optional source-whitelisted enum"
+      },
+      "submission_token": {
+        "meaning": "Absent for a synchronous Core call without submission.",
+        "type": "optional actual-submission token"
+      },
+      "thread_cpu_ns": {
+        "meaning": "Comparable within the same original thread only; never an occupancy measurement.",
+        "type": "optional nonnegative integer or decimal string"
+      },
+      "worker_token": {
+        "meaning": "Separate from reused OS thread identity and from per-call execution.",
+        "type": "optional original-worker token"
+      }
+    },
+    "forbidden_payloads": [
+      "SQL parameters",
+      "exception messages",
+      "arbitrary repr",
+      "connection URLs",
+      "private deployment identities"
+    ],
+    "online_behavior": [
+      "Call original exactly once",
+      "Preserve original return and BaseException identity/order",
+      "Preserve generator laziness and close",
+      "No extra SQL/readiness calls",
+      "No worker gating/new threads",
+      "No JSON/hash inside primitive observer",
+      "No product callback under observer lock",
+      "No resource lifetime extension for identity aliases"
+    ],
+    "status": "Unimplemented design; no sample rows or measured values supplied."
+  },
+  "readiness_lattice": [
+    {
+      "does_not_prove": "Completed readiness or resources",
+      "event": "candidate_selected",
+      "proves": "Fresh validating-state selector key"
+    },
+    {
+      "does_not_prove": "Persistent authority",
+      "event": "source_selected",
+      "proves": "Exact detached source after current owner checks"
+    },
+    {
+      "does_not_prove": "Atomic ready snapshot or later admission",
+      "event": "core_ready_to_attempt_owner",
+      "proves": "Actual sequential fresh chain reached owner call"
+    },
+    {
+      "does_not_prove": "Executor submission or all Native admissions",
+      "event": "slot_reserved",
+      "proves": "Actual key lock/resource reservation at that source boundary"
+    },
+    {
+      "does_not_prove": "Internal source/ledger/budget/SQLite admissions succeeded",
+      "event": "native_invocation_enter",
+      "proves": "Original call entered"
+    },
+    {
+      "does_not_prove": "Other checks or future validity",
+      "event": "native_check_return",
+      "proves": "That actual check returned"
+    },
+    {
+      "does_not_prove": "Semantic outcome or other writer identity",
+      "event": "writer_admitted_or_refused",
+      "proves": "That actual statement result"
+    },
+    {
+      "does_not_prove": "All finalization or resource receiving",
+      "event": "catalog_adoption_return",
+      "proves": "Actual publication return under owner CAS"
+    },
+    {
+      "does_not_prove": "Global closure",
+      "event": "resource_received",
+      "proves": "Specific original owning receiver confirmed its boundary"
+    }
+  ],
+  "report": {
+    "bytes": 41283,
+    "path": "/workspace/scratch/21c38f9cc56d/ready-occupancy-measurement.md",
+    "sha256": "be542e35bf90c26a3c4c5b57bf24e73ff4b437f7dbfad97a4787defb70effeea"
+  },
+  "reported_catalog_error_evidence": {
+    "attempt_interval_end_reported": "Entry to SQLAlchemy error callback; later retry/connection/coordination/rollback/receiving excluded.",
+    "availability": "Supplied comment only; original raw/profile bytes and exact diagnostic probe unavailable in the inspected workspace evidence.",
+    "bucket_caller_attribution": "Unknown; no assignment to SDK, background worker or retry family.",
+    "database_code_reported": 5,
+    "database_name_reported": "SQLITE_BUSY",
+    "error_family_reported": "sqlite3.OperationalError",
+    "execute_attempts_reported": 51811,
+    "failed_attempt_thread_cpu_ms_reported": "12.768",
+    "failed_attempt_wall_ms_reported": "18.410",
+    "helper_seconds_reported": "49.217",
+    "historical_418_reclassified": false,
+    "outer_bucket_counts_reported": {
+      "producer.finish": 302,
+      "unparented": 163
+    },
+    "profile_sha256_reported_not_verified": "bdee7c0313e257933888f0fc6058e8387def8c30c1e5f44c3256897d8bd5ee6a",
+    "publication_seconds_reported": "36.315",
+    "raised_attempts_reported": 465,
+    "raw_sha256_reported_not_verified": "5da872016fae26039c92c53d36ec3281374e71b2b8475281cca72d55b8187390",
+    "source_comment": 6890015223,
+    "statement_reported": "BEGIN IMMEDIATE"
+  },
+  "reported_context": {
+    "bytes": 10323,
+    "path": "/workspace/scratch/21c38f9cc56d/ready-occupancy-context.json",
+    "sha256": "0cb37fd8c8c678b177696a234297b90d55bc04c39d6a691ed57775013f266ab1"
+  },
+  "request": {
+    "bytes": 4974,
+    "path": "/workspace/scratch/21c38f9cc56d/ready-occupancy-request.md",
+    "sha256": "a5dac3b1d9ef4280242ece0c7542930454d768e868ca2d80d630ed7267428dd9"
+  },
+  "routes": [
+    {
+      "execution": "Synchronous selected Core unit on caller",
+      "id": "core-direct",
+      "native_executor": false,
+      "native_submission_queue": false
+    },
+    {
+      "concurrent_by_this_sequence": false,
+      "execution": "Generic Core scheduling opportunity followed by selected HTTP seal",
+      "id": "fixture-local-api-seal"
+    },
+    {
+      "capacity_owner": "Actual transport/event loop/limiter, not retained journal slot",
+      "execution": "Actual synchronous endpoint worker for exact request",
+      "id": "http-selected-seal"
+    },
+    {
+      "execution": "Custody/finalization opportunities before upload-session status",
+      "id": "fixture-status-poll",
+      "native_capacity_claim": false
+    },
+    {
+      "execution": "Archive coroutine awaits one asyncio.to_thread call under operation lock; other lifespan tasks are separate",
+      "id": "lifespan-maintenance",
+      "neutral_to_enter_lifespan": false
+    },
+    {
+      "capacity_available_to_native_automatically": false,
+      "execution": "Actual original Future/Thread owner with lane/target grants and receiving",
+      "id": "archive-physical"
+    }
+  ],
+  "source": {
+    "all_pinned_files_equal_exact_base": true,
+    "branch": "reference/external/991-ready-occupancy",
+    "commit": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+    "files": [
+      {
+        "bytes": 15153,
+        "git_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+        "repository_path": "AGENTS.md",
+        "sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3"
+      },
+      {
+        "bytes": 7499,
+        "git_blob": "fbffc8f88664852081da13b4a6411a6465308d51",
+        "repository_path": "pyproject.toml",
+        "sha256": "393c618205afb2234fa7518b4f4762112e09c1959b641fc1344e74bf285c2631"
+      },
+      {
+        "bytes": 439763,
+        "git_blob": "d68e459476062f5cf2a211a24ab8abf361c3d349",
+        "repository_path": "uv.lock",
+        "sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24"
+      },
+      {
+        "bytes": 49828,
+        "git_blob": "6d52e14284cfae432f92d02fac0946887b3cdfa5",
+        "repository_path": "scripts/extent_contract.py",
+        "sha256": "e4375f906ace60a1bf3bc4133f6e15e022ca88ffd069ef6daf2de85b726aab8f"
+      },
+      {
+        "bytes": 22977,
+        "git_blob": "ed5a58be427aaf0dcd873dcef67d30dd44fbd005",
+        "repository_path": "scripts/ci_timing.py",
+        "sha256": "094484571186e28601ed7da51511d4bd59182dd5bd98c138868e82bd216c8895"
+      },
+      {
+        "bytes": 3158,
+        "git_blob": "a151b789b484e01920cffd55829441d11f001e98",
+        "repository_path": "scripts/validation_process.py",
+        "sha256": "93eb45cb32341ff14ec6375d201d867fcad3c680aef8a17952c429b5f161660d"
+      },
+      {
+        "bytes": 445404,
+        "git_blob": "25129310ed6e42e0e56cce1587361caedd617b50",
+        "repository_path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+        "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf"
+      },
+      {
+        "bytes": 83238,
+        "git_blob": "f520c6b3e727e3d5a0fea595762e3dd659100baf",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py",
+        "sha256": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa"
+      },
+      {
+        "bytes": 22266,
+        "git_blob": "c9d368d356a5297270a4d60c26484a450f17bba7",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py",
+        "sha256": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f"
+      },
+      {
+        "bytes": 26780,
+        "git_blob": "5a679509a93d04c2ec1c00f7b68b41e59aa82494",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_rank.py",
+        "sha256": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a"
+      },
+      {
+        "bytes": 15891,
+        "git_blob": "ef161cde4353ef80401796a526702f1b2c8d7b73",
+        "repository_path": "riverhog/src/riverhog_core/services/physical_execution.py",
+        "sha256": "fdba1ac2bceb0b7cf60c93c60c4bf9ae7952cbed7b7cd4f0b702a94f7f81ecbc"
+      },
+      {
+        "bytes": 12386,
+        "git_blob": "fae03621048c7ee59f4600e5107cc84b1c9837f4",
+        "repository_path": "riverhog/src/riverhog_core/catalog_db.py",
+        "sha256": "bf5cec0630fc63886f1b352ef2a1cc398b2fd72b8835a95262d2d0760c258b56"
+      },
+      {
+        "bytes": 34290,
+        "git_blob": "f4c9ca23c553e1a55fe6a25896e38e83dfeb8240",
+        "repository_path": "riverhog/src/riverhog_core/services/archive_write_admission.py",
+        "sha256": "0fc77ad0a5e0ed2e20f98b479d199b86e30f84244b0322baed27e149301610bc"
+      },
+      {
+        "bytes": 9129,
+        "git_blob": "d3ba71155c69ce4f7846920974bafa9b6a9bc82c",
+        "repository_path": "riverhog/src/riverhog_core/services/archive_finalizer_work.py",
+        "sha256": "ed5a544039b2137f075666184868f18b4278a3391bbe400fecd26070f380f00d"
+      },
+      {
+        "bytes": 11202,
+        "git_blob": "97f8f64fccd4716b6d29844b89e2d54953dd0714",
+        "repository_path": "riverhog/src/riverhog_core/services/archive_upload_maintenance.py",
+        "sha256": "bd518fb19e9faf713c71a643bbee5f7e3eeddc60141ce46718d878ab552d1ceb"
+      },
+      {
+        "bytes": 23071,
+        "git_blob": "a66aad307298d549852ec03ddaaa518dc5bd23a1",
+        "repository_path": "riverhog/src/riverhog_core/services/archive_finalizer_registry.py",
+        "sha256": "00b4653750fb3b71a57fac7300c430bcd53700f4954061674bfb36d6f9dfdf2b"
+      },
+      {
+        "bytes": 28982,
+        "git_blob": "8178596be0d6dd0fc43b9e1fbf51e9a00ba6aa71",
+        "repository_path": "riverhog/src/riverhog_core/services/archive_upload_invocations.py",
+        "sha256": "f3e3e577e6f207d8ba8160cc613241bcc6e7b0cae268becbe048e51c52b96102"
+      },
+      {
+        "bytes": 3415,
+        "git_blob": "b533a56d4df2a45cdce5a8e74dbed4e1371f9009",
+        "repository_path": "riverhog/src/riverhog_core/services/archive_finalization_admission.py",
+        "sha256": "3a58cb4d6dbe5a32dc98e5b4946c1157a512f90c37bab02b411592bbfa8d11b0"
+      },
+      {
+        "bytes": 1315,
+        "git_blob": "dc59c9f73d0b8ca98f506c3e99d7f1e231a62893",
+        "repository_path": "riverhog/src/riverhog_core/journal_storage_grants.py",
+        "sha256": "1784c4b448ace0145a80332343e2e54797dc7b27640c782b592b27896143ee96"
+      },
+      {
+        "bytes": 3163,
+        "git_blob": "440bf44d345a0f473925fbc0ff02250c216c1f11",
+        "repository_path": "riverhog/src/riverhog_core/services/journal_storage_resources.py",
+        "sha256": "97a56076f37bd118027cd2de51c480a6858eab6688644cf56182e29afbdb7253"
+      },
+      {
+        "bytes": 21884,
+        "git_blob": "fdba4986f83766d8e499f96085bf0e6163724c99",
+        "repository_path": "riverhog/src/riverhog_core/runtime_config.py",
+        "sha256": "a902d8256912fc1cdbe9f18905e155c5d9c794a34f97a54d9bf9a829fb73ddbb"
+      },
+      {
+        "bytes": 25903,
+        "git_blob": "44440c31af9834c38f6837bea395e2f28ea3633a",
+        "repository_path": "riverhog/src/riverhog_api/app.py",
+        "sha256": "fb3776d921576a7ee8625837364c29fdf5305f792aea53e77c6dea27d092e1c0"
+      },
+      {
+        "bytes": 35649,
+        "git_blob": "7563f72fcffe503f1fcd9efe1f563195c8a74c2c",
+        "repository_path": "riverhog/src/riverhog_api/routers/collections.py",
+        "sha256": "137cc8d06d78c1e3e3707f9863b33b4a0f710518623c418121b8b31212f86078"
+      },
+      {
+        "bytes": 109544,
+        "git_blob": "62d241719635d77924bcaabdc734a9246bc3bc84",
+        "repository_path": "packages/riverhog-client/src/riverhog_client/client.py",
+        "sha256": "918d52350956f0a5028a570a948f395f8a86f0c2360426a56273391016a67736"
+      },
+      {
+        "bytes": 62566,
+        "git_blob": "4800b2dce7a25d8f555c37870e13386f5cee23b2",
+        "repository_path": "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+        "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118"
+      },
+      {
+        "bytes": 101250,
+        "git_blob": "a13682eb5bd17f75868c8f37cc8a28aeb5b66720",
+        "repository_path": "packages/riverhog-provenance/src/riverhog_provenance/_entry_replay.py",
+        "sha256": "a60a71676f75c8d814ce5d419b385a06e223a7ffd51da82b00b5a78b1069c365"
+      },
+      {
+        "bytes": 33605,
+        "git_blob": "d6b8ab6042a31c28addc29ae095c2dc4a3f1c4c4",
+        "repository_path": "packages/sqlite-admission/src/sqlite_admission/__init__.py",
+        "sha256": "059495b6f92aff6a38dcb3fe282d8d3c0f8f2ad8120f89f408ac87c805a89d05"
+      },
+      {
+        "bytes": 70580,
+        "git_blob": "ff6f31a4fb6cf02b931973e8acf6e94e6030f2fb",
+        "repository_path": "tests/unit/test_operation_lifecycle_api.py",
+        "sha256": "18776fb41d02bbdfcaebdc4824677b730b7f6509ccd198290340a165d0784b91"
+      },
+      {
+        "bytes": 17873,
+        "git_blob": "2ad8407877db3717c964317a6172ba20ef4135ec",
+        "repository_path": "tests/unit/test_upload_journal_validation_owner.py",
+        "sha256": "89ea5c08950393bb5f846d0cce9f0270ad497e607c881f40250e953c3df9bb44"
+      },
+      {
+        "bytes": 26473,
+        "git_blob": "8fc5a78d9717399f2c7f64db8bfe2d4325911c05",
+        "repository_path": "tests/unit/test_upload_journal_service_scheduler_growth.py",
+        "sha256": "3892a1d8185038cc284cf9dc2d97741e9a5fea4278f246d47ba6308cc45946c4"
+      },
+      {
+        "bytes": 30848,
+        "git_blob": "b0ba9f0bc083918dbda7954b056ae3890e47d828",
+        "repository_path": "tests/unit/test_upload_journal_service_unit_growth.py",
+        "sha256": "61b989bb902ea95427987ad2650bc41b1720f05f6466b3eb309e955e7f7de009"
+      },
+      {
+        "bytes": 62882,
+        "git_blob": "38fc347b30a9f877ee9ce2c97140e25677c12db1",
+        "repository_path": "tests/unit/test_upload_journal_validation_advance_growth.py",
+        "sha256": "42a37b66702f58222cd7b1d2d4674e237447d28c03e9287f23a89568b0c4fa0c"
+      },
+      {
+        "bytes": 10362,
+        "git_blob": "30c0578ac29ab110504dcea7979c52f04aed076b",
+        "repository_path": "tests/support/qualification/publication_profile.py",
+        "sha256": "8d893cfbb319e10683d7de142a7cac85f713f305fb12e2281b349657449a4da4"
+      },
+      {
+        "bytes": 11000,
+        "git_blob": "3941ed79f0f62632d270b9db90d35f943eb29034",
+        "repository_path": "tests/support/qualification/publication_evidence.py",
+        "sha256": "c18ce32bcd4f5799ad1eb9d167397d65ec902f1f4d2b07b6f82e95f5682a0b75"
+      },
+      {
+        "bytes": 25169,
+        "git_blob": "2ffd93428bce2cf42f2d4f7f004e35c3a9d1cfc3",
+        "repository_path": "tests/support/qualification/canonical_history_scale.py",
+        "sha256": "e9b111ea0ae9aa16182ff5ce29d32e105e83573827b0c47ae29d8f19a63ca48e"
+      },
+      {
+        "bytes": 41187,
+        "git_blob": "994fa3844d40a83bbd8d1e37563cb109b6148b9b",
+        "repository_path": "tests/support/async_retirement_growth.py",
+        "sha256": "4485ede1c80f54e7efa2c75823919a90300943437554da141d086f973799a231"
+      },
+      {
+        "bytes": 7767,
+        "git_blob": "cb5c18c9508fd4a746441a914d6ebb270b5d500f",
+        "repository_path": "tests/support/retirement_transcripts.py",
+        "sha256": "6fa7fb4828b47495972c057105afabd03b530280e634d3b41d98195ca5e2219b"
+      },
+      {
+        "bytes": 3104,
+        "git_blob": "ad0921c624389e46ffc1c25a02b1061cb5ad22eb",
+        "repository_path": "tests/support/sqlite_observation.py",
+        "sha256": "e45fccda811c82c723679cea673cb3d599b831b8df718e6b985e6c55a18973cd"
+      },
+      {
+        "bytes": 9777,
+        "git_blob": "07e824cb9cc15622f812bf9b77dee1c615987f0b",
+        "repository_path": "tests/support/growth_batch.py",
+        "sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8"
+      }
+    ],
+    "initial_source_observation_was_clean": true,
+    "product_diff_from_base": [],
+    "reference_only_packaging_allowed": true,
+    "status_at_inventory_creation": "?? .reference/",
+    "tree": "98cf298e60e4ba9c178229eae907e164265f6e48",
+    "untracked_product_paths": []
+  }
+}

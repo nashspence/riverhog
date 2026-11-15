@@ -1,0 +1,481 @@
+{
+  "audited_source": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+  "audited_tree": "98cf298e60e4ba9c178229eae907e164265f6e48",
+  "checks": {
+    "all_passed": true,
+    "byte_identical_relocated_analysis_files": 8,
+    "distinct_repository_source_files": 72,
+    "exact_pre_codec_delta": true,
+    "exact_supplied_comment_bodies": 3,
+    "explicit_source_ranges": 67,
+    "installed_dependency_ranges": 6,
+    "installed_dependency_source_files": 4,
+    "installed_metadata_and_lock_versions": 9,
+    "local_heading_fragments": 0,
+    "no_runtime_activity_claims_consistent": true,
+    "packet_json_parsed": true,
+    "pinned_github_link_check_scope": "Exact local Git objects, path existence and full source line ranges; not remote URL transport",
+    "pinned_github_source_links": 111,
+    "pinned_uv_binary_hash": true,
+    "prior_reference_product_paths_equal_same_source": true,
+    "product_paths_equal_audited_source": true,
+    "relative_markdown_links": 27,
+    "source_pin_occurrences": 113,
+    "subtree_relationships": 9,
+    "unsupported_sandbox_or_file_markdown_targets": 0,
+    "untracked_product_paths": 0
+  },
+  "classification": "Actual finite static source/packet verification; no product run or runtime interval reconciliation",
+  "command": ".venv/bin/python /workspace/scratch/21c38f9cc56d/verify-ready-occupancy-packet.py",
+  "completed_utc": "2026-11-15T06:17:29.005010+00:00",
+  "elapsed_seconds": 1.3037678350010538,
+  "final_review": {
+    "absence_of_avoidable_serialization_proved": false,
+    "avoidable_serialization_demonstrated": false,
+    "independent_reviewers": [
+      "scheduling_authority_and_lifetime",
+      "fixture_and_source_feasibility",
+      "measurement_and_growth_accounting"
+    ],
+    "material_precisions": [
+      "Native method entry is not proof that internal admission succeeded.",
+      "Physical slot collection follows actual worker exit/join/done-future; later semantic/resource retention is a separate charge."
+    ],
+    "runtime_change_proposed": false
+  },
+  "format": "riverhog-ready-occupancy-static-packet-verification/v1",
+  "packet_files_verified_before_receipt_and_manifest": [
+    {
+      "bytes": 9896,
+      "path": ".reference/EVIDENCE.md",
+      "sha256": "3353c5e3fea7591e13de4d7171a315e0c355f2a97d4308f923641238d8672fb0"
+    },
+    {
+      "bytes": 27460,
+      "path": ".reference/FEASIBILITY.md",
+      "sha256": "4a080374876cdcc031d3bc9751a529dfdb0e83b1f96ce34eb3db9218632768dd"
+    },
+    {
+      "bytes": 4658,
+      "path": ".reference/HANDOFF.md",
+      "sha256": "f2e5d00c76932ee24769519ea2139e733e7542aa0fe2a53f48c7fc307da346bd"
+    },
+    {
+      "bytes": 41283,
+      "path": ".reference/MEASUREMENT.md",
+      "sha256": "be542e35bf90c26a3c4c5b57bf24e73ff4b437f7dbfad97a4787defb70effeea"
+    },
+    {
+      "bytes": 26357,
+      "path": ".reference/OCCUPANCY.md",
+      "sha256": "1ff6b3c9cd630136e3251f941b14d61a59b9093d6036050cc67c04304b418ae0"
+    },
+    {
+      "bytes": 30809,
+      "path": ".reference/OWNERSHIP.md",
+      "sha256": "b4966510dc3e734877fae0fbd06aacffe4a5bcc95873abdf57db2ad072cf5b5d"
+    },
+    {
+      "bytes": 10323,
+      "path": ".reference/evidence/context.json",
+      "sha256": "0cb37fd8c8c678b177696a234297b90d55bc04c39d6a691ed57775013f266ab1"
+    },
+    {
+      "bytes": 26858,
+      "path": ".reference/evidence/growth-inventory.json",
+      "sha256": "62d3ad8d5168e2d7f14b8c72e432e85ea3cd31bf9861476a98befa6115c6eaad"
+    },
+    {
+      "bytes": 26378,
+      "path": ".reference/evidence/ownership-audit.json",
+      "sha256": "797e2cf516a113e9187180cf423db3d77f86ba98a83b8c91439bf6d40c38171f"
+    },
+    {
+      "bytes": 4974,
+      "path": ".reference/evidence/request.md",
+      "sha256": "a5dac3b1d9ef4280242ece0c7542930454d768e868ca2d80d630ed7267428dd9"
+    },
+    {
+      "bytes": 45219,
+      "path": ".reference/evidence/source-audit.json",
+      "sha256": "4b7700ec83ea29b51f0d380bfdb99531f7307f86597e3c83ffd665a505623e00"
+    }
+  ],
+  "product_activity": {
+    "archive_publications": 0,
+    "benchmarks": 0,
+    "calls": 0,
+    "diagnostic_runs": 0,
+    "fixture_creations": 0,
+    "project_imports": 0,
+    "runtime_event_traces": 0,
+    "runtime_interval_reconciler_executions": 0,
+    "test_collection": 0,
+    "test_executions": 0
+  },
+  "publication_verification": "The owning issue will identify the actual remote commit and verified sole-parent/tree/product/manifest relationship after publication; no recursive published-SHA assertion is embedded here.",
+  "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+  "source_files_verified": {
+    "AGENTS.md": {
+      "bytes": 15153,
+      "git_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+      "sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3"
+    },
+    "README.md": {
+      "bytes": 8659,
+      "git_blob": "3a045b5713a34daf7a3f1a7c0b6b6543a45989bc",
+      "sha256": "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"
+    },
+    "mise.lock": {
+      "bytes": 5503,
+      "git_blob": "2f0d2ac0e3f23f1364f1a3594430d04481f6e8bc",
+      "sha256": "4cc8be44172720c07ef6585d104961c718cf108952e587a4fa627e00e1d699db"
+    },
+    "mise.toml": {
+      "bytes": 450,
+      "git_blob": "478821801c5d3cef31353ca5535c6ebed65fbbbc",
+      "sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d"
+    },
+    "packages/riverhog-client/src/riverhog_client/client.py": {
+      "bytes": 109544,
+      "git_blob": "62d241719635d77924bcaabdc734a9246bc3bc84",
+      "sha256": "918d52350956f0a5028a570a948f395f8a86f0c2360426a56273391016a67736"
+    },
+    "packages/riverhog-client/src/riverhog_client/producer.py": {
+      "bytes": 58226,
+      "git_blob": "f03292ba6d1aef05ef74a2ee886d98bf8af5d2f6",
+      "sha256": "d92fa6186abeee36ec2de028a548c4579ebb60b12cb796c20fe4bac1db638916"
+    },
+    "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py": {
+      "bytes": 31352,
+      "git_blob": "75f8b5f8f57317e6a01cec1eec5dffad710149a6",
+      "sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/_entry_replay.py": {
+      "bytes": 101250,
+      "git_blob": "a13682eb5bd17f75868c8f37cc8a28aeb5b66720",
+      "sha256": "a60a71676f75c8d814ce5d419b385a06e223a7ffd51da82b00b5a78b1069c365"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py": {
+      "bytes": 23512,
+      "git_blob": "92d883272377da4940f46c8f9b53d02c596ed53c",
+      "sha256": "432c9b2d53ed77e078a937cba3849dd8afd89a8d0dc82ed60ebc85986e01a0f0"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/epoch_union.py": {
+      "bytes": 6101,
+      "git_blob": "f076c80f2b59d57a2b5a4895860985703b0cde92",
+      "sha256": "3486a97d56205c1dbaf69419a69de311a671827e287d95d2d86707a1c1509974"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/journal.py": {
+      "bytes": 57713,
+      "git_blob": "bd7abd0464b23a161ffac705aad9050cfc1e1e67",
+      "sha256": "ee062255a1f457f5780879d0834932db79fb7fb2264545d54bfcb613d12353d5"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py": {
+      "bytes": 62566,
+      "git_blob": "4800b2dce7a25d8f555c37870e13386f5cee23b2",
+      "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/observer.py": {
+      "bytes": 11356,
+      "git_blob": "11a806b01104f4787a3b297b530bec6e9b23fa1f",
+      "sha256": "d8bd2d7351a3cf0b3f05b2a6ec896866f344e9110c9f5ed95c4a843e9c8f1ee0"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/sources.py": {
+      "bytes": 5582,
+      "git_blob": "34afdde88de3f63d7a0b537ee7bd8f1b4d3fb35d",
+      "sha256": "dbfb9e40a18b2a501ce8b604a4164b1e96495b6a5ef5054b688171d6fe9fb5cf"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/topology_facts.py": {
+      "bytes": 23933,
+      "git_blob": "a37b470c508324116ab3fa751d3ac544e753cd4f",
+      "sha256": "1cd0cad622850a29f3e4a332a940e5ea5387de6e98d9eb4dd71ea1435720fb90"
+    },
+    "packages/sqlite-admission/src/sqlite_admission/__init__.py": {
+      "bytes": 33605,
+      "git_blob": "d6b8ab6042a31c28addc29ae095c2dc4a3f1c4c4",
+      "sha256": "059495b6f92aff6a38dcb3fe282d8d3c0f8f2ad8120f89f408ac87c805a89d05"
+    },
+    "pyproject.toml": {
+      "bytes": 7499,
+      "git_blob": "fbffc8f88664852081da13b4a6411a6465308d51",
+      "sha256": "393c618205afb2234fa7518b4f4762112e09c1959b641fc1344e74bf285c2631"
+    },
+    "riverhog/src/riverhog_api/app.py": {
+      "bytes": 25903,
+      "git_blob": "44440c31af9834c38f6837bea395e2f28ea3633a",
+      "sha256": "fb3776d921576a7ee8625837364c29fdf5305f792aea53e77c6dea27d092e1c0"
+    },
+    "riverhog/src/riverhog_api/routers/collections.py": {
+      "bytes": 35649,
+      "git_blob": "7563f72fcffe503f1fcd9efe1f563195c8a74c2c",
+      "sha256": "137cc8d06d78c1e3e3707f9863b33b4a0f710518623c418121b8b31212f86078"
+    },
+    "riverhog/src/riverhog_core/archive_execution_tuning.py": {
+      "bytes": 1655,
+      "git_blob": "a9d1be8b36b7aebd66c6a69a4d73a6b9893d9e08",
+      "sha256": "31a0128ae424565d0932b63ec2bb5d7e93ecc65ea5e1254e8315e0a37185cc91"
+    },
+    "riverhog/src/riverhog_core/catalog_db.py": {
+      "bytes": 12386,
+      "git_blob": "fae03621048c7ee59f4600e5107cc84b1c9837f4",
+      "sha256": "bf5cec0630fc63886f1b352ef2a1cc398b2fd72b8835a95262d2d0760c258b56"
+    },
+    "riverhog/src/riverhog_core/journal_storage_grants.py": {
+      "bytes": 1315,
+      "git_blob": "dc59c9f73d0b8ca98f506c3e99d7f1e231a62893",
+      "sha256": "1784c4b448ace0145a80332343e2e54797dc7b27640c782b592b27896143ee96"
+    },
+    "riverhog/src/riverhog_core/runtime_config.py": {
+      "bytes": 21884,
+      "git_blob": "fdba4986f83766d8e499f96085bf0e6163724c99",
+      "sha256": "a902d8256912fc1cdbe9f18905e155c5d9c794a34f97a54d9bf9a829fb73ddbb"
+    },
+    "riverhog/src/riverhog_core/services/archive_finalization_admission.py": {
+      "bytes": 3415,
+      "git_blob": "b533a56d4df2a45cdce5a8e74dbed4e1371f9009",
+      "sha256": "3a58cb4d6dbe5a32dc98e5b4946c1157a512f90c37bab02b411592bbfa8d11b0"
+    },
+    "riverhog/src/riverhog_core/services/archive_finalizer_progress.py": {
+      "bytes": 2380,
+      "git_blob": "cadf0bd18e86483e3594689b6e05fd9c35b98659",
+      "sha256": "0dff58a8f4849231e9963e325d3826ec668970e3d4ca0744f98d2b98ab60c76e"
+    },
+    "riverhog/src/riverhog_core/services/archive_finalizer_registry.py": {
+      "bytes": 23071,
+      "git_blob": "a66aad307298d549852ec03ddaaa518dc5bd23a1",
+      "sha256": "00b4653750fb3b71a57fac7300c430bcd53700f4954061674bfb36d6f9dfdf2b"
+    },
+    "riverhog/src/riverhog_core/services/archive_finalizer_work.py": {
+      "bytes": 9129,
+      "git_blob": "d3ba71155c69ce4f7846920974bafa9b6a9bc82c",
+      "sha256": "ed5a544039b2137f075666184868f18b4278a3391bbe400fecd26070f380f00d"
+    },
+    "riverhog/src/riverhog_core/services/archive_upload_drain.py": {
+      "bytes": 8346,
+      "git_blob": "eb69d6ef1944a3936d6363530b7e80732b42467d",
+      "sha256": "efb990ca6e99a7333c53997e3458955efb1741ad0d6c48551bc8fc57e211a993"
+    },
+    "riverhog/src/riverhog_core/services/archive_upload_invocations.py": {
+      "bytes": 28982,
+      "git_blob": "8178596be0d6dd0fc43b9e1fbf51e9a00ba6aa71",
+      "sha256": "f3e3e577e6f207d8ba8160cc613241bcc6e7b0cae268becbe048e51c52b96102"
+    },
+    "riverhog/src/riverhog_core/services/archive_upload_maintenance.py": {
+      "bytes": 11202,
+      "git_blob": "97f8f64fccd4716b6d29844b89e2d54953dd0714",
+      "sha256": "bd518fb19e9faf713c71a643bbee5f7e3eeddc60141ce46718d878ab552d1ceb"
+    },
+    "riverhog/src/riverhog_core/services/archive_write_admission.py": {
+      "bytes": 34290,
+      "git_blob": "f4c9ca23c553e1a55fe6a25896e38e83dfeb8240",
+      "sha256": "0fc77ad0a5e0ed2e20f98b479d199b86e30f84244b0322baed27e149301610bc"
+    },
+    "riverhog/src/riverhog_core/services/collection_uploads.py": {
+      "bytes": 445404,
+      "git_blob": "25129310ed6e42e0e56cce1587361caedd617b50",
+      "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf"
+    },
+    "riverhog/src/riverhog_core/services/journal_storage_resources.py": {
+      "bytes": 3163,
+      "git_blob": "440bf44d345a0f473925fbc0ff02250c216c1f11",
+      "sha256": "97a56076f37bd118027cd2de51c480a6858eab6688644cf56182e29afbdb7253"
+    },
+    "riverhog/src/riverhog_core/services/physical_execution.py": {
+      "bytes": 15891,
+      "git_blob": "ef161cde4353ef80401796a526702f1b2c8d7b73",
+      "sha256": "fdba1ac2bceb0b7cf60c93c60c4bf9ae7952cbed7b7cd4f0b702a94f7f81ecbc"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_certificates.py": {
+      "bytes": 34480,
+      "git_blob": "f4284ca2367d2c4875dfa86d962d73df7018e2d0",
+      "sha256": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_cleanup.py": {
+      "bytes": 11539,
+      "git_blob": "fec165e99eaac9137b921ab3dd4381de96ecc544",
+      "sha256": "aa6ca4387ea11999cfe1f405925ba25394a06982245b97a76e374240e17de920"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_epochs.py": {
+      "bytes": 17654,
+      "git_blob": "0f9e92fc3cb41e60dab36fd5dbfbd50c1fe42fda",
+      "sha256": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_rank.py": {
+      "bytes": 26780,
+      "git_blob": "5a679509a93d04c2ec1c00f7b68b41e59aa82494",
+      "sha256": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_replay.py": {
+      "bytes": 8035,
+      "git_blob": "f16d14ce82fa661c1991980911c9bfb721ac25af",
+      "sha256": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_source.py": {
+      "bytes": 23994,
+      "git_blob": "551764a542a937240be84d260db0cfe03c3e0e7d",
+      "sha256": "6ecd01d9a9fb3c85d50433e89f73bbdaaaebd9dde5b1586566ae66258a8f5d3c"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_topology.py": {
+      "bytes": 10683,
+      "git_blob": "bef071d62dbd88375bfc6f7a11591fb1e4b4f051",
+      "sha256": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_union.py": {
+      "bytes": 29630,
+      "git_blob": "c1db895921befc58fb7e9409047851928a7e9ead",
+      "sha256": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py": {
+      "bytes": 22266,
+      "git_blob": "c9d368d356a5297270a4d60c26484a450f17bba7",
+      "sha256": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py": {
+      "bytes": 83238,
+      "git_blob": "f520c6b3e727e3d5a0fea595762e3dd659100baf",
+      "sha256": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa"
+    },
+    "scripts/ci_timing.py": {
+      "bytes": 22977,
+      "git_blob": "ed5a58be427aaf0dcd873dcef67d30dd44fbd005",
+      "sha256": "094484571186e28601ed7da51511d4bd59182dd5bd98c138868e82bd216c8895"
+    },
+    "scripts/extent_contract.py": {
+      "bytes": 49828,
+      "git_blob": "6d52e14284cfae432f92d02fac0946887b3cdfa5",
+      "sha256": "e4375f906ace60a1bf3bc4133f6e15e022ca88ffd069ef6daf2de85b726aab8f"
+    },
+    "scripts/validation_process.py": {
+      "bytes": 3158,
+      "git_blob": "a151b789b484e01920cffd55829441d11f001e98",
+      "sha256": "93eb45cb32341ff14ec6375d201d867fcad3c680aef8a17952c429b5f161660d"
+    },
+    "tests/conftest.py": {
+      "bytes": 9749,
+      "git_blob": "876fbd9e81a7351b512ab756f59004c22a4e06e4",
+      "sha256": "777a04ff8175399d407134920e2bb864a11fdc1bcb1880c0f60b5e6a3e1bfbd3"
+    },
+    "tests/support/async_retirement_growth.py": {
+      "bytes": 41187,
+      "git_blob": "994fa3844d40a83bbd8d1e37563cb109b6148b9b",
+      "sha256": "4485ede1c80f54e7efa2c75823919a90300943437554da141d086f973799a231"
+    },
+    "tests/support/finalization.py": {
+      "bytes": 1705,
+      "git_blob": "ea542f3c0667a404c7969a225b603d7140e4b18c",
+      "sha256": "4708fec7dbb839f5e8cd4bb7894a40c9d8692054ef3ef228e89f2cbf2004ffd1"
+    },
+    "tests/support/growth_batch.py": {
+      "bytes": 9777,
+      "git_blob": "07e824cb9cc15622f812bf9b77dee1c615987f0b",
+      "sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8"
+    },
+    "tests/support/native_construction.py": {
+      "bytes": 2020,
+      "git_blob": "594c612cb41e3edf634ca9c4982c9efce8c08bbd",
+      "sha256": "b09812842f7b1b486a1657a101e153a4ca6ec28c3a813b3cd2431b156af8ab0a"
+    },
+    "tests/support/qualification/canonical_history_scale.py": {
+      "bytes": 25169,
+      "git_blob": "2ffd93428bce2cf42f2d4f7f004e35c3a9d1cfc3",
+      "sha256": "e9b111ea0ae9aa16182ff5ce29d32e105e83573827b0c47ae29d8f19a63ca48e"
+    },
+    "tests/support/qualification/publication_evidence.py": {
+      "bytes": 11000,
+      "git_blob": "3941ed79f0f62632d270b9db90d35f943eb29034",
+      "sha256": "c18ce32bcd4f5799ad1eb9d167397d65ec902f1f4d2b07b6f82e95f5682a0b75"
+    },
+    "tests/support/qualification/publication_profile.py": {
+      "bytes": 10362,
+      "git_blob": "30c0578ac29ab110504dcea7979c52f04aed076b",
+      "sha256": "8d893cfbb319e10683d7de142a7cac85f713f305fb12e2281b349657449a4da4"
+    },
+    "tests/support/retirement_transcripts.py": {
+      "bytes": 7767,
+      "git_blob": "cb5c18c9508fd4a746441a914d6ebb270b5d500f",
+      "sha256": "6fa7fb4828b47495972c057105afabd03b530280e634d3b41d98195ca5e2219b"
+    },
+    "tests/support/sqlite_observation.py": {
+      "bytes": 3104,
+      "git_blob": "ad0921c624389e46ffc1c25a02b1061cb5ad22eb",
+      "sha256": "e45fccda811c82c723679cea673cb3d599b831b8df718e6b985e6c55a18973cd"
+    },
+    "tests/unit/test_journal_capture.py": {
+      "bytes": 18643,
+      "git_blob": "2c30f8c0efd66d660c047eb68630569764c2e4bb",
+      "sha256": "d692238404bd79060f6331a6fec403461f10a2ce19f485d2a969139cbcf8750e"
+    },
+    "tests/unit/test_journal_epoch_rank.py": {
+      "bytes": 24247,
+      "git_blob": "2a2ca449ece89b84a38d96f586d15a70402bb064",
+      "sha256": "5213e3c08d59d0d58691918c9370b88166db8c1cf37d45073280ab1055287184"
+    },
+    "tests/unit/test_journal_epoch_union.py": {
+      "bytes": 25698,
+      "git_blob": "c8ee2ec3eac2b79182afdd70d1175a3d38fde727",
+      "sha256": "9ff1077c1e4ceea7d13080132e739e8cdca77cd8898ccc9bdd28a42db140f595"
+    },
+    "tests/unit/test_journal_summary_consumers.py": {
+      "bytes": 7854,
+      "git_blob": "606243def3ab2c01aba8ed1b5b922bb4dd882dfc",
+      "sha256": "ee69678fce64ef076b786502da9854b20558200b50fa7cad782d2cd92724e13a"
+    },
+    "tests/unit/test_journal_validation_handoff.py": {
+      "bytes": 14678,
+      "git_blob": "5b7888b8141ddfcc807bca787a2eb50f53422614",
+      "sha256": "6d85e966e9370b65494d042fb4dc092d6285c5c850cdf3061d2abc5f01a1e72f"
+    },
+    "tests/unit/test_operation_lifecycle_api.py": {
+      "bytes": 70580,
+      "git_blob": "ff6f31a4fb6cf02b931973e8acf6e94e6030f2fb",
+      "sha256": "18776fb41d02bbdfcaebdc4824677b730b7f6509ccd198290340a165d0784b91"
+    },
+    "tests/unit/test_staged_journal_range.py": {
+      "bytes": 13833,
+      "git_blob": "b41dbb8fc2611eb39cc89cdb4a1e22dc412199c7",
+      "sha256": "5593472e6e6361fd324552ea4096739e04aec68862fb9fa38e502f01a2ee722b"
+    },
+    "tests/unit/test_upload_journal_certificates.py": {
+      "bytes": 8841,
+      "git_blob": "2e4c604f7d1febc9da786ed4ebf58381752923c3",
+      "sha256": "327ee800a2e37a8487a9cbd091c7fce0f12955fa99e7d1e0533fe3d8b9c4e9ad"
+    },
+    "tests/unit/test_upload_journal_service_caller_growth.py": {
+      "bytes": 13978,
+      "git_blob": "a89aa3767d18fafc1fee2d0c761d8693e502bf50",
+      "sha256": "e5c700e84c373b22c3e1ed89eba2a5b20068259f5401d1e940af012ac3629f8b"
+    },
+    "tests/unit/test_upload_journal_service_scheduler_growth.py": {
+      "bytes": 26473,
+      "git_blob": "8fc5a78d9717399f2c7f64db8bfe2d4325911c05",
+      "sha256": "3892a1d8185038cc284cf9dc2d97741e9a5fea4278f246d47ba6308cc45946c4"
+    },
+    "tests/unit/test_upload_journal_service_unit_growth.py": {
+      "bytes": 30848,
+      "git_blob": "b0ba9f0bc083918dbda7954b056ae3890e47d828",
+      "sha256": "61b989bb902ea95427987ad2650bc41b1720f05f6466b3eb309e955e7f7de009"
+    },
+    "tests/unit/test_upload_journal_validation_advance_growth.py": {
+      "bytes": 62882,
+      "git_blob": "38fc347b30a9f877ee9ce2c97140e25677c12db1",
+      "sha256": "42a37b66702f58222cd7b1d2d4674e237447d28c03e9287f23a89568b0c4fa0c"
+    },
+    "tests/unit/test_upload_journal_validation_custody.py": {
+      "bytes": 17427,
+      "git_blob": "e60afdf3efa2aa6d672783bd737aba686b9ddd40",
+      "sha256": "58261932c4ddcdb7fe611b0c065eb36f2f68e52d5ec24cf557ebb5731084f759"
+    },
+    "tests/unit/test_upload_journal_validation_owner.py": {
+      "bytes": 17873,
+      "git_blob": "2ad8407877db3717c964317a6172ba20ef4135ec",
+      "sha256": "89ea5c08950393bb5f846d0cce9f0270ad497e607c881f40250e953c3df9bb44"
+    },
+    "uv.lock": {
+      "bytes": 439763,
+      "git_blob": "d68e459476062f5cf2a211a24ab8abf361c3d349",
+      "sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24"
+    }
+  },
+  "verifier_sha256": "053f865925d6bb72e2eda63d4ae9c5951515429888245eb6027347a000a7867b"
+}

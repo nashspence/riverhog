@@ -1,0 +1,1015 @@
+{
+  "format": "riverhog-ready-occupancy-static-audit/v1",
+  "generated_utc": "2026-11-15T06:08:15.342474+00:00",
+  "limits": [
+    "No actual queue, admission, start/receive or worker-occupancy interval was measured.",
+    "Candidate rows, active_keys, a prior successful guard or retained slot capacity are not current independent executor availability.",
+    "The existing terminal-driving tests and full publication profile were inspected but not called.",
+    "The static source snapshot is distinct from any later evidence-only packaging commit.",
+    "No G10/G12/G13 or whole-path growth, throughput or timing acceptance is claimed."
+  ],
+  "method": {
+    "metadata_reader": "Python standard library only.",
+    "product_fixture_probe_benchmark_or_publication_runs": 0,
+    "product_or_test_modules_imported": false,
+    "repository_edits": false,
+    "scope": "Static source, exact Git trees/blobs, distribution METADATA, lock files and supplied public issue bodies only.",
+    "test_collection_or_execution": false,
+    "version_commands_run": false
+  },
+  "prior_reports": {
+    "catalog_error_diagnostic": {
+      "attribution": "Receiving report only; no new run. Failed-attempt intervals exclude later retry/coordination/receiving and are not a concurrent critical path. This does not classify the historical 418.",
+      "comment_id": 6890015223,
+      "original_raw_or_profile_independently_read_here": false,
+      "reported_complete_helper_seconds": 49.217,
+      "reported_error_class": "sqlite3.OperationalError",
+      "reported_exact_parameter_free_statement": "BEGIN IMMEDIATE",
+      "reported_execute_attempts": 51811,
+      "reported_profile_sha256": "bdee7c0313e257933888f0fc6058e8387def8c30c1e5f44c3256897d8bd5ee6a",
+      "reported_publication_seconds": 36.315,
+      "reported_raised_attempts": 465,
+      "reported_raw_sha256": "5da872016fae26039c92c53d36ec3281374e71b2b8475281cca72d55b8187390",
+      "reported_sqlite_code": 5,
+      "reported_sqlite_name": "SQLITE_BUSY"
+    },
+    "core_decision": {
+      "attribution": "Supplied owning decision retains one-step execution and per-step catalog adoption.",
+      "comment_id": 6889902338,
+      "reported_reference": "46ace062078d08cd70f508a3f3a7d834a92cbb40"
+    },
+    "qualification": {
+      "attribution": "Receiving-owner report only, not independently run or raw-artifact reconciled by this task.",
+      "comment_id": 6889181049,
+      "reported_actual_jobs": 31,
+      "reported_executions": 54,
+      "reported_scoped_witnesses": 48,
+      "reported_selected_cases": 7579,
+      "reported_top_level_samples": 1219,
+      "reported_workloads": 26,
+      "source": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "tested_merge": "05abffaef7f87a93b4949fcd6981e4ce6d033864"
+    }
+  },
+  "repository": {
+    "branch": "reference/external/991-ready-occupancy",
+    "clean_before_and_after": true,
+    "head": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+    "path": "/workspace/scratch/21c38f9cc56d/riverhog",
+    "root_tree": "98cf298e60e4ba9c178229eae907e164265f6e48",
+    "status_end": "",
+    "status_start": ""
+  },
+  "source_citations": [
+    {
+      "end_line": 369,
+      "label": "two-key",
+      "path": "tests/unit/test_upload_journal_validation_owner.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 324
+    },
+    {
+      "end_line": 120,
+      "label": "transport",
+      "path": "tests/unit/test_staged_journal_range.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 42
+    },
+    {
+      "end_line": 65,
+      "label": "capture-fixture",
+      "path": "tests/unit/test_journal_capture.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 49
+    },
+    {
+      "end_line": 37,
+      "label": "source",
+      "path": "tests/unit/test_journal_summary_consumers.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 22
+    },
+    {
+      "end_line": 300,
+      "label": "scheduler-fixture",
+      "path": "tests/unit/test_upload_journal_validation_owner.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 289
+    },
+    {
+      "end_line": 245,
+      "label": "graph",
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/observer.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 73
+    },
+    {
+      "end_line": 64,
+      "label": "bytes-source",
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/sources.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 24
+    },
+    {
+      "end_line": 888,
+      "label": "author",
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/journal.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 845
+    },
+    {
+      "end_line": 2177,
+      "label": "unit",
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 2122
+    },
+    {
+      "end_line": 433,
+      "label": "epoch",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_epochs.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 332
+    },
+    {
+      "end_line": 298,
+      "label": "cleanup",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_cleanup.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 288
+    },
+    {
+      "end_line": 115,
+      "label": "topology-facts",
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/topology_facts.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 82
+    },
+    {
+      "end_line": 289,
+      "label": "topology",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_topology.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 166
+    },
+    {
+      "end_line": 358,
+      "label": "union-phases",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_union.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 302
+    },
+    {
+      "end_line": 773,
+      "label": "union-loop",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_union.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 619
+    },
+    {
+      "end_line": 534,
+      "label": "rank-phases",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_rank.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 480
+    },
+    {
+      "end_line": 683,
+      "label": "rank-loop",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_rank.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 664
+    },
+    {
+      "end_line": 87,
+      "label": "replay",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_replay.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 73
+    },
+    {
+      "end_line": 2251,
+      "label": "scheduler",
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 2209
+    },
+    {
+      "end_line": 1897,
+      "label": "reserve",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 1836
+    },
+    {
+      "end_line": 75,
+      "label": "budget",
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 66
+    },
+    {
+      "end_line": 3669,
+      "label": "finalization",
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 3618
+    },
+    {
+      "end_line": 7384,
+      "label": "finalization-ready",
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 7369
+    },
+    {
+      "end_line": 351,
+      "label": "rank-corruption",
+      "path": "tests/unit/test_journal_epoch_rank.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 306
+    },
+    {
+      "end_line": 438,
+      "label": "owned-source",
+      "path": "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 402
+    },
+    {
+      "end_line": 271,
+      "label": "unrelated",
+      "path": "tests/unit/test_journal_validation_handoff.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 201
+    },
+    {
+      "end_line": 334,
+      "label": "readers",
+      "path": "tests/unit/test_upload_journal_validation_custody.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 236
+    },
+    {
+      "end_line": 358,
+      "label": "publication",
+      "path": "tests/support/qualification/canonical_history_scale.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 96
+    },
+    {
+      "end_line": 290,
+      "label": "local-api",
+      "path": "tests/unit/test_operation_lifecycle_api.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 234
+    },
+    {
+      "end_line": 1642,
+      "label": "sdk-upload",
+      "path": "packages/riverhog-client/src/riverhog_client/client.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 1589
+    },
+    {
+      "end_line": 607,
+      "label": "http-seal",
+      "path": "riverhog/src/riverhog_api/routers/collections.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 593
+    },
+    {
+      "end_line": 2120,
+      "label": "selected-core",
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 2086
+    },
+    {
+      "end_line": 384,
+      "label": "lifespan",
+      "path": "riverhog/src/riverhog_api/app.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 343
+    },
+    {
+      "end_line": 293,
+      "label": "topology-advance",
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/topology_facts.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 262
+    },
+    {
+      "end_line": 7928,
+      "label": "selector",
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "source_sha": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+      "start_line": 7905
+    }
+  ],
+  "source_file_pins": {
+    "AGENTS.md": {
+      "bytes": 15153,
+      "git_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+      "lines": 172,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/AGENTS.md",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3",
+      "working_equals_expected_blob": true
+    },
+    "README.md": {
+      "bytes": 8659,
+      "git_blob": "3a045b5713a34daf7a3f1a7c0b6b6543a45989bc",
+      "lines": 111,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/README.md",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2",
+      "working_equals_expected_blob": true
+    },
+    "mise.lock": {
+      "bytes": 5503,
+      "git_blob": "2f0d2ac0e3f23f1364f1a3594430d04481f6e8bc",
+      "lines": 114,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/mise.lock",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "4cc8be44172720c07ef6585d104961c718cf108952e587a4fa627e00e1d699db",
+      "working_equals_expected_blob": true
+    },
+    "mise.toml": {
+      "bytes": 450,
+      "git_blob": "478821801c5d3cef31353ca5535c6ebed65fbbbc",
+      "lines": 14,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/mise.toml",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-client/src/riverhog_client/client.py": {
+      "bytes": 109544,
+      "git_blob": "62d241719635d77924bcaabdc734a9246bc3bc84",
+      "lines": 2815,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-client/src/riverhog_client/client.py",
+      "sha256": "918d52350956f0a5028a570a948f395f8a86f0c2360426a56273391016a67736",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-client/src/riverhog_client/producer.py": {
+      "bytes": 58226,
+      "git_blob": "f03292ba6d1aef05ef74a2ee886d98bf8af5d2f6",
+      "lines": 1405,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-client/src/riverhog_client/producer.py",
+      "sha256": "d92fa6186abeee36ec2de028a548c4579ebb60b12cb796c20fe4bac1db638916",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py": {
+      "bytes": 31352,
+      "git_blob": "75f8b5f8f57317e6a01cec1eec5dffad710149a6",
+      "lines": 769,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py": {
+      "bytes": 23512,
+      "git_blob": "92d883272377da4940f46c8f9b53d02c596ed53c",
+      "lines": 606,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "432c9b2d53ed77e078a937cba3849dd8afd89a8d0dc82ed60ebc85986e01a0f0",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/epoch_union.py": {
+      "bytes": 6101,
+      "git_blob": "f076c80f2b59d57a2b5a4895860985703b0cde92",
+      "lines": 169,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/epoch_union.py",
+      "sha256": "3486a97d56205c1dbaf69419a69de311a671827e287d95d2d86707a1c1509974",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/journal.py": {
+      "bytes": 57713,
+      "git_blob": "bd7abd0464b23a161ffac705aad9050cfc1e1e67",
+      "lines": 1446,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/journal.py",
+      "sha256": "ee062255a1f457f5780879d0834932db79fb7fb2264545d54bfcb613d12353d5",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py": {
+      "bytes": 62566,
+      "git_blob": "4800b2dce7a25d8f555c37870e13386f5cee23b2",
+      "lines": 1611,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/observer.py": {
+      "bytes": 11356,
+      "git_blob": "11a806b01104f4787a3b297b530bec6e9b23fa1f",
+      "lines": 246,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/observer.py",
+      "sha256": "d8bd2d7351a3cf0b3f05b2a6ec896866f344e9110c9f5ed95c4a843e9c8f1ee0",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/sources.py": {
+      "bytes": 5582,
+      "git_blob": "34afdde88de3f63d7a0b537ee7bd8f1b4d3fb35d",
+      "lines": 156,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/sources.py",
+      "sha256": "dbfb9e40a18b2a501ce8b604a4164b1e96495b6a5ef5054b688171d6fe9fb5cf",
+      "working_equals_expected_blob": true
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/topology_facts.py": {
+      "bytes": 23933,
+      "git_blob": "a37b470c508324116ab3fa751d3ac544e753cd4f",
+      "lines": 668,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/topology_facts.py",
+      "sha256": "1cd0cad622850a29f3e4a332a940e5ea5387de6e98d9eb4dd71ea1435720fb90",
+      "working_equals_expected_blob": true
+    },
+    "pyproject.toml": {
+      "bytes": 7499,
+      "git_blob": "fbffc8f88664852081da13b4a6411a6465308d51",
+      "lines": 191,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/pyproject.toml",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "393c618205afb2234fa7518b4f4762112e09c1959b641fc1344e74bf285c2631",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_api/app.py": {
+      "bytes": 25903,
+      "git_blob": "44440c31af9834c38f6837bea395e2f28ea3633a",
+      "lines": 641,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/app.py",
+      "sha256": "fb3776d921576a7ee8625837364c29fdf5305f792aea53e77c6dea27d092e1c0",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_api/routers/collections.py": {
+      "bytes": 35649,
+      "git_blob": "7563f72fcffe503f1fcd9efe1f563195c8a74c2c",
+      "lines": 963,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_api/routers/collections.py",
+      "sha256": "137cc8d06d78c1e3e3707f9863b33b4a0f710518623c418121b8b31212f86078",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/journal_storage_grants.py": {
+      "bytes": 1315,
+      "git_blob": "dc59c9f73d0b8ca98f506c3e99d7f1e231a62893",
+      "lines": 32,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/journal_storage_grants.py",
+      "sha256": "1784c4b448ace0145a80332343e2e54797dc7b27640c782b592b27896143ee96",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/runtime_config.py": {
+      "bytes": 21884,
+      "git_blob": "fdba4986f83766d8e499f96085bf0e6163724c99",
+      "lines": 421,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/runtime_config.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "a902d8256912fc1cdbe9f18905e155c5d9c794a34f97a54d9bf9a829fb73ddbb",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/collection_uploads.py": {
+      "bytes": 445404,
+      "git_blob": "25129310ed6e42e0e56cce1587361caedd617b50",
+      "lines": 10333,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/collection_uploads.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/journal_storage_resources.py": {
+      "bytes": 3163,
+      "git_blob": "440bf44d345a0f473925fbc0ff02250c216c1f11",
+      "lines": 77,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/journal_storage_resources.py",
+      "sha256": "97a56076f37bd118027cd2de51c480a6858eab6688644cf56182e29afbdb7253",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_certificates.py": {
+      "bytes": 34480,
+      "git_blob": "f4284ca2367d2c4875dfa86d962d73df7018e2d0",
+      "lines": 940,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_certificates.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_cleanup.py": {
+      "bytes": 11539,
+      "git_blob": "fec165e99eaac9137b921ab3dd4381de96ecc544",
+      "lines": 298,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_cleanup.py",
+      "sha256": "aa6ca4387ea11999cfe1f405925ba25394a06982245b97a76e374240e17de920",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_epochs.py": {
+      "bytes": 17654,
+      "git_blob": "0f9e92fc3cb41e60dab36fd5dbfbd50c1fe42fda",
+      "lines": 433,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_epochs.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_rank.py": {
+      "bytes": 26780,
+      "git_blob": "5a679509a93d04c2ec1c00f7b68b41e59aa82494",
+      "lines": 683,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_rank.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_replay.py": {
+      "bytes": 8035,
+      "git_blob": "f16d14ce82fa661c1991980911c9bfb721ac25af",
+      "lines": 212,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_replay.py",
+      "sha256": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_source.py": {
+      "bytes": 23994,
+      "git_blob": "551764a542a937240be84d260db0cfe03c3e0e7d",
+      "lines": 577,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_source.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "6ecd01d9a9fb3c85d50433e89f73bbdaaaebd9dde5b1586566ae66258a8f5d3c",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_topology.py": {
+      "bytes": 10683,
+      "git_blob": "bef071d62dbd88375bfc6f7a11591fb1e4b4f051",
+      "lines": 289,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_topology.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_union.py": {
+      "bytes": 29630,
+      "git_blob": "c1db895921befc58fb7e9409047851928a7e9ead",
+      "lines": 773,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_union.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py": {
+      "bytes": 22266,
+      "git_blob": "c9d368d356a5297270a4d60c26484a450f17bba7",
+      "lines": 630,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f",
+      "working_equals_expected_blob": true
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py": {
+      "bytes": 83238,
+      "git_blob": "f520c6b3e727e3d5a0fea595762e3dd659100baf",
+      "lines": 2165,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_validation_owner.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa",
+      "working_equals_expected_blob": true
+    },
+    "tests/conftest.py": {
+      "bytes": 9749,
+      "git_blob": "876fbd9e81a7351b512ab756f59004c22a4e06e4",
+      "lines": 257,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/conftest.py",
+      "sha256": "777a04ff8175399d407134920e2bb864a11fdc1bcb1880c0f60b5e6a3e1bfbd3",
+      "working_equals_expected_blob": true
+    },
+    "tests/support/growth_batch.py": {
+      "bytes": 9777,
+      "git_blob": "07e824cb9cc15622f812bf9b77dee1c615987f0b",
+      "lines": 217,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/growth_batch.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8",
+      "working_equals_expected_blob": true
+    },
+    "tests/support/native_construction.py": {
+      "bytes": 2020,
+      "git_blob": "594c612cb41e3edf634ca9c4982c9efce8c08bbd",
+      "lines": 60,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/native_construction.py",
+      "sha256": "b09812842f7b1b486a1657a101e153a4ca6ec28c3a813b3cd2431b156af8ab0a",
+      "working_equals_expected_blob": true
+    },
+    "tests/support/qualification/canonical_history_scale.py": {
+      "bytes": 25169,
+      "git_blob": "2ffd93428bce2cf42f2d4f7f004e35c3a9d1cfc3",
+      "lines": 600,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/qualification/canonical_history_scale.py",
+      "sha256": "e9b111ea0ae9aa16182ff5ce29d32e105e83573827b0c47ae29d8f19a63ca48e",
+      "working_equals_expected_blob": true
+    },
+    "tests/support/qualification/publication_profile.py": {
+      "bytes": 10362,
+      "git_blob": "30c0578ac29ab110504dcea7979c52f04aed076b",
+      "lines": 247,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/support/qualification/publication_profile.py",
+      "sha256": "8d893cfbb319e10683d7de142a7cac85f713f305fb12e2281b349657449a4da4",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_journal_capture.py": {
+      "bytes": 18643,
+      "git_blob": "2c30f8c0efd66d660c047eb68630569764c2e4bb",
+      "lines": 468,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_journal_capture.py",
+      "sha256": "d692238404bd79060f6331a6fec403461f10a2ce19f485d2a969139cbcf8750e",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_journal_epoch_rank.py": {
+      "bytes": 24247,
+      "git_blob": "2a2ca449ece89b84a38d96f586d15a70402bb064",
+      "lines": 576,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_journal_epoch_rank.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "5213e3c08d59d0d58691918c9370b88166db8c1cf37d45073280ab1055287184",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_journal_epoch_union.py": {
+      "bytes": 25698,
+      "git_blob": "c8ee2ec3eac2b79182afdd70d1175a3d38fde727",
+      "lines": 623,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_journal_epoch_union.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "9ff1077c1e4ceea7d13080132e739e8cdca77cd8898ccc9bdd28a42db140f595",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_journal_summary_consumers.py": {
+      "bytes": 7854,
+      "git_blob": "606243def3ab2c01aba8ed1b5b922bb4dd882dfc",
+      "lines": 186,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_journal_summary_consumers.py",
+      "sha256": "ee69678fce64ef076b786502da9854b20558200b50fa7cad782d2cd92724e13a",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_journal_validation_handoff.py": {
+      "bytes": 14678,
+      "git_blob": "5b7888b8141ddfcc807bca787a2eb50f53422614",
+      "lines": 348,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_journal_validation_handoff.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "6d85e966e9370b65494d042fb4dc092d6285c5c850cdf3061d2abc5f01a1e72f",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_operation_lifecycle_api.py": {
+      "bytes": 70580,
+      "git_blob": "ff6f31a4fb6cf02b931973e8acf6e94e6030f2fb",
+      "lines": 1715,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_operation_lifecycle_api.py",
+      "sha256": "18776fb41d02bbdfcaebdc4824677b730b7f6509ccd198290340a165d0784b91",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_staged_journal_range.py": {
+      "bytes": 13833,
+      "git_blob": "b41dbb8fc2611eb39cc89cdb4a1e22dc412199c7",
+      "lines": 346,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_staged_journal_range.py",
+      "sha256": "5593472e6e6361fd324552ea4096739e04aec68862fb9fa38e502f01a2ee722b",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_upload_journal_certificates.py": {
+      "bytes": 8841,
+      "git_blob": "2e4c604f7d1febc9da786ed4ebf58381752923c3",
+      "lines": 219,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_upload_journal_certificates.py",
+      "sha256": "327ee800a2e37a8487a9cbd091c7fce0f12955fa99e7d1e0533fe3d8b9c4e9ad",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_upload_journal_service_caller_growth.py": {
+      "bytes": 13978,
+      "git_blob": "a89aa3767d18fafc1fee2d0c761d8693e502bf50",
+      "lines": 324,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_upload_journal_service_caller_growth.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "e5c700e84c373b22c3e1ed89eba2a5b20068259f5401d1e940af012ac3629f8b",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_upload_journal_service_scheduler_growth.py": {
+      "bytes": 26473,
+      "git_blob": "8fc5a78d9717399f2c7f64db8bfe2d4325911c05",
+      "lines": 629,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_upload_journal_service_scheduler_growth.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "3892a1d8185038cc284cf9dc2d97741e9a5fea4278f246d47ba6308cc45946c4",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_upload_journal_service_unit_growth.py": {
+      "bytes": 30848,
+      "git_blob": "b0ba9f0bc083918dbda7954b056ae3890e47d828",
+      "lines": 732,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_upload_journal_service_unit_growth.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "61b989bb902ea95427987ad2650bc41b1720f05f6466b3eb309e955e7f7de009",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_upload_journal_validation_custody.py": {
+      "bytes": 17427,
+      "git_blob": "e60afdf3efa2aa6d672783bd737aba686b9ddd40",
+      "lines": 377,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_upload_journal_validation_custody.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "58261932c4ddcdb7fe611b0c065eb36f2f68e52d5ec24cf557ebb5731084f759",
+      "working_equals_expected_blob": true
+    },
+    "tests/unit/test_upload_journal_validation_owner.py": {
+      "bytes": 17873,
+      "git_blob": "2ad8407877db3717c964317a6172ba20ef4135ec",
+      "lines": 415,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_upload_journal_validation_owner.py",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "89ea5c08950393bb5f846d0cce9f0270ad497e607c881f40250e953c3df9bb44",
+      "working_equals_expected_blob": true
+    },
+    "uv.lock": {
+      "bytes": 439763,
+      "git_blob": "d68e459476062f5cf2a211a24ab8abf361c3d349",
+      "lines": 4249,
+      "path": "/workspace/scratch/21c38f9cc56d/riverhog/uv.lock",
+      "same_sha256_as_prior_static_audit": true,
+      "sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+      "working_equals_expected_blob": true
+    }
+  },
+  "source_reconciliation": {
+    "changed_paths_since_pre_codec": [
+      "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py",
+      "packages/riverhog-provenance/tests/test_validation_checkpoint.py"
+    ],
+    "numstat_since_pre_codec": [
+      "8\t10\tpackages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py",
+      "42\t0\tpackages/riverhog-provenance/tests/test_validation_checkpoint.py"
+    ],
+    "pre_codec_base": "3b47cbba770c31eb1487b50f7e3b16533c10e827",
+    "prior_static_audit": {
+      "bytes": 40313,
+      "path": "/workspace/scratch/21c38f9cc56d/core-stepping-source-audit.json",
+      "sha256": "f503abb623fa07849f20fe8f2aff4765f59d81de1a8f11fd51792c273ad2e794"
+    },
+    "same_exact_head_and_root_tree_as_prior_audit": true,
+    "scope_note": "The exact d4d7 source already audited for bounded Core stepping is unchanged. The delta from 3b47 remains only the Native checkpoint codec implementation and its tests. No runtime changes are supplied here."
+  },
+  "source_trees": [
+    {
+      "changed_paths_since_pre_codec": [],
+      "expected_tree": "78fcfec69fda60db77f9d81ef8376eae177dda9a",
+      "path": "riverhog/src/riverhog_core",
+      "pre_codec_tree": "78fcfec69fda60db77f9d81ef8376eae177dda9a",
+      "role": "core",
+      "same_as_pre_codec_tree": true
+    },
+    {
+      "changed_paths_since_pre_codec": [],
+      "expected_tree": "18b23ccf8a9e1cb0679a5b2038b60fcc74e1acaf",
+      "path": "riverhog/src/riverhog_api",
+      "pre_codec_tree": "18b23ccf8a9e1cb0679a5b2038b60fcc74e1acaf",
+      "role": "http_api",
+      "same_as_pre_codec_tree": true
+    },
+    {
+      "changed_paths_since_pre_codec": [],
+      "expected_tree": "2ef5efaa4e6cb05b31a49b692c1eda7628a7f320",
+      "path": "packages/riverhog-client/src",
+      "pre_codec_tree": "2ef5efaa4e6cb05b31a49b692c1eda7628a7f320",
+      "role": "sdk",
+      "same_as_pre_codec_tree": true
+    },
+    {
+      "changed_paths_since_pre_codec": [
+        "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py"
+      ],
+      "expected_tree": "3aecf2d2b1699f721e4a40941b88f86206118138",
+      "path": "packages/riverhog-provenance/src",
+      "pre_codec_tree": "373b170cef926a0a7ac357998ea1dd8ec155c35b",
+      "role": "native_runtime",
+      "same_as_pre_codec_tree": false
+    },
+    {
+      "changed_paths_since_pre_codec": [
+        "packages/riverhog-provenance/tests/test_validation_checkpoint.py"
+      ],
+      "expected_tree": "22c5127313728d14e02e4beb39a20582b6434b66",
+      "path": "packages/riverhog-provenance/tests",
+      "pre_codec_tree": "56f1bc37f15777261afb5f9e4dd8453804f1ba99",
+      "role": "native_tests",
+      "same_as_pre_codec_tree": false
+    },
+    {
+      "changed_paths_since_pre_codec": [],
+      "expected_tree": "fca3736d414cf047cceabab0c0bae475bd3df877",
+      "path": "packages/riverhog-growth-contracts",
+      "pre_codec_tree": "fca3736d414cf047cceabab0c0bae475bd3df877",
+      "role": "growth_reader",
+      "same_as_pre_codec_tree": true
+    },
+    {
+      "changed_paths_since_pre_codec": [],
+      "expected_tree": "d9e98dfaada342071250a745900a2c34b4b47fe9",
+      "path": "tests/unit",
+      "pre_codec_tree": "d9e98dfaada342071250a745900a2c34b4b47fe9",
+      "role": "unit_tests",
+      "same_as_pre_codec_tree": true
+    },
+    {
+      "changed_paths_since_pre_codec": [],
+      "expected_tree": "250713fb3636142f5ffd55ddf82360bfe3e2c8b2",
+      "path": "tests/support",
+      "pre_codec_tree": "250713fb3636142f5ffd55ddf82360bfe3e2c8b2",
+      "role": "test_support",
+      "same_as_pre_codec_tree": true
+    },
+    {
+      "changed_paths_since_pre_codec": [],
+      "expected_tree": "43faf0f1ef4ecbb1d60fed7335415b06bf3242b4",
+      "path": "scripts",
+      "pre_codec_tree": "43faf0f1ef4ecbb1d60fed7335415b06bf3242b4",
+      "role": "scripts",
+      "same_as_pre_codec_tree": true
+    }
+  ],
+  "static_feasibility": {
+    "conclusion_limit": "Avoidable serialization is not demonstrated, not disproved. Independent work exists; the missing conjunction is an observation/owning-boundary gap.",
+    "conditional_first_turn": {
+      "conclusion": "Each key can reach its first actual owner/Native call through one ordinary Core service unit; this is a conditional source deduction, not observed counts.",
+      "conditions": [
+        "Fresh default source helper with exactly one valid initialization frame and no relations/retracts.",
+        "Actual generated bytes fit the ordinary 65536-byte capture window.",
+        "No retired-attempt backlog, source conflict, provider failure or capacity refusal.",
+        "No other producers, replacement attempts, application lifespan workers or dispatch sources."
+      ],
+      "rank_empty_graph_kinds": 2,
+      "rank_empty_transitions": 6,
+      "rank_transition_limit": 16,
+      "union_empty_transitions": 2,
+      "union_transition_limit": 4
+    },
+    "conditional_prefix": {
+      "all_zero_progress_refusal_and_failed_candidates_count": true,
+      "closed_two_key_universe_candidate_attempt_bound": 8,
+      "direct_private_advance_shortcuts": false,
+      "generic_core_candidate_attempt_bound": 20,
+      "normal_finalization_opportunities_preserved": true,
+      "retained_slot_capacity": 2,
+      "scheduler_invocations_max": 4,
+      "scheduler_limit_each": 1,
+      "successful_first_candidate_path": "A,B,A,B with four actual candidates/owner/Native calls, conditional on observed success; never equated with scheduler invocation count."
+    },
+    "deadline_scope": "Only a conditional future cooperative whole-workload admission cap, including setup; entered operations and original receiving may finish later and must be reported honestly.",
+    "maintained_two_independent_key_recipe_exists": true,
+    "no_completed_readiness_injected_by_recipe": true,
+    "owning_test": "tests/unit/test_upload_journal_validation_owner.py::test_scheduler_progresses_two_exact_journals_without_reopening_their_atoms",
+    "reason": "A four-invocation synchronous Core prefix cannot demonstrate a contemporaneously fresh-ready/admissible unselected key overlapping idle authorized executor capacity. The inspected owner has slots and locks but no journal executor or dispatch queue. Adding parallel HTTP/lifespan or a readiness-mutating probe changes conditions.",
+    "recommended_product_run_now": false,
+    "wall_time_guaranteed_below_120_seconds": false
+  },
+  "supplied_context": {
+    "comments": [
+      {
+        "body_sha256": "d16413cfdeae9b9b29778ae11d6dae270e0966cf7b40a49af4bd4348200785fb",
+        "body_utf8_bytes": 2700,
+        "id": 6889181049,
+        "url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6889181049"
+      },
+      {
+        "body_sha256": "0fb94fb604a6bd9a2e88176b1c5d8c8b0d929d9d79e0b75fe5922527d2e70dfc",
+        "body_utf8_bytes": 2201,
+        "id": 6889902338,
+        "url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6889902338"
+      },
+      {
+        "body_sha256": "a5dac3b1d9ef4280242ece0c7542930454d768e868ca2d80d630ed7267428dd9",
+        "body_utf8_bytes": 4974,
+        "id": 6890015223,
+        "url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-6890015223"
+      }
+    ],
+    "context_file": {
+      "bytes": 10323,
+      "path": "/workspace/scratch/21c38f9cc56d/ready-occupancy-context.json",
+      "sha256": "0cb37fd8c8c678b177696a234297b90d55bc04c39d6a691ed57775013f266ab1"
+    },
+    "readable_request": {
+      "bytes": 4974,
+      "path": "/workspace/scratch/21c38f9cc56d/ready-occupancy-request.md",
+      "sha256": "a5dac3b1d9ef4280242ece0c7542930454d768e868ca2d80d630ed7267428dd9"
+    }
+  },
+  "versions": {
+    "installed_metadata_and_locked_versions": {
+      "anyio": {
+        "installed_metadata_version": "4.14.2",
+        "locked_version": "4.14.2",
+        "metadata": {
+          "bytes": 4645,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/anyio-4.14.2.dist-info/METADATA",
+          "sha256": "c5e6fc4dfd833319913b287be7a30d9935e9208c7ef917630621855aaac4d419"
+        },
+        "same_metadata_as_prior_audit": true,
+        "version_command_or_package_import_run": false
+      },
+      "fastapi": {
+        "installed_metadata_version": "0.141.1",
+        "locked_version": "0.141.1",
+        "metadata": {
+          "bytes": 27029,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/fastapi-0.141.1.dist-info/METADATA",
+          "sha256": "1010c29547b4026bdb3cd1c406e0570b9d79bb448b5a61fa4d5bb5a5eb0b752c"
+        },
+        "same_metadata_as_prior_audit": true,
+        "version_command_or_package_import_run": false
+      },
+      "httpx": {
+        "installed_metadata_version": "0.28.1",
+        "locked_version": "0.28.1",
+        "metadata": {
+          "bytes": 7052,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/httpx-0.28.1.dist-info/METADATA",
+          "sha256": "febb9b0f8f3e80d57c8199c304f35c4336e8581d1d18d7983c92766b82793b25"
+        },
+        "same_metadata_as_prior_audit": true,
+        "version_command_or_package_import_run": false
+      },
+      "mypy": {
+        "installed_metadata_version": "2.3.0",
+        "locked_version": "2.3.0",
+        "metadata": {
+          "bytes": 2373,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/mypy-2.3.0.dist-info/METADATA",
+          "sha256": "baf74c2c1ecbfd2ffbbee0878044698417830b62335a822194e395b042d593d7"
+        },
+        "same_metadata_as_prior_audit": true,
+        "version_command_or_package_import_run": false
+      },
+      "pytest": {
+        "installed_metadata_version": "9.1.1",
+        "locked_version": "9.1.1",
+        "metadata": {
+          "bytes": 7586,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/pytest-9.1.1.dist-info/METADATA",
+          "sha256": "c5d032518012789cabc870d46589aca3aeda36cf9fa4399ee88bda3d10438451"
+        },
+        "same_metadata_as_prior_audit": true,
+        "version_command_or_package_import_run": false
+      },
+      "reuse": {
+        "installed_metadata_version": "6.2.0",
+        "locked_version": "6.2.0",
+        "metadata": {
+          "bytes": 14011,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/reuse-6.2.0.dist-info/METADATA",
+          "sha256": "318d853f6fda36222b00244ae2690c510419a79b3c28544f9bd9f53c307c2f54"
+        },
+        "same_metadata_as_prior_audit": true,
+        "version_command_or_package_import_run": false
+      },
+      "ruff": {
+        "installed_metadata_version": "0.16.0",
+        "locked_version": "0.16.0",
+        "metadata": {
+          "bytes": 26337,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/ruff-0.16.0.dist-info/METADATA",
+          "sha256": "6467759a06d52ff582896426c50f71fec2bf6ec6ce109d9c21b2b8831ed9cd2c"
+        },
+        "same_metadata_as_prior_audit": true,
+        "version_command_or_package_import_run": false
+      },
+      "sqlalchemy": {
+        "installed_metadata_version": "2.0.51",
+        "locked_version": "2.0.51",
+        "metadata": {
+          "bytes": 9547,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/sqlalchemy-2.0.51.dist-info/METADATA",
+          "sha256": "6fea45e57dc5b5b1c4ad7bed68a2cca0895b66d3be6a8f7c451d3ad09e937776"
+        },
+        "same_metadata_as_prior_audit": true,
+        "version_command_or_package_import_run": false
+      },
+      "starlette": {
+        "installed_metadata_version": "1.3.1",
+        "locked_version": "1.3.1",
+        "metadata": {
+          "bytes": 6370,
+          "path": "/workspace/scratch/21c38f9cc56d/riverhog/.venv/lib/python3.12/site-packages/starlette-1.3.1.dist-info/METADATA",
+          "sha256": "d83ccd9665eb05d1f9393c75e209cb353990731a6215a609a0f1c5c0a6286c9a"
+        },
+        "same_metadata_as_prior_audit": true,
+        "version_command_or_package_import_run": false
+      }
+    },
+    "metadata_reader_python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "mise_python": "3.12.3",
+    "mise_uv": "0.11.24",
+    "note": "Version and binary identities were read as metadata/bytes only; no inspected package or tool executable was run.",
+    "pinned_uv_binary": {
+      "bytes": 61335552,
+      "path": "/workspace/scratch/21c38f9cc56d/bin/uv",
+      "sha256": "144d6cf48bc4dfda52cc48b42320bbfac5562a2da10c856a8a6ce9b3e8ad1b2e"
+    }
+  }
+}
