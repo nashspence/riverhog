@@ -1,0 +1,506 @@
+{
+  "audited_source": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+  "exact_changed_paths_from_prior": [
+    "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py",
+    "packages/riverhog-provenance/tests/test_validation_checkpoint.py"
+  ],
+  "executed": {
+    "fixtures": false,
+    "probes": false,
+    "product": false,
+    "profile": false,
+    "tests": false
+  },
+  "findings": [
+    {
+      "claim": "Per-step source/worker/certificate metadata does not subsume prerequisite dependent-row and captured-tail-page checks.",
+      "classification": "static equivalence blocker",
+      "example": "Delete the completed rank checkpoint last_graph Result while preserving Scan/source/worker metadata; old readiness checks reject before Native, whereas bare inner Native callback predicates do not query that dependency.",
+      "id": "C1",
+      "observed_in_new_execution": false
+    },
+    {
+      "claim": "A late capacity exception after earlier Native commits can reach the old False return without adopting those commits, leaving outer catalog stamps unchanged on a warm slot.",
+      "classification": "new partial-progress protocol needed for deferred adoption",
+      "id": "C2",
+      "observed_in_new_execution": false
+    },
+    {
+      "claim": "worker_current excludes saved job version/progress; final publish_progress checks both, so deferred adoption detects version-only interference later.",
+      "classification": "distinct identity and CAS obligations",
+      "id": "C3",
+      "observed_in_new_execution": false
+    },
+    {
+      "claim": "Job outcome may already be durable when original close fails; exact slot, construction, storage and lease remain retained and charged.",
+      "classification": "existing terminal/receiving invariant",
+      "id": "C4",
+      "observed_in_new_execution": false
+    },
+    {
+      "claim": "Stop at the first terminal outcome; preserve the original result borrow/check/adopt/drop and separately fenced journal publication.",
+      "classification": "required group stop",
+      "id": "C5",
+      "observed_in_new_execution": false
+    }
+  ],
+  "inputs": [
+    {
+      "bytes": 5950,
+      "path": "/workspace/scratch/21c38f9cc56d/core-stepping-request.md",
+      "sha256": "0427b050b87f8ffd9b21fc3b26c885ee8eb332627418ab841bf351e66cc87a27"
+    },
+    {
+      "bytes": 8965,
+      "path": "/workspace/scratch/21c38f9cc56d/core-stepping-context.json",
+      "sha256": "a9ef9f144d8a5999e743b41feb7ffae96dfa659ab7b152401b7e18d8e7338b38"
+    }
+  ],
+  "mode": "read-only source and existing-test inspection; external analysis artifacts only",
+  "prior_native_source": "3b47cbba770c31eb1487b50f7e3b16533c10e827",
+  "qualification_context": {
+    "d4d7_fully_qualified_as_reported": true,
+    "historical_418_raises_location_as_reported": "finalization",
+    "historical_raises_cause_classified": false,
+    "independently_reverified_ci": false,
+    "source": "supplied issue comment 6889181049"
+  },
+  "recommendation": {
+    "concurrency_change_proposed": false,
+    "count_preparation_only_and_capacity_attempts": true,
+    "default_max_attempted_turns": 1,
+    "deferred_catalog_adoption": "B remains out pending explicit partial-progress, error, interference and recovery ownership decisions",
+    "native_phase_or_commit_change_proposed": false,
+    "preferred_if_further_justified": "A: bounded calls to existing owner.advance, catalog adoption after each step, all readiness checks preserved or proved equivalent in a fresh owning validator",
+    "runtime_patch_proposed": false
+  },
+  "report": {
+    "bytes": 31992,
+    "path": "/workspace/scratch/21c38f9cc56d/core-stepping-lifetime.md",
+    "sha256": "ad6d59147d85d50c2a53a085e2f1d34a3e3a8fd404694c7f6aabce1113d46d0a"
+  },
+  "schema": "core-stepping-lifetime-static-audit/v1",
+  "scope_exclusions": [
+    "whole-path G10/G12/G13 closure",
+    "historical timing attribution",
+    "throughput comparison",
+    "catalog-raise cause classification",
+    "parallelism occupancy",
+    "hard elapsed-time bound"
+  ],
+  "source_files": [
+    {
+      "bytes": 445404,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          2086,
+          2177
+        ],
+        [
+          2209,
+          2251
+        ],
+        [
+          3094,
+          3155
+        ],
+        [
+          7874,
+          8026
+        ],
+        [
+          8131,
+          8226
+        ]
+      ],
+      "lines": 10333,
+      "path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+      "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf"
+    },
+    {
+      "bytes": 83238,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          402,
+          475
+        ],
+        [
+          1836,
+          2122
+        ]
+      ],
+      "lines": 2165,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py",
+      "sha256": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa"
+    },
+    {
+      "bytes": 22266,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          351,
+          603
+        ]
+      ],
+      "lines": 630,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py",
+      "sha256": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f"
+    },
+    {
+      "bytes": 23994,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          362,
+          458
+        ]
+      ],
+      "lines": 577,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_source.py",
+      "sha256": "6ecd01d9a9fb3c85d50433e89f73bbdaaaebd9dde5b1586566ae66258a8f5d3c"
+    },
+    {
+      "bytes": 34480,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          43,
+          62
+        ],
+        [
+          660,
+          751
+        ]
+      ],
+      "lines": 940,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_certificates.py",
+      "sha256": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5"
+    },
+    {
+      "bytes": 8035,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          27,
+          87
+        ],
+        [
+          181,
+          212
+        ]
+      ],
+      "lines": 212,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_replay.py",
+      "sha256": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47"
+    },
+    {
+      "bytes": 17654,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          55,
+          153
+        ],
+        [
+          418,
+          433
+        ]
+      ],
+      "lines": 433,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_epochs.py",
+      "sha256": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6"
+    },
+    {
+      "bytes": 10683,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          38,
+          108
+        ],
+        [
+          277,
+          289
+        ]
+      ],
+      "lines": 289,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_topology.py",
+      "sha256": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7"
+    },
+    {
+      "bytes": 29630,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          182,
+          268
+        ],
+        [
+          756,
+          773
+        ]
+      ],
+      "lines": 773,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_union.py",
+      "sha256": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3"
+    },
+    {
+      "bytes": 26780,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          194,
+          291
+        ],
+        [
+          664,
+          683
+        ]
+      ],
+      "lines": 683,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_rank.py",
+      "sha256": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a"
+    },
+    {
+      "bytes": 11539,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          288,
+          298
+        ]
+      ],
+      "lines": 298,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_cleanup.py",
+      "sha256": "aa6ca4387ea11999cfe1f405925ba25394a06982245b97a76e374240e17de920"
+    },
+    {
+      "bytes": 20868,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          285,
+          426
+        ]
+      ],
+      "lines": 576,
+      "path": "riverhog/src/riverhog_core/journal_validation_workspace.py",
+      "sha256": "a5b358dba96f86c1ca716754eb9fd50f8e1dc04d4bc6bca1a32d204119d7a7f7"
+    },
+    {
+      "bytes": 6325,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          79,
+          159
+        ]
+      ],
+      "lines": 159,
+      "path": "riverhog/src/riverhog_core/journal_validation_workspace_lease.py",
+      "sha256": "14fbe8d0a81e6c5b03b1b8f4fcda05fe5c91aa2083f3de0de48ae91bbe136b36"
+    },
+    {
+      "bytes": 4578,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          13,
+          116
+        ]
+      ],
+      "lines": 116,
+      "path": "riverhog/src/riverhog_core/services/upload_journal_result_receiving.py",
+      "sha256": "64e674fb63c15363606e2977a5d0a68ae71852b8fb9689d6914cd4e0bc1281a7"
+    },
+    {
+      "bytes": 3691,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          20,
+          56
+        ]
+      ],
+      "lines": 87,
+      "path": "riverhog/src/riverhog_core/catalog_journal_validation_models.py",
+      "sha256": "096747c54c78f0f89872fbaa5683c350f4079444f8f8cee5bbda64b6366c7876"
+    },
+    {
+      "bytes": 62566,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          1325,
+          1445
+        ],
+        [
+          1456,
+          1595
+        ]
+      ],
+      "lines": 1611,
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118"
+    },
+    {
+      "bytes": 23512,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          416,
+          595
+        ]
+      ],
+      "lines": 606,
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py",
+      "sha256": "432c9b2d53ed77e078a937cba3849dd8afd89a8d0dc82ed60ebc85986e01a0f0"
+    },
+    {
+      "bytes": 5461,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          21,
+          139
+        ]
+      ],
+      "lines": 139,
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/journal_construction.py",
+      "sha256": "4b686f659d37105f0ed4854905c8de49de9c6f0d18a1fb7da5ac439c42f3e11f"
+    }
+  ],
+  "tests_inspected_not_run": [
+    {
+      "bytes": 17873,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          37,
+          286
+        ],
+        [
+          303,
+          415
+        ]
+      ],
+      "lines": 415,
+      "path": "tests/unit/test_upload_journal_validation_owner.py",
+      "sha256": "89ea5c08950393bb5f846d0cce9f0270ad497e607c881f40250e953c3df9bb44"
+    },
+    {
+      "bytes": 17427,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          19,
+          153
+        ],
+        [
+          185,
+          233
+        ],
+        [
+          236,
+          334
+        ]
+      ],
+      "lines": 377,
+      "path": "tests/unit/test_upload_journal_validation_custody.py",
+      "sha256": "58261932c4ddcdb7fe611b0c065eb36f2f68e52d5ec24cf557ebb5731084f759"
+    },
+    {
+      "bytes": 14678,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          94,
+          347
+        ]
+      ],
+      "lines": 348,
+      "path": "tests/unit/test_journal_validation_handoff.py",
+      "sha256": "6d85e966e9370b65494d042fb4dc092d6285c5c850cdf3061d2abc5f01a1e72f"
+    },
+    {
+      "bytes": 18727,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          254,
+          279
+        ]
+      ],
+      "lines": 446,
+      "path": "tests/unit/test_journal_epoch_scan.py",
+      "sha256": "11f7a9066ec4369e035f12ac10534faf77969c8f3ffc78413307a859661acaf7"
+    },
+    {
+      "bytes": 18384,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          285,
+          312
+        ]
+      ],
+      "lines": 467,
+      "path": "tests/unit/test_journal_topology_capture.py",
+      "sha256": "b156fe517a4185f9f14093ffd2c3b9e072cee55853e55232563bbd46ef371763"
+    },
+    {
+      "bytes": 25698,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          278,
+          309
+        ]
+      ],
+      "lines": 623,
+      "path": "tests/unit/test_journal_epoch_union.py",
+      "sha256": "9ff1077c1e4ceea7d13080132e739e8cdca77cd8898ccc9bdd28a42db140f595"
+    },
+    {
+      "bytes": 24247,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          306,
+          365
+        ]
+      ],
+      "lines": 576,
+      "path": "tests/unit/test_journal_epoch_rank.py",
+      "sha256": "5213e3c08d59d0d58691918c9370b88166db8c1cf37d45073280ab1055287184"
+    },
+    {
+      "bytes": 7131,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          105,
+          126
+        ]
+      ],
+      "lines": 169,
+      "path": "tests/unit/test_upload_journal_source.py",
+      "sha256": "29890729b8c959a9b369291854a10fdd05285875519a47ed476fa1ecdde78835"
+    },
+    {
+      "bytes": 13600,
+      "equals_audited_commit": true,
+      "inspected_ranges": [
+        [
+          183,
+          222
+        ]
+      ],
+      "lines": 380,
+      "path": "packages/riverhog-provenance/tests/test_validation_checkpoint.py",
+      "sha256": "7ca82872fb507d985a986d1086863b02d88cab2577b81147e8a24c917a41c802"
+    }
+  ]
+}

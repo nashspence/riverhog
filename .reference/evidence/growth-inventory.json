@@ -1,0 +1,390 @@
+{
+  "activity": {
+    "fixtures_created": 0,
+    "method": "Read source/text and retained evidence; stdlib-only hashes/JSON and read-only git identity checks.",
+    "product_calls": 0,
+    "profile_or_diagnostic_runs": 0,
+    "project_modules_imported": false,
+    "repository_files_edited_by_this_audit": false,
+    "tests_collected_or_run": 0
+  },
+  "candidate_A": {
+    "charged_attempts": [
+      "preparation-only",
+      "busy",
+      "stale",
+      "capacity",
+      "failed",
+      "successful"
+    ],
+    "finalization_boundary": {
+      "classification": "Required source-owner decision, not demonstrated no-op.",
+      "options": [
+        "preserve each former scheduling opportunity",
+        "justify and qualify the changed grouped opportunity"
+      ],
+      "readiness_lines": [
+        7369,
+        7386
+      ],
+      "reason": "Existing readiness checks closed planner, complete payload seal and sealed-object count, not a direct selected-journal terminality predicate.",
+      "scheduling_lines": [
+        3618,
+        3667
+      ],
+      "source_path": "riverhog/src/riverhog_core/services/collection_uploads.py"
+    },
+    "maximum_attempts": "S >= 1, chosen independently of observed work/progress; proposed default S=1.",
+    "owner_calls_cap": "n <= S",
+    "owner_direct_caps": {
+      "certificate": "sum of actual supplied row_budget",
+      "current": "4*n",
+      "drop": "2*n",
+      "exact": "1*n",
+      "native": "1*n",
+      "open": "1*n",
+      "progress": "2*n",
+      "publish": "2*n",
+      "reserve": "1*n",
+      "result": "1*n",
+      "sweep": "1*n",
+      "window": "1*n",
+      "window_plus_exact": "1*n"
+    },
+    "preserved": [
+      "all current preparation and source checks",
+      "existing owner.advance",
+      "per-owner-call catalog adoption",
+      "Native phases and commits",
+      "all independently validated child samples",
+      "final actual stamp inequality",
+      "original receiving"
+    ],
+    "required_new_owner_decisions": [
+      "attempt/work admission and configuration",
+      "explicit internal disposition because current unit returns None",
+      "intermediate finalization/readiness scheduling boundary",
+      "all parent multiplicities and actual child envelopes",
+      "fairness and receiving evidence"
+    ],
+    "scheduler_native_attempts_loose_cap": "L*(2*C+1)*S",
+    "status": "Design only; retain present one-attempt behavior.",
+    "stop_after": [
+      "preparation-only/nonrepeatable disposition",
+      "False",
+      "terminal outcome",
+      "changed selected source/attempt identity",
+      "exception",
+      "exhausted admission"
+    ],
+    "unit_calls_cap": "S",
+    "unit_direct_caps": {
+      "epoch": "64*S",
+      "framing": "1*S",
+      "owner": "1*S",
+      "plan": "1*S",
+      "topology": "1*S"
+    }
+  },
+  "candidate_B": {
+    "other_required_proofs": [
+      "fresh dependent-row checks",
+      "partial progress and late failure",
+      "stale authority and delayed CAS",
+      "cancellation/reply loss/restart",
+      "terminal reader custody",
+      "longer slot interval"
+    ],
+    "specific_unresolved_case": "Earlier inner Native commit followed by capacity can reuse old False/no-publication handler and leave catalog stamps unchanged.",
+    "status": "Leave out pending owning proof."
+  },
+  "classification": "Source-derived current caps and proposed design; no newly observed product execution.",
+  "composition": {
+    "all_children_independently_validated": true,
+    "callback_scope": "Keep existing Core provider/certificate ownership and Native workspace accounting; do not sum overlapping raw inclusive scopes.",
+    "expression": "exclusive parent primitive + sum of actual non-overlapping child inclusive primitives",
+    "full_control_widths_required": true,
+    "independent_caps_required": true,
+    "timing_or_memory_claim": false,
+    "whole_path_G10_G12_G13_closure_claim": false
+  },
+  "current_structural_caps": {
+    "classification": "Static declaration caps, not actual invocation counts.",
+    "nested_scope_note": "Cold open, drop, source/read/certificate and Native children retain their own independently validated descendants; direct and inclusive counts must not be added as disjoint work.",
+    "owner_advance_direct_children": {
+      "certificate": "row_budget",
+      "current": 4,
+      "drop": 2,
+      "exact": 1,
+      "native": 1,
+      "open": 1,
+      "progress": 2,
+      "publish": 2,
+      "reserve": 1,
+      "result": 1,
+      "sweep": 1,
+      "window": 1,
+      "window_plus_exact": 1
+    },
+    "scheduler": {
+      "configured_slots": "C >= 1",
+      "keys": "L",
+      "outer_iterations": "L",
+      "retirement": "L",
+      "schedule": "L",
+      "select": "L*(C+1)",
+      "sweep": "L",
+      "unit_limit": "L >= 0",
+      "validation": "L*(2*C+1)"
+    },
+    "service_unit_direct_children": {
+      "epoch": 64,
+      "framing": 1,
+      "owner": 1,
+      "plan": 1,
+      "topology": 1
+    },
+    "stamped_service_advance": {
+      "comparison_operations": 1,
+      "stamp": 2,
+      "unit": 1
+    }
+  },
+  "format": "non-authoritative-core-stepping-static-inventory/v1",
+  "native_reservations": {
+    "additional_envelopes": [
+      "Core capture/preparation",
+      "catalog/source/worker/certificate controls",
+      "full input and metadata widths",
+      "indexed retained populations",
+      "opening/result/receiving",
+      "graph/correction work"
+    ],
+    "illustrative_S_2": {
+      "rows": 128,
+      "source_window_octets": 131072,
+      "work_octets": 67239936
+    },
+    "meaning": "Conservative reservation totals, not measured bytes/rows, complete Core work, memory, allocation or RSS. source_window_octets excludes separate exact-frame delivery admission.",
+    "ordinary_per_possible_native_call": {
+      "rows": 64,
+      "source_window_octets": 65536,
+      "work_octets": 33619968
+    }
+  },
+  "qualification_scope": "Supplied receiving-owner update reports d4d7 fully qualified with 48 scoped witnesses, 54 executions and 1219 top-level samples. No CI or raw qualification rerun/reverification performed here.",
+  "report": {
+    "bytes": 34364,
+    "path": "/workspace/scratch/21c38f9cc56d/core-stepping-growth.md",
+    "sha256": "12e87eb8dc0a17566fdda3aa30e880d306c80111bb46e458ac423837db109eb1"
+  },
+  "resource_limits_current_defaults": {
+    "file_records_per_journal_construction": 2,
+    "meaning": "Simultaneously live original resources through actual receiving; not aggregate sequential turnover, heap, scratch or thread-executor capacity.",
+    "retained_validation_slots": 2,
+    "scope_distinction": {
+      "connection_storage_lease": "May remain retained through final independent result readers.",
+      "cursor_ticket": "Follows its original cursor receiving/close.",
+      "operation_completion_source": {
+        "lines": [
+          267,
+          270
+        ],
+        "path": "packages/sqlite-admission/src/sqlite_admission/__init__.py"
+      },
+      "operation_ticket": "Released after each actual completed operation."
+    },
+    "shared_connections": 8,
+    "shared_cursors": 32,
+    "shared_operations": 4
+  },
+  "retained_evidence": [
+    {
+      "bytes": 8965,
+      "path": "/workspace/scratch/21c38f9cc56d/core-stepping-context.json",
+      "sha256": "a9ef9f144d8a5999e743b41feb7ffae96dfa659ab7b152401b7e18d8e7338b38"
+    },
+    {
+      "bytes": 3240236,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-observation-r2/run.json",
+      "sha256": "019236fdc3b227d49753b54e79915b62d45cf44e788283d3843411611b33c00b"
+    },
+    {
+      "bytes": 255300,
+      "path": "/workspace/scratch/21c38f9cc56d/native-phase-cost-summary.json",
+      "sha256": "c8ca95297d7921771ffda38328ab43a0b4e1ba8b50a32384b898c10933d927b8"
+    }
+  ],
+  "source": {
+    "branch": "reference/external/991-core-stepping",
+    "commit": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+    "end_head": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+    "end_status_porcelain": "",
+    "files": [
+      {
+        "bytes": 15153,
+        "git_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/AGENTS.md",
+        "repository_path": "AGENTS.md",
+        "sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3"
+      },
+      {
+        "bytes": 49828,
+        "git_blob": "6d52e14284cfae432f92d02fac0946887b3cdfa5",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/scripts/extent_contract.py",
+        "repository_path": "scripts/extent_contract.py",
+        "sha256": "e4375f906ace60a1bf3bc4133f6e15e022ca88ffd069ef6daf2de85b726aab8f"
+      },
+      {
+        "bytes": 445404,
+        "git_blob": "25129310ed6e42e0e56cce1587361caedd617b50",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/collection_uploads.py",
+        "repository_path": "riverhog/src/riverhog_core/services/collection_uploads.py",
+        "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf"
+      },
+      {
+        "bytes": 83238,
+        "git_blob": "f520c6b3e727e3d5a0fea595762e3dd659100baf",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_validation_owner.py",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py",
+        "sha256": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa"
+      },
+      {
+        "bytes": 22266,
+        "git_blob": "c9d368d356a5297270a4d60c26484a450f17bba7",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py",
+        "sha256": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f"
+      },
+      {
+        "bytes": 17654,
+        "git_blob": "0f9e92fc3cb41e60dab36fd5dbfbd50c1fe42fda",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_epochs.py",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_epochs.py",
+        "sha256": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6"
+      },
+      {
+        "bytes": 10683,
+        "git_blob": "bef071d62dbd88375bfc6f7a11591fb1e4b4f051",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_topology.py",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_topology.py",
+        "sha256": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7"
+      },
+      {
+        "bytes": 29630,
+        "git_blob": "c1db895921befc58fb7e9409047851928a7e9ead",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_union.py",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_union.py",
+        "sha256": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3"
+      },
+      {
+        "bytes": 26780,
+        "git_blob": "5a679509a93d04c2ec1c00f7b68b41e59aa82494",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_rank.py",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_rank.py",
+        "sha256": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a"
+      },
+      {
+        "bytes": 8035,
+        "git_blob": "f16d14ce82fa661c1991980911c9bfb721ac25af",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_replay.py",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_replay.py",
+        "sha256": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47"
+      },
+      {
+        "bytes": 34480,
+        "git_blob": "f4284ca2367d2c4875dfa86d962d73df7018e2d0",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/upload_journal_certificates.py",
+        "repository_path": "riverhog/src/riverhog_core/services/upload_journal_certificates.py",
+        "sha256": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5"
+      },
+      {
+        "bytes": 21884,
+        "git_blob": "fdba4986f83766d8e499f96085bf0e6163724c99",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/runtime_config.py",
+        "repository_path": "riverhog/src/riverhog_core/runtime_config.py",
+        "sha256": "a902d8256912fc1cdbe9f18905e155c5d9c794a34f97a54d9bf9a829fb73ddbb"
+      },
+      {
+        "bytes": 27705,
+        "git_blob": "3351a52a2adf1ec408a82c8b35ef34a26dcb5172",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/runtime_document.py",
+        "repository_path": "riverhog/src/riverhog_core/runtime_document.py",
+        "sha256": "cf625eeec1af35a8d1dbc738e618e84fd6a8d69d413c85e7a9ff8563d34182ab"
+      },
+      {
+        "bytes": 1315,
+        "git_blob": "dc59c9f73d0b8ca98f506c3e99d7f1e231a62893",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/journal_storage_grants.py",
+        "repository_path": "riverhog/src/riverhog_core/journal_storage_grants.py",
+        "sha256": "1784c4b448ace0145a80332343e2e54797dc7b27640c782b592b27896143ee96"
+      },
+      {
+        "bytes": 3163,
+        "git_blob": "440bf44d345a0f473925fbc0ff02250c216c1f11",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/services/journal_storage_resources.py",
+        "repository_path": "riverhog/src/riverhog_core/services/journal_storage_resources.py",
+        "sha256": "97a56076f37bd118027cd2de51c480a6858eab6688644cf56182e29afbdb7253"
+      },
+      {
+        "bytes": 1046,
+        "git_blob": "05f65851472b4d19428916d3fbbeb20606720c03",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/riverhog/src/riverhog_core/provenance_catalog.py",
+        "repository_path": "riverhog/src/riverhog_core/provenance_catalog.py",
+        "sha256": "fa2409aaabd085675ae2b03221a385dea73389097a6881f18462f571aafba1fc"
+      },
+      {
+        "bytes": 5172,
+        "git_blob": "f71fef4b0d86661b2a40b000dc4cdbf0d167c989",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas.py",
+        "repository_path": "packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas.py",
+        "sha256": "7e75537ac467555107f0dca99fce2e8f11f9f5d78889083ca651401feb6e9713"
+      },
+      {
+        "bytes": 642,
+        "git_blob": "fdc1afcefda41c30a6488d5cc594a1be7125095d",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/constants.py",
+        "repository_path": "packages/riverhog-provenance/src/riverhog_provenance/constants.py",
+        "sha256": "770f98f565f62ee582411e9ad81953a60df4f84278eeb8410a7424d404f1fb1d"
+      },
+      {
+        "bytes": 62566,
+        "git_blob": "4800b2dce7a25d8f555c37870e13386f5cee23b2",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+        "repository_path": "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+        "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118"
+      },
+      {
+        "bytes": 101250,
+        "git_blob": "a13682eb5bd17f75868c8f37cc8a28aeb5b66720",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/riverhog-provenance/src/riverhog_provenance/_entry_replay.py",
+        "repository_path": "packages/riverhog-provenance/src/riverhog_provenance/_entry_replay.py",
+        "sha256": "a60a71676f75c8d814ce5d419b385a06e223a7ffd51da82b00b5a78b1069c365"
+      },
+      {
+        "bytes": 30848,
+        "git_blob": "b0ba9f0bc083918dbda7954b056ae3890e47d828",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_upload_journal_service_unit_growth.py",
+        "repository_path": "tests/unit/test_upload_journal_service_unit_growth.py",
+        "sha256": "61b989bb902ea95427987ad2650bc41b1720f05f6466b3eb309e955e7f7de009"
+      },
+      {
+        "bytes": 62882,
+        "git_blob": "38fc347b30a9f877ee9ce2c97140e25677c12db1",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/tests/unit/test_upload_journal_validation_advance_growth.py",
+        "repository_path": "tests/unit/test_upload_journal_validation_advance_growth.py",
+        "sha256": "42a37b66702f58222cd7b1d2d4674e237447d28c03e9287f23a89568b0c4fa0c"
+      },
+      {
+        "bytes": 33605,
+        "git_blob": "d6b8ab6042a31c28addc29ae095c2dc4a3f1c4c4",
+        "path": "/workspace/scratch/21c38f9cc56d/riverhog/packages/sqlite-admission/src/sqlite_admission/__init__.py",
+        "repository_path": "packages/sqlite-admission/src/sqlite_admission/__init__.py",
+        "sha256": "059495b6f92aff6a38dcb3fe282d8d3c0f8f2ad8120f89f408ac87c805a89d05"
+      }
+    ],
+    "start_head": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+    "start_status_porcelain": "",
+    "tree": "98cf298e60e4ba9c178229eae907e164265f6e48"
+  }
+}

@@ -1,0 +1,406 @@
+{
+  "audited_source": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+  "audited_tree": "98cf298e60e4ba9c178229eae907e164265f6e48",
+  "checks": {
+    "all_passed": true,
+    "byte_identical_relocated_analysis_artifacts": 8,
+    "distinct_source_files": 56,
+    "exact_comment_bodies": 2,
+    "exact_two_file_prefix_delta": true,
+    "focused_receiving_matrix_rows": 20,
+    "installed_distribution_metadata_hashes_and_lock_versions": 9,
+    "literal_patch_reverse_applicability_to_audited_source": true,
+    "local_heading_fragments": 6,
+    "no_untracked_paths_outside_reference": true,
+    "packet_json_parsed": true,
+    "packet_whitespace_excluding_literal_patch": true,
+    "pinned_github_source_links": 90,
+    "pinned_link_check_scope": "Git commit/path existence and line-range starts against local exact Git objects, not remote URL transport",
+    "pinned_uv_binary_hash": true,
+    "product_paths_equal_audited_source": true,
+    "relative_markdown_links": 31,
+    "source_pin_occurrences": 90,
+    "subtree_relationships": 12
+  },
+  "classification": "Actual finite packaging/source verification; no product execution or qualification",
+  "command": ".venv/bin/python /workspace/scratch/21c38f9cc56d/verify-core-stepping-packet.py",
+  "completed_utc": "2026-11-15T05:25:46.608319+00:00",
+  "elapsed_seconds": 1.239534961998288,
+  "final_design_review": {
+    "material_correction": "Separate reply loss from confirmed process exit; missing acknowledgment cannot authorize worker replacement without normal custody and exact-lease acquisition.",
+    "reviewers": [
+      "authority_and_lifetime",
+      "growth_and_resource_accounting",
+      "source_and_validation_scope"
+    ],
+    "runtime_candidate_claimed": false
+  },
+  "format": "riverhog-static-core-stepping-packet-verification/v1",
+  "packet_files_verified_before_receipt_and_manifest": [
+    {
+      "bytes": 29246,
+      "path": ".reference/DESIGN.md",
+      "sha256": "3900c179ab7257f434dcb8b72fe5f29609746cb8c62dd8261610ec86239bd794"
+    },
+    {
+      "bytes": 9801,
+      "path": ".reference/EVIDENCE.md",
+      "sha256": "b6ba877d054851e67ca7ea55dcb33b89dde3beba2b61439ec8890d879b9d7d4a"
+    },
+    {
+      "bytes": 34364,
+      "path": ".reference/GROWTH.md",
+      "sha256": "12e87eb8dc0a17566fdda3aa30e880d306c80111bb46e458ac423837db109eb1"
+    },
+    {
+      "bytes": 4513,
+      "path": ".reference/HANDOFF.md",
+      "sha256": "6434c68452e62817099236bba4c5256f257e6c143b0a711814a6733a869fa79e"
+    },
+    {
+      "bytes": 31992,
+      "path": ".reference/LIFETIMES.md",
+      "sha256": "ad6d59147d85d50c2a53a085e2f1d34a3e3a8fd404694c7f6aabce1113d46d0a"
+    },
+    {
+      "bytes": 28046,
+      "path": ".reference/VALIDATION.md",
+      "sha256": "fb2a00ed124c6e50ff13ba3b779b3b7b95aa7452c03f93934723a43fa557d151"
+    },
+    {
+      "bytes": 5291,
+      "path": ".reference/evidence/audited-prefix-change.patch",
+      "sha256": "352d3370749ba074d535be35a32951ad2e1b9f394bc8f1dfb6629d1bd3df8f91"
+    },
+    {
+      "bytes": 8965,
+      "path": ".reference/evidence/context.json",
+      "sha256": "a9ef9f144d8a5999e743b41feb7ffae96dfa659ab7b152401b7e18d8e7338b38"
+    },
+    {
+      "bytes": 17260,
+      "path": ".reference/evidence/growth-inventory.json",
+      "sha256": "9314a2c017205272885ba55a798ee5c45b85e5fc1088db88e73977f6ab7787e0"
+    },
+    {
+      "bytes": 13958,
+      "path": ".reference/evidence/lifetime-audit.json",
+      "sha256": "1f308a50741766576183b426533c4ef7b1a12552fc8d6f396fc5359602fdf720"
+    },
+    {
+      "bytes": 5950,
+      "path": ".reference/evidence/request.md",
+      "sha256": "0427b050b87f8ffd9b21fc3b26c885ee8eb332627418ab841bf351e66cc87a27"
+    },
+    {
+      "bytes": 40313,
+      "path": ".reference/evidence/source-audit.json",
+      "sha256": "f503abb623fa07849f20fe8f2aff4765f59d81de1a8f11fd51792c273ad2e794"
+    }
+  ],
+  "product_activity": {
+    "archive_publications": 0,
+    "benchmarks": 0,
+    "calls": 0,
+    "fixtures": 0,
+    "imports": 0,
+    "probe_runs": 0,
+    "test_collection": 0,
+    "test_executions": 0
+  },
+  "publication_checks": "The later owning issue record supplies the actual published SHA, verified sole parent/tree/product relationship and manifest verification; those cannot be embedded recursively in this pre-publication receipt.",
+  "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+  "source_files_verified": {
+    "AGENTS.md": {
+      "bytes": 15153,
+      "git_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+      "sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3"
+    },
+    "Makefile": {
+      "bytes": 16003,
+      "git_blob": "558906c7e338acf3ae35614c6ca60a38ff97dd31",
+      "sha256": "9f9097743f4f96bdc6a03a01286bcb451fb70f95d192e3e8f70810a1a209ba58"
+    },
+    "README.md": {
+      "bytes": 8659,
+      "git_blob": "3a045b5713a34daf7a3f1a7c0b6b6543a45989bc",
+      "sha256": "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"
+    },
+    "mise.lock": {
+      "bytes": 5503,
+      "git_blob": "2f0d2ac0e3f23f1364f1a3594430d04481f6e8bc",
+      "sha256": "4cc8be44172720c07ef6585d104961c718cf108952e587a4fa627e00e1d699db"
+    },
+    "mise.toml": {
+      "bytes": 450,
+      "git_blob": "478821801c5d3cef31353ca5535c6ebed65fbbbc",
+      "sha256": "7f45381718065e39e650c0737bcc4c319413ca9a98101f82f30839191b489a7d"
+    },
+    "packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py": {
+      "bytes": 31352,
+      "git_blob": "75f8b5f8f57317e6a01cec1eec5dffad710149a6",
+      "sha256": "a6fa11e73a3886dbf950bba34e310ab27857c5e87af6ca77bb6cad756a059f40"
+    },
+    "packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas.py": {
+      "bytes": 5172,
+      "git_blob": "f71fef4b0d86661b2a40b000dc4cdbf0d167c989",
+      "sha256": "7e75537ac467555107f0dca99fce2e8f11f9f5d78889083ca651401feb6e9713"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/_entry_replay.py": {
+      "bytes": 101250,
+      "git_blob": "a13682eb5bd17f75868c8f37cc8a28aeb5b66720",
+      "sha256": "a60a71676f75c8d814ce5d419b385a06e223a7ffd51da82b00b5a78b1069c365"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py": {
+      "bytes": 23512,
+      "git_blob": "92d883272377da4940f46c8f9b53d02c596ed53c",
+      "sha256": "432c9b2d53ed77e078a937cba3849dd8afd89a8d0dc82ed60ebc85986e01a0f0"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/constants.py": {
+      "bytes": 642,
+      "git_blob": "fdc1afcefda41c30a6488d5cc594a1be7125095d",
+      "sha256": "770f98f565f62ee582411e9ad81953a60df4f84278eeb8410a7424d404f1fb1d"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_construction.py": {
+      "bytes": 5461,
+      "git_blob": "f003102a5f5f28a456d7f31029f2a57d0d5d01cd",
+      "sha256": "4b686f659d37105f0ed4854905c8de49de9c6f0d18a1fb7da5ac439c42f3e11f"
+    },
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py": {
+      "bytes": 62566,
+      "git_blob": "4800b2dce7a25d8f555c37870e13386f5cee23b2",
+      "sha256": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118"
+    },
+    "packages/riverhog-provenance/tests/test_retained_journal_session.py": {
+      "bytes": 15492,
+      "git_blob": "42fb4cec9177d8113d8fcf2ae23f402d2357678b",
+      "sha256": "ef4e5bd0ec1d68de24068d0ded48c057d1821d8d6b02a25267db24c4892407b5"
+    },
+    "packages/riverhog-provenance/tests/test_validation_checkpoint.py": {
+      "bytes": 13600,
+      "git_blob": "dbc209c5c3e411d059e20292ac337575cfe94c05",
+      "sha256": "7ca82872fb507d985a986d1086863b02d88cab2577b81147e8a24c917a41c802"
+    },
+    "packages/sqlite-admission/src/sqlite_admission/__init__.py": {
+      "bytes": 33605,
+      "git_blob": "d6b8ab6042a31c28addc29ae095c2dc4a3f1c4c4",
+      "sha256": "059495b6f92aff6a38dcb3fe282d8d3c0f8f2ad8120f89f408ac87c805a89d05"
+    },
+    "pyproject.toml": {
+      "bytes": 7499,
+      "git_blob": "fbffc8f88664852081da13b4a6411a6465308d51",
+      "sha256": "393c618205afb2234fa7518b4f4762112e09c1959b641fc1344e74bf285c2631"
+    },
+    "riverhog/src/riverhog_core/catalog_journal_validation_models.py": {
+      "bytes": 3691,
+      "git_blob": "dd86537d0aaff845335cc6ff76c73fc3f7f3ec38",
+      "sha256": "096747c54c78f0f89872fbaa5683c350f4079444f8f8cee5bbda64b6366c7876"
+    },
+    "riverhog/src/riverhog_core/journal_storage_grants.py": {
+      "bytes": 1315,
+      "git_blob": "dc59c9f73d0b8ca98f506c3e99d7f1e231a62893",
+      "sha256": "1784c4b448ace0145a80332343e2e54797dc7b27640c782b592b27896143ee96"
+    },
+    "riverhog/src/riverhog_core/journal_validation_workspace.py": {
+      "bytes": 20868,
+      "git_blob": "9238e2352cedf4787519e7a2cb5cfe128f7b6fd5",
+      "sha256": "a5b358dba96f86c1ca716754eb9fd50f8e1dc04d4bc6bca1a32d204119d7a7f7"
+    },
+    "riverhog/src/riverhog_core/journal_validation_workspace_lease.py": {
+      "bytes": 6325,
+      "git_blob": "4fe17ade8c0026cf34e6502591b9bc5eed03e8ba",
+      "sha256": "14fbe8d0a81e6c5b03b1b8f4fcda05fe5c91aa2083f3de0de48ae91bbe136b36"
+    },
+    "riverhog/src/riverhog_core/provenance_catalog.py": {
+      "bytes": 1046,
+      "git_blob": "05f65851472b4d19428916d3fbbeb20606720c03",
+      "sha256": "fa2409aaabd085675ae2b03221a385dea73389097a6881f18462f571aafba1fc"
+    },
+    "riverhog/src/riverhog_core/runtime_config.py": {
+      "bytes": 21884,
+      "git_blob": "fdba4986f83766d8e499f96085bf0e6163724c99",
+      "sha256": "a902d8256912fc1cdbe9f18905e155c5d9c794a34f97a54d9bf9a829fb73ddbb"
+    },
+    "riverhog/src/riverhog_core/runtime_document.py": {
+      "bytes": 27705,
+      "git_blob": "3351a52a2adf1ec408a82c8b35ef34a26dcb5172",
+      "sha256": "cf625eeec1af35a8d1dbc738e618e84fd6a8d69d413c85e7a9ff8563d34182ab"
+    },
+    "riverhog/src/riverhog_core/services/collection_uploads.py": {
+      "bytes": 445404,
+      "git_blob": "25129310ed6e42e0e56cce1587361caedd617b50",
+      "sha256": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf"
+    },
+    "riverhog/src/riverhog_core/services/journal_storage_resources.py": {
+      "bytes": 3163,
+      "git_blob": "440bf44d345a0f473925fbc0ff02250c216c1f11",
+      "sha256": "97a56076f37bd118027cd2de51c480a6858eab6688644cf56182e29afbdb7253"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_certificates.py": {
+      "bytes": 34480,
+      "git_blob": "f4284ca2367d2c4875dfa86d962d73df7018e2d0",
+      "sha256": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_cleanup.py": {
+      "bytes": 11539,
+      "git_blob": "fec165e99eaac9137b921ab3dd4381de96ecc544",
+      "sha256": "aa6ca4387ea11999cfe1f405925ba25394a06982245b97a76e374240e17de920"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_epochs.py": {
+      "bytes": 17654,
+      "git_blob": "0f9e92fc3cb41e60dab36fd5dbfbd50c1fe42fda",
+      "sha256": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_rank.py": {
+      "bytes": 26780,
+      "git_blob": "5a679509a93d04c2ec1c00f7b68b41e59aa82494",
+      "sha256": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_replay.py": {
+      "bytes": 8035,
+      "git_blob": "f16d14ce82fa661c1991980911c9bfb721ac25af",
+      "sha256": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_result_receiving.py": {
+      "bytes": 4578,
+      "git_blob": "815e4cedb7fcf56ea1723fd4b1d1c8f97e4e5509",
+      "sha256": "64e674fb63c15363606e2977a5d0a68ae71852b8fb9689d6914cd4e0bc1281a7"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_source.py": {
+      "bytes": 23994,
+      "git_blob": "551764a542a937240be84d260db0cfe03c3e0e7d",
+      "sha256": "6ecd01d9a9fb3c85d50433e89f73bbdaaaebd9dde5b1586566ae66258a8f5d3c"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_topology.py": {
+      "bytes": 10683,
+      "git_blob": "bef071d62dbd88375bfc6f7a11591fb1e4b4f051",
+      "sha256": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_union.py": {
+      "bytes": 29630,
+      "git_blob": "c1db895921befc58fb7e9409047851928a7e9ead",
+      "sha256": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py": {
+      "bytes": 22266,
+      "git_blob": "c9d368d356a5297270a4d60c26484a450f17bba7",
+      "sha256": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f"
+    },
+    "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py": {
+      "bytes": 83238,
+      "git_blob": "f520c6b3e727e3d5a0fea595762e3dd659100baf",
+      "sha256": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa"
+    },
+    "scripts/ci_qualification.py": {
+      "bytes": 30767,
+      "git_blob": "0deebcf2f12e7d4aa6ed57c6f690c4daaf9f059c",
+      "sha256": "fb7f14e323d5ce1144d8f809314e92f843b785dd898ed7ef95af9b88fe6e2fc1"
+    },
+    "scripts/ci_unit.py": {
+      "bytes": 11452,
+      "git_blob": "eac1b15f675c153df470874025eee8912ea38f22",
+      "sha256": "31ae6c0a73dd5b12f9ba6c3eb76f603a77632a5fa7531b67853b18f5e1b6dcaa"
+    },
+    "scripts/extent_contract.py": {
+      "bytes": 49828,
+      "git_blob": "6d52e14284cfae432f92d02fac0946887b3cdfa5",
+      "sha256": "e4375f906ace60a1bf3bc4133f6e15e022ca88ffd069ef6daf2de85b726aab8f"
+    },
+    "scripts/validation_evidence.py": {
+      "bytes": 12137,
+      "git_blob": "206cbc9a264eacf0b7ebda737fa0be3384680489",
+      "sha256": "50f43b16ab7dc87119d8a866488e64d75a7547f6df4a145143ecb354d872af94"
+    },
+    "scripts/validation_process.py": {
+      "bytes": 3158,
+      "git_blob": "a151b789b484e01920cffd55829441d11f001e98",
+      "sha256": "93eb45cb32341ff14ec6375d201d867fcad3c680aef8a17952c429b5f161660d"
+    },
+    "scripts/validation_witnesses.py": {
+      "bytes": 14952,
+      "git_blob": "ca5e1225e387d9bab0b92e4118d2080265446d31",
+      "sha256": "80e9ad5e77622b99a2f9889b24cbdcae9a1668d0d1a1d85f098c192654c4637f"
+    },
+    "tests/support/growth_batch.py": {
+      "bytes": 9777,
+      "git_blob": "07e824cb9cc15622f812bf9b77dee1c615987f0b",
+      "sha256": "335a6cc036caf987dbf3585713411a38bdde3bd786ad369dc7b1c56a38046ec8"
+    },
+    "tests/unit/test_journal_epoch_rank.py": {
+      "bytes": 24247,
+      "git_blob": "2a2ca449ece89b84a38d96f586d15a70402bb064",
+      "sha256": "5213e3c08d59d0d58691918c9370b88166db8c1cf37d45073280ab1055287184"
+    },
+    "tests/unit/test_journal_epoch_scan.py": {
+      "bytes": 18727,
+      "git_blob": "f03e6bdae2711e1c69a58df42332494016620381",
+      "sha256": "11f7a9066ec4369e035f12ac10534faf77969c8f3ffc78413307a859661acaf7"
+    },
+    "tests/unit/test_journal_epoch_union.py": {
+      "bytes": 25698,
+      "git_blob": "c8ee2ec3eac2b79182afdd70d1175a3d38fde727",
+      "sha256": "9ff1077c1e4ceea7d13080132e739e8cdca77cd8898ccc9bdd28a42db140f595"
+    },
+    "tests/unit/test_journal_topology_capture.py": {
+      "bytes": 18384,
+      "git_blob": "7a743c63b600a3da98fa8ea434b435eebba222fb",
+      "sha256": "b156fe517a4185f9f14093ffd2c3b9e072cee55853e55232563bbd46ef371763"
+    },
+    "tests/unit/test_journal_validation_handoff.py": {
+      "bytes": 14678,
+      "git_blob": "5b7888b8141ddfcc807bca787a2eb50f53422614",
+      "sha256": "6d85e966e9370b65494d042fb4dc092d6285c5c850cdf3061d2abc5f01a1e72f"
+    },
+    "tests/unit/test_upload_journal_service_caller_growth.py": {
+      "bytes": 13978,
+      "git_blob": "a89aa3767d18fafc1fee2d0c761d8693e502bf50",
+      "sha256": "e5c700e84c373b22c3e1ed89eba2a5b20068259f5401d1e940af012ac3629f8b"
+    },
+    "tests/unit/test_upload_journal_service_scheduler_growth.py": {
+      "bytes": 26473,
+      "git_blob": "8fc5a78d9717399f2c7f64db8bfe2d4325911c05",
+      "sha256": "3892a1d8185038cc284cf9dc2d97741e9a5fea4278f246d47ba6308cc45946c4"
+    },
+    "tests/unit/test_upload_journal_service_unit_growth.py": {
+      "bytes": 30848,
+      "git_blob": "b0ba9f0bc083918dbda7954b056ae3890e47d828",
+      "sha256": "61b989bb902ea95427987ad2650bc41b1720f05f6466b3eb309e955e7f7de009"
+    },
+    "tests/unit/test_upload_journal_source.py": {
+      "bytes": 7131,
+      "git_blob": "04bddb9236dffff65b3b815ff75b90f5bba78e53",
+      "sha256": "29890729b8c959a9b369291854a10fdd05285875519a47ed476fa1ecdde78835"
+    },
+    "tests/unit/test_upload_journal_validation_advance_growth.py": {
+      "bytes": 62882,
+      "git_blob": "38fc347b30a9f877ee9ce2c97140e25677c12db1",
+      "sha256": "42a37b66702f58222cd7b1d2d4674e237447d28c03e9287f23a89568b0c4fa0c"
+    },
+    "tests/unit/test_upload_journal_validation_custody.py": {
+      "bytes": 17427,
+      "git_blob": "e60afdf3efa2aa6d672783bd737aba686b9ddd40",
+      "sha256": "58261932c4ddcdb7fe611b0c065eb36f2f68e52d5ec24cf557ebb5731084f759"
+    },
+    "tests/unit/test_upload_journal_validation_owner.py": {
+      "bytes": 17873,
+      "git_blob": "2ad8407877db3717c964317a6172ba20ef4135ec",
+      "sha256": "89ea5c08950393bb5f846d0cce9f0270ad497e607c881f40250e953c3df9bb44"
+    },
+    "uv.lock": {
+      "bytes": 439763,
+      "git_blob": "d68e459476062f5cf2a211a24ab8abf361c3d349",
+      "sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24"
+    }
+  },
+  "unfiltered_whitespace_check": {
+    "command": "git diff --cached --check",
+    "exit_code": 2,
+    "interpretation": "Exactly five preserved single-space unified-diff context markers in the retained byte-identical patch; no other finding. Not an unqualified pass.",
+    "patch_check_command": "git apply --reverse --check .reference/evidence/audited-prefix-change.patch",
+    "patch_check_exit_code": 0,
+    "scoped_check_command": "git diff --cached --check -- . :(exclude).reference/evidence/audited-prefix-change.patch",
+    "scoped_check_exit_code": 0,
+    "stdout": ".reference/evidence/audited-prefix-change.patch:8: trailing whitespace.\n+ \n.reference/evidence/audited-prefix-change.patch:20: trailing whitespace.\n+ \n.reference/evidence/audited-prefix-change.patch:45: trailing whitespace.\n+ \n.reference/evidence/audited-prefix-change.patch:63: trailing whitespace.\n+ \n.reference/evidence/audited-prefix-change.patch:64: trailing whitespace.\n+ \n"
+  },
+  "verifier_sha256": "958ad7b5f4f647faa42df407840dd8a5e7037d285560a57a06384f29bb464953"
+}

@@ -1,0 +1,75 @@
+{
+  "audited_base": "d4d7b6535be2cf491b7859cacea2a9ada4ac8d9e",
+  "audited_base_tree": "98cf298e60e4ba9c178229eae907e164265f6e48",
+  "files": [
+    {
+      "bytes": 29246,
+      "path": ".reference/DESIGN.md",
+      "sha256": "3900c179ab7257f434dcb8b72fe5f29609746cb8c62dd8261610ec86239bd794"
+    },
+    {
+      "bytes": 9801,
+      "path": ".reference/EVIDENCE.md",
+      "sha256": "b6ba877d054851e67ca7ea55dcb33b89dde3beba2b61439ec8890d879b9d7d4a"
+    },
+    {
+      "bytes": 34364,
+      "path": ".reference/GROWTH.md",
+      "sha256": "12e87eb8dc0a17566fdda3aa30e880d306c80111bb46e458ac423837db109eb1"
+    },
+    {
+      "bytes": 4513,
+      "path": ".reference/HANDOFF.md",
+      "sha256": "6434c68452e62817099236bba4c5256f257e6c143b0a711814a6733a869fa79e"
+    },
+    {
+      "bytes": 31992,
+      "path": ".reference/LIFETIMES.md",
+      "sha256": "ad6d59147d85d50c2a53a085e2f1d34a3e3a8fd404694c7f6aabce1113d46d0a"
+    },
+    {
+      "bytes": 28046,
+      "path": ".reference/VALIDATION.md",
+      "sha256": "fb2a00ed124c6e50ff13ba3b779b3b7b95aa7452c03f93934723a43fa557d151"
+    },
+    {
+      "bytes": 5291,
+      "path": ".reference/evidence/audited-prefix-change.patch",
+      "sha256": "352d3370749ba074d535be35a32951ad2e1b9f394bc8f1dfb6629d1bd3df8f91"
+    },
+    {
+      "bytes": 8965,
+      "path": ".reference/evidence/context.json",
+      "sha256": "a9ef9f144d8a5999e743b41feb7ffae96dfa659ab7b152401b7e18d8e7338b38"
+    },
+    {
+      "bytes": 17260,
+      "path": ".reference/evidence/growth-inventory.json",
+      "sha256": "9314a2c017205272885ba55a798ee5c45b85e5fc1088db88e73977f6ab7787e0"
+    },
+    {
+      "bytes": 13958,
+      "path": ".reference/evidence/lifetime-audit.json",
+      "sha256": "1f308a50741766576183b426533c4ef7b1a12552fc8d6f396fc5359602fdf720"
+    },
+    {
+      "bytes": 18452,
+      "path": ".reference/evidence/packet-verification.json",
+      "sha256": "06ccf891572ea3ecc45f25f91ca8770fef7b80e8fd1a93f5f3053bd78fcb3aa7"
+    },
+    {
+      "bytes": 5950,
+      "path": ".reference/evidence/request.md",
+      "sha256": "0427b050b87f8ffd9b21fc3b26c885ee8eb332627418ab841bf351e66cc87a27"
+    },
+    {
+      "bytes": 40313,
+      "path": ".reference/evidence/source-audit.json",
+      "sha256": "f503abb623fa07849f20fe8f2aff4765f59d81de1a8f11fd51792c273ad2e794"
+    }
+  ],
+  "format": "riverhog-external-core-stepping-reference-manifest/v1",
+  "reference_branch": "reference/external/991-core-stepping",
+  "scope": "Only .reference paths are added; all product paths equal the audited base.",
+  "self_exclusion": "This manifest excludes itself; its own hash and the actual published commit are recorded in the owning issue handoff."
+}
