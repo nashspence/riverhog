@@ -8,7 +8,7 @@ from collections import defaultdict
 from collections.abc import Mapping
 
 from riverhog_canonical_json import canonical_json_bytes
-from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_roots
 
 
 class SampleBatch:
@@ -16,7 +16,7 @@ class SampleBatch:
 
     One context owns a fixed source closure and at most ``limit`` pending roots.
     Only declaration bytes and exact source bindings cross flushes; compiled
-    contexts belong to each existing reader call. Evidence is complete only
+    contexts belong to one private multi-root invocation per flush. Evidence is complete only
     after context exit succeeds. Children may also occur within another root:
     retaining both preserves checks when that parent fails before it emits.
     """
@@ -36,6 +36,7 @@ class SampleBatch:
         self.include_descendants = include_descendants
         self.state = "new"
         self.validated_samples = self.validation_calls = 0
+        self.validation_attempts = self.validation_groups = 0
         self._pending, self._source = [], []
         self._roots, self._digests = {}, {}
         self._sources = {}
@@ -157,19 +158,14 @@ class SampleBatch:
             self.state = "failed"
             raise
 
-    def _projection(self, operation):
+    def _projection(self):
         snapshot = json.loads(self._projection_header_bytes)
-        # Include every declared edge, even when no bound evaluates that edge.
-        pending, declarations = [operation], snapshot["declarations"]
-        while pending:
-            _binding, _operation, declaration, delegates, _expected = self._sources[pending.pop()]
-            if declaration.id in declarations:
-                continue
-            declarations[declaration.id] = json.loads(self._declaration_bytes[declaration.id])
-            pending.extend(child for _tag, child in delegates)
-        # Readers get private nested mappings; mutations cannot leak between
-        # groups or flushes. No compiled contexts or per-owner copies are kept.
-        return snapshot
+        snapshot["declarations"] = {
+            identity: json.loads(row) for identity, row in self._declaration_bytes.items()
+        }
+        # Bytes isolate the complete admitted metadata from every root and from
+        # other invocations. Admission contexts never cross this boundary.
+        return canonical_json_bytes(snapshot)
 
     def flush(self):
         if self.state != "active":
@@ -182,13 +178,15 @@ class SampleBatch:
                     raise ValueError("completed growth sample changed before batch receiving")
                 groups[operation].append(sample)
             if groups:
-                for operation, samples in groups.items():
-                    validate_execution_samples(
-                        self._projection(operation),
-                        self._roots[operation].declaration.id,
-                        samples,
-                    )
-                    self.validation_calls += 1
+                schedule = [
+                    (self._roots[operation].declaration.id, samples)
+                    for operation, samples in groups.items()
+                ]
+                projection = self._projection()
+                self.validation_attempts += 1
+                validate_execution_roots(projection, schedule)
+                self.validation_calls += 1
+                self.validation_groups += len(schedule)
                 self._current()
                 self.validated_samples += len(self._pending)
                 self._pending.clear()

@@ -8,7 +8,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any, Literal, TypeVar
 
-from riverhog_canonical_json import canonical_json_bytes
+from riverhog_canonical_json import canonical_json_bytes, parse_identity_json
 
 Unit = tuple[tuple[str, int], ...]
 SCALAR: Unit = ()
@@ -635,16 +635,9 @@ def _validate_sample(
             raise ValueError("actual primitive observations violate the declared growth bound")
 
 
-def validate_execution_samples(projection: object, declaration_id: str, samples: object) -> None:
-    """Validate complete primitive samples and the actual named delegate invocations.
-
-    Counts establish only the declared successful-call scope. Clean source and
-    assertion execution must be verified by the evidence owner separately.
-    Each root has its own bounded reader budget; every root is checked.
-    """
-    contexts = _projection_contexts(projection)
-    rows = _fields(projection, {"format", "cost_model", "declarations"})["declarations"]
-
+def _execution_root_checker(
+    contexts: dict[str, _Context], rows: Mapping[str, Any]
+) -> Callable[[str, object, int, list[int]], None]:
     def check(identity: str, sample: object, depth: int, budget: list[int]) -> None:
         budget[0] -= 1
         if depth > 64 or budget[0] < 0 or identity not in contexts:
@@ -692,10 +685,57 @@ def validate_execution_samples(projection: object, declaration_id: str, samples:
         for bound in context.declaration.bounds:
             composition(bound.expression)
 
+    return check
+
+
+def validate_execution_samples(projection: object, declaration_id: str, samples: object) -> None:
+    """Validate complete primitive samples and the actual named delegate invocations.
+
+    Counts establish only the declared successful-call scope. Clean source and
+    assertion execution must be verified by the evidence owner separately.
+    Each root has its own bounded reader budget; every root is checked.
+    """
+    contexts = _projection_contexts(projection)
+    rows = _fields(projection, {"format", "cost_model", "declarations"})["declarations"]
+    check = _execution_root_checker(contexts, rows)
     if not isinstance(samples, list) or not samples:
         raise ValueError("growth evidence has no completed primitive samples")
     for sample in samples:
         check(declaration_id, sample, 0, [65536])
+
+
+def validate_execution_roots(projection_json: bytes, groups: object) -> None:
+    """Check independent roots against one private canonical metadata closure.
+
+    Complete metadata is validated before the finite ordered group schedule.
+    Each group is an exact (declaration identity, nonempty sample list) tuple.
+    Snapshot only that schedule; original sample values remain live and each
+    occurrence gets its own depth/node budget. No acceptance or compiled
+    context survives this invocation. Failure has no partial-success result;
+    an original traceback can retain its local state until received.
+    """
+    projection = parse_identity_json(projection_json)
+    if canonical_json_bytes(projection) != projection_json:
+        raise ValueError("growth metadata input must be canonical JSON bytes")
+    contexts = _projection_contexts(projection)
+    rows = _fields(projection, {"format", "cost_model", "declarations"})["declarations"]
+    if type(groups) is not list or not groups:
+        raise ValueError("growth evidence requires nonempty ordered root groups")
+    schedule = []
+    for group in groups:
+        if (
+            type(group) is not tuple
+            or len(group) != 2
+            or type(group[0]) is not str
+            or type(group[1]) is not list
+            or not group[1]
+        ):
+            raise ValueError("growth root group requires an identity and completed sample list")
+        schedule.append((group[0], tuple(group[1])))
+    check = _execution_root_checker(contexts, rows)
+    for identity, samples in schedule:
+        for sample in samples:
+            check(identity, sample, 0, [65536])
 
 
 def _evaluate(context: _Context, metric: str, dimensions: Mapping[str, int]) -> int:
@@ -763,6 +803,7 @@ __all__ = [
     "evaluate_bound",
     "growth_binding",
     "project_bindings",
+    "validate_execution_roots",
     "validate_execution_samples",
     "validate_projection",
     "validate_sample",

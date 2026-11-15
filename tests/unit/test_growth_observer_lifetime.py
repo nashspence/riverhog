@@ -189,23 +189,24 @@ def test_receive_rejects_inexact_or_invalid_samples_without_repair(defect):
     assert_released(batch)
 
 
-def test_each_group_reads_its_complete_reachable_projection(monkeypatch):
+def test_all_groups_read_one_complete_admitted_projection(monkeypatch):
     root, middle, child, unused = source_graph()
-    original = growth_batch.validate_execution_samples
+    original = growth_batch.validate_execution_roots
     received = []
 
-    def validate(projection, identity, samples):
-        expected = (
-            {child.declaration.id}
-            if identity == child.declaration.id
-            else {middle.declaration.id, child.declaration.id, unused.declaration.id}
-        )
-        assert set(projection["declarations"]) == expected
-        assert all(projection is not prior for prior in received)
-        original(projection, identity, samples)
+    def validate(projection, groups):
+        decoded = json.loads(projection)
+        assert set(decoded["declarations"]) == {
+            item.declaration.id for item in (root, middle, child, unused)
+        }
+        assert [identity for identity, _samples in groups] == [
+            child.declaration.id,
+            middle.declaration.id,
+        ]
+        original(projection, groups)
         received.append(projection)
 
-    monkeypatch.setattr(growth_batch, "validate_execution_samples", validate)
+    monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
     with SampleBatch((root.operation,), limit=4, include_descendants=True) as batch:
         child_sample = literal_sample(child)
         batch.receive(child.operation, child_sample)
@@ -213,27 +214,30 @@ def test_each_group_reads_its_complete_reachable_projection(monkeypatch):
             middle.operation,
             literal_sample(middle, children={"leaf": [child_sample], "unused": []}),
         )
-    assert batch.validation_calls == 2 and batch.validated_samples == 2
-    assert len(received) == 2
+    assert len(received) == batch.validation_calls == 1
+    assert batch.validation_groups == batch.validated_samples == 2
     assert_released(batch)
 
 
-def test_later_group_does_not_reuse_a_prior_readers_mutable_projection(monkeypatch):
+def test_later_flush_does_not_reuse_a_prior_readers_mutable_projection(monkeypatch):
     root, _, child, _ = source_graph()
-    original = growth_batch.validate_execution_samples
+    original = growth._projection_contexts
     projections = []
 
-    def validate(projection, identity, samples):
+    def compile_projection(projection):
         assert all(projection is not prior for prior in projections)
-        original(projection, identity, samples)
+        result = original(projection)
         projections.append(projection)
-        projection["format"] = "changed after validation"
+        return result
 
-    monkeypatch.setattr(growth_batch, "validate_execution_samples", validate)
+    monkeypatch.setattr(growth, "_projection_contexts", compile_projection)
     with SampleBatch((root.operation,), limit=1, include_descendants=True) as batch:
         batch.receive(child.operation, literal_sample(child, items=2, visits=2))
+        # The first flush's decoded graph is no longer an authority.
+        projections[-1]["format"] = "changed after validation"
         batch.receive(child.operation, literal_sample(child, items=3, visits=3))
-    assert len(projections) == batch.validated_samples == 2
+    assert len(projections) == 3
+    assert batch.validated_samples == batch.validation_calls == 2
     assert_released(batch)
 
 
@@ -256,18 +260,18 @@ def test_initial_admission_checks_unused_metadata_before_receiving_any_leaf():
 def test_leaf_receiving_keeps_source_checks_for_unselected_metadata(monkeypatch, during_reader):
     root, _, child, unused = source_graph()
     previous = unused.declaration.invariants
-    original = growth_batch.validate_execution_samples
+    original = growth_batch.validate_execution_roots
 
     def mutate():
         object.__setattr__(unused.declaration, "invariants", ("Changed unused completion scope.",))
 
-    def validate(projection, identity, samples):
-        assert set(projection["declarations"]) == {child.declaration.id}
-        original(projection, identity, samples)
+    def validate(projection, groups):
+        assert child.declaration.id in json.loads(projection)["declarations"]
+        original(projection, groups)
         mutate()
 
     if during_reader:
-        monkeypatch.setattr(growth_batch, "validate_execution_samples", validate)
+        monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
     try:
         with pytest.raises(ValueError, match="source binding"):
             with SampleBatch((root.operation,), limit=4, include_descendants=True) as batch:
@@ -447,16 +451,16 @@ def test_core_receiving_and_automatic_flush_run_with_observers_paused(monkeypatc
 
     db = Database()
     recorder.dbs = [db]
-    original = growth_batch.validate_execution_samples
+    original = growth_batch.validate_execution_roots
     calls = []
 
-    def validate(projection, identity, samples):
+    def validate(projection, groups):
         assert not recorder.active and not recorder.lease_active
         assert not recorder.native_recorder.recording and not db.recording
-        original(projection, identity, samples)
-        calls.append(identity)
+        original(projection, groups)
+        calls.extend(identity for identity, _samples in groups)
 
-    monkeypatch.setattr(growth_batch, "validate_execution_samples", validate)
+    monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
     with SampleBatch((binding.operation,), limit=1, include_descendants=True) as batch:
         recorder.batch = batch
         recorder.validate(binding.operation, literal_sample(binding))

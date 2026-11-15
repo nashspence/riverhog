@@ -110,13 +110,13 @@ def assert_released(batch):
 
 def observed_validations(monkeypatch):
     calls = []
-    original = growth_batch.validate_execution_samples
+    original = growth_batch.validate_execution_roots
 
-    def validate(projection, identity, samples):
-        original(projection, identity, samples)
-        calls.append((identity, tuple(samples)))
+    def validate(projection, groups):
+        original(projection, groups)
+        calls.extend((identity, tuple(samples)) for identity, samples in groups)
 
-    monkeypatch.setattr(growth_batch, "validate_execution_samples", validate)
+    monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
     return calls
 
 
@@ -148,15 +148,12 @@ def test_bounded_batch_checks_every_root_without_compiling_each_emission(monkeyp
 
 
 @pytest.mark.parametrize("parent_first", [False, True])
-def test_each_group_and_flush_uses_fresh_nested_projection_from_admitted_bytes(
+def test_each_flush_uses_one_private_complete_projection_from_admitted_bytes(
     monkeypatch, parent_first
 ):
     parent, child, unused = projection_bindings()
-    expected = {
-        binding.declaration.id: canonical_json_bytes(project_bindings((binding,)))
-        for binding in (parent, child)
-    }
-    original = growth_batch.validate_execution_samples
+    expected = canonical_json_bytes(project_bindings((parent,)))
+    original = growth_batch.validate_execution_roots
     compile_original = growth._projection_contexts
     compilations, received = [], []
 
@@ -174,27 +171,25 @@ def test_each_group_and_flush_uses_fresh_nested_projection_from_admitted_bytes(
             for item in value:
                 yield from containers(item)
 
-    def validate(projection, identity, samples):
-        assert canonical_json_bytes(projection) == expected[identity]
-        current = tuple(containers(projection))
+    def validate(projection, groups):
+        assert type(projection) is bytes and projection == expected
+        before = len(compilations)
+        original(projection, groups)
+        assert len(compilations) == before + 1
+        current = tuple(containers(compilations[-1]))
         assert {id(item) for item in current}.isdisjoint(
             id(item) for previous in received for item in previous
         )
-        before = len(compilations)
-        original(projection, identity, samples)
-        assert len(compilations) == before + 1
-        assert compilations[-1] is projection
         received.append(current)
-        # Retain and mutate every nested mapping/list, including unused metadata.
+        # Mutating retained private decoded metadata cannot affect another flush.
         for item in current:
             if isinstance(item, dict):
                 item["reader_mutation"] = True
             else:
                 item.append("changed after this reader call")
-        projection["format"] = "changed after this reader call"
 
     monkeypatch.setattr(growth, "_projection_contexts", compile_projection)
-    monkeypatch.setattr(growth_batch, "validate_execution_samples", validate)
+    monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
     with SampleBatch((parent.operation,), limit=2, include_descendants=True) as batch:
         assert isinstance(batch._projection_header_bytes, bytes)
         assert set(batch._declaration_bytes) == {
@@ -212,8 +207,9 @@ def test_each_group_and_flush_uses_fresh_nested_projection_from_admitted_bytes(
             for binding, sample in pending:
                 batch.receive(binding.operation, sample)
             assert not batch._pending
-    assert len(compilations) == 5
-    assert len(received) == batch.validated_samples == batch.validation_calls == 4
+    assert len(compilations) == 3
+    assert len(received) == batch.validation_attempts == batch.validation_calls == 2
+    assert batch.validated_samples == batch.validation_groups == 4
     assert_released(batch)
 
 
@@ -223,21 +219,20 @@ def test_equal_projected_rows_still_require_separate_source_admissions(monkeypat
     assert first.project() == second.project()
     expected = canonical_json_bytes(project_bindings((first,)))
     original_project = growth_batch.project_bindings
-    original_validate = growth_batch.validate_execution_samples
+    original_validate = growth_batch.validate_execution_roots
     admissions, projections = [], []
 
     def project(bindings):
         admissions.append(bindings)
         return original_project(bindings)
 
-    def validate(projection, identity, samples):
-        assert canonical_json_bytes(projection) == expected
-        original_validate(projection, identity, samples)
+    def validate(projection, groups):
+        assert type(projection) is bytes and projection == expected
+        original_validate(projection, groups)
         projections.append(projection)
-        projection["declarations"][identity]["invariants"].append("Changed private reader row.")
 
     monkeypatch.setattr(growth_batch, "project_bindings", project)
-    monkeypatch.setattr(growth_batch, "validate_execution_samples", validate)
+    monkeypatch.setattr(growth_batch, "validate_execution_roots", validate)
     for binding in (first, second):
         with SampleBatch((binding.operation,), limit=1) as batch:
             assert batch.source(binding.operation)[0] is binding
@@ -246,7 +241,6 @@ def test_equal_projected_rows_still_require_separate_source_admissions(monkeypat
         assert_released(batch)
     assert len(admissions) == len(projections) == 2
     assert admissions[0][0] is first and admissions[1][0] is second
-    assert projections[0] is not projections[1]
 
 
 @pytest.mark.parametrize("after_flush", [False, True])
@@ -541,7 +535,8 @@ def _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, *, include_
                 roots.append(sample)
                 assert case.engine.pool.checkedout() == 0
         assert batch.validated_samples == (122 if include_descendants else 6)
-        assert batch.validation_calls == (46 if include_descendants else 4)
+        assert batch.validation_attempts == batch.validation_calls == 2
+        assert batch.validation_groups == (46 if include_descendants else 4)
         expected = {
             growth.growth_binding(callers.ROOT).declaration.id: 3,
             growth.growth_binding(units.ROOT).declaration.id: 3,
