@@ -567,6 +567,7 @@ class PhaseEvidence:
                     error=self.error,
                     fault=self.fault,
                     observed_error=errors,
+                    numeric_policy=self.numeric_policy,
                 )
                 self.append(actual_unit, sample, "raised" if errors[0] else "returned")
                 if errors[0] is not None:

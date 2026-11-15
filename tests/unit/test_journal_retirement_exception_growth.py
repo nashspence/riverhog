@@ -56,7 +56,9 @@ def shape(error):
     gates=("unit",),
     operation="riverhog_core.services.physical_execution.release_exception_graph",
 )
-def test_exception_graph_counts_cycles_shared_edges_and_depth(owned, monkeypatch, record_property):
+def test_exception_graph_counts_cycles_shared_edges_and_depth(
+    owned, monkeypatch, record_property, numeric_policy
+):
     assert UploadJournalValidationRetirement.advance is not None
     samples = []
     lines, start = inspect.getsourcelines(OPERATION)
@@ -125,6 +127,7 @@ def test_exception_graph_counts_cycles_shared_edges_and_depth(owned, monkeypatch
                     },
                     observed,
                     {},
+                    numeric_policy=numeric_policy,
                 )
             )
             assert observed["exception_visits"] == edges + 1

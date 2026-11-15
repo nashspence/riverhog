@@ -51,18 +51,16 @@ class EvidenceFailure(RuntimeError):
     pass
 
 
-def sample(operation, inputs, metrics, delegates=None):
+def sample(operation, inputs, metrics, delegates=None, *, numeric_policy):
     binding = growth_binding(operation)
-    projection = project_bindings(
-        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
-    )
+    projection = project_bindings((binding,), numeric_policy=numeric_policy)
     if operation is workspace_reclamation.reclaim_retired_files:
         result = execution_sample(binding, projection, inputs, metrics, delegates or {})
         validate_execution_samples(
             projection,
             binding.declaration.id,
             [result],
-            numeric_policy=numeric_policy_from_environment(os.environ),
+            numeric_policy=numeric_policy,
         )
         return result
     result = {
@@ -81,7 +79,7 @@ def sample(operation, inputs, metrics, delegates=None):
             projection,
             binding.declaration.id,
             [result],
-            numeric_policy=numeric_policy_from_environment(os.environ),
+            numeric_policy=numeric_policy,
         )
     except ValueError as error:
         raise EvidenceFailure(
@@ -286,8 +284,20 @@ def totals(recorder):
 
 
 def measure(
-    case, current, job, budget, *, turn, cold=False, error=None, fault=None, observed_error=None
+    case,
+    current,
+    job,
+    budget,
+    *,
+    turn,
+    cold=False,
+    error=None,
+    fault=None,
+    observed_error=None,
+    numeric_policy=None,
 ):
+    if numeric_policy is None:
+        numeric_policy = numeric_policy_from_environment(os.environ)
     before = snapshot(case.engine)
     row_width = max(octets(row) for rows in before.values() for row in rows)
     control = tuple(asdict(job).values())
@@ -308,7 +318,9 @@ def measure(
                 bound.metric: metrics.get(ALIASES.get(bound.metric, bound.metric), 0)
                 for bound in growth_binding(CHILDREN[tag]).declaration.bounds
             }
-        children[tag].append(sample(CHILDREN[tag], inputs, metrics, delegates))
+        children[tag].append(
+            sample(CHILDREN[tag], inputs, metrics, delegates, numeric_policy=numeric_policy)
+        )
 
     def transition(selected, target, state):
         arguments = tuple(asdict(target).values())
@@ -419,7 +431,11 @@ def measure(
                     }
                 )
                 child_metrics.attempts = fs.attempts[attempt_start:]
-                file_children.append(sample(files_operation, child_inputs, child_metrics))
+                file_children.append(
+                    sample(
+                        files_operation, child_inputs, child_metrics, numeric_policy=numeric_policy
+                    )
+                )
 
         try:
             with pytest.MonkeyPatch.context() as patch:
@@ -502,7 +518,7 @@ def measure(
             metrics[tag + "_" + bound.metric] = sum(
                 child["metrics"][bound.metric] for child in children[tag]
             )
-    return result, sample(ROOT, dimensions, metrics, children)
+    return result, sample(ROOT, dimensions, metrics, children, numeric_policy=numeric_policy)
 
 
 def measure_in_worker(case, original, job, budget, **kwargs):
