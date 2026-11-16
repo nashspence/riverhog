@@ -1,0 +1,160 @@
+{
+  "audited_product_source": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "checks": [
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/native-996-env/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        ".reference/implementation",
+        "packages/riverhog-provenance/tests/test_journal_session.py::test_public_session_matches_native_summary_and_exact_source",
+        "--basetemp=/workspace/scratch/939b84c043b0/996-final-pytest",
+        "--junitxml=.reference/validation/pytest.xml"
+      ],
+      "cwd": "/workspace/scratch/939b84c043b0/riverhog-996",
+      "elapsed_ns": 42501912715,
+      "environment": {
+        "TMPDIR": "/workspace/scratch/939b84c043b0/996-temp"
+      },
+      "exit_code": 0,
+      "name": "focused-tests",
+      "stderr": "",
+      "stdout": "......................................................... [ 79%]\n...............                                                  [100%]\n72 passed, 23 subtests passed in 41.06s\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/toolchain/bin/ruff",
+        "check",
+        ".reference/implementation"
+      ],
+      "cwd": "/workspace/scratch/939b84c043b0/riverhog-996",
+      "elapsed_ns": 39452936,
+      "environment": {
+        "TMPDIR": "/workspace/scratch/939b84c043b0/996-temp"
+      },
+      "exit_code": 0,
+      "name": "ruff-lint",
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/toolchain/bin/ruff",
+        "format",
+        "--check",
+        ".reference/implementation"
+      ],
+      "cwd": "/workspace/scratch/939b84c043b0/riverhog-996",
+      "elapsed_ns": 38385204,
+      "environment": {
+        "TMPDIR": "/workspace/scratch/939b84c043b0/996-temp"
+      },
+      "exit_code": 0,
+      "name": "ruff-format",
+      "stderr": "",
+      "stdout": "8 files already formatted\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/toolchain/bin/mypy",
+        "--strict",
+        ".reference/implementation/generation_store.py",
+        ".reference/implementation/wal_capture.py"
+      ],
+      "cwd": "/workspace/scratch/939b84c043b0/riverhog-996",
+      "elapsed_ns": 278862599,
+      "environment": {
+        "TMPDIR": "/workspace/scratch/939b84c043b0/996-temp"
+      },
+      "exit_code": 0,
+      "name": "strict-mypy-storage",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "make",
+        "lint"
+      ],
+      "cwd": "/workspace/scratch/939b84c043b0/riverhog-996",
+      "elapsed_ns": 13720539,
+      "environment": {
+        "TMPDIR": "/workspace/scratch/939b84c043b0/996-temp"
+      },
+      "exit_code": 2,
+      "name": "repository-lint",
+      "stderr": "Riverhog Makefile targets require mise on PATH, or MISE_BIN=/abs/path/to/mise.\nInstall mise or pass MISE_BIN explicitly, then rerun make.\nmake: *** [Makefile:64: lint] Error 127\n",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+        "--",
+        ".",
+        ":(exclude).reference"
+      ],
+      "cwd": "/workspace/scratch/939b84c043b0/riverhog-996",
+      "elapsed_ns": 11840933,
+      "environment": {
+        "TMPDIR": "/workspace/scratch/939b84c043b0/996-temp"
+      },
+      "exit_code": 0,
+      "name": "product-source-identity",
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "date": "2026-11-16",
+  "format": "riverhog-996-reference-validation/v1",
+  "implementation_sha256": {
+    ".reference/implementation/generation_store.py": "28956d5215150c35e5f094515109deba3c9179cdbabb61efd2bd5207e0e6c9f8",
+    ".reference/implementation/native_execution_experiment.py": "1493aac691bb8e241e2b761d33ad842e0398a49a33c7e9c20d37fe0595618bff",
+    ".reference/implementation/reproduce_native_experiment.py": "a1a1fabe06637ccea78d276cdb487a906bb1206c3f7b86daed912a08941faeda",
+    ".reference/implementation/test_generation_capture.py": "e64d91df6595931bad374d74ca03de48e4ef67f7566079f2a56f4e7b468f569d",
+    ".reference/implementation/test_generation_store.py": "955a685ed9aa03a84aba5ca25082a1bbd8ff924f3c76841b6aaff12f9dda5337",
+    ".reference/implementation/test_native_execution_experiment.py": "d7bac0e0085d94b4ee5088cc584686a30d85ef84dea4bbb6388f6c85420c04c1",
+    ".reference/implementation/test_wal_capture.py": "509f95fce0e78862a4d2ec50c2e6f20810e4f089b7b9878b0079110528ca7729",
+    ".reference/implementation/wal_capture.py": "681110f0befcc2fb15c6c2f9c23b95a7daadc91fc609b08e032c2750043ad573"
+  },
+  "scope": "External reference experiments only; no integrated product qualification or performance claim.",
+  "source_reconciliation": {
+    "changed_paths": [
+      ".gitattributes",
+      "tests/unit/test_validation_numeric.py",
+      "tests/unit/test_validation_witnesses.py"
+    ],
+    "disposition": "Complete delta inspected; product source refreshed; final tests and paired observations rerun. Native/Core/packages/dependencies/policies unchanged by this delta.",
+    "final_source": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+    "initial_source": "0f8030b0c0cd53eb33456924f070ae5979ed307e"
+  },
+  "test_counts": {
+    "baseline": 3,
+    "errors": 0,
+    "failures": 0,
+    "reference": 69,
+    "skipped": 0,
+    "total": 72
+  },
+  "unperformed": [
+    "Full repository lint (blocked: mise unavailable)",
+    "Full repository CI/merge-checkout qualification",
+    "Integrated Native optional recovery and policy admission",
+    "Actual F1 publication/profile",
+    "Default-policy long/unknown work eligibility",
+    "Installed/platform/backend/receiving/growth gates",
+    "Physical fsync, OS-crash/power-loss and provider qualification"
+  ],
+  "uv_lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+  "versions": {
+    "mypy": "2.3.0",
+    "pytest": "9.1.1",
+    "python": "3.12.3",
+    "ruff": "0.16.0",
+    "sqlite": "3.45.1",
+    "uv": "0.11.24"
+  }
+}
