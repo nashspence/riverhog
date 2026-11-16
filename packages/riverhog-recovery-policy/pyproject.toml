@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "riverhog-recovery-policy"
+version = "0.1.0"
+description = "Bounded optional recovery policy and owner accounting."
+requires-python = ">=3.12"
+dependencies = ["release-documentation-lib>=0.1,<0.2"]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Bounded optional recovery policy and owner accounting.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+
+[tool.riverhog.public-api]
+modules = ["riverhog_recovery_policy"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/riverhog_recovery_policy"]
+
+[tool.uv.sources]
+release-documentation-lib = { workspace = true }
