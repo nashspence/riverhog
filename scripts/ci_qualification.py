@@ -57,6 +57,7 @@ NATIVE_TESTS = (
     "packages/retained-resource/tests/test_construction_receiving.py",
     "packages/retained-resource/tests/test_receiving.py",
     "packages/retained-resource/tests/test_receiving_growth.py",
+    "packages/retained-resource/tests/test_native_growth.py",
     "packages/retained-resource/tests/test_wheel_build.py",
     "tests/platform/test_native_provenance.py",
     "tests/unit/test_cli_upload_source_hashing.py",
@@ -242,8 +243,14 @@ def validation_workloads(*, names: Sequence[str] | None = None) -> tuple[Validat
         requested = set(names)
         work = [item for item in work if item.name in requested]
     selected = {item.name for item in work}
-    required_gates = selected | (
-        {"unit-unit"} if any(name.startswith("unit-unit-") for name in selected) else set()
+    required_gates = (
+        selected
+        | ({"unit-unit"} if any(name.startswith("unit-unit-") for name in selected) else set())
+        | (
+            {"client-platform-qualification"}
+            if any(name.startswith("native-") for name in selected)
+            else set()
+        )
     )
     witnesses = tuple(
         witness
@@ -252,7 +259,9 @@ def validation_workloads(*, names: Sequence[str] | None = None) -> tuple[Validat
     )
 
     def applies(name: str, witness: TestWitness) -> bool:
-        if name in witness.gates:
+        if name in witness.gates or (
+            name.startswith("native-") and "client-platform-qualification" in witness.gates
+        ):
             return True
         return (
             name.startswith("unit-unit-")
@@ -540,7 +549,7 @@ def qualify_images(targets: Sequence[str], graph: dict[str, Any]) -> None:
 
 def native_platform() -> None:
     evidence = os.environ.get("RIVERHOG_CI_TIMING_DIR")
-    tests = [sys.executable, "-m", "pytest", "-q", "--maxfail=1"]
+    tests = [sys.executable, "-m", "pytest", "-q", "--maxfail=1", "-p", "scripts.ci_timing"]
     if evidence:
         tests.extend(
             ("-o", "junit_family=xunit1", "--junitxml", str(Path(evidence) / "native-pytest.xml"))

@@ -12,6 +12,7 @@ from riverhog_core.journal_validation_workspace_lease import ValidationWorkspace
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
 from scripts.validation_numeric import numeric_policy_from_environment
+from tests.support.native_growth import record_native_growth
 from tests.support.retained_resource import fault_native as fault_native
 from tests.support.workspace_reclamation import execution_sample
 
@@ -198,7 +199,7 @@ def test_receiving_native_work_is_independent_of_reference_and_namespace_populat
                 if original._active:
                     original.finish()
                 original.close()
-    record_property("growth_samples", samples)
+    record_native_growth(record_property, samples)
 
 
 @pytest.mark.parametrize("target", ["root", "coordinator", "directory", "lease"])

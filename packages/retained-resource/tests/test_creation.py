@@ -9,12 +9,8 @@ import sys
 
 import pytest
 from retained_resource import Borrow, Resource
-from retained_resource.growth import acquire, receive
-from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 
-from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.retained_resource import fault_native as fault_native
-from tests.support.workspace_reclamation import execution_sample
 
 pytestmark = pytest.mark.skipif(
     sys.platform not in {"linux", "darwin"}, reason="native Linux/Darwin POSIX owner backend"
@@ -198,77 +194,3 @@ if replacement is not None:os.close(replacement)
         timeout=30,
     )
     assert result.returncode == 0, (result.stdout + result.stderr)[-2800:]
-
-
-@pytest.mark.growth_witness(
-    "retained-resource.native-creation-work",
-    gates=("unit", "client-platform-qualification"),
-)
-def test_creation_measures_actual_native_entries_and_full_control_operands(
-    tmp_path, record_property
-):
-    bindings = tuple(growth_binding(operation) for operation in (acquire, receive))
-    projection = project_bindings(
-        bindings, numeric_policy=numeric_policy_from_environment(os.environ)
-    )
-    samples = []
-    for backlog in (1, 17, 1025):
-        root = tmp_path / str(backlog)
-        root.mkdir(mode=0o700)
-        for index in range(backlog):
-            (root / str(index)).touch()
-        parent = Resource("directory")
-        parent.acquire(os.fsencode(root))
-        try:
-            for width in (1, 17, 129):
-                for relative in (False, True):
-                    for exclusive in (False, True):
-                        name = "x" * width
-                        target = root / name
-                        path = os.fsencode(name if relative else target)
-                        owner = Resource("file")
-                        for operation in (acquire, receive, *([receive] * 17)):
-                            before = owner.metrics
-                            if operation is acquire:
-                                operation(
-                                    owner,
-                                    path,
-                                    parent=parent if relative else None,
-                                    writable=True,
-                                    create=True,
-                                    exclusive=exclusive,
-                                )
-                            else:
-                                operation(owner)
-                            after = owner.metrics
-                            metrics = {
-                                key: after[key] - before[key]
-                                for key in (
-                                    "open_calls",
-                                    "dup_calls",
-                                    "fstat_calls",
-                                    "close_calls",
-                                    "control_octets",
-                                )
-                            }
-                            binding = growth_binding(operation)
-                            sample = execution_sample(
-                                binding,
-                                projection,
-                                {"unrelated_files": backlog, "path_octets": len(path)},
-                                metrics,
-                                {},
-                            )
-                            validate_execution_samples(
-                                projection,
-                                binding.declaration.id,
-                                [sample],
-                                numeric_policy=numeric_policy_from_environment(os.environ),
-                            )
-                            samples.append(sample)
-                        assert owner.received and owner.metrics["close_calls"] == 1
-                        target.unlink()
-                assert parent.metrics["children"] == 0
-        finally:
-            parent.close()
-    record_property("growth_samples", samples)

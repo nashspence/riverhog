@@ -268,7 +268,13 @@ def test_native_qualification_preserves_staged_install_and_bounded_failure_evide
     monkeypatch.setenv("GOGURT_FAILURE_EVIDENCE_DIR", "/tmp/qualification-evidence")
     monkeypatch.setattr(qualification, "run", lambda command: commands.append(command))
     qualification.native_platform()
-    assert commands[0][3:] == ["-q", "--maxfail=1", *qualification.NATIVE_TESTS]
+    assert commands[0][3:] == [
+        "-q",
+        "--maxfail=1",
+        "-p",
+        "scripts.ci_timing",
+        *qualification.NATIVE_TESTS,
+    ]
     native_modules = {
         path.relative_to(qualification.ROOT).as_posix()
         for path in (qualification.ROOT / "packages/retained-resource/tests").glob("test_*.py")
@@ -966,6 +972,8 @@ def test_native_qualification_retains_structured_results_without_repeating_work(
         "pytest",
         "-q",
         "--maxfail=1",
+        "-p",
+        "scripts.ci_timing",
         "-o",
         "junit_family=xunit1",
         "--junitxml",
@@ -973,3 +981,15 @@ def test_native_qualification_retains_structured_results_without_repeating_work(
         *qualification.NATIVE_TESTS,
     ]
     assert commands[1][-2:] == ["--summary", str(tmp_path / "installation.json")]
+
+
+@pytest.mark.parametrize("runner", ["ubuntu-24.04", "macos-15", "windows-2025"])
+def test_actions_native_work_requires_the_same_growth_evidence_as_the_make_target(runner):
+    make = qualification.validation_work("client-platform-qualification")
+    native = qualification.validation_work("native-" + runner)
+    assert set(make.growth_witnesses) == {
+        "retained-resource.native-creation-work",
+        "retained-resource.native-resource-work",
+    }
+    assert native.growth_witnesses == make.growth_witnesses
+    assert native.growth_declarations == make.growth_declarations
