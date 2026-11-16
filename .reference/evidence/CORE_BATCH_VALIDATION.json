@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/core-sdk-997-env/bin/python",
+    "-m",
+    "pytest",
+    ".reference/implementation/test_core_batch_experiment.py",
+    "-q",
+    "--durations=5",
+    "--junitxml=.reference/evidence/CORE_BATCH_TESTS.xml"
+  ],
+  "environment": {
+    "PYTHONPATH": ".:some-implementations/riverhog/storage/filesystem/src:packages/riverhog-storage-adapter-asgi-support/src"
+  },
+  "exit_code": 0,
+  "elapsed_ns": 18233359606,
+  "measurement_command": [
+    "/workspace/scratch/939b84c043b0/core-sdk-997-env/bin/python",
+    ".reference/implementation/core_batch_experiment.py",
+    "--output",
+    "/workspace/scratch/939b84c043b0/997-core-batch-results.json"
+  ],
+  "measurement_note": "CORE_BATCH.json copied without changing observations; stage timers are explicitly inclusive. Fixture provider admission-check writer transactions are isolated in their named stage and are not shipped-path overhead."
+}

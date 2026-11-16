@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/core-sdk-997-env/bin/python",
+    "-c",
+    "import os,sys; from scripts.validation_numeric import bind_numeric_environment, qualification_numeric_policy; bind_numeric_environment(os.environ, qualification_numeric_policy()); os.execv(sys.executable,[sys.executable,\"-m\",\"pytest\",*sys.argv[1:]])",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "--basetemp=/workspace/scratch/939b84c043b0/997-final-temp/pytest",
+    "--junitxml=/workspace/scratch/939b84c043b0/riverhog-997/.reference/evidence/REFERENCE_TESTS.xml",
+    "--durations=8",
+    ".reference/implementation"
+  ],
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/997-final-temp",
+    "PYTHONPATH": "/workspace/scratch/939b84c043b0/riverhog-997:/workspace/scratch/939b84c043b0/riverhog-997/.reference/implementation:/workspace/scratch/939b84c043b0/riverhog-997/some-implementations/riverhog/storage/filesystem/src:/workspace/scratch/939b84c043b0/riverhog-997/packages/riverhog-storage-adapter-asgi-support/src",
+    "RIVERHOG_PROVENANCE_STATE_HOME": "/workspace/scratch/939b84c043b0/997-final-temp/provenance-state",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/997-final-temp/timing"
+  },
+  "exit_code": 0,
+  "elapsed_ns_including_process": 76856210676,
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "source_relationship": "product unchanged; reference files present and uncommitted during focused validation"
+}

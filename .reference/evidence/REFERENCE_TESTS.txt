@@ -1,0 +1,12 @@
+............................................                             [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/997-final-temp/timing/pytest/unit/142dc012bf2f4f74b76b747898adf93a/2839ed8d30a941038edb5c279ea18851
+============================= slowest 8 durations ==============================
+2.63s call     .reference/implementation/test_prepared_primary_experiment.py::test_real_native_retry_preserves_original_journal_decision_and_complete_receipt
+2.05s call     .reference/implementation/test_core_batch_experiment.py::test_same_logical_checkpoint_has_one_batch_commit_and_all_original_effects[262144-pack]
+1.98s call     .reference/implementation/test_core_batch_experiment.py::test_same_logical_checkpoint_has_one_batch_commit_and_all_original_effects[65536-segment]
+1.94s call     .reference/implementation/test_prepared_primary_experiment.py::test_receipt_only_accepts_original_controls_but_never_invents_decision_ack[changed-observation]
+1.92s call     .reference/implementation/test_prepared_primary_experiment.py::test_receipt_only_accepts_original_controls_but_never_invents_decision_ack[changed-journal]
+1.90s call     .reference/implementation/test_prepared_primary_experiment.py::test_warm_lease_prevents_creation_and_cleanup_before_any_filesystem_mutation[new-child]
+1.87s call     .reference/implementation/test_prepared_primary_experiment.py::test_receipt_only_accepts_original_controls_but_never_invents_decision_ack[changed-graph]
+1.86s call     .reference/implementation/test_prepared_primary_experiment.py::test_receipt_only_accepts_original_controls_but_never_invents_decision_ack[truncated-journal]
+44 passed in 74.59s (0:01:14)

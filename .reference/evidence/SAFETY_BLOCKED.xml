@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="0" tests="2" time="7.708" timestamp="2026-11-16T15:33:33.161067-08:00" hostname="7f0b24832328"><testcase classname="" name="tests.unit.test_archive_upload_terminal_adjudication" file="tests/unit/test_archive_upload_terminal_adjudication.py" time="0.000"><error message="collection failure">ImportError while importing test module '/workspace/scratch/939b84c043b0/riverhog-997/tests/unit/test_archive_upload_terminal_adjudication.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_archive_upload_terminal_adjudication.py:27: in &lt;module&gt;
+    from tests.unit.test_archive_payload_input import _request
+tests/unit/test_archive_payload_input.py:20: in &lt;module&gt;
+    from tests.unit.test_archive_upload_invocations import _receive
+tests/unit/test_archive_upload_invocations.py:26: in &lt;module&gt;
+    from tests.unit.test_archive_upload_writes import _actor, _open, _stored, _unit
+tests/unit/test_archive_upload_writes.py:13: in &lt;module&gt;
+    from a_riverhog_filesystem_store import FilesystemStorageAdapter, FilesystemStorageAdapterConfig
+E   ModuleNotFoundError: No module named 'a_riverhog_filesystem_store'</error></testcase><testcase classname="" name="tests.unit.test_archive_upload_terminal_completion" file="tests/unit/test_archive_upload_terminal_completion.py" time="0.000"><error message="collection failure">ImportError while importing test module '/workspace/scratch/939b84c043b0/riverhog-997/tests/unit/test_archive_upload_terminal_completion.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_archive_upload_terminal_completion.py:25: in &lt;module&gt;
+    from tests.unit.test_archive_upload_projection_cleanup import LIMITS, _count, _projection
+tests/unit/test_archive_upload_projection_cleanup.py:28: in &lt;module&gt;
+    from tests.unit.test_archive_upload_cleanup_turn import _bind, _complete
+tests/unit/test_archive_upload_cleanup_turn.py:40: in &lt;module&gt;
+    from tests.unit.test_archive_upload_maintenance import _join
+tests/unit/test_archive_upload_maintenance.py:22: in &lt;module&gt;
+    from tests.unit.test_archive_finalizer_terminal_drain import _original, _terminal
+tests/unit/test_archive_finalizer_terminal_drain.py:17: in &lt;module&gt;
+    from tests.unit import test_archive_authority_checkpoint as root_source
+tests/unit/test_archive_authority_checkpoint.py:27: in &lt;module&gt;
+    from tests.unit.test_archive_volume_metadata_receiving import _count, _metadata_source
+tests/unit/test_archive_volume_metadata_receiving.py:11: in &lt;module&gt;
+    from a_riverhog_filesystem_store import FilesystemStorageAdapter, FilesystemStorageAdapterConfig
+E   ModuleNotFoundError: No module named 'a_riverhog_filesystem_store'</error></testcase></testsuite></testsuites>

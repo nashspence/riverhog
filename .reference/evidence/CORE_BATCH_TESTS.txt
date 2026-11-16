@@ -1,0 +1,8 @@
+............                                                             [100%]
+============================= slowest 5 durations ==============================
+1.90s call     .reference/implementation/test_core_batch_experiment.py::test_same_logical_checkpoint_has_one_batch_commit_and_all_original_effects[65536-segment]
+1.73s call     .reference/implementation/test_core_batch_experiment.py::test_same_logical_checkpoint_has_one_batch_commit_and_all_original_effects[262144-segment]
+1.44s call     .reference/implementation/test_core_batch_experiment.py::test_same_logical_checkpoint_has_one_batch_commit_and_all_original_effects[65536-pack]
+1.35s call     .reference/implementation/test_core_batch_experiment.py::test_same_logical_checkpoint_has_one_batch_commit_and_all_original_effects[262144-pack]
+0.90s call     .reference/implementation/test_core_batch_experiment.py::test_positive_unknown_segment_stays_charged_and_blocks_completion
+12 passed in 15.82s

@@ -1,0 +1,125 @@
+{
+  "artifact_sha256": {
+    ".reference/evidence/CORE_BATCH.json": "e91a5616e9823d14f023e025a9ee8bd69079a537215125fd139812f4c5ad6512",
+    ".reference/evidence/CORE_BATCH_TESTS.txt": "aee8d92a7e7f1ac14cc308c2644530f8eaa8f1ec39a0cce2bf58de3fae4a34a5",
+    ".reference/evidence/CORE_BATCH_TESTS.xml": "daf58c1b16333bc2fbda26dbfc8cacef09607b8f06723c2d1f80d2d5b3acff68",
+    ".reference/evidence/CORE_BATCH_VALIDATION.json": "4d5c9c37b82dfbbb94e86297497383a25a0c3e6f41b918d33bd9882be1288fcb",
+    ".reference/evidence/F1_BASELINE.json": "633a6738c9a33c1adff861ad6cd1d563f5af9ac51a2bd011dd867fd798835b02",
+    ".reference/evidence/F1_BASELINE_PHASE.json": "c506bbab5e33126596b2cbc6574358745006ab9595fd293e44a44e15637bef22",
+    ".reference/evidence/F1_WORKLOAD.json": "a4e5cae489f81fb966c1754802dc7f04abb273a93c5b1a2acb1ca4b38724b060",
+    ".reference/evidence/REFERENCE_TESTS.txt": "dab97d1c11c799477acb324111dde8ed9a987a410f2340af780e75f33d219ea4",
+    ".reference/evidence/REFERENCE_TESTS.xml": "f616c84cb7f6078e4a4ebaf163be0a1cb870eade848d4f57c021604cddc4db28",
+    ".reference/evidence/REFERENCE_TEST_COMMAND.json": "b5f493f7f392cb34e314f7ea18b63e05e8d4eb9fcea888ab500dda8933a34f00",
+    ".reference/evidence/REFERENCE_TEST_TIMING.json": "6e8dd71e06dd8ecfd70d8fef76eeae5da64cbae421d9e2d762b1a775061cd3ce",
+    ".reference/evidence/SAFETY_BLOCKED.xml": "d00e8d8d6cd7492d2da0d0fe88ef7fe20270b0f3af0a6c1e387cfbd7daad8f8d",
+    ".reference/evidence/SAFETY_BLOCKED_TIMING.json": "a3c56aec7e84c454800639f28e0d36cac590a2a4b620777ac9faaab3a1baac5b",
+    ".reference/evidence/SAFETY_PASSED.xml": "04205511fd95cb97bd44e43920288b57e44821473a151c6b3d7fb90be9addc80",
+    ".reference/evidence/SAFETY_PASSED_TIMING.json": "1d3281033d4885b997b026c0c6f7e995d9a5437c6f40942abcbefdfb9d92614e",
+    ".reference/evidence/SDK_PREPARED_PRIMARY.json": "6c042f5bed3044df59738a156d1d734d44c694709e0444d510fa9bbf0a35fb52",
+    ".reference/implementation/core_batch_experiment.py": "bb66e489be987210be27f717dc7ffad2f8538a64b7f4d0df2654a7ad8ca57b70",
+    ".reference/implementation/prepared_primary_experiment.py": "fc869809be39a95a37343108326c673de53846563eeb1cebfbc23afc90b14af5",
+    ".reference/implementation/test_core_batch_experiment.py": "f4df594cf8c2fb84511a8c459678ba0181bce7154e9a4d43ffe80e5bfb993504",
+    ".reference/implementation/test_prepared_primary_experiment.py": "a2ad9415b3b77ba9509aec1b3d84a3315ae71268ba50cd6b4b546c60e0233351"
+  },
+  "audited_base_ref": "codex/964-session-owner",
+  "audited_base_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "audited_base_tree": "044a0e1e3eecf0b4183836017269fc208b6603d2",
+  "blocked_gates": {
+    "make_lint": {
+      "exit_code": 2,
+      "reason": "mise unavailable",
+      "wrapper_exit": 127
+    },
+    "make_profile": {
+      "exit_code": 2,
+      "reason": "mise unavailable",
+      "wrapper_exit": 127
+    }
+  },
+  "convention_issue": 903,
+  "format": "riverhog-reference-publication-validation/v1",
+  "limits": [
+    "F1 is unchanged-source baseline, not new execution path or optional checkpoint evidence",
+    "SDK API is a fault fixture; POSIX Python calls are not physical-device synchronization evidence",
+    "Core uses real encrypted private owner/direct filesystem fixture; comparator is not old product F1",
+    "No PostgreSQL, Windows/macOS, installed recovery, power-loss, provider or complete product CI qualification",
+    "No full-lifecycle growth or actual default optional eligibility/restart on the proposed path",
+    "No product implementation, speedup, issue completion, release/merge authority or permission to resume held campaigns"
+  ],
+  "lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+  "observed_main_sha": "209481c189f7387557a85e1c249184642816e103",
+  "owning_issue": 997,
+  "pinned_reference_inputs": {
+    "995": "b545a77996fbc9fe98019796860473bda1bb1aa0",
+    "996": "e4a607081d17ae1a067bb766241bd5febd9ddeb9"
+  },
+  "producer": {
+    "effort": "not exposed",
+    "mode": "Default",
+    "model": "GPT-6 Astra Pro",
+    "product": "OpenAI ChatGPT",
+    "requester": "nashspence, Riverhog maintainer"
+  },
+  "reference_branch": "reference/external/997-publication-custody",
+  "runtime": {
+    "cryptography": "50.0.0",
+    "fastapi": "0.141.1",
+    "httpx2": "2.12.0",
+    "mypy": "2.3.0",
+    "pytest": "9.1.1",
+    "python": "3.12.3",
+    "ruff": "0.16.0",
+    "sqlalchemy": "2.0.51",
+    "sqlite": "3.45.1",
+    "starlette": "1.3.1"
+  },
+  "source_relationship": "Only .reference is added; all product and maintained test paths match audited base. Reference and safety tests run with uncommitted reference files; F1 on clean base.",
+  "static_checks": [
+    {
+      "command": "/workspace/scratch/939b84c043b0/toolchain/bin/ruff check .reference/implementation",
+      "exit_code": 0
+    },
+    {
+      "command": "/workspace/scratch/939b84c043b0/toolchain/bin/ruff format --check .reference/implementation",
+      "exit_code": 0,
+      "files": 4
+    },
+    {
+      "command": "/workspace/scratch/939b84c043b0/toolchain/bin/mypy --strict --follow-imports=skip --ignore-missing-imports .reference/implementation/core_batch_experiment.py",
+      "exit_code": 0,
+      "scope": "Core harness only; imported owners skipped; SDK and full product typing not claimed"
+    }
+  ],
+  "test_cohorts": {
+    "final_reference": {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "7f0b24832328",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "44",
+      "time": "74.571",
+      "timestamp": "2026-11-16T15:45:31.256253-08:00"
+    },
+    "initial_safety_collection_blocked": {
+      "errors": "2",
+      "failures": "0",
+      "hostname": "7f0b24832328",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "2",
+      "time": "7.708",
+      "timestamp": "2026-11-16T15:33:33.161067-08:00"
+    },
+    "separate_unchanged_safety": {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "7f0b24832328",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "9",
+      "time": "54.496",
+      "timestamp": "2026-11-16T15:34:27.541886-08:00"
+    }
+  }
+}
