@@ -161,7 +161,7 @@ def test_reader_identity_survives_git_checkout_line_ending_conversion(
     reader.parent.mkdir(parents=True)
     reader.write_bytes(reader_bytes)
     (tmp_path / ".gitattributes").write_bytes(attributes)
-    control = tmp_path / "ordinary.py"
+    control = tmp_path / "ordinary.txt"
     control.write_bytes(reader_bytes)
 
     def git(*arguments):

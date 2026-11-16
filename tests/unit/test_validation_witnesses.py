@@ -27,6 +27,7 @@ def executed_witness(tmp_path_factory):
     tests = root / "tests/unit"
     tests.mkdir(parents=True)
     (root / ".gitignore").write_text("__pycache__/\n.pytest_cache/\n")
+    (root / ".gitattributes").write_bytes((ROOT / ".gitattributes").read_bytes())
     (root / "pytest.ini").write_text(
         "[pytest]\nmarkers =\n    growth_witness(identity, gates): owned test observations\n"
     )
@@ -88,6 +89,63 @@ def executed_witness(tmp_path_factory):
 
 def test_actual_pytest_execution_supplies_source_bound_owner_observations(executed_witness):
     root, paths, source = executed_witness
+    assert collect_test_witnesses(
+        paths,
+        root=root,
+        expected=(IDENTITY,),
+        source_sha=source,
+        run_id=RUN,
+        numeric_policy=NUMERIC_POLICY,
+    ) == {IDENTITY: "pass"}
+
+
+@pytest.mark.parametrize("autocrlf", ["false", "input", "true"])
+def test_actual_cross_checkout_witness_preserves_exact_owner_bytes(
+    executed_witness, tmp_path, autocrlf
+):
+    root, _, source = executed_witness
+    checkout, output = tmp_path / "checkout", tmp_path / "observations"
+    subprocess.run(
+        ["git", "clone", "--no-checkout", "--quiet", str(root), str(checkout)],
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(checkout), "config", "core.autocrlf", autocrlf],
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "-C", str(checkout), "checkout", "--quiet", source],
+        check=True,
+        capture_output=True,
+    )
+    observed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "scripts.ci_timing",
+            "--basetemp=" + str(tmp_path / "pytest-temp"),
+        ],
+        cwd=checkout,
+        env={
+            **os.environ,
+            **numeric_environment(NUMERIC_POLICY),
+            "PYTHONPATH": str(ROOT),
+            "RIVERHOG_CI_RUN_ID": RUN,
+            "RIVERHOG_CI_LANE": "unit",
+            "RIVERHOG_CI_TIMING_DIR": str(output),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert observed.returncode == 0, observed.stdout + observed.stderr
+    paths = tuple((output / "pytest").glob(f"*/{RUN}/*/*.json"))
+    assert len(paths) == 1
     assert collect_test_witnesses(
         paths,
         root=root,
