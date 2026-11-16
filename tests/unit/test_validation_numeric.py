@@ -24,6 +24,13 @@ from scripts.validation_numeric import (
 )
 
 
+@pytest.fixture(autouse=True)
+def isolated_parent_make_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Each case supplies parent Make flags independently of the invoking shard."""
+    for variable in ("MAKEFLAGS", "MFLAGS", "MAKEOVERRIDES"):
+        monkeypatch.delenv(variable, raising=False)
+
+
 @pytest.fixture
 def policy() -> NumericWorkPolicy:
     return NumericWorkPolicy(100_000, 64)
