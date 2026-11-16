@@ -1,0 +1,2 @@
+# Keep the qualification reader byte identity identical on every runner.
+/packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py text eol=lf

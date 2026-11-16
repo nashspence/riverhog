@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -146,6 +147,51 @@ def test_actual_imported_reader_must_match_the_qualification_checkout(
     monkeypatch.setattr(riverhog_growth_contracts, "__file__", str(different))
     with pytest.raises(ValueError, match="loaded numeric reader differs"):
         numeric_policy_identity(policy)
+
+
+@pytest.mark.parametrize("autocrlf", ["false", "input", "true"])
+def test_reader_identity_survives_git_checkout_line_ending_conversion(
+    tmp_path, monkeypatch, policy, autocrlf
+):
+    relative = Path("packages/riverhog-growth-contracts/src/riverhog_growth_contracts/__init__.py")
+    original = numeric_policy_identity(policy)
+    reader_bytes = (validation_numeric.ROOT / relative).read_bytes()
+    attributes = (validation_numeric.ROOT / ".gitattributes").read_bytes()
+    reader = tmp_path / relative
+    reader.parent.mkdir(parents=True)
+    reader.write_bytes(reader_bytes)
+    (tmp_path / ".gitattributes").write_bytes(attributes)
+    control = tmp_path / "ordinary.py"
+    control.write_bytes(reader_bytes)
+
+    def git(*arguments):
+        subprocess.run(
+            [
+                "git",
+                "-c",
+                f"core.autocrlf={autocrlf}",
+                "-c",
+                "core.safecrlf=false",
+                "-C",
+                str(tmp_path),
+                *arguments,
+            ],
+            check=True,
+            capture_output=True,
+        )
+
+    git("init", "-q")
+    git("add", "--", ".gitattributes", relative.as_posix(), control.name)
+    reader.unlink()
+    control.unlink()
+    git("checkout-index", "--all", "--force")
+    assert reader.read_bytes() == reader_bytes
+    assert control.read_bytes() == (
+        reader_bytes.replace(b"\n", b"\r\n") if autocrlf == "true" else reader_bytes
+    )
+    monkeypatch.setattr(validation_numeric, "ROOT", tmp_path)
+    monkeypatch.setattr(riverhog_growth_contracts, "__file__", str(reader))
+    assert numeric_policy_identity(policy) == original
 
 
 def test_growth_work_requires_conditions_before_launch(monkeypatch):
