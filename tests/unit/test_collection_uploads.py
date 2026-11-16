@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+import sqlite3
 from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from riverhog_age import decrypt_age_scrypt
@@ -57,6 +59,8 @@ from riverhog_core.incremental_plan import (
 )
 from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission, RetrievalCacheReceipt
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services import archive_finalizer_registry
+from riverhog_core.services.archive_finalization_pipeline import ArchiveFinalizationPipeline
 from riverhog_core.services.canonical_provenance import SqlAlchemyCanonicalProvenanceService
 from riverhog_core.services.catalog_sync import SqlAlchemyCatalogSyncService
 from riverhog_core.services.collection_uploads import (
@@ -90,6 +94,7 @@ from riverhog_provenance import (
     MemberHistoryClosure,
 )
 from sqlalchemy import select
+from sqlalchemy.exc import OperationalError
 
 from tests.support.finalization import drive_custody_turn, drive_finalization_turn
 from tests.support.immutable_archive import MemoryImmutableArchiveStore
@@ -403,14 +408,20 @@ def _process_until(
     *,
     archive_phase: str = "finalized",
 ) -> dict[str, object]:
-    """Drive bounded finalization claims until the requested externally visible state."""
+    """Drive bounded claims and advance their retry clock between joined turns."""
 
-    for _ in range(256):
-        current = service.get(collection_id)
-        if current["state"] == "finalized" or current["archive_phase"] == archive_phase:
-            return current
-        drive_finalization_turn(service)
-    raise AssertionError("bounded finalization did not reach the expected state")
+    now = archive_finalizer_registry.monotonic()
+    with patch.object(archive_finalizer_registry, "monotonic", lambda: now):
+        for _ in range(256):
+            current = service.get(collection_id)
+            if current["state"] == "finalized" or current["archive_phase"] == archive_phase:
+                return current
+            drive_finalization_turn(service)
+            now += service._archive_upload_maintenance._retry_after.total_seconds()
+    raise AssertionError(
+        f"bounded finalization did not reach the expected state: {current['archive_phase']}; "
+        f"{current['latest_failure']}"
+    )
 
 
 def _upload_provenance_journal(
@@ -1290,6 +1301,29 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
             event_context={"source": "other-fixture"},
             custody_mode=custody_mode,
         )
+
+
+def test_small_collection_finalization_retries_same_original_after_database_contention(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    original = ArchiveFinalizationPipeline.advance
+    attempts: list[ArchiveFinalizationPipeline] = []
+
+    def transient_contention(owner: ArchiveFinalizationPipeline) -> bool:
+        if len(attempts) < 3:
+            attempts.append(owner)
+            if len(attempts) <= 2:
+                busy = sqlite3.OperationalError("injected transient database lock")
+                busy.sqlite_errorcode = sqlite3.SQLITE_BUSY
+                raise OperationalError("injected finalization transaction", {}, busy)
+        return original(owner)
+
+    monkeypatch.setattr(ArchiveFinalizationPipeline, "advance", transient_contention)
+    test_small_collection_moves_directly_from_source_unit_to_final_custody(
+        tmp_path, "producer-retained", None
+    )
+    assert len(attempts) == 3
+    assert attempts[0] is attempts[1] is attempts[2]
 
 
 def test_closed_custody_transfer_keeps_lease_until_final_tail_is_custodied(
