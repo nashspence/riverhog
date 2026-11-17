@@ -1,0 +1,3 @@
+...................                                                      [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/riverhog-998/.reference/evidence/ingress_timing/pytest/reference-998-ingress/ingress-reference-02/7c5112e29b574139911af50e0b1f397d
+19 passed in 2.51s

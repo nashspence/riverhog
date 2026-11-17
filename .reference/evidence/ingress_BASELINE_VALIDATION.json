@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/application-998-env/bin/python",
+    "-m",
+    "pytest",
+    "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_landing_adapter_reconciles_lost_response_without_releasing_custody",
+    "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_durable_receipt_finishes_claim_cleanup_after_process_stop",
+    "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_completion_event_replay_guard_survives_until_exact_log_tip",
+    "some-implementations/riverhog/ingress/ftp/tests/test_operational_state_admission.py::test_retention_explicit_unknown_close_has_no_implicit_retry",
+    "some-implementations/riverhog/ingress/ftp/tests/test_operational_state_admission.py::test_spool_retains_failed_owner_and_blocks_new_connections_until_explicit_cleanup",
+    "some-implementations/gogurt/application/tests/test_listener.py::test_controlled_stop_does_not_replay_interrupted_custody",
+    "some-implementations/gogurt/application/tests/test_listener.py::test_shutdown_force_settles_an_action_that_ignores_termination",
+    "some-implementations/gogurt/application/tests/test_listener.py::test_official_heartbeat_observation_does_not_own_publication",
+    "tests/unit/test_cli_upload_sqlite_resources.py::test_borrowed_journal_keeps_connection_and_directory_after_original_close",
+    "tests/unit/test_cli_upload_sqlite_resources.py::test_result_reader_retention_survives_unwind_without_implicit_close_retry",
+    "tests/unit/test_cli_upload_state_admission.py::test_resume_missing_identity_does_not_create_directories_ids_primary_or_api",
+    "tests/unit/test_cli_upload_state_admission.py::test_source_verification_inventory_is_released_before_publication",
+    "tests/unit/test_local_materialization.py::test_local_retains_late_and_inherited_selection_for_offline_audit_and_repair",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "--junitxml=.reference/evidence/ingress_BASELINE.xml",
+    "--basetemp=/workspace/scratch/939b84c043b0/998-ingress-temp/baseline-01"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 74.37874227099746,
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/998-ingress-temp",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a",
+    "RIVERHOG_CI_LANE": "reference-998-ingress-baseline",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/riverhog-998/.reference/evidence/ingress_timing",
+    "RIVERHOG_CI_RUN_ID": "ingress-baseline-01"
+  },
+  "scope": "unchanged selected FTP/Gogurt/CLI private-owner witnesses; local fixture subprocesses only"
+}

@@ -1,0 +1,238 @@
+{
+  "format": "riverhog-reference-validation/v1",
+  "owning_issue": 998,
+  "convention_issue": 903,
+  "source": {
+    "audited_ref": "codex/964-session-owner",
+    "audited_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+    "audited_base_tree": "044a0e1e3eecf0b4183836017269fc208b6603d2",
+    "observed_main": "209481c189f7387557a85e1c249184642816e103",
+    "product_paths_unchanged": true,
+    "published_reference_identity": "Exact SHA recorded in owning issue after tree-verified GitHub publication; no local pre-publication commit is asserted as published"
+  },
+  "final_reference_suite": {
+    "tests": 65,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "pytest_elapsed_seconds": 4.090360889000294,
+    "command_elapsed_ns": 6104744337,
+    "cases_by_file": {
+      ".reference/implementation/effects_test.py": 7,
+      ".reference/implementation/test_application_credit.py": 26,
+      ".reference/implementation/test_ingress_lifetime.py": 19,
+      ".reference/implementation/test_stove0_progress_experiment.py": 13
+    },
+    "command": "evidence/reference_final_command.json",
+    "junit": "evidence/reference_final.xml",
+    "timing": "evidence/reference_final_timing.json",
+    "reference_python_sha256": {
+      ".reference/implementation/application_credit.py": "9d082c5cf1dedb27d4dd8d9d1da8920b3c288681bb7071562ebf94f6e6ec7ac0",
+      ".reference/implementation/effects_experiment.py": "f4b6cf4f4023eb48805ba4171325271df127c2d2e1b3276fa08f7df62a8d0510",
+      ".reference/implementation/effects_test.py": "3796d394a78a66e26765007970e8f6e258aeb887d6367319778f38ce176d7ff2",
+      ".reference/implementation/ingress_lifetime.py": "0594411a5cb1d8b6fd9677b40d256ef530e5ef71d581d24be45c1712817150c2",
+      ".reference/implementation/stove0_progress_experiment.py": "522c48865885040b1e2da7224f7e09e524c49c55bcad58babb25bc565bb41d45",
+      ".reference/implementation/test_application_credit.py": "f36022ff7fc33dbad5044397490127476f908389f531836b92a718f84dc8c9d7",
+      ".reference/implementation/test_ingress_lifetime.py": "32bfacac71a0fba7988a2aebac3e381c9b6449fe8750b8317fbb3fe25bb43b85",
+      ".reference/implementation/test_stove0_progress_experiment.py": "e8110c1763af58654df92223d70560ea91fef0abf95e65dbe0601ea9d520f9b1"
+    },
+    "reference_python_unchanged_during_run": true
+  },
+  "static": {
+    "all_exit_codes_zero": true,
+    "ruff_files": 8,
+    "strict_mypy_files": [
+      "implementation/application_credit.py",
+      "implementation/ingress_lifetime.py"
+    ],
+    "evidence": "evidence/reference_static.json"
+  },
+  "separate_unchanged_baselines": [
+    {
+      "owner": "Core/SDK",
+      "tests": 63,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "evidence": "evidence/core_baseline_command.json"
+    },
+    {
+      "owner": "ingress/Gogurt/CLI",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "evidence": "evidence/ingress_BASELINE_VALIDATION.json"
+    },
+    {
+      "owner": "supplied applications",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "evidence": "evidence/effects_baseline.json"
+    },
+    {
+      "owner": "Stove0",
+      "first_cohort": {
+        "tests": 10,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "exact_failed_case_rerun": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "distinct_cases_observed_passing": 10,
+      "correction": "Omit ambient proxy variables in the synthetic no-network fixture; no dependency or product changes",
+      "evidence": "evidence/stove0_validation.md"
+    }
+  ],
+  "counter_evidence": {
+    "stove0_callbacks": {
+      "callbacks": 64,
+      "current": {
+        "writes": 64,
+        "python_fsync_calls": 128,
+        "encoded_bytes": 23927,
+        "elapsed_ns": 53698308
+      },
+      "proposed": {
+        "writes": 0,
+        "python_fsync_calls": 0,
+        "encoded_bytes": 0,
+        "elapsed_ns": 264129
+      },
+      "scope": "single ordered callback-only local sample, exact original terminal result; not device IO or workflow throughput",
+      "evidence": "evidence/stove0_progress.json"
+    },
+    "empty_witness_poll": {
+      "per_witness_current": {
+        "begin_immediate": 1,
+        "progress_upsert": 1,
+        "commit": 1
+      },
+      "per_witness_proposed": {
+        "begin_immediate": 0,
+        "progress_upsert": 0,
+        "commit": 0
+      },
+      "current_generation_checked": true,
+      "scope": "actual SQLite statements with fixture catalog, no physical sync count or speedup claim",
+      "evidence": "evidence/effects_final.json"
+    }
+  },
+  "environment": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "sqlite": "3.45.1",
+    "pytest": "9.1.1",
+    "ruff": "0.16.0",
+    "mypy": "2.3.0",
+    "SQLAlchemy": "2.0.51"
+  },
+  "lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+  "blocked": {
+    "make_profile_exit": 2,
+    "recipe_exit": 127,
+    "reason": "mise missing; Docker also absent; profile did not execute",
+    "evidence": "evidence/effects_environment.json"
+  },
+  "not_qualified": [
+    "complete proposed production implementation",
+    "grant/phase transport and persistence",
+    "new sampler protocol/receiving proof/capacity",
+    "new Core set execution and state hard cut",
+    "installed complete processing lifecycle",
+    "old/restart/adaptive full workflow comparison",
+    "PostgreSQL",
+    "macOS and Windows",
+    "GPU/codec/native installed lifecycle",
+    "physical crash or power-loss",
+    "live external effects/provider qualification",
+    "production PR/final merge checkout CI"
+  ],
+  "artifact_manifest_scope": "All other tracked reference text files at preparation; manifest excludes itself to avoid self-reference. Git tree is the complete publication identity.",
+  "artifact_sha256": {
+    ".reference/APPLICATION_EFFECTS.md": "bc5be807b0c2ed2a534d4f1a072b8fc907bbd081abee830439a735d19274851c",
+    ".reference/BUDGET.md": "9eccd4b3cf26ac951469ef28cd95f0c0705e78733e8086f9e5fdd0496dae6644",
+    ".reference/CORE_WORKFLOWS.md": "a4de53676cc55039c5acff728bdd3b3a496586c92e61c9dff7294e056a5179ce",
+    ".reference/HANDOFF.md": "a55fe9eec44269c8f0bf30f59cbf8e8ee7634bad32abe4f6ba3de411857fd694",
+    ".reference/IMPLEMENTATION.md": "a9ebbf0d9bbd08691e49ab1be2af3f0ed9132acdf99631eb14dc425af6bf87cd",
+    ".reference/INGRESS_LIFETIME.md": "a15731f5d3a0a3a729f7d0bc37c73c9f6c0ec6dff7090b0dc2a52c59814a33c0",
+    ".reference/QUALIFICATION.md": "5ec57e353f382ca1da622f1195872ea4c726702feed24d9a26669cea21aa9599",
+    ".reference/STOVE0.md": "9f82a36406e75efe642c8beba4d72f2cd4961600c554fb243e0298d272d09291",
+    ".reference/VALIDATION.md": "02d1e4df09cb1697d3feeeb9fdf65dcceb42ccf70aef8dbe23c41ae4bd9cc553",
+    ".reference/evidence/core_baseline.txt": "b99193bc34b5d7f534a36a06f9c1d6f68106f287ad401389097bee684041c8dd",
+    ".reference/evidence/core_baseline.xml": "acb0df2b035b19c63578851d81bcfcf293a9c7a8cc8e82e7d0309658db851b03",
+    ".reference/evidence/core_baseline_command.json": "1fbb9c34ecf1f9a785f78579984540f4b5803170141cd510764bd0b9136656be",
+    ".reference/evidence/core_baseline_timing.json": "022813bf87c74370d5a2e15b828ffce08c59731811cadddf3df182d3262c9f00",
+    ".reference/evidence/credit_command.json": "3b3feb1203e2814f494aaccda2522574532ae0ba2afae8e850bd6b6f814effb1",
+    ".reference/evidence/credit_tests.txt": "ad8d187f9e8f2df35f3d5055c2e215c3702844f80bf5dcf9105bbe8a60035a71",
+    ".reference/evidence/credit_tests.xml": "1519b0426653cf08142aa8d7b1320740a77647d36c68787837b262975788d370",
+    ".reference/evidence/credit_timing.json": "70a0df62c93f760cf5baa004409f565265a2946330bceecdbaf822949ede411a",
+    ".reference/evidence/effects_baseline.json": "19fe547c9e147deb980db523d94808e31704f7831516704865b43cade61f9eba",
+    ".reference/evidence/effects_baseline.xml": "b296565cef36b6f91ca6d08737dd934a38723549474ed986f48c2f3e9808fd08",
+    ".reference/evidence/effects_baseline_timing.json": "4ed7c03ca7172e38b1facb03969523cac33fb06fc845890d4a2b048176fcccd9",
+    ".reference/evidence/effects_environment.json": "60586fdaf2c0f82386ba41e995a5a0dde10627ac42da843e5e4ab77d3fe4474c",
+    ".reference/evidence/effects_faults.json": "2eec6fe7f9b4b70ebb07e5ee52137a7f109ab9d3efeed7b0b645b5ab1ddb17a7",
+    ".reference/evidence/effects_faults.xml": "daff2f4044d21571b6127ed392d4f6afa0a825f219b39fa70f6ef9f5473a67fa",
+    ".reference/evidence/effects_faults_timing.json": "225d211c4704886f449d375a093f8b3a265c374f970e37bcea1b76be92893929",
+    ".reference/evidence/effects_final.json": "299776cd6c81cf8355ec384aedf9c406d06a65b8a6c6edd78d36b59247df0aee",
+    ".reference/evidence/effects_idle.json": "55f75c1b0ba3b096e97a0a9e66b112633ae3bc7d8c8d26276aecf8de87706ede",
+    ".reference/evidence/effects_idle.xml": "d9c4b82f54b99580e4cb71ee6e662e8598ba6c5e0785b4cbb488bc9a4cd51f8f",
+    ".reference/evidence/effects_idle_timing.json": "588777883add1802c7ba74509d25214cd71715fb7fc78d51ab93f9f253fe6867",
+    ".reference/evidence/ingress_BASELINE.txt": "5463971a1db3c0c7f3d0aa58e002ac9296d05bc02b4bde805b0fa43d847eea9c",
+    ".reference/evidence/ingress_BASELINE.xml": "13e3bcc20986282a28ef1f6b4bd910cd1432df589f6563cf7b09286b50ac3a87",
+    ".reference/evidence/ingress_BASELINE_VALIDATION.json": "53999466122bdb174a35cf04d515a1b79243d9027680545b1d89e90b54eff868",
+    ".reference/evidence/ingress_STATIC.json": "ffb3370e2244fadfc0727d0907964be31c30bd02d614beb7999707f080f704a7",
+    ".reference/evidence/ingress_TESTS.txt": "0de5feddea5c23c3f8782cbc54938abb2bd2788f18277c32ed927712de814314",
+    ".reference/evidence/ingress_TESTS.xml": "5e37948bbf85077adce72f840aa66203d8dfc1fe94f760bcaab044714ed24120",
+    ".reference/evidence/ingress_VALIDATION.json": "45c5c99c1e47e844e2bfc48f83c4b237162bb1f9bcacab9eef8f1d6c8263a645",
+    ".reference/evidence/ingress_timing/pytest/reference-998-ingress-baseline/ingress-baseline-01/38846f170ad248158b6f582cd01acb75/controller.json": "1ccbc171d44e0b392ff4b1a9acb05ade7b682bf6f079295099ef9d74c4471150",
+    ".reference/evidence/ingress_timing/pytest/reference-998-ingress/ingress-reference-01/dabd247240d7416ea4c455f49c34bbad/controller.json": "2f4a928387539c76bdc878d53e26493f45bfc12b2db576c271ef505e4decf875",
+    ".reference/evidence/ingress_timing/pytest/reference-998-ingress/ingress-reference-02/7c5112e29b574139911af50e0b1f397d/controller.json": "c22739ff335c1160ecb0303836ec52908436870f87316fa4012e9fd80b66289d",
+    ".reference/evidence/reference_final.txt": "878e6664441758f6351cd60e3257777047cab343272c28d9a70d15263f0d4022",
+    ".reference/evidence/reference_final.xml": "ef81e0e3577af5123c0c899a69fcfd4937beae7bbf42c5618f2072fb8273e914",
+    ".reference/evidence/reference_final_command.json": "79f6e2f6a287298d81d26a6d0a85ce5f261bad6e78ae16db5e6f1be18a2d3b7e",
+    ".reference/evidence/reference_final_timing.json": "bd4cc85df9e265244059548ea798acf912c75890cdff95dcdaf856691b7d27dc",
+    ".reference/evidence/reference_static.json": "0552415dc0e772df55881e8739b01b9b7ff2a1764d8ae3f54dffa093295d7c95",
+    ".reference/evidence/source_audit.json": "f6e98fd8c39077c54fd3b0193569aadda39b3226cc972598065f8cc6e8da98de",
+    ".reference/evidence/stove0_effect_corrected.xml": "646c92c8f059adb4f8f89d93d6764b982725be5fd215380110b380a3db8f0243",
+    ".reference/evidence/stove0_maintained_tests.xml": "7606c842946536cb654ec6651ac810d0a038dbd3bd43e3ea8ec6a182ddb27664",
+    ".reference/evidence/stove0_progress.json": "4045e91b61bd735ef35dd480bfb47f76cbac65f62d15c7e050b8aca934d65be2",
+    ".reference/evidence/stove0_tests.xml": "ee1aa28c08d67f03bd2b989739537ccb9babc7f3dbb2ceecb20c9c99e14f2069",
+    ".reference/evidence/stove0_tests_first.xml": "bc8639ff0d4ccad4d1dbc2498a177629c67a1d77afc413f2c428adc7a0318b72",
+    ".reference/evidence/stove0_timing_effect_corrected.json": "871496c7be4541502340b2282f280d0b836bc8c94296799745ec3f4cf7095d6a",
+    ".reference/evidence/stove0_timing_final.json": "cdb45767f95a8bf0caa4baa7d5b89186b1dbc864a92e2d0a3ba584498777ab66",
+    ".reference/evidence/stove0_timing_first.json": "d18c1bd5f922f7b37d4610d55fe66308b4274f8a11bb58ac8d273324ac97d00d",
+    ".reference/evidence/stove0_timing_maintained.json": "75fe515d46e22f3f227ac59f90bfd789b1d04c3c0c42e615a9b65df78fdc421c",
+    ".reference/evidence/stove0_validation.md": "03ac6d684568eaae52d1707fd94cca67bc23a82c184443c4860d1f76deb9d973",
+    ".reference/implementation/application_credit.py": "9d082c5cf1dedb27d4dd8d9d1da8920b3c288681bb7071562ebf94f6e6ec7ac0",
+    ".reference/implementation/effects_experiment.py": "f4b6cf4f4023eb48805ba4171325271df127c2d2e1b3276fa08f7df62a8d0510",
+    ".reference/implementation/effects_test.py": "3796d394a78a66e26765007970e8f6e258aeb887d6367319778f38ce176d7ff2",
+    ".reference/implementation/ingress_lifetime.py": "0594411a5cb1d8b6fd9677b40d256ef530e5ef71d581d24be45c1712817150c2",
+    ".reference/implementation/stove0_progress_experiment.py": "522c48865885040b1e2da7224f7e09e524c49c55bcad58babb25bc565bb41d45",
+    ".reference/implementation/test_application_credit.py": "f36022ff7fc33dbad5044397490127476f908389f531836b92a718f84dc8c9d7",
+    ".reference/implementation/test_ingress_lifetime.py": "32bfacac71a0fba7988a2aebac3e381c9b6449fe8750b8317fbb3fe25bb43b85",
+    ".reference/implementation/test_stove0_progress_experiment.py": "e8110c1763af58654df92223d70560ea91fef0abf95e65dbe0601ea9d520f9b1"
+  },
+  "artifact_integrity": {
+    "relative_links_checked": 109,
+    "pinned_source_links_checked": 81,
+    "json_parsed": 28,
+    "xml_parsed": 12,
+    "full_diff_whitespace": {
+      "exit_code": 2,
+      "scope": "Six original traceback whitespace lines in retained first-failure reports",
+      "files": [
+        "evidence/stove0_maintained_tests.xml",
+        "evidence/stove0_tests_first.xml"
+      ]
+    },
+    "scoped_whitespace": "All authored files and other evidence pass; exact raw failure reports retained"
+  }
+}

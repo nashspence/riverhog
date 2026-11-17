@@ -1,0 +1,36 @@
+{
+  "checks": [
+    {
+      "command": [
+        "command",
+        "-v",
+        "mise"
+      ],
+      "exit_status": 1,
+      "output": ""
+    },
+    {
+      "command": [
+        "docker",
+        "--version"
+      ],
+      "exit_status": 127,
+      "output": "docker: command not found"
+    },
+    {
+      "command": [
+        "make",
+        "profile",
+        "args=--scenario stove0-scale --output /workspace/scratch/939b84c043b0/998-processing-profile"
+      ],
+      "environment": {
+        "TMPDIR": "/workspace/scratch/939b84c043b0/998-effects-tmp"
+      },
+      "exit_status": 2,
+      "output": "Riverhog Makefile targets require mise on PATH, or MISE_BIN=/abs/path/to/mise.\nInstall mise or pass MISE_BIN explicitly, then rerun make.\nmake: *** [Makefile:64: profile] Error 127",
+      "recipe_exit_status": 127,
+      "scope": "wrapper refused before profile or image execution; no campaign or live effects launched"
+    }
+  ],
+  "schema": "riverhog-reference-effects-environment-1"
+}

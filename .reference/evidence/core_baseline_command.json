@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/application-998-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "--basetemp=/workspace/scratch/939b84c043b0/998-core-baseline/pytest",
+    "--junitxml=/workspace/scratch/939b84c043b0/998-core-baseline/results.xml",
+    "--durations=8",
+    "riverhog/tests/test_collection_workflows.py",
+    "packages/riverhog-client/tests/test_processing_provenance.py",
+    "packages/riverhog-client/tests/test_processing_provenance_admission.py::test_processing_completion_releases_each_reader_and_preserves_exact_bytes",
+    "packages/riverhog-client/tests/test_processing_provenance_admission.py::test_processing_uncertain_close_blocks_next_reader_or_completion_upload",
+    "packages/riverhog-client/tests/test_processing_provenance_admission.py::test_processing_upload_failure_releases_validation_and_retries_exact_preimages",
+    "packages/riverhog-client/tests/test_processing_provenance_admission.py::test_processing_completion_upload_response_loss_retries_exact_bytes_after_spool_release"
+  ],
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "source_clean_at_start": true,
+  "elapsed_ns_including_process": 136833119553,
+  "exit_code": 0,
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/998-core-baseline",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/998-core-baseline/timing",
+    "RIVERHOG_PROVENANCE_STATE_HOME": "/workspace/scratch/939b84c043b0/998-core-baseline/provenance-state",
+    "PYTHONPATH": "/workspace/scratch/939b84c043b0/riverhog-998",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  }
+}

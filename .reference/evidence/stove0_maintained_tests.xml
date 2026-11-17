@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="10" time="7.645" timestamp="2026-11-16T18:08:38.418222-08:00" hostname="7f0b24832328"><testcase classname="some-implementations.stove0.packages.target-support.tests.test_target_support" name="test_persisted_effect_receipt_replays_without_repeating_external_effect" time="5.016"><failure message="assert False&#10; +  where False = wait(timeout=5)&#10; +    where wait = &lt;threading.Event at 0x7f1e27269880: unset&gt;.wait">tmp_path = PosixPath('/workspace/scratch/939b84c043b0/998-stove0-temp/pytest-maintained/test_persisted_effect_receipt_0')
+
+    def test_persisted_effect_receipt_replays_without_repeating_external_effect(
+        tmp_path: Path,
+    ) -&gt; None:
+        operation, target, request = _effect_request()
+        state_root = tmp_path / "effect-state"
+        committed = threading.Event()
+        calls = 0
+    
+        def execute(
+            _request: TargetJobRequest,
+            attempt: int,
+            _cancellation: threading.Event,
+            session: TargetExecutionSession,
+        ) -&gt; TargetJobStatus:
+            nonlocal calls
+            calls += 1
+            status = _effect_success_status(operation, request, attempt=attempt)
+            session.record_completed(status)
+            committed.set()
+            return status
+    
+        first = PersistentTargetService(
+            primary_state=PRIMARY_STATE_POLICY,
+            descriptor=target,
+            operations={operation.id: operation},
+            state_root=state_root,
+            execute=execute,
+        )
+        first.put_job(request)
+&gt;       assert committed.wait(timeout=5)
+E       assert False
+E        +  where False = wait(timeout=5)
+E        +    where wait = &lt;threading.Event at 0x7f1e27269880: unset&gt;.wait
+
+some-implementations/stove0/packages/target-support/tests/test_target_support.py:2712: AssertionError</failure></testcase><testcase classname="some-implementations.stove0.packages.target-support.tests.test_target_support" name="test_uncertain_effect_commit_stays_interrupted_and_never_auto_repeats" time="0.019" /><testcase classname="some-implementations.stove0.packages.target-support.tests.test_target_support" name="test_published_success_wins_late_cancel_and_cleanup_failure" time="0.021" /><testcase classname="some-implementations.stove0.packages.target-support.tests.test_target_support" name="test_checkpoint_retention_keeps_failed_unpublished_evidence" time="0.017" /><testcase classname="some-implementations.stove0.packages.target-support.tests.test_target_support" name="test_output_checkpoint_rejects_replacement_and_changed_workspace" time="0.207" /><testcase classname="some-implementations.stove0.packages.observer-support.tests.test_observer_lifecycle" name="test_canceling_payload_waits_for_actual_consumer_stop" time="0.035" /><testcase classname="some-implementations.stove0.packages.observer-support.tests.test_observer_lifecycle" name="test_valid_complete_evidence_wins_late_cancel_and_cleanup_failure" time="0.020" /><testcase classname="some-implementations.stove0.application.tests.test_work_state" name="test_target_callback_authority_rejects_unpermitted_disposition_and_stale_fence" time="0.017" /><testcase classname="some-implementations.stove0.application.tests.test_work_state" name="test_target_production_seal_is_segmented_closes_declarations_and_replays" time="0.019" /><testcase classname="some-implementations.stove0.application.tests.test_work_state" name="test_stale_revision_and_invalid_success_order_fail_closed" time="0.002" /></testsuite></testsuites>

@@ -1,0 +1,54 @@
+{
+  "checks": [
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/application-998-env/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        ".reference/implementation"
+      ],
+      "exit_code": 0,
+      "elapsed_ns": 37014292,
+      "output": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/application-998-env/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        ".reference/implementation"
+      ],
+      "exit_code": 0,
+      "elapsed_ns": 48925932,
+      "output": "8 files already formatted\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/application-998-env/bin/python",
+        "-m",
+        "mypy",
+        "--follow-imports=silent",
+        "--strict",
+        ".reference/implementation/application_credit.py",
+        ".reference/implementation/ingress_lifetime.py"
+      ],
+      "exit_code": 0,
+      "elapsed_ns": 701139845,
+      "output": ""
+    }
+  ],
+  "scope": "Ruff all 8 reference Python files; strict mypy only the two typed proposed helpers, not dynamic owner test harnesses",
+  "sha256": {
+    ".reference/implementation/application_credit.py": "9d082c5cf1dedb27d4dd8d9d1da8920b3c288681bb7071562ebf94f6e6ec7ac0",
+    ".reference/implementation/effects_experiment.py": "f4b6cf4f4023eb48805ba4171325271df127c2d2e1b3276fa08f7df62a8d0510",
+    ".reference/implementation/effects_test.py": "3796d394a78a66e26765007970e8f6e258aeb887d6367319778f38ce176d7ff2",
+    ".reference/implementation/ingress_lifetime.py": "0594411a5cb1d8b6fd9677b40d256ef530e5ef71d581d24be45c1712817150c2",
+    ".reference/implementation/stove0_progress_experiment.py": "522c48865885040b1e2da7224f7e09e524c49c55bcad58babb25bc565bb41d45",
+    ".reference/implementation/test_application_credit.py": "f36022ff7fc33dbad5044397490127476f908389f531836b92a718f84dc8c9d7",
+    ".reference/implementation/test_ingress_lifetime.py": "32bfacac71a0fba7988a2aebac3e381c9b6449fe8750b8317fbb3fe25bb43b85",
+    ".reference/implementation/test_stove0_progress_experiment.py": "e8110c1763af58654df92223d70560ea91fef0abf95e65dbe0601ea9d520f9b1"
+  }
+}

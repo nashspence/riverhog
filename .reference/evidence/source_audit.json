@@ -1,0 +1,31 @@
+{
+  "format": "riverhog-reference-source-audit/v1",
+  "observed_at_utc": "2026-11-17T02:31:36.556Z",
+  "base_ref": "codex/964-session-owner",
+  "base_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "base_tree_sha": "044a0e1e3eecf0b4183836017269fc208b6603d2",
+  "main_sha": "209481c189f7387557a85e1c249184642816e103",
+  "rail_pr": 979,
+  "rail_updated_at": "2026-11-16T21:03:57Z",
+  "issues": [
+    {
+      "number": 998,
+      "url": "https://github.com/nashspence/riverhog/issues/998",
+      "updated_at": "2026-11-16T16:02:33Z",
+      "state": "open",
+      "comments": 0,
+      "body_matches_initial": true
+    },
+    {
+      "number": 994,
+      "url": "https://github.com/nashspence/riverhog/issues/994",
+      "updated_at": "2026-11-16T17:23:57Z",
+      "state": "open",
+      "comments": 1,
+      "body_matches_initial": true
+    }
+  ],
+  "reference_refs_at_check": [],
+  "owning_comments_at_check": 0,
+  "relationship": "Product paths match audited c28; new reference-only files. No previous #998 handoff superseded. No native Development association."
+}

@@ -1,0 +1,61 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/application-998-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "--basetemp=/workspace/scratch/939b84c043b0/998-final-temp/pytest",
+    "--junitxml=/workspace/scratch/939b84c043b0/riverhog-998/.reference/evidence/reference_final.xml",
+    "--durations=10",
+    ".reference/implementation"
+  ],
+  "exit_code": 0,
+  "elapsed_ns_including_process": 6104744337,
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "scope": "All reference-only experiments; product code unchanged; not proposed production integration",
+  "reference_python_sha256": {
+    ".reference/implementation/application_credit.py": "9d082c5cf1dedb27d4dd8d9d1da8920b3c288681bb7071562ebf94f6e6ec7ac0",
+    ".reference/implementation/effects_experiment.py": "f4b6cf4f4023eb48805ba4171325271df127c2d2e1b3276fa08f7df62a8d0510",
+    ".reference/implementation/effects_test.py": "3796d394a78a66e26765007970e8f6e258aeb887d6367319778f38ce176d7ff2",
+    ".reference/implementation/ingress_lifetime.py": "0594411a5cb1d8b6fd9677b40d256ef530e5ef71d581d24be45c1712817150c2",
+    ".reference/implementation/stove0_progress_experiment.py": "522c48865885040b1e2da7224f7e09e524c49c55bcad58babb25bc565bb41d45",
+    ".reference/implementation/test_application_credit.py": "f36022ff7fc33dbad5044397490127476f908389f531836b92a718f84dc8c9d7",
+    ".reference/implementation/test_ingress_lifetime.py": "32bfacac71a0fba7988a2aebac3e381c9b6449fe8750b8317fbb3fe25bb43b85",
+    ".reference/implementation/test_stove0_progress_experiment.py": "e8110c1763af58654df92223d70560ea91fef0abf95e65dbe0601ea9d520f9b1"
+  },
+  "reference_python_unchanged_during_run": true,
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/998-final-temp",
+    "PYTHONPATH": "/workspace/scratch/939b84c043b0/riverhog-998:/workspace/scratch/939b84c043b0/riverhog-998/.reference/implementation",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/998-final-temp/timing",
+    "RIVERHOG_CI_LANE": "998-reference-final",
+    "RIVERHOG_EFFECTS_REPORT": "/workspace/scratch/939b84c043b0/riverhog-998/.reference/evidence/effects_final.json",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "proxy_variables_omitted": [
+    "ALL_PROXY",
+    "HTTPS_PROXY",
+    "HTTP_PROXY",
+    "all_proxy",
+    "https_proxy",
+    "http_proxy"
+  ],
+  "proxy_omission_scope": "Only this no-network fixture subprocess; no credential values recorded",
+  "versions": {
+    "python": "3.12.3",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "sqlite": "3.45.1",
+    "pytest": "9.1.1",
+    "ruff": "0.16.0",
+    "mypy": "2.3.0",
+    "SQLAlchemy": "2.0.51"
+  },
+  "uv_lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24"
+}

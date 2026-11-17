@@ -1,0 +1,14 @@
+.................................................................        [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/998-final-temp/timing/pytest/998-reference-final/cfc9d726c478401fa6ef1cb423c784e4/b184802b8f4c41b7940a52373c78b3b3
+============================= slowest 10 durations =============================
+0.41s call     .reference/implementation/test_ingress_lifetime.py::test_baseline_asgi_lifespan_closes_api_before_original_pass_terminates
+0.38s call     .reference/implementation/test_ingress_lifetime.py::test_actual_claim_registration_reply_loss_and_original_evidence[proposed-guard]
+0.35s call     .reference/implementation/test_ingress_lifetime.py::test_actual_claim_registration_reply_loss_and_original_evidence[baseline-gap]
+0.18s call     .reference/implementation/test_stove0_progress_experiment.py::test_real_supervised_process_is_received_before_original_lock_is_released
+0.10s call     .reference/implementation/test_ingress_lifetime.py::test_proposal_cold_retry_fairness_uses_original_outcomes_without_cursor_writes
+0.08s call     .reference/implementation/test_stove0_progress_experiment.py::test_actual_dispatcher_keeps_original_owner_until_worker_received[True]
+0.08s call     .reference/implementation/test_stove0_progress_experiment.py::test_actual_dispatcher_keeps_original_owner_until_worker_received[False]
+0.06s call     .reference/implementation/test_stove0_progress_experiment.py::test_same_original_result_without_per_callback_durable_progress[31]
+0.05s call     .reference/implementation/test_ingress_lifetime.py::test_proposal_retired_outcome_seed_falls_back_without_historical_scan
+0.05s call     .reference/implementation/test_ingress_lifetime.py::test_baseline_receipted_claim_reclaims_before_primary_store_exit
+65 passed in 4.09s

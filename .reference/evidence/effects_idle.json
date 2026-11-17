@@ -1,0 +1,53 @@
+{
+  "elapsed_ns_including_test_fixtures": 111579587,
+  "limits": [
+    "no live effects, native signer, installed or new sampler contract tested",
+    "commit reply-loss injection is not process-death or power-loss evidence",
+    "no physical sync count or performance improvement is claimed"
+  ],
+  "python": "3.12.3",
+  "rows": [
+    {
+      "application": "minisign",
+      "baseline_sql_statements": {
+        "begin_immediate": 1,
+        "commits": 1,
+        "progress_upserts": 1
+      },
+      "case": "fixture_no_change_catalog_page",
+      "fresh_generation_and_serial_checked": true,
+      "physical_sync_calls": null,
+      "proposed_sql_statements": {
+        "begin_immediate": 0,
+        "commits": 0,
+        "progress_upserts": 0
+      },
+      "same_accepted_position": true
+    },
+    {
+      "application": "opentimestamps",
+      "baseline_sql_statements": {
+        "begin_immediate": 1,
+        "commits": 1,
+        "progress_upserts": 1
+      },
+      "case": "fixture_no_change_catalog_page",
+      "fresh_generation_and_serial_checked": true,
+      "physical_sync_calls": null,
+      "proposed_sql_statements": {
+        "begin_immediate": 0,
+        "commits": 0,
+        "progress_upserts": 0
+      },
+      "same_accepted_position": true
+    },
+    {
+      "case": "idle_page_concurrent_generation_change",
+      "stale_rejected": true
+    }
+  ],
+  "schema": "riverhog-reference-application-effects-1",
+  "scope": "unchanged actual application owners; fixture external ports",
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "sqlite": "3.45.1"
+}

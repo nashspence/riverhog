@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="13" time="2.079" timestamp="2026-11-16T18:00:19.523541-08:00" hostname="7f0b24832328"><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_same_original_result_without_per_callback_durable_progress[1]" time="0.095" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_same_original_result_without_per_callback_durable_progress[7]" time="0.059" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_same_original_result_without_per_callback_durable_progress[31]" time="0.089" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_generation_bound_callback_rejects_old_same_attempt_owner" time="0.012" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_old_attempt_does_not_overwrite_new_attempt_or_mutate_authority" time="0.014" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_progress_snapshot_cannot_be_changed_by_callers_after_reporting" time="0.014"><failure message="pydantic_core._pydantic_core.ValidationError: 1 validation error for TargetProgress&#10;completed&#10;  Instance is frozen [type=frozen_instance, input_value=99, input_type=int]&#10;    For further information visit https://errors.pydantic.dev/2.13/v/frozen_instance">tmp_path = PosixPath('/workspace/scratch/939b84c043b0/998-stove0-temp/pytest-first/test_progress_snapshot_cannot_0')
+
+    def test_progress_snapshot_cannot_be_changed_by_callers_after_reporting(tmp_path):
+        service = open_target(tmp_path / "state", proposed=True)
+        try:
+            _, running = seed_original_running(service)
+            callback = service.bind_progress(running.job_id, 1)
+            value = TargetProgress(phase="selected", completed=5)
+            callback(value)
+&gt;           value.completed = 99
+            ^^^^^^^^^^^^^^^
+
+.reference/implementation/test_stove0_progress_experiment.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../application-998-env/lib/python3.12/site-packages/pydantic/main.py:1048: in __setattr__
+    elif (setattr_handler := self._setattr_handler(name, value)) is not None:
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../application-998-env/lib/python3.12/site-packages/pydantic/main.py:1084: in _setattr_handler
+    _check_frozen(cls, name, value)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model_cls = &lt;class 'stove0_target_protocol.protocol.TargetProgress'&gt;
+name = 'completed', value = 99
+
+    def _check_frozen(model_cls: type[BaseModel], name: str, value: Any) -&gt; None:
+        if model_cls.model_config.get('frozen'):
+            error_type = 'frozen_instance'
+        elif getattr(model_cls.__pydantic_fields__.get(name), 'frozen', False):
+            error_type = 'frozen_field'
+        else:
+            return
+    
+&gt;       raise ValidationError.from_exception_data(
+            model_cls.__name__, [{'type': error_type, 'loc': (name,), 'input': value}]
+        )
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for TargetProgress
+E       completed
+E         Instance is frozen [type=frozen_instance, input_value=99, input_type=int]
+E           For further information visit https://errors.pydantic.dev/2.13/v/frozen_instance
+
+../application-998-env/lib/python3.12/site-packages/pydantic/main.py:90: ValidationError</failure></testcase><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_cancellation_tombstone_wins_late_progress_without_becoming_quiescence" time="0.016" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_successful_original_result_survives_lost_write_reply_and_cold_reopen" time="0.029" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_restart_discards_advisory_only_and_retains_original_interrupted_attempt" time="0.021" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_progress_memory_follows_existing_active_worker_admission" time="0.015"><failure message="Failed: DID NOT RAISE ValueError">tmp_path = PosixPath('/workspace/scratch/939b84c043b0/998-stove0-temp/pytest-first/test_progress_memory_follows_e0')
+
+    def test_progress_memory_follows_existing_active_worker_admission(tmp_path):
+        fixture = source_fixture()
+        service = open_target(tmp_path / "state", proposed=True)
+        try:
+            request, running = seed_original_running(service)
+            service.bind_progress(running.job_id, 1)
+            second = fixture._request_at_fence(request, 2)
+            service._write_model(service._accepted_path(second.declaration.job_id), second.accepted())
+            service._commit_status(
+                service._status(second, state="running", attempt=1, phase="starting")
+            )
+&gt;           with pytest.raises(ValueError, match="active-worker admission"):
+E           Failed: DID NOT RAISE ValueError
+
+.reference/implementation/test_stove0_progress_experiment.py:188: Failed</failure></testcase><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_actual_dispatcher_keeps_original_owner_until_worker_received[False]" time="0.078" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_actual_dispatcher_keeps_original_owner_until_worker_received[True]" time="0.083" /><testcase classname=".reference.implementation.test_stove0_progress_experiment" name="test_real_supervised_process_is_received_before_original_lock_is_released" time="0.217" /></testsuite></testsuites>

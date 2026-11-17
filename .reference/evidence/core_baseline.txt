@@ -1,0 +1,12 @@
+...............................................................          [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/998-core-baseline/timing/pytest/unit/6b105085c0804d0f928bfe2cd4a75b56/ddfd32bae34a4f5c8b3634dc90ac66d1
+============================= slowest 8 durations ==============================
+8.65s call     packages/riverhog-client/tests/test_processing_provenance_admission.py::test_processing_completion_releases_each_reader_and_preserves_exact_bytes[True]
+8.34s call     packages/riverhog-client/tests/test_processing_provenance_admission.py::test_processing_completion_releases_each_reader_and_preserves_exact_bytes[False]
+8.09s call     riverhog/tests/test_collection_workflows.py::test_outcome_append_crosses_transport_boundary_and_replays_after_restart
+7.63s call     packages/riverhog-client/tests/test_processing_provenance.py::test_derivative_import_retains_late_input_history_and_checks_exact_source_state
+7.35s call     packages/riverhog-client/tests/test_processing_provenance_admission.py::test_processing_completion_upload_response_loss_retries_exact_bytes_after_spool_release
+6.95s call     packages/riverhog-client/tests/test_processing_provenance.py::test_history_transfer_reuses_one_validated_selection_and_preserves_retained_context
+6.29s call     packages/riverhog-client/tests/test_processing_provenance_admission.py::test_processing_upload_failure_releases_validation_and_retries_exact_preimages
+5.91s call     packages/riverhog-client/tests/test_processing_provenance.py::test_history_closure_keeps_retracted_late_bytes_and_does_not_widen_extent
+63 passed in 134.09s (0:02:14)

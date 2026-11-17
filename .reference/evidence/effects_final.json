@@ -1,0 +1,99 @@
+{
+  "elapsed_ns_including_test_fixtures": 257874297,
+  "limits": [
+    "no live effects, native signer, installed or new sampler contract tested",
+    "commit reply-loss injection is not process-death or power-loss evidence",
+    "no physical sync count or performance improvement is claimed"
+  ],
+  "python": "3.12.3",
+  "rows": [
+    {
+      "accepted_fixture_deliveries": 3,
+      "cursor_after_failure": "0",
+      "cursor_after_retry": "2",
+      "distinct_event_ids": 2,
+      "failed_phase": "delivery",
+      "failure": "webhook_reply_loss",
+      "fetch_cursors": [
+        "0",
+        "0"
+      ],
+      "physical_sync_calls": null,
+      "retried_delivery_count": 2
+    },
+    {
+      "accepted_fixture_deliveries": 2,
+      "cursor_after_failure": "2",
+      "cursor_after_retry": "2",
+      "distinct_event_ids": 2,
+      "failed_phase": "state",
+      "failure": "cursor_commit_reply_loss",
+      "fetch_cursors": [
+        "0",
+        "2"
+      ],
+      "physical_sync_calls": null,
+      "retried_delivery_count": 0
+    },
+    {
+      "application": "a-riverhog-minisign-witness",
+      "commit_performed_before_injected_reply_loss": true,
+      "evidence_survives_explicit_view_rebaseline": true,
+      "exact_result_received_from_reopened_store": true,
+      "fixture_effect_calls": 1,
+      "nonce_and_commitment_preserved": null,
+      "physical_sync_calls": null
+    },
+    {
+      "application": "a-riverhog-opentimestamps-witness",
+      "commit_performed_before_injected_reply_loss": true,
+      "evidence_survives_explicit_view_rebaseline": true,
+      "exact_result_received_from_reopened_store": true,
+      "fixture_effect_calls": 1,
+      "nonce_and_commitment_preserved": true,
+      "physical_sync_calls": null
+    },
+    {
+      "application": "minisign",
+      "baseline_sql_statements": {
+        "begin_immediate": 1,
+        "commits": 1,
+        "progress_upserts": 1
+      },
+      "case": "fixture_no_change_catalog_page",
+      "fresh_generation_and_serial_checked": true,
+      "physical_sync_calls": null,
+      "proposed_sql_statements": {
+        "begin_immediate": 0,
+        "commits": 0,
+        "progress_upserts": 0
+      },
+      "same_accepted_position": true
+    },
+    {
+      "application": "opentimestamps",
+      "baseline_sql_statements": {
+        "begin_immediate": 1,
+        "commits": 1,
+        "progress_upserts": 1
+      },
+      "case": "fixture_no_change_catalog_page",
+      "fresh_generation_and_serial_checked": true,
+      "physical_sync_calls": null,
+      "proposed_sql_statements": {
+        "begin_immediate": 0,
+        "commits": 0,
+        "progress_upserts": 0
+      },
+      "same_accepted_position": true
+    },
+    {
+      "case": "idle_page_concurrent_generation_change",
+      "stale_rejected": true
+    }
+  ],
+  "schema": "riverhog-reference-application-effects-1",
+  "scope": "actual stores; proposed idle-poll branch; fixture external ports",
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "sqlite": "3.45.1"
+}
