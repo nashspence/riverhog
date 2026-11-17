@@ -1,0 +1,29 @@
+{
+  "scope": "Reference files only; actual command results, no performance claim",
+  "commands": [
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        ".reference/implementation/materialization_experiment.py",
+        ".reference/implementation/test_materialization_experiment.py"
+      ],
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+        "-m",
+        "mypy",
+        "--strict",
+        ".reference/implementation/materialization_experiment.py",
+        ".reference/implementation/test_materialization_experiment.py"
+      ],
+      "exit_code": 0,
+      "output": ""
+    }
+  ]
+}

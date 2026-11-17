@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    ".reference/implementation/test_restore_experiment.py",
+    "--basetemp=/workspace/scratch/939b84c043b0/999-restore-temp/pytest",
+    "--junitxml=/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/restore_experiment.xml"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-999",
+  "source_commit": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/999-restore-temp",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/restore_timing",
+    "RIVERHOG_CI_LANE": "reference-999-restore-experiment",
+    "REFERENCE_999_RESTORE_EVIDENCE": "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "scope": "reference guard with real AWS policy and Core/SQLite fault witnesses; fixture transport; no live provider",
+  "exit_code": 0,
+  "wall_seconds": 34.404120305000106
+}

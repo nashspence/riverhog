@@ -1,0 +1,950 @@
+.................................................FF.FF.FF.FF.FF......... [ 91%]
+.......                                                                  [100%]
+=================================== FAILURES ===================================
+_ test_actual_cache_executor_keeps_original_identity_and_transport_closure[begin-owned-http] _
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_actual_cache_executor_kee1')
+mode = 'owned-http', kind = 'begin'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    @pytest.mark.parametrize("kind", ["begin", "part", "complete", "lookup"])
+    def test_actual_cache_executor_keeps_original_identity_and_transport_closure(tmp_path, mode, kind):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:136: in _executor
+    client = StorageAdapterClient(
+packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py:119: in __init__
+    self._client = client or httpx.Client(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9ae034e300>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=32, max_keepalive_connections=32, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+_ test_actual_cache_executor_keeps_original_identity_and_transport_closure[begin-supplied] _
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_actual_cache_executor_kee2')
+mode = 'supplied', kind = 'begin'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    @pytest.mark.parametrize("kind", ["begin", "part", "complete", "lookup"])
+    def test_actual_cache_executor_keeps_original_identity_and_transport_closure(tmp_path, mode, kind):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:135: in _executor
+    supplied = httpx.Client(timeout=2, follow_redirects=True) if mode == "supplied" else None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9ae01d0ce0>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=100, max_keepalive_connections=20, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+_ test_actual_cache_executor_keeps_original_identity_and_transport_closure[part-owned-http] _
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_actual_cache_executor_kee4')
+mode = 'owned-http', kind = 'part'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    @pytest.mark.parametrize("kind", ["begin", "part", "complete", "lookup"])
+    def test_actual_cache_executor_keeps_original_identity_and_transport_closure(tmp_path, mode, kind):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:136: in _executor
+    client = StorageAdapterClient(
+packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py:119: in __init__
+    self._client = client or httpx.Client(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9ae01d85c0>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=32, max_keepalive_connections=32, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+_ test_actual_cache_executor_keeps_original_identity_and_transport_closure[part-supplied] _
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_actual_cache_executor_kee5')
+mode = 'supplied', kind = 'part'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    @pytest.mark.parametrize("kind", ["begin", "part", "complete", "lookup"])
+    def test_actual_cache_executor_keeps_original_identity_and_transport_closure(tmp_path, mode, kind):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:135: in _executor
+    supplied = httpx.Client(timeout=2, follow_redirects=True) if mode == "supplied" else None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9adfceb620>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=100, max_keepalive_connections=20, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+_ test_actual_cache_executor_keeps_original_identity_and_transport_closure[complete-owned-http] _
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_actual_cache_executor_kee7')
+mode = 'owned-http', kind = 'complete'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    @pytest.mark.parametrize("kind", ["begin", "part", "complete", "lookup"])
+    def test_actual_cache_executor_keeps_original_identity_and_transport_closure(tmp_path, mode, kind):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:136: in _executor
+    client = StorageAdapterClient(
+packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py:119: in __init__
+    self._client = client or httpx.Client(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9adfd4acc0>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=32, max_keepalive_connections=32, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+_ test_actual_cache_executor_keeps_original_identity_and_transport_closure[complete-supplied] _
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_actual_cache_executor_kee8')
+mode = 'supplied', kind = 'complete'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    @pytest.mark.parametrize("kind", ["begin", "part", "complete", "lookup"])
+    def test_actual_cache_executor_keeps_original_identity_and_transport_closure(tmp_path, mode, kind):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:135: in _executor
+    supplied = httpx.Client(timeout=2, follow_redirects=True) if mode == "supplied" else None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9adf8f2420>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=100, max_keepalive_connections=20, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+_ test_actual_cache_executor_keeps_original_identity_and_transport_closure[lookup-owned-http] _
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_actual_cache_executor_kee10')
+mode = 'owned-http', kind = 'lookup'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    @pytest.mark.parametrize("kind", ["begin", "part", "complete", "lookup"])
+    def test_actual_cache_executor_keeps_original_identity_and_transport_closure(tmp_path, mode, kind):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:136: in _executor
+    client = StorageAdapterClient(
+packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py:119: in __init__
+    self._client = client or httpx.Client(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9adf7c9c10>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=32, max_keepalive_connections=32, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+_ test_actual_cache_executor_keeps_original_identity_and_transport_closure[lookup-supplied] _
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_actual_cache_executor_kee11')
+mode = 'supplied', kind = 'lookup'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    @pytest.mark.parametrize("kind", ["begin", "part", "complete", "lookup"])
+    def test_actual_cache_executor_keeps_original_identity_and_transport_closure(tmp_path, mode, kind):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:135: in _executor
+    supplied = httpx.Client(timeout=2, follow_redirects=True) if mode == "supplied" else None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9adf6592b0>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=100, max_keepalive_connections=20, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+__ test_cache_negative_lookup_preserves_its_own_execution_status[owned-http] ___
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_cache_negative_lookup_pre1')
+mode = 'owned-http'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    def test_cache_negative_lookup_preserves_its_own_execution_status(tmp_path, mode):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:136: in _executor
+    client = StorageAdapterClient(
+packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/client.py:119: in __init__
+    self._client = client or httpx.Client(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9adf190ce0>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=32, max_keepalive_connections=32, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+___ test_cache_negative_lookup_preserves_its_own_execution_status[supplied] ____
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest/test_cache_negative_lookup_pre2')
+mode = 'supplied'
+
+    @pytest.mark.parametrize("mode", ["direct", "owned-http", "supplied"])
+    def test_cache_negative_lookup_preserves_its_own_execution_status(tmp_path, mode):
+>       with _filesystem(tmp_path / "cache") as adapter, _executor(adapter, mode) as executor:
+
+tests/unit/test_retrieval_cache_write_execution.py:119: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/contextlib.py:137: in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+tests/unit/test_archive_write_execution.py:135: in _executor
+    supplied = httpx.Client(timeout=2, follow_redirects=True) if mode == "supplied" else None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:700: in __init__
+    else self._init_proxy_transport(
+../storage-999-env/lib/python3.12/site-packages/httpx/_client.py:750: in _init_proxy_transport
+    return HTTPTransport(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <httpx.HTTPTransport object at 0x7f9adf0b8230>, verify = True
+cert = None, trust_env = True, http1 = True, http2 = False
+limits = Limits(max_connections=100, max_keepalive_connections=20, keepalive_expiry=5.0)
+proxy = Proxy('socks5h://127.0.0.1:43337'), uds = None, local_address = None
+retries = 0, socket_options = None
+
+    def __init__(
+        self,
+        verify: ssl.SSLContext | str | bool = True,
+        cert: CertTypes | None = None,
+        trust_env: bool = True,
+        http1: bool = True,
+        http2: bool = False,
+        limits: Limits = DEFAULT_LIMITS,
+        proxy: ProxyTypes | None = None,
+        uds: str | None = None,
+        local_address: str | None = None,
+        retries: int = 0,
+        socket_options: typing.Iterable[SOCKET_OPTION] | None = None,
+    ) -> None:
+        import httpcore
+    
+        proxy = Proxy(url=proxy) if isinstance(proxy, (str, URL)) else proxy
+        ssl_context = create_ssl_context(verify=verify, cert=cert, trust_env=trust_env)
+    
+        if proxy is None:
+            self._pool = httpcore.ConnectionPool(
+                ssl_context=ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                uds=uds,
+                local_address=local_address,
+                retries=retries,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("http", "https"):
+            self._pool = httpcore.HTTPProxy(
+                proxy_url=httpcore.URL(
+                    scheme=proxy.url.raw_scheme,
+                    host=proxy.url.raw_host,
+                    port=proxy.url.port,
+                    target=proxy.url.raw_path,
+                ),
+                proxy_auth=proxy.raw_auth,
+                proxy_headers=proxy.headers.raw,
+                ssl_context=ssl_context,
+                proxy_ssl_context=proxy.ssl_context,
+                max_connections=limits.max_connections,
+                max_keepalive_connections=limits.max_keepalive_connections,
+                keepalive_expiry=limits.keepalive_expiry,
+                http1=http1,
+                http2=http2,
+                socket_options=socket_options,
+            )
+        elif proxy.url.scheme in ("socks5", "socks5h"):
+            try:
+                import socksio  # noqa
+            except ImportError:  # pragma: no cover
+>               raise ImportError(
+                    "Using SOCKS proxy, but the 'socksio' package is not installed. "
+                    "Make sure to install httpx using `pip install httpx[socks]`."
+                ) from None
+E               ImportError: Using SOCKS proxy, but the 'socksio' package is not installed. Make sure to install httpx using `pip install httpx[socks]`.
+
+../storage-999-env/lib/python3.12/site-packages/httpx/_transports/default.py:191: ImportError
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/999-retrieval-baseline/timing/pytest/999-retrieval-baseline/88cac5413da2493fb3cedf037a06be49/9ea0671fa1404176b08b0684a8199f83
+============================= slowest 10 durations =============================
+64.82s call     tests/unit/test_retrieval_service.py::test_retrieval_reserves_and_attributes_the_planned_range_bytes
+63.93s call     tests/unit/test_retrieval_service.py::test_immediate_retrieval_reads_only_the_selected_pack_member_range
+50.22s call     tests/unit/test_retrieval_service.py::test_retrieval_plan_failure_is_durable_and_does_not_skip_a_missing_segment
+48.82s call     tests/unit/test_retrieval_service.py::test_retrieval_plan_resumes_across_more_than_two_internal_segment_pages
+44.29s call     tests/unit/test_retrieval_service.py::test_restore_required_job_caches_ciphertext_then_serves_logical_range
+43.68s call     tests/unit/test_retrieval_service.py::test_retrieval_plan_accepts_the_exact_capability_artifact
+29.86s call     tests/unit/test_retrieval_service.py::test_requested_retrieval_converges_after_its_pending_timeout
+29.38s call     tests/unit/test_retrieval_service.py::test_cache_sweep_removes_an_unleased_verified_object
+28.21s call     tests/unit/test_retrieval_service.py::test_ready_retrieval_renewal_extends_its_cache_lease
+27.89s call     tests/unit/test_retrieval_service.py::test_restore_policy_never_is_atomic_and_never_requests_archive_restore
+=========================== short test summary info ============================
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[begin-owned-http]
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[begin-supplied]
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[part-owned-http]
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[part-supplied]
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[complete-owned-http]
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[complete-supplied]
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[lookup-owned-http]
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[lookup-supplied]
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_cache_negative_lookup_preserves_its_own_execution_status[owned-http]
+FAILED tests/unit/test_retrieval_cache_write_execution.py::test_cache_negative_lookup_preserves_its_own_execution_status[supplied]
+10 failed, 69 passed in 721.25s (0:12:01)

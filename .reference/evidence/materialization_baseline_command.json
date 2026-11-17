@@ -1,0 +1,43 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "--basetemp",
+    "/workspace/scratch/939b84c043b0/999-materialization-temp/baseline-pytest",
+    "--junitxml",
+    "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/materialization_baseline.xml",
+    "packages/riverhog-materialization/tests/test_planning.py",
+    "packages/riverhog-client/tests/test_file_download.py",
+    "some-implementations/riverhog/recovery/tests/test_publication.py",
+    "tests/unit/test_local_materialization.py::test_local_sync_materializes_exact_hint_and_complete_provenance",
+    "tests/unit/test_local_materialization.py::test_repair_preserves_long_materialization_edits_with_opaque_quarantine_names",
+    "tests/unit/test_local_materialization.py::test_local_rejects_wrong_primary_anchor_without_freezing_state",
+    "tests/unit/test_local_materialization.py::test_local_retains_late_and_inherited_selection_for_offline_audit_and_repair",
+    "tests/unit/test_local_materialization.py::test_local_audit_rejects_modified_history_selection"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-999",
+  "exit_code": 0,
+  "wall_seconds": 108.90951063599641,
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "numeric": {
+    "profile": "qualification",
+    "max_work": "907920445364",
+    "max_integer_bits": "84",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/999-materialization-temp",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/materialization_timing",
+    "RIVERHOG_CI_LANE": "reference-999-materialization-baseline",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  }
+}

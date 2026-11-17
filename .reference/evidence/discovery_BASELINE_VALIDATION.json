@@ -1,0 +1,37 @@
+{
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-999",
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "--basetemp=/workspace/scratch/939b84c043b0/999-discovery-baseline/pytest",
+    "--junitxml=/workspace/scratch/939b84c043b0/999-discovery-baseline/results.xml",
+    "--durations=13",
+    "tests/unit/test_canonical_discovery_index.py::test_bounded_index_staging_retries_and_fences_late_workers",
+    "tests/unit/test_canonical_discovery_index.py::test_complete_generation_requires_every_snapshot_row_and_has_content_identity",
+    "tests/unit/test_canonical_discovery_search.py::test_native_discovery_returns_exact_hint_support_and_fences_changed_reads",
+    "tests/unit/test_canonical_discovery_search.py::test_provenance_query_fails_explicitly_when_index_is_lost",
+    "tests/unit/test_canonical_discovery_search.py::test_provenance_matches_require_current_provenance_disclosure",
+    "tests/unit/test_canonical_discovery_metadata.py::test_stale_fence_rolls_back_actual_bounded_source_registration",
+    "tests/unit/test_canonical_discovery_metadata.py::test_missing_confirmed_core_storage_cannot_be_recreated",
+    "tests/unit/test_discovery_validation_owner.py::test_close_keeps_the_slot_and_lease_until_both_actual_handles_confirm",
+    "tests/unit/test_discovery_validation_owner.py::test_actual_native_input_progress_stays_warm_and_resumes_after_owner_replacement",
+    "tests/unit/test_canonical_discovery_rebuild.py::test_archive_only_rebuild_retains_shared_roots_and_exact_member_scope"
+  ],
+  "source_head_before": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "source_status_before": "",
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/999-discovery-baseline/tmp",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/999-discovery-baseline/timing"
+  },
+  "returncode": 0,
+  "process_elapsed_seconds": 271.51858339500177,
+  "source_status_after": "?? .reference/\n"
+}

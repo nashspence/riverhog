@@ -1,0 +1,27 @@
+{
+  "count": 2,
+  "restore_requests": [
+    {
+      "Bucket": "fixture-bucket",
+      "Key": "archives/object.age",
+      "RestoreRequest": {
+        "Days": 3,
+        "GlacierJobParameters": {
+          "Tier": "Bulk"
+        }
+      },
+      "VersionId": "provider-version-1"
+    },
+    {
+      "Bucket": "fixture-bucket",
+      "Key": "archives/object.age",
+      "RestoreRequest": {
+        "Days": 3,
+        "GlacierJobParameters": {
+          "Tier": "Bulk"
+        }
+      },
+      "VersionId": "provider-version-1"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "uv_lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+  "tools": {
+    "git": "/usr/local/bin/git",
+    "make": "/usr/bin/make",
+    "mise": null,
+    "docker": null,
+    "age": null,
+    "age-plugin-batchpass": null,
+    "psql": null
+  },
+  "versions": {
+    "pytest": "9.1.1",
+    "ruff": "0.16.0",
+    "mypy": "2.3.0",
+    "SQLAlchemy": "2.0.51",
+    "httpx": "0.28.1"
+  },
+  "source": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "product_diff": ""
+}

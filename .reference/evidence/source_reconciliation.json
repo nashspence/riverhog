@@ -1,0 +1,19 @@
+{
+  "format": "riverhog-999-source-reconciliation/v1",
+  "observed_at_utc": "2026-11-17 03:14:47 UTC",
+  "repository": "nashspence/riverhog",
+  "owning_issue": 999,
+  "convention_issue": 903,
+  "integration_ref": "codex/964-session-owner",
+  "pull_request": 979,
+  "audited_and_tested_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "observed_pr_head_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "observed_main_sha": "209481c189f7387557a85e1c249184642816e103",
+  "issue_999_body_unchanged_since_initial_read": true,
+  "issue_999_comments_before_publication": 0,
+  "producer": "OpenAI ChatGPT",
+  "model": "GPT-6 Astra Pro",
+  "configuration": "Default mode; delegated adapter, discovery, materialization and independent safety reviews; hidden reasoning configuration not asserted",
+  "requester": "nashspence, Riverhog maintainer, current conversation",
+  "source_relationship": "Only .reference additions; product paths match the audited source. No previous handoff is superseded."
+}

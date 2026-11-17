@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="0" tests="18" time="36.268" timestamp="2026-11-16T18:46:27.734779-08:00" hostname="7f0b24832328"><testcase classname="some-implementations.riverhog.storage.filesystem.tests.test_filesystem_storage_adapter" name="test_resumable_write_survives_restart_and_supports_exact_reads" time="0.044" /><testcase classname="some-implementations.riverhog.storage.filesystem.tests.test_filesystem_storage_adapter" name="test_failed_segment_is_not_catalogued_and_can_be_retried" time="0.026" /><testcase classname="some-implementations.riverhog.storage.filesystem.tests.test_filesystem_storage_adapter" name="test_completion_does_not_reread_the_completed_payload" time="0.031" /><testcase classname="some-implementations.riverhog.storage.filesystem.tests.test_filesystem_storage_adapter" name="test_streamed_read_holds_deletion_until_closed" time="0.045" /><testcase classname="some-implementations.riverhog.storage.filesystem.tests.test_filesystem_storage_adapter" name="test_restart_finalizes_revision_installed_before_current_pointer" time="0.029" /><testcase classname="some-implementations.riverhog.storage.s3-support.tests.test_s3_storage_adapter" name="test_lost_begin_response_reconciles_the_exact_nonterminal_write" time="0.001" /><testcase classname="some-implementations.riverhog.storage.s3-support.tests.test_s3_storage_adapter" name="test_resumable_write_reconciles_segments_and_lost_completion" time="0.072" /><testcase classname="some-implementations.riverhog.storage.s3-support.tests.test_s3_storage_adapter" name="test_current_object_fence_rejects_a_change_between_head_and_mutation[write]" time="0.001" /><testcase classname="some-implementations.riverhog.storage.s3-support.tests.test_s3_storage_adapter" name="test_current_object_fence_rejects_a_change_between_head_and_mutation[delete]" time="0.001" /><testcase classname="some-implementations.riverhog.storage.s3-support.tests.test_s3_dispatch_attempts" name="test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-part]" time="0.001"><error message="failed on setup with &quot;pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')&quot;">self = &lt;scripts.ci_timing.PytestTiming object at 0x7f7e84425850&gt;
+fixturedef = &lt;FixtureDef argname='record_property' scope='function' baseid=''&gt;
+request = &lt;SubRequest 'record_property' for &lt;Function test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-part]&gt;&gt;
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(
+        self, fixturedef: pytest.FixtureDef[Any], request: pytest.FixtureRequest
+    ) -&gt; Generator[None, Any, Any]:
+        started = time.monotonic()
+        try:
+&gt;           return (yield)
+                    ^^^^^
+E           pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+
+scripts/ci_timing.py:109: PytestWarning</error></testcase><testcase classname="some-implementations.riverhog.storage.s3-support.tests.test_s3_dispatch_attempts" name="test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-complete]" time="0.001"><error message="failed on setup with &quot;pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')&quot;">self = &lt;scripts.ci_timing.PytestTiming object at 0x7f7e84425850&gt;
+fixturedef = &lt;FixtureDef argname='record_property' scope='function' baseid=''&gt;
+request = &lt;SubRequest 'record_property' for &lt;Function test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-complete]&gt;&gt;
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(
+        self, fixturedef: pytest.FixtureDef[Any], request: pytest.FixtureRequest
+    ) -&gt; Generator[None, Any, Any]:
+        started = time.monotonic()
+        try:
+&gt;           return (yield)
+                    ^^^^^
+E           pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+
+scripts/ci_timing.py:109: PytestWarning</error></testcase><testcase classname="some-implementations.riverhog.storage.s3-support.tests.test_s3_dispatch_attempts" name="test_s3_completion_parses_body_error_without_replaying" time="0.538" /><testcase classname="tests.unit.test_archive_copy_jobs" name="test_archive_copy_preserves_the_independent_object_manifest" time="6.438" /><testcase classname="tests.unit.test_archive_copy_jobs" name="test_archive_copy_cancellation_stops_an_active_transfer_before_commit" time="6.003" /><testcase classname="tests.unit.test_archive_copy_jobs" name="test_archive_copy_waits_for_selected_source_objects" time="5.829" /><testcase classname="tests.unit.test_archive_copy_jobs" name="test_archive_copy_checks_remote_source_outside_its_catalog_transaction" time="5.759" /><testcase classname="tests.unit.test_archive_copy_retirements" name="test_retirement_verifies_a_retained_copy_then_deletes_every_target_object" time="3.097" /><testcase classname="tests.unit.test_archive_copy_retirements" name="test_retirement_deletes_description_only_after_another_current_replica_exists" time="3.160" /></testsuite></testsuites>

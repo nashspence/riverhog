@@ -1,0 +1,43 @@
+..........F                                                              [100%]
+=================================== FAILURES ===================================
+______ test_actual_core_repeated_claim_and_post_commit_allowance_release _______
+
+tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-restore-temp/pytest/test_actual_core_repeated_clai0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ff7e0cc0d40>
+
+    def test_actual_core_repeated_claim_and_post_commit_allowance_release(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        allowance = RecordingDownloadAllowance()
+        artifact = "a" * 64
+>       service, collection, _, _ = _seed_collection(
+            tmp_path,
+            {artifact: b"small actual archive"},
+            read_mode="restore_required",
+            cache=MemoryRetrievalCache(),
+            allowance=allowance,
+        )
+
+.reference/implementation/test_restore_experiment.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_retrieval_service.py:425: in _seed_collection
+    api = UploadServiceApi(uploads, _creator())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/support/upload_api.py:60: in __init__
+    else create_app(
+riverhog/src/riverhog_api/app.py:312: in create_app
+    config = load_runtime_config()
+             ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def load_runtime_config() -> RuntimeConfig:
+        config_path = os.environ.get("RIVERHOG_CONFIG", "").strip()
+        if not config_path:
+>           raise ValueError("RIVERHOG_CONFIG must name a YAML configuration document")
+E           ValueError: RIVERHOG_CONFIG must name a YAML configuration document
+
+riverhog/src/riverhog_core/runtime_document.py:602: ValueError
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/restore_timing/pytest/reference-999-restore-experiment/4653e4a0a3364361ad0ab7f0475bf405/cc0c7a9ad8b34a8fbf1702d5906394f0
+=========================== short test summary info ============================
+FAILED .reference/implementation/test_restore_experiment.py::test_actual_core_repeated_claim_and_post_commit_allowance_release
+1 failed, 10 passed in 5.33s

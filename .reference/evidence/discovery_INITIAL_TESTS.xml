@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="6" time="0.505" timestamp="2026-11-16T18:50:45.072696-08:00" hostname="7f0b24832328"><testcase classname=".reference.implementation.test_discovery_experiment" name="test_real_reader_removes_only_disposable_index_commit_and_preserves_exact_results" file=".reference/implementation/test_discovery_experiment.py" line="19" time="0.021"><failure message="riverhog_canonical_json.CanonicalJsonError: shape: identity input must contain JSON values">def test_real_reader_removes_only_disposable_index_commit_and_preserves_exact_results() -&gt; None:
+        _, objects, journal_id, _ = archive_reader_fixture()
+&gt;       unchanged = observe(objects, journal_id, private=False)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.reference/implementation/test_discovery_experiment.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.reference/implementation/discovery_experiment.py:130: in observe
+    "bindings_sha256": hashlib.sha256(canonical_json_bytes(bindings)).hexdigest(),
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py:131: in canonical_json_bytes
+    prepared, _ = _prepare(value, slow_containers)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = ({'artifact_id': 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', 'bytes': '7', 'sha256': 'aaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaa', 'history_sha256': '946a4d8df1127c8037d18c06b50e4ea87757a24b425a81a3bd85f7b7b02adf21', ...},)
+slow_containers = set()
+
+    def _prepare(value: object, slow_containers: set[int]) -&gt; tuple[object, bool]:
+        if value is None or type(value) is bool:
+            return value, True
+        if type(value) is str:
+            return _string(value), True
+        if type(value) is int:
+            integer = _exact_integer(value)
+            return integer, type(integer) is int
+        if type(value) is float:
+            if not math.isfinite(value):
+                raise CanonicalJsonError("numeric", "nonfinite binary64 value")
+            return value, False
+        if type(value) is list:
+            items: list[object] = []
+            fast = True
+            for item in value:
+                prepared, child_fast = _prepare(item, slow_containers)
+                items.append(prepared)
+                fast = fast and child_fast
+            if not fast:
+                slow_containers.add(id(items))
+            return items, fast
+        if type(value) is dict:
+            result: dict[str, object] = {}
+            fast = True
+            for key, item in value.items():
+                if type(key) is not str:
+                    raise CanonicalJsonError("shape", "object names must be strings")
+                prepared, child_fast = _prepare(item, slow_containers)
+                result[_string(key)] = prepared
+                fast = fast and key.isascii() and child_fast
+            if not fast:
+                slow_containers.add(id(result))
+            return result, fast
+&gt;       raise CanonicalJsonError("shape", "identity input must contain JSON values")
+E       riverhog_canonical_json.CanonicalJsonError: shape: identity input must contain JSON values
+
+packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py:90: CanonicalJsonError</failure></testcase><testcase classname=".reference.implementation.test_discovery_experiment" name="test_corrupt_terminal_never_exposes_a_partial_index" file=".reference/implementation/test_discovery_experiment.py" line="41" time="0.019" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_missing_authority_is_not_an_empty_prepared_query" file=".reference/implementation/test_discovery_experiment.py" line="56" time="0.030" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_uncertain_original_close_retains_owner_and_blocks_reprepare[before]" file=".reference/implementation/test_discovery_experiment.py" line="73" time="0.015" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_uncertain_original_close_retains_owner_and_blocks_reprepare[after]" file=".reference/implementation/test_discovery_experiment.py" line="73" time="0.017" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_private_index_remains_query_only_and_owned_across_serial_worker_handoff" file=".reference/implementation/test_discovery_experiment.py" line="97" time="0.017" /></testsuite></testsuites>

@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    ".reference/implementation/materialization_experiment.py",
+    "/workspace/scratch/939b84c043b0/999-materialization-temp/observations-v1",
+    "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/materialization_observations.json"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-999",
+  "exit_code": 1,
+  "wall_seconds": 2.279579307003587,
+  "numeric": {
+    "profile": "qualification",
+    "max_work": "907920445364",
+    "max_integer_bits": "84",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/999-materialization-temp",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "stdout": "Traceback (most recent call last):\n  File \"/workspace/scratch/939b84c043b0/riverhog-999/.reference/implementation/materialization_experiment.py\", line 354, in <module>\n    main()\n  File \"/workspace/scratch/939b84c043b0/riverhog-999/.reference/implementation/materialization_experiment.py\", line 350, in main\n    arguments.output.write_text(json.dumps(run_observations(arguments.workspace), indent=2) + \"\\n\")\n                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/939b84c043b0/riverhog-999/.reference/implementation/materialization_experiment.py\", line 327, in run_observations\n    observe_planner(\n  File \"/workspace/scratch/939b84c043b0/riverhog-999/.reference/implementation/materialization_experiment.py\", line 239, in observe_planner\n    rows = tuple(function(advice, rules=rules, state=state))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/939b84c043b0/riverhog-999/packages/riverhog-materialization/src/riverhog_materialization/__init__.py\", line 255, in plan_materialization_spooled\n    catalog.validate(_HINT_SCHEMA, member.materialization_hint)\n  File \"/workspace/scratch/939b84c043b0/riverhog-999/packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas.py\", line 97, in validate\n    raise ValueError(\"schema validation failed:\\n\" + \"\\n\".join(messages))\nValueError: schema validation failed:\n['components']: ['d000', 'd001', 'd002', 'd003', 'd004', 'd005', 'd006', 'd007', 'd008', 'd009', 'd010', 'd011', 'd012', 'd013', 'd014', 'd015', 'd016', 'd017', 'd018', 'd019', 'd020', 'd021', 'd022', 'd023', 'd024', 'd025', 'd026', 'd027', 'd028', 'd029', 'd030', 'd031', 'd032', 'd033', 'd034', 'd035', 'd036', 'd037', 'd038', 'd039', 'd040', 'd041', 'd042', 'd043', 'd044', 'd045', 'd046', 'd047', 'd048', 'd049', 'd050', 'd051', 'd052', 'd053', 'd054', 'd055', 'd056', 'd057', 'd058', 'd059', 'd060', 'd061', 'd062', 'f000000'] is too long\n"
+}

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="17" time="18.166" timestamp="2026-11-16T18:52:30.089984-08:00" hostname="7f0b24832328"><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths0-rules0-declared-hints]" time="0.181" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths1-rules1-declared-hints]" time="0.009" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths2-rules2-declared-hints]" time="0.010" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths3-rules3-declared-hints]" time="0.011" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths4-rules4-declared-hints]" time="0.008"><failure message="ValueError: schema validation failed:&#10;['components', 0]: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' is too long">tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-materialization-temp/reference-pytest/test_trie_preserves_actual_all4')
+paths = (('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',), ('short',), None)
+rules = DestinationRules(windows_names=False, case_sensitive=True, unicode_equivalence='exact', component_bytes=255, relative_path_bytes=160)
+mode = 'declared-hints'
+
+    @pytest.mark.parametrize(
+        ("paths", "rules", "mode"),
+        [
+            (
+                (("same",), ("same",), ("same", "child")),
+                DestinationRules(False, True, "exact", 255, 4096),
+                "declared-hints",
+            ),
+            (
+                (("Camera", "one"), ("camera", "two"), ("safe",)),
+                DestinationRules(False, False, "exact", 255, 4096),
+                "declared-hints",
+            ),
+            (
+                (("e\u0301", "one"), ("\u00e9", "two"), ("safe",)),
+                DestinationRules(False, True, "NFC", 255, 4096),
+                "declared-hints",
+            ),
+            (
+                (("CON", "tail. "), ("%43ON", "safe"), None),
+                DestinationRules(True, False, "NFC", 255, 4096),
+                "declared-hints",
+            ),
+            (
+                (("x" * 200,), ("short",), None),
+                DestinationRules(False, True, "exact", 255, 160),
+                "declared-hints",
+            ),
+            (
+                (("same",), ("same",), None),
+                DestinationRules(False, True, "exact", 255, 4096),
+                "id-layout",
+            ),
+        ],
+    )
+    def test_trie_preserves_actual_all_participant_collision_semantics(
+        tmp_path: Path,
+        paths: tuple[tuple[str, ...] | None, ...],
+        rules: DestinationRules,
+        mode: Any,
+    ) -&gt; None:
+        advice = [
+            MemberAdvice(f"{number:064x}", {"components": list(path)} if path is not None else None)
+            for number, path in enumerate(paths, 1)
+        ]
+        state = sqlite3.connect(tmp_path / "trie.sqlite3")
+        try:
+&gt;           actual = tuple(plan_trie_spooled(iter(advice), rules=rules, state=state, mode=mode))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.reference/implementation/test_materialization_experiment.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.reference/implementation/materialization_experiment.py:116: in plan_trie_spooled
+    catalog.validate(owner._HINT_SCHEMA, member.materialization_hint)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;riverhog_provenance_contracts.schemas.ContractCatalog object at 0x7f1458376b10&gt;
+schema_id = 'https://nashspence.github.io/riverhog/v1/provenance/materialization-hint.schema.json'
+value = {'components': ['xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx']}
+
+    def validate(self, schema_id: str, value: Any) -&gt; None:
+        require_portable_json(value)
+        if schema_id not in self._validators:
+            raise ValueError(f"schema is not present in the sealed catalog: {schema_id}")
+        findings = sorted(self._validators[schema_id].iter_errors(value), key=lambda e: str(e.path))
+        if findings:
+            messages = [f"{list(e.absolute_path)}: {e.message}" for e in findings[:12]]
+&gt;           raise ValueError("schema validation failed:\n" + "\n".join(messages))
+E           ValueError: schema validation failed:
+E           ['components', 0]: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' is too long
+
+packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas.py:97: ValueError</failure></testcase><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths5-rules5-id-layout]" time="0.010" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_rejects_duplicate_exact_member" time="0.008" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_prefix_serialization_grows_quadratically_with_depth" time="0.007"><failure message="riverhog_canonical_json.CanonicalJsonError: shape: identity input must contain JSON values">tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-materialization-temp/reference-pytest/test_actual_prefix_serializati0')
+
+    def test_actual_prefix_serialization_grows_quadratically_with_depth(tmp_path: Path) -&gt; None:
+        current = [
+&gt;           observe_planner(tmp_path / f"current-{depth}", members=4, depth=depth, trie=False)
+            for depth in (16, 32, 64)
+        ]
+
+.reference/implementation/test_materialization_experiment.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.reference/implementation/materialization_experiment.py:267: in observe_planner
+    hashlib.sha256(canonical_json_bytes([asdict(row) for row in rows])).hexdigest(),
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py:131: in canonical_json_bytes
+    prepared, _ = _prepare(value, slow_containers)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py:72: in _prepare
+    prepared, child_fast = _prepare(item, slow_containers)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py:84: in _prepare
+    prepared, child_fast = _prepare(item, slow_containers)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = ('files', 'd000', 'd001', 'd002', 'd003', 'd004', ...)
+slow_containers = set()
+
+    def _prepare(value: object, slow_containers: set[int]) -&gt; tuple[object, bool]:
+        if value is None or type(value) is bool:
+            return value, True
+        if type(value) is str:
+            return _string(value), True
+        if type(value) is int:
+            integer = _exact_integer(value)
+            return integer, type(integer) is int
+        if type(value) is float:
+            if not math.isfinite(value):
+                raise CanonicalJsonError("numeric", "nonfinite binary64 value")
+            return value, False
+        if type(value) is list:
+            items: list[object] = []
+            fast = True
+            for item in value:
+                prepared, child_fast = _prepare(item, slow_containers)
+                items.append(prepared)
+                fast = fast and child_fast
+            if not fast:
+                slow_containers.add(id(items))
+            return items, fast
+        if type(value) is dict:
+            result: dict[str, object] = {}
+            fast = True
+            for key, item in value.items():
+                if type(key) is not str:
+                    raise CanonicalJsonError("shape", "object names must be strings")
+                prepared, child_fast = _prepare(item, slow_containers)
+                result[_string(key)] = prepared
+                fast = fast and key.isascii() and child_fast
+            if not fast:
+                slow_containers.add(id(result))
+            return result, fast
+&gt;       raise CanonicalJsonError("shape", "identity input must contain JSON values")
+E       riverhog_canonical_json.CanonicalJsonError: shape: identity input must contain JSON values
+
+packages/riverhog-canonical-json/src/riverhog_canonical_json/__init__.py:90: CanonicalJsonError</failure></testcase><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_download_refuses_destination_created_during_transfer" time="0.002" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_download_lost_link_reply_leaves_exact_output" time="0.002" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_sdk_and_cli_have_distinct_directory_sync_boundaries" time="0.003" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_recovery_parent_sync_failure_preserves_published_tree" time="0.002" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_recovery_fixed_scratch_deletes_unowned_staging_before_input_validation" time="0.001" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_quarantine_can_remove_concurrent_replacement" time="0.003" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_complete_recovery_lost_reply_retains_all_selected_contents" time="11.305" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_mapping_failure_loses_constructed_sqlite_close_owner" time="5.477" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_download_pool_stops_receiving_after_first_client_close_failure" time="0.003" /></testsuite></testsuites>

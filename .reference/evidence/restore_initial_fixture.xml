@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="11" time="5.317" timestamp="2026-11-16T18:54:44.198112-08:00" hostname="7f0b24832328"><testcase classname=".reference.implementation.test_restore_experiment" name="test_actual_policy_repeats_after_lost_reply_and_expired_window" time="0.001" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_original_survives_restart_without_repeating_entry[provider_reply]" time="0.008" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_original_survives_restart_without_repeating_entry[intent_commit_reply]" time="0.007" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_repeated_waits_create_zero_progress_writes" time="0.007" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_two_reopened_owners_cannot_repeat_the_original" time="0.008" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_original_cannot_change_identity[consent]" time="0.004" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_original_cannot_change_identity[source_incarnation]" time="0.004" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_original_cannot_change_identity[revision]" time="0.004" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_original_cannot_change_identity[policy_identity]" time="0.005" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_current_authority_required_at_entry_and_result" time="0.009" /><testcase classname=".reference.implementation.test_restore_experiment" name="test_actual_core_repeated_claim_and_post_commit_allowance_release" time="1.130"><failure message="ValueError: RIVERHOG_CONFIG must name a YAML configuration document">tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-restore-temp/pytest/test_actual_core_repeated_clai0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7ff7e0cc0d40&gt;
+
+    def test_actual_core_repeated_claim_and_post_commit_allowance_release(
+        tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -&gt; None:
+        allowance = RecordingDownloadAllowance()
+        artifact = "a" * 64
+&gt;       service, collection, _, _ = _seed_collection(
+            tmp_path,
+            {artifact: b"small actual archive"},
+            read_mode="restore_required",
+            cache=MemoryRetrievalCache(),
+            allowance=allowance,
+        )
+
+.reference/implementation/test_restore_experiment.py:198: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_retrieval_service.py:425: in _seed_collection
+    api = UploadServiceApi(uploads, _creator())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/support/upload_api.py:60: in __init__
+    else create_app(
+riverhog/src/riverhog_api/app.py:312: in create_app
+    config = load_runtime_config()
+             ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def load_runtime_config() -&gt; RuntimeConfig:
+        config_path = os.environ.get("RIVERHOG_CONFIG", "").strip()
+        if not config_path:
+&gt;           raise ValueError("RIVERHOG_CONFIG must name a YAML configuration document")
+E           ValueError: RIVERHOG_CONFIG must name a YAML configuration document
+
+riverhog/src/riverhog_core/runtime_document.py:602: ValueError</failure></testcase></testsuite></testsuites>

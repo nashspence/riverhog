@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="1.339" timestamp="2026-11-16T18:53:47.862030-08:00" hostname="7f0b24832328"><testcase classname="" name=".reference.implementation.test_restore_experiment" time="0.000"><error message="collection failure">ImportError while importing test module '/workspace/scratch/939b84c043b0/riverhog-999/.reference/implementation/test_restore_experiment.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.reference/implementation/test_restore_experiment.py:14: in &lt;module&gt;
+    from riverhog_core.catalog_db import read_snapshot
+E   ImportError: cannot import name 'read_snapshot' from 'riverhog_core.catalog_db' (/workspace/scratch/939b84c043b0/riverhog-999/riverhog/src/riverhog_core/catalog_db.py)</error></testcase></testsuite></testsuites>

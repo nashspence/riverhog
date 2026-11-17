@@ -1,0 +1,3 @@
+..........                                                               [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/999-retrieval-loopback/timing/pytest/reference-999-cache-loopback-correction/09013f3e281745efb74baa280a1b18c3/eb46783763294c248373933ea3291417
+10 passed in 3.95s

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="8" time="9.018" timestamp="2026-11-16T18:54:43.093520-08:00" hostname="7f0b24832328"><testcase classname=".reference.implementation.test_discovery_experiment" name="test_real_reader_removes_only_disposable_index_commit_and_preserves_exact_results" file=".reference/implementation/test_discovery_experiment.py" line="32" time="0.029"><failure message="TypeError: keys must be str, int, float, bool or None, not tuple">def test_real_reader_removes_only_disposable_index_commit_and_preserves_exact_results() -&gt; None:
+        _, objects, journal_id, _ = archive_reader_fixture()
+        unchanged = observe(objects, journal_id, private=False)
+        proposed = observe(objects, journal_id, private=True)
+        assert unchanged["results"] == proposed["results"]
+        old = unchanged["measurements"]
+        new = proposed["measurements"]
+        assert old["explicit_commit_requests"] == old["traced_commit_statements"] == 1
+        assert new["explicit_commit_requests"] == new["traced_commit_statements"] == 0
+        assert old["inserted_descriptors"] == new["inserted_descriptors"] == 4
+        assert old["archive_reads"] == new["archive_reads"]
+        assert not unchanged["transaction_open_while_reading"]
+        assert proposed["transaction_open_while_reading"]
+        for result in (unchanged, proposed):
+            assert result["rows_ready_before_reads"] and result["query_only"]
+            assert result["metadata_reads_after_prepare"] == result["metadata_reads_after_use"] == 4
+            assert result["scratch_removed"]
+            assert result["measurements"]["original_close_received"]
+        if path := os.environ.get("RIVERHOG_DISCOVERY_REPORT"):
+&gt;           Path(path).write_text(json.dumps({"unchanged": unchanged, "proposed": proposed}, indent=2))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.reference/implementation/test_discovery_experiment.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/json/__init__.py:238: in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/json/encoder.py:202: in encode
+    chunks = list(chunks)
+             ^^^^^^^^^^^^
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/json/encoder.py:432: in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/json/encoder.py:406: in _iterencode_dict
+    yield from chunks
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/json/encoder.py:406: in _iterencode_dict
+    yield from chunks
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/json/encoder.py:406: in _iterencode_dict
+    yield from chunks
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dct = Counter({('PRAGMA', 4): 1, ('CREATE', 3): 1, ('BEGIN', 1): 1, ('INSERT', 4): 1, ('COMMIT', 1): 1, ('SELECT', 9): 1})
+_current_indent_level = 4
+
+    def _iterencode_dict(dct, _current_indent_level):
+        if not dct:
+            yield '{}'
+            return
+        if markers is not None:
+            markerid = id(dct)
+            if markerid in markers:
+                raise ValueError("Circular reference detected")
+            markers[markerid] = dct
+        yield '{'
+        if _indent is not None:
+            _current_indent_level += 1
+            newline_indent = '\n' + _indent * _current_indent_level
+            item_separator = _item_separator + newline_indent
+            yield newline_indent
+        else:
+            newline_indent = None
+            item_separator = _item_separator
+        first = True
+        if _sort_keys:
+            items = sorted(dct.items())
+        else:
+            items = dct.items()
+        for key, value in items:
+            if isinstance(key, str):
+                pass
+            # JavaScript is weakly typed for these, so it makes sense to
+            # also allow them.  Many encoders seem to do something like this.
+            elif isinstance(key, float):
+                # see comment for int/float in _make_iterencode
+                key = _floatstr(key)
+            elif key is True:
+                key = 'true'
+            elif key is False:
+                key = 'false'
+            elif key is None:
+                key = 'null'
+            elif isinstance(key, int):
+                # see comment for int/float in _make_iterencode
+                key = _intstr(key)
+            elif _skipkeys:
+                continue
+            else:
+&gt;               raise TypeError(f'keys must be str, int, float, bool or None, '
+                                f'not {key.__class__.__name__}')
+E               TypeError: keys must be str, int, float, bool or None, not tuple
+
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/json/encoder.py:377: TypeError</failure></testcase><testcase classname=".reference.implementation.test_discovery_experiment" name="test_corrupt_terminal_never_exposes_a_partial_index" file=".reference/implementation/test_discovery_experiment.py" line="54" time="0.014" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_missing_authority_is_not_an_empty_prepared_query" file=".reference/implementation/test_discovery_experiment.py" line="69" time="0.022" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_uncertain_original_close_retains_owner_and_blocks_reprepare[before]" file=".reference/implementation/test_discovery_experiment.py" line="86" time="0.014" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_uncertain_original_close_retains_owner_and_blocks_reprepare[after]" file=".reference/implementation/test_discovery_experiment.py" line="86" time="0.014" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_private_index_remains_query_only_and_owned_across_serial_worker_handoff" file=".reference/implementation/test_discovery_experiment.py" line="110" time="0.016" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_actual_native_eviction_keeps_original_until_received[False]" file=".reference/implementation/test_discovery_experiment.py" line="138" time="2.952" /><testcase classname=".reference.implementation.test_discovery_experiment" name="test_actual_native_eviction_keeps_original_until_received[True]" file=".reference/implementation/test_discovery_experiment.py" line="138" time="2.613" /></testsuite></testsuites>

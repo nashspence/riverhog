@@ -1,0 +1,153 @@
+{
+  "unchanged": {
+    "mode": "unchanged",
+    "measurements": {
+      "explicit_commit_requests": 1,
+      "traced_commit_statements": 1,
+      "inserted_descriptors": 4,
+      "original_close_attempts": 1,
+      "original_close_received": true,
+      "sql_statements": {
+        "PRAGMA": 4,
+        "CREATE": 3,
+        "BEGIN": 1,
+        "INSERT": 4,
+        "COMMIT": 1,
+        "SELECT": 9
+      },
+      "archive_reads": {
+        "provenance/root.json.age": 1,
+        "provenance/metadata/volume-0000000000000000000000000000000000000000000000000000000000000000.json.age": 1,
+        "provenance/metadata/volume-0000000000000000000000000000000000000000000000000000000000000001.json.age": 1,
+        "provenance/metadata/volume-0000000000000000000000000000000000000000000000000000000000000002.json.age": 1,
+        "provenance/metadata/volume-0000000000000000000000000000000000000000000000000000000000000003.json.age": 1,
+        "provenance/payloads/dc/dc118e61be24d40edeb0fb2ff1d794d04ac75aeeb32b23806e5fd39b1718df73.bin.age": 3,
+        "provenance/payloads/e5/e528d23705fa6095acd43d6b47fdb644a23a4a7adc302fafc2f908ffadbdd45f.bin.age": 3,
+        "provenance/payloads/c1/c18cf8b1f8686e97ba326147591f1f52b5358e38e2c3c9068f40db3189fc5950.bin.age": 3
+      },
+      "scratch_paths": [
+        "/workspace/scratch/939b84c043b0/riverhog-999-final-v24varjt/riverhog-provenance-metadata-el_ngg12/metadata.sqlite3"
+      ]
+    },
+    "rows_ready_before_reads": true,
+    "query_only": true,
+    "transaction_open_while_reading": false,
+    "metadata_reads_after_prepare": 4,
+    "metadata_reads_after_use": 4,
+    "results": [
+      {
+        "headers": [
+          [
+            "urn:uuid:11111111-1111-4111-8111-111111111111",
+            25,
+            "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31"
+          ]
+        ],
+        "journal_bytes": 25,
+        "journal_sha256": "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31",
+        "bindings_sha256": "5f47c8d75597febbeb20528251d07e1af686cdab68d31423c3d922dfbd1b143c"
+      },
+      {
+        "headers": [
+          [
+            "urn:uuid:11111111-1111-4111-8111-111111111111",
+            25,
+            "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31"
+          ]
+        ],
+        "journal_bytes": 25,
+        "journal_sha256": "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31",
+        "bindings_sha256": "5f47c8d75597febbeb20528251d07e1af686cdab68d31423c3d922dfbd1b143c"
+      },
+      {
+        "headers": [
+          [
+            "urn:uuid:11111111-1111-4111-8111-111111111111",
+            25,
+            "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31"
+          ]
+        ],
+        "journal_bytes": 25,
+        "journal_sha256": "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31",
+        "bindings_sha256": "5f47c8d75597febbeb20528251d07e1af686cdab68d31423c3d922dfbd1b143c"
+      }
+    ],
+    "scratch_removed": true,
+    "scope": "Real Core reader/index/SQLite on fixture authenticated plaintext objects; no retained Native generation, archive provider, fsync count, power-loss, PostgreSQL or installed recovery claim."
+  },
+  "proposed": {
+    "mode": "proposed-private",
+    "measurements": {
+      "explicit_commit_requests": 0,
+      "traced_commit_statements": 0,
+      "inserted_descriptors": 4,
+      "original_close_attempts": 1,
+      "original_close_received": true,
+      "sql_statements": {
+        "PRAGMA": 4,
+        "CREATE": 3,
+        "BEGIN": 1,
+        "INSERT": 4,
+        "SELECT": 9
+      },
+      "archive_reads": {
+        "provenance/root.json.age": 1,
+        "provenance/metadata/volume-0000000000000000000000000000000000000000000000000000000000000000.json.age": 1,
+        "provenance/metadata/volume-0000000000000000000000000000000000000000000000000000000000000001.json.age": 1,
+        "provenance/metadata/volume-0000000000000000000000000000000000000000000000000000000000000002.json.age": 1,
+        "provenance/metadata/volume-0000000000000000000000000000000000000000000000000000000000000003.json.age": 1,
+        "provenance/payloads/dc/dc118e61be24d40edeb0fb2ff1d794d04ac75aeeb32b23806e5fd39b1718df73.bin.age": 3,
+        "provenance/payloads/e5/e528d23705fa6095acd43d6b47fdb644a23a4a7adc302fafc2f908ffadbdd45f.bin.age": 3,
+        "provenance/payloads/c1/c18cf8b1f8686e97ba326147591f1f52b5358e38e2c3c9068f40db3189fc5950.bin.age": 3
+      },
+      "scratch_paths": [
+        "/workspace/scratch/939b84c043b0/riverhog-999-final-v24varjt/riverhog-provenance-metadata-6xyisi5d/metadata.sqlite3"
+      ]
+    },
+    "rows_ready_before_reads": true,
+    "query_only": true,
+    "transaction_open_while_reading": true,
+    "metadata_reads_after_prepare": 4,
+    "metadata_reads_after_use": 4,
+    "results": [
+      {
+        "headers": [
+          [
+            "urn:uuid:11111111-1111-4111-8111-111111111111",
+            25,
+            "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31"
+          ]
+        ],
+        "journal_bytes": 25,
+        "journal_sha256": "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31",
+        "bindings_sha256": "5f47c8d75597febbeb20528251d07e1af686cdab68d31423c3d922dfbd1b143c"
+      },
+      {
+        "headers": [
+          [
+            "urn:uuid:11111111-1111-4111-8111-111111111111",
+            25,
+            "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31"
+          ]
+        ],
+        "journal_bytes": 25,
+        "journal_sha256": "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31",
+        "bindings_sha256": "5f47c8d75597febbeb20528251d07e1af686cdab68d31423c3d922dfbd1b143c"
+      },
+      {
+        "headers": [
+          [
+            "urn:uuid:11111111-1111-4111-8111-111111111111",
+            25,
+            "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31"
+          ]
+        ],
+        "journal_bytes": 25,
+        "journal_sha256": "68db6a4b1099f90dbb7baec19a6ffb1979cc70ab7b7ff114fe09988219a92a31",
+        "bindings_sha256": "5f47c8d75597febbeb20528251d07e1af686cdab68d31423c3d922dfbd1b143c"
+      }
+    ],
+    "scratch_removed": true,
+    "scope": "Real Core reader/index/SQLite on fixture authenticated plaintext objects; no retained Native generation, archive provider, fsync count, power-loss, PostgreSQL or installed recovery claim."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    ".reference/implementation/materialization_experiment.py",
+    "/workspace/scratch/939b84c043b0/999-materialization-temp/observations-v2",
+    "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/materialization_observations.json"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-999",
+  "exit_code": 0,
+  "wall_seconds": 2.8168500760002644,
+  "numeric": {
+    "profile": "qualification",
+    "max_work": "907920445364",
+    "max_integer_bits": "84",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/999-materialization-temp",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "stdout": ""
+}

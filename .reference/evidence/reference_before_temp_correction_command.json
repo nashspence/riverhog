@@ -1,0 +1,46 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    ".reference/implementation",
+    "--basetemp=/workspace/scratch/939b84c043b0/riverhog-999/riverhog-999-final-io6_leb2/pytest",
+    "--junitxml=/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/reference_final.xml"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-999",
+  "source_commit": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "input_sha256": {
+    ".reference/implementation/adapter_experiment.py": "6c83021e0a240e6a806830b424292efa76342954235d4de484a38ebdd52b86bf",
+    ".reference/implementation/discovery_experiment.py": "4bbb86f3b66805879490e8f43642f2d543041c487d5dfc7e7777500ba9cb7a27",
+    ".reference/implementation/materialization_experiment.py": "1db958ca0e706f7ca96fcb3a1845b37e8a4722ebbe6a496be4a609ae104de4bf",
+    ".reference/implementation/restore_experiment.py": "a7d7c2326bc4428b45ed47feaf387e157f67198dfa875b136c0a9913caa5e9a3",
+    ".reference/implementation/run_reference_checks.py": "f9749b539e917ac0f9a222fa6a28ce99f906f79462f89255d317234f7eba0253",
+    ".reference/implementation/test_adapter_experiment.py": "3af0fc3a8e572d381b7b6cad9af65e2295cb16de549fa3f6bf43c413b577e854",
+    ".reference/implementation/test_discovery_experiment.py": "7aab223f533b4512dda874cfa76fbc5ebe8d1ce1636e480ecdcb09dfa84846e6",
+    ".reference/implementation/test_materialization_experiment.py": "c0f88ea8ac62ebeb2e12f79b339c4de7834b1bb8c2f093ec2e425a22d57649a0",
+    ".reference/implementation/test_restore_experiment.py": "9ec639d866a4b339bfd94659788d9f47f298b6f5bec40a09424d82a1c8caf096"
+  },
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/riverhog-999/riverhog-999-final-io6_leb2",
+    "NO_PROXY": "*",
+    "no_proxy": "*",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/reference_final_timing",
+    "RIVERHOG_CI_LANE": "reference-999-final",
+    "REFERENCE_999_RESTORE_EVIDENCE": "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/final_restore_observations",
+    "RIVERHOG_DISCOVERY_REPORT": "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/discovery_final_counters.json",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "scope": "Reference experiments against unchanged c28 product owners; controlled local/fixture transport only. Loopback-only client configuration. No provider/power-loss/PostgreSQL/installed-only/full workflow qualification.",
+  "exit_code": 0,
+  "wall_seconds": 85.67289779500425,
+  "inputs_unchanged_during_run": true
+}

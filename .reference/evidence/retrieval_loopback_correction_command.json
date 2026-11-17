@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[begin-owned-http]",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[begin-supplied]",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[part-owned-http]",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[part-supplied]",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[complete-owned-http]",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[complete-supplied]",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[lookup-owned-http]",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_actual_cache_executor_keeps_original_identity_and_transport_closure[lookup-supplied]",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_cache_negative_lookup_preserves_its_own_execution_status[owned-http]",
+    "tests/unit/test_retrieval_cache_write_execution.py::test_cache_negative_lookup_preserves_its_own_execution_status[supplied]",
+    "--basetemp=/workspace/scratch/939b84c043b0/999-retrieval-loopback/pytest",
+    "--junitxml=/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/retrieval_loopback_correction.xml"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-999",
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/999-retrieval-loopback",
+    "NO_PROXY": "*",
+    "no_proxy": "*",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/999-retrieval-loopback/timing",
+    "RIVERHOG_CI_LANE": "reference-999-cache-loopback-correction",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "scope": "Only the ten loopback HTTP fixture cases blocked by HTTPX construction with the ambient SOCKS proxy; no live network/provider; tests and lock unchanged.",
+  "exit_code": 0,
+  "wall_seconds": 5.432197094000003
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="17" time="21.289" timestamp="2026-11-16T18:55:21.037291-08:00" hostname="7f0b24832328"><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths0-rules0-declared-hints]" time="0.198" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths1-rules1-declared-hints]" time="0.013" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths2-rules2-declared-hints]" time="0.013" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths3-rules3-declared-hints]" time="0.013" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths4-rules4-declared-hints]" time="0.012" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_preserves_actual_all_participant_collision_semantics[paths5-rules5-id-layout]" time="0.011" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_trie_rejects_duplicate_exact_member" time="0.010" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_prefix_serialization_grows_quadratically_with_depth" time="0.021"><failure message="ValueError: schema validation failed:&#10;['components']: ['d000', 'd001', 'd002', 'd003', 'd004', 'd005', 'd006', 'd007', 'd008', 'd009', 'd010', 'd011', 'd012', 'd013', 'd014', 'd015', 'd016', 'd017', 'd018', 'd019', 'd020', 'd021', 'd022', 'd023', 'd024', 'd025', 'd026', 'd027', 'd028', 'd029', 'd030', 'd031', 'd032', 'd033', 'd034', 'd035', 'd036', 'd037', 'd038', 'd039', 'd040', 'd041', 'd042', 'd043', 'd044', 'd045', 'd046', 'd047', 'd048', 'd049', 'd050', 'd051', 'd052', 'd053', 'd054', 'd055', 'd056', 'd057', 'd058', 'd059', 'd060', 'd061', 'd062', 'f000000'] is too long">tmp_path = PosixPath('/workspace/scratch/939b84c043b0/999-materialization-temp/reference-pytest-final/test_actual_prefix_serializati0')
+
+    def test_actual_prefix_serialization_grows_quadratically_with_depth(tmp_path: Path) -&gt; None:
+        current = [
+&gt;           observe_planner(tmp_path / f"current-{depth}", members=4, depth=depth, trie=False)
+            for depth in (16, 32, 64)
+        ]
+
+.reference/implementation/test_materialization_experiment.py:120: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.reference/implementation/materialization_experiment.py:239: in observe_planner
+    rows = tuple(function(advice, rules=rules, state=state))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+packages/riverhog-materialization/src/riverhog_materialization/__init__.py:255: in plan_materialization_spooled
+    catalog.validate(_HINT_SCHEMA, member.materialization_hint)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;riverhog_provenance_contracts.schemas.ContractCatalog object at 0x7f18fa59d640&gt;
+schema_id = 'https://nashspence.github.io/riverhog/v1/provenance/materialization-hint.schema.json'
+value = {'components': ['d000', 'd001', 'd002', 'd003', 'd004', 'd005', ...]}
+
+    def validate(self, schema_id: str, value: Any) -&gt; None:
+        require_portable_json(value)
+        if schema_id not in self._validators:
+            raise ValueError(f"schema is not present in the sealed catalog: {schema_id}")
+        findings = sorted(self._validators[schema_id].iter_errors(value), key=lambda e: str(e.path))
+        if findings:
+            messages = [f"{list(e.absolute_path)}: {e.message}" for e in findings[:12]]
+&gt;           raise ValueError("schema validation failed:\n" + "\n".join(messages))
+E           ValueError: schema validation failed:
+E           ['components']: ['d000', 'd001', 'd002', 'd003', 'd004', 'd005', 'd006', 'd007', 'd008', 'd009', 'd010', 'd011', 'd012', 'd013', 'd014', 'd015', 'd016', 'd017', 'd018', 'd019', 'd020', 'd021', 'd022', 'd023', 'd024', 'd025', 'd026', 'd027', 'd028', 'd029', 'd030', 'd031', 'd032', 'd033', 'd034', 'd035', 'd036', 'd037', 'd038', 'd039', 'd040', 'd041', 'd042', 'd043', 'd044', 'd045', 'd046', 'd047', 'd048', 'd049', 'd050', 'd051', 'd052', 'd053', 'd054', 'd055', 'd056', 'd057', 'd058', 'd059', 'd060', 'd061', 'd062', 'f000000'] is too long
+
+packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/schemas.py:97: ValueError</failure></testcase><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_download_refuses_destination_created_during_transfer" time="0.003" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_download_lost_link_reply_leaves_exact_output" time="0.002" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_sdk_and_cli_have_distinct_directory_sync_boundaries" time="0.003" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_recovery_parent_sync_failure_preserves_published_tree" time="0.002" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_recovery_fixed_scratch_deletes_unowned_staging_before_input_validation" time="0.001" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_quarantine_can_remove_concurrent_replacement" time="0.005" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_complete_recovery_lost_reply_retains_all_selected_contents" time="13.242" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_mapping_failure_loses_constructed_sqlite_close_owner" time="6.692" /><testcase classname=".reference.implementation.test_materialization_experiment" name="test_actual_download_pool_stops_receiving_after_first_client_close_failure" time="0.019" /></testsuite></testsuites>

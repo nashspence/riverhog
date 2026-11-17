@@ -1,0 +1,3 @@
+.................                                                        [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/materialization_timing/pytest/reference-999-materialization-experiments/4104a995d03e46e89a309cd311613443/247e9e6ae2ac4213a68b068e7ebf459f
+17 passed in 20.18s

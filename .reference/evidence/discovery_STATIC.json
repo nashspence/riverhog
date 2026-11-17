@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        ".reference/implementation/discovery_experiment.py",
+        ".reference/implementation/test_discovery_experiment.py"
+      ],
+      "returncode": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        ".reference/implementation/discovery_experiment.py",
+        ".reference/implementation/test_discovery_experiment.py"
+      ],
+      "returncode": 0,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "sha256": {
+    ".reference/implementation/discovery_experiment.py": "4bbb86f3b66805879490e8f43642f2d543041c487d5dfc7e7777500ba9cb7a27",
+    ".reference/implementation/test_discovery_experiment.py": "7aab223f533b4512dda874cfa76fbc5ebe8d1ce1636e480ecdcb09dfa84846e6"
+  }
+}

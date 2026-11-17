@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "some-implementations/riverhog/storage/s3-support/tests/test_s3_dispatch_attempts.py::test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-part]",
+    "some-implementations/riverhog/storage/s3-support/tests/test_s3_dispatch_attempts.py::test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-complete]",
+    "--basetemp=/workspace/scratch/939b84c043b0/999-adapter-temp/pytest-baseline-junit-correction",
+    "--junitxml=.reference/evidence/adapter_baseline_junit_correction.xml"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-999",
+  "elapsed_ns": 2756680411,
+  "exit_code": 0,
+  "format": "riverhog-999-adapter-validation/v1",
+  "numeric_policy": {
+    "max_integer_bits": "84",
+    "max_work": "907920445364",
+    "profile": "qualification",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "proxy_variables_omitted": true,
+  "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+  "scope": "unchanged actual owners; local filesystem, controlled provider fixtures and loopback SDK; no live provider or full workflow qualification",
+  "source_commit": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "temp_root": "/workspace/scratch/939b84c043b0/999-adapter-temp",
+  "correction": "JUnit xunit1 supports maintained record_property fixture; only two previously blocked cases rerun"
+}

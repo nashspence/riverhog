@@ -1,0 +1,17 @@
+
+==================================== ERRORS ====================================
+____ ERROR collecting .reference/implementation/test_restore_experiment.py _____
+ImportError while importing test module '/workspace/scratch/939b84c043b0/riverhog-999/.reference/implementation/test_restore_experiment.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../toolchain/python/cpython-3.12.3-linux-x86_64-gnu/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.reference/implementation/test_restore_experiment.py:14: in <module>
+    from riverhog_core.catalog_db import read_snapshot
+E   ImportError: cannot import name 'read_snapshot' from 'riverhog_core.catalog_db' (/workspace/scratch/939b84c043b0/riverhog-999/riverhog/src/riverhog_core/catalog_db.py)
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/restore_timing/pytest/reference-999-restore-experiment/1fed504aef1b4fd99a7b546302ceb6a4/9d6e22a33f8d46a6acef20aaf912f898
+=========================== short test summary info ============================
+ERROR .reference/implementation/test_restore_experiment.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.35s

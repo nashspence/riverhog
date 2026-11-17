@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "--basetemp=/workspace/scratch/939b84c043b0/999-retrieval-baseline/pytest",
+    "--junitxml=/workspace/scratch/939b84c043b0/999-retrieval-baseline/results.xml",
+    "--durations=10",
+    "tests/unit/test_retrieval_service.py",
+    "tests/unit/test_retrieval_cache_coordinator.py",
+    "tests/unit/test_retrieval_cache_observation.py",
+    "tests/unit/test_retrieval_cache_write_execution.py",
+    "tests/unit/test_raw_retrieval.py",
+    "tests/unit/test_pack_retrieval.py",
+    "tests/unit/test_storage_adapter_retrieval_cache.py"
+  ],
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "source_clean_at_start": true,
+  "elapsed_ns_including_process": 736758708548,
+  "exit_code": 1,
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/999-retrieval-baseline",
+    "PYTHONPATH": "/workspace/scratch/939b84c043b0/riverhog-999",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/999-retrieval-baseline/timing",
+    "RIVERHOG_CI_LANE": "999-retrieval-baseline",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "scope": "Current retrieval/cache/range owners on audited source; fixture adapters; no proposed integration or live provider"
+}

@@ -1,0 +1,17 @@
+.............                                                            [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/999-discovery-baseline/timing/pytest/unit/3d17a558c08f4f9c8ecaac44f02a0c7b/bdebfd697a9e487e9e090da48bef70d8
+============================= slowest 13 durations =============================
+231.30s call     tests/unit/test_canonical_discovery_rebuild.py::test_archive_only_rebuild_retains_shared_roots_and_exact_member_scope
+4.97s setup    tests/unit/test_discovery_validation_owner.py::test_close_keeps_the_slot_and_lease_until_both_actual_handles_confirm[False-native]
+4.47s setup    tests/unit/test_canonical_discovery_metadata.py::test_stale_fence_rolls_back_actual_bounded_source_registration
+3.47s call     tests/unit/test_canonical_discovery_search.py::test_provenance_query_fails_explicitly_when_index_is_lost
+3.30s call     tests/unit/test_canonical_discovery_search.py::test_native_discovery_returns_exact_hint_support_and_fences_changed_reads
+3.23s call     tests/unit/test_canonical_discovery_index.py::test_complete_generation_requires_every_snapshot_row_and_has_content_identity
+3.10s call     tests/unit/test_canonical_discovery_search.py::test_provenance_matches_require_current_provenance_disclosure
+0.85s call     tests/unit/test_discovery_validation_owner.py::test_actual_native_input_progress_stays_warm_and_resumes_after_owner_replacement
+0.73s call     tests/unit/test_canonical_discovery_index.py::test_bounded_index_staging_retries_and_fences_late_workers
+0.52s call     tests/unit/test_discovery_validation_owner.py::test_close_keeps_the_slot_and_lease_until_both_actual_handles_confirm[True-native]
+0.51s call     tests/unit/test_discovery_validation_owner.py::test_close_keeps_the_slot_and_lease_until_both_actual_handles_confirm[True-core]
+0.50s call     tests/unit/test_discovery_validation_owner.py::test_close_keeps_the_slot_and_lease_until_both_actual_handles_confirm[False-core]
+0.48s call     tests/unit/test_discovery_validation_owner.py::test_close_keeps_the_slot_and_lease_until_both_actual_handles_confirm[False-native]
+13 passed in 267.24s (0:04:27)

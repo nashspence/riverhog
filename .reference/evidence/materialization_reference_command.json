@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/storage-999-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "--basetemp",
+    "/workspace/scratch/939b84c043b0/999-materialization-temp/reference-pytest-qualified",
+    "--junitxml",
+    "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/materialization_reference.xml",
+    ".reference/implementation/test_materialization_experiment.py"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-999",
+  "exit_code": 0,
+  "wall_seconds": 21.638115036003,
+  "numeric": {
+    "profile": "qualification",
+    "max_work": "907920445364",
+    "max_integer_bits": "84",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "scope": "actual source owners and parent-ID-trie proposal; recovery subprocess decrypt substituted by authenticated repository age stream; no installed-only, official-age, other-platform, or power-loss qualification",
+  "earlier_reference_runs": "Reference-only schema-bound fixtures and canonical tuple serialization were corrected; original failures retained with _initial/_second suffixes. Product code/baseline unchanged.",
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/999-materialization-temp",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/riverhog-999/.reference/evidence/materialization_timing",
+    "RIVERHOG_CI_LANE": "reference-999-materialization-experiments",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  }
+}

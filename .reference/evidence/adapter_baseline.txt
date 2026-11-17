@@ -1,0 +1,41 @@
+.........EE.......                                                       [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-part] _
+
+self = <scripts.ci_timing.PytestTiming object at 0x7f7e84425850>
+fixturedef = <FixtureDef argname='record_property' scope='function' baseid=''>
+request = <SubRequest 'record_property' for <Function test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-part]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(
+        self, fixturedef: pytest.FixtureDef[Any], request: pytest.FixtureRequest
+    ) -> Generator[None, Any, Any]:
+        started = time.monotonic()
+        try:
+>           return (yield)
+                    ^^^^^
+E           pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+
+scripts/ci_timing.py:109: PytestWarning
+_ ERROR at setup of test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-complete] _
+
+self = <scripts.ci_timing.PytestTiming object at 0x7f7e84425850>
+fixturedef = <FixtureDef argname='record_property' scope='function' baseid=''>
+request = <SubRequest 'record_property' for <Function test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-complete]>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(
+        self, fixturedef: pytest.FixtureDef[Any], request: pytest.FixtureRequest
+    ) -> Generator[None, Any, Any]:
+        started = time.monotonic()
+        try:
+>           return (yield)
+                    ^^^^^
+E           pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+
+scripts/ci_timing.py:109: PytestWarning
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/999-adapter-temp/timing-baseline/pytest/999-adapter-baseline/36b8049a58da4997a5836b0c6b4d8f92/fe0cdf4a86c04cc7a80f6267a3083017
+=========================== short test summary info ============================
+ERROR some-implementations/riverhog/storage/s3-support/tests/test_s3_dispatch_attempts.py::test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-part]
+ERROR some-implementations/riverhog/storage/s3-support/tests/test_s3_dispatch_attempts.py::test_s3_dispatch_does_not_replay_an_uncertain_mutation[lost-response-complete]
+16 passed, 2 errors in 36.28s

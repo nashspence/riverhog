@@ -1,0 +1,48 @@
+[
+  {
+    "command": [
+      "/workspace/scratch/939b84c043b0/storage-999-env/bin/ruff",
+      "check",
+      ".reference/implementation"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.029083686997182667,
+    "stdout": "All checks passed!\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/workspace/scratch/939b84c043b0/storage-999-env/bin/ruff",
+      "format",
+      "--check",
+      ".reference/implementation"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.008902405003027525,
+    "stdout": "9 files already formatted\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/workspace/scratch/939b84c043b0/storage-999-env/bin/mypy",
+      "--strict",
+      "--follow-imports=silent",
+      ".reference/implementation/restore_experiment.py",
+      ".reference/implementation/materialization_experiment.py"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 11.734075061998738,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "make",
+      "lint"
+    ],
+    "exit_code": 2,
+    "wall_seconds": 0.004826377997233067,
+    "stdout": "",
+    "stderr": "make: TMPDIR value /tmp: No such file or directory\nmake: using default temporary directory '/tmp'\nRiverhog Makefile targets require mise on PATH, or MISE_BIN=/abs/path/to/mise.\nInstall mise or pass MISE_BIN explicitly, then rerun make.\nmake: *** [Makefile:64: lint] Error 127\n"
+  }
+]

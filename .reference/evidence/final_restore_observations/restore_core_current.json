@@ -1,0 +1,10 @@
+{
+  "allowance_released_despite_surviving_job": true,
+  "catalog_job_survived_lost_commit_reply": true,
+  "original_job_reused_without_second_reservation": true,
+  "scope": "actual Core/SQLite/archive fixture; no concurrent process or live provider claim",
+  "sequential_unreceived_claim_actions": [
+    "prepare",
+    "prepare"
+  ]
+}

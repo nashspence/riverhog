@@ -1,0 +1,95 @@
+{
+  "format": "riverhog-999-adapter-experiment/v1",
+  "source_commit": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "scope": "real Core owners; controlled provider fixtures; no live provider or fsync trace",
+  "timing_scope": "copy process_due only; excludes fixture construction and evidence queries",
+  "pairs": [
+    {
+      "archive_parts": 16,
+      "archive_objects": 20,
+      "stored_bytes": 105358,
+      "exact_evidence_equal": true,
+      "evidence_sha256": "b873b2532d1a5504bd748f9f0131850a51afc89969d66b103f66bd47f3722df1",
+      "arms": {
+        "current": {
+          "elapsed_ns": 135117379,
+          "sql": {
+            "statements": 152,
+            "mutations": 38,
+            "progress_updates": 4,
+            "commits": 75,
+            "rollbacks": 0
+          },
+          "progress_calls": 4,
+          "progress_elapsed_ns": 7085435,
+          "source_object_reads": 20,
+          "segment_calls": 16,
+          "provider_sessions_created": 1
+        },
+        "volatile": {
+          "elapsed_ns": 119538258,
+          "sql": {
+            "statements": 150,
+            "mutations": 34,
+            "progress_updates": 0,
+            "commits": 71,
+            "rollbacks": 3
+          },
+          "progress_calls": 3,
+          "progress_elapsed_ns": 2998481,
+          "source_object_reads": 20,
+          "segment_calls": 16,
+          "provider_sessions_created": 1
+        }
+      }
+    },
+    {
+      "archive_parts": 64,
+      "archive_objects": 20,
+      "stored_bytes": 105358,
+      "exact_evidence_equal": true,
+      "evidence_sha256": "57c8d970bc7a8848dfd2d505e0076cee34671dd1cc96103762f186885a4ca48e",
+      "arms": {
+        "current": {
+          "elapsed_ns": 353938482,
+          "sql": {
+            "statements": 160,
+            "mutations": 42,
+            "progress_updates": 8,
+            "commits": 79,
+            "rollbacks": 0
+          },
+          "progress_calls": 8,
+          "progress_elapsed_ns": 12118410,
+          "source_object_reads": 20,
+          "segment_calls": 64,
+          "provider_sessions_created": 1
+        },
+        "volatile": {
+          "elapsed_ns": 132280623,
+          "sql": {
+            "statements": 168,
+            "mutations": 34,
+            "progress_updates": 0,
+            "commits": 71,
+            "rollbacks": 12
+          },
+          "progress_calls": 12,
+          "progress_elapsed_ns": 7594586,
+          "source_object_reads": 20,
+          "segment_calls": 64,
+          "provider_sessions_created": 1
+        }
+      }
+    }
+  ],
+  "s3_current_traversal": {
+    "parts": 2050,
+    "public_page_maximum": 128,
+    "public_pages": 17,
+    "provider_list_parts_calls": 51,
+    "provider_metadata_rows": 34850,
+    "elapsed_ns": 347802611
+  },
+  "experiment_sha256": "6c83021e0a240e6a806830b424292efa76342954235d4de484a38ebdd52b86bf"
+}
