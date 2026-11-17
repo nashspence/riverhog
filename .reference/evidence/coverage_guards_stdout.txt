@@ -1,0 +1,3 @@
+...........                                                         [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/1000-coverage-guards-01/timing/pytest/unit/d68a781ffbda43e19629eeb23c4141b5/98bb6b562e8f45eca531f9edd3eb0cb1
+11 passed, 5 subtests passed in 0.05s

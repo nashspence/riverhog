@@ -1,0 +1,58 @@
+{
+  "scope": "scoped external reference checks; not maintained make lint",
+  "inputs": {
+    ".reference/implementation/discovery_probe.py": "ca8ec603682b844a5a10caf42748e0c40843d01f703047d0865b30375bc87d43",
+    ".reference/implementation/measurement_comparison.py": "3203886fa0e73b89de1671d91125aefaf0c61b0dd28383b00bc94baa751fe817",
+    ".reference/implementation/run_reference_checks.py": "0f6756b96445f6b5dc1376c783d2831d0aa50ab882469a9c38be3025d04e4fac",
+    ".reference/implementation/safety_evidence.py": "cb4cf26791b0a601e7593c7eae680e715e6311dae4171474240c22bcd12faccd",
+    ".reference/implementation/test_discovery_probe.py": "7c802353ef3d3e566b74103b95ab9a242a744fd75e9404780a7a5ace5ac7816e",
+    ".reference/implementation/test_measurement_comparison.py": "da23fb584bfc192b0df7f93ef37335bc1a15096356a7b31915c3376b89dd7e53",
+    ".reference/implementation/test_safety_evidence.py": "cb1e01ff2a05713b09aedfcd75f179ffa7e9cb7b272a1175a0c2fb2237c5bb0a"
+  },
+  "checks": [
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        ".reference/implementation"
+      ],
+      "exit_status": 0,
+      "elapsed_seconds": 0.04875723699660739,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        ".reference/implementation"
+      ],
+      "exit_status": 1,
+      "elapsed_seconds": 0.07001470599789172,
+      "stdout": "unformatted: File would be reformatted\n   --> .reference/implementation/run_reference_checks.py:1:1\n    |\n133 |     raise SystemExit(main())\n    -\n    |\n\n1 file would be reformatted, 6 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+        "-m",
+        "mypy",
+        "--strict",
+        "--follow-imports=silent",
+        ".reference/implementation/discovery_probe.py",
+        ".reference/implementation/measurement_comparison.py",
+        ".reference/implementation/safety_evidence.py",
+        ".reference/implementation/run_reference_checks.py"
+      ],
+      "exit_status": 1,
+      "elapsed_seconds": 0.5904416419944027,
+      "stdout": ".reference/implementation/discovery_probe.py:155: error: Cannot find implementation or library stub for module named \"contract_discovery\"  [import-not-found]\n.reference/implementation/discovery_probe.py:155: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports\n.reference/implementation/discovery_probe.py:156: error: Cannot find implementation or library stub for module named \"contract_freeze\"  [import-not-found]\n.reference/implementation/discovery_probe.py:157: error: Cannot find implementation or library stub for module named \"operation_qualification\"  [import-not-found]\n.reference/implementation/discovery_probe.py:158: error: Cannot find implementation or library stub for module named \"release\"  [import-not-found]\n.reference/implementation/discovery_probe.py:159: error: Cannot find implementation or library stub for module named \"state_contract\"  [import-not-found]\n.reference/implementation/discovery_probe.py:242: error: Module \"scripts.ci_qualification\" does not explicitly export attribute \"CI_SHARDS\"  [attr-defined]\n",
+      "stderr": ""
+    }
+  ]
+}

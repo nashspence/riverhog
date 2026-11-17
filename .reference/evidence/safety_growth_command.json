@@ -1,0 +1,33 @@
+{
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-1000",
+  "argv": [
+    "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+    "-m",
+    "scripts.ci_timing",
+    "run",
+    "--lane",
+    "reference-1000-growth",
+    "--output",
+    "/workspace/scratch/939b84c043b0/1000-safety-evidence/safety_growth_timing.json",
+    "--",
+    "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "packages/riverhog-provenance/tests/test_retained_corpus_growth.py::test_owner_checkpoint_work_does_not_scan_retained_inputs",
+    "tests/unit/test_physical_workspace_execution_growth.py::test_measured_workspace_submission",
+    "tests/unit/test_physical_workspace_execution_growth.py::test_measured_workspace_receiving",
+    "--basetemp",
+    "/workspace/scratch/939b84c043b0/1000-safety-temp/growth",
+    "--junitxml",
+    "/workspace/scratch/939b84c043b0/1000-safety-evidence/safety_growth_junit.xml"
+  ],
+  "numeric": {
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  }
+}

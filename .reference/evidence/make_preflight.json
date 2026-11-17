@@ -1,0 +1,28 @@
+{
+  "observed_at_utc": "2026-11-17T04:31:27.934880+00:00",
+  "results": [
+    {
+      "command": [
+        "make",
+        "lint"
+      ],
+      "exit_status": 2,
+      "elapsed_seconds": 0.0038126689978525974,
+      "stdout": "",
+      "stderr": "make: TMPDIR value /tmp: No such file or directory\nmake: using default temporary directory '/tmp'\nRiverhog Makefile targets require mise on PATH, or MISE_BIN=/abs/path/to/mise.\nInstall mise or pass MISE_BIN explicitly, then rerun make.\nmake: *** [Makefile:64: lint] Error 127\n",
+      "scope": "maintained wrapper preflight; no underlying workload executed"
+    },
+    {
+      "command": [
+        "make",
+        "profile",
+        "args=--scenario collection-publication --publication-workload /workspace/scratch/939b84c043b0/1000-measurements-temp/measurements_f1_workload.json --output /workspace/scratch/939b84c043b0/1000-measurements-temp/f1-profile"
+      ],
+      "exit_status": 2,
+      "elapsed_seconds": 0.0037379650020739064,
+      "stdout": "",
+      "stderr": "make: TMPDIR value /tmp: No such file or directory\nmake: using default temporary directory '/tmp'\nRiverhog Makefile targets require mise on PATH, or MISE_BIN=/abs/path/to/mise.\nInstall mise or pass MISE_BIN explicitly, then rerun make.\nmake: *** [Makefile:64: profile] Error 127\n",
+      "scope": "maintained wrapper preflight; no underlying workload executed"
+    }
+  ]
+}

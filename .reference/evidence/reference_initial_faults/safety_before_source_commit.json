@@ -1,0 +1,42 @@
+{
+  "child_returncode": -9,
+  "cold_resume_and_receive_elapsed_ns": 369069111,
+  "completion_advance_calls": 107,
+  "cut": "before_source_commit",
+  "evidence_class": "actual-posix-process-kill-current-native-owner",
+  "kill_and_receive_elapsed_ns": 1129660557,
+  "original_child_reaped": true,
+  "original_parent_constructions_received": true,
+  "result_sha256": "8f0f1ef904dad199b519dc6efc55b204e63525f1d900c4eb6d97d7cba3f046a4",
+  "resumed_source_cursor": 0,
+  "scope_excludes": [
+    "adaptive-cutover",
+    "os-crash",
+    "power-loss",
+    "Windows",
+    "provider-effects"
+  ],
+  "signal": "SIGKILL",
+  "source_bytes": 4913,
+  "source_calls_after_reopen": [
+    [
+      "window",
+      0,
+      4913
+    ],
+    [
+      "exact",
+      1,
+      4911
+    ]
+  ],
+  "source_calls_before_kill": [
+    [
+      "window",
+      0,
+      7
+    ]
+  ],
+  "source_sha256": "1941da26774ae8836d74518337b656ac1332531601e4ce7eb9eb99df88945c95",
+  "workspace": "/workspace/scratch/939b84c043b0/1000-reference-0_kkoqqc/pytest/test_actual_child_kill_preserv0/before_source_commit"
+}

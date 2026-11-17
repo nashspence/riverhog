@@ -1,0 +1,64 @@
+{
+  "format": "riverhog-external-reference-check/v1",
+  "scope": "Reference witnesses, not full product/cutover qualification",
+  "command": [
+    "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "--durations=10",
+    "--basetemp",
+    "/workspace/scratch/939b84c043b0/1000-reference-r8db3h94/pytest",
+    "--junitxml",
+    "/workspace/scratch/939b84c043b0/1000-reference-r8db3h94/evidence/reference_final.xml",
+    ".reference/implementation"
+  ],
+  "source_before": {
+    "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+    "source_clean": false
+  },
+  "source_after": {
+    "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+    "source_clean": false
+  },
+  "inputs_before": {
+    ".reference/implementation/discovery_probe.py": "6f92551ff208d0c809ebdef99c918feaa1f77431264b06a3fe20dc54d37bfd90",
+    ".reference/implementation/measurement_comparison.py": "3203886fa0e73b89de1671d91125aefaf0c61b0dd28383b00bc94baa751fe817",
+    ".reference/implementation/run_reference_checks.py": "924d8cfc1c957942a1b94fc95dc9badee7e2b5b7d42e9ef9fba0eead3a099b72",
+    ".reference/implementation/safety_evidence.py": "cb4cf26791b0a601e7593c7eae680e715e6311dae4171474240c22bcd12faccd",
+    ".reference/implementation/test_discovery_probe.py": "7c802353ef3d3e566b74103b95ab9a242a744fd75e9404780a7a5ace5ac7816e",
+    ".reference/implementation/test_measurement_comparison.py": "da23fb584bfc192b0df7f93ef37335bc1a15096356a7b31915c3376b89dd7e53",
+    ".reference/implementation/test_safety_evidence.py": "cb1e01ff2a05713b09aedfcd75f179ffa7e9cb7b272a1175a0c2fb2237c5bb0a"
+  },
+  "inputs_after": {
+    ".reference/implementation/discovery_probe.py": "6f92551ff208d0c809ebdef99c918feaa1f77431264b06a3fe20dc54d37bfd90",
+    ".reference/implementation/measurement_comparison.py": "3203886fa0e73b89de1671d91125aefaf0c61b0dd28383b00bc94baa751fe817",
+    ".reference/implementation/run_reference_checks.py": "924d8cfc1c957942a1b94fc95dc9badee7e2b5b7d42e9ef9fba0eead3a099b72",
+    ".reference/implementation/safety_evidence.py": "cb4cf26791b0a601e7593c7eae680e715e6311dae4171474240c22bcd12faccd",
+    ".reference/implementation/test_discovery_probe.py": "7c802353ef3d3e566b74103b95ab9a242a744fd75e9404780a7a5ace5ac7816e",
+    ".reference/implementation/test_measurement_comparison.py": "da23fb584bfc192b0df7f93ef37335bc1a15096356a7b31915c3376b89dd7e53",
+    ".reference/implementation/test_safety_evidence.py": "cb1e01ff2a05713b09aedfcd75f179ffa7e9cb7b272a1175a0c2fb2237c5bb0a"
+  },
+  "numeric_policy": {
+    "profile": "qualification",
+    "max_work": "907920445364",
+    "max_integer_bits": "84",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "started_at": "2026-11-17T04:37:18.592034+00:00",
+  "finished_at": "2026-11-17T04:37:24.066247+00:00",
+  "elapsed_seconds": 5.454513460004819,
+  "exit_status": 0,
+  "temporary_directory": "/workspace/scratch/939b84c043b0/1000-reference-r8db3h94",
+  "environment_overrides": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/1000-reference-r8db3h94",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/1000-reference-r8db3h94/timing",
+    "RIVERHOG_REFERENCE_SAFETY_OUTPUT": "/workspace/scratch/939b84c043b0/1000-reference-r8db3h94/faults",
+    "NO_PROXY": "*",
+    "no_proxy": "*"
+  }
+}

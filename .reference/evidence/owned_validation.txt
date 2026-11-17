@@ -1,0 +1,18 @@
+........................................................................ [ 35%]
+........................................................................ [ 71%]
+.........................................................                [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/1000-owned-checks/timing/pytest/unit/a30249d903894bcbb8aeccf1a0a4b6b9/fe844097af9a4f9b8b67a280d337ee7f
+============================= slowest 12 durations =============================
+35.47s call     tests/unit/test_ci_actions.py::test_ci_partition_growth_coverage_cannot_omit_or_repeat_required_work[duplicate]
+34.88s call     tests/unit/test_ci_actions.py::test_ci_partition_growth_coverage_cannot_omit_or_repeat_required_work[missing]
+3.98s setup    tests/unit/test_qualification_source.py::test_observer_binds_the_executed_checkout_even_if_cleaned_before_report[clean]
+0.83s setup    tests/unit/test_validation_witnesses.py::test_every_actual_parametrized_case_supplies_declared_evidence[xdist]
+0.71s setup    tests/unit/test_ci_make.py::test_parallel_make_observation_records_real_work_once_and_actual_wall_time
+0.70s call     tests/unit/test_validation_witnesses.py::test_numeric_receipt_survives_equivalent_metadata_json_representations
+0.66s call     tests/unit/test_qualification_source.py::test_producer_rechecks_source_after_observation_and_report_construction[during_report]
+0.63s call     tests/unit/test_qualification_source.py::test_observer_binds_the_executed_checkout_even_if_cleaned_before_report[during]
+0.62s call     tests/unit/test_ci_make.py::test_actual_make_cancellation_joins_owned_recipe_cleanup[15]
+0.62s call     tests/unit/test_qualification_source.py::test_observer_binds_the_executed_checkout_even_if_cleaned_before_report[clean]
+0.61s call     tests/unit/test_qualification_source.py::test_producer_rechecks_source_after_observation_and_report_construction[untracked]
+0.60s call     tests/unit/test_qualification_source.py::test_observer_binds_the_executed_checkout_even_if_cleaned_before_report[restored]
+201 passed in 93.08s (0:01:33)

@@ -1,0 +1,48 @@
+{
+  "arguments": [
+    "--scenario",
+    "collection-publication",
+    "--publication-workload",
+    "/workspace/scratch/939b84c043b0/1000-measurements-temp/measurements_f1_workload.json",
+    "--output",
+    "/workspace/scratch/939b84c043b0/1000-measurements-temp/f1-profile"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-1000",
+  "exit_status": 0,
+  "format": "riverhog-reference-measurement-run/v1",
+  "loaded_sources": {
+    "riverhog_core": "/workspace/scratch/939b84c043b0/riverhog-1000/riverhog/src/riverhog_core/__init__.py",
+    "riverhog_provenance": "/workspace/scratch/939b84c043b0/riverhog-1000/packages/riverhog-provenance/src/riverhog_provenance/__init__.py",
+    "scripts.transfer_profile": "/workspace/scratch/939b84c043b0/riverhog-1000/scripts/transfer_profile.py"
+  },
+  "lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+  "numeric_policy": {
+    "max_integer_bits": "84",
+    "max_work": "907920445364",
+    "profile": "qualification",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "original_parent_returned": true,
+  "outer_elapsed_ns": 65059421626,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+  "python_executable": "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+  "scope": "one direct unchanged maintained collection-publication producer; not make wrapper qualification",
+  "source_after": {
+    "source_clean": true,
+    "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa"
+  },
+  "source_before": {
+    "source_clean": true,
+    "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa"
+  },
+  "source_files": {
+    "scripts/performance_measurement.py": "e7c57a1c11cc11b936afb2449071ebef9d528be2b45b27262ad9b5bbdac3a78b",
+    "scripts/transfer_profile.py": "540b34088706a63e8acd5660f23627b8a4b99e5fd6c2e6b3fb3a98ff474b15c3",
+    "scripts/validation_process.py": "93eb45cb32341ff14ec6375d201d867fcad3c680aef8a17952c429b5f161660d",
+    "tests/support/qualification/publication_geometry.py": "e0eaaec18e02b5f97409125072aee3f280aa3e0873df23986c1349d84d626a5b",
+    "tests/support/qualification/publication_profile.py": "8d893cfbb319e10683d7de142a7cac85f713f305fb12e2281b349657449a4da4"
+  },
+  "tmpdir": "/workspace/scratch/939b84c043b0/1000-measurements-temp",
+  "workload_sha256": "66a85c8286e2514a40fb79003ae37bdc521fd881ba5becb51a1e2a459e7e8678"
+}

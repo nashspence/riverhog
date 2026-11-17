@@ -1,0 +1,56 @@
+{
+  "checkout": "/workspace/scratch/939b84c043b0/riverhog-1000",
+  "claim": "current product c28 plus separate uncommitted reference witness; not clean product, installed, native-platform, backend-crash or aggregate qualification",
+  "executable": "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+  "import_paths": {
+    "retained_resource": "/workspace/scratch/939b84c043b0/riverhog-1000/packages/retained-resource/src/retained_resource/__init__.py",
+    "riverhog_core": "/workspace/scratch/939b84c043b0/riverhog-1000/riverhog/src/riverhog_core/__init__.py",
+    "riverhog_provenance": "/workspace/scratch/939b84c043b0/riverhog-1000/packages/riverhog-provenance/src/riverhog_provenance/__init__.py",
+    "sqlite_admission": "/workspace/scratch/939b84c043b0/riverhog-1000/packages/sqlite-admission/src/sqlite_admission/__init__.py"
+  },
+  "numeric_policy": {
+    "max_integer_bits": "84",
+    "max_work": "907920445364",
+    "profile": "qualification",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "observed_static_checks": [
+    {
+      "argv": [
+        "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        ".reference/implementation/safety_evidence.py",
+        ".reference/implementation/test_safety_evidence.py"
+      ],
+      "exit_status": 0
+    },
+    {
+      "argv": [
+        "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+        "-m",
+        "mypy",
+        "--strict",
+        "--follow-imports=silent",
+        ".reference/implementation/safety_evidence.py"
+      ],
+      "exit_status": 0
+    }
+  ],
+  "original_raw_root": "/workspace/scratch/939b84c043b0/1000-safety-evidence",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "product_diff": [],
+  "product_source": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+  "source_sha256": {
+    ".reference/implementation/safety_evidence.py": "cb4cf26791b0a601e7593c7eae680e715e6311dae4171474240c22bcd12faccd",
+    ".reference/implementation/test_safety_evidence.py": "cb1e01ff2a05713b09aedfcd75f179ffa7e9cb7b272a1175a0c2fb2237c5bb0a",
+    "packages/riverhog-provenance/src/riverhog_provenance/_session_checkpoint.py": "432c9b2d53ed77e078a937cba3849dd8afd89a8d0dc82ed60ebc85986e01a0f0",
+    "packages/riverhog-provenance/src/riverhog_provenance/_session_input.py": "0ea38752bef273c4dabfc70559a91298ea68560d14a3e3b90482098ee3873228",
+    "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+    "tests/support/native_construction.py": "b09812842f7b1b486a1657a101e153a4ca6ec28c3a813b3cd2431b156af8ab0a"
+  },
+  "sqlite": "3.45.1",
+  "temporary_root": "/workspace/scratch/939b84c043b0/1000-safety-temp"
+}

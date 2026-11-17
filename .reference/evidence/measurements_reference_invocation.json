@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+    "-m",
+    "pytest",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    ".reference/implementation/test_measurement_comparison.py",
+    "--basetemp",
+    "/workspace/scratch/939b84c043b0/1000-measurements-temp/pytest-reference-final",
+    "--junitxml",
+    "/workspace/scratch/939b84c043b0/riverhog-1000/.reference/evidence/measurements_reference_junit.xml",
+    "-q"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-1000",
+  "elapsed_ns": 1372882118,
+  "exit_status": 0,
+  "format": "riverhog-reference-focused-test-run/v1",
+  "numeric_policy": {
+    "max_integer_bits": "84",
+    "max_work": "907920445364",
+    "profile": "qualification",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "original_child_received": true,
+  "scope": "final narrow receiving after strict type correction; do not add prior same-case run to this count",
+  "source_after": {
+    "source_clean": false,
+    "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa"
+  },
+  "source_before": {
+    "source_clean": false,
+    "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa"
+  },
+  "source_files": {
+    ".reference/implementation/measurement_comparison.py": "3203886fa0e73b89de1671d91125aefaf0c61b0dd28383b00bc94baa751fe817",
+    ".reference/implementation/test_measurement_comparison.py": "da23fb584bfc192b0df7f93ef37335bc1a15096356a7b31915c3376b89dd7e53"
+  },
+  "timing_root": "/workspace/scratch/939b84c043b0/1000-measurements-temp/reference-final-timing",
+  "tmpdir": "/workspace/scratch/939b84c043b0/1000-measurements-temp"
+}

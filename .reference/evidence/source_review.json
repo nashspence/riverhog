@@ -1,0 +1,32 @@
+{
+  "format": "riverhog-external-reference-source-review/v1",
+  "audited_ref": "codex/964-session-owner",
+  "audited_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "audited_tree": "044a0e1e3eecf0b4183836017269fc208b6603d2",
+  "main_inspected_sha": "209481c189f7387557a85e1c249184642816e103",
+  "main_tests_claimed": false,
+  "issues": [
+    {
+      "number": 1000,
+      "url": "https://github.com/nashspence/riverhog/issues/1000",
+      "updated_at": "2026-11-16T16:04:18Z",
+      "state": "open",
+      "body_sha256": "a08b434c53f5ac99a9a09639aadae8680255b86adca8aad79913c7d3eb14c713",
+      "body_unchanged_since_initial_audit": true
+    },
+    {
+      "number": 994,
+      "url": "https://github.com/nashspence/riverhog/issues/994",
+      "updated_at": "2026-11-16T17:23:57Z",
+      "state": "open",
+      "body_sha256": "ca9a8948bb7101766e8271c68f9b4ad0869dcd4ba0e6e5f0acf22240b58dd63c",
+      "body_unchanged_since_initial_audit": true
+    }
+  ],
+  "parent_comment_ids": [
+    6921730895
+  ],
+  "owning_issue_comments_before_publication": 0,
+  "existing_1000_reference_branches": [],
+  "scope": "Read-only final source and decision refresh. Exact published reference identity is subsequently recorded in owning issue #1000."
+}

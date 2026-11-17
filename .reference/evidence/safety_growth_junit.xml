@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="3" failures="0" skipped="0" tests="3" time="3.774" timestamp="2026-11-16T20:29:08.484819-08:00" hostname="7f0b24832328"><testcase classname="packages.riverhog-provenance.tests.test_retained_corpus_growth" name="test_owner_checkpoint_work_does_not_scan_retained_inputs" time="0.175"><error message="failed on setup with &quot;pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')&quot;">self = &lt;scripts.ci_timing.PytestTiming object at 0x7f16db177ec0&gt;
+fixturedef = &lt;FixtureDef argname='record_property' scope='function' baseid=''&gt;
+request = &lt;SubRequest 'record_property' for &lt;Function test_owner_checkpoint_work_does_not_scan_retained_inputs&gt;&gt;
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(
+        self, fixturedef: pytest.FixtureDef[Any], request: pytest.FixtureRequest
+    ) -&gt; Generator[None, Any, Any]:
+        started = time.monotonic()
+        try:
+&gt;           return (yield)
+                    ^^^^^
+E           pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+
+scripts/ci_timing.py:109: PytestWarning</error></testcase><testcase classname="tests.unit.test_physical_workspace_execution_growth" name="test_measured_workspace_submission" time="0.013"><error message="failed on setup with &quot;pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')&quot;">self = &lt;scripts.ci_timing.PytestTiming object at 0x7f16db177ec0&gt;
+fixturedef = &lt;FixtureDef argname='record_property' scope='function' baseid=''&gt;
+request = &lt;SubRequest 'record_property' for &lt;Function test_measured_workspace_submission&gt;&gt;
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(
+        self, fixturedef: pytest.FixtureDef[Any], request: pytest.FixtureRequest
+    ) -&gt; Generator[None, Any, Any]:
+        started = time.monotonic()
+        try:
+&gt;           return (yield)
+                    ^^^^^
+E           pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+
+scripts/ci_timing.py:109: PytestWarning</error></testcase><testcase classname="tests.unit.test_physical_workspace_execution_growth" name="test_measured_workspace_receiving" time="0.002"><error message="failed on setup with &quot;pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')&quot;">self = &lt;scripts.ci_timing.PytestTiming object at 0x7f16db177ec0&gt;
+fixturedef = &lt;FixtureDef argname='record_property' scope='function' baseid=''&gt;
+request = &lt;SubRequest 'record_property' for &lt;Function test_measured_workspace_receiving&gt;&gt;
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(
+        self, fixturedef: pytest.FixtureDef[Any], request: pytest.FixtureRequest
+    ) -&gt; Generator[None, Any, Any]:
+        started = time.monotonic()
+        try:
+&gt;           return (yield)
+                    ^^^^^
+E           pytest.PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+
+scripts/ci_timing.py:109: PytestWarning</error></testcase></testsuite></testsuites>

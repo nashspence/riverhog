@@ -1,0 +1,70 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "--junitxml=/workspace/scratch/939b84c043b0/1000-coverage-guards-02/coverage_guards_final.xml",
+    "--basetemp=/workspace/scratch/939b84c043b0/1000-coverage-guards-02/tmp",
+    ".reference/implementation/test_discovery_probe.py"
+  ],
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "source_before": {
+    "head": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+    "tree": "044a0e1e3eecf0b4183836017269fc208b6603d2",
+    "status": "?? .reference/",
+    "tracked_input_snapshot": {
+      "files": 2564,
+      "sha256": "d97668b98f8481c1132a184aff3e28adf4b231b57736598754d17225722a3a5f"
+    }
+  },
+  "inputs_before": {
+    ".reference/implementation/discovery_probe.py": "6f92551ff208d0c809ebdef99c918feaa1f77431264b06a3fe20dc54d37bfd90",
+    ".reference/implementation/test_discovery_probe.py": "7c802353ef3d3e566b74103b95ab9a242a744fd75e9404780a7a5ace5ac7816e"
+  },
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "numeric_policy": {
+    "profile": "qualification",
+    "max_work": "907920445364",
+    "max_integer_bits": "84",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "scope": "Final reference helper source/evidence guards after qualified scripts-owner imports; mocked Git boundaries and isolated files; no full discovery or product workload rerun.",
+  "import_smoke": {
+    "scripts.ci_qualification": "/workspace/scratch/939b84c043b0/riverhog-1000/scripts/ci_qualification.py",
+    "scripts.contract_discovery": "/workspace/scratch/939b84c043b0/riverhog-1000/scripts/contract_discovery.py",
+    "scripts.contract_freeze": "/workspace/scratch/939b84c043b0/riverhog-1000/scripts/contract_freeze.py",
+    "scripts.growth_contract": "/workspace/scratch/939b84c043b0/riverhog-1000/scripts/growth_contract.py",
+    "scripts.operation_qualification": "/workspace/scratch/939b84c043b0/riverhog-1000/scripts/operation_qualification.py",
+    "scripts.release": "/workspace/scratch/939b84c043b0/riverhog-1000/scripts/release.py",
+    "scripts.state_contract": "/workspace/scratch/939b84c043b0/riverhog-1000/scripts/state_contract.py"
+  },
+  "unit_shards": [
+    "release",
+    "contract",
+    "unit-1",
+    "unit-2",
+    "unit-3",
+    "unit-4"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 1.189116371999262,
+  "inputs_after": {
+    ".reference/implementation/discovery_probe.py": "6f92551ff208d0c809ebdef99c918feaa1f77431264b06a3fe20dc54d37bfd90",
+    ".reference/implementation/test_discovery_probe.py": "7c802353ef3d3e566b74103b95ab9a242a744fd75e9404780a7a5ace5ac7816e"
+  },
+  "source_after": {
+    "head": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+    "tree": "044a0e1e3eecf0b4183836017269fc208b6603d2",
+    "status": "?? .reference/",
+    "tracked_input_snapshot": {
+      "files": 2564,
+      "sha256": "d97668b98f8481c1132a184aff3e28adf4b231b57736598754d17225722a3a5f"
+    }
+  }
+}

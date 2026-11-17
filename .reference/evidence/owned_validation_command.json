@@ -1,0 +1,85 @@
+{
+  "format": "riverhog-external-reference-check/v1",
+  "scope": "Focused unchanged qualification/evidence consumer tests; not whole product or cutover qualification",
+  "command": [
+    "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "--durations=12",
+    "--basetemp",
+    "/workspace/scratch/939b84c043b0/1000-owned-2z9ypug0/pytest",
+    "--junitxml",
+    "/workspace/scratch/939b84c043b0/1000-owned-checks/owned.xml",
+    "tests/unit/test_validation_evidence.py",
+    "tests/unit/test_validation_witnesses.py",
+    "tests/unit/test_validation_process.py",
+    "tests/unit/test_qualification_source.py",
+    "tests/unit/test_ci_actions.py::test_ci_consumer_requires_the_qualified_owner_and_its_descendants",
+    "tests/unit/test_ci_actions.py::test_consumer_uses_bound_real_execution_and_never_repeats_it",
+    "tests/unit/test_ci_actions.py::test_missing_stale_forged_or_duplicate_artifacts_fail",
+    "tests/unit/test_ci_actions.py::test_native_work_cannot_be_qualified_under_another_platform",
+    "tests/unit/test_ci_actions.py::test_partial_retry_consumes_the_original_completed_receipt_without_reexecution",
+    "tests/unit/test_ci_actions.py::test_retry_does_not_reuse_an_old_success_when_the_new_execution_failed",
+    "tests/unit/test_ci_actions.py::test_current_attempt_must_agree_with_complete_execution_history",
+    "tests/unit/test_ci_actions.py::test_ci_partition_growth_coverage_cannot_omit_or_repeat_required_work",
+    "tests/unit/test_ci_make.py::test_parallel_make_observation_records_real_work_once_and_actual_wall_time",
+    "tests/unit/test_ci_make.py::test_actual_make_cancellation_joins_owned_recipe_cleanup",
+    "tests/unit/test_ci_make.py::test_completed_child_collects_only_owned_spans_while_parent_and_sibling_run",
+    "tests/unit/test_ci_make.py::test_reachable_descendant_still_requires_complete_exact_source",
+    "tests/unit/test_ci_make.py::test_parent_cannot_consume_a_still_running_descendant",
+    "tests/unit/test_ci_make.py::test_exhausted_storage_does_not_discard_active_or_incomplete_attempts",
+    "tests/unit/test_ci_timing.py::test_source_identity_binds_the_requested_checkout_and_observes_its_drift",
+    "tests/unit/test_ci_timing.py::test_source_identity_excludes_an_enclosing_checkout_even_when_its_head_changes",
+    "tests/unit/test_validation_timing_policy.py::test_required_execution_rejects_unrecorded_scope_reduction"
+  ],
+  "source_before": {
+    "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+    "source_clean": false
+  },
+  "source_after": {
+    "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+    "source_clean": false
+  },
+  "inputs_before": {
+    "tests/unit/test_ci_actions.py": "a8d0be3e0b276bc604f51207fc48321c24808bc211357cdf4c3c400ce2985274",
+    "tests/unit/test_ci_make.py": "bdd31f7de5edb5c2d1c54e945b49e060c207cff84b9f3c282c8797d1b5a005b9",
+    "tests/unit/test_ci_timing.py": "7298949e50d4561457455ca6fdbb57b462473870f4314bd3311a62617b715cfc",
+    "tests/unit/test_qualification_source.py": "308ff294c78ea0f7d440c1d813dc535199d2ae33743d8c36c1add076732a7d89",
+    "tests/unit/test_validation_evidence.py": "2e0be9891900ac169d626380e15c97389f1dc7e041b641ba6509879ee8a635d7",
+    "tests/unit/test_validation_process.py": "51225c05cc4e0b0d1a1ba13404c5e1077027d52dab4b2577dc72b4a50956b163",
+    "tests/unit/test_validation_timing_policy.py": "0f63c26a74c56662480d50d0b1761076438a492e7ac3385232b7032ad232b041",
+    "tests/unit/test_validation_witnesses.py": "374022322b8b23200bf7a80b5f25d013ab9aa09dd253df031ebaa3605694a395"
+  },
+  "inputs_after": {
+    "tests/unit/test_ci_actions.py": "a8d0be3e0b276bc604f51207fc48321c24808bc211357cdf4c3c400ce2985274",
+    "tests/unit/test_ci_make.py": "bdd31f7de5edb5c2d1c54e945b49e060c207cff84b9f3c282c8797d1b5a005b9",
+    "tests/unit/test_ci_timing.py": "7298949e50d4561457455ca6fdbb57b462473870f4314bd3311a62617b715cfc",
+    "tests/unit/test_qualification_source.py": "308ff294c78ea0f7d440c1d813dc535199d2ae33743d8c36c1add076732a7d89",
+    "tests/unit/test_validation_evidence.py": "2e0be9891900ac169d626380e15c97389f1dc7e041b641ba6509879ee8a635d7",
+    "tests/unit/test_validation_process.py": "51225c05cc4e0b0d1a1ba13404c5e1077027d52dab4b2577dc72b4a50956b163",
+    "tests/unit/test_validation_timing_policy.py": "0f63c26a74c56662480d50d0b1761076438a492e7ac3385232b7032ad232b041",
+    "tests/unit/test_validation_witnesses.py": "374022322b8b23200bf7a80b5f25d013ab9aa09dd253df031ebaa3605694a395"
+  },
+  "numeric_policy": {
+    "profile": "qualification",
+    "max_work": "907920445364",
+    "max_integer_bits": "84",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "started_at": "2026-11-17T04:21:41.703672+00:00",
+  "finished_at": "2026-11-17T04:23:17.511739+00:00",
+  "elapsed_seconds": 95.80805715700262,
+  "exit_status": 0,
+  "temporary_directory": "/workspace/scratch/939b84c043b0/1000-owned-2z9ypug0",
+  "environment_overrides": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/1000-owned-2z9ypug0",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/1000-owned-checks/timing",
+    "NO_PROXY": "*",
+    "no_proxy": "*"
+  }
+}

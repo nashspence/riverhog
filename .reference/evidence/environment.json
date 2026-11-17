@@ -1,0 +1,49 @@
+{
+  "source": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "interpreter": "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+  "uv_lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+  "versions": {
+    "pytest": "9.1.1",
+    "ruff": "0.16.0",
+    "mypy": "2.3.0",
+    "SQLAlchemy": "2.0.51",
+    "httpx": "0.28.1",
+    "httpx2": "2.12.0",
+    "botocore": "1.43.36",
+    "PyYAML": "6.0.3"
+  },
+  "loaded_owners": {
+    "riverhog_core": "/workspace/scratch/939b84c043b0/riverhog-1000/riverhog/src/riverhog_core/__init__.py",
+    "riverhog_client": "/workspace/scratch/939b84c043b0/riverhog-1000/packages/riverhog-client/src/riverhog_client/__init__.py",
+    "riverhog_provenance": "/workspace/scratch/939b84c043b0/riverhog-1000/packages/riverhog-provenance/src/riverhog_provenance/__init__.py",
+    "state_schema": "/workspace/scratch/939b84c043b0/riverhog-1000/packages/state-schema/src/state_schema/__init__.py",
+    "a_riverhog_recovery_tool": "/workspace/scratch/939b84c043b0/riverhog-1000/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/__init__.py",
+    "stove0_core": "/workspace/scratch/939b84c043b0/riverhog-1000/some-implementations/stove0/application/server/src/stove0_core/__init__.py",
+    "gogurt_listener_runtime": "/workspace/scratch/939b84c043b0/riverhog-1000/some-implementations/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py"
+  },
+  "tools": {
+    "git": "/usr/local/bin/git",
+    "make": "/usr/bin/make",
+    "mise": null,
+    "docker": null,
+    "age": null,
+    "age-plugin-batchpass": null,
+    "psql": null
+  },
+  "environment_setup": {
+    "uv_version": "0.11.24",
+    "python_version": "3.12.3",
+    "arguments": [
+      "sync",
+      "--frozen",
+      "--all-packages",
+      "--group",
+      "dev"
+    ],
+    "initial_offline_setup": "blocked: botocore wheel absent from cache",
+    "completed_setup": "normal frozen sync succeeded; no lockfile changes; no previous environment resync"
+  }
+}

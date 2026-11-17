@@ -1,0 +1,9 @@
+.....                                                                    [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/1000-coverage-state-01/timing/pytest/unit/48ccdf0acd00425e9f4877156e5d818e/a76b4dde06eb46399c4f36455ebea7c7
+============================= slowest 5 durations ==============================
+0.23s call     tests/unit/test_state_v1_fixtures.py::test_every_v1_state_owner_projects_its_component_owned_exact_structure
+0.17s call     packages/state-schema/tests/test_state_schema.py::test_unknown_revision_is_incompatible_and_preserves_operational_state
+0.03s call     packages/state-schema/tests/test_state_schema.py::test_forward_upgrade_preserves_state_and_reaches_the_single_head
+0.03s call     packages/state-schema/tests/test_state_schema.py::test_interrupted_upgrade_rolls_back_and_can_be_reentered
+0.02s call     packages/state-schema/tests/test_state_schema.py::test_explicit_bootstrap_produces_current_verified_state
+5 passed in 2.26s

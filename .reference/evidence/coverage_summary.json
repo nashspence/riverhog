@@ -1,0 +1,61 @@
+{
+  "configuration_validator_detections": 21,
+  "declared_state_owners": 9,
+  "distribution_roles": {
+    "application": 9,
+    "component": 36,
+    "deployed_implementation": 1,
+    "internal_build_unit": 2,
+    "reusable_library": 43
+  },
+  "environment_read_detections": 156,
+  "format": "riverhog-reference-coverage-summary/v1",
+  "growth_declarations_including_reachable_delegates": 413,
+  "growth_delegate_edges": 207,
+  "growth_evidence_status": "not-executed",
+  "growth_surface_status": {
+    "inherits": 33,
+    "nonexecutable": 329,
+    "owns": 6,
+    "unestablished": 3513
+  },
+  "installation_roots": [
+    "a-riverhog-cli",
+    "a-riverhog-recovery-tool",
+    "a-stove0-cli",
+    "gogurt"
+  ],
+  "operations": {
+    "applications": {
+      "a-riverhog-ftp-spool": 6,
+      "riverhog": 126,
+      "stove0": 47
+    },
+    "classifications": {
+      "client-only-primitive": 78,
+      "human-cli+json": 89,
+      "standard-tool/protocol": 12
+    },
+    "matrix_sha256": "2e1fd4d960071b987383303f5b8818e9ded963090040e4d57390c4689428865b",
+    "operations": 179,
+    "provider_evidence_operations": 33,
+    "response_authorities": {
+      "canonical-document": 72,
+      "http-json": 69,
+      "operator-projection": 31,
+      "stream-or-empty": 7
+    }
+  },
+  "public_python_surfaces": 3881,
+  "python_package_detections": 105,
+  "qualification_workloads": 55,
+  "release_distributions": 91,
+  "runtime_images": 18,
+  "scope": "Discovery/projection only. No runtime workload or installed proof executed.",
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "state_classifications": {
+    "durable-user-content": 2,
+    "durable-user-evidence": 2,
+    "operational-state": 5
+  }
+}

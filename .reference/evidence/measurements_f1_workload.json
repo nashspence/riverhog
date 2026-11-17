@@ -1,0 +1,10 @@
+{
+  "format": "riverhog-publication-workload/v1",
+  "payload_sizes": [
+    65536
+  ],
+  "shared_root_members": 1,
+  "shared_claim_members": 1,
+  "retained_journals": 2,
+  "required_journals": 1
+}

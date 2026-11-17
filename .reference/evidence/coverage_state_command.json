@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "scripts.ci_timing",
+    "-o",
+    "junit_family=xunit1",
+    "--junitxml=/workspace/scratch/939b84c043b0/1000-coverage-state-01/coverage_state.xml",
+    "--basetemp=/workspace/scratch/939b84c043b0/1000-coverage-state-01/tmp",
+    "--durations=5",
+    "packages/state-schema/tests/test_state_schema.py",
+    "tests/unit/test_state_v1_fixtures.py::test_every_v1_state_owner_projects_its_component_owned_exact_structure"
+  ],
+  "cwd": "/workspace/scratch/939b84c043b0/riverhog-1000",
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "source_status_before": "?? .reference/\n",
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "environment": {
+    "TMPDIR": "/workspace/scratch/939b84c043b0/1000-coverage-tmp",
+    "RIVERHOG_VALIDATION_NUMERIC_PROFILE": "qualification",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_WORK": "907920445364",
+    "RIVERHOG_VALIDATION_NUMERIC_MAX_INTEGER_BITS": "84",
+    "RIVERHOG_VALIDATION_NUMERIC_READER_SHA256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a",
+    "RIVERHOG_CI_TIMING_DIR": "/workspace/scratch/939b84c043b0/1000-coverage-state-01/timing"
+  },
+  "scope": "Unchanged owner tests on 1000 editable source; reference files present, concurrent separate agent work possible; not installed/PG/native-platform qualification.",
+  "returncode": 0,
+  "elapsed_seconds": 3.9474086959962733,
+  "source_status_after": "?? .reference/\n"
+}

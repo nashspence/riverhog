@@ -1,0 +1,49 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/939b84c043b0/toolchain/bin/ruff",
+        "format",
+        "--check",
+        ".reference/implementation/measurement_comparison.py",
+        ".reference/implementation/test_measurement_comparison.py"
+      ],
+      "elapsed_ns": 9476345,
+      "exit_status": 0,
+      "stdout": "2 files already formatted\n"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/939b84c043b0/toolchain/bin/ruff",
+        "check",
+        ".reference/implementation/measurement_comparison.py",
+        ".reference/implementation/test_measurement_comparison.py"
+      ],
+      "elapsed_ns": 8967353,
+      "exit_status": 0,
+      "stdout": "All checks passed!\n"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+        "-m",
+        "mypy",
+        "--strict",
+        "--follow-imports=silent",
+        ".reference/implementation/measurement_comparison.py"
+      ],
+      "elapsed_ns": 244955489,
+      "exit_status": 0,
+      "stdout": ""
+    }
+  ],
+  "development_corrections": [
+    "initial Ruff import-order diagnostic fixed",
+    "initial strict mypy exposed nine narrowing/result typing diagnostics; fixed without Any or ignores"
+  ],
+  "format": "riverhog-reference-static-checks/v1",
+  "source_files": {
+    ".reference/implementation/measurement_comparison.py": "3203886fa0e73b89de1671d91125aefaf0c61b0dd28383b00bc94baa751fe817",
+    ".reference/implementation/test_measurement_comparison.py": "da23fb584bfc192b0df7f93ef37335bc1a15096356a7b31915c3376b89dd7e53"
+  }
+}

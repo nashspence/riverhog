@@ -1,0 +1,250 @@
+{
+  "numeric_consumption": "The current test helpers validate samples with the explicit policy but do not retain the returned per-validation numeric usage in these raw pytest properties. No reconstructed consumption is attributed to their original run.",
+  "numeric_policy": {
+    "max_integer_bits": "84",
+    "max_work": "907920445364",
+    "profile": "qualification",
+    "reader_sha256": "4f08bc6148007c7194b2451cdd885b04ada30806b6ee1f6c5e6d29433885720a"
+  },
+  "owners": {
+    "packages/riverhog-provenance/tests/test_retained_corpus_growth.py::test_owner_checkpoint_work_does_not_scan_retained_inputs": {
+      "dimensions_observed": {
+        "binding_octets": [
+          527
+        ],
+        "checkpoint_octets": [
+          179
+        ],
+        "counter_octets": [
+          2,
+          17,
+          129
+        ],
+        "retained_rows": [
+          0,
+          1,
+          17,
+          129
+        ]
+      },
+      "metrics_min_max": {
+        "checkpoint_decoded_octets": [
+          179,
+          179
+        ],
+        "checkpoint_encoded_octets": [
+          358,
+          358
+        ],
+        "closed_connections": [
+          0,
+          0
+        ],
+        "descriptor_closes": [
+          0,
+          0
+        ],
+        "descriptor_opens": [
+          0,
+          0
+        ],
+        "file_identity_reads": [
+          4,
+          4
+        ],
+        "fsync_calls": [
+          0,
+          0
+        ],
+        "full_assertion_reads": [
+          0,
+          0
+        ],
+        "opened_connections": [
+          0,
+          0
+        ],
+        "opening_callbacks": [
+          0,
+          0
+        ],
+        "parameter_octets": [
+          1452,
+          1708
+        ],
+        "release_callbacks": [
+          0,
+          0
+        ],
+        "returned_octets": [
+          191,
+          319
+        ],
+        "returned_rows": [
+          3,
+          3
+        ],
+        "source_checks": [
+          2,
+          2
+        ],
+        "source_frame_reads": [
+          0,
+          0
+        ],
+        "sql_statements": [
+          6,
+          6
+        ]
+      },
+      "samples": 12,
+      "witness": {
+        "declaration": {
+          "id": "riverhog-provenance.retained-corpus-operation.growth/v1",
+          "projection_sha256": "3901f9092ee5d9b061570f89862986f8bde5628021fca398f140e3020401d5d4",
+          "sha256": "c27db71256cd4d7fa52b33e1c0757b924c26124992c82c538e188c14afb8c8e9"
+        },
+        "id": "native-retained-corpus-transaction-work/v1",
+        "source_sha256": "6e9f9c82d37ce5d73405e8165c6d20a5d5e4308922a4f31c0c0d7d6a1d0cbecb"
+      }
+    },
+    "tests/unit/test_physical_workspace_execution_growth.py::test_measured_workspace_receiving": {
+      "dimensions_observed": {
+        "control_octets_per_step": [
+          185,
+          201,
+          1209
+        ],
+        "quantum": [
+          1,
+          3
+        ],
+        "retained_slots": [
+          4,
+          20,
+          1028
+        ]
+      },
+      "metrics_min_max": {
+        "mapping_enumerations": [
+          0,
+          0
+        ],
+        "mapping_key_octets": [
+          444,
+          7461
+        ],
+        "mapping_steps": [
+          13,
+          36
+        ],
+        "payload_octets": [
+          0,
+          0
+        ],
+        "results_received": [
+          1,
+          3
+        ],
+        "worker_join_calls": [
+          1,
+          3
+        ],
+        "worker_liveness_calls": [
+          1,
+          3
+        ],
+        "workers_constructed": [
+          0,
+          0
+        ],
+        "workers_started": [
+          0,
+          0
+        ]
+      },
+      "samples": 18,
+      "witness": {
+        "declaration": {
+          "id": "riverhog-server.physical-workspace-collect.growth/v1",
+          "projection_sha256": "3eec1f576b8ddb6f0afbf94f05c7fc69fdbe994de8f9f0d504b1c7f3b7883c71",
+          "sha256": "d2a9c6eeb8d5f350b53f88cee97eeb916eca4462512571f0bb401d7bd3f14e88"
+        },
+        "id": "physical-workspace-collect/v1",
+        "source_sha256": "0212cee3d815ab7b93828246e0192ba93c74e10f407e779476f4a08071d85bb6"
+      }
+    },
+    "tests/unit/test_physical_workspace_execution_growth.py::test_measured_workspace_submission": {
+      "dimensions_observed": {
+        "control_octets_per_step": [
+          185,
+          201,
+          1209
+        ],
+        "quantum": [
+          1
+        ],
+        "retained_slots": [
+          1,
+          2,
+          17,
+          18,
+          1025,
+          1026
+        ]
+      },
+      "metrics_min_max": {
+        "mapping_enumerations": [
+          0,
+          0
+        ],
+        "mapping_key_octets": [
+          0,
+          3420
+        ],
+        "mapping_steps": [
+          0,
+          10
+        ],
+        "payload_octets": [
+          0,
+          0
+        ],
+        "results_received": [
+          0,
+          0
+        ],
+        "worker_join_calls": [
+          0,
+          0
+        ],
+        "worker_liveness_calls": [
+          0,
+          0
+        ],
+        "workers_constructed": [
+          0,
+          1
+        ],
+        "workers_started": [
+          0,
+          1
+        ]
+      },
+      "samples": 45,
+      "witness": {
+        "declaration": {
+          "id": "riverhog-server.physical-workspace-submit.growth/v1",
+          "projection_sha256": "6dbe6ebb1854e38c063543659d476a642bbf596e76da2b7fa3db80ea046d4a8e",
+          "sha256": "e6301aa54622824c765eb54a5a0b1e628b9e78517c001d100a74dca6fb584b36"
+        },
+        "id": "physical-workspace-submit/v1",
+        "source_sha256": "0212cee3d815ab7b93828246e0192ba93c74e10f407e779476f4a08071d85bb6"
+      }
+    }
+  },
+  "producer_evidence": "safety_growth_final_pytest.json",
+  "producer_evidence_sha256": "cbeb1bdb45e234b985df1a6b7bdafb7043b93c43e9fe6fdbddccee4a768d23e4",
+  "sample_count": 75,
+  "scope": "three unchanged current-owner growth witnesses; no new-generation lifecycle proof"
+}

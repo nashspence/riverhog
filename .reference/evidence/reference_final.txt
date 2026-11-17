@@ -1,0 +1,13 @@
+..................................................................  [100%]
+Machine-readable pytest timings: /workspace/scratch/939b84c043b0/1000-reference-r8db3h94/timing/pytest/unit/7d9d3741bf79482084c61cf00f46c088/424ec7e27de449bfa6cb2e20d4a7070f
+============================= slowest 10 durations =============================
+1.75s call     .reference/implementation/test_safety_evidence.py::test_actual_child_kill_preserves_atomic_source_and_parent[before_source_commit]
+1.61s call     .reference/implementation/test_safety_evidence.py::test_actual_child_kill_preserves_atomic_source_and_parent[after_source_commit]
+0.42s setup    .reference/implementation/test_safety_evidence.py::test_actual_child_kill_preserves_atomic_source_and_parent[before_source_commit]
+0.08s call     .reference/implementation/test_safety_evidence.py::test_changed_authority_cannot_adopt_or_rewrite_original[algorithm]
+0.07s call     .reference/implementation/test_safety_evidence.py::test_changed_authority_cannot_adopt_or_rewrite_original[worker_epoch]
+0.07s call     .reference/implementation/test_safety_evidence.py::test_changed_authority_cannot_adopt_or_rewrite_original[source_current]
+0.07s call     .reference/implementation/test_safety_evidence.py::test_changed_authority_cannot_adopt_or_rewrite_original[source_version]
+
+(3 durations < 0.005s hidden.  Use -vv to show these durations.)
+66 passed, 5 subtests passed in 4.22s

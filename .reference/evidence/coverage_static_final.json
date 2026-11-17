@@ -1,0 +1,50 @@
+{
+  "scope": "Final reference helper and guard tests only, not make lint",
+  "inputs": {
+    ".reference/implementation/discovery_probe.py": "6f92551ff208d0c809ebdef99c918feaa1f77431264b06a3fe20dc54d37bfd90",
+    ".reference/implementation/test_discovery_probe.py": "7c802353ef3d3e566b74103b95ab9a242a744fd75e9404780a7a5ace5ac7816e"
+  },
+  "checks": [
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        ".reference/implementation/discovery_probe.py",
+        ".reference/implementation/test_discovery_probe.py"
+      ],
+      "exit_status": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        ".reference/implementation/discovery_probe.py",
+        ".reference/implementation/test_discovery_probe.py"
+      ],
+      "exit_status": 0,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/939b84c043b0/qualification-1000-env/bin/python",
+        "-m",
+        "mypy",
+        "--strict",
+        "--follow-imports=silent",
+        ".reference/implementation/discovery_probe.py",
+        ".reference/implementation/test_discovery_probe.py"
+      ],
+      "exit_status": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

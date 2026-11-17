@@ -1,0 +1,127 @@
+{
+  "format": "riverhog-reference-artifact-digests/v1",
+  "source_sha": "c28eceaa2dfec1b3712135469ba12230e74f5ffa",
+  "observation": "coverage_execution.json records the original full discovery helper; coverage_probe_observed.py.gz preserves its exact bytes. The current helper adds tested final source guards and qualified imports from the existing scripts owners, including CI_SHARDS from scripts.ci_unit. Original coverage_guards_command.json retains the first guard run. coverage_guards_final_command.json and coverage_static_final.json bind the final helper and unchanged product source snapshot. The full discovery scan was not rerun after these guard/import-only changes.",
+  "files": [
+    {
+      "path": "coverage_discovery.json.gz",
+      "encoding": "gzip",
+      "uncompressed_path": "coverage_discovery.json",
+      "uncompressed_bytes": 2250501,
+      "uncompressed_sha256": "0518fbca0f715a77e73aa5737d65de8d0892bf209fde4fa43f23517377c25b60",
+      "bytes": 214892,
+      "sha256": "97010bd8fccbafc7b2f322eef83c12b79310b4412a62c7e57c10234c1ec85e33"
+    },
+    {
+      "path": "coverage_growth_projection.json.gz",
+      "encoding": "gzip",
+      "uncompressed_path": "coverage_growth_projection.json",
+      "uncompressed_bytes": 17139675,
+      "uncompressed_sha256": "b816f63b9ff4e741dc6a6431ca9c9dac1b184347d972082332eb30f215cdf294",
+      "bytes": 606702,
+      "sha256": "0e0892efe711cd977d66363669ddb48f071af2a54576407f414d293319de5329"
+    },
+    {
+      "path": "coverage_growth_sources.json.gz",
+      "encoding": "gzip",
+      "uncompressed_path": "coverage_growth_sources.json",
+      "uncompressed_bytes": 814235,
+      "uncompressed_sha256": "8ccd5f35f75ac4cfd957b165893f9a3dae6cacb25ef8110674e0bef0dd8b529a",
+      "bytes": 67858,
+      "sha256": "95df70c38d228925abf1785b2da6d279a661e1788994d4c7914a902acbc1648e"
+    },
+    {
+      "path": "coverage_probe_observed.py.gz",
+      "encoding": "gzip",
+      "uncompressed_path": "coverage_probe_observed.py",
+      "uncompressed_bytes": 10152,
+      "uncompressed_sha256": "af0ce9ed988af346ec82598dc138d88fe33c9afecc0593f56d20994525088569",
+      "bytes": 3016,
+      "sha256": "48f9757910637faa29ed7647d8007b4558a90e8671f3f9ea46a5ac5b45477bc5"
+    },
+    {
+      "path": "coverage_execution.json",
+      "bytes": 3954,
+      "sha256": "80d6ccdbc6e206539fb93021e59b942a592f4bfb0a5e86a9a6246d85bb1bcbb0"
+    },
+    {
+      "path": "coverage_summary.json",
+      "bytes": 1701,
+      "sha256": "58c77561890265aee670af043baf7a782a9bf533b7483a7a04b5b71bb248b660"
+    },
+    {
+      "path": "coverage_state_command.json",
+      "bytes": 1531,
+      "sha256": "5c92815027218a0f1ee7af09d437765e86aa23b86d95091e8f567fa0f70c207d"
+    },
+    {
+      "path": "coverage_state.xml",
+      "bytes": 1326,
+      "sha256": "a9d2efb58990a84a1c9a2af592c65233579e3d4d0c5a7ea0598999d9789e27c1"
+    },
+    {
+      "path": "coverage_state_stdout.txt",
+      "bytes": 984,
+      "sha256": "f501ebeb91e20075bee139533f7401f7933951b15730cefd02f76a9d7592c34d"
+    },
+    {
+      "path": "coverage_guards_command.json",
+      "bytes": 2112,
+      "sha256": "59129159660ba8a771c983702cc0f954dd3f3fab818238fb06b52ae1c8e3d372"
+    },
+    {
+      "path": "coverage_guards.xml",
+      "bytes": 2737,
+      "sha256": "324f47ba89b4fcacbdb08214b030599e82f83fe0f66787e6349e51377c432e5d"
+    },
+    {
+      "path": "coverage_guards_stdout.txt",
+      "bytes": 287,
+      "sha256": "cb71c007b392a267ed115005f433c8dafddc0037031ef34b25bf1e1e73b83bbf"
+    },
+    {
+      "path": "coverage_state_timing/pytest/unit/48ccdf0acd00425e9f4877156e5d818e/a76b4dde06eb46399c4f36455ebea7c7/controller.json",
+      "bytes": 2929,
+      "sha256": "a113e28a5039930ca65a7f9a41116b77659b0de96eb67cef8ec31ec84dad2cfa"
+    },
+    {
+      "path": "coverage_guards_timing/pytest/unit/d68a781ffbda43e19629eeb23c4141b5/98bb6b562e8f45eca531f9edd3eb0cb1/controller.json",
+      "bytes": 5315,
+      "sha256": "78bbaef82faacbe4a1083dbf3ae552f5cd0e4a9703da4631046f8e256fbbcb36"
+    },
+    {
+      "path": "coverage_static.json",
+      "bytes": 843,
+      "sha256": "097f16a59a4b6e35bcf4dd598dff9236721c9a581ed77621ed973797690912e8"
+    },
+    {
+      "path": "coverage_guards_final_command.json",
+      "bytes": 3045,
+      "sha256": "4e63b359786124a0f56673228b1094313e9296dc928bccbe80ff73a18baaa33c"
+    },
+    {
+      "path": "coverage_guards_final.xml",
+      "bytes": 2737,
+      "sha256": "998efa06e2ab3084263d17de7fef68b9a589367db7e726f8d1da949ff201d0ee"
+    },
+    {
+      "path": "coverage_guards_final_stdout.txt",
+      "bytes": 287,
+      "sha256": "2ef0be80200285f6ab7b4e5cf9e8d94c3c2c6d47fa492aa974caedab62e3a75f"
+    },
+    {
+      "path": "coverage_static_final.json",
+      "bytes": 1494,
+      "sha256": "226fa12f0b2b6d032c4f1af6e4517c887182402cbeb48ef72584008bc05b732a"
+    },
+    {
+      "path": "coverage_guards_final_timing/pytest/unit/c9b7d445ef994e2c9312cd0f741f3b8f/814dcd27265e4b83a56c641cbce3d90a/controller.json",
+      "bytes": 5311,
+      "sha256": "36d55f843da66b1321b093a18260f8797a3769f17ae9d8c5427b6d3075a6c3a5"
+    }
+  ],
+  "final_reference_inputs": {
+    ".reference/implementation/discovery_probe.py": "6f92551ff208d0c809ebdef99c918feaa1f77431264b06a3fe20dc54d37bfd90",
+    ".reference/implementation/test_discovery_probe.py": "7c802353ef3d3e566b74103b95ab9a242a744fd75e9404780a7a5ace5ac7816e"
+  }
+}
