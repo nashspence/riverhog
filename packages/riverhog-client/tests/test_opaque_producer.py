@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from collections import OrderedDict
+from threading import RLock
 from types import SimpleNamespace
 from typing import Any
 
@@ -465,3 +466,67 @@ def test_sealed_pending_retry_preserves_the_original_hint_commitment():
         source.artifact_id, source.bytes, source.sha256, ("changed.txt",), False, content=b"x"
     )
     assert not sources.matches_registration(changed)
+
+
+@pytest.mark.parametrize("boundary", ["inventory", "closing", "closing-completed", "heartbeat"])
+def test_finish_checks_original_deadline_between_inventory_and_closing_quanta(
+    monkeypatch, boundary
+):
+    now = 0.0
+    producer = object.__new__(IncrementalCollectionProducer)
+    producer._operation_lock = RLock()
+    producer._finalized = None
+    producer._closed = False
+    producer._needs_upload_scan = False
+    producer._heartbeat_failure = None
+    producer.constraints = object()
+    producer.collection_id = 42
+    producer._stage_journals = lambda _journals: None
+    producer._require_heartbeat = lambda: None
+    producer._settle_primary = lambda _member: None
+    producer.primary_store = SimpleNamespace(recover_step=lambda: True)
+    calls = []
+    heartbeat_error = RuntimeError("original heartbeat failed")
+
+    def inventory():
+        try:
+            yield producer_module.ProducerArtifactIdentity(
+                ArtifactId("a" * 64), 0, hashlib.sha256(b"").hexdigest()
+            )
+        finally:
+            calls.append("inventory-closed")
+
+    producer._member_inventory = inventory
+
+    def freeze(_store, members):
+        nonlocal now
+        if boundary == "inventory":
+            now = 2.0
+        if boundary == "heartbeat":
+            producer._heartbeat_failure = heartbeat_error
+        list(members)
+
+    def closing(*_args, **_kwargs):
+        nonlocal now
+        calls.append("closing")
+        now = 2.0
+        return boundary == "closing-completed"
+
+    def complete(_collection):
+        raise AssertionError("completion must not dispatch after the original deadline")
+
+    producer.api = SimpleNamespace(complete_collection_upload_session=complete)
+    monkeypatch.setattr(producer_module.time, "monotonic", lambda: now)
+    monkeypatch.setattr(producer_module, "freeze_inventory", freeze)
+    monkeypatch.setattr(producer_module, "advance_closing", closing)
+    error = RuntimeError if boundary == "heartbeat" else TimeoutError
+    with pytest.raises(error) as caught:
+        producer.finish(timeout_seconds=1.0)
+    if boundary == "heartbeat":
+        assert caught.value.__cause__ is heartbeat_error
+    assert calls == (
+        ["inventory-closed"]
+        if boundary in {"inventory", "heartbeat"}
+        else ["inventory-closed", "closing"]
+    )
+    assert producer._closed is False and producer._finalized is None
