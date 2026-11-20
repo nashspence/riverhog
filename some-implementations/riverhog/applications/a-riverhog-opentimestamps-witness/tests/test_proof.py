@@ -198,6 +198,7 @@ def test_nested_pending_uses_derived_subnode_commitment():
 @pytest.mark.parametrize(
     "response",
     [b"", b"junk", b"x" * (core.MAX_PROOF + 1), mature_response() + b"trailing", REAL_PROOF],
+    ids=("empty", "junk", "oversized", "trailing-bytes", "prior-proof"),
 )
 def test_bad_calendar_response_retains_prior_proof_and_retries(response):
     job = real_pending_job()

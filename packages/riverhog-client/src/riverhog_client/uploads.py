@@ -121,9 +121,12 @@ def put_collection_upload_unit(
                 plan_sha256=plan_sha256,
                 content=content,
             )
-            if result.state != "committed":
-                raise RuntimeError("server did not commit the complete upload unit")
-            return payload_bytes
+            if result.state == "committed":
+                return payload_bytes
+            if retry_notice is not None:
+                retry_notice(
+                    f"Upload unit {volume_id}/{unit_number} is pending; retrying in {delay:.1f}s"
+                )
         except (httpx.TransportError, httpx.HTTPStatusError, Conflict, ServiceUnavailable) as exc:
             if not isinstance(exc, Conflict) and not _is_transient(exc):
                 raise
@@ -144,8 +147,8 @@ def put_collection_upload_unit(
                     f"Upload unit {volume_id}/{unit_number} interrupted "
                     f"({_error_description(exc)}); retrying in {delay:.1f}s"
                 )
-            time.sleep(delay)
-            delay = min(delay * 2, retry_max_delay_seconds)
+        time.sleep(delay)
+        delay = min(delay * 2, retry_max_delay_seconds)
 
 
 def upload_collection_units(

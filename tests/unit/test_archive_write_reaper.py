@@ -31,7 +31,12 @@ class _RetrievalService:
         return 0
 
 
-def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizations() -> None:
+def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizations(
+    monkeypatch,
+) -> None:
+    registrations = SimpleNamespace(process_due=Mock(return_value=0))
+    factory = Mock(return_value=registrations)
+    monkeypatch.setattr(api_app, "CollectionRegistrationOwner", factory)
     collection_uploads = SimpleNamespace(
         requeue_interrupted_finalizations_for_startup=Mock(return_value=2),
         requeue_interrupted_orphan_discards_for_startup=Mock(return_value=1),
@@ -87,6 +92,8 @@ def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizatio
     collection_uploads.requeue_interrupted_orphan_discards_for_startup.assert_called_once_with(
         limit=100
     )
+    factory.assert_called_once_with(collection_uploads)
+    registrations.process_due.assert_called_once_with(limit=1)
     collection_uploads.process_due_provenance_journal_validations.assert_called_once_with(limit=1)
     collection_uploads.process_due_finalizations.assert_called_once_with(limit=1)
     collection_uploads.reap_expired_custody_transfers.assert_called_once_with(limit=100)
@@ -103,10 +110,15 @@ def test_archive_maintenance_sweep_recovers_and_processes_collection_finalizatio
     lifecycle_events.reap_expired_contexts.assert_called_once_with()
 
 
-def test_archive_maintenance_drains_bounded_progress_before_idle_interval() -> None:
+def test_archive_maintenance_drains_bounded_progress_before_idle_interval(monkeypatch) -> None:
     async def exercise() -> None:
         finalizations = Mock(side_effect=[1, 1, 0])
         zero = Mock(return_value=0)
+        monkeypatch.setattr(
+            api_app,
+            "CollectionRegistrationOwner",
+            Mock(return_value=SimpleNamespace(process_due=zero)),
+        )
         container = cast(
             ServiceContainer,
             SimpleNamespace(
@@ -116,6 +128,7 @@ def test_archive_maintenance_drains_bounded_progress_before_idle_interval() -> N
                     process_due_provenance_journal_validations=zero,
                     process_due_custody_receipts=zero,
                     process_due_finalizations=finalizations,
+                    has_unreceived_archive_work=lambda: False,
                     reap_expired_custody_transfers=zero,
                 ),
                 collection_workflows=SimpleNamespace(
@@ -149,6 +162,7 @@ def test_archive_maintenance_drains_bounded_progress_before_idle_interval() -> N
             api_app._run_archive_upload_reaper(
                 lambda: container,
                 sweep_interval=timedelta(days=1),
+                receive_interval=timedelta(milliseconds=100),
                 operation_lock=asyncio.Lock(),
             )
         )
@@ -230,5 +244,47 @@ def test_retrieval_restore_reaper_drains_restartable_steps_before_idle_interval(
         task.cancel()
         with pytest.raises(asyncio.CancelledError):
             await task
+
+    asyncio.run(exercise())
+
+
+def test_archive_reaper_receives_active_workers_without_repeating_unrelated_sweeps(monkeypatch):
+    async def exercise():
+        turns = []
+        finished = asyncio.Event()
+        active = [True]
+        loop = asyncio.get_running_loop()
+
+        def process(container, *, startup_recovery=False, execution_only=False):
+            turns.append("receive" if execution_only else "sweep")
+            assert startup_recovery is (len(turns) == 1)
+            if turns == ["sweep", "receive", "receive"]:
+                active[0] = False
+                return True
+            if turns == ["sweep", "receive", "receive", "sweep"]:
+                loop.call_soon_threadsafe(finished.set)
+            return False
+
+        monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
+        container = SimpleNamespace(
+            collection_uploads=SimpleNamespace(has_unreceived_archive_work=lambda: active[0])
+        )
+        task = asyncio.create_task(
+            api_app._run_archive_upload_reaper(
+                lambda: container,
+                sweep_interval=timedelta(days=1),
+                receive_interval=timedelta(milliseconds=10),
+                operation_lock=asyncio.Lock(),
+            )
+        )
+        try:
+            await asyncio.wait_for(finished.wait(), timeout=5)
+            assert turns == ["sweep", "receive", "receive", "sweep"]
+            await asyncio.sleep(0.03)
+            assert len(turns) == 4
+        finally:
+            task.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await task
 
     asyncio.run(exercise())

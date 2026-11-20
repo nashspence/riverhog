@@ -248,6 +248,10 @@ def _clause_predicate(assertion: Any, clause: AssertionClause) -> ColumnElement[
     if clause.profile is None:
         filters.extend(_value_exists(assertion, predicate) for predicate in clause.values)
     else:
+        # Select value postings first, then point-check their exact profile.
+        # The correlated profile probe must not become a whole-relation hash
+        # merely because the requested profile pin is common.
+        filters.extend(_value_exists(assertion, predicate) for predicate in clause.values)
         profile = aliased(Profile)
         statement = select(1).select_from(profile)
         profile_filters = [
@@ -264,7 +268,7 @@ def _clause_predicate(assertion: Any, clause: AssertionClause) -> ColumnElement[
                 and_(value.build_id == profile.build_id, value.row_key == profile.row_key),
             )
             profile_filters.extend(_value_filters(value, predicate, profile=profile))
-        filters.append(exists(statement.where(*profile_filters).correlate(assertion)))
+        filters.append(exists(statement.where(*profile_filters).correlate(assertion).offset(0)))
     return and_(*filters)
 
 

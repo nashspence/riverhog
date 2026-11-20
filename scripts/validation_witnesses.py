@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import inspect
+import json
 import math
 import re
 from collections.abc import Mapping, Sequence
@@ -13,6 +14,13 @@ from pathlib import Path
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes, require_canonical_json
+from riverhog_growth_contracts import NumericWorkPolicy, NumericWorkUsage
+
+from scripts.validation_numeric import (
+    numeric_policy_identity,
+    numeric_policy_snapshot,
+    numeric_validation_receipt,
+)
 
 
 @dataclass(frozen=True)
@@ -38,6 +46,8 @@ def discover_test_witnesses(root: Path) -> tuple[TestWitness, ...]:
                 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     continue
                 for decorator in node.decorator_list:
+                    if ast.unparse(decorator) == "pytest.mark.growth_witness":
+                        raise ValueError("growth witness requires one identity and gate binding")
                     if not isinstance(decorator, ast.Call):
                         continue
                     if ast.unparse(decorator.func) != "pytest.mark.growth_witness":
@@ -77,15 +87,15 @@ def discover_test_witnesses(root: Path) -> tuple[TestWitness, ...]:
 
 
 def operation_projection(
-    subject: str, *, root: Path | None = None
+    subject: str, *, numeric_policy: NumericWorkPolicy, root: Path | None = None
 ) -> tuple[dict[str, object], dict[str, str]]:
     """Resolve the normative owner from trusted source, never from an artifact."""
-    from riverhog_growth_contracts import growth_binding, project_bindings
+    from riverhog_growth_contracts import growth_binding, project_binding, project_bindings
 
     from scripts.growth_contract import resolve_operation
 
     binding = growth_binding(resolve_operation(subject))
-    projection = project_bindings((binding,))
+    projection = project_bindings((binding,), numeric_policy=numeric_policy)
     pending, seen = [binding], set()
     while pending:
         current = pending.pop()
@@ -93,20 +103,44 @@ def operation_projection(
             continue
         seen.add(current.declaration.id)
         if root is not None and not Path(
-            inspect.getfile(current.operation)
+            inspect.getfile(inspect.unwrap(current.operation))
         ).resolve().is_relative_to(root.resolve()):
             raise ValueError("growth operation source is outside the required checkout")
         pending.extend(growth_binding(operation) for _, operation in current.delegates)
     return projection, {
         "id": binding.declaration.id,
-        "sha256": hashlib.sha256(canonical_json_bytes(binding.project())).hexdigest(),
+        "sha256": hashlib.sha256(
+            canonical_json_bytes(project_binding(binding, numeric_policy=numeric_policy))
+        ).hexdigest(),
         "projection_sha256": hashlib.sha256(canonical_json_bytes(projection)).hexdigest(),
     }
 
 
 def validate_growth_execution(
-    projection: Mapping[str, Any], evidence: object, *, source: Mapping[str, object]
-) -> None:
+    projection: Mapping[str, Any],
+    evidence: object,
+    *,
+    source: Mapping[str, object],
+    numeric_policy: NumericWorkPolicy,
+) -> NumericWorkUsage:
+    """Recheck an owned execution and its recorded source-bound numeric consumption."""
+    numeric_policy = numeric_policy_snapshot(numeric_policy)
+    usage = _validate_growth_execution(
+        projection, evidence, source=source, numeric_policy=numeric_policy
+    )
+    assert isinstance(evidence, Mapping)
+    if evidence["numeric_validation"] != numeric_validation_receipt(numeric_policy, source, usage):
+        raise ValueError("growth execution numeric work receipt is missing or contradictory")
+    return usage
+
+
+def _validate_growth_execution(
+    projection: Mapping[str, Any],
+    evidence: object,
+    *,
+    source: Mapping[str, object],
+    numeric_policy: NumericWorkPolicy,
+) -> NumericWorkUsage:
     """Check a retained execution record against standalone normative data and source.
 
     The collecting gate verifies artifact custody and source-owned test identity;
@@ -114,6 +148,8 @@ def validate_growth_execution(
     """
     from riverhog_growth_contracts import validate_execution_samples
 
+    numeric_policy = numeric_policy_snapshot(numeric_policy)
+    numeric_identity = numeric_policy_identity(numeric_policy)
     source_sha = source.get("source_sha")
     fields = {
         "format",
@@ -126,9 +162,13 @@ def validate_growth_execution(
         "declaration",
         "outcomes",
         "samples",
+        "numeric_policy",
+        "numeric_validation",
     }
     if not isinstance(evidence, Mapping) or set(evidence) != fields:
         raise ValueError("growth execution record has missing or unknown evidence fields")
+    if evidence["numeric_policy"] != numeric_identity:
+        raise ValueError("growth execution numeric resources or reader identity differ")
     if (
         evidence["format"] != "riverhog-growth-execution/v1"
         or source.get("source_clean") is not True
@@ -161,10 +201,11 @@ def validate_growth_execution(
         selected[child] = declarations[child]
         pending.extend(row["declaration"] for row in declarations[child]["delegates"].values())
     owned_projection = {**projection, "declarations": selected}
+    owned_projection_bytes = canonical_json_bytes(owned_projection)
     if binding != {
         "id": identity,
         "sha256": hashlib.sha256(canonical_json_bytes(declarations[identity])).hexdigest(),
-        "projection_sha256": hashlib.sha256(canonical_json_bytes(owned_projection)).hexdigest(),
+        "projection_sha256": hashlib.sha256(owned_projection_bytes).hexdigest(),
     }:
         raise ValueError("growth execution normative declaration or reachable composition is stale")
     outcomes = evidence["outcomes"]
@@ -183,7 +224,15 @@ def validate_growth_execution(
         )
     ):
         raise ValueError("growth execution has incomplete or failed assertion phases")
-    validate_execution_samples(owned_projection, identity, evidence["samples"])
+    # The normative digest fixes one JSON representation for numeric accounting.
+    # Source and serialized dictionaries can have equal contents but different
+    # insertion order or shared objects, which change the meter's debit sequence.
+    return validate_execution_samples(
+        json.loads(owned_projection_bytes),
+        identity,
+        evidence["samples"],
+        numeric_policy=numeric_policy,
+    )
 
 
 def collect_test_witnesses(
@@ -193,6 +242,7 @@ def collect_test_witnesses(
     expected: Sequence[str],
     source_sha: str,
     run_id: str,
+    numeric_policy: NumericWorkPolicy,
     evidence: list[dict[str, object]] | None = None,
 ) -> dict[str, str]:
     """Verify actual assertion execution and source-bound primitive observations.
@@ -200,6 +250,8 @@ def collect_test_witnesses(
     Test results support their explicitly owned test scope. Product conformance
     still requires an independently declared obligation and its Audit binding.
     """
+    numeric_policy = numeric_policy_snapshot(numeric_policy)
+    numeric_identity = numeric_policy_identity(numeric_policy)
     declarations = {witness.id: witness for witness in discover_test_witnesses(root)}
     if set(expected) - declarations.keys():
         raise ValueError("required growth witness has no source owner")
@@ -210,6 +262,7 @@ def collect_test_witnesses(
             not isinstance(row, dict)
             or row.get("format") != "riverhog-ci-pytest-timing/v3"
             or row.get("run_id") != run_id
+            or row.get("numeric_policy") != numeric_identity
         ):
             raise ValueError("invalid or stale growth execution artifact")
         records.append(row)
@@ -219,86 +272,116 @@ def collect_test_witnesses(
         if not isinstance(identity, str) or not identity:
             raise ValueError("missing pytest session identity")
         sessions.setdefault(identity, []).append(row)
-    selected = []
+    selected_sessions = []
     for rows in sessions.values():
         workers = [row for row in rows if row.get("worker") != "controller"]
-        selected.extend(workers or rows)
-    observed: dict[str, str] = {}
-    for record in selected:
-        if record.get("source_sha") != source_sha or record.get("source_clean") is not True:
-            raise ValueError("growth artifact is not bound to the required clean source")
-        if record.get("source_end") != {"source_sha": source_sha, "source_clean": True}:
-            raise ValueError("growth artifact source changed during execution")
-        bindings, observations, tests = (
-            record.get("growth_witnesses"),
-            record.get("growth_observations"),
-            record.get("tests"),
-        )
-        if not all(isinstance(value, dict) for value in (bindings, observations, tests)):
-            raise ValueError("missing executed growth witness data")
-        assert (
-            isinstance(bindings, dict)
-            and isinstance(observations, dict)
-            and isinstance(tests, dict)
-        )
-        for identity in expected:
-            witness = declarations[identity]
-            binding = bindings.get(witness.node_id)
-            report = tests.get(witness.node_id)
-            if report is None:
-                continue
-            required_binding: dict[str, object] = {
-                "id": identity,
-                "source_sha256": witness.source_sha256,
-            }
-            projection = None
-            if witness.operation is not None:
-                projection, declaration = operation_projection(witness.operation, root=root)
-                required_binding["declaration"] = declaration
-            if identity in observed or binding != required_binding:
-                raise ValueError("duplicate, stale or mismatched owner growth witness")
-            if not isinstance(report, dict):
-                raise ValueError("invalid or expected-failure witness assertion results")
-            phases: dict[str, object] = {}
-            for phase, value in report.items():
-                if not isinstance(value, dict) or value.get("expected_failure") is not False:
-                    raise ValueError("invalid or expected-failure witness assertion results")
-                phases[phase] = value.get("outcome")
-            if phases != {"setup": "passed", "call": "passed", "teardown": "passed"}:
-                raise ValueError("required growth witness did not completely execute")
-            if projection is not None:
-                samples = record.get("growth_samples")
-                if not isinstance(samples, dict):
-                    raise ValueError("missing declared growth execution samples")
-                execution: dict[str, object] = {
-                    "format": "riverhog-growth-execution/v1",
-                    "source": {"source_sha": source_sha, "source_clean": True},
-                    "source_end": record["source_end"],
-                    "run_id": run_id,
-                    "session_id": record["session_id"],
-                    "node_id": witness.node_id,
-                    "owner_sha256": witness.source_sha256,
-                    "declaration": declaration,
-                    "outcomes": report,
-                    "samples": samples.get(witness.node_id),
-                }
-                validate_growth_execution(
-                    projection, execution, source={"source_sha": source_sha, "source_clean": True}
-                )
-                if evidence is not None:
-                    evidence.append(execution)
-                observed[identity] = "pass"
-                continue
-            metrics = observations.get(witness.node_id)
-            if (
-                not isinstance(metrics, dict)
-                or not metrics
-                or any(
-                    not isinstance(key, str) or type(value) is not int or value < 0
-                    for key, value in metrics.items()
-                )
+        selected_sessions.append(workers or rows)
+    for rows in selected_sessions:
+        for record in rows:
+            if record.get("source_sha") != source_sha or record.get("source_clean") is not True:
+                raise ValueError("growth artifact is not bound to the required clean source")
+            if record.get("source_end") != {"source_sha": source_sha, "source_clean": True}:
+                raise ValueError("growth artifact source changed during execution")
+            if not all(
+                isinstance(record.get(field), dict)
+                for field in ("growth_witnesses", "growth_observations", "tests")
             ):
-                raise ValueError("missing or malformed actual growth observations")
+                raise ValueError("missing executed growth witness data")
+
+    def belongs(node: str, witness: TestWitness) -> bool:
+        return node == witness.node_id or (
+            node.startswith(witness.node_id + "[") and node.endswith("]")
+        )
+
+    observed: dict[str, str] = {}
+    for identity in expected:
+        witness = declarations[identity]
+        required_binding: dict[str, object] = {
+            "id": identity,
+            "source_sha256": witness.source_sha256,
+        }
+        projection = None
+        if witness.operation is not None:
+            projection, declaration = operation_projection(
+                witness.operation, root=root, numeric_policy=numeric_policy
+            )
+            required_binding["declaration"] = declaration
+        for rows in selected_sessions:
+            collections = [
+                {
+                    node: binding
+                    for node, binding in row["growth_witnesses"].items()
+                    if belongs(node, witness)
+                }
+                for row in rows
+            ]
+            reports = [
+                (node, row) for row in rows for node in row["tests"] if belongs(node, witness)
+            ]
+            if not any(collections) and not reports:
+                continue
+            collected = collections[0]
+            if not collected or any(value != collected for value in collections):
+                raise ValueError("growth witness collection differs between workers")
+            if any(binding != required_binding for binding in collected.values()):
+                raise ValueError("stale or mismatched owner growth witness")
+            if identity in observed or len({node for node, _ in reports}) != len(reports):
+                raise ValueError("duplicate owner growth witness execution")
+            if {node for node, _ in reports} != set(collected):
+                raise ValueError("missing or uncollected owner growth witness case execution")
+            for node, record in reports:
+                report = record["tests"][node]
+                if not isinstance(report, dict):
+                    raise ValueError("invalid or expected-failure witness assertion results")
+                phases: dict[str, object] = {}
+                for phase, value in report.items():
+                    if not isinstance(value, dict) or value.get("expected_failure") is not False:
+                        raise ValueError("invalid or expected-failure witness assertion results")
+                    phases[phase] = value.get("outcome")
+                if phases != {"setup": "passed", "call": "passed", "teardown": "passed"}:
+                    raise ValueError("required growth witness did not completely execute")
+                if projection is not None:
+                    samples = record.get("growth_samples")
+                    if not isinstance(samples, dict):
+                        raise ValueError("missing declared growth execution samples")
+                    execution: dict[str, object] = {
+                        "format": "riverhog-growth-execution/v1",
+                        "source": {"source_sha": source_sha, "source_clean": True},
+                        "source_end": record["source_end"],
+                        "run_id": run_id,
+                        "session_id": record["session_id"],
+                        "node_id": node,
+                        "owner_sha256": witness.source_sha256,
+                        "declaration": declaration,
+                        "outcomes": report,
+                        "samples": samples.get(node),
+                        "numeric_policy": record["numeric_policy"],
+                        "numeric_validation": None,
+                    }
+                    usage = _validate_growth_execution(
+                        projection,
+                        execution,
+                        source={"source_sha": source_sha, "source_clean": True},
+                        numeric_policy=numeric_policy,
+                    )
+                    execution["numeric_validation"] = numeric_validation_receipt(
+                        numeric_policy,
+                        {"source_sha": source_sha, "source_clean": True},
+                        usage,
+                    )
+                    if evidence is not None:
+                        evidence.append(execution)
+                    continue
+                metrics = record["growth_observations"].get(node)
+                if (
+                    not isinstance(metrics, dict)
+                    or not metrics
+                    or any(
+                        not isinstance(key, str) or type(value) is not int or value < 0
+                        for key, value in metrics.items()
+                    )
+                ):
+                    raise ValueError("missing or malformed actual growth observations")
             observed[identity] = "pass"
     if set(observed) != set(expected):
         raise ValueError("missing required owner growth witness execution")

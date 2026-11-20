@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 import subprocess
 import sys
@@ -14,6 +15,7 @@ from riverhog_core.services import upload_journal_epochs as epochs
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import event, func, insert, select, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import Frame, retained
 from tests.unit.test_journal_epoch_union import uid
 from tests.unit.test_journal_summary_consumers import source
@@ -158,7 +160,18 @@ def test_replacement_atomically_queues_and_reclaims_only_its_private_attempt(tmp
         assert counts(factory, uid(900001)) == (3,) * 7
         assert not queued(factory)
         assert owner._read_upload_journal_validation(factory, 1, JOURNAL) == before_source
-        assert b"".join(owner._iter_upload_journal_validation_chunks(factory, current)) == raw
+        from riverhog_core.services.upload_journal_source import UploadJournalValidationSource
+
+        source_reader = UploadJournalValidationSource(
+            factory, current, catalog=owner.admission_provenance_catalog()
+        )
+        pieces, offset = [], 0
+        while offset < len(raw):
+            piece = source_reader.read_window(offset, min(65536, len(raw) - offset))
+            assert piece
+            pieces.append(piece)
+            offset += len(piece)
+        assert b"".join(pieces) == raw
         with factory() as session:
             assert (
                 session.scalar(select(func.count()).select_from(Frame))
@@ -378,7 +391,9 @@ class ObservedDeletion:
 )
 def test_actual_indexed_retired_preparation_deletion_work(tmp_path, monkeypatch, record_property):
     binding = growth_binding(cleanup._delete_batch)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -472,6 +487,11 @@ def test_actual_indexed_retired_preparation_deletion_work(tmp_path, monkeypatch,
                     },
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
     record_property("growth_samples", samples)

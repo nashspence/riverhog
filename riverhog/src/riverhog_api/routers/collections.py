@@ -882,6 +882,7 @@ async def put_collection_upload_session_unit(
         unit,
         plan_sha256=parse_quoted_sha256_identity(if_match),
         content=bytes(content),
+        principal=principal,
     )
     return CollectionUploadUnitOut.model_validate(payload)
 

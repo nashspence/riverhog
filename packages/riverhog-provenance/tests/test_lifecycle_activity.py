@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import subprocess
 import sys
 from contextlib import closing
@@ -20,6 +21,8 @@ from riverhog_provenance.journal_store import _StoredValidator
 from test_assertion_staging import connect, contents, create, identity, proposed_octets, work
 from test_entry_preparation import WorkConnection
 from test_journal_lifecycle import lifecycle_graph
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 MODES = (
     "bare",
@@ -361,7 +364,9 @@ def test_actual_process_death_keeps_activity_assertion_and_progress_atomic(tmp_p
 )
 def test_actual_cold_activity_metadata_reads(tmp_path, record_property):
     binding = growth_binding(read_activity)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -385,7 +390,12 @@ def test_actual_cold_activity_metadata_reads(tmp_path, record_property):
                 "metrics": dict(metrics),
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     assert len(samples) == 80
     record_property("growth_samples", samples)

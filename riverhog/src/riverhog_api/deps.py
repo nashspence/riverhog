@@ -71,6 +71,7 @@ from riverhog_core.storage_incarnations import (
     reconcile_storage_incarnations,
 )
 from riverhog_core.stores.storage_adapter_archive_objects import (
+    StorageAdapterArchiveObjectCleanup,
     StorageAdapterArchiveObjectRangeStore,
     StorageAdapterArchiveResumableObjectStore,
     StorageAdapterImmutableArchiveObjectStore,
@@ -109,6 +110,7 @@ class ServiceContainer:
     bootstrap_token: str = field(default="", repr=False)
 
     def close(self) -> None:
+        self.collection_uploads.close()
         dispose_session_factory(self.session_factory)
         for client in self.storage_adapter_clients:
             client.close()
@@ -142,6 +144,8 @@ def _archive_store_binding(
     download_allowance: DownloadAllowance,
 ) -> ArchiveStoreBinding:
     adapter = validated_storage_adapter(client)
+    immutable = StorageAdapterImmutableArchiveObjectStore(adapter)
+    resumable = StorageAdapterArchiveResumableObjectStore(adapter)
     return ArchiveStoreBinding(
         incarnation_id=adapter.descriptor().storage_incarnation_id,
         store=StorageAdapterArchiveStore(
@@ -150,8 +154,11 @@ def _archive_store_binding(
             adapter=adapter,
             download_allowance=download_allowance,
         ),
-        resumable_objects=StorageAdapterArchiveResumableObjectStore(adapter),
-        immutable_objects=StorageAdapterImmutableArchiveObjectStore(adapter),
+        resumable_objects=resumable,
+        resumable_writes=resumable,
+        object_cleanup=StorageAdapterArchiveObjectCleanup(adapter),
+        immutable_objects=immutable,
+        immutable_writes=immutable,
         object_ranges=StorageAdapterArchiveObjectRangeStore(adapter),
     )
 
@@ -388,6 +395,18 @@ def _build_default_container(
             config,
             archive_stores,
             retrieval_cache=retrieval_cache,
+            cache_upload_candidates=(
+                retrieval_cache.population_candidates if retrieval_cache is not None else None
+            ),
+            cache_cleanup_create=(
+                partial(
+                    retrieval_cache.native_population_cleanup_turn,
+                    grants=config.archive_cleanup,
+                    tuning=config.cleanup_execution,
+                )
+                if retrieval_cache is not None
+                else None
+            ),
             session_factory=session_factory,
             throughput_tuning=throughput_tuning,
             policy=config.volume_policy,

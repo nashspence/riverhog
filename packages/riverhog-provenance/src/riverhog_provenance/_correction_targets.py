@@ -12,7 +12,7 @@ import json
 import re
 import sqlite3
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -27,9 +27,10 @@ from riverhog_growth_contracts import (
     declare_growth,
 )
 
+from ._admission_growth import admission_declaration
 from ._journal_prefix import PrefixState, _reference
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
-from .errors import ProvenanceValidationError
+from .errors import JournalValidationCapacity, ProvenanceValidationError
 
 if TYPE_CHECKING:
     from .journal import JournalFrame
@@ -208,7 +209,7 @@ class StaleCorrectionTargets(RuntimeError):
     """This operation no longer owns the exact correction and accepted prefix."""
 
 
-class CorrectionTargetCapacity(RuntimeError):
+class CorrectionTargetCapacity(JournalValidationCapacity):
     """The next logical atom requires a larger byte admission."""
 
 
@@ -257,6 +258,15 @@ class TargetState:
 
 
 @dataclass(frozen=True)
+class TargetAdmission:
+    source_binding: str
+    attempt_id: str
+    prefix_json: str
+    prior: tuple[object, ...] | None
+    after: TargetState
+
+
+@dataclass(frozen=True)
 class TargetBatch:
     attempt_id: str
     source_binding: str
@@ -275,6 +285,54 @@ def install(db: sqlite3.Connection) -> None:
         "CREATE TABLE correction_targets(position INTEGER PRIMARY KEY, "
         "assertion_id TEXT NOT NULL UNIQUE, sequence TEXT NOT NULL);"
     ).close()
+
+
+def _phase_declaration(operation: str) -> Declaration:
+    planning = operation == "prepare"
+    base = _declaration()
+    return replace(
+        base,
+        id="riverhog-provenance.sqlite-correction-targets-"
+        + ("plan" if planning else "application")
+        + ".growth/v1",
+        subjects=("riverhog_provenance._correction_targets.CorrectionTargets." + operation,),
+        scope="detached-correction-targets-plan"
+        if planning
+        else "owner-transaction-correction-targets-application",
+        starts_at=(
+            "load the exact owned phase outside a transaction"
+            if planning
+            else "accept one admitted exact proposal inside the parent's transaction"
+        ),
+        ends_at=(
+            "return a bounded detached proposal without changing native state"
+            if planning
+            else "return native changes and progress while preserving the open parent transaction"
+        ),
+        bounds=tuple(
+            replace(
+                bound, relation="equal", expression=Expression("constant", value=0, unit=bound.unit)
+            )
+            if planning and bound.metric in {"changed_rows", "written_value_octets"}
+            else bound
+            for bound in base.bounds
+        ),
+        conditions=(
+            *base.conditions,
+            "The proposal is admitted under the recorded row/byte budget; planning is detached "
+            "and application runs inside its owner's transaction.",
+        ),
+        invariants=(
+            *base.invariants,
+            "Planning never writes; application neither commits nor rolls back the parent's "
+            "transaction.",
+        ),
+        limitations=(
+            *base.limitations,
+            "Admission, parent publication and transaction control require caller composition; "
+            "this phase does not claim execution of the standalone advance operation.",
+        ),
+    )
 
 
 class CorrectionTargets:
@@ -314,60 +372,89 @@ class CorrectionTargets:
             raise StaleCorrectionTargets("correction differs from the current accepted prefix")
         return checkpoint
 
-    def initialize(self) -> TargetState:
-        """Explicitly admit a fresh operation; restoring uses load(), never reset."""
-        self._detached()
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
-            prefix = self._prefix()
-            with closing(
-                self.db.execute(
-                    "SELECT algorithm, attempt_id, target_count, substr(checkpoint, 1, "
-                    "?) FROM journal_correction_targets WHERE singleton = 1",
-                    (_HEADER_OCTETS + 1,),
-                )
-            ) as cursor:
-                old = cursor.fetchone()
-            version = 0
-            if old is not None:
-                if old[0] != ALGORITHM:
-                    raise RuntimeError("unknown correction target algorithm")
-                prior = TargetState.from_json(old[3], old[2])
-                if old[1] == self.attempt_id or not prior.done:
-                    raise StaleCorrectionTargets("correction target operation is already bound")
-                version = prior.version + 1
-            with closing(
-                self.db.execute(
-                    "SELECT position FROM correction_targets WHERE position >= 0 ORDER "
-                    "BY position LIMIT 1"
-                )
-            ) as cursor:
-                if cursor.fetchone() is not None:
-                    raise RuntimeError("unreclaimed correction target directory")
-            state = TargetState(version=version)
+    def _admission(self) -> TargetAdmission:
+        prefix = self._prefix()
+        with closing(
             self.db.execute(
-                "INSERT INTO journal_correction_targets VALUES (1, ?, ?, ?, ?, ?, ?) "
-                "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
-                "attempt_id=excluded.attempt_id, binding=excluded.binding, "
-                "target_count=excluded.target_count, prefix=excluded.prefix, "
-                "checkpoint=excluded.checkpoint",
-                (
-                    ALGORITHM,
-                    self.attempt_id,
-                    self.source_binding,
-                    self.count,
-                    prefix,
-                    state.to_json(),
-                ),
-            ).close()
+                "SELECT algorithm, attempt_id, target_count, substr(checkpoint, 1, "
+                "?) FROM journal_correction_targets WHERE singleton = 1",
+                (_HEADER_OCTETS + 1,),
+            )
+        ) as cursor:
+            old = cursor.fetchone()
+        version = 0
+        if old is not None:
+            if old[0] != ALGORITHM:
+                raise RuntimeError("unknown correction target algorithm")
+            prior = TargetState.from_json(old[3], old[2])
+            if old[1] == self.attempt_id or not prior.done:
+                raise StaleCorrectionTargets("correction target operation is already bound")
+            version = prior.version + 1
+        with closing(
+            self.db.execute(
+                "SELECT position FROM correction_targets WHERE position >= 0 ORDER "
+                "BY position LIMIT 1"
+            )
+        ) as cursor:
+            if cursor.fetchone() is not None:
+                raise RuntimeError("unreclaimed correction target directory")
+        state = TargetState(version=version)
+        return TargetAdmission(
+            self.source_binding, self.attempt_id, prefix, None if old is None else tuple(old), state
+        )
+
+    @declare_growth(
+        admission_declaration(
+            identifier="correction-targets",
+            subject="riverhog_provenance._correction_targets.CorrectionTargets.prepare_admission",
+            planning=True,
+        )
+    )
+    def prepare_admission(self) -> TargetAdmission:
+        self._detached()
+        return self._admission()
+
+    @declare_growth(
+        admission_declaration(
+            identifier="correction-targets",
+            subject="riverhog_provenance._correction_targets.CorrectionTargets._admit",
+            planning=False,
+        )
+    )
+    def _admit(self, batch: TargetAdmission) -> TargetState:
+        if not self.db.in_transaction:
+            raise RuntimeError("child admission requires an owner transaction")
+        if self._admission() != batch:
+            raise StaleCorrectionTargets("child admission was superseded")
+        self.db.execute(
+            "INSERT INTO journal_correction_targets VALUES (1, ?, ?, ?, ?, ?, ?) "
+            "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
+            "attempt_id=excluded.attempt_id, binding=excluded.binding, "
+            "target_count=excluded.target_count, prefix=excluded.prefix, "
+            "checkpoint=excluded.checkpoint",
+            (
+                ALGORITHM,
+                self.attempt_id,
+                self.source_binding,
+                self.count,
+                batch.prefix_json,
+                batch.after.to_json(),
+            ),
+        ).close()
+        return batch.after
+
+    def initialize(self) -> TargetState:
+        batch = self.prepare_admission()
+        self.db.execute("BEGIN IMMEDIATE").close()
+        try:
+            state = self._admit(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
         return state
 
-    def _header(self) -> tuple[TargetState, str]:
-        self._detached()
+    def _read_checkpoint(self) -> tuple[TargetState, str]:
         with closing(
             self.db.execute(
                 "SELECT algorithm, target_count, substr(prefix, 1, ?), "
@@ -386,6 +473,10 @@ class CorrectionTargets:
         if row[2] != self._prefix():
             raise StaleCorrectionTargets("accepted prefix changed during correction work")
         return TargetState.from_json(row[3], self.count), row[2]
+
+    def _header(self) -> tuple[TargetState, str]:
+        self._detached()
+        return self._read_checkpoint()
 
     def _source_row(self, row: tuple[int, str, str]) -> None:
         position, identity, sequence = row
@@ -448,6 +539,7 @@ class CorrectionTargets:
     def load(self) -> TargetState:
         return self._load()[0]
 
+    @declare_growth(_phase_declaration("prepare"))
     def prepare(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> TargetBatch:
         if type(row_budget) is not int or not 1 <= row_budget <= MAX_ROWS:
             raise ValueError("correction target row budget must be between one and 64")
@@ -558,6 +650,60 @@ class CorrectionTargets:
             self.attempt_id, self.source_binding, prefix, state.to_json(), after, tuple(rows)
         )
 
+    @declare_growth(_phase_declaration("_apply"))
+    def _apply(self, batch: TargetBatch) -> TargetState:
+        if not self.db.in_transaction:
+            raise RuntimeError("child application requires an owner transaction")
+        if (batch.attempt_id, batch.source_binding) != (self.attempt_id, self.source_binding):
+            raise StaleCorrectionTargets("correction proposal belongs to another input")
+        before = TargetState.from_json(batch.before_json, self.count)
+        if before.done:
+            current, prefix = self._read_checkpoint()
+            if current != before or prefix != batch.prefix_json:
+                raise StaleCorrectionTargets("finished correction proposal was superseded")
+            return current
+        with closing(
+            self.db.execute(
+                "UPDATE journal_correction_targets SET checkpoint = ? WHERE "
+                "singleton = 1 AND algorithm = ? AND attempt_id = ? AND binding = ? "
+                "AND target_count = ? AND prefix = ? AND checkpoint = ? AND "
+                "EXISTS(SELECT 1 FROM journal_prefix WHERE singleton = 1 AND "
+                "checkpoint = ?)",
+                (
+                    batch.after.to_json(),
+                    ALGORITHM,
+                    self.attempt_id,
+                    self.source_binding,
+                    self.count,
+                    batch.prefix_json,
+                    batch.before_json,
+                    batch.prefix_json,
+                ),
+            )
+        ) as cursor:
+            if cursor.rowcount != 1:
+                raise StaleCorrectionTargets("correction target proposal was superseded")
+        parameters: tuple[int | str, ...]
+        for row in batch.rows:
+            if before.phase == "verify":
+                sql, parameters = "INSERT INTO correction_targets VALUES (?, ?, ?)", row
+            elif before.phase == "apply":
+                sql, parameters = (
+                    "UPDATE assertions SET active = 0 WHERE assertion_id = ? AND "
+                    "sequence = ? AND active = 1",
+                    row[1:],
+                )
+            else:
+                sql, parameters = (
+                    "DELETE FROM correction_targets WHERE position = ? AND assertion_id "
+                    "= ? AND sequence = ?",
+                    row,
+                )
+            with closing(self.db.execute(sql, parameters)) as cursor:
+                if cursor.rowcount != 1:
+                    raise RuntimeError("correction target changed outside its work fence")
+        return batch.after
+
     def commit(self, batch: TargetBatch) -> TargetState:
         self._detached()
         if (batch.attempt_id, batch.source_binding) != (self.attempt_id, self.source_binding):
@@ -570,51 +716,12 @@ class CorrectionTargets:
             return current
         try:
             self.db.execute("BEGIN IMMEDIATE").close()
-            with closing(
-                self.db.execute(
-                    "UPDATE journal_correction_targets SET checkpoint = ? WHERE "
-                    "singleton = 1 AND algorithm = ? AND attempt_id = ? AND binding = ? "
-                    "AND target_count = ? AND prefix = ? AND checkpoint = ? AND "
-                    "EXISTS(SELECT 1 FROM journal_prefix WHERE singleton = 1 AND "
-                    "checkpoint = ?)",
-                    (
-                        batch.after.to_json(),
-                        ALGORITHM,
-                        self.attempt_id,
-                        self.source_binding,
-                        self.count,
-                        batch.prefix_json,
-                        batch.before_json,
-                        batch.prefix_json,
-                    ),
-                )
-            ) as cursor:
-                if cursor.rowcount != 1:
-                    raise StaleCorrectionTargets("correction target proposal was superseded")
-            parameters: tuple[int | str, ...]
-            for row in batch.rows:
-                if before.phase == "verify":
-                    sql, parameters = "INSERT INTO correction_targets VALUES (?, ?, ?)", row
-                elif before.phase == "apply":
-                    sql, parameters = (
-                        "UPDATE assertions SET active = 0 WHERE assertion_id = ? AND "
-                        "sequence = ? AND active = 1",
-                        row[1:],
-                    )
-                else:
-                    sql, parameters = (
-                        "DELETE FROM correction_targets WHERE position = ? AND assertion_id "
-                        "= ? AND sequence = ?",
-                        row,
-                    )
-                with closing(self.db.execute(sql, parameters)) as cursor:
-                    if cursor.rowcount != 1:
-                        raise RuntimeError("correction target changed outside its work fence")
+            state = self._apply(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
-        return batch.after
+        return state
 
     @declare_growth(_declaration())
     def advance(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> TargetState:

@@ -68,6 +68,7 @@ class CollectionProvenanceIndexGenerationRecord(Base):
             name="ck_provenance_index_generation_complete",
         ),
         Index("ix_provenance_index_generations_collection", "collection_id", "complete"),
+        Index("ix_provenance_index_generations_retirement", "collection_id", "build_id"),
     )
 
 

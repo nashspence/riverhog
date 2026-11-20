@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
@@ -42,11 +43,51 @@ def verify_member_binding(
     deliberately accepts no member pathname or latest-journal lookup.
     """
 
+    def has_member_history(artifact_id: str) -> bool:
+        subject = {"scope": "local", "object_id": artifact_id, "object_type": "artifact"}
+        return any(
+            row["journal_id"] == summary.journal_id
+            and row["artifact"] == subject
+            and row["role"] == _MEMBER_HISTORY_ROLE
+            for row in summary.graph_validation.view.get("journal_subjects", ())
+        )
+
+    result = verify_selected_member_binding(
+        member=member,
+        binding=binding,
+        journal_id=summary.journal_id,
+        anchor=summary.anchor,
+        objects=summary.graph_validation.objects,
+        has_member_history=has_member_history,
+        delivery_context_id=delivery_context_id,
+    )
+    if reader is not None:
+        verify_delivery(summary, binding.delivery_association_id, reader)
+    return result
+
+
+def verify_selected_member_binding(
+    *,
+    member: ArtifactMemberIdentityDocument,
+    binding: CollectionArtifactProvenanceBindingDocument,
+    journal_id: str,
+    anchor: Mapping[str, Any],
+    objects: Mapping[str, dict[str, Any]],
+    has_member_history: Callable[[str], bool],
+    delivery_context_id: str,
+) -> VerifiedMemberBinding:
+    """Apply member policy to exact admitted historical Native selections.
+
+    The caller owns current source admission and lifetime. Indexed existence
+    supplies only the same journal/member-history predicate as the full view;
+    it grants no independent archive or permission authority.
+    """
     if member.artifact_id != binding.artifact_id:
         raise ProvenanceValidationError("member and binding artifact IDs differ")
-    if summary.anchor != binding.journal.model_dump(mode="json"):
+    if journal_id != binding.journal.journal_id or anchor != binding.journal.model_dump(
+        mode="json"
+    ):
         raise ProvenanceValidationError("selected primary journal anchor differs")
-    objects = summary.graph_validation.objects
     association = objects.get(binding.delivery_association_id)
     if association is None or association["type"] != "delivery_association":
         raise ProvenanceValidationError("binding does not select an effective delivery association")
@@ -74,21 +115,13 @@ def verify_member_binding(
     occurrence = objects[state["occurrence_id"]]
     if occurrence["type"] != "occurrence":
         raise ProvenanceValidationError("delivery State has no effective Occurrence")
-    subject = {"scope": "local", "object_id": occurrence["artifact_id"], "object_type": "artifact"}
-    if not any(
-        row["journal_id"] == summary.journal_id
-        and row["artifact"] == subject
-        and row["role"] == _MEMBER_HISTORY_ROLE
-        for row in summary.graph_validation.view.get("journal_subjects", ())
-    ):
+    if not has_member_history(occurrence["artifact_id"]):
         raise ProvenanceValidationError("primary journal does not declare the member history")
     hint: tuple[str, ...] | None = None
     if "materialization_hint" in occurrence:
         value: Any = occurrence["materialization_hint"]
         ContractCatalog().validate(_HINT_SCHEMA, value)
         hint = tuple(value["components"])
-    if reader is not None:
-        verify_delivery(summary, binding.delivery_association_id, reader)
     return VerifiedMemberBinding(
         artifact_id=member.artifact_id,
         observation_id=observation["id"],
@@ -98,4 +131,4 @@ def verify_member_binding(
     )
 
 
-__all__ = ["VerifiedMemberBinding", "verify_member_binding"]
+__all__ = ["VerifiedMemberBinding", "verify_member_binding", "verify_selected_member_binding"]

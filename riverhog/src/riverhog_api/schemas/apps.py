@@ -28,7 +28,13 @@ class AppSummaryOut(RiverhogModel):
     name: ApplicationName
     keys: int
     active_keys: int
-    last_used_at: CanonicalUtcTimestamp | None
+    last_used_at: CanonicalUtcTimestamp | None = Field(
+        description=(
+            "Latest recorded authentication observation among the application's current keys. "
+            "Recording is best effort under write contention; a null or stale value does not "
+            "establish inactivity and is not an authorization or accounting record."
+        )
+    )
 
 
 class AppListOut(RiverhogModel):
@@ -89,7 +95,13 @@ class AppKeyOut(RiverhogModel):
     created_at: CanonicalUtcTimestamp
     expires_at: CanonicalUtcTimestamp | None
     revoked_at: CanonicalUtcTimestamp | None
-    last_used_at: CanonicalUtcTimestamp | None
+    last_used_at: CanonicalUtcTimestamp | None = Field(
+        description=(
+            "Most recent recorded successful authentication observation for this key. "
+            "Recording is best effort under write contention; a null or stale value does not "
+            "establish inactivity and is not an authorization or accounting record."
+        )
+    )
 
     @model_validator(mode="after")
     def validate_status_evidence(self) -> Self:

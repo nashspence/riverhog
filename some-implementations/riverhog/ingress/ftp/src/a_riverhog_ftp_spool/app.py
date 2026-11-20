@@ -9,7 +9,8 @@ import ipaddress
 import json
 import logging
 import secrets
-from collections.abc import AsyncIterator, Mapping, Sequence
+import sqlite3
+from collections.abc import AsyncIterator, Callable, Mapping, Sequence
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from http import HTTPStatus
@@ -41,6 +42,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from a_riverhog_ftp_spool.config import FtpSpoolConfig, load_config, load_source_config
 from a_riverhog_ftp_spool.landing import FtpEventCursorChanged, FtpSpool
 from a_riverhog_ftp_spool.listener import serve_ftp
+from a_riverhog_ftp_spool.operational_state import FtpOperationalState
 
 BEARER = HTTPBearer(auto_error=False, scheme_name="RiverhogFtpSpoolBearer")
 LOGGER = logging.getLogger(__name__)
@@ -135,7 +137,13 @@ class FtpSpoolComposition:
     adapter: FtpSpool
 
     @classmethod
-    def build(cls, config: FtpSpoolConfig) -> FtpSpoolComposition:
+    def build(
+        cls,
+        config: FtpSpoolConfig,
+        *,
+        state_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_state_storage_open: Callable[[FtpOperationalState], None] | None = None,
+    ) -> FtpSpoolComposition:
         observer = resolve_provenance_observer(config.provenance_observer)
         api = ApiClient(
             base_url=config.riverhog_base_url,
@@ -149,6 +157,8 @@ class FtpSpoolComposition:
                 api,
                 config,
                 provenance_observer=observer,
+                state_connection_factory=state_connection_factory,
+                on_state_storage_open=on_state_storage_open,
             ),
         )
 

@@ -79,6 +79,7 @@ class _Adapter:
 
 def _composition(tmp_path: Path) -> FtpSpoolComposition:
     config = FtpSpoolConfig(
+        primary_state={"scope": {"service": "fixture-service", "account": "fixture-account"}},
         host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",

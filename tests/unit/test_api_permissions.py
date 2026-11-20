@@ -304,6 +304,7 @@ def test_collection_upload_unit_accepts_the_documented_binary_body() -> None:
 
     class Uploads:
         content: bytes | None = None
+        expected_principal = principal
 
         def require_access(self, collection_id: int, current: Principal) -> None:
             assert collection_id == 42
@@ -334,7 +335,9 @@ def test_collection_upload_unit_accepts_the_documented_binary_body() -> None:
             *,
             plan_sha256: str,
             content: bytes,
+            principal: Principal,
         ) -> dict[str, object]:
+            assert principal is self.expected_principal
             assert (collection_id, volume_id, unit) == (42, f"pack-{0:064x}", 0)
             assert plan_sha256 == "a" * 64
             self.content = content

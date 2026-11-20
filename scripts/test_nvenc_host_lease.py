@@ -162,6 +162,10 @@ def qualify(image: str) -> dict[str, Any]:
                     f"{PREFIX}_IMAGE_ID": image_id,
                     f"{PREFIX}_SOURCE_REVISION": revision,
                     f"{PREFIX}_STATE_ROOT": "/fixture/state",
+                    f"{PREFIX}_PRIMARY_STATE": (
+                        '{"scope":{"service":"qualification-service",'
+                        '"account":"qualification-account"}}'
+                    ),
                     f"{PREFIX}_WORKSPACE": "/fixture/workspace",
                     f"{PREFIX}_EXECUTION_LEASE_FILE": "/run/stove0-execution-lease/exclusive.lock",
                 },

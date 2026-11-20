@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from email import policy
 from email.parser import BytesParser
+from fnmatch import fnmatchcase
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
@@ -35,7 +36,9 @@ from license_expression import (  # type: ignore[import-untyped]
 )
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
-from packaging.utils import canonicalize_name
+from packaging.tags import parse_tag
+from packaging.utils import InvalidWheelFilename, canonicalize_name, parse_wheel_filename
+from packaging.version import InvalidVersion, Version
 from runtime_image_attribution import RuntimeAttributionError, locked_runtime_payloads
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1078,7 +1081,7 @@ def publication_contract(
             "artifacts": [
                 {
                     "format": "wheel",
-                    "coordinate": f"dist/{artifact_name}-{{version}}-py3-none-any.whl",
+                    "coordinate": f"dist/{artifact_name}-{{version}}-*.whl",
                 },
                 {
                     "format": "sdist",
@@ -1974,6 +1977,30 @@ def _distribution_metadata(path: Path) -> tuple[str, str, str, str, set[str]]:
             if len(names) != 1:
                 raise ReleaseError(f"wheel has no unique METADATA: {path.name}")
             body = archive.read(names[0])
+            wheel_names = [name for name in archive.namelist() if name.endswith(".dist-info/WHEEL")]
+            if (
+                len(wheel_names) != 1
+                or PurePosixPath(wheel_names[0]).parent != PurePosixPath(names[0]).parent
+            ):
+                raise ReleaseError(f"wheel has no unique WHEEL metadata: {path.name}")
+            wheel_metadata = BytesParser(policy=policy.default).parsebytes(
+                archive.read(wheel_names[0])
+            )
+            try:
+                filename_name, filename_version, _build, filename_tags = parse_wheel_filename(
+                    path.name
+                )
+                stored_tags = {
+                    tag
+                    for field in (wheel_metadata.get_all("Tag") or [])
+                    for tag in parse_tag(str(field))
+                }
+            except (InvalidWheelFilename, ValueError) as exc:
+                raise ReleaseError(f"wheel compatibility tags are invalid: {path.name}") from exc
+            if stored_tags != filename_tags:
+                raise ReleaseError(
+                    f"wheel compatibility tags differ from its filename: {path.name}"
+                )
     else:
         with tarfile.open(path, mode="r:gz") as archive:
             members = [
@@ -1995,6 +2022,16 @@ def _distribution_metadata(path: Path) -> tuple[str, str, str, str, set[str]]:
     dependencies = {
         _dependency_name(str(value)) for value in (metadata.get_all("Requires-Dist") or [])
     }
+    if path.suffix == ".whl":
+        try:
+            metadata_version = Version(version)
+        except InvalidVersion as exc:
+            raise ReleaseError(f"wheel metadata version is invalid: {path.name}") from exc
+        if (
+            filename_name != _canonical_distribution_name(name)
+            or filename_version != metadata_version
+        ):
+            raise ReleaseError(f"wheel filename and metadata identity differ: {path.name}")
     return (
         _canonical_distribution_name(name),
         version,
@@ -2054,7 +2091,7 @@ def _validate_distribution_artifacts(
     *,
     version: str,
 ) -> dict[str, tuple[Project, set[str]]]:
-    expected: dict[str, Project] = {}
+    patterns: dict[str, Project] = {}
     publication = publication_contract(root, projects)
     distributions = cast(dict[str, dict[str, object]], publication["distributions"])
     projects_by_name = {project.name: project for project in projects}
@@ -2065,15 +2102,24 @@ def _validate_distribution_artifacts(
             artifact_path = PurePosixPath(coordinate)
             if artifact_path.parent != PurePosixPath("dist"):
                 raise ReleaseError(f"distribution artifact is outside dist: {coordinate}")
-            if artifact_path.name in expected:
+            if artifact_path.name in patterns:
                 raise ReleaseError(f"distribution artifact is repeated: {coordinate}")
-            expected[artifact_path.name] = project
+            patterns[artifact_path.name] = project
     dist = root / "dist"
     actual = {path.name for path in dist.iterdir() if path.is_file()}
-    if actual != set(expected):
+    expected: dict[str, Project] = {}
+    missing = []
+    for pattern, project in patterns.items():
+        matched = {name for name in actual if fnmatchcase(name, pattern)}
+        if not matched:
+            missing.append(pattern)
+        if set(expected) & matched:
+            raise ReleaseError("distribution artifact matches multiple release units")
+        expected.update((name, project) for name in sorted(matched))
+    if missing or actual != set(expected):
         raise ReleaseError(
             "distribution artifact set differs from the release-unit inventory: "
-            f"missing={sorted(set(expected) - actual)} extra={sorted(actual - set(expected))}"
+            f"missing={sorted(missing)} extra={sorted(actual - set(expected))}"
         )
     _internal, direct, _licenses = _project_dependency_graph(root, projects)
     validated: dict[str, tuple[Project, set[str]]] = {}

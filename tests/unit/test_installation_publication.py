@@ -30,7 +30,7 @@ def test_index_consumption_requires_exact_release_identity_inventory_and_links(t
     elif change == "digest":
         manifest["index"]["snapshot_sha256"] = "0" * 64
     elif change == "wheel":
-        assets[next(iter(manifest["wheels"].values()))["asset"]]["digest"] = "sha256:" + "0" * 64
+        assets[next(iter(manifest["wheels"].values()))[0]["asset"]]["digest"] = "sha256:" + "0" * 64
     else:
         write_index_snapshot(
             archive,

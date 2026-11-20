@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import Any
 
 from .common import fingerprint
@@ -10,6 +10,34 @@ from .errors import ProvenanceValidationError
 from .journal import JournalSummary
 from .model import BinaryReadable, ObservationPolicy
 from .observer import measure
+
+
+def _delivery_projection(value: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Retain only the fields consumed by the selected-delivery predicate.
+
+    Native's content schema admits exactly one SHA-256 digest. Other fixity
+    algorithms, opaque descriptions and advisory Occurrence fields remain in
+    the original assertion, outside this per-selection semantic projection.
+    """
+    kind = value["type"]
+    if kind not in ("delivery_association", "state", "occurrence", "observation"):
+        return None
+    result = {name: value[name] for name in ("id", "type", "assertion_id")}
+    if kind == "delivery_association":
+        result.update(
+            (name, value[name]) for name in ("role", "slot", "state", "verification_observation_id")
+        )
+    elif kind == "state":
+        result["occurrence_id"] = value["occurrence_id"]
+    elif kind == "observation":
+        result["state"] = value["state"]
+        result["content"] = {
+            "size_bytes": value["content"]["size_bytes"],
+            "digests": [
+                digest for digest in value["content"]["digests"] if digest["algorithm"] == "sha-256"
+            ],
+        }
+    return result
 
 
 def selected_delivery_occurrence(
@@ -28,13 +56,33 @@ def selected_delivery_occurrence(
     back to an ancestor, sibling, or source locator.
     """
 
-    if binding.get("artifact_id") != artifact_id or binding.get("journal") != summary.anchor:
+    return _selected_delivery_occurrence(
+        summary.anchor,
+        summary.graph_validation.objects.get,
+        binding=binding,
+        artifact_id=artifact_id,
+        byte_count=byte_count,
+        sha256=sha256,
+        member_role=member_role,
+    )
+
+
+def _selected_delivery_occurrence(
+    anchor: Mapping[str, Any],
+    lookup: Callable[[str], dict[str, Any] | None],
+    *,
+    binding: Mapping[str, Any],
+    artifact_id: str,
+    byte_count: int,
+    sha256: str,
+    member_role: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    if binding.get("artifact_id") != artifact_id or binding.get("journal") != anchor:
         raise ProvenanceValidationError("primary delivery binding differs from selected member")
-    objects = summary.graph_validation.objects
     association_id = binding.get("delivery_association_id")
     if not isinstance(association_id, str):
         raise ProvenanceValidationError("primary delivery association identity is invalid")
-    association = objects.get(association_id)
+    association = lookup(association_id)
     if association is None or association.get("type") != "delivery_association":
         raise ProvenanceValidationError("primary delivery association is absent")
     if association.get("role") != member_role or association.get("slot") != {
@@ -48,7 +96,7 @@ def selected_delivery_occurrence(
     state_id = state_reference.get("object_id")
     if not isinstance(state_id, str):
         raise ProvenanceValidationError("primary delivery State identity is invalid")
-    state = objects.get(state_id)
+    state = lookup(state_id)
     if (
         state is None
         or state.get("type") != "state"
@@ -58,13 +106,13 @@ def selected_delivery_occurrence(
     occurrence_id = state.get("occurrence_id")
     if not isinstance(occurrence_id, str):
         raise ProvenanceValidationError("primary delivery Occurrence identity is invalid")
-    occurrence = objects.get(occurrence_id)
+    occurrence = lookup(occurrence_id)
     if occurrence is None or occurrence.get("type") != "occurrence":
         raise ProvenanceValidationError("primary delivery Occurrence is absent")
     observation_id = association.get("verification_observation_id")
     if not isinstance(observation_id, str):
         raise ProvenanceValidationError("primary delivery observation identity is invalid")
-    observation = objects.get(observation_id)
+    observation = lookup(observation_id)
     if (
         observation is None
         or observation.get("type") != "observation"

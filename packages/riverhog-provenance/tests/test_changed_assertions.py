@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from contextlib import closing, contextmanager
 
@@ -14,6 +15,8 @@ from riverhog_provenance._changed_assertions import (
 )
 from test_assertion_staging import connect, create, identity
 from test_entry_preparation import logical_octets, owner
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 class Cursor(sqlite3.Cursor):
@@ -206,10 +209,12 @@ def test_iterator_visits_sparse_keys_once_without_prefetch_or_held_cursor(tmp_pa
 
 
 def test_native_row_checks_observe_no_open_assertion_cursor(journal, catalog, monkeypatch):
-    from riverhog_provenance import journal_store, validate_journal
+    from riverhog_provenance import _entry_replay, journal_store, validate_journal
+    from riverhog_provenance._generic_semantics import GenericSemantics
 
     connections = []
-    original_connect, original_generic = sqlite3.connect, journal_store._StoredValidator.generic
+    original_connect = sqlite3.connect
+    original_admission = GenericSemantics.prepare_admission
 
     def tracked_connect(*args, **kwargs):
         connection = original_connect(*args, **kwargs, factory=Connection)
@@ -218,24 +223,24 @@ def test_native_row_checks_observe_no_open_assertion_cursor(journal, catalog, mo
 
     seen = []
 
-    def generic(validator, row):
-        assert validator.store.db in connections
-        assert all(cursor.closed for _sql, _args, cursor in validator.store.db.statements)
-        seen.append(row["assertion_id"])
-        return original_generic(validator, row)
+    def admission(worker):
+        assert worker.db in connections and not worker.db.in_transaction
+        assert all(cursor.closed for _sql, _args, cursor in worker.db.statements)
+        seen.append(worker.assertion_id)
+        return original_admission(worker)
 
     # Track only the read primitive, so other owning SQL lifetimes remain independent.
-    original_read = journal_store.read_changed_assertion
+    original_read = _entry_replay.read_changed_assertion
 
     def read(db, **kwargs):
         with db.observe():
             return original_read(db, **kwargs)
 
     monkeypatch.setattr(journal_store.sqlite3, "connect", tracked_connect)
-    monkeypatch.setattr(journal_store, "read_changed_assertion", read)
-    monkeypatch.setattr(journal_store._StoredValidator, "generic", generic)
+    monkeypatch.setattr(_entry_replay, "read_changed_assertion", read)
+    monkeypatch.setattr(GenericSemantics, "prepare_admission", admission)
     with validate_journal(journal, catalog=catalog) as summary:
-        assert seen == sorted(seen) and seen
+        assert seen == sorted(seen) and set(seen) == set(summary.assertion_entries)
         assert summary.journal_bytes == len(journal)
 
 
@@ -246,7 +251,9 @@ def test_native_row_checks_observe_no_open_assertion_cursor(journal, catalog, mo
 )
 def test_actual_cold_changed_assertion_admission(tmp_path, record_property):
     binding = growth_binding(read_changed_assertion)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -281,6 +288,11 @@ def test_actual_cold_changed_assertion_admission(tmp_path, record_property):
                 "metrics": dict(metrics),
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     record_property("growth_samples", samples)

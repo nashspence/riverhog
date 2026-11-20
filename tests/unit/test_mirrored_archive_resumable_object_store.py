@@ -204,6 +204,14 @@ class _Cache:
             admitted_at=NOW,
         )
 
+    def observe_completed_population(
+        self, *, expected_bytes: int, **_: object
+    ) -> RetrievalCacheReceipt | None:
+        if self.store.completed is None:
+            return None
+        assert len(self.store.completed) == expected_bytes
+        return self.store._completed_receipt().retrieval_cache
+
     def resumable_object_store(self, **_: object) -> _ResumableStore:
         return self.store
 
@@ -416,3 +424,19 @@ def test_abort_removes_a_sealed_cache_orphan_when_archive_is_incomplete() -> Non
 
     assert cache.completed is None
     assert "cache:delete" in cache.events
+
+
+def test_completed_archive_lookup_does_not_admit_or_release_cache_work() -> None:
+    archive = _ResumableStore(
+        "archive", object_path="archives/one/volumes/pack.tar.age", completed=b"encrypted"
+    )
+    cache = _ResumableStore("cache")
+    completed = _mirror(archive, cache).find_completed_write(
+        object_path="archives/one/volumes/pack.tar.age",
+        expected_bytes=9,
+        expected_content_type="application/vnd.riverhog.pack+age",
+        expected_metadata={"riverhog-format": "riverhog-pack-volume/v1"},
+    )
+    assert completed is not None and completed.retrieval_cache is None
+    assert cache.events == []
+    assert cache.object_path is None

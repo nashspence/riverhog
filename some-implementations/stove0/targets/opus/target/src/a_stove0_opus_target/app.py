@@ -26,6 +26,7 @@ from stove0_target_support import (
     TARGET_HTTP_OPERATIONS,
     TargetHttpBinding,
     TargetHttpResponse,
+    publication_state_policy,
     terminal_state_retention_seconds,
 )
 
@@ -204,6 +205,7 @@ def target_main(argv: Sequence[str] | None = None) -> int:
     prefix = "A_STOVE0_OPUS_TARGET"
     args = _parser().parse_args(argv)
     target = OpusTargetService(
+        primary_state=publication_state_policy(prefix),
         state_root=Path(os.getenv(f"{prefix}_STATE_ROOT", "/var/lib/a-stove0-opus-target")),
         workspace_root=Path(os.getenv(f"{prefix}_WORKSPACE", "/run/a-stove0-opus-target")),
         ffmpeg=os.getenv("STOVE0_FFMPEG_BIN", "ffmpeg"),

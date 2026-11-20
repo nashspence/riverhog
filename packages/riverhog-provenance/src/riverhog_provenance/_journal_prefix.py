@@ -13,7 +13,7 @@ import re
 import sqlite3
 from collections.abc import Mapping
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -31,7 +31,7 @@ from riverhog_provenance_contracts import (
     ContractCatalog,
     require_canonical_uuid_urn,
 )
-from sha256_continuation import CheckpointSHA256
+from sha256_continuation import CheckpointSHA256, sha256_compress
 
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ProvenanceValidationError
@@ -194,8 +194,8 @@ def _publication_declaration() -> Declaration:
                 "published_metadata_octets",
                 OCTETS,
                 "upper",
-                Expression("constant", value=_CHECKPOINT_CHARACTERS + 512 + 20, unit=OCTETS),
-                "The fixed header, canonical predecessor and owning ordinal text.",
+                Expression("constant", value=_CHECKPOINT_CHARACTERS + 512 + 20 + 512, unit=OCTETS),
+                "The header, predecessor, ordinal and accepted frame SHA continuation.",
             ),
             Bound(
                 "published_payload_octets",
@@ -265,6 +265,142 @@ def _publication_declaration() -> Declaration:
             "are not physical resource guarantees from these counters.",
             "Rejected proposals and rollback have separate correctness and attempt evidence.",
             "This phase does not establish resumability of the whole semantic validator.",
+        ),
+    )
+
+
+def _publication_phase_declaration(operation: str) -> Declaration:
+    base = _publication_declaration()
+    planning = operation == "prepare_publication"
+
+    def count(value: int) -> Expression:
+        return Expression("constant", value=value, unit=COUNT)
+
+    bounds = tuple(
+        replace(
+            bound,
+            relation="equal" if planning else bound.relation,
+            expression=(
+                Expression("dimension", name="padding_blocks")
+                if planning and bound.metric == "sha256_compression_calls"
+                else Expression("constant", value=0, unit=bound.unit)
+                if planning or bound.metric == "sha256_compression_calls"
+                else count(2)
+                if bound.metric == "sql_statements"
+                else bound.expression
+            ),
+            meaning=(
+                "Detached planning publishes nothing; only a matched anchor finalizes SHA padding."
+                if planning
+                else "The caller transaction contains exactly the fenced header and frame writes."
+            ),
+        )
+        for bound in base.bounds
+    )
+    padding = (
+        tuple(
+            Bound(
+                "padding_" + metric,
+                unit,
+                "equal",
+                Expression(
+                    "delegate",
+                    name="padding",
+                    metric=metric,
+                    terms=(Expression("dimension", name="padding_blocks"),),
+                    arguments=(("block_octets", Expression("constant", value=64, unit=OCTETS)),),
+                ),
+                "Actual native SHA padding calls, already included in the compression count.",
+            )
+            for metric, unit in (
+                ("block_input_octets", OCTETS),
+                ("rotate_calls", COUNT),
+                ("returned_words", COUNT),
+            )
+        )
+        if planning
+        else ()
+    )
+    return replace(
+        base,
+        id="riverhog-provenance.sqlite-journal-prefix-publication-"
+        + ("planning" if planning else "application")
+        + ".growth/v1",
+        subjects=("riverhog_provenance._journal_prefix.JournalPrefix." + operation,),
+        scope="native-sqlite-accepted-prefix-"
+        + ("detached-publication-plan" if planning else "caller-transaction-publication"),
+        starts_at="receive an exact prepared frame under its owner binding",
+        ends_at=(
+            "return detached prefix metadata without database work"
+            if planning
+            else "return after two writes while preserving the caller transaction"
+        ),
+        dimensions=(
+            *base.dimensions,
+            *(
+                (
+                    Dimension(
+                        "padding_blocks",
+                        COUNT,
+                        "Zero without an anchor entry match; otherwise one for a prepared SHA tail "
+                        "below 56 octets, two for 56 through 63.",
+                    ),
+                )
+                if planning
+                else ()
+            ),
+        ),
+        bounds=(*bounds, *padding),
+        conditions=(
+            *base.conditions,
+            "Padding count is derived from the input anchor entry identity and prepared SHA "
+            "continuation, not from measured calls.",
+            "Application requires the caller transaction; planning does not change its "
+            "transaction state.",
+        ),
+        invariants=(
+            *base.invariants,
+            "Neither phase commits nor rolls back its caller's transaction.",
+        ),
+    )
+
+
+def _composed_publication_declaration() -> Declaration:
+    base = _publication_declaration()
+    planning = _publication_phase_declaration("prepare_publication")
+    application = _publication_phase_declaration("_apply")
+    subtotals = tuple(
+        Bound(
+            "prefix_" + bound.metric,
+            bound.unit,
+            "upper",
+            Expression(
+                "sum",
+                terms=tuple(
+                    Expression(
+                        "delegate",
+                        name=name,
+                        metric=bound.metric,
+                        terms=(Expression("constant", value=1, unit=COUNT),),
+                        arguments=tuple(
+                            (dimension.name, Expression("dimension", name=dimension.name))
+                            for dimension in child.dimensions
+                        ),
+                    )
+                    for name, child in (("plan", planning), ("application", application))
+                ),
+            ),
+            "Actual phase subtotal, already included in the inclusive primitive observation.",
+        )
+        for bound in base.bounds
+    )
+    return replace(
+        base,
+        dimensions=planning.dimensions,
+        bounds=(*base.bounds, *subtotals),
+        invariants=(
+            *base.invariants,
+            "Actual planning and application compose without charging their inclusive work twice.",
         ),
     )
 
@@ -398,10 +534,17 @@ class PreparedEntry:
         return self.frame.document
 
 
+@dataclass(frozen=True)
+class PrefixPublication:
+    prepared: PreparedEntry
+    after: PrefixState
+
+
 def install(db: sqlite3.Connection) -> None:
     """Initialize a fresh owning workspace; never upgrade or replace one."""
     db.executescript(
-        "CREATE TABLE frames(sequence TEXT PRIMARY KEY, value BLOB, reference BLOB);"
+        "CREATE TABLE frames(sequence TEXT PRIMARY KEY, value BLOB, reference BLOB, "
+        "prefix_state TEXT NOT NULL);"
         "CREATE TABLE journal_prefix(singleton INTEGER PRIMARY KEY CHECK(singleton = 1), "
         "attempt_id TEXT NOT NULL, binding BLOB NOT NULL, checkpoint TEXT NOT NULL);"
     )
@@ -443,18 +586,25 @@ class JournalPrefix:
     def expected_anchor(self) -> dict[str, Any] | None:
         return None if self.anchor_json is None else json.loads(self.anchor_json)
 
+    def _initialize(self) -> PrefixState:
+        if not self.db.in_transaction:
+            raise RuntimeError("prefix initialization requires an owner transaction")
+        with closing(self.db.execute("SELECT 1 FROM frames LIMIT 1")) as rows:
+            if rows.fetchone() is not None:
+                raise RuntimeError("prefix initialization requires a fresh frame directory")
+        state = PrefixState.empty()
+        self.db.execute(
+            "INSERT INTO journal_prefix VALUES (1, ?, ?, ?)",
+            (self.attempt_id, self.binding, state.to_json()),
+        ).close()
+        return state
+
     def initialize(self) -> PrefixState:
         if self.db.in_transaction:
             raise RuntimeError("prefix binding requires a closed owner transaction")
         try:
             self.db.execute("BEGIN IMMEDIATE").close()
-            with closing(self.db.execute("SELECT 1 FROM frames LIMIT 1")) as rows:
-                if rows.fetchone() is not None:
-                    raise RuntimeError("prefix initialization requires a fresh frame directory")
-            self.db.execute(
-                "INSERT INTO journal_prefix VALUES (1, ?, ?, ?)",
-                (self.attempt_id, self.binding, PrefixState.empty().to_json()),
-            ).close()
+            self._initialize()
             self.db.commit()
         except BaseException:
             self.db.rollback()
@@ -555,56 +705,80 @@ class JournalPrefix:
             digest.export_state(),
         )
 
-    @declare_growth(_publication_declaration())
-    def commit(self, prepared: PreparedEntry) -> PrefixState:
-        """Commit the exact frame and prefix after the owning native checks succeed.
+    @declare_growth(
+        _publication_phase_declaration("prepare_publication"),
+        delegates=(("padding", sha256_compress),),
+    )
+    def prepare_publication(self, prepared: PreparedEntry) -> PrefixPublication:
+        """Prepare native anchor and hash metadata without publishing its prefix."""
+        if (prepared.attempt_id, prepared.binding) != (self.attempt_id, self.binding):
+            raise StaleJournalPrefix("journal prefix proposal belongs to another replay")
+        before = prepared.before
+        digest = CheckpointSHA256.from_state(prepared.sha256_state)
+        reference = _reference(json.loads(prepared.reference_json))
+        matched = before.matched_anchor
+        expected = self.expected_anchor
+        if expected and reference["entry_id"] == expected["through"]["entry_id"]:
+            candidate = {
+                "journal_id": prepared.journal_id,
+                "through": reference,
+                "prefix_sha256": digest.hexdigest(),
+                "prefix_bytes": str(digest.total_bytes),
+            }
+            if candidate != expected:
+                raise ProvenanceValidationError("externally supplied prefix anchor mismatch")
+            matched = True
+        after = PrefixState(
+            before.frame_count + 1,
+            digest.total_bytes,
+            prepared.journal_id,
+            prepared.reference_json,
+            digest.export_state(),
+            matched,
+        )
+        return PrefixPublication(prepared, after)
 
-        The bounded entry atom was hashed off-transaction. Semantic preparation may
-        already have private writes; only this frame and its prefix become the
-        accepted watermark together. This does not make earlier graph subphases
-        recoverable or authorize resuming a disposable native projection.
-        """
+    @declare_growth(_publication_phase_declaration("_apply"))
+    def _apply(self, batch: PrefixPublication) -> PrefixState:
+        if not self.db.in_transaction:
+            raise RuntimeError("prefix application requires an owner transaction")
+        prepared, after = (batch.prepared, batch.after)
+        before, frame = (prepared.before, prepared.frame)
+        if (prepared.attempt_id, prepared.binding) != (self.attempt_id, self.binding):
+            raise StaleJournalPrefix("journal prefix proposal belongs to another replay")
+        with closing(
+            self.db.execute(
+                "UPDATE journal_prefix SET checkpoint = ? WHERE singleton = 1 "
+                "AND attempt_id = ? AND binding = ? AND checkpoint = ?",
+                (after.to_json(), self.attempt_id, self.binding, prepared.before_json),
+            )
+        ) as rows:
+            if rows.rowcount != 1:
+                raise StaleJournalPrefix("journal prefix proposal was superseded")
+        self.db.execute(
+            "INSERT INTO frames VALUES (?, ?, ?, ?)",
+            (
+                str(before.frame_count),
+                frame.json_bytes,
+                prepared.reference_json.encode(),
+                after.sha256_state,
+            ),
+        ).close()
+        return after
+
+    @declare_growth(
+        _composed_publication_declaration(),
+        delegates=(("plan", prepare_publication), ("application", _apply)),
+    )
+    def commit(self, prepared: PreparedEntry) -> PrefixState:
+        """Publish the exact accepted frame and hash watermark after native checks."""
         if (prepared.attempt_id, prepared.binding) != (self.attempt_id, self.binding):
             raise StaleJournalPrefix("journal prefix proposal belongs to another replay")
         try:
-            before, frame = prepared.before, prepared.frame
-            digest = CheckpointSHA256.from_state(prepared.sha256_state)
-            reference = _reference(json.loads(prepared.reference_json))
-            matched = before.matched_anchor
-            expected = self.expected_anchor
-            if expected and reference["entry_id"] == expected["through"]["entry_id"]:
-                candidate = {
-                    "journal_id": prepared.journal_id,
-                    "through": reference,
-                    "prefix_sha256": digest.hexdigest(),
-                    "prefix_bytes": str(digest.total_bytes),
-                }
-                if candidate != expected:
-                    raise ProvenanceValidationError("externally supplied prefix anchor mismatch")
-                matched = True
-            after = PrefixState(
-                before.frame_count + 1,
-                digest.total_bytes,
-                prepared.journal_id,
-                prepared.reference_json,
-                digest.export_state(),
-                matched,
-            )
+            batch = self.prepare_publication(prepared)
             if not self.db.in_transaction:
                 self.db.execute("BEGIN IMMEDIATE").close()
-            with closing(
-                self.db.execute(
-                    "UPDATE journal_prefix SET checkpoint = ? WHERE singleton = 1 "
-                    "AND attempt_id = ? AND binding = ? AND checkpoint = ?",
-                    (after.to_json(), self.attempt_id, self.binding, prepared.before_json),
-                )
-            ) as rows:
-                if rows.rowcount != 1:
-                    raise StaleJournalPrefix("journal prefix proposal was superseded")
-            self.db.execute(
-                "INSERT INTO frames VALUES (?, ?, ?)",
-                (str(before.frame_count), frame.json_bytes, prepared.reference_json.encode()),
-            ).close()
+            after = self._apply(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()

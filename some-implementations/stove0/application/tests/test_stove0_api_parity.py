@@ -1615,3 +1615,80 @@ def test_work_progress_reads_fresh_metadata_without_loading_large_work_evidence(
     finally:
         event.remove(composition.state.engine, "before_cursor_execute", capture)
         composition.state.engine.dispose()
+
+
+@pytest.mark.parametrize("endpoint", ["/v1/workflow-previews", "/v1/work"])
+@pytest.mark.parametrize("changed_receipt", [False, True])
+def test_metadata_capacity_deferral_is_retryable_without_bypassing_current_receipt(
+    monkeypatch: pytest.MonkeyPatch, endpoint: str, changed_receipt: bool
+) -> None:
+    from metadata_contact_fixture import occupied_metadata_contact
+
+    composition = _lifecycle_composition()
+    request = OperatorWorkflowPreviewRequest(
+        invocation_id="a" * 64,
+        recipe_id="stove0.conformance-media/v1",
+        inputs=(_collection_root(),),
+    ).model_dump(mode="json")
+    headers = {"Authorization": "Bearer stove0-test-token"}
+    original = composition.riverhog_api.get_collection
+    calls = []
+    with TestClient(create_app(composition)) as client:
+        planning = client.post("/v1/workflow-previews", json=request, headers=headers)
+        assert planning.status_code == 200
+        accepted = PlanningJobStatus.model_validate(planning.json())
+        assert accepted.result is not None
+        if endpoint == "/v1/work":
+            request = {**request, "preview_sha256": accepted.result.preview_sha256}
+        with occupied_metadata_contact("https://riverhog.invalid") as contacts:
+
+            def current(collection_id):
+                calls.append(collection_id)
+                result = original(collection_id)
+                return {**result, "archive_root_sha256": "e" * 64} if changed_receipt else result
+
+            def admitted(collection_id):
+                return contacts.call("https://riverhog.invalid", lambda: current(collection_id))
+
+            monkeypatch.setattr(composition.riverhog_api, "get_collection", admitted)
+            pending = client.post(endpoint, json=request, headers=headers)
+            assert pending.status_code == 503
+            assert pending.headers["Retry-After"] == "1"
+            assert pending.json()["error"]["code"] == "service_unavailable"
+            assert calls == []
+            assert composition.state.load(_fixture_work().work_id) is None
+        response = client.post(endpoint, json=request, headers=headers)
+        assert calls
+        if changed_receipt:
+            assert response.status_code == 409
+            assert composition.state.load(_fixture_work().work_id) is None
+        else:
+            assert response.status_code == (202 if endpoint == "/v1/work" else 200)
+            assert client.post(endpoint, json=request, headers=headers).json() == response.json()
+
+
+def test_metadata_contact_deadline_uses_existing_transient_error_contract(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from http_api_contracts.control import ControlBudgetExhausted
+
+    composition = _lifecycle_composition()
+
+    def exhausted(_collection_id):
+        raise ControlBudgetExhausted("internal contact diagnostic")
+
+    monkeypatch.setattr(composition.riverhog_api, "get_collection", exhausted)
+    request = OperatorWorkflowPreviewRequest(
+        invocation_id="a" * 64,
+        recipe_id="stove0.conformance-media/v1",
+        inputs=(_collection_root(),),
+    ).model_dump(mode="json")
+    with TestClient(create_app(composition)) as client:
+        response = client.post(
+            "/v1/workflow-previews",
+            json=request,
+            headers={"Authorization": "Bearer stove0-test-token"},
+        )
+        assert response.status_code == 503
+        assert response.json()["error"]["code"] == "service_unavailable"
+        assert "internal contact diagnostic" not in response.text

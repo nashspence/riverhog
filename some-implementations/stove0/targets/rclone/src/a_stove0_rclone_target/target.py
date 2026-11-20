@@ -180,6 +180,7 @@ class RcloneEffectTargetService(PersistentTargetService):
             descriptor=descriptor,
             operations={RCLONE_DELIVER_OPERATION.id: RCLONE_DELIVER_OPERATION},
             state_root=state_root,
+            primary_state=None,
             execute=self._execute,
             terminal_state_retention_seconds=terminal_state_retention_seconds,
             execution_admission=execution_admission,

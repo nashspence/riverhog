@@ -26,6 +26,8 @@ from a_riverhog_ftp_spool.landing import FtpSpool
 from a_riverhog_ftp_spool.listener import build_ftp_server
 from riverhog_client.producer import ProducedCollection
 
+from tests.support.prepared_primary import settle_stub_publication
+
 
 @contextmanager
 def _listener(root: Path) -> Iterator[tuple[str, int]]:
@@ -95,6 +97,7 @@ def test_completion_authority_rejects_duplicate_json_members_before_decode() -> 
 
 def _adapter_config(root: Path) -> FtpSpoolConfig:
     return FtpSpoolConfig(
+        primary_state={"scope": {"service": "fixture-service", "account": "fixture-account"}},
         host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",
@@ -117,6 +120,7 @@ class _Producer:
     available = True
 
     def __init__(self, _api: object, **_kwargs: object) -> None:
+        self.primary_store = _kwargs["primary_store"]
         pass
 
     def publish(self, files: object, **_kwargs: object) -> ProducedCollection:
@@ -130,6 +134,7 @@ class _Producer:
         if not self.__class__.available:
             raise ConnectionError("publication intentionally unavailable")
         ordinal = len(self.__class__.calls)
+        settle_stub_publication(self.primary_store, materialized, collection_id=ordinal)
         return ProducedCollection(
             collection_id=ordinal,
             archive_root_sha256=f"{ordinal:064x}",

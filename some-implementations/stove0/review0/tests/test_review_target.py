@@ -55,6 +55,8 @@ from stove0_target_support import (
     TargetServiceError,
 )
 
+from tests.support.prepared_primary import PRIMARY_STATE_POLICY
+
 
 def _sha(character: str) -> str:
     return character * 64
@@ -137,6 +139,7 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
 ) -> None:
     registration, sampler_client = _sampler()
     target = ReviewMaterializeTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         state_root=tmp_path / "state",
         workspace_root=tmp_path / "workspace",
         samplers=(registration,),
@@ -208,6 +211,7 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
 def test_review_process_exposes_only_target_descriptor(tmp_path: Path) -> None:
     registration, _sampler_client = _sampler()
     target = ReviewMaterializeTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         state_root=tmp_path / "state",
         workspace_root=tmp_path / "workspace",
         samplers=(registration,),
@@ -309,6 +313,7 @@ def test_review_execution_publishes_canonical_index_with_opaque_member_ids(
 ) -> None:
     registration, _client = _sampler()
     target = ReviewMaterializeTargetService(
+        primary_state=PRIMARY_STATE_POLICY,
         state_root=tmp_path / "state",
         workspace_root=tmp_path / "workspace",
         samplers=(registration,),
@@ -430,6 +435,7 @@ def test_review_process_yaml_and_wiring_are_connected(
         yaml.safe_dump(
             {
                 "token_file": str(token_file),
+                "primary_state": PRIMARY_STATE_POLICY.model_dump(mode="json"),
                 "samplers": [
                     {
                         "id": "opus",
@@ -478,6 +484,7 @@ def test_review_process_yaml_and_wiring_are_connected(
         "state_root": tmp_path / "state",
         "workspace_root": tmp_path / "workspace",
         "samplers": registrations,
+        "primary_state": PRIMARY_STATE_POLICY,
         "source_revision": "fixture-revision",
         "image_id": "sha256:" + _sha("9"),
         "implementation_version": "0.1.0",
@@ -500,5 +507,10 @@ def test_review_support_registration_count_is_defined_by_deployment(tmp_path: Pa
     )
 
     assert (
-        Review0Config(token_file=tmp_path / "target.token", samplers=samplers).samplers == samplers
+        Review0Config(
+            primary_state=PRIMARY_STATE_POLICY,
+            token_file=tmp_path / "target.token",
+            samplers=samplers,
+        ).samplers
+        == samplers
     )

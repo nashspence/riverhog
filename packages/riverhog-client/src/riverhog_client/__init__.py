@@ -17,6 +17,47 @@ from riverhog_protocol import (
     Unauthorized,
 )
 
+from riverhog_client._prepared_primary_application import WindowsSqliteProcess
+from riverhog_client._prepared_primary_documents import PrimaryScope
+from riverhog_client._prepared_primary_factory import (
+    WindowsPrimaryFactory,
+    posix_primary_files,
+    sqlite_primary_preparation_step,
+)
+from riverhog_client._prepared_primary_inventory import (
+    PreparedPrimaryInventory,
+    ordered_primary_inventory,
+    prepare_primary_inventory,
+)
+from riverhog_client._prepared_primary_policy import PrimaryStatePolicy
+from riverhog_client._prepared_primary_publisher import (
+    DeclaredPrimaryObservation,
+    RetainedPrimaryObservation,
+    retained_primary_observation,
+)
+from riverhog_client._prepared_primary_sqlite import SqlitePrimaryLimits
+from riverhog_client._prepared_primary_sqlite_operations import (
+    SqliteOperationBank,
+    SqliteOperationGrants,
+)
+from riverhog_client._prepared_primary_sqlite_preparation import SqliteReadinessPlan
+from riverhog_client._prepared_primary_storage import (
+    PrimaryOrdering,
+    PrimaryStorage,
+    PrimaryStorageFactory,
+    RetainedPrimaryOrdering,
+)
+from riverhog_client._prepared_primary_store import (
+    PrimaryStore,
+    PrimaryStoreLimits,
+    primary_allocation_descriptor,
+)
+from riverhog_client._prepared_primary_types import (
+    PrimaryByteFile,
+    PrimaryStateBusy,
+    PrimaryStateCapacity,
+    PrimaryStateError,
+)
 from riverhog_client.catalog_sync import CatalogReplica, CatalogSyncApi
 from riverhog_client.client import (
     ApiClient,
@@ -26,6 +67,7 @@ from riverhog_client.client import (
     RestorePolicy,
     RetrievalPlanIdempotencyKey,
 )
+from riverhog_client.completion_records import CompletionRecords
 from riverhog_client.downloads import (
     RetrievalDownload,
     configured_download_concurrency,
@@ -50,6 +92,34 @@ from riverhog_client.uploads import (
 )
 
 __all__ = [
+    "PrimaryOrdering",
+    "RetainedPrimaryOrdering",
+    "PreparedPrimaryInventory",
+    "prepare_primary_inventory",
+    "PrimaryStorage",
+    "PrimaryStorageFactory",
+    "PrimaryByteFile",
+    "primary_allocation_descriptor",
+    "WindowsSqliteProcess",
+    "WindowsPrimaryFactory",
+    "posix_primary_files",
+    "SqlitePrimaryLimits",
+    "SqliteOperationBank",
+    "SqliteOperationGrants",
+    "SqliteReadinessPlan",
+    "sqlite_primary_preparation_step",
+    "DeclaredPrimaryObservation",
+    "RetainedPrimaryObservation",
+    "retained_primary_observation",
+    "PrimaryScope",
+    "PrimaryStatePolicy",
+    "PrimaryStateBusy",
+    "PrimaryStateCapacity",
+    "PrimaryStateError",
+    "PrimaryStore",
+    "CompletionRecords",
+    "PrimaryStoreLimits",
+    "ordered_primary_inventory",
     "ApiClient",
     "CatalogReplica",
     "CatalogSyncApi",

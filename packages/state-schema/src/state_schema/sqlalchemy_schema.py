@@ -71,6 +71,30 @@ def _uses_postgresql_implicit_sequence(column: Any, bind: Connection | Engine) -
     )
 
 
+def _predicate_groups(expression: str) -> str:
+    """Remove redundant groups around atomic boolean predicates only.
+
+    Keep comparison operands and compound boolean grouping intact. Unsupported
+    syntax remains exact rather than being accepted as an equivalent predicate.
+    """
+    identifier = r"[a-z_][a-z0-9_]*"
+    literal = r"'(?:[^']|'')*'"
+    values = rf"{literal}(?:\s*,\s*{literal})*"
+    atom = rf"{identifier}\s+(?:is\s+(?:not\s+)?null|(?:not\s+)?in\s*\({values}\))"
+    pattern = re.compile(rf"\(({atom})\)")
+    while True:
+        for match in pattern.finditer(expression):
+            before = expression[: match.start()].rstrip()
+            after = expression[match.end() :].lstrip()
+            if (not before or before.endswith("(") or re.search(r"\b(?:and|or)$", before)) and (
+                not after or after.startswith(")") or re.match(r"(?:and|or)\b", after)
+            ):
+                expression = before + " " + match[1] + " " + after
+                break
+        else:
+            return (_sql(expression) or "").strip()
+
+
 def _check_expression(value: object | None) -> str:
     expression = (_sql(value) or "").casefold().replace('"', "")
     # PostgreSQL deparses integer literals outside its implicit ``integer`` domain as
@@ -87,16 +111,30 @@ def _check_expression(value: object | None) -> str:
         expression,
     )
     expression = expression.replace("<>", "!=")
+    # NOT IN and <> ALL have the same three-valued SQL semantics. Match
+    # only a column and a literal array; other operators and expressions retain
+    # their identity. PostgreSQL may group the cast operand and array separately.
+    identifier = r"[a-z_][a-z0-9_]*"
+    literal = r"'(?:[^']|'')*'"
+    values = rf"{literal}(?:\s*,\s*{literal})*"
+    expression = re.sub(
+        rf"(?<![a-z0-9_])(?:(?P<column>{identifier})|\((?P<grouped>{identifier})\))"
+        rf"\s*!=\s*all\s*\(\s*(?P<array_group>\()?\s*array\["
+        rf"(?P<values>{values})\]\s*(?(array_group)\))\s*\)",
+        lambda match: (match["column"] or match["grouped"]) + " not in (" + match["values"] + ")",
+        expression,
+    )
+    # SQLAlchemy's PostgreSQL CHECK reflection strips the enclosing pair from
+    # this boolean equality. Restore only that exact two-NULL-predicate shape.
+    null_predicate = rf"{identifier}\s+is\s+(?:not\s+)?null"
+    if match := re.fullmatch(rf"({null_predicate})\s*\)\s*=\s*\(\s*({null_predicate})", expression):
+        expression = "(" + match[1] + ")=(" + match[2] + ")"
     expression = re.sub(
         r"([a-z_][a-z0-9_]*)\s*=\s*any\s*\(\s*array\[(.*?)\]\s*\)",
         r"\1 in (\2)",
         expression,
     )
-    expression = re.sub(
-        r"\(([a-z_][a-z0-9_]*\s+in\s*\([^()]*\))\)",
-        r"\1",
-        expression,
-    )
+    expression = _predicate_groups(expression)
     expression = re.sub(
         r"\(([a-z_][a-z0-9_]*\s*[+-]\s*[0-9]+)\)",
         r"\1",
@@ -158,6 +196,9 @@ def _index_definition(value: object, *, dialect: str) -> str:
             r"\1 using btree\2",
             definition,
         )
+    head, separator, predicate = definition.partition(" where ")
+    if separator:
+        definition = head + separator + _check_expression(predicate)
     return definition
 
 

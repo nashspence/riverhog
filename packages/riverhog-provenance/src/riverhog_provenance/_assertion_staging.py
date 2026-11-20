@@ -12,7 +12,7 @@ import json
 import re
 import sqlite3
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -28,9 +28,11 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import canonical_document
 
+from ._admission_growth import admission_declaration
+from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
-from .errors import ProvenanceValidationError
+from .errors import JournalValidationCapacity, ProvenanceValidationError
 from .graph import iter_assertions
 
 if TYPE_CHECKING:
@@ -39,14 +41,13 @@ if TYPE_CHECKING:
 ALGORITHM = "riverhog-assertion-staging/v9"
 MAX_ROWS = 64
 _HEADER_OCTETS = 2048
-_BINDING_OCTETS = 8192
 
 
 class StaleAssertionStaging(RuntimeError):
     """This work no longer owns the exact source, mode, attempt and prefix."""
 
 
-class AssertionStagingCapacity(RuntimeError):
+class AssertionStagingCapacity(JournalValidationCapacity):
     """The next assertion and identity atom needs more byte admission."""
 
 
@@ -129,6 +130,15 @@ class StageRow:
     observation: tuple[str | None, str | None, int] | None
     relation: tuple[str, str] | None
     fixity: tuple[str | None, str | None] | None
+
+
+@dataclass(frozen=True)
+class StageAdmission:
+    binding: bytes
+    attempt_id: str
+    prefix: tuple[str, bytes, str]
+    prior: tuple[object, ...] | None
+    after: StageState
 
 
 @dataclass(frozen=True)
@@ -388,6 +398,54 @@ def _declaration() -> Declaration:
     )
 
 
+def _phase_declaration(operation: str) -> Declaration:
+    planning = operation == "prepare"
+    base = _declaration()
+    return replace(
+        base,
+        id="riverhog-provenance.sqlite-assertion-staging-"
+        + ("plan" if planning else "application")
+        + ".growth/v1",
+        subjects=("riverhog_provenance._assertion_staging.AssertionStaging." + operation,),
+        scope="detached-assertion-staging-plan"
+        if planning
+        else "owner-transaction-assertion-staging-application",
+        starts_at=(
+            "load the exact owned phase outside a transaction"
+            if planning
+            else "accept one admitted exact proposal inside the parent's transaction"
+        ),
+        ends_at=(
+            "return a bounded detached proposal without changing native state"
+            if planning
+            else "return native changes and progress while preserving the open parent transaction"
+        ),
+        bounds=tuple(
+            replace(
+                bound, relation="equal", expression=Expression("constant", value=0, unit=bound.unit)
+            )
+            if planning and bound.metric in {"changed_rows", "written_value_octets"}
+            else bound
+            for bound in base.bounds
+        ),
+        conditions=(
+            *base.conditions,
+            "The proposal is admitted under the recorded row/byte budget; planning is detached "
+            "and application runs inside its owner's transaction.",
+        ),
+        invariants=(
+            *base.invariants,
+            "Planning never writes; application neither commits nor rolls back the parent's "
+            "transaction.",
+        ),
+        limitations=(
+            *base.limitations,
+            "Admission, parent publication and transaction control require caller composition; "
+            "this phase does not claim execution of the standalone advance operation.",
+        ),
+    )
+
+
 class AssertionStaging:
     def __init__(
         self,
@@ -435,7 +493,7 @@ class AssertionStaging:
         row = self._one(
             "SELECT substr(attempt_id,1,?),substr(binding,1,?),substr(checkpoint,1,?) "
             "FROM journal_prefix WHERE singleton=1",
-            (_HEADER_OCTETS + 1, _BINDING_OCTETS + 1, _HEADER_OCTETS + 1),
+            (_HEADER_OCTETS + 1, PREFIX_BINDING_OCTETS_MAX + 1, _HEADER_OCTETS + 1),
         )
         if (
             row is None
@@ -443,7 +501,7 @@ class AssertionStaging:
             or not row[0]
             or len(row[0]) > _HEADER_OCTETS
             or type(row[1]) is not bytes
-            or len(row[1]) > _BINDING_OCTETS
+            or len(row[1]) > PREFIX_BINDING_OCTETS_MAX
         ):
             raise RuntimeError("missing or invalid staging accepted-prefix manifest")
         state = PrefixState.from_json(row[2])
@@ -454,58 +512,94 @@ class AssertionStaging:
             raise StaleAssertionStaging("staging frame differs from its accepted prefix")
         return row[0], row[1], row[2]
 
-    def initialize(self) -> StageState:
-        """Admit a fresh phase explicitly; restoring uses load without resetting."""
-        self._detached()
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
-            prefix = self._prefix()
-            old = self._one(
-                "SELECT algorithm,attempt_id,row_count,substr(checkpoint,1,?) "
-                "FROM journal_assertion_staging WHERE singleton=1",
-                (_HEADER_OCTETS + 1,),
+    def _admission(self) -> StageAdmission:
+        prefix = self._prefix()
+        old = self._one(
+            "SELECT algorithm,attempt_id,row_count,substr(checkpoint,1,?) "
+            "FROM journal_assertion_staging WHERE singleton=1",
+            (_HEADER_OCTETS + 1,),
+        )
+        version = 0
+        if old is not None:
+            if old[0] != ALGORITHM:
+                raise RuntimeError("unknown assertion staging algorithm")
+            state = StageState.from_json(old[3], old[2])
+            if old[1] == self.attempt_id or not state.done:
+                raise StaleAssertionStaging("assertion staging is already bound")
+            version = state.version + 1
+        if (
+            self._one(
+                "SELECT assertion_id FROM changes WHERE assertion_id>'' "
+                "ORDER BY assertion_id LIMIT 1"
             )
-            version = 0
-            if old is not None:
-                if old[0] != ALGORITHM:
-                    raise RuntimeError("unknown assertion staging algorithm")
-                state = StageState.from_json(old[3], old[2])
-                if old[1] == self.attempt_id or not state.done:
-                    raise StaleAssertionStaging("assertion staging is already bound")
-                version = state.version + 1
-            if (
-                self._one(
-                    "SELECT assertion_id FROM changes WHERE assertion_id>'' "
-                    "ORDER BY assertion_id LIMIT 1"
-                )
-                is not None
-            ):
-                raise RuntimeError("assertion staging requires a retired change queue")
-            state = StageState(version=version)
-            self.db.execute(
-                "INSERT INTO journal_assertion_staging VALUES (1,?,?,?,?,?,?,?,?) "
-                "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
-                "attempt_id=excluded.attempt_id,binding=excluded.binding,row_"
-                "count=excluded.row_count, "
-                "prefix_attempt=excluded.prefix_attempt,prefix_binding=excluded.prefix_binding, "
-                "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
-                (ALGORITHM, self.attempt_id, self.binding, self.count, *prefix, state.to_json()),
-            ).close()
+            is not None
+        ):
+            raise RuntimeError("assertion staging requires a retired change queue")
+        state = StageState(version=version)
+        return StageAdmission(
+            self.binding, self.attempt_id, prefix, None if old is None else tuple(old), state
+        )
+
+    @declare_growth(
+        admission_declaration(
+            identifier="assertion-staging",
+            subject="riverhog_provenance._assertion_staging.AssertionStaging.prepare_admission",
+            planning=True,
+        )
+    )
+    def prepare_admission(self) -> StageAdmission:
+        self._detached()
+        return self._admission()
+
+    @declare_growth(
+        admission_declaration(
+            identifier="assertion-staging",
+            subject="riverhog_provenance._assertion_staging.AssertionStaging._admit",
+            planning=False,
+        )
+    )
+    def _admit(self, batch: StageAdmission) -> StageState:
+        if not self.db.in_transaction:
+            raise RuntimeError("child admission requires an owner transaction")
+        if self._admission() != batch:
+            raise StaleAssertionStaging("child admission was superseded")
+        self.db.execute(
+            "INSERT INTO journal_assertion_staging VALUES (1,?,?,?,?,?,?,?,?) "
+            "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
+            "attempt_id=excluded.attempt_id,binding=excluded.binding,row_"
+            "count=excluded.row_count, "
+            "prefix_attempt=excluded.prefix_attempt,prefix_binding=excluded.prefix_binding, "
+            "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
+            (
+                ALGORITHM,
+                self.attempt_id,
+                self.binding,
+                self.count,
+                *batch.prefix,
+                batch.after.to_json(),
+            ),
+        ).close()
+        return batch.after
+
+    def initialize(self) -> StageState:
+        batch = self.prepare_admission()
+        self.db.execute("BEGIN IMMEDIATE").close()
+        try:
+            state = self._admit(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
         return state
 
-    def _load(self) -> tuple[StageState, tuple[str, bytes, str]]:
-        self._detached()
+    def _read_checkpoint(self) -> tuple[StageState, tuple[str, bytes, str]]:
         header = self._one(
             "SELECT algorithm,row_count,substr(prefix_attempt,1,?),substr(prefix_binding,1,?), "
             "substr(prefix,1,?),substr(checkpoint,1,?) FROM journal_assertion_staging "
             "WHERE singleton=1 AND attempt_id=? AND binding=?",
             (
                 _HEADER_OCTETS + 1,
-                _BINDING_OCTETS + 1,
+                PREFIX_BINDING_OCTETS_MAX + 1,
                 _HEADER_OCTETS + 1,
                 _HEADER_OCTETS + 1,
                 self.attempt_id,
@@ -623,9 +717,14 @@ class AssertionStaging:
             raise RuntimeError("uncheckpointed assertion changes")
         return state, prefix
 
+    def _load(self) -> tuple[StageState, tuple[str, bytes, str]]:
+        self._detached()
+        return self._read_checkpoint()
+
     def load(self) -> StageState:
         return self._load()[0]
 
+    @declare_growth(_phase_declaration("prepare"))
     def prepare(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> StageBatch:
         from .journal import _identity_signature
 
@@ -849,6 +948,118 @@ class AssertionStaging:
             self.attempt_id, self.binding, prefix, state.to_json(), after, tuple(rows)
         )
 
+    @declare_growth(_phase_declaration("_apply"))
+    def _apply(self, batch: StageBatch) -> StageState:
+        if not self.db.in_transaction:
+            raise RuntimeError("child application requires an owner transaction")
+        if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
+            raise StaleAssertionStaging("staging proposal belongs to another input")
+        before = StageState.from_json(batch.before_json, self.count)
+        if before.done:
+            current, prefix = self._read_checkpoint()
+            if current != before or prefix != batch.prefix:
+                raise StaleAssertionStaging("finished staging proposal was superseded")
+            return current
+        with closing(
+            self.db.execute(
+                "UPDATE journal_assertion_staging SET checkpoint=? WHERE singleton=1 AND "
+                "algorithm=? AND attempt_id=? AND binding=? AND "
+                "row_count=? AND prefix_attempt=? "
+                "AND prefix_binding=? AND prefix=? AND checkpoint=? AND EXISTS(SELECT 1 FROM "
+                "journal_prefix WHERE singleton=1 AND attempt_id=? AND "
+                "binding=? AND checkpoint=?)",
+                (
+                    batch.after.to_json(),
+                    ALGORITHM,
+                    self.attempt_id,
+                    self.binding,
+                    self.count,
+                    *batch.prefix,
+                    batch.before_json,
+                    *batch.prefix,
+                ),
+            )
+        ) as cursor:
+            if cursor.rowcount != 1:
+                raise StaleAssertionStaging("staging proposal was superseded")
+        for row in batch.rows:
+            self.db.execute(
+                "INSERT INTO identities VALUES (?, 'assertion', ?)", (row.assertion_id, b"")
+            ).close()
+            self.db.execute(
+                "INSERT OR IGNORE INTO identities VALUES (?, 'referent', ?)",
+                (row.object_id, row.signature),
+            ).close()
+            try:
+                self.db.execute(
+                    "INSERT INTO assertions VALUES (?,?,?,?,?,?,?,?,1)",
+                    (
+                        row.assertion_id,
+                        row.object_id,
+                        row.category,
+                        row.kind,
+                        row.state_id,
+                        row.observation_id,
+                        self.sequence,
+                        row.value,
+                    ),
+                ).close()
+            except sqlite3.IntegrityError as exc:
+                raise ProvenanceValidationError(
+                    "duplicate effective entity/record identity"
+                ) from exc
+            if row.activity is not None:
+                self.db.execute(
+                    "INSERT INTO activity_projection VALUES (?,?,?,?)",
+                    (row.assertion_id, *row.activity),
+                ).close()
+            if row.binding is not None:
+                self.db.execute(
+                    "INSERT INTO binding_projection VALUES (?,?)",
+                    (row.assertion_id, *row.binding),
+                ).close()
+            if row.delivery is not None:
+                self.db.execute(
+                    "INSERT INTO delivery_projection VALUES (?,?,?,?)",
+                    (row.assertion_id, *row.delivery),
+                ).close()
+            self.db.execute(
+                "INSERT INTO description_projection VALUES (?,?,?,?)",
+                (row.assertion_id, *row.description),
+            ).close()
+            if row.fixity is not None:
+                self.db.execute(
+                    "INSERT INTO fixity_projection VALUES (?,?,?)",
+                    (row.assertion_id, *row.fixity),
+                ).close()
+            if row.relation is not None:
+                self.db.execute(
+                    "INSERT INTO relation_projection VALUES (?,?,?)",
+                    (row.assertion_id, *row.relation),
+                ).close()
+            if row.observation is not None:
+                self.db.execute(
+                    "INSERT INTO observation_projection VALUES (?,?,?,?)",
+                    (row.assertion_id, *row.observation),
+                ).close()
+            self.db.execute("INSERT INTO changes VALUES (?)", (row.assertion_id,)).close()
+        for assertion_id, agent_id in batch.observers:
+            self.db.execute(
+                "INSERT INTO observation_observers VALUES (?,?) ON CONFLICT DO NOTHING",
+                (assertion_id, agent_id),
+            ).close()
+        if batch.complete_observers is not None:
+            with closing(
+                self.db.execute(
+                    "UPDATE observation_projection SET observers_complete=1 "
+                    "WHERE assertion_id=? AND observers_complete=0",
+                    (batch.complete_observers,),
+                )
+            ) as cursor:
+                if cursor.rowcount != 1:
+                    raise RuntimeError("observer completion lost its staged activity")
+        return batch.after
+
     def commit(self, batch: StageBatch) -> StageState:
         self._detached()
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
@@ -861,109 +1072,12 @@ class AssertionStaging:
             return current
         try:
             self.db.execute("BEGIN IMMEDIATE").close()
-            with closing(
-                self.db.execute(
-                    "UPDATE journal_assertion_staging SET checkpoint=? WHERE singleton=1 AND "
-                    "algorithm=? AND attempt_id=? AND binding=? AND "
-                    "row_count=? AND prefix_attempt=? "
-                    "AND prefix_binding=? AND prefix=? AND checkpoint=? AND EXISTS(SELECT 1 FROM "
-                    "journal_prefix WHERE singleton=1 AND attempt_id=? AND "
-                    "binding=? AND checkpoint=?)",
-                    (
-                        batch.after.to_json(),
-                        ALGORITHM,
-                        self.attempt_id,
-                        self.binding,
-                        self.count,
-                        *batch.prefix,
-                        batch.before_json,
-                        *batch.prefix,
-                    ),
-                )
-            ) as cursor:
-                if cursor.rowcount != 1:
-                    raise StaleAssertionStaging("staging proposal was superseded")
-            for row in batch.rows:
-                self.db.execute(
-                    "INSERT INTO identities VALUES (?, 'assertion', ?)", (row.assertion_id, b"")
-                ).close()
-                self.db.execute(
-                    "INSERT OR IGNORE INTO identities VALUES (?, 'referent', ?)",
-                    (row.object_id, row.signature),
-                ).close()
-                try:
-                    self.db.execute(
-                        "INSERT INTO assertions VALUES (?,?,?,?,?,?,?,?,1)",
-                        (
-                            row.assertion_id,
-                            row.object_id,
-                            row.category,
-                            row.kind,
-                            row.state_id,
-                            row.observation_id,
-                            self.sequence,
-                            row.value,
-                        ),
-                    ).close()
-                except sqlite3.IntegrityError as exc:
-                    raise ProvenanceValidationError(
-                        "duplicate effective entity/record identity"
-                    ) from exc
-                if row.activity is not None:
-                    self.db.execute(
-                        "INSERT INTO activity_projection VALUES (?,?,?,?)",
-                        (row.assertion_id, *row.activity),
-                    ).close()
-                if row.binding is not None:
-                    self.db.execute(
-                        "INSERT INTO binding_projection VALUES (?,?)",
-                        (row.assertion_id, *row.binding),
-                    ).close()
-                if row.delivery is not None:
-                    self.db.execute(
-                        "INSERT INTO delivery_projection VALUES (?,?,?,?)",
-                        (row.assertion_id, *row.delivery),
-                    ).close()
-                self.db.execute(
-                    "INSERT INTO description_projection VALUES (?,?,?,?)",
-                    (row.assertion_id, *row.description),
-                ).close()
-                if row.fixity is not None:
-                    self.db.execute(
-                        "INSERT INTO fixity_projection VALUES (?,?,?)",
-                        (row.assertion_id, *row.fixity),
-                    ).close()
-                if row.relation is not None:
-                    self.db.execute(
-                        "INSERT INTO relation_projection VALUES (?,?,?)",
-                        (row.assertion_id, *row.relation),
-                    ).close()
-                if row.observation is not None:
-                    self.db.execute(
-                        "INSERT INTO observation_projection VALUES (?,?,?,?)",
-                        (row.assertion_id, *row.observation),
-                    ).close()
-                self.db.execute("INSERT INTO changes VALUES (?)", (row.assertion_id,)).close()
-            for assertion_id, agent_id in batch.observers:
-                self.db.execute(
-                    "INSERT INTO observation_observers VALUES (?,?) ON CONFLICT DO NOTHING",
-                    (assertion_id, agent_id),
-                ).close()
-            if batch.complete_observers is not None:
-                with closing(
-                    self.db.execute(
-                        "UPDATE observation_projection SET observers_complete=1 "
-                        "WHERE assertion_id=? AND observers_complete=0",
-                        (batch.complete_observers,),
-                    )
-                ) as cursor:
-                    if cursor.rowcount != 1:
-                        raise RuntimeError("observer completion lost its staged activity")
+            state = self._apply(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
-        return batch.after
+        return state
 
     @declare_growth(_declaration())
     def advance(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> StageState:

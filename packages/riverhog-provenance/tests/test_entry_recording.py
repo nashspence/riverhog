@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import subprocess
 import sys
 from contextlib import closing
@@ -15,6 +16,8 @@ from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal_store import JournalStore
 from test_assertion_staging import connect, create, identity
 from test_entry_preparation import WorkConnection, owner
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 MODES = (
     "agent-only",
@@ -235,7 +238,9 @@ def test_actual_process_death_replays_only_the_fixed_read_unit(tmp_path, seam):
 )
 def test_actual_cold_recording_checks(tmp_path, record_property):
     binding = growth_binding(JournalStore._check_entry_recording)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -257,7 +262,12 @@ def test_actual_cold_recording_checks(tmp_path, record_property):
                 "metrics": dict(metrics),
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     assert len(samples) == 72
     record_property("growth_samples", samples)

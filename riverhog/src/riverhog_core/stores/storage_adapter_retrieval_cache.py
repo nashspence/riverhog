@@ -7,9 +7,9 @@ from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from typing import Any
 
 from riverhog_storage_adapter_protocol import (
-    CompletedObjectReceipt as AdapterCompletedObjectReceipt,
-)
-from riverhog_storage_adapter_protocol import (
+    BinaryContent,
+    CleanupExecutionResult,
+    CleanupInvocation,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
     ObjectLocator,
@@ -17,9 +17,14 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteStartRequest,
     validated_storage_adapter,
+)
+from riverhog_storage_adapter_protocol import (
+    CompletedObjectReceipt as AdapterCompletedObjectReceipt,
 )
 from riverhog_storage_adapter_protocol import (
     WriteCompletionPrecondition as AdapterWriteCompletionPrecondition,
@@ -108,6 +113,35 @@ class StorageAdapterRetrievalCache:
         digest = hashlib.sha256(identity).hexdigest()
         return f"objects/{digest[:2]}/{digest}"
 
+    @staticmethod
+    def population_write_request(
+        *,
+        source_store: str,
+        collection_id: int,
+        object_id: str,
+        expected_bytes: int,
+    ) -> WriteStartRequest:
+        """Describe the exact cache target before its owner admits a provider call."""
+        return WriteStartRequest(
+            object_path=StorageAdapterRetrievalCache.object_path(
+                source_store, collection_id, object_id
+            ),
+            expected_bytes=expected_bytes,
+            content_type="application/octet-stream",
+            required_identity_assertions=_cache_identity(source_store, collection_id, object_id),
+            placement_policy="immediate_default",
+        )
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        """Preserve the selected adapter's exact call correlation and closure evidence."""
+        return self._adapter.execute_write(invocation, content=content)
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        """Forward only the selected cache adapter's admitted cleanup operation."""
+        return self._adapter.execute_cleanup(invocation)
+
     def write_constraints(self) -> ResumableWriteConstraints:
         return ResumableWriteConstraints(
             minimum_nonfinal_segment_bytes=self._descriptor.minimum_nonfinal_segment_bytes,
@@ -124,16 +158,11 @@ class StorageAdapterRetrievalCache:
         expected_bytes: int,
     ) -> WriteSession:
         session = self._adapter.begin_write(
-            WriteStartRequest(
-                object_path=self.object_path(source_store, collection_id, object_id),
+            self.population_write_request(
+                source_store=source_store,
+                collection_id=collection_id,
+                object_id=object_id,
                 expected_bytes=expected_bytes,
-                content_type="application/octet-stream",
-                required_identity_assertions=_cache_identity(
-                    source_store,
-                    collection_id,
-                    object_id,
-                ),
-                placement_policy="immediate_default",
             )
         )
         return _write_session(session)

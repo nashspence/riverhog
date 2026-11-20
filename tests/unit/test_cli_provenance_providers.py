@@ -60,6 +60,10 @@ def test_upload_requires_source_host_for_selected_native_observer_before_opening
     monkeypatch: pytest.MonkeyPatch,
     terminal_width: int,
 ) -> None:
+    monkeypatch.setenv(
+        "A_RIVERHOG_CLI_PRIMARY_STATE",
+        json.dumps({"scope": {"service": "fixture-service", "account": "fixture-account"}}),
+    )
     monkeypatch.delenv("NO_COLOR", raising=False)
     monkeypatch.setattr(typer.rich_utils, "FORCE_TERMINAL", True)
     monkeypatch.setattr(typer.rich_utils, "COLOR_SYSTEM", "standard")
@@ -119,6 +123,10 @@ def test_upload_provider_environment_selection_requires_source_host(
     tmp_path: Path,
     terminal_width: int,
 ) -> None:
+    monkeypatch.setenv(
+        "A_RIVERHOG_CLI_PRIMARY_STATE",
+        json.dumps({"scope": {"service": "fixture-service", "account": "fixture-account"}}),
+    )
     monkeypatch.delenv("NO_COLOR", raising=False)
     monkeypatch.setattr(typer.rich_utils, "FORCE_TERMINAL", True)
     monkeypatch.setattr(typer.rich_utils, "COLOR_SYSTEM", "standard")

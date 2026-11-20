@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 
 import pytest
 import sha256_continuation as backend
@@ -10,6 +11,8 @@ from riverhog_core.checkpoint_sha256 import CheckpointSHA256 as RiverhogSHA256
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_protocol import CheckpointSHA256, sha256_compress
 from stove0_core._checkpoint_sha256 import CheckpointSHA256 as Stove0SHA256
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 @pytest.mark.parametrize("owner", [CheckpointSHA256, RiverhogSHA256, Stove0SHA256])
@@ -178,7 +181,9 @@ def test_bounded_sha256_update_records_actual_compression_and_buffer_work(
 ):
     source = growth_binding(CheckpointSHA256.update_bytes)
     child = growth_binding(sha256_compress)
-    projection = project_bindings((source,))
+    projection = project_bindings(
+        (source,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declarations = projection["declarations"]
     samples = []
     real_compress, real_rotate = backend.sha256_compress, backend._rotr
@@ -262,7 +267,12 @@ def test_bounded_sha256_update_records_actual_compression_and_buffer_work(
             },
             {"compression": calls},
         )
-        validate_execution_samples(projection, source.declaration.id, [observed])
+        validate_execution_samples(
+            projection,
+            source.declaration.id,
+            [observed],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         samples.append(observed)
         assert digest.total_bytes == prefix_size + size
         assert digest.digest() == hashlib.sha256(prefix + payload).digest()

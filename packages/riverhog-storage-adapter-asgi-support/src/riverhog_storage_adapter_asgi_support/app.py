@@ -144,16 +144,34 @@ def create_storage_adapter_app(
                 return _error(
                     400, "invalid_request", "storage incarnation precondition is required"
                 )
-            try:
-                descriptor = adapter.descriptor()
-                if not isinstance(descriptor, AdapterDescriptor):
-                    raise ValueError("storage adapter descriptor is invalid")
-                observed_incarnation = descriptor.storage_incarnation_id
-            except Exception:
-                return _error(503, "provider_unavailable", "storage incarnation is unavailable")
-            if observed_incarnation != expected_incarnation:
-                return _error(503, "provider_unavailable", "storage incarnation changed")
-        if request.method.upper() == "POST" and request.url.path in (
+            if request.url.path != "/v1/cleanup/execute":
+                try:
+                    descriptor = await run_in_threadpool(adapter.descriptor)
+                    if not isinstance(descriptor, AdapterDescriptor):
+                        raise ValueError("storage adapter descriptor is invalid")
+                    observed_incarnation = descriptor.storage_incarnation_id
+                except Exception:
+                    return _error(503, "provider_unavailable", "storage incarnation is unavailable")
+                if observed_incarnation != expected_incarnation:
+                    return _error(503, "provider_unavailable", "storage incarnation changed")
+        if request.method.upper() == "POST" and request.url.path == "/v1/cleanup/execute":
+            # This operation checks live identity inside its own request grant.
+            # Do not add an unaccounted descriptor/provider prelude here.
+            control = bytearray()
+            async for chunk in request.stream():
+                if len(control) + len(chunk) > binding.maximum_control_bytes:
+                    return _error(
+                        413, "request_too_large", "adapter control request exceeds its limit"
+                    )
+                control.extend(chunk)
+            result = await run_in_threadpool(
+                binding.handle,
+                request.method,
+                request.url.path,
+                bytes(control),
+                expected_incarnation=expected_incarnation,
+            )
+        elif request.method.upper() == "POST" and request.url.path in (
             FRAMED_STORAGE_ADAPTER_HTTP_PATHS
         ):
             media_type = request.headers.get("content-type", "").partition(";")[0].strip()

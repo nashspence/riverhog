@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import subprocess
 import sys
 from contextlib import closing
@@ -49,6 +50,8 @@ from test_generic_semantics import (
     work,
     workspace_rows,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 CASES = (
     "valid",
@@ -241,7 +244,11 @@ def test_public_description_native_and_journal_agree(graph, who, catalog, mode):
 
 
 @pytest.mark.parametrize("field", ["occurrence_id", "kind", "source_context_id"])
-@pytest.mark.parametrize("value", ["x" * 131072, b"x" * 131072, "é", "", b"\x00"])
+@pytest.mark.parametrize(
+    "value",
+    ["x" * 131072, b"x" * 131072, "é", "", b"\x00"],
+    ids=("oversized-text", "oversized-blob", "non-ascii", "empty-text", "nul-blob"),
+)
 def test_description_corruption_is_rejected_after_bounded_metadata_read(tmp_path, field, value):
     path = tmp_path / "corrupt.sqlite3"
     create_staging(path)
@@ -448,8 +455,10 @@ def test_process_death_preserves_description_keys_outputs_and_progress(tmp_path,
         require_reclaimed(db)
 
 
-def growth_samples(tmp_path, catalog):
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
+    from test_generic_semantics import measure_semantic_operation
+
+    binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
     samples = []
     for phase in (
         "context",
@@ -504,21 +513,21 @@ def growth_samples(tmp_path, catalog):
                 )
             with closing(connect(path, factory=CommonWorkConnection)) as db:
                 current = work(db, row, catalog, operation="row")
-                with db.observe() as metrics:
-                    current.advance(step_budget=budget, byte_budget=131072)
-                sample = {
-                    "declaration": binding.declaration.id,
-                    "declaration_sha256": digest,
-                    "dimensions": {
-                        "retained_rows": retained,
-                        "step_budget": budget,
-                        "byte_budget": 131072,
-                        "metadata_row_octets": envelope,
-                    },
-                    "metrics": dict(metrics),
-                    "delegates": {},
-                }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                sample = measure_semantic_operation(
+                    current,
+                    measured_operation=measured_operation,
+                    step_budget=budget,
+                    byte_budget=131072,
+                    retained_rows=retained,
+                    metadata_row_octets=envelope,
+                )
+                metrics = sample["metrics"]
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 assert metrics["source_payload_octets"] == metrics["adjacency_rows"] == 0
                 assert snapshot(db)["journal_prefix"] == [tuple(prefix)]
@@ -582,7 +591,12 @@ def test_actual_cold_description_metadata_work(tmp_path, record_property):
                         "metrics": dict(metrics),
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
     assert len(samples) == 105
     record_property("growth_samples", samples)

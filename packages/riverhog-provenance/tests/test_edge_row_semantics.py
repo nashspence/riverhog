@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -21,6 +22,8 @@ from riverhog_provenance._semantic_edge import EdgeAdmission, EdgeBatch, StaleSe
 from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal import JournalFrame
 from test_generic_semantics import connect, finish, identity, require_reclaimed, snapshot, work
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def subject(kind, mode="valid"):
@@ -809,21 +812,6 @@ def position_parent(current, phase, *, budget=1):
     pytest.fail("parent did not reach " + phase)
 
 
-def semantic_sample(binding, digest, retained, budget, envelope, metrics, byte_budget):
-    return {
-        "declaration": binding.declaration.id,
-        "declaration_sha256": digest,
-        "dimensions": {
-            "retained_rows": retained,
-            "step_budget": budget,
-            "byte_budget": byte_budget,
-            "metadata_row_octets": envelope,
-        },
-        "metrics": dict(metrics),
-        "delegates": {},
-    }
-
-
 def envelope(current, prefix):
     return (
         8192
@@ -832,12 +820,18 @@ def envelope(current, prefix):
     )
 
 
-def growth_samples(tmp_path, catalog):
+def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
     from riverhog_growth_contracts import validate_execution_samples
     from riverhog_provenance._generic_semantics import GenericSemantics
-    from test_generic_semantics import CommonWorkConnection, binding_projection, workspace_rows
+    from test_generic_semantics import (
+        CommonWorkConnection,
+        binding_projection,
+        measure_semantic_operation,
+        semantic_child_dimensions,
+        workspace_rows,
+    )
 
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+    binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
     samples = []
     phases = (
         "admit",
@@ -879,6 +873,7 @@ def growth_samples(tmp_path, catalog):
                     current = work(db, row, catalog, operation="row")
                     current.initialize()
                     position_parent(current, phase, budget=budget)
+                    child_dimensions = semantic_child_dimensions(current, budget)
                     retained = workspace_rows(db)
                     prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                     width = envelope(current, prefix)
@@ -887,12 +882,21 @@ def growth_samples(tmp_path, catalog):
                 with closing(connect(path, factory=CommonWorkConnection)) as db:
                     current = work(db, row, catalog, operation="row")
                     byte_budget = 16 * 1024 * 1024
-                    with db.observe() as metrics:
-                        current.advance(step_budget=budget, byte_budget=byte_budget)
-                    sample = semantic_sample(
-                        binding, digest, retained, budget, width, metrics, byte_budget
+                    sample = measure_semantic_operation(
+                        current,
+                        measured_operation=measured_operation,
+                        step_budget=budget,
+                        byte_budget=byte_budget,
+                        retained_rows=retained,
+                        metadata_row_octets=width,
+                        child_dimensions=child_dimensions,
                     )
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                     assert db.execute("SELECT * FROM journal_prefix").fetchone() == prefix
                     with closing(sqlite3.connect(":memory:")) as suffix_db:
@@ -926,7 +930,13 @@ def growth_samples(tmp_path, catalog):
 def terminal_growth_samples(tmp_path, catalog):
     from riverhog_growth_contracts import validate_execution_samples
     from riverhog_provenance._generic_semantics import _RESULT_BYTES, GenericSemantics
-    from test_generic_semantics import CommonWorkConnection, binding_projection, workspace_rows
+    from test_generic_semantics import (
+        CommonWorkConnection,
+        binding_projection,
+        measure_semantic_result,
+        semantic_terminal_dimensions,
+        workspace_rows,
+    )
 
     binding, projection, digest = binding_projection(GenericSemantics.result)
     samples = []
@@ -945,27 +955,39 @@ def terminal_growth_samples(tmp_path, catalog):
                     current.initialize()
                     finish(current, budget=64)
                     assert current.load().phase == "rejected"
+                    terminal_dimensions = semantic_terminal_dimensions(current)
                     retained = workspace_rows(db)
                     prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                     width = envelope(current, prefix)
+                    before = owned(db)
                     with closing(connect(path)) as destination:
                         db.backup(destination)
                 with closing(connect(path, factory=CommonWorkConnection)) as db:
                     current = work(db, row, catalog, operation="row")
-                    before = owned(db)
                     message = (
                         "cannot relate an entity to itself"
                         if mode == "self"
                         else "graph contains a cycle"
                     )
-                    with db.observe() as metrics:
-                        with pytest.raises(ProvenanceValidationError, match=message):
-                            current.result()
-                    assert owned(db) == before
-                    sample = semantic_sample(
-                        binding, digest, retained, 1, width, metrics, _RESULT_BYTES
+                    sample = measure_semantic_result(
+                        current,
+                        {
+                            "retained_rows": retained,
+                            "step_budget": 1,
+                            "byte_budget": _RESULT_BYTES,
+                            "metadata_row_octets": width,
+                            **terminal_dimensions,
+                        },
+                        expected_exception=ProvenanceValidationError,
+                        pattern=message,
                     )
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    assert owned(db) == before
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
     assert len(samples) == 24
     return samples
@@ -1043,7 +1065,12 @@ def staging_growth_samples(tmp_path):
                         },
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
                     assert db.execute("SELECT * FROM journal_prefix").fetchone() == prefix
     assert len(samples) == 36
@@ -1125,7 +1152,12 @@ def test_actual_cold_relation_metadata_work(tmp_path, record_property):
                         "metrics": dict(metrics),
                         "delegates": {},
                     }
-                    validate_execution_samples(projection, binding.declaration.id, [sample])
+                    validate_execution_samples(
+                        projection,
+                        binding.declaration.id,
+                        [sample],
+                        numeric_policy=numeric_policy_from_environment(os.environ),
+                    )
                     samples.append(sample)
     assert len(samples) == 70
     record_property("growth_samples", samples)

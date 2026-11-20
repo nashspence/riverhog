@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sqlite3
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import replace
 from tempfile import TemporaryFile
@@ -10,6 +11,7 @@ from typing import Any, cast
 from riverhog_archive_contracts import (
     HistoryJournalAnchor,
     MemberHistoryBuilder,
+    MemberHistoryHeads,
     MemberHistoryPrimary,
 )
 from riverhog_canonical_json import canonical_json_bytes
@@ -35,14 +37,17 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_sha256,
 )
 from riverhog_provenance import (
+    JournalStore,
     external_reference,
     selected_delivery_occurrence,
     software_agent_id,
     validate_journal_chunks,
 )
 
+from riverhog_client import PrimaryStore
 from riverhog_client.canonical_completion import CompletionRecord, write_completion_journal
 from riverhog_client.completion_records import CompletionRecords
+from riverhog_client.initial_tags import PreparedInitialCollectionTags
 from riverhog_client.processing.history_transfer import CanonicalHistoryTransfer
 from riverhog_client.processing.models import (
     DerivedCollectionReceipt,
@@ -80,6 +85,18 @@ class DerivedCollectionWriter:
         self,
         api: Any,
         *,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
+        completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
+        history_selection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_selection_storage_open: Callable[[MemberHistoryBuilder], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -97,6 +114,18 @@ class DerivedCollectionWriter:
         if not evidence:
             raise ValueError("derived collection writer requires controller evidence")
         self.api = api
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
+        self._initial_tags_connection_factory = initial_tags_connection_factory
+        self._on_initial_tags_storage_open = on_initial_tags_storage_open
+        self._completion_connection_factory = completion_connection_factory
+        self._on_completion_storage_open = on_completion_storage_open
+        self._history_selection_connection_factory = history_selection_connection_factory
+        self._on_history_selection_storage_open = on_history_selection_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
+        self.primary_store = primary_store
+        self.member_inventory = member_inventory
         self.spec = spec
         self.claim_id = claim_id
         self.fence = fence
@@ -143,6 +172,18 @@ class DerivedCollectionWriter:
             raise ValueError("derived output declarations lack exact input-history correspondence")
         writer = IncrementalDerivedCollectionWriter(
             self.api,
+            primary_store=self.primary_store,
+            member_inventory=self.member_inventory,
+            provenance_connection_factory=self._provenance_connection_factory,
+            on_provenance_storage_open=self._on_provenance_storage_open,
+            initial_tags_connection_factory=self._initial_tags_connection_factory,
+            on_initial_tags_storage_open=self._on_initial_tags_storage_open,
+            completion_connection_factory=self._completion_connection_factory,
+            on_completion_storage_open=self._on_completion_storage_open,
+            history_selection_connection_factory=self._history_selection_connection_factory,
+            on_history_selection_storage_open=self._on_history_selection_storage_open,
+            history_verification_connection_factory=self._history_verification_connection_factory,
+            on_history_verification_storage_open=self._on_history_verification_storage_open,
             spec=self.spec,
             claim_id=self.claim_id,
             fence=self.fence,
@@ -183,6 +224,18 @@ class IncrementalDerivedCollectionWriter:
         self,
         api: Any,
         *,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
+        completion_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_completion_storage_open: Callable[[CompletionRecords], None] | None = None,
+        history_selection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_selection_storage_open: Callable[[MemberHistoryBuilder], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
         spec: DerivedCollectionSpec,
         claim_id: str,
         fence: int,
@@ -195,6 +248,16 @@ class IncrementalDerivedCollectionWriter:
         source_context: Mapping[str, object] | None = None,
     ) -> None:
         self.api = api
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
+        self._initial_tags_connection_factory = initial_tags_connection_factory
+        self._on_initial_tags_storage_open = on_initial_tags_storage_open
+        self._completion_connection_factory = completion_connection_factory
+        self._on_completion_storage_open = on_completion_storage_open
+        self._history_selection_connection_factory = history_selection_connection_factory
+        self._on_history_selection_storage_open = on_history_selection_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
         self.producer_app = producer_app
         self.producer_version = producer_version
         self.spec = spec
@@ -224,6 +287,12 @@ class IncrementalDerivedCollectionWriter:
         )
         self.producer = IncrementalCollectionProducer(
             api,
+            primary_store=primary_store,
+            member_inventory=member_inventory,
+            provenance_connection_factory=provenance_connection_factory,
+            on_provenance_storage_open=on_provenance_storage_open,
+            initial_tags_connection_factory=initial_tags_connection_factory,
+            on_initial_tags_storage_open=on_initial_tags_storage_open,
             producer_app=producer_app,
             adapter_id="riverhog-derived-collection/v1",
             adapter_version=producer_version,
@@ -289,6 +358,10 @@ class IncrementalDerivedCollectionWriter:
             self.producer.collection_id, identity.artifact_id
         )
         with MemberHistoryBuilder(
+            connection_factory=self._history_selection_connection_factory,
+            on_storage_open=self._on_history_selection_storage_open,
+            verification_connection_factory=self._history_verification_connection_factory,
+            on_verification_storage_open=self._on_history_verification_storage_open,
             artifact_id=str(identity.artifact_id),
             bytes=identity.bytes,
             sha256=identity.sha256,
@@ -355,7 +428,10 @@ class IncrementalDerivedCollectionWriter:
         completion_assertions: CompletionAssertions | None,
     ) -> None:
         session = self.api.get_collection_upload_session(self.producer.collection_id)
-        with CompletionRecords() as records:
+        with CompletionRecords(
+            connection_factory=self._completion_connection_factory,
+            on_storage_open=self._on_completion_storage_open,
+        ) as records:
             for record in supplied:
                 retained = records.add(record.kind, record.read())
                 if (retained.bytes, retained.sha256) != (record.bytes, record.sha256):
@@ -420,7 +496,7 @@ class IncrementalDerivedCollectionWriter:
                 ),
             )
             with TemporaryFile("w+b") as journal:
-                summary = write_completion_journal(
+                with write_completion_journal(
                     journal,
                     requirement=self.requirement,
                     records=records.records(),
@@ -441,13 +517,19 @@ class IncrementalDerivedCollectionWriter:
                     disposition_set_sha256=disposition.sha256,
                     producer_app=self.producer_app,
                     producer_version=self.producer_version,
-                )
+                    connection_factory=self._provenance_connection_factory,
+                    on_storage_open=self._on_provenance_storage_open,
+                ) as summary:
+                    journal_id = summary.journal_id
+                    byte_count = summary.journal_bytes
+                    sha256 = summary.journal_sha256
+                records.close()
                 self.api.upload_collection_upload_session_provenance_journal(
                     self.producer.collection_id,
-                    summary.journal_id,
+                    journal_id,
                     content=iter(lambda: journal.read(1024 * 1024), b""),
-                    byte_count=summary.journal_bytes,
-                    sha256=summary.journal_sha256,
+                    byte_count=byte_count,
+                    sha256=sha256,
                     selection_role="completion",
                 )
 
@@ -482,26 +564,29 @@ class IncrementalDerivedCollectionWriter:
                 with self.api.stream_collection_upload_session_provenance_journal(
                     self.producer.collection_id, primary.journal.journal_id
                 ) as chunks:
-                    summary = validate_journal_chunks(
+                    with validate_journal_chunks(
                         chunks,
                         expected_anchor=primary.journal.model_dump(mode="json"),
                         require_exact_tail=True,
                         require_profiles=False,
-                    )
-                state, _ = selected_delivery_occurrence(
-                    summary,
-                    binding=primary.model_dump(mode="json"),
-                    artifact_id=str(artifact_id),
-                    byte_count=int(member["bytes"]),
-                    sha256=member["sha256"],
-                    member_role=COLLECTION_MEMBER_ROLE,
-                )
-                output_id = validate_member_completion_requirement(
-                    summary.graph_validation.view,
-                    delivery_context_id=self.producer.delivery_context_id,
-                    state_id=state["id"],
-                    requirement=self.requirement,
-                )
+                        connection_factory=self._provenance_connection_factory,
+                        on_storage_open=self._on_provenance_storage_open,
+                    ) as summary:
+                        state, _ = selected_delivery_occurrence(
+                            summary,
+                            binding=primary.model_dump(mode="json"),
+                            artifact_id=str(artifact_id),
+                            byte_count=int(member["bytes"]),
+                            sha256=member["sha256"],
+                            member_role=COLLECTION_MEMBER_ROLE,
+                        )
+                        output_id = validate_member_completion_requirement(
+                            summary.graph_validation.view,
+                            delivery_context_id=self.producer.delivery_context_id,
+                            state_id=state["id"],
+                            requirement=self.requirement,
+                        )
+                        state_reference = external_reference(summary, state["id"])
                 imports = self.api.get_collection_upload_session_member_history_inputs(
                     self.producer.collection_id, artifact_id
                 )
@@ -515,7 +600,7 @@ class IncrementalDerivedCollectionWriter:
                             "journal": primary.journal.model_dump(mode="json"),
                             "delivery_association_id": primary.delivery_association_id,
                         },
-                        "state": external_reference(summary, state["id"]),
+                        "state": state_reference,
                     },
                     {"artifact_id": str(artifact_id), "imports": imports.model_dump(mode="json")},
                 )

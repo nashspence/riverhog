@@ -141,7 +141,7 @@ def summarize_transfer_log(
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Run a transfer, recovery or Stove0 scale profile. "
+            "Run transfer, recovery, collection publication or Stove0 scale profiles. "
             "Commands and arguments are excluded from measurement records."
         ),
         epilog=(
@@ -154,13 +154,25 @@ def _parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
-        "--scenario", choices=sorted([*SCENARIO_OPERATIONS, "stove0-scale"]), required=True
+        "--scenario",
+        choices=sorted([*SCENARIO_OPERATIONS, "stove0-scale", "collection-publication"]),
+        required=True,
     )
     parser.add_argument("--workload", choices=WORKLOADS, help="transfer or recovery workload")
+    parser.add_argument(
+        "--publication-workload",
+        type=Path,
+        help="exact input geometry JSON for the maintained collection-publication profile",
+    )
+    parser.add_argument(
+        "--finalization-timeout-seconds",
+        type=_positive_int,
+        help="positive finalization resource deadline for collection-publication",
+    )
     parser.add_argument("--payload-bytes", type=_positive_int)
     parser.add_argument("--items", type=_positive_int)
     parser.add_argument(
-        "--output", type=Path, help="directory for retained Stove0 scale profiling records"
+        "--output", type=Path, help="directory for retained maintained profiling records"
     )
     parser.add_argument(
         "--context",
@@ -191,6 +203,25 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) -> list[str]:
+    if args.scenario == "collection-publication":
+        fields = (
+            "workload",
+            "payload_bytes",
+            "items",
+            "context",
+            "reference",
+            "target_ratio",
+            "transfer_log",
+        )
+        if args.command or any(getattr(args, field) is not None for field in fields):
+            parser.error("collection-publication uses its exact --publication-workload")
+        if args.publication_workload is None:
+            parser.error("collection-publication requires --publication-workload")
+        return []
+    if args.publication_workload is not None:
+        parser.error("--publication-workload requires --scenario collection-publication")
+    if args.finalization_timeout_seconds is not None:
+        parser.error("--finalization-timeout-seconds requires --scenario collection-publication")
     if args.scenario == "stove0-scale":
         transfer_fields = (
             "workload",
@@ -205,7 +236,7 @@ def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
             parser.error("stove0-scale uses the maintained 128-file workload and lifecycle command")
         return []
     if args.output is not None:
-        parser.error("--output selects a retained Stove0 scale profile directory")
+        parser.error("--output selects a maintained preset profile directory")
     if args.workload is None or args.payload_bytes is None:
         parser.error("transfer and recovery profiles require --workload and --payload-bytes")
     if args.items is None:
@@ -345,6 +376,145 @@ def _profile_stove0_scale(output: Path) -> int:
     return status
 
 
+def _profile_collection_publication(
+    workload: Path,
+    output: Path,
+    *,
+    finalization_timeout_seconds: int | None = None,
+) -> int:
+    from dataclasses import asdict
+
+    from riverhog_canonical_json import canonical_json_bytes
+
+    from scripts.validation_identity import source_identity
+    from scripts.validation_process import run_validation_child
+    from tests.support.qualification.publication_geometry import WORKLOAD_FORMAT, read_workload
+
+    root = Path(__file__).resolve().parents[1]
+    source = source_identity(root)
+    if source.get("source_clean") is not True:
+        raise performance.PerformanceError("collection-publication requires clean source")
+    try:
+        geometry = read_workload(workload)
+    except (OSError, ValueError, TypeError) as error:
+        raise performance.PerformanceError("publication workload is invalid") from error
+    if finalization_timeout_seconds is not None and (
+        type(finalization_timeout_seconds) is not int or finalization_timeout_seconds <= 0
+    ):
+        raise performance.PerformanceError("publication finalization deadline is invalid")
+    target = asdict(geometry)
+    target["payload_sizes"] = list(geometry.payload_sizes)
+    output.mkdir(parents=True, exist_ok=True)
+    run_id = str(uuid4())
+    directory = output / run_id
+    directory.mkdir()
+
+    def phase(value: dict[str, object]) -> None:
+        record = {
+            "format": "riverhog-publication-profile-phase/v1",
+            "run_id": run_id,
+            **source,
+            **value,
+        }
+        temporary = directory / "phase.json.tmp"
+        temporary.write_bytes(canonical_json_bytes(record))
+        temporary.replace(directory / "phase.json")
+
+    phase({"phase": "starting"})
+    failure: dict[str, object] = {}
+    started = time.perf_counter()
+    try:
+        # The parent owns scratch. Its receiver joins the original helper and
+        # cancellation cleanup before this directory can be removed.
+        with tempfile.TemporaryDirectory(prefix="riverhog-publication-profile-") as scratch:
+            workspace = Path(scratch)
+            selected = workspace / "workload.json"
+            selected.write_bytes(canonical_json_bytes({"format": WORKLOAD_FORMAT, **target}))
+            completion = workspace / "completion.json"
+            fixture_root = workspace / "fixture"
+            environment = dict(os.environ)
+            # A helper's restored environment still names its own dummy config.
+            # Unconfirmed fixture cleanup can never select deployed settings.
+            environment["RIVERHOG_CONFIG"] = str(fixture_root / "riverhog.yaml")
+            status = run_validation_child(
+                [
+                    sys.executable,
+                    "-m",
+                    "tests.support.qualification.publication_profile",
+                    str(selected),
+                    str(fixture_root),
+                    str(completion),
+                    str(directory / "phase.json"),
+                    run_id,
+                    str(source["source_sha"]),
+                    str(finalization_timeout_seconds) if finalization_timeout_seconds else "",
+                ],
+                cwd=root,
+                env=environment,
+            )
+            failure["child_exit_status"] = status
+            failure["child_received"] = True
+            if status != 0:
+                progress = directory / "phase.json"
+                if progress.exists():
+                    failure["helper_failure"] = json.loads(progress.read_text())
+                raise performance.PerformanceError("publication helper failed")
+            try:
+                receipt = json.loads(completion.read_text())
+            except (OSError, ValueError) as error:
+                raise performance.PerformanceError(
+                    "publication completion receipt is invalid"
+                ) from error
+            if (
+                not isinstance(receipt, dict)
+                or not isinstance(receipt.get("observed"), dict)
+                or set(receipt) != {"format", "run_id", "source", "observed"}
+                or receipt["format"] != "riverhog-publication-completion/v1"
+                or receipt["run_id"] != run_id
+                or receipt["source"] != source
+                or receipt["observed"].get("completion_verified") is not True
+                or receipt["observed"].get("workload") != target
+                or (
+                    finalization_timeout_seconds is not None
+                    and (
+                        not isinstance(receipt["observed"].get("conditions"), dict)
+                        or receipt["observed"]["conditions"].get("finalization_timeout_seconds")
+                        != finalization_timeout_seconds
+                    )
+                )
+            ):
+                raise performance.PerformanceError("publication completion receipt is invalid")
+            observed = receipt["observed"]
+        if source_identity(root) != source:
+            raise performance.PerformanceError("publication profile source changed")
+    except BaseException as error:
+        phase({"phase": "failed", "error_type": type(error).__name__, **failure})
+        raise
+    report = {
+        "format": "riverhog-publication-profile/v1",
+        **source,
+        "run_id": run_id,
+        "observed": observed,
+        "execution": {
+            "elapsed_seconds": time.perf_counter() - started,
+            "child_exit_status": status,
+            "child_received": True,
+            "workspace_cleanup_received": True,
+        },
+        "comparison": {
+            "status": "not-compared",
+            "reason": "no-measured-reference",
+            "report_only": True,
+        },
+    }
+    temporary = directory / "profile.json.tmp"
+    temporary.write_bytes(canonical_json_bytes(report))
+    temporary.replace(directory / "profile.json")
+    phase({"phase": "passed", "completion_verified": True})
+    print(canonical_json_bytes(report).decode(), flush=True)
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     from riverhog_canonical_json import canonical_json_bytes
 
@@ -352,6 +522,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     command = _validate_args(args, parser)
     try:
+        if args.scenario == "collection-publication":
+            output = (
+                args.output or Path(__file__).resolve().parents[1] / "build/publication-profile"
+            )
+            return _profile_collection_publication(
+                args.publication_workload,
+                output,
+                finalization_timeout_seconds=args.finalization_timeout_seconds,
+            )
         if args.scenario == "stove0-scale":
             output = (
                 args.output or Path(__file__).resolve().parents[1] / "build/stove0-scale-profile"

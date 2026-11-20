@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 from contextlib import contextmanager
 from types import SimpleNamespace
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
+from riverhog_core import upload_journal_ranges as owner
 from riverhog_core.catalog_db import Base, create_catalog_engine
 from riverhog_core.catalog_models import (
     CollectionUploadProvenanceJournalChunkRecord as Chunk,
@@ -18,12 +20,17 @@ from riverhog_core.catalog_models import (
     CollectionUploadRecord,
     StorageIncarnationRecord,
 )
-from riverhog_core.services import collection_uploads as owner
+from riverhog_core.incremental_plan import (
+    incremental_volume_planner_checkpoint_bytes,
+    new_incremental_volume_planner,
+)
+from riverhog_core.services.archive_write_admission import initialize_archive_write_control
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_protocol import COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX as EXTENT
 from sqlalchemy import delete, event, update
 from sqlalchemy.orm import Session
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.db_helpers import sqlite_url
 
 JOURNAL = "urn:uuid:11111111-1111-4111-8111-111111111111"
@@ -66,10 +73,15 @@ def staged_transport(root, count, last_octets=EXTENT, *, first_octets=EXTENT):
                     last_activity_at="2026-01-01T00:00:00Z",
                     archive_phase_updated_at="2026-01-01T00:00:00Z",
                     archive_storage_prefix="collections/1",
-                    planner_checkpoint_json="{}",
+                    planner_checkpoint_json=incremental_volume_planner_checkpoint_bytes(
+                        new_incremental_volume_planner()
+                    ).decode(),
                 )
             )
             session.flush()
+            upload = session.get(CollectionUploadRecord, 1)
+            assert upload is not None
+            initialize_archive_write_control(session, upload)
             journal = Journal(
                 collection_id=1,
                 journal_id=JOURNAL,
@@ -173,7 +185,7 @@ def observe_execute(session, monkeypatch):
 def test_exact_ranges_cross_transport_boundaries_and_close(tmp_path, monkeypatch, offset, size):
     with staged_transport(tmp_path, 3, last_octets=37) as (engine, _), Session(engine) as session:
         counts = observe_execute(session, monkeypatch)
-        actual = owner._upload_journal_range_bytes(session, 1, JOURNAL, offset=offset, size=size)
+        actual = owner.upload_journal_range_bytes(session, 1, JOURNAL, offset=offset, size=size)
         assert actual == expected_range(offset, size)
         overlap = (offset + size - 1) // EXTENT - offset // EXTENT + 1
         assert counts["closed"] is True and counts["sql_statements"] == (1 if overlap == 1 else 2)
@@ -198,7 +210,7 @@ def test_corrupt_selected_range_fails_and_closes(tmp_path, monkeypatch, alterati
         with Session(engine) as session:
             counts = observe_execute(session, monkeypatch)
             with pytest.raises(RuntimeError, match="not contiguous|unavailable"):
-                owner._upload_journal_range_bytes(
+                owner.upload_journal_range_bytes(
                     session, 1, JOURNAL, offset=EXTENT - 1, size=EXTENT + 2
                 )
             assert counts["closed"] is True
@@ -212,7 +224,7 @@ def test_invalid_range_never_opens_a_query(offset, size):
         raise AssertionError("invalid request reached the database")
 
     with pytest.raises(RuntimeError, match="range is invalid"):
-        owner._upload_journal_range_bytes(
+        owner.upload_journal_range_bytes(
             SimpleNamespace(execute=forbidden), 1, JOURNAL, offset=offset, size=size
         )
 
@@ -222,11 +234,11 @@ def test_tail_overrun_is_an_error_and_reopen_resumes_exact_range(tmp_path, monke
         with Session(engine) as session:
             counts = observe_execute(session, monkeypatch)
             with pytest.raises(RuntimeError, match="unavailable"):
-                owner._upload_journal_range_bytes(session, 1, JOURNAL, offset=total - 1, size=2)
+                owner.upload_journal_range_bytes(session, 1, JOURNAL, offset=total - 1, size=2)
             assert counts["closed"] is True
         engine.dispose()
         with Session(engine) as session:
-            assert owner._upload_journal_range_bytes(
+            assert owner.upload_journal_range_bytes(
                 session, 1, JOURNAL, offset=2 * EXTENT, size=37
             ) == expected_range(2 * EXTENT, 37)
 
@@ -234,11 +246,13 @@ def test_tail_overrun_is_an_error_and_reopen_resumes_exact_range(tmp_path, monke
 @pytest.mark.growth_witness(
     "riverhog-staged-journal-range-indexed-work/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.services.collection_uploads._upload_journal_range_bytes",
+    operation="riverhog_core.upload_journal_ranges.upload_journal_range_bytes",
 )
 def test_native_indexed_range_records_actual_work(tmp_path, monkeypatch, record_property):
-    binding = growth_binding(owner._upload_journal_range_bytes)
-    projection = project_bindings((binding,))
+    binding = growth_binding(owner.upload_journal_range_bytes)
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration = projection["declarations"][binding.declaration.id]
     samples = []
     for count, first_octets, offset, size in (
@@ -292,7 +306,7 @@ def test_native_indexed_range_records_actual_work(tmp_path, monkeypatch, record_
             try:
                 with monkeypatch.context() as patch:
                     patch.setattr(owner, "bytearray", Buffer, raising=False)
-                    actual = owner._upload_journal_range_bytes(
+                    actual = owner.upload_journal_range_bytes(
                         session, 1, JOURNAL, offset=offset, size=size
                     )
             finally:
@@ -331,6 +345,11 @@ def test_native_indexed_range_records_actual_work(tmp_path, monkeypatch, record_
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     record_property("growth_samples", samples)

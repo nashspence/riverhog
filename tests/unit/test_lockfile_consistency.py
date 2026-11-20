@@ -3,6 +3,7 @@ from __future__ import annotations
 import tomllib
 from pathlib import Path
 
+from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
 
 from tests.workspace import workspace_pyprojects
@@ -59,13 +60,21 @@ def test_workspace_packages_resolve_internal_dependencies_through_uv_sources() -
         assert all(sources[name] == {"workspace": True} for name in internal)
 
 
-def test_storage_adapter_client_declares_its_http2_transport() -> None:
+def test_storage_adapter_client_declares_its_transport_dependencies() -> None:
     pyproject = tomllib.loads(
         (REPO_ROOT / "packages/riverhog-storage-adapter-support/pyproject.toml").read_text(
             encoding="utf-8"
         )
     )
+    runtime = {
+        canonical_distribution_name(requirement.name): requirement
+        for requirement in map(Requirement, pyproject["project"]["dependencies"])
+    }
+    assert runtime["httpx"].extras == set()
 
-    assert any(
-        dependency.startswith("httpx[http2]") for dependency in pyproject["project"]["dependencies"]
-    )
+    workspace = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    development = {
+        canonical_distribution_name(Requirement(dependency).name)
+        for dependency in workspace["dependency-groups"]["dev"]
+    }
+    assert {"cryptography", "h2"} <= development

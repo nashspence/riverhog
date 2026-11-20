@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import uuid
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from riverhog_core.catalog_db import (
@@ -17,7 +18,12 @@ from riverhog_core.catalog_models import (
     StorageIncarnationRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
+from riverhog_core.incremental_plan import (
+    incremental_volume_planner_checkpoint_bytes,
+    new_incremental_volume_planner,
+)
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_write_admission import initialize_archive_write_control
 from riverhog_core.services.collection_uploads import (
     SqlAlchemyCollectionUploadService,
 )
@@ -37,15 +43,20 @@ from sqlalchemy.orm import Session
 from tests.unit.db_helpers import sqlite_url
 
 
-def test_staged_canonical_journal_seals_to_its_exact_tail(tmp_path: Path) -> None:
+def test_staged_canonical_journal_seals_to_its_exact_tail(
+    tmp_path: Path, request: pytest.FixtureRequest
+) -> None:
     observed = BoundedSourceObserver().observe(BytesSource(b"canonical content"))
     raw = create_journal(
         observed.graph_fragment(),
         recorded_by_agent_id=observed.observer_agent_id,
     )
     expected = validate_journal(raw)
-    factory = make_session_factory(sqlite_url(tmp_path / "catalog.db"))
+    request.addfinalizer(expected.close)
+    config = RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.db"))
+    factory = make_session_factory(config.database_url)
     engine = factory.kw["bind"]
+    request.addfinalizer(engine.dispose)
     Base.metadata.create_all(engine)
     with Session(engine) as session, session.begin():
         incarnation_id = str(uuid.uuid4())
@@ -73,10 +84,15 @@ def test_staged_canonical_journal_seals_to_its_exact_tail(tmp_path: Path) -> Non
                 last_activity_at="2026-01-01T00:00:00Z",
                 archive_phase_updated_at="2026-01-01T00:00:00Z",
                 archive_storage_prefix="collections/1",
-                planner_checkpoint_json="{}",
+                planner_checkpoint_json=incremental_volume_planner_checkpoint_bytes(
+                    new_incremental_volume_planner()
+                ).decode(),
             )
         )
         session.flush()
+        upload = session.get(CollectionUploadRecord, 1)
+        assert upload is not None
+        initialize_archive_write_control(session, upload)
         record = CollectionUploadProvenanceJournalRecord(
             collection_id=1,
             journal_id=expected.journal_id,
@@ -100,21 +116,23 @@ def test_staged_canonical_journal_seals_to_its_exact_tail(tmp_path: Path) -> Non
                 )
             )
         session.flush()
-    service = object.__new__(SqlAlchemyCollectionUploadService)
-    service._session_factory = factory
+    service = SqlAlchemyCollectionUploadService(config, SimpleNamespace(), session_factory=factory)
+    request.addfinalizer(service.close)
     status = service.seal_provenance_journal(1, expected.journal_id)
     while status["state"] == "validating":
         status = service.seal_provenance_journal(1, expected.journal_id)
     assert status["state"] == "sealed"
     assert status["anchor"] == expected.anchor
-    expected.close()
-    engine.dispose()
 
 
-def test_completion_requirement_and_journal_selection_are_immutable(tmp_path: Path) -> None:
+def test_completion_requirement_and_journal_selection_are_immutable(
+    tmp_path: Path, request: pytest.FixtureRequest
+) -> None:
     config = RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.db"))
     factory = make_session_factory(config.database_url)
-    Base.metadata.create_all(factory.kw["bind"])
+    engine = factory.kw["bind"]
+    request.addfinalizer(engine.dispose)
+    Base.metadata.create_all(engine)
     incarnation_id = str(uuid.uuid4())
     with session_scope(factory) as session:
         session.add(
@@ -141,12 +159,18 @@ def test_completion_requirement_and_journal_selection_are_immutable(tmp_path: Pa
                 last_activity_at="2026-01-01T00:00:00Z",
                 archive_phase_updated_at="2026-01-01T00:00:00Z",
                 archive_storage_prefix="collections/1",
-                planner_checkpoint_json="{}",
+                planner_checkpoint_json=incremental_volume_planner_checkpoint_bytes(
+                    new_incremental_volume_planner()
+                ).decode(),
             )
         )
-    service = object.__new__(SqlAlchemyCollectionUploadService)
-    service._session_factory = factory
-    service._config = config
+        session.flush()
+        upload = session.get(CollectionUploadRecord, 1)
+        assert upload is not None
+        initialize_archive_write_control(session, upload)
+
+    service = SqlAlchemyCollectionUploadService(config, SimpleNamespace(), session_factory=factory)
+    request.addfinalizer(service.close)
     first = "urn:uuid:11111111-1111-4111-8111-111111111111"
     second = "urn:uuid:22222222-2222-4222-8222-222222222222"
     authority = CollectionUploadProvenanceJournalCreateDocument(

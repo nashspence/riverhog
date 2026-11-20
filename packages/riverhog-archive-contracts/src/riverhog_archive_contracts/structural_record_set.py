@@ -13,6 +13,7 @@ from riverhog_canonical_json import (
     parse_scalar,
     require_canonical_json,
 )
+from sha256_continuation import CheckpointSHA256
 
 RECORD_SET_FORMAT = "riverhog-archive-record-set/v1"
 RECORD_PAGE_FORMAT = "riverhog-archive-record-page/v1"
@@ -65,30 +66,115 @@ class RecordSetRef:
         )
 
 
+def _prefix(schema_id: str) -> bytes:
+    if not isinstance(schema_id, str) or not schema_id or len(schema_id.encode("utf-8")) > 256:
+        raise ValueError("structural record set schema identity is invalid")
+    encoded = schema_id.encode("utf-8")
+    return _DOMAIN + len(encoded).to_bytes(2, "big") + encoded
+
+
+def _record(key: str, value: Mapping[str, Any], previous: bytes | None) -> tuple[bytes, bytes]:
+    if not isinstance(key, str) or not key or len(key.encode("utf-8")) > 1024:
+        raise ValueError("structural record key is invalid")
+    encoded = key.encode("utf-8")
+    if previous is not None and encoded <= previous:
+        raise ValueError("structural record keys are not strictly ordered")
+    raw = canonical_json_bytes({"key": key, "value": dict(value)})
+    if len(raw) > RECORD_BYTES_MAX:
+        raise ValueError("structural record exceeds its byte bound")
+    return encoded, len(raw).to_bytes(4, "big") + raw
+
+
+@dataclass(frozen=True, slots=True)
+class RecordSetCheckpoint:
+    """Resume the existing ordered commitment from trusted owner work state.
+
+    Source binding and the mandatory terminal comparison belong to the consumer.
+    This checkpoint retains one key, one SHA-256 continuation and an exact count.
+    """
+
+    schema_id: str
+    count: int
+    previous_key: str | None
+    hash_state: str
+
+    def __post_init__(self) -> None:
+        prefix = _prefix(self.schema_id)
+        digest = CheckpointSHA256.from_state(self.hash_state)
+        if type(self.count) is not int or not 0 <= self.count <= digest.total_bytes:
+            raise ValueError("structural record checkpoint count is invalid")
+        if self.count == 0:
+            if (
+                self.previous_key is not None
+                or self.hash_state != CheckpointSHA256(prefix).export_state()
+            ):
+                raise ValueError("empty structural record checkpoint differs from its schema")
+        elif (
+            not isinstance(self.previous_key, str)
+            or not self.previous_key
+            or len(self.previous_key.encode("utf-8")) > 1024
+            or digest.total_bytes < len(prefix) + self.count * 4
+        ):
+            raise ValueError("structural record checkpoint position is invalid")
+
+    @classmethod
+    def begin(cls, schema_id: str) -> RecordSetCheckpoint:
+        return cls(schema_id, 0, None, CheckpointSHA256(_prefix(schema_id)).export_state())
+
+    def append(self, key: str, value: Mapping[str, Any]) -> RecordSetCheckpoint:
+        previous = None if self.previous_key is None else self.previous_key.encode("utf-8")
+        _, raw = _record(key, value, previous)
+        digest = CheckpointSHA256.from_state(self.hash_state)
+        digest.update_bytes(raw)
+        return type(self)(self.schema_id, self.count + 1, key, digest.export_state())
+
+    def ref(self) -> RecordSetRef:
+        digest = CheckpointSHA256.from_state(self.hash_state)
+        digest.update_bytes(b"\x00count:" + str(self.count).encode("ascii"))
+        return RecordSetRef(self.schema_id, self.count, digest.hexdigest())
+
+    def to_json_bytes(self) -> bytes:
+        return canonical_json_bytes(
+            {
+                "format": "riverhog-record-set-checkpoint/v1",
+                "schema_id": self.schema_id,
+                "count": format_scalar("nonnegative", self.count),
+                "previous_key": self.previous_key,
+                "hash_state": self.hash_state,
+            }
+        )
+
+    @classmethod
+    def from_json_bytes(cls, raw: bytes) -> RecordSetCheckpoint:
+        # Schema <=256 UTF-8 octets, key <=1024, and the fixed SHA-256 state.
+        if type(raw) is not bytes or len(raw) > 16 * 1024:
+            raise ValueError("structural record checkpoint exceeds its codec-derived bound")
+        value: Any = require_canonical_json(raw)
+        if (
+            not isinstance(value, dict)
+            or set(value) != {"format", "schema_id", "count", "previous_key", "hash_state"}
+            or value["format"] != "riverhog-record-set-checkpoint/v1"
+        ):
+            raise ValueError("structural record checkpoint fields are invalid")
+        return cls(
+            value["schema_id"],
+            parse_scalar("nonnegative", value["count"]),
+            value["previous_key"],
+            value["hash_state"],
+        )
+
+
 class RecordSetCommitment:
     """Verify an ordered stream without retaining all records or page boundaries."""
 
     def __init__(self, schema_id: str) -> None:
-        if not isinstance(schema_id, str) or not schema_id or len(schema_id.encode("utf-8")) > 256:
-            raise ValueError("structural record set schema identity is invalid")
         self.schema_id = schema_id
-        self._digest = hashlib.sha256(_DOMAIN)
-        encoded_schema = schema_id.encode("utf-8")
-        self._digest.update(len(encoded_schema).to_bytes(2, "big"))
-        self._digest.update(encoded_schema)
+        self._digest = hashlib.sha256(_prefix(schema_id))
         self._last_key: bytes | None = None
         self.count = 0
 
     def update(self, key: str, value: Mapping[str, Any]) -> None:
-        if not isinstance(key, str) or not key or len(key.encode("utf-8")) > 1024:
-            raise ValueError("structural record key is invalid")
-        encoded_key = key.encode("utf-8")
-        if self._last_key is not None and encoded_key <= self._last_key:
-            raise ValueError("structural record keys are not strictly ordered")
-        raw = canonical_json_bytes({"key": key, "value": dict(value)})
-        if len(raw) > RECORD_BYTES_MAX:
-            raise ValueError("structural record exceeds its byte bound")
-        self._digest.update(len(raw).to_bytes(4, "big"))
+        encoded_key, raw = _record(key, value, self._last_key)
         self._digest.update(raw)
         self._last_key = encoded_key
         self.count += 1
@@ -176,6 +262,7 @@ __all__ = [
     "RECORD_PAGE_FORMAT",
     "RECORD_SET_FORMAT",
     "RecordPage",
+    "RecordSetCheckpoint",
     "RecordSetCommitment",
     "RecordSetRef",
     "verify_record_pages",

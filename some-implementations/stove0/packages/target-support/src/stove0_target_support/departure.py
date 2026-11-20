@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 import threading
 import time
@@ -126,6 +127,9 @@ class PersistentDepartureEffectService:
                     ExecutionDispatch(
                         invocation_id=intent.departure_id,
                         attempt=status.attempt,
+                        refresh_id=hashlib.sha256(
+                            canonical_json_bytes(intent.model_dump(mode="json"))
+                        ).hexdigest(),
                         authorize=lambda deadline: self._authorize(intent, deadline),
                         prepare=lambda canceled, permit: self._prepare(intent, canceled, permit),
                         deferred=lambda: None,

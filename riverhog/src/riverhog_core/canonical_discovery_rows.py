@@ -138,6 +138,7 @@ def iter_index_assertions(summary: JournalSummary) -> Iterator[IndexedAssertion]
 
     for sequence, frame in enumerate(summary.frames):
         document = frame.document
+        entry = summary.anchor_at(sequence)["through"]
         for assertions in document["body"].get("assertions", {}).values():
             for row in assertions:
                 yield IndexedAssertion(
@@ -146,7 +147,7 @@ def iter_index_assertions(summary: JournalSummary) -> Iterator[IndexedAssertion]
                     prefix_sha256=summary.journal_sha256,
                     entry_id=document["id"],
                     entry_sequence=sequence,
-                    entry_sha256=frame.sha256,
+                    entry_sha256=entry["json_sha256"],
                     assertion_id=row["assertion_id"],
                     referent_id=row["id"],
                     kind=row["type"],

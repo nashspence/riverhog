@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal, Self
+from typing import Self
 
 from config_validation import read_secret_file
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -26,8 +26,6 @@ class S3StoreDocument(BaseModel):
     max_pool_connections: int = Field(default=32, ge=1, le=4096)
     connect_timeout_seconds: float = Field(default=10.0, gt=0)
     read_timeout_seconds: float = Field(default=300.0, gt=0)
-    max_attempts: int = Field(default=8, ge=1, le=100)
-    retry_mode: Literal["standard", "adaptive"] = "standard"
     tcp_keepalive: bool = True
     read_chunk_bytes: int = Field(default=8 * 1024 * 1024, ge=64 * 1024)
 
@@ -73,8 +71,6 @@ class S3StoreDocument(BaseModel):
             max_pool_connections=self.max_pool_connections,
             connect_timeout_seconds=self.connect_timeout_seconds,
             read_timeout_seconds=self.read_timeout_seconds,
-            max_attempts=self.max_attempts,
-            retry_mode=self.retry_mode,
             tcp_keepalive=self.tcp_keepalive,
         )
 

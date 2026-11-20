@@ -49,6 +49,7 @@ from stove0_target_protocol.jcs import canonical_json_bytes, canonical_json_sha2
 
 from stove0_target_support.configuration import (
     TARGET_TERMINAL_STATE_RETENTION_ENV,
+    publication_state_policy,
     terminal_state_retention_seconds,
 )
 from stove0_target_support.conformance import (
@@ -162,6 +163,7 @@ __all__ = [
     "conformance_report",
     "target_schema_bundle",
     "terminal_state_retention_seconds",
+    "publication_state_policy",
     "validate_declaration_against_operation",
     "validate_preflight_response_against_request",
     "validate_status_against_request",

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import sqlite3
 from contextlib import closing
 
@@ -22,6 +23,8 @@ from riverhog_provenance import (
     validate_journal,
 )
 from riverhog_provenance.graph import time_ns
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def lifecycle_graph(graph, who):
@@ -235,7 +238,9 @@ def test_actual_indexed_extrema_work(monkeypatch, record_property):
 
     monkeypatch.setattr(journal_store.sqlite3, "connect", observed_connect)
     binding = growth_binding(journal_store.JournalStore._lifecycle_bounds_hold)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -306,7 +311,12 @@ def test_actual_indexed_extrema_work(monkeypatch, record_property):
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
         finally:
             current.close()

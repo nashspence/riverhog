@@ -6,9 +6,15 @@ from riverhog_protocol.errors import Conflict
 from riverhog_storage_adapter_protocol import StorageAdapterRejection
 from sqlalchemy import delete, select, tuple_
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only
+from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, utc_now
 
+from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
+from riverhog_core.catalog_cache_write_models import (
+    CachePopulationBeginRecord,
+    CachePopulationWriteEffectRecord,
+)
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import (
     ArchiveCopyRetirementRecord,
@@ -22,7 +28,8 @@ from riverhog_core.catalog_models import (
     RetrievalCachePopulationRecord,
     RetrievalCacheStoreAccountingRecord,
 )
-from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
+from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
+from riverhog_core.domain.retrieval_cache import AbandonedCachePopulation, RetrievalCacheReceipt
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     ResumableWriteConstraints,
@@ -30,6 +37,13 @@ from riverhog_core.ports.archive_objects import (
 )
 from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
+from riverhog_core.services.cache_population_abandonment import CachePopulationAbandonment
+from riverhog_core.services.cache_population_cleanup import CachePopulationCleanup
+from riverhog_core.services.cache_population_cleanup_turn import (
+    CacheCleanupNotAdmitted,
+    CachePopulationCleanupTurn,
+)
+from riverhog_core.services.cache_write_capacity import retains_cache_write
 from riverhog_core.services.retrieval_cache_accounting import (
     adjust_cache_committed_bytes,
     locked_cache_accounting,
@@ -55,6 +69,7 @@ class SqlAlchemyRetrievalCache:
         self._stores = dict(stores)
         self._registrations = dict(registrations)
         self._session_factory = session_factory
+        self.abandonment = CachePopulationAbandonment(session_factory)
         self._recover = recover
         self._ensure_accounting_rows()
 
@@ -74,6 +89,53 @@ class SqlAlchemyRetrievalCache:
     @property
     def store_names(self) -> tuple[str, ...]:
         return tuple(self._registrations)
+
+    def population_candidates(
+        self,
+    ) -> tuple[tuple[StorageAdapterRetrievalCache, RetrievalCacheStoreRegistration], ...]:
+        """Snapshot current configured priority without recovery or provider work."""
+        stores, registrations = self._stores, self._registrations
+        return tuple(
+            (stores[name], registration)
+            for name, registration in registrations.items()
+            if registration.admission_enabled and name in stores
+        )
+
+    def native_population_cleanup(
+        self,
+        receipt: AbandonedCachePopulation,
+        *,
+        grants: ArchiveCleanupGrants,
+    ) -> tuple[CachePopulationCleanup, StorageAdapterRetrievalCache]:
+        """Bind one original receiving owner to its currently configured target."""
+        value = self.abandonment._value(receipt)
+        target = self._require_store(value["cache_store"])
+        if target.incarnation_id != value["cache_incarnation_id"]:
+            raise Conflict("cache cleanup configured target incarnation changed")
+        return CachePopulationCleanup(self._session_factory, receipt, grants=grants), target
+
+    def native_population_cleanup_turn(
+        self,
+        receipt: AbandonedCachePopulation,
+        *,
+        grants: ArchiveCleanupGrants,
+        tuning: CleanupExecutionTuning,
+    ) -> CachePopulationCleanupTurn:
+        """Bind locally without provider work; new admission has its own SQL guard."""
+        try:
+            owner, target = self.native_population_cleanup(receipt, grants=grants)
+        except (Conflict, RuntimeError) as error:
+            raise CacheCleanupNotAdmitted("cache cleanup current target is unavailable") from error
+        value = self.abandonment._value(receipt)
+
+        def guard(session: Session) -> None:
+            # Current configuration and exact SQL population ownership jointly
+            # authorize disposal. Disabling fresh admission does not revoke it.
+            current = self._require_store(value["cache_store"])
+            if current.incarnation_id != value["cache_incarnation_id"]:
+                raise Conflict("cache cleanup current configured target changed")
+
+        return CachePopulationCleanupTurn(owner, target, guard=guard, tuning=tuning)
 
     def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool:
         store = self._stores.get(cache_store)
@@ -289,6 +351,7 @@ class SqlAlchemyRetrievalCache:
                     raise RuntimeError("retrieval cache population could not be established")
             elif population.expected_bytes != expected_bytes:
                 raise RuntimeError("retrieval cache population byte identity changed")
+            _require_unmanaged_population(session, key)
             if population.state == "abandoning":
                 return None
             self._claim(session, owner=owner, key=key)
@@ -396,6 +459,86 @@ class SqlAlchemyRetrievalCache:
                 return self._admission(population, owner=owner)
         return None
 
+    def observe_completed_population(
+        self,
+        *,
+        owner: str,
+        source_store: str,
+        collection_id: int,
+        object_id: str,
+        expected_bytes: int,
+    ) -> RetrievalCacheReceipt | None:
+        """Read exact existing placement; absence never admits or disposes work."""
+        if not owner.strip() or expected_bytes < 1:
+            raise ValueError("retrieval cache observation requires owner and positive bytes")
+        key = (source_store, collection_id, object_id)
+        with read_snapshot(self._session_factory) as session:
+            ready = session.get(
+                RetrievalCacheObjectRecord,
+                key,
+                options=(load_only(RetrievalCacheObjectRecord.stored_bytes, raiseload=True),),
+            )
+            if ready is not None:
+                if ready.stored_bytes != expected_bytes:
+                    raise RuntimeError("retrieval cache object byte identity changed")
+                # Published placement has independent lifetime/lease ownership.
+                # Observation cannot acquire it for this population owner.
+                return None
+            population = session.get(
+                RetrievalCachePopulationRecord,
+                key,
+                options=(
+                    load_only(
+                        RetrievalCachePopulationRecord.expected_bytes,
+                        RetrievalCachePopulationRecord.state,
+                        RetrievalCachePopulationRecord.cache_store,
+                        RetrievalCachePopulationRecord.cache_incarnation_id,
+                        RetrievalCachePopulationRecord.source_incarnation_id,
+                        RetrievalCachePopulationRecord.object_path,
+                        raiseload=True,
+                    ),
+                ),
+            )
+            if population is None:
+                return None
+            if population.expected_bytes != expected_bytes:
+                raise RuntimeError("retrieval cache population byte identity changed")
+            if (
+                population.state not in {"admitting", "admitted", "writing"}
+                or population.cache_store is None
+                or population.cache_incarnation_id is None
+                or population.object_path is None
+                or session.get(RetrievalCachePopulationClaimRecord, (owner, *key)) is None
+            ):
+                return None
+            cache_store = population.cache_store
+            cache_incarnation = population.cache_incarnation_id
+            source_incarnation = population.source_incarnation_id
+            object_path = population.object_path
+            if (
+                require_storage_incarnation(session, "archive", source_store, bound=False)
+                != source_incarnation
+                or require_storage_incarnation(session, "cache", cache_store, bound=False)
+                != cache_incarnation
+            ):
+                raise RuntimeError("retrieval cache observation incarnation changed")
+        candidate = self._stores.get(cache_store)
+        if candidate is None or not candidate.is_current_incarnation(cache_incarnation):
+            return None
+        if candidate.object_path(*key) != object_path:
+            raise RuntimeError("retrieval cache observation object path changed")
+        completed = candidate.find_completed_population(
+            source_store=source_store,
+            collection_id=collection_id,
+            object_id=object_id,
+            expected_bytes=expected_bytes,
+        )
+        return (
+            candidate.receipt(completed=completed, stored_sha256=None)
+            if completed is not None
+            else None
+        )
+
     def release(self, *, owner: str) -> int:
         if not owner.strip():
             raise ValueError("retrieval cache owner must be non-empty")
@@ -421,6 +564,7 @@ class SqlAlchemyRetrievalCache:
                 population is not None
                 and claim is not None
                 and population.state in {"admitted", "writing"}
+                and population.begin_call_id is None
                 and self._admission(population, owner=admission.owner) == admission
             )
 
@@ -436,6 +580,27 @@ class SqlAlchemyRetrievalCache:
             statement = (
                 select(RetrievalCachePopulationRecord)
                 .where(
+                    RetrievalCachePopulationRecord.begin_call_id.is_(None),
+                    ~select(CachePopulationBeginRecord.id)
+                    .where(
+                        CachePopulationBeginRecord.source_store
+                        == RetrievalCachePopulationRecord.source_store,
+                        CachePopulationBeginRecord.collection_id
+                        == RetrievalCachePopulationRecord.collection_id,
+                        CachePopulationBeginRecord.object_id
+                        == RetrievalCachePopulationRecord.object_id,
+                    )
+                    .exists(),
+                    ~select(CachePopulationWriteEffectRecord.id)
+                    .where(
+                        CachePopulationWriteEffectRecord.source_store
+                        == RetrievalCachePopulationRecord.source_store,
+                        CachePopulationWriteEffectRecord.collection_id
+                        == RetrievalCachePopulationRecord.collection_id,
+                        CachePopulationWriteEffectRecord.object_id
+                        == RetrievalCachePopulationRecord.object_id,
+                    )
+                    .exists(),
                     ~select(RetrievalCachePopulationClaimRecord.owner)
                     .where(
                         RetrievalCachePopulationClaimRecord.source_store
@@ -445,7 +610,7 @@ class SqlAlchemyRetrievalCache:
                         RetrievalCachePopulationClaimRecord.object_id
                         == RetrievalCachePopulationRecord.object_id,
                     )
-                    .exists()
+                    .exists(),
                 )
                 .order_by(
                     RetrievalCachePopulationRecord.updated_at,
@@ -710,6 +875,10 @@ class SqlAlchemyRetrievalCache:
             population = session.get(
                 RetrievalCachePopulationRecord,
                 (admission.source_store, admission.collection_id, admission.object_id),
+                with_for_update=True,
+            )
+            _require_unmanaged_population(
+                session, (admission.source_store, admission.collection_id, admission.object_id)
             )
             claim = session.get(
                 RetrievalCachePopulationClaimRecord,
@@ -797,6 +966,10 @@ class SqlAlchemyRetrievalCache:
         *,
         admission: RetrievalCacheAdmission,
     ) -> ArchiveResumableObjectStore:
+        with read_snapshot(self._session_factory) as session:
+            _require_unmanaged_population(
+                session, (admission.source_store, admission.collection_id, admission.object_id)
+            )
         candidate = self._require_store(admission.cache_store)
         return candidate.resumable_object_store(
             source_store=admission.source_store,
@@ -852,17 +1025,26 @@ class SqlAlchemyRetrievalCache:
         waiting: bool,
     ) -> None:
         with session_scope(self._session_factory) as session:
+            population = session.get(RetrievalCachePopulationRecord, key, with_for_update=True)
+            _require_unmanaged_population(session, key)
+            if (
+                population is None
+                or population.cache_store != cache_store
+                or population.expected_bytes != expected_bytes
+                or population.state != "admitting"
+            ):
+                raise RuntimeError("retrieval cache original reservation changed")
             accounting = self._accounting(session, cache_store)
+            if accounting.reserved_bytes < expected_bytes:
+                raise RuntimeError("retrieval cache reservation accounting is inconsistent")
             accounting.reserved_bytes -= expected_bytes
             accounting.updated_at = format_utc_timestamp(utc_now())
-            population = session.get(RetrievalCachePopulationRecord, key)
-            if population is not None:
-                population.cache_store = None
-                population.cache_incarnation_id = None
-                population.object_path = None
-                population.write_token = None
-                population.state = "waiting" if waiting else population.state
-                population.updated_at = format_utc_timestamp(utc_now())
+            population.cache_store = None
+            population.cache_incarnation_id = None
+            population.object_path = None
+            population.write_token = None
+            population.state = "waiting" if waiting else population.state
+            population.updated_at = format_utc_timestamp(utc_now())
 
     @staticmethod
     def _admission(
@@ -1022,6 +1204,11 @@ class SqlAlchemyRetrievalCache:
             raise RuntimeError(f"retrieval cache store is unavailable: {cache_store}") from exc
 
 
+def _require_unmanaged_population(session: Session, key: tuple[str, int, str]) -> None:
+    if retains_cache_write(session, key):
+        raise Conflict("retrieval cache population retains admitted provider effects")
+
+
 def _receipt_identity(record: RetrievalCacheObjectRecord) -> tuple[object, ...]:
     return (
         record.cache_store,
@@ -1053,13 +1240,6 @@ def register_cache_ready(
     session.scalar(
         select(CollectionRecord.id).where(CollectionRecord.id == collection_id).with_for_update()
     )
-    if session.get(ArchiveCopyRetirementRecord, (collection_id, source_store)) is not None:
-        raise RuntimeError("retrieval cache source copy is retiring")
-    source_copy = session.get(CollectionArchiveCopyRecord, (collection_id, source_store))
-    if source_copy is None:
-        raise RuntimeError("retrieval cache source copy is unavailable")
-    source_incarnation_id = source_copy.incarnation_id
-    cache_incarnation_id = require_storage_incarnation(session, "cache", receipt.cache_store)
     population = session.scalar(
         select(RetrievalCachePopulationRecord)
         .where(
@@ -1069,6 +1249,14 @@ def register_cache_ready(
         )
         .with_for_update()
     )
+    _require_unmanaged_population(session, (source_store, collection_id, object_id))
+    if session.get(ArchiveCopyRetirementRecord, (collection_id, source_store)) is not None:
+        raise RuntimeError("retrieval cache source copy is retiring")
+    source_copy = session.get(CollectionArchiveCopyRecord, (collection_id, source_store))
+    if source_copy is None:
+        raise RuntimeError("retrieval cache source copy is unavailable")
+    source_incarnation_id = source_copy.incarnation_id
+    cache_incarnation_id = require_storage_incarnation(session, "cache", receipt.cache_store)
     if population is not None and population.state == "abandoning":
         raise RuntimeError("retrieval cache population is abandoning")
     existing = session.scalar(

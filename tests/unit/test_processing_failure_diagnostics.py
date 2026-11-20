@@ -1,0 +1,330 @@
+from __future__ import annotations
+
+import io
+import json
+import subprocess
+import sys
+import urllib.error
+
+import pytest
+
+from scripts import qualify_stove0_processing as processing
+
+PREFIX = "::error title=Processing qualification::"
+
+
+def annotation(output):
+    rows = [
+        json.loads(line.removeprefix(PREFIX))
+        for line in output.splitlines()
+        if line.startswith(PREFIX)
+    ]
+    assert len(rows) == 1
+    return rows[0]
+
+
+@pytest.mark.parametrize(
+    "error,category",
+    [
+        (AssertionError("private fixture payload"), "assertion"),
+        (TimeoutError("private fixture payload"), "timeout"),
+        (OSError("private fixture payload"), "filesystem"),
+        (ValueError("private fixture payload"), "value"),
+        (KeyError("private fixture payload"), "key"),
+        (TypeError("private fixture payload"), "type"),
+        (RuntimeError("private fixture payload"), "runtime"),
+        (Exception("private fixture payload"), "unexpected"),
+    ],
+)
+def test_processing_failure_annotation_excludes_exception_payload_and_type_names(
+    capsys, error, category
+):
+    processing.qualification_failure_annotation(error)
+    observed = annotation(capsys.readouterr().err)
+    assert observed == {
+        "format": "riverhog-processing-failure-diagnostic/v1",
+        "failure_class": category,
+        "source_frames": [],
+    }
+
+
+def test_processing_failure_annotation_keeps_http_status_without_request_or_response(capsys):
+    error = urllib.error.HTTPError(
+        "https://private.invalid/secret",
+        503,
+        "private reason",
+        {"X-Private": "private header"},
+        io.BytesIO(b"private body"),
+    )
+    try:
+        processing.qualification_failure_annotation(error)
+    finally:
+        error.close()
+    observed = annotation(capsys.readouterr().err)
+    assert observed == {
+        "format": "riverhog-processing-failure-diagnostic/v1",
+        "failure_class": "http-status",
+        "source_frames": [],
+        "http_status": 503,
+    }
+
+
+def test_processing_main_keeps_original_exception_and_excludes_imported_callback_frames(
+    monkeypatch, capsys
+):
+    error = RuntimeError("private callback payload")
+
+    def private_callback_name():
+        raise error
+
+    monkeypatch.setattr(processing, "await_admission", private_callback_name)
+    monkeypatch.setattr(sys, "argv", ["qualification", "admission"])
+    with pytest.raises(RuntimeError) as observed:
+        processing.main()
+    assert observed.value is error
+    payload = annotation(capsys.readouterr().err)
+    assert payload["failure_class"] == "runtime"
+    assert len(payload["source_frames"]) == 1
+    assert payload["source_frames"][0]["function"] == "main"
+    assert payload["source_frames"][0]["line"] > processing.main.__code__.co_firstlineno
+    assert "private" not in json.dumps(payload)
+
+
+def test_processing_failure_frame_observation_is_bounded_and_contains_only_owned_source(capsys):
+    actual, declared = 0, 1
+    for _ in range(30):
+        actual, declared = {"private-key": actual}, {"private-key": declared}
+    with pytest.raises(AssertionError) as error:
+        processing.declared_values(actual, declared)
+    processing.qualification_failure_annotation(error.value)
+    payload = annotation(capsys.readouterr().err)
+    assert payload["failure_class"] == "assertion"
+    assert len(payload["source_frames"]) == 3
+    assert all(row["function"] == "declared_values" for row in payload["source_frames"])
+    assert all(row["line"] > 0 for row in payload["source_frames"])
+    assert "private" not in json.dumps(payload)
+
+
+@pytest.mark.parametrize("argument", [None, "private-argument"])
+def test_invalid_processing_command_preserves_failure_without_copying_argument(
+    monkeypatch, capsys, argument
+):
+    monkeypatch.setattr(sys, "argv", ["qualification"] + ([] if argument is None else [argument]))
+    with pytest.raises((IndexError, KeyError)):
+        processing.main()
+    payload = annotation(capsys.readouterr().err)
+    assert payload["failure_class"] == ("unexpected" if argument is None else "key")
+    assert [row["function"] for row in payload["source_frames"]] == ["main"]
+    assert "private" not in json.dumps(payload)
+
+
+def test_successful_processing_command_emits_no_failure_annotation(monkeypatch, capsys):
+    observed = []
+    monkeypatch.setattr(processing, "await_admission", lambda: observed.append("called"))
+    monkeypatch.setattr(sys, "argv", ["qualification", "admission"])
+    processing.main()
+    assert observed == ["called"]
+    assert capsys.readouterr().err == ""
+
+
+@pytest.mark.parametrize("error", [KeyboardInterrupt(), SystemExit(7)])
+def test_processing_cancellation_is_not_caught_or_reclassified(monkeypatch, capsys, error):
+    def interrupted():
+        raise error
+
+    monkeypatch.setattr(processing, "await_admission", interrupted)
+    monkeypatch.setattr(sys, "argv", ["qualification", "admission"])
+    with pytest.raises(BaseException) as observed:
+        processing.main()
+    assert observed.value is error
+    assert capsys.readouterr().err == ""
+
+
+def test_uncaught_processing_failure_still_fails_the_actual_process():
+    code = """
+import sys
+from scripts import qualify_stove0_processing as processing
+def private_callback_name():
+    raise RuntimeError("private callback payload")
+processing.await_admission = private_callback_name
+sys.argv = ["qualification", "admission"]
+processing.main()
+"""
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 1
+    payload = annotation(result.stderr)
+    assert payload["failure_class"] == "runtime"
+    assert [row["function"] for row in payload["source_frames"]] == ["main"]
+    assert "private" not in json.dumps(payload)
+
+
+def test_failure_reporting_cannot_replace_the_original_processing_failure(monkeypatch, capsys):
+    original = RuntimeError("original fixture failure")
+
+    def failed():
+        raise original
+
+    def unavailable(_error):
+        raise OSError("reporting stream unavailable")
+
+    monkeypatch.setattr(processing, "await_admission", failed)
+    monkeypatch.setattr(processing, "qualification_failure_annotation", unavailable)
+    monkeypatch.setattr(sys, "argv", ["qualification", "admission"])
+    with pytest.raises(RuntimeError) as error:
+        processing.main()
+    assert error.value is original
+    assert capsys.readouterr().err == ""
+
+
+@pytest.mark.parametrize("invalid_record", [False, True])
+def test_target_record_command_does_not_require_api_operator_contracts(tmp_path, invalid_record):
+    if invalid_record:
+        (tmp_path / "fixture.accepted.json").write_text('{"private": "fixture payload"}')
+    code = """
+import importlib.abc
+import pathlib
+import sys
+
+class TargetDependencies(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname == "stove0_operator_contracts":
+            raise ModuleNotFoundError("API-only dependency unavailable", name=fullname)
+
+sys.meta_path.insert(0, TargetDependencies())
+scope = {"__name__": "qualification_fixture"}
+source = pathlib.Path(sys.argv[1])
+exec(compile(source.read_text(), str(source), "exec"), scope)
+state = pathlib.Path(sys.argv[2])
+scope["Path"] = lambda _selected: state
+sys.argv = ["qualification", "target-records"]
+scope["main"]()
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code, processing.__file__, str(tmp_path)],
+        capture_output=True,
+        text=True,
+    )
+    if invalid_record:
+        assert result.returncode == 1
+        payload = annotation(result.stderr)
+        assert payload["failure_class"] == "value"
+        assert [row["function"] for row in payload["source_frames"]] == [
+            "main",
+            "target_records",
+        ]
+        assert "private" not in json.dumps(payload)
+    else:
+        assert result.returncode == 0, result.stderr
+        assert result.stdout.strip() == "preflight-only: zero accepted target jobs"
+        assert result.stderr == ""
+
+
+def _failed_preview(state="failed", *, code="private.code/v1", retryable=True):
+    from stove0_protocol import (
+        CollectionRootIdentityRef,
+        PreviewOutcome,
+        RecipeIdentityRef,
+        WorkflowPreview,
+        WorkflowPreviewPayload,
+        WorkIdentity,
+        WorkPayload,
+    )
+
+    work = WorkIdentity.seal(
+        WorkPayload(
+            recipe=RecipeIdentityRef(id="private.recipe/v1", revision="1", sha256="a" * 64),
+            inputs=(
+                CollectionRootIdentityRef(
+                    collection_id="1",
+                    archive_root_sha256="b" * 64,
+                    artifact_set_identity="c" * 64,
+                ),
+            ),
+            effective_intent={"private": "private fixture input"},
+        )
+    )
+    return WorkflowPreview.seal(
+        WorkflowPreviewPayload(
+            preview_id="d" * 64,
+            state=state,
+            work=work,
+            outcome=PreviewOutcome(
+                code=code, message="private fixture exception message", retryable=retryable
+            ),
+            warnings=("private fixture warning",),
+        )
+    )
+
+
+def _preview_annotation(output):
+    prefix = "::error title=Processing preview qualification::"
+    rows = [
+        json.loads(line.removeprefix(prefix))
+        for line in output.splitlines()
+        if line.startswith(prefix)
+    ]
+    assert len(rows) == 1
+    return rows[0]
+
+
+@pytest.mark.parametrize("state", ("failed", "inapplicable", "canceled"))
+@pytest.mark.parametrize("retryable", (None, False, True))
+def test_failed_preview_reports_only_contract_state_counts_and_retryability(
+    capsys, state, retryable
+):
+    preview = _failed_preview(state, retryable=retryable)
+    with pytest.raises(AssertionError) as error:
+        processing.require_ready_preview(preview)
+    expected = {
+        "state": preview.state,
+        "outcome": preview.outcome.model_dump(mode="json", exclude_none=True),
+    }
+    assert json.loads(str(error.value)) == expected
+    observed = _preview_annotation(capsys.readouterr().err)
+    assert observed == {
+        "format": "riverhog-processing-preview-diagnostic/v1",
+        "state": state,
+        "outcome_present": True,
+        "generic_planning_failure": False,
+        "retryable": retryable,
+        "observations": 0,
+        "selections": 0,
+        "target_plans": 0,
+        "branch_sets": 0,
+        "root_branch_plan_present": False,
+    }
+    assert "private" not in json.dumps(observed)
+    assert preview.preview_id not in json.dumps(observed)
+    assert preview.work.work_id not in json.dumps(observed)
+
+
+def test_generic_preview_failure_is_classified_without_copying_its_message(capsys):
+    preview = _failed_preview(code="workflow-preview-failed")
+    with pytest.raises(AssertionError):
+        processing.require_ready_preview(preview)
+    observed = _preview_annotation(capsys.readouterr().err)
+    assert observed["generic_planning_failure"] is True
+    assert "private" not in json.dumps(observed)
+
+
+def test_preview_reporting_failure_preserves_the_original_qualification_failure(monkeypatch):
+    preview = _failed_preview()
+
+    def unavailable(_preview):
+        raise OSError("private reporting stream failure")
+
+    monkeypatch.setattr(processing, "preview_failure_annotation", unavailable)
+    with pytest.raises(AssertionError) as error:
+        processing.require_ready_preview(preview)
+    assert json.loads(str(error.value))["state"] == "failed"
+    assert json.loads(str(error.value))["outcome"]["message"] == preview.outcome.message
+
+
+def test_ready_preview_does_not_read_or_report_failure_details(monkeypatch):
+    from types import SimpleNamespace
+
+    def forbidden(_preview):
+        pytest.fail("ready preview cannot report a failure")
+
+    monkeypatch.setattr(processing, "preview_failure_annotation", forbidden)
+    processing.require_ready_preview(SimpleNamespace(state="ready"))

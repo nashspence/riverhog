@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import os
 import sqlite3
 import subprocess
 import sys
@@ -34,6 +35,8 @@ from test_generic_semantics import (
     work,
     workspace_rows,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def reference(kind, ordinal, *, external=False):
@@ -645,8 +648,10 @@ def test_actual_process_death_in_row_suboperations(tmp_path, catalog, seam):
         require_reclaimed(db)
 
 
-def growth_samples(tmp_path, catalog):
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
+    from test_generic_semantics import measure_semantic_operation, semantic_child_dimensions
+
+    binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
     samples = []
     cases = [(kind, 0, False) for kind in sorted(ROW_TYPES)]
     cases += [("activity", stage, False) for stage in (3, 4, 5, 6, 7)]
@@ -701,6 +706,11 @@ def growth_samples(tmp_path, catalog):
                 current.initialize()
                 if stage:
                     position(current, ("row", str(stage)))
+                child_dimensions = (
+                    semantic_child_dimensions(current, budget)
+                    if kind in {"derivation", "specialization"}
+                    else None
+                )
                 retained = workspace_rows(db)
                 prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                 envelope = (
@@ -716,21 +726,21 @@ def growth_samples(tmp_path, catalog):
             with closing(connect(path, factory=CommonWorkConnection)) as db:
                 current = work(db, row, catalog, operation="row")
                 byte_budget = 16 * 1024 * 1024
-                with db.observe() as metrics:
-                    current.advance(step_budget=budget, byte_budget=byte_budget)
-                sample = {
-                    "declaration": binding.declaration.id,
-                    "declaration_sha256": digest,
-                    "dimensions": {
-                        "retained_rows": retained,
-                        "step_budget": budget,
-                        "byte_budget": byte_budget,
-                        "metadata_row_octets": envelope,
-                    },
-                    "metrics": dict(metrics),
-                    "delegates": {},
-                }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                sample = measure_semantic_operation(
+                    current,
+                    measured_operation=measured_operation,
+                    step_budget=budget,
+                    byte_budget=byte_budget,
+                    retained_rows=retained,
+                    metadata_row_octets=envelope,
+                    child_dimensions=child_dimensions,
+                )
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 samples.append(sample)
                 assert db.execute("SELECT * FROM journal_prefix").fetchone() == prefix
                 with closing(sqlite3.connect(":memory:")) as suffix_db:

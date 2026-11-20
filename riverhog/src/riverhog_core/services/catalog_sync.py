@@ -40,6 +40,7 @@ from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, utc_now
 
 from riverhog_core.app_permissions import CATALOG_READ, Principal
+from riverhog_core.catalog_archive_write_models import ArchiveUploadTerminalTagRecord
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_events import catalog_event_projection
 from riverhog_core.catalog_models import (
@@ -878,6 +879,11 @@ def _reap_unreferenced_tag_history_rows(
             ),
             ~exists(
                 select(1).where(
+                    ArchiveUploadTerminalTagRecord.root_sha256 == CollectionTagNodeRecord.digest
+                )
+            ),
+            ~exists(
+                select(1).where(
                     CollectionTagMutationNodeReferenceRecord.node_digest
                     == CollectionTagNodeRecord.digest
                 )
@@ -936,6 +942,7 @@ def _tag_node_has_live_owner(session: Session, digest: str) -> bool:
         CollectionTagPublicationFrontierRecord.node_digest,
         CollectionUploadTagPublicationFrontierRecord.node_digest,
         CollectionUploadTagNodeReferenceRecord.node_digest,
+        ArchiveUploadTerminalTagRecord.root_sha256,
         CollectionTagMutationNodeReferenceRecord.node_digest,
         CollectionTagPublishedNodeRecord.node_digest,
     )

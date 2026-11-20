@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 import subprocess
 import sys
@@ -13,6 +14,7 @@ from riverhog_core.services import collection_uploads as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from sqlalchemy import delete, event, select, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import advance, checkpoint, retained
 from tests.unit.test_journal_summary_consumers import source
 from tests.unit.test_journal_validation_handoff import complete_capture, terminal
@@ -141,7 +143,10 @@ def test_stale_reader_checks_the_attempt_before_loading_an_existing_page(tmp_pat
             assert owner._read_upload_journal_capture_segment(factory, work, ordinal=0) is None
         finally:
             event.remove(engine, "before_cursor_execute", sql)
-        assert len(statements) == 1
+        reads = [statement for statement in statements if statement.strip().upper() != "BEGIN"]
+        assert len(reads) == 1
+        assert reads[0].lstrip().upper().startswith("SELECT")
+        assert Journal.__tablename__ in reads[0] and Segment.__tablename__ not in reads[0]
         assert pages(factory) == before
         assert engine.pool.checkedout() == 0
 
@@ -312,7 +317,9 @@ def test_actual_fenced_source_page_work(tmp_path, monkeypatch, record_property):
     from contextlib import contextmanager
 
     binding = growth_binding(owner._read_upload_journal_capture_segment)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -391,7 +398,15 @@ def test_actual_fenced_source_page_work(tmp_path, monkeypatch, record_property):
                 native.set_progress_handler(None, 0)
                 event.remove(engine, "before_cursor_execute", sql)
             assert actual == b"p" * final and counts["closed"] and engine.pool.checkedout() == 0
-            for statement, parameters in statements:
+            selects = [
+                (statement, parameters)
+                for statement, parameters in statements
+                if statement.lstrip().upper().startswith("SELECT")
+            ]
+            starts = sum(statement.strip().upper() == "BEGIN" for statement, _ in statements)
+            assert len(selects) == 2 and starts == 1
+            assert len(statements) == len(selects) + starts
+            for statement, parameters in selects:
                 with engine.connect() as connection:
                     result = connection.exec_driver_sql(
                         "EXPLAIN QUERY PLAN " + statement, parameters
@@ -413,6 +428,11 @@ def test_actual_fenced_source_page_work(tmp_path, monkeypatch, record_property):
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     record_property("growth_samples", samples)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -14,18 +15,25 @@ from riverhog_core.services import collection_uploads as owner
 from riverhog_core.services import upload_journal_rank as rank
 from riverhog_core.services import upload_journal_replay as replay
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
+from riverhog_provenance import validate_journal
 from riverhog_provenance.replay_binding import JournalReplayBinding
 from riverhog_provenance_contracts import ContractCatalog, ProvenanceContractBinding
 from riverhog_provenance_contracts import schemas as schemas_owner
 from sqlalchemy import event, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_epoch_rank import finish as finish_rank
 from tests.unit.test_journal_epoch_rank import prepared
 from tests.unit.test_journal_epoch_scan import ObservedWindow
 from tests.unit.test_journal_epoch_union import uid
 from tests.unit.test_journal_summary_consumers import source
-from tests.unit.test_journal_validation_handoff import complete_capture, service_for, terminal
+from tests.unit.test_journal_validation_handoff import (
+    complete_capture,
+    native_outcome,
+    service_for,
+    terminal,
+)
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
 
 Scan = replay.Scan
@@ -141,7 +149,7 @@ def test_prepared_binding_is_idempotent_and_accepts_no_semantics(tmp_path):
 
 @pytest.mark.parametrize("phase", ["reopen", "compute", "publish"])
 def test_catalog_replacement_cannot_reuse_replay_binding_or_publish_anchor(
-    tmp_path, monkeypatch, phase
+    tmp_path, monkeypatch, phase, *, journal_constructions
 ):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work = ready(factory)
@@ -149,7 +157,9 @@ def test_catalog_replacement_cannot_reuse_replay_binding_or_publish_anchor(
             factory, work, catalog=owner.admission_provenance_catalog()
         )
         outcome = (
-            owner._compute_upload_journal_validation(factory, work) if phase == "publish" else None
+            native_outcome(factory, work, journal_constructions=journal_constructions)
+            if phase == "publish"
+            else None
         )
         monkeypatch.setattr(
             owner, "admission_provenance_catalog", lambda: ContractCatalog((pack("replacement"),))
@@ -160,7 +170,7 @@ def test_catalog_replacement_cannot_reuse_replay_binding_or_publish_anchor(
                     factory, work, catalog=owner.admission_provenance_catalog()
                 )
             elif phase == "compute":
-                owner._compute_upload_journal_validation(factory, work)
+                native_outcome(factory, work, journal_constructions=journal_constructions)
             else:
                 owner._commit_upload_journal_validation(factory, work, outcome)
         assert terminal(factory)["anchor"] is None and terminal(factory)["state"] == "validating"
@@ -177,7 +187,9 @@ def test_catalog_replacement_cannot_reuse_replay_binding_or_publish_anchor(
         "require_profiles",
     ],
 )
-def test_changed_binding_fails_closed_before_native_replay(tmp_path, field):
+def test_changed_binding_fails_closed_before_native_replay(
+    tmp_path, field, *, journal_constructions
+):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
         work = ready(factory)
         binding = replay._binding(work, owner.admission_provenance_catalog())
@@ -197,7 +209,7 @@ def test_changed_binding_fails_closed_before_native_replay(tmp_path, field):
                 )
             )
         with pytest.raises(RuntimeError, match="retained replay inputs"):
-            owner._compute_upload_journal_validation(factory, work)
+            native_outcome(factory, work, journal_constructions=journal_constructions)
         assert terminal(factory)["anchor"] is None
 
 
@@ -276,20 +288,32 @@ os._exit(73)
 
 
 def test_native_handoff_verifies_binding_after_reader_release(tmp_path, monkeypatch):
-    with retained(tmp_path, source(journal_id=JOURNAL)) as (engine, factory):
+    raw = source(journal_id=JOURNAL)
+    with retained(tmp_path, raw) as (engine, factory):
         ready(factory)
-        compute = owner.validate_journal_chunks
-        calls = []
+        service = service_for(factory)
+        native = service._journal_validation_owner.advance
+        observed = []
 
         def detached(*args, **kwargs):
-            assert engine.pool.checkedout() == 0
-            assert progress(factory)[1] is not None and terminal(factory)["anchor"] is None
-            calls.append(True)
-            return compute(*args, **kwargs)
+            assert progress(factory)[1] is not None
+            assert engine.pool.checkedout() == 0 and terminal(factory)["anchor"] is None
+            observed.append(True)
+            return native(*args, **kwargs)
 
-        monkeypatch.setattr(owner, "validate_journal_chunks", detached)
-        service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
-        assert calls == [True] and terminal(factory)["anchor"] is not None
+        monkeypatch.setattr(service._journal_validation_owner, "advance", detached)
+        try:
+            for _ in range(10000):
+                service._advance_provenance_journal_validation(1, JOURNAL)
+                if terminal(factory)["state"] == "sealed":
+                    break
+            else:
+                pytest.fail("small native handoff did not complete")
+            assert len(observed) > 1
+            with validate_journal(raw) as expected:
+                assert terminal(factory)["anchor"] == expected.anchor
+        finally:
+            service.close()
 
 
 def test_unprepared_current_source_differs_from_a_stale_source(tmp_path):
@@ -308,7 +332,9 @@ def test_unprepared_current_source_differs_from_a_stale_source(tmp_path):
 )
 def test_actual_replay_binding_metadata_probe_work(tmp_path, monkeypatch, record_property):
     binding = growth_binding(replay._probe)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -418,7 +444,11 @@ def test_actual_replay_binding_metadata_probe_work(tmp_path, monkeypatch, record
                 event.remove(engine, "before_cursor_execute", sql)
             assert observed["returned_positions"] == 1 and observed["closed"]
             assert not payload_reads and engine.pool.checkedout() == 0
+            assert len(statements) == 2
+            assert sum(statement.strip().upper() == "BEGIN" for statement, _ in statements) == 1
             for statement, parameters in statements:
+                if statement.strip().upper() == "BEGIN":
+                    continue
                 with engine.connect() as connection:
                     result = connection.exec_driver_sql(
                         "EXPLAIN QUERY PLAN " + statement, parameters
@@ -441,6 +471,11 @@ def test_actual_replay_binding_metadata_probe_work(tmp_path, monkeypatch, record
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     record_property("growth_samples", samples)

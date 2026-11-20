@@ -39,6 +39,7 @@ from riverhog_core.catalog_provenance_index_models import (
     CollectionProvenanceIndexValueRecord,
 )
 from riverhog_core.services.collection_uploads import _advance_catalog_canonical_index
+from riverhog_core.services.upload_journal_result_receiving import UploadJournalResultResources
 from riverhog_protocol import ArtifactMemberIdentityDocument, collection_tag_set_identity
 from riverhog_protocol.collection_production_provenance import collection_production_contract
 from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journal, validate_journal
@@ -196,7 +197,9 @@ def test_complete_generation_requires_every_snapshot_row_and_has_content_identit
     engine.dispose()
 
 
-def test_initial_catalog_publication_waits_for_exact_canonical_index() -> None:
+def test_initial_catalog_publication_waits_for_exact_canonical_index(
+    *, journal_constructions
+) -> None:
     engine = create_catalog_engine("sqlite:///:memory:")
     Base.metadata.create_all(engine)
     payload = b"indexed opaque member"
@@ -323,7 +326,18 @@ def test_initial_catalog_publication_waits_for_exact_canonical_index() -> None:
         )
         session.commit()
         for _ in range(3):
-            _advance_catalog_canonical_index(session, upload)
+            _advance_catalog_canonical_index(
+                session,
+                upload,
+                result_resources=UploadJournalResultResources(
+                    construction_factory=journal_constructions.retain
+                ),
+                open_summary=lambda journal_id, receiver: validate_journal(
+                    produced.content,
+                    catalog=ContractCatalog((collection_production_contract(),)),
+                    require_profiles=False,
+                ),
+            )
             session.commit()
         assert upload.catalog_phase == "terminal"
         assert collection.is_published is False

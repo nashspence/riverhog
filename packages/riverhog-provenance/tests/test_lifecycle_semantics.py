@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 import subprocess
 import sys
 from contextlib import closing
@@ -20,6 +21,7 @@ from test_generic_semantics import (
     connect,
     finish,
     identity,
+    measure_semantic_operation,
     outputs,
     position,
     require_reclaimed,
@@ -27,6 +29,8 @@ from test_generic_semantics import (
     work,
     workspace_rows,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 KINDS = ("usage", "generation", "invalidation")
 FAULTS = (
@@ -429,22 +433,22 @@ def test_cold_lifecycle_unit_uses_metadata_with_independent_aggregate_history(
         envelope = 8192 + len(current.binding)
         prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
         envelope += sum(len(v) if isinstance(v, bytes) else len(str(v).encode()) for v in prefix)
-    binding, projection, digest = binding_projection(GenericSemantics.advance)
+    binding, projection, _ = binding_projection(GenericSemantics.advance)
     with closing(connect(path, factory=CommonWorkConnection)) as db:
         current = work(db, row, catalog, operation="row")
-        with db.observe() as metrics:
-            current.advance(step_budget=1, byte_budget=65536)
-        sample = {
-            "declaration": binding.declaration.id,
-            "declaration_sha256": digest,
-            "dimensions": {
-                "retained_rows": retained,
-                "step_budget": 1,
-                "byte_budget": 65536,
-                "metadata_row_octets": envelope,
-            },
-            "metrics": dict(metrics),
-            "delegates": {},
-        }
-        validate_execution_samples(projection, binding.declaration.id, [sample])
+        sample = measure_semantic_operation(
+            current,
+            measured_operation="advance",
+            step_budget=1,
+            byte_budget=65536,
+            retained_rows=retained,
+            metadata_row_octets=envelope,
+        )
+        metrics = sample["metrics"]
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [sample],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         assert metrics["source_payload_octets"] == metrics["adjacency_rows"] == 0

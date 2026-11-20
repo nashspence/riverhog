@@ -55,6 +55,18 @@ class RetrievalCache(Protocol):
         expected_bytes: int,
     ) -> RetrievalCacheAdmission | None: ...
 
+    def observe_completed_population(
+        self,
+        *,
+        owner: str,
+        source_store: str,
+        collection_id: int,
+        object_id: str,
+        expected_bytes: int,
+    ) -> RetrievalCacheReceipt | None:
+        """Observe original retained placement without admission, claims or cleanup."""
+        ...
+
     def release(self, *, owner: str) -> int: ...
 
     def is_current(self, *, admission: RetrievalCacheAdmission) -> bool: ...

@@ -5,12 +5,13 @@ from __future__ import annotations
 import builtins
 import hashlib
 import re
+import shutil
 import sqlite3
 import tempfile
-from collections.abc import Iterable, Mapping, Sequence
-from contextlib import closing
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Final, Literal
+from pathlib import Path
+from typing import Any, Final, Literal, Self
 
 from riverhog_canonical_json import (
     canonical_json_bytes,
@@ -409,17 +410,113 @@ class MemberHistoryImport:
         )
 
 
+class MemberHistoryHeads:
+    """Disposable uniqueness worklist for one exact history-root verification.
+
+    A supplied factory owns unreturned connection files. Early retention receives
+    the actual close-ready owner before settings or schema work. Unconfirmed
+    cursor, connection or directory cleanup freezes work and requires explicit
+    close retry; no destructor removes files whose custody remains unsettled.
+    """
+
+    def __init__(
+        self,
+        *,
+        connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_storage_open: Callable[[Self], None] | None = None,
+    ) -> None:
+        self._closing = False
+        self._connection_closed = False
+        self._directory_removed = False
+        self._cursor: sqlite3.Cursor | None = None
+        self._root = Path(tempfile.mkdtemp(prefix="riverhog-history-check-"))
+        connect = sqlite3.connect if connection_factory is None else connection_factory
+        try:
+            self._db = connect(self._root / "heads.sqlite3")
+        except BaseException:
+            if connection_factory is None:
+                self._remove_directory()
+            raise
+        try:
+            if on_storage_open is not None:
+                on_storage_open(self)
+            self._require_open()
+            self._run("PRAGMA cache_size = -512")
+            self._run("CREATE TABLE bound_heads (journal_id TEXT PRIMARY KEY) WITHOUT ROWID")
+        except BaseException:
+            if not self._closing:
+                self.close()
+            raise
+
+    def _require_open(self) -> None:
+        if self._closing:
+            raise RuntimeError("member history heads are closed")
+
+    def __enter__(self) -> Self:
+        self._require_open()
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        if not self._closing:
+            self.close()
+
+    @property
+    def cleanup_complete(self) -> bool:
+        """Whether both the connection and its independent directory were released."""
+        return self._directory_removed
+
+    def _remove_directory(self) -> None:
+        try:
+            shutil.rmtree(self._root)
+        except FileNotFoundError:
+            if self._root.exists():
+                raise
+
+    def close(self) -> None:
+        self._closing = True
+        if self._cursor is not None:
+            self._cursor.close()
+            self._cursor = None
+        if not self._connection_closed:
+            self._db.close()
+            self._connection_closed = True
+        if not self._directory_removed:
+            self._remove_directory()
+            self._directory_removed = True
+
+    def _run(self, statement: str, parameters: tuple[object, ...] = ()) -> None:
+        self._require_open()
+        self._cursor = self._db.execute(statement, parameters)
+        try:
+            self._cursor.close()
+        except BaseException:
+            self._closing = True
+            raise
+        self._cursor = None
+
+    def _add_bound_head(self, journal_id: str) -> None:
+        self._run("INSERT INTO bound_heads VALUES (?)", (journal_id,))
+
+    def _commit(self) -> None:
+        self._require_open()
+        self._db.commit()
+
+
 def _verify_selected_pages(
     authority: RecordSetRef,
     pages: Iterable[RecordPage],
     *,
     primary: HistoryJournalAnchor | None = None,
-    bound_heads: sqlite3.Connection | None = None,
+    bound_heads: MemberHistoryHeads | None = None,
 ) -> None:
     commitment = RecordSetCommitment(authority.schema_id)
     terminal_seen = False
     primary_seen = False
+    if bound_heads is not None:
+        bound_heads._require_open()
     for ordinal, page in enumerate(pages):
+        if bound_heads is not None:
+            bound_heads._require_open()
         if terminal_seen or page.ordinal != ordinal or page.authority != authority:
             raise ValueError("member history page sequence or authority changed")
         for row in page.records:
@@ -432,9 +529,7 @@ def _verify_selected_pages(
                 if root.inclusion == "bound":
                     assert bound_heads is not None
                     try:
-                        bound_heads.execute(
-                            "INSERT INTO bound_heads VALUES (?)", (root.journal.journal_id,)
-                        )
+                        bound_heads._add_bound_head(root.journal.journal_id)
                     except sqlite3.IntegrityError as exc:
                         raise ValueError("member history has conflicting bound heads") from exc
                 if root.journal == primary:
@@ -449,6 +544,8 @@ def _verify_selected_pages(
                 raise ValueError("member history record set schema is invalid")
             commitment.update(row["key"], row["value"])
         terminal_seen = page.terminal
+    if bound_heads is not None:
+        bound_heads._require_open()
     if not terminal_seen or commitment.ref() != authority:
         raise ValueError("member history record set is incomplete or changed")
     if primary is not None and not primary_seen:
@@ -460,24 +557,26 @@ def verify_member_history_sets(
     *,
     root_pages: Iterable[RecordPage],
     import_pages: Iterable[RecordPage],
+    connection_factory: Callable[..., sqlite3.Connection] | None = None,
+    on_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
 ) -> None:
     """Verify exact bounded selections before their assertions are exposed.
 
     Callers may stream pages from durable storage, then re-read only the selected
     records they need. Neither set needs to be materialized as a collection.
+    Admission precedes root-page iteration; confirmed heads cleanup precedes import
+    verification. The retention callback owns explicit retry after uncertain cleanup.
     """
-    with tempfile.TemporaryDirectory(prefix="riverhog-history-check-") as scratch:
-        with closing(sqlite3.connect(scratch + "/heads.sqlite3")) as bound_heads, bound_heads:
-            bound_heads.execute("PRAGMA cache_size = -512")
-            bound_heads.execute(
-                "CREATE TABLE bound_heads (journal_id TEXT PRIMARY KEY) WITHOUT ROWID"
-            )
-            _verify_selected_pages(
-                descriptor.roots,
-                root_pages,
-                primary=descriptor.primary.journal,
-                bound_heads=bound_heads,
-            )
+    with MemberHistoryHeads(
+        connection_factory=connection_factory, on_storage_open=on_storage_open
+    ) as bound_heads:
+        _verify_selected_pages(
+            descriptor.roots,
+            root_pages,
+            primary=descriptor.primary.journal,
+            bound_heads=bound_heads,
+        )
+        bound_heads._commit()
     _verify_selected_pages(descriptor.imports, import_pages)
 
 
@@ -491,6 +590,7 @@ __all__ = [
     "HistoryJournalAnchor",
     "MemberHistoryBinding",
     "MemberHistoryDocument",
+    "MemberHistoryHeads",
     "MemberHistoryImport",
     "MemberHistoryPrimary",
     "MemberHistoryRoot",

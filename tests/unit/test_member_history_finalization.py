@@ -6,6 +6,7 @@ import uuid
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
 from riverhog_age import decrypt_age_scrypt
 from riverhog_archive_contracts import MemberHistoryBinding, MemberHistoryRoot, RecordPage
 from riverhog_client.canonical_production import ProducerAttribution, build_member_journal
@@ -21,7 +22,12 @@ from riverhog_core.catalog_models import (
     StorageIncarnationRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
+from riverhog_core.incremental_plan import (
+    IncrementalVolumePlannerCheckpoint,
+    incremental_volume_planner_checkpoint_bytes,
+)
 from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.services.archive_write_admission import initialize_archive_write_control
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_protocol import ArtifactMemberIdentityDocument, collection_tag_set_identity
 from riverhog_provenance import BoundedSourceObserver, BytesSource, create_journal, validate_journal
@@ -32,21 +38,23 @@ from tests.unit.test_archive_root import MemoryImmutableStore
 
 
 def test_final_history_and_encrypted_structure_resume_without_changing_early_primary(
-    tmp_path: Path,
+    tmp_path: Path, request: pytest.FixtureRequest
 ) -> None:
     config = RuntimeConfig.for_testing(
         database_url=sqlite_url(tmp_path / "catalog.db"),
         archive_scrypt_work_factor=1,
     )
     factory = make_session_factory(config.database_url)
-    Base.metadata.create_all(factory.kw["bind"])
+    engine = factory.kw["bind"]
+    request.addfinalizer(engine.dispose)
+    Base.metadata.create_all(engine)
     store = MemoryImmutableStore()
-    service = object.__new__(SqlAlchemyCollectionUploadService)
-    service._session_factory = factory
-    service._config = config
-    service._archive_stores = SimpleNamespace(
-        require=lambda _name: SimpleNamespace(immutable_objects=store)
+    service = SqlAlchemyCollectionUploadService(
+        config,
+        SimpleNamespace(require=lambda _name: SimpleNamespace(immutable_objects=store)),
+        session_factory=factory,
     )
+    request.addfinalizer(service.close)
     member = ArtifactMemberIdentityDocument.model_validate(
         {
             "artifact_id": "c" * 64,
@@ -69,6 +77,7 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
         observation.graph_fragment(), recorded_by_agent_id=observation.observer_agent_id
     )
     late_summary = validate_journal(late)
+    request.addfinalizer(late_summary.close)
     incarnation = str(uuid.uuid4())
     with session_scope(factory) as session:
         session.add(
@@ -95,7 +104,15 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
                 last_activity_at="2026-01-01T00:00:00Z",
                 archive_phase_updated_at="2026-01-01T00:00:00Z",
                 archive_storage_prefix="collections/1",
-                planner_checkpoint_json="{}",
+                planner_checkpoint_json=incremental_volume_planner_checkpoint_bytes(
+                    IncrementalVolumePlannerCheckpoint(
+                        policy=config.volume_policy,
+                        next_artifact_order=1,
+                        artifacts_seen=1,
+                        bytes_seen=7,
+                        closed=True,
+                    )
+                ).decode(),
                 delivery_context_id=delivery_context_id,
                 artifact_count=1,
                 artifact_bytes=7,
@@ -105,6 +122,9 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
             )
         )
         session.flush()
+        upload = session.get(CollectionUploadRecord, 1)
+        assert upload is not None
+        initialize_archive_write_control(session, upload)
         session.add(
             CollectionUploadArtifactRecord(
                 collection_id=1,
@@ -116,6 +136,7 @@ def test_final_history_and_encrypted_structure_resume_without_changing_early_pri
         )
         for raw in (produced.content, late):
             summary = validate_journal(raw, require_profiles=False)
+            request.addfinalizer(summary.close)
             session.add(
                 CollectionUploadProvenanceJournalRecord(
                     collection_id=1,

@@ -4,6 +4,11 @@ import hashlib
 from collections.abc import Iterator
 
 from riverhog_storage_adapter_protocol import (
+    BinaryContent,
+    CleanupExecutionResult,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
+    CleanupInvocation,
     CompletedWriteLookupRequest,
     ObjectHeadRequest,
     ObjectLocator,
@@ -13,9 +18,14 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteStartRequest,
     validated_storage_adapter,
+)
+from riverhog_storage_adapter_protocol import (
+    ImmutableObjectReceipt as AdapterImmutableObjectReceipt,
 )
 from riverhog_storage_adapter_protocol import (
     WriteCompletionPrecondition as AdapterWriteCompletionPrecondition,
@@ -27,6 +37,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSession as AdapterWriteSession,
 )
 
+from riverhog_core.immutable_archive_identity import require_immutable_archive_receipt
 from riverhog_core.ports.archive_objects import (
     ArchiveObjectIdentityConflict,
     CompletedObjectReceipt,
@@ -40,6 +51,19 @@ from riverhog_core.ports.archive_objects import (
 )
 
 
+class StorageAdapterArchiveObjectCleanup:
+    """Cleanup over exactly one selected adapter, without a mirrored cache side effect."""
+
+    def __init__(self, adapter: StorageAdapterPort) -> None:
+        self._adapter = validated_storage_adapter(adapter)
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        return self._adapter.list_cleanup_candidates(request)
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        return self._adapter.execute_cleanup(invocation)
+
+
 class StorageAdapterArchiveResumableObjectStore:
     """Riverhog's resumable-write port over one opaque-object adapter."""
 
@@ -51,6 +75,11 @@ class StorageAdapterArchiveResumableObjectStore:
     ) -> None:
         self._adapter = validated_storage_adapter(adapter)
         self._placement_policy = placement_policy
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        return self._adapter.execute_write(invocation, content=content)
 
     def write_constraints(self) -> ResumableWriteConstraints:
         descriptor = self._adapter.descriptor()
@@ -192,6 +221,40 @@ class StorageAdapterImmutableArchiveObjectStore:
     def __init__(self, adapter: StorageAdapterPort) -> None:
         self._adapter = validated_storage_adapter(adapter)
 
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        return self._adapter.execute_write(invocation, content=content)
+
+    def observe_immutable_object(
+        self, request: SmallObjectWriteRequest
+    ) -> AdapterImmutableObjectReceipt | None:
+        """Observe compatible immutable authority; never attest a write invocation."""
+        request = SmallObjectWriteRequest.model_validate_json(request.model_dump_json())
+        existing = self._adapter.head_object(
+            ObjectHeadRequest(
+                object=ObjectLocator(object_path=request.object_path),
+                expected_placement_policy=request.placement_policy,
+            )
+        )
+        if existing is None:
+            return None
+        if existing.stored_sha256 is None or existing.content_type is None:
+            raise ArchiveObjectIdentityConflict("existing immutable archive object lacks identity")
+        receipt = AdapterImmutableObjectReceipt(
+            object_path=existing.object_path,
+            revision=existing.revision,
+            entity_token=existing.entity_token,
+            stored_bytes=existing.stored_bytes,
+            stored_sha256=existing.stored_sha256,
+            verified_content_type=existing.content_type,
+            verified_identity_assertions=existing.observed_identity_assertions,
+            verified_placement_policy=existing.verified_placement_policy,
+            completed_at=existing.completed_at,
+        )
+        require_immutable_archive_receipt(request, receipt)
+        return receipt
+
     def put_immutable_object(
         self,
         *,
@@ -203,38 +266,30 @@ class StorageAdapterImmutableArchiveObjectStore:
     ) -> ImmutableObjectReceipt:
         if not object_path or not content or not content_type:
             raise ValueError("immutable archive object identity and content are required")
+        request = SmallObjectWriteRequest(
+            object_path=object_path,
+            content_type=content_type,
+            required_identity_assertions=required_identity_assertions,
+            placement_policy=placement_policy,
+            mode="create_only",
+            stored_bytes=len(content),
+            stored_sha256=hashlib.sha256(content).hexdigest(),
+        )
         try:
-            receipt = self._adapter.put_small_object(
-                SmallObjectWriteRequest(
-                    object_path=object_path,
-                    content_type=content_type,
-                    required_identity_assertions=required_identity_assertions,
-                    placement_policy=placement_policy,
-                    mode="create_only",
-                    stored_bytes=len(content),
-                    stored_sha256=hashlib.sha256(content).hexdigest(),
-                ),
-                content,
-            )
+            receipt = self._adapter.put_small_object(request, content)
         except StorageAdapterRejection as exc:
-            if exc.code == "identity_conflict":
-                # Age ciphertext is randomized. The immutable archive identity is
-                # the exact plaintext assertions, type and placement; replay the
-                # original stored receipt rather than replacing its ciphertext.
-                existing = self._adapter.head_object(
-                    ObjectHeadRequest(
-                        object=ObjectLocator(object_path=object_path),
-                        expected_placement_policy=placement_policy,
-                    )
-                )
-                if (
-                    existing is not None
-                    and existing.stored_sha256 is not None
-                    and existing.content_type == content_type
-                    and existing.observed_identity_assertions == required_identity_assertions
-                    and "riverhog-plaintext-bytes" in required_identity_assertions
-                    and "riverhog-plaintext-sha256" in required_identity_assertions
-                ):
+            if (
+                exc.code == "identity_conflict"
+                and {
+                    "riverhog-plaintext-bytes",
+                    "riverhog-plaintext-sha256",
+                }
+                <= required_identity_assertions.keys()
+            ):
+                # Randomized encodings can retain the same immutable archive
+                # identity. This read recovers object authority, not call closure.
+                existing = self.observe_immutable_object(request)
+                if existing is not None:
                     return ImmutableObjectReceipt(
                         object_path=existing.object_path,
                         revision=existing.revision,
@@ -331,6 +386,7 @@ def _raise_identity_conflict(exc: StorageAdapterRejection) -> None:
 
 
 __all__ = [
+    "StorageAdapterArchiveObjectCleanup",
     "StorageAdapterArchiveResumableObjectStore",
     "StorageAdapterArchiveObjectRangeStore",
     "StorageAdapterImmutableArchiveObjectStore",

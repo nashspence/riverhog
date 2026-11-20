@@ -29,6 +29,7 @@ from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.catalog_db import catalog_state_schema
 from riverhog_core.runtime_document import load_runtime_config
 from riverhog_core.scratch_workspace import process_workspace
+from riverhog_core.services.collection_registration import CollectionRegistrationOwner
 from riverhog_protocol import RIVERHOG_HTTP_ERROR_AUTHORITY
 from riverhog_protocol.errors import RiverhogError, ServiceUnavailable
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -105,7 +106,10 @@ def _process_archive_maintenance(
     container: ServiceContainer,
     *,
     startup_recovery: bool = False,
+    execution_only: bool = False,
 ) -> bool:
+    if execution_only:
+        return container.collection_uploads.process_due_finalizations(limit=1) > 0
     progressed = 0
     if startup_recovery:
         requeued_finalizations = (
@@ -164,6 +168,7 @@ def _process_archive_maintenance(
                 "startup requested retrieval-cache accounting reconciliation: count=%s",
                 requested_cache_reconciliations,
             )
+    progressed += CollectionRegistrationOwner(container.collection_uploads).process_due(limit=1)
     progressed += container.collection_uploads.process_due_provenance_journal_validations(limit=1)
     progressed += container.collection_uploads.process_due_custody_receipts(limit=1)
     progressed += container.catalog_sync.reap_expired_history()
@@ -185,11 +190,17 @@ async def _run_archive_upload_reaper(
     container_provider: Callable[[], ServiceContainer | None],
     *,
     sweep_interval: timedelta,
+    receive_interval: timedelta,
     operation_lock: asyncio.Lock,
 ) -> None:
     interval_seconds = max(sweep_interval.total_seconds(), 0.1)
+    receive_seconds = receive_interval.total_seconds()
+    if receive_seconds <= 0:
+        raise ValueError("archive receiving interval must be positive")
     startup_recovery = True
     delay_seconds = 0.0
+    next_full_sweep = 0.0
+    loop = asyncio.get_running_loop()
     while True:
         try:
             await asyncio.sleep(delay_seconds)
@@ -197,6 +208,7 @@ async def _run_archive_upload_reaper(
             if container is None:
                 delay_seconds = interval_seconds
                 continue
+            full_sweep = startup_recovery or loop.time() >= next_full_sweep
             current_startup_recovery = startup_recovery
             startup_recovery = False
             async with operation_lock:
@@ -204,8 +216,22 @@ async def _run_archive_upload_reaper(
                     _process_archive_maintenance,
                     container,
                     startup_recovery=current_startup_recovery,
+                    execution_only=not full_sweep,
                 )
-            delay_seconds = 0.0 if progressed else interval_seconds
+            now = loop.time()
+            if full_sweep:
+                next_full_sweep = now + (0.0 if progressed else interval_seconds)
+            elif progressed:
+                # A received workflow may have made unrelated catalog work due.
+                next_full_sweep = now
+            if progressed:
+                delay_seconds = 0.0
+            else:
+                delay_seconds = max(0.0, next_full_sweep - now)
+                if container.collection_uploads.has_unreceived_archive_work():
+                    # This local hint selects cadence only. Receiving still
+                    # requires the original physical join and semantic owner.
+                    delay_seconds = min(delay_seconds, receive_seconds)
         except asyncio.CancelledError:
             raise
         except Exception:  # pragma: no cover - defensive background task logging
@@ -323,6 +349,9 @@ def create_app(
             _run_archive_upload_reaper(
                 get_or_create_container,
                 sweep_interval=archive_sweep_interval,
+                receive_interval=timedelta(
+                    milliseconds=config.archive_execution.receive_poll_interval_ms
+                ),
                 operation_lock=archive_operation_lock,
             )
         )

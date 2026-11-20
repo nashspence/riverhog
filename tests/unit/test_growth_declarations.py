@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import hashlib
+import os
 from dataclasses import replace
 
 import pytest
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_client import hash_raw_source_chunks
 from riverhog_growth_contracts import (
     COUNT,
@@ -15,8 +18,12 @@ from riverhog_growth_contracts import (
     declare_growth,
     evaluate_bound,
     growth_binding,
+    project_bindings,
+    validate_execution_samples,
 )
 from riverhog_protocol.raw_ingress import advance_raw_part_commitment
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def declaration(expression: Expression, *, unit=OCTETS, relation="equal") -> Declaration:
@@ -99,13 +106,23 @@ def test_binding_preserves_exact_function_identity_and_single_execution():
 def test_evaluation_requires_complete_actual_integer_dimensions(dimensions):
     operation = attach(declaration(Expression("dimension", name="bytes")))
     with pytest.raises(ValueError, match="nonnegative integer"):
-        evaluate_bound(growth_binding(operation), "processed_bytes", dimensions)
+        evaluate_bound(
+            growth_binding(operation),
+            "processed_bytes",
+            dimensions,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
 
 
 def test_asymptotic_expression_is_not_an_absolute_acceptance_budget():
     operation = attach(declaration(Expression("dimension", name="bytes"), relation="big_o"))
     with pytest.raises(ValueError, match="not numerical acceptance"):
-        evaluate_bound(growth_binding(operation), "processed_bytes", {"bytes": 100})
+        evaluate_bound(
+            growth_binding(operation),
+            "processed_bytes",
+            {"bytes": 100},
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
 
 
 def test_count_to_octet_conversion_has_explicit_units():
@@ -117,7 +134,15 @@ def test_count_to_octet_conversion_has_explicit_units():
         ),
     )
     operation = attach(declaration(expression))
-    assert evaluate_bound(growth_binding(operation), "processed_bytes", {"bytes": 0}) == 144
+    assert (
+        evaluate_bound(
+            growth_binding(operation),
+            "processed_bytes",
+            {"bytes": 0},
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
+        == 144
+    )
 
 
 @pytest.mark.parametrize("parts", [1, 2, 17, 1024])
@@ -126,13 +151,42 @@ def test_real_source_declaration_composes_its_exact_commitment_delegate(parts):
     assert dict(binding.delegates)["commitment"] is advance_raw_part_commitment
     dimensions = {"payload_octets": parts * 65536 - 7, "input_chunks": parts + 3, "parts": parts}
     assert (
-        evaluate_bound(binding, "hash_input_octets", dimensions)
+        evaluate_bound(
+            binding,
+            "hash_input_octets",
+            dimensions,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
         == 2 * dimensions["payload_octets"] + 72 * parts
     )
-    assert evaluate_bound(binding, "digest_spool_octets", dimensions) == 32 * parts
-    assert evaluate_bound(binding, "iterator_pulls", dimensions) == dimensions["input_chunks"] + 1
+    assert (
+        evaluate_bound(
+            binding,
+            "digest_spool_octets",
+            dimensions,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
+        == 32 * parts
+    )
+    assert (
+        evaluate_bound(
+            binding,
+            "iterator_pulls",
+            dimensions,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
+        == dimensions["input_chunks"] + 1
+    )
     child = growth_binding(advance_raw_part_commitment)
-    assert evaluate_bound(child, "hash_input_octets", {"parts": parts}) == 72 * parts
+    assert (
+        evaluate_bound(
+            child,
+            "hash_input_octets",
+            {"parts": parts},
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
+        == 72 * parts
+    )
     projected = binding.project()
     assert projected["delegates"]["commitment"]["declaration"] == child.declaration.id
     assert "source_sha" not in projected and "tests" not in projected
@@ -171,12 +225,14 @@ def test_standalone_reader_rejects_unused_cyclic_delegate_edges():
     from riverhog_growth_contracts import project_bindings, validate_projection
 
     operation = attach(declaration(Expression("dimension", name="bytes")))
-    projection = project_bindings((growth_binding(operation),))
+    projection = project_bindings(
+        (growth_binding(operation),), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     projection["declarations"]["fixture.operation.growth/v1"]["delegates"]["unused"] = {
         "declaration": "fixture.operation.growth/v1"
     }
     with pytest.raises(ValueError, match="cyclic"):
-        validate_projection(projection)
+        validate_projection(projection, numeric_policy=numeric_policy_from_environment(os.environ))
 
 
 @pytest.mark.parametrize("meaning", [True, 1, ["ambiguous"]])
@@ -185,3 +241,120 @@ def test_dimension_and_metric_meanings_require_text(meaning):
         Dimension("bytes", OCTETS, meaning)
     with pytest.raises(ValueError):
         Bound("bytes", OCTETS, "equal", Expression("dimension", name="bytes"), meaning)
+
+
+def _execution_sample(binding, dimensions, *, delegates=None):
+    return {
+        "declaration": binding.declaration.id,
+        "declaration_sha256": hashlib.sha256(canonical_json_bytes(binding.project())).hexdigest(),
+        "dimensions": dimensions,
+        "metrics": {
+            bound.metric: evaluate_bound(
+                binding,
+                bound.metric,
+                dimensions,
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
+            for bound in binding.declaration.bounds
+        },
+        "delegates": {} if delegates is None else delegates,
+    }
+
+
+@pytest.mark.parametrize("invalid_last_root", [False, True])
+def test_execution_reader_checks_complete_batches_with_independently_bounded_roots(
+    invalid_last_root,
+):
+    binding = growth_binding(attach(declaration(Expression("dimension", name="bytes"))))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
+    sample = _execution_sample(binding, {"bytes": 1})
+    roots = [sample] * 65536
+    final = {**sample, "metrics": {"processed_bytes": 2}} if invalid_last_root else sample
+    roots.append(final)
+    if invalid_last_root:
+        with pytest.raises(ValueError, match="declared growth bound"):
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                roots,
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
+    else:
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            roots,
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
+
+
+@pytest.mark.parametrize("children", [65535, 65536])
+def test_execution_reader_retains_the_complete_single_root_node_budget(children):
+    child = attach(declaration(Expression("dimension", name="bytes")))
+    value = declaration(
+        Expression(
+            "delegate",
+            name="child",
+            metric="processed_bytes",
+            terms=(Expression("dimension", name="calls"),),
+            arguments=(("bytes", Expression("dimension", name="bytes")),),
+        )
+    )
+    value = replace(
+        value,
+        id="fixture.parent.growth/v1",
+        subjects=("fixture.parent",),
+        dimensions=(*value.dimensions, Dimension("calls", COUNT, "Actual child calls.")),
+    )
+
+    def parent_operation():
+        return "exact-output"
+
+    parent = declare_growth(value, delegates=(("child", child),))(parent_operation)
+    binding = growth_binding(parent)
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
+    leaf = _execution_sample(growth_binding(child), {"bytes": 1})
+    root = _execution_sample(
+        binding, {"bytes": 1, "calls": children}, delegates={"child": [leaf] * children}
+    )
+    if children == 65536:
+        with pytest.raises(ValueError, match="reader budget"):
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [root],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
+    else:
+        validate_execution_samples(
+            projection,
+            binding.declaration.id,
+            [root],
+            numeric_policy=numeric_policy_from_environment(os.environ),
+        )
+
+
+@pytest.mark.parametrize("operands", [131071, 131072])
+def test_projection_reader_preserves_a_bounded_complete_metadata_capacity(operands):
+    from riverhog_growth_contracts import validate_projection
+
+    binding = growth_binding(attach(declaration(Expression("dimension", name="bytes"))))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
+    bound = projection["declarations"][binding.declaration.id]["bounds"]["processed_bytes"]
+    bound["expression"] = {
+        "op": "sum",
+        "terms": [{"op": "dimension", "name": "bytes"}] * operands,
+    }
+    if operands == 131072:
+        with pytest.raises(ValueError, match="bounded metadata parsing budget"):
+            validate_projection(
+                projection, numeric_policy=numeric_policy_from_environment(os.environ)
+            )
+    else:
+        validate_projection(projection, numeric_policy=numeric_policy_from_environment(os.environ))

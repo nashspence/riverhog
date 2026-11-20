@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import sys
 from contextlib import contextmanager
 from dataclasses import replace
@@ -942,8 +943,11 @@ def test_infrastructure_evidence_uses_logical_names_only() -> None:
     assert "distribution-id" not in encoded
 
 
+@pytest.mark.parametrize("umask", [0o000, 0o077])
 def test_runtime_configuration_uses_mounted_scoped_credentials_and_cloudfront(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    umask: int,
 ) -> None:
     module = load_script()
     config = module.load_config(CONFIG)
@@ -1001,15 +1005,22 @@ def test_runtime_configuration_uses_mounted_scoped_credentials_and_cloudfront(
         def runtime_configuration(self) -> tuple[str, str]:
             return "https://distribution.example.test", "public-key-id"
 
+    # A permissive existing parent must not expose any mounted credentials.
+    tmp_path.chmod(0o777)
     output = tmp_path / "runtime.env"
-    module.write_runtime_configuration(
-        config=config,
-        checkpoint=checkpoint,
-        buckets=module.resolve_buckets(config, values),
-        cloudfront=_CloudFront(),
-        values=values,
-        output=output,
-    )
+    arguments = {
+        "config": config,
+        "checkpoint": checkpoint,
+        "buckets": module.resolve_buckets(config, values),
+        "cloudfront": _CloudFront(),
+        "values": values,
+        "output": output,
+    }
+    previous_umask = os.umask(umask)
+    try:
+        module.write_runtime_configuration(**arguments)
+    finally:
+        os.umask(previous_umask)
     text = output.read_text()
     riverhog_path = module._riverhog_config_path(output)
     adapter_paths = module._adapter_config_paths(output)
@@ -1021,6 +1032,12 @@ def test_runtime_configuration_uses_mounted_scoped_credentials_and_cloudfront(
     def secret(name: str) -> Path:
         return module._private_artifact_path(output, name)
 
+    private_directory = module._private_artifact_directory(output)
+    assert private_directory.stat().st_mode & 0o777 == 0o700
+    assert private_directory.stat().st_uid == os.getuid()
+    assert riverhog_path.parent == private_directory
+    assert all(path.parent == private_directory for path in adapter_paths.values())
+    assert all(path.stat().st_mode & 0o777 == 0o640 for path in private_directory.iterdir())
     assert output.stat().st_mode & 0o777 == 0o600
     assert riverhog_path.stat().st_mode & 0o777 == 0o640
     assert all(path.stat().st_mode & 0o777 == 0o640 for path in adapter_paths.values())
@@ -1080,6 +1097,47 @@ def test_runtime_configuration_uses_mounted_scoped_credentials_and_cloudfront(
         validate_json_schema(
             document, B2StoreDocument.model_json_schema(), label="B2 qualification"
         )
+
+    # Existing output, directory or symlink is never adopted or overwritten.
+    original_secret = secret("aws-secret-access-key").read_bytes()
+    with pytest.raises(module.QualificationError, match="must not already exist"):
+        module.write_runtime_configuration(**arguments)
+    assert secret("aws-secret-access-key").read_bytes() == original_secret
+    output.unlink()
+    with pytest.raises(module.QualificationError, match="must not already exist"):
+        module.write_runtime_configuration(**arguments)
+    assert secret("aws-secret-access-key").read_bytes() == original_secret
+    for path in private_directory.iterdir():
+        path.unlink()
+    with pytest.raises(module.QualificationError, match="private directory"):
+        module.write_runtime_configuration(**arguments)
+    private_directory.rmdir()
+    elsewhere = tmp_path / "unrelated"
+    elsewhere.mkdir()
+    sentinel = elsewhere / "keep"
+    sentinel.write_bytes(b"unrelated-content")
+    private_directory.symlink_to(elsewhere, target_is_directory=True)
+    with pytest.raises(module.QualificationError, match="private directory"):
+        module.write_runtime_configuration(**arguments)
+    assert sentinel.read_bytes() == b"unrelated-content"
+    private_directory.unlink()
+
+    # Failed output removes only the newly created bundle, allowing retry.
+    write_environment = module._write_private_environment
+
+    def failed_environment(*args, **kwargs) -> None:  # type: ignore[no-untyped-def]
+        raise OSError("synthetic output interruption")
+
+    monkeypatch.setattr(module, "_write_private_environment", failed_environment)
+    with pytest.raises(OSError, match="synthetic output interruption"):
+        module.write_runtime_configuration(**arguments)
+    assert not private_directory.exists()
+    assert not output.exists()
+    assert sentinel.read_bytes() == b"unrelated-content"
+    monkeypatch.setattr(module, "_write_private_environment", write_environment)
+    module.write_runtime_configuration(**arguments)
+    assert private_directory.stat().st_mode & 0o777 == 0o700
+    assert secret("aws-secret-access-key").read_bytes() == original_secret
 
 
 def test_runtime_configuration_rejects_mismatched_cloudfront_signing_keys(
@@ -1153,12 +1211,14 @@ def test_runtime_configuration_rejects_mismatched_cloudfront_signing_keys(
         ),
     ),
 )
+@pytest.mark.parametrize("initialize_state", [False, True])
 def test_official_upload_client_writes_directly_and_resumes_after_interruption(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
     profile: str,
     expected_processes: int,
     resumable_observations: tuple[str, ...],
+    initialize_state: bool,
 ) -> None:
     module = load_script()
     captured: dict[str, object] = {"commands": []}
@@ -1288,12 +1348,14 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
         base_url="http://127.0.0.1:8000",
         token="token",
         allow_insecure_http=True,
+        initialize_state=initialize_state,
     )
 
     commands = captured["commands"]
     assert isinstance(commands, list)
     assert len(commands) == expected_processes
-    for command in commands:
+    for index, command in enumerate(commands):
+        assert ("--initialize-state" in command) is (initialize_state and index == 0)
         archive_store_index = command.index("--archive-store")
         assert command[archive_store_index + 1] == "b2-archive"
         idempotency_index = command.index("--idempotency-key")
@@ -1309,9 +1371,11 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
     }
 
 
+@pytest.mark.parametrize("initialize_upload_state", [False, True])
 def test_operator_advances_across_short_restore_invocations(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    initialize_upload_state: bool,
 ) -> None:
     module = load_script()
     config = module.load_config(CONFIG)
@@ -1450,10 +1514,11 @@ def test_operator_advances_across_short_restore_invocations(
         yield api, "rotated-token", "a" * 16
 
     monkeypatch.setattr(module, "_qualification_api", qualification_api)
-    monkeypatch.setattr(
-        module,
-        "_upload_collection_with_observation",
-        lambda *_args, **_kwargs: (
+    upload_authorities = []
+
+    def upload_with_observation(*_args, **kwargs):
+        upload_authorities.append(kwargs["initialize_state"])
+        return (
             42,
             (
                 "committed-payload-progress",
@@ -1462,8 +1527,9 @@ def test_operator_advances_across_short_restore_invocations(
                 "unit-readback",
                 "upload-work-acquisition",
             ),
-        ),
-    )
+        )
+
+    monkeypatch.setattr(module, "_upload_collection_with_observation", upload_with_observation)
     for name in (
         "_wait_archive_copy",
         "_assert_catalog_sync",
@@ -1501,6 +1567,7 @@ def test_operator_advances_across_short_restore_invocations(
         checkpoint_path=checkpoint_path,
         corpus=corpus,
         corpus_root=corpus_root,
+        initialize_upload_state=initialize_upload_state,
         base_url="http://127.0.0.1:8000",
         allow_insecure_http=True,
         buckets=module.resolve_buckets(config, values),
@@ -1508,6 +1575,7 @@ def test_operator_advances_across_short_restore_invocations(
         values=values,
     )
 
+    assert upload_authorities == [initialize_upload_state]
     assert first.phase == "restore-pending"
     assert module.load_checkpoint(checkpoint_path) == first
     assert first.collection_id == 42

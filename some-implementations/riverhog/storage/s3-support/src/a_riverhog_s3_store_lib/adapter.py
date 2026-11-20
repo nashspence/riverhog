@@ -4,16 +4,25 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Protocol, cast
+from typing import Any, Literal, Protocol, cast
+from urllib.parse import unquote
 
 from botocore.exceptions import ClientError
 from riverhog_storage_adapter_protocol import (
     ADAPTER_PRIVATE_ASSERTION_PREFIX,
     AdapterDescriptor,
     BinaryContent,
+    CleanupCandidate,
+    CleanupCandidateKind,
+    CleanupExecutionResult,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
+    CleanupInvocation,
+    CleanupItemOutcome,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -26,6 +35,9 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWriteObservation,
+    OpenWritePage,
     ReadMode,
     ReadPreparationRequest,
     ReadReadiness,
@@ -35,14 +47,23 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterRejection,
     WriteCompleteRequest,
     WriteCompletionPrecondition,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
+    cleanup_execution_result,
+    cleanup_inventory_execution_result,
+    execute_write_invocation,
+    unknown_cleanup_execution,
+    validate_cleanup_inventory_response,
+    validate_open_write_page_response,
 )
 from time_formats import format_utc_timestamp, utc_now
 
+from a_riverhog_s3_store_lib.client import uses_single_attempt_dispatch
 from a_riverhog_s3_store_lib.incarnation import (
     STORAGE_INCARNATION_MARKER_PREFIX,
     StorageIncarnationError,
@@ -59,6 +80,29 @@ _PLACEMENT_POLICY_METADATA = f"{ADAPTER_PRIVATE_ASSERTION_PREFIX}placement-polic
 _RESERVED_METADATA = frozenset({_STORED_SHA256_METADATA, _PLACEMENT_POLICY_METADATA})
 _TRAVERSAL_DOMAIN = b"riverhog-s3-write-segment-traversal/v1\x00"
 _COMPLETION_DOMAIN = b"riverhog-storage-write-segment-sequence/v1\x00"
+
+
+def _decoded_multipart_upload_page(response: dict[str, Any]) -> dict[str, Any]:
+    # Botocore automatically encodes/decodes ListObjectVersions, but its locked
+    # handlers do not do so for ListMultipartUploads. Decode keys exactly once;
+    # upload IDs remain opaque, including literal percent/plus characters.
+    if response.get("EncodingType") != "url":
+        raise StorageAdapterRejection(
+            "provider_unavailable", "S3 multipart key encoding is unsupported"
+        )
+    result = dict(response)
+    for field in ("KeyMarker", "NextKeyMarker", "Prefix"):
+        if isinstance(result.get(field), str):
+            result[field] = unquote(result[field], encoding="utf-8", errors="strict")
+    rows = result.get("Uploads")
+    if isinstance(rows, list):
+        result["Uploads"] = [
+            {**row, "Key": unquote(row["Key"], encoding="utf-8", errors="strict")}
+            if isinstance(row, dict) and isinstance(row.get("Key"), str)
+            else row
+            for row in rows
+        ]
+    return result
 
 
 def _segment_traversal_token(segments: tuple[WriteSegmentReceipt, ...]) -> str:
@@ -228,6 +272,124 @@ class S3StorageAdapter:
             minimum_nonfinal_segment_bytes=_MINIMUM_NONFINAL_PART_BYTES,
             maximum_segment_bytes=_MAXIMUM_PART_BYTES,
             maximum_segment_count=_MAXIMUM_PART_COUNT,
+        )
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        return execute_write_invocation(
+            self,
+            invocation,
+            content=content,
+            profile="joined-single-attempt"
+            if uses_single_attempt_dispatch(self._client)
+            else "unaccounted",
+        )
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        """One owned single-attempt, serial cleanup turn, with no descriptor prelude.
+
+        Charge the reserved adapter hop and the live incarnation GET before
+        item work. Versions/markers use individual exact deletes. A session
+        needs room for abort plus bounded ListParts verification. An ambiguous
+        call stops this turn before another lower-provider request can start.
+        """
+        try:
+            invocation._require_exact_request()
+        except Exception:
+            return unknown_cleanup_execution(invocation)
+        grant = invocation.request
+        if (
+            not uses_single_attempt_dispatch(self._client)
+            or grant.maximum_in_flight < 2
+            or grant.maximum_provider_requests
+            < (3 if isinstance(grant, CleanupInventoryStepRequest) else 2)
+            or invocation.call.target_incarnation != self._incarnation_id
+        ):
+            return unknown_cleanup_execution(invocation)
+        charged = 1
+        try:
+            charged += 1
+            self._require_incarnation()
+        except Exception:
+            return unknown_cleanup_execution(invocation)
+
+        def invoke(method: str, **kwargs: Any) -> Any:
+            nonlocal charged
+            if charged >= grant.maximum_provider_requests:
+                raise RuntimeError("cleanup request grant is exhausted")
+            charged += 1
+            response = getattr(self._client, method)(**kwargs)
+            expected_status = 200 if method.startswith("list_") else 204
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != expected_status:
+                raise RuntimeError("cleanup provider response has no exact success status")
+            return response
+
+        if isinstance(grant, CleanupInventoryStepRequest):
+            try:
+                page = self._cleanup_inventory_page(grant.inventory, invoke=invoke)
+                return cleanup_inventory_execution_result(
+                    invocation, page, provider_requests=charged, execution="closed"
+                )
+            except Exception:
+                return unknown_cleanup_execution(invocation)
+
+        items: list[CleanupItemOutcome] = []
+        execution: Literal["closed", "unknown"] = "closed"
+        stopped = False
+        for candidate in grant.inventory.candidates:
+            required = 2 if candidate.kind == "open_write" else 1
+            outcome: Literal["disposed", "pending", "deferred", "rejected", "unknown"]
+            if stopped or charged + required > grant.maximum_provider_requests:
+                outcome = "deferred"
+                stopped = True
+            else:
+                try:
+                    key = self._key(candidate.object_path)
+                    if candidate.kind != "open_write":
+                        invoke(
+                            "delete_object",
+                            Bucket=self._config.bucket,
+                            Key=key,
+                            VersionId=candidate.token,
+                        )
+                        outcome = "disposed"
+                    else:
+                        request = {
+                            "Bucket": self._config.bucket,
+                            "Key": key,
+                            "UploadId": candidate.token,
+                        }
+                        try:
+                            invoke("abort_multipart_upload", **request)
+                        except ClientError as exc:
+                            if _client_error_identity(exc)[1] != "NoSuchUpload":
+                                raise
+                            outcome = "disposed"
+                        else:
+                            try:
+                                observed = invoke("list_parts", **request, MaxParts=1)
+                            except ClientError as exc:
+                                if _client_error_identity(exc)[1] != "NoSuchUpload":
+                                    raise
+                                outcome = "disposed"
+                            else:
+                                if (
+                                    observed.get("Key") != key
+                                    or observed.get("UploadId") != candidate.token
+                                    or type(observed.get("IsTruncated")) is not bool
+                                    or not isinstance(observed.get("Parts", []), list)
+                                    or len(observed.get("Parts", [])) > 1
+                                ):
+                                    raise RuntimeError("cleanup session verification is invalid")
+                                outcome = "pending"
+                except Exception:
+                    outcome = "unknown"
+                    execution = "unknown"
+                    stopped = True
+            items.append(CleanupItemOutcome(candidate=candidate, outcome=outcome))
+        return cleanup_execution_result(
+            invocation, tuple(items), provider_requests=charged, execution=execution
         )
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
@@ -469,6 +631,277 @@ class S3StorageAdapter:
             verified_identity_assertions=request.required_identity_assertions,
             verified_placement_policy=request.expected_placement_policy,
         )
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        """Observe versions/markers and multipart sessions in separate bounded SDK pages."""
+        return self._cleanup_inventory_page(request)
+
+    def _cleanup_inventory_page(
+        self, request: CleanupInventoryRequest, *, invoke: Callable[..., Any] | None = None
+    ) -> CleanupInventoryPage:
+        if request.target_incarnation != self._incarnation_id:
+            raise StorageIncarnationError("S3 cleanup inventory incarnation changed")
+        prefix = self._key(request.object_prefix)
+        scope = hashlib.sha256(
+            json.dumps(
+                [
+                    "s3-cleanup-inventory/v1",
+                    self._incarnation_id,
+                    self._config.bucket,
+                    self._config.root_prefix,
+                    request.object_prefix,
+                ],
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        stage = "versions"
+        previous: tuple[str, str] | None = None
+        if request.continuation is not None:
+            try:
+                cursor = json.loads(request.continuation)
+                if (
+                    not isinstance(cursor, dict)
+                    or set(cursor) != {"scope", "stage", "key", "token"}
+                    or cursor["scope"] != scope
+                    or cursor["stage"] not in {"versions", "writes"}
+                ):
+                    raise ValueError("cleanup inventory scope changed")
+                stage = cursor["stage"]
+                if cursor["key"] is not None or cursor["token"] is not None:
+                    if (
+                        not isinstance(cursor["key"], str)
+                        or len(cursor["key"]) > 4096
+                        or not cursor["key"].startswith(request.object_prefix)
+                        or not isinstance(cursor["token"], str)
+                        or not 1 <= len(cursor["token"]) <= 4000
+                    ):
+                        raise ValueError("cleanup inventory position changed")
+                    previous = (self._key(cursor["key"]), cursor["token"])
+                elif stage != "writes":
+                    raise ValueError("cleanup inventory has no advancing position")
+            except (ValueError, TypeError, KeyError) as exc:
+                raise StorageAdapterRejection(
+                    "traversal_invalidated", "cleanup inventory continuation changed"
+                ) from exc
+        provider_request: dict[str, Any] = {
+            "Bucket": self._config.bucket,
+            "Prefix": prefix,
+            "MaxKeys" if stage == "versions" else "MaxUploads": request.maximum_items,
+        }
+        if previous is not None:
+            provider_request["KeyMarker"] = previous[0]
+            provider_request["VersionIdMarker" if stage == "versions" else "UploadIdMarker"] = (
+                previous[1]
+            )
+        if invoke is None:
+            self._require_incarnation()
+
+            def invoke(method: str, **kwargs: Any) -> Any:
+                return getattr(self._client, method)(**kwargs)
+
+        fields: tuple[tuple[str, CleanupCandidateKind, str], ...]
+        if stage == "versions":
+            response = cast(dict[str, Any], invoke("list_object_versions", **provider_request))
+            fields = (
+                ("Versions", "object_revision", "VersionId"),
+                ("DeleteMarkers", "deletion_marker", "VersionId"),
+            )
+        else:
+            provider_request["EncodingType"] = "url"
+            response = _decoded_multipart_upload_page(
+                cast(dict[str, Any], invoke("list_multipart_uploads", **provider_request))
+            )
+            fields = (("Uploads", "open_write", "UploadId"),)
+        if response.get("CommonPrefixes"):
+            raise RuntimeError("S3 cleanup inventory unexpectedly grouped provider keys")
+        candidates = []
+        scanned = 0
+        for field, kind, identity in fields:
+            rows = response.get(field)
+            if rows is None:
+                rows = []
+            if not isinstance(rows, list) or len(rows) + scanned > request.maximum_items:
+                raise RuntimeError("S3 cleanup inventory exceeds its candidate grant")
+            scanned += len(rows)
+            for row in rows:
+                if (
+                    not isinstance(row, dict)
+                    or not isinstance(row.get("Key"), str)
+                    or not row["Key"].startswith(prefix)
+                    or not isinstance(row.get(identity), str)
+                    or not 1 <= len(row[identity]) <= 4000
+                ):
+                    raise RuntimeError("S3 cleanup inventory returned an invalid candidate")
+                relative = (
+                    row["Key"][len(self._config.root_prefix) + 1 :]
+                    if self._config.root_prefix
+                    else row["Key"]
+                )
+                candidates.append(
+                    CleanupCandidate(object_path=relative, kind=kind, token=row[identity])
+                )
+        truncated = response.get("IsTruncated")
+        if type(truncated) is not bool:
+            raise RuntimeError("S3 cleanup inventory has no explicit exhaustion")
+        continuation = None
+        if truncated:
+            key = response.get("NextKeyMarker")
+            token = response.get(
+                "NextVersionIdMarker" if stage == "versions" else "NextUploadIdMarker"
+            )
+            if (
+                not isinstance(key, str)
+                or not key.startswith(prefix)
+                or not isinstance(token, str)
+                or not 1 <= len(token) <= 4000
+                or (key, token) == previous
+            ):
+                raise RuntimeError("S3 cleanup inventory continuation did not advance")
+            relative = key[len(self._config.root_prefix) + 1 :] if self._config.root_prefix else key
+            if len(relative) > 4096:
+                raise RuntimeError("S3 cleanup inventory continuation key is too large")
+            continuation = json.dumps(
+                {"scope": scope, "stage": stage, "key": relative, "token": token},
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        elif stage == "versions":
+            continuation = json.dumps(
+                {"scope": scope, "stage": "writes", "key": None, "token": None},
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        page = CleanupInventoryPage(
+            object_prefix=request.object_prefix,
+            target_incarnation=self._incarnation_id,
+            candidates=tuple(candidates),
+            scanned_items=scanned,
+            continuation=continuation,
+            exhausted=continuation is None,
+        )
+        if (
+            len(page.model_dump_json(exclude_none=True).encode("utf-8"))
+            > request.maximum_response_bytes
+        ):
+            raise StorageAdapterRejection(
+                "request_too_large", "cleanup inventory response grant is too small"
+            )
+        validate_cleanup_inventory_response(request, page)
+        return page
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        """One SDK list page; never use the mutating begin/recovery convenience path."""
+        if request.target_incarnation != self._incarnation_id:
+            raise StorageIncarnationError("S3 storage incarnation differs from observation")
+        key = self._key(request.object_path)
+        scope = hashlib.sha256(
+            json.dumps(
+                [
+                    self._incarnation_id,
+                    self._config.bucket,
+                    self._config.root_prefix,
+                    request.object_path,
+                ],
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        provider_request: dict[str, Any] = {
+            "Bucket": self._config.bucket,
+            "Prefix": key,
+            "MaxUploads": request.maximum_items,
+            "EncodingType": "url",
+        }
+        previous: tuple[str, str] | None = None
+        if request.continuation is not None:
+            try:
+                cursor = json.loads(request.continuation)
+                if (
+                    not isinstance(cursor, dict)
+                    or set(cursor) != {"scope", "key", "upload"}
+                    or cursor["scope"] != scope
+                    or not isinstance(cursor["key"], str)
+                    or not cursor["key"].startswith(request.object_path)
+                    or len(cursor["key"]) > 4096
+                    or not isinstance(cursor["upload"], str)
+                    or not 1 <= len(cursor["upload"]) <= 4000
+                ):
+                    raise ValueError("open-write cursor differs from observation")
+                previous = (self._key(cursor["key"]), cursor["upload"])
+            except (ValueError, TypeError, KeyError) as exc:
+                raise StorageAdapterRejection(
+                    "traversal_invalidated", "open-write continuation differs from its target"
+                ) from exc
+            provider_request["KeyMarker"], provider_request["UploadIdMarker"] = previous
+        self._require_incarnation()
+        response = _decoded_multipart_upload_page(
+            cast(dict[str, Any], self._client.list_multipart_uploads(**provider_request))
+        )
+        rows = response.get("Uploads")
+        if rows is None:
+            rows = []
+        if not isinstance(rows, list) or len(rows) > request.maximum_items:
+            raise RuntimeError("S3 open-write page exceeds its candidate grant")
+        observations = []
+        for row in rows:
+            if (
+                not isinstance(row, dict)
+                or not isinstance(row.get("Key"), str)
+                or not row["Key"].startswith(key)
+                or not isinstance(row.get("UploadId"), str)
+                or not 1 <= len(row["UploadId"]) <= 4000
+            ):
+                raise RuntimeError("S3 returned an invalid open-write observation")
+            if row["Key"] == key:
+                # ListMultipartUploads does not attest the original create metadata.
+                observations.append(OpenWriteObservation(write_token=row["UploadId"]))
+        truncated = response.get("IsTruncated")
+        if type(truncated) is not bool:
+            raise RuntimeError("S3 open-write page has no explicit exhaustion")
+        continuation = None
+        if truncated:
+            next_key, next_upload = (
+                response.get("NextKeyMarker"),
+                response.get("NextUploadIdMarker"),
+            )
+            if (
+                not isinstance(next_key, str)
+                or not next_key.startswith(key)
+                or not isinstance(next_upload, str)
+                or not 1 <= len(next_upload) <= 4000
+                or (next_key, next_upload) == previous
+            ):
+                raise RuntimeError("S3 open-write continuation did not advance within the target")
+            relative = (
+                next_key[len(self._config.root_prefix) + 1 :]
+                if self._config.root_prefix
+                else next_key
+            )
+            if len(relative) > 4096:
+                raise RuntimeError("S3 open-write continuation key is too large")
+            continuation = json.dumps(
+                {"scope": scope, "key": relative, "upload": next_upload},
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        page = OpenWritePage(
+            object_path=request.object_path,
+            target_incarnation=self._incarnation_id,
+            observations=tuple(observations),
+            scanned_items=len(rows),
+            continuation=continuation,
+            exhausted=not truncated,
+        )
+        if (
+            len(page.model_dump_json(exclude_none=True).encode("utf-8"))
+            > request.maximum_response_bytes
+        ):
+            raise StorageAdapterRejection(
+                "request_too_large", "open-write response grant is too small"
+            )
+        validate_open_write_page_response(request, page)
+        return page
 
     def abort_write(self, session: WriteSession) -> None:
         self._require_incarnation()

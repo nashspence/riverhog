@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 from types import SimpleNamespace
 
 import pytest
@@ -12,6 +13,8 @@ from riverhog_protocol.raw_ingress import (
     ordered_raw_part_commitment,
     raw_volume_part_span,
 )
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def test_raw_source_is_hashed_once_into_small_authority_and_bounded_batches() -> None:
@@ -74,7 +77,9 @@ def test_raw_source_primitive_work_keeps_exact_outputs_and_delegate_composition(
 
     source = growth_binding(source_hashing.hash_raw_source_chunks)
     child = growth_binding(raw_ingress.advance_raw_part_commitment)
-    projection = project_bindings((source,))
+    projection = project_bindings(
+        (source,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     declaration_rows = projection["declarations"]
     samples = []
     counts = {}
@@ -211,7 +216,12 @@ def test_raw_source_primitive_work_keeps_exact_outputs_and_delegate_composition(
                 },
                 {"commitment": calls},
             )
-            validate_execution_samples(projection, source.declaration.id, [observed])
+            validate_execution_samples(
+                projection,
+                source.declaration.id,
+                [observed],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(observed)
             parts = tuple(value for _, batch in result.iter_batches(limit=2) for value in batch)
             assert result.summary.sha256 == hashlib.sha256(content).hexdigest()

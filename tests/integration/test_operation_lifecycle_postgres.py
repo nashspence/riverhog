@@ -6,6 +6,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
+from riverhog_client import PrimaryStore
 from riverhog_core.catalog_db import create_catalog_engine, initialize_db
 from sqlalchemy import text
 from sqlalchemy.engine import make_url
@@ -39,10 +40,10 @@ def database_url() -> Iterator[str]:
 
 
 def test_official_http_lifecycle_uses_real_postgresql_transactions(
-    database_url: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    database_url: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, primary_store: PrimaryStore
 ) -> None:
     container = lifecycle._container
     monkeypatch.setattr(
         lifecycle, "_container", lambda root: container(root, database_url=database_url)
     )
-    lifecycle.test_riverhog_official_client_positive_disposable_lifecycle(tmp_path)
+    lifecycle.test_riverhog_official_client_positive_disposable_lifecycle(primary_store, tmp_path)

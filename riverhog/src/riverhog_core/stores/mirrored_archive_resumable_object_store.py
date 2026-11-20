@@ -257,41 +257,18 @@ class MirroredArchiveResumableObjectStore:
         )
         if archive_completed is None:
             return None
-        admission = self._cache.admit(
+        cache_receipt = self._cache.observe_completed_population(
             owner=self._owner,
             source_store=self._source_store,
             collection_id=self._collection_id,
             object_id=self._object_id,
             expected_bytes=expected_bytes,
         )
-        if admission is None:
-            self._cache.release(owner=self._owner)
-            return archive_completed
-        cache_receipt = admission.completed
-        cache_session = _cache_session(admission)
-        if cache_receipt is None and cache_session is not None:
-            cache_completed = self._cache.resumable_object_store(
-                admission=admission
-            ).find_completed_write(
-                object_path=cache_session.object_path,
-                expected_bytes=expected_bytes,
-                expected_content_type="application/octet-stream",
-                expected_metadata={},
-            )
-            if cache_completed is not None:
-                cache_receipt = cache_completed.retrieval_cache or RetrievalCacheReceipt(
-                    cache_store=admission.cache_store,
-                    object_path=cache_completed.object_path,
-                    revision=cache_completed.revision,
-                    stored_bytes=cache_completed.bytes,
-                    stored_sha256=None,
-                    cached_at=cache_completed.completed_at,
-                    verified_at=cache_completed.completed_at,
-                )
-        if cache_receipt is None:
-            self._release_optional_cache()
-            return archive_completed
-        return replace(archive_completed, retrieval_cache=cache_receipt)
+        return (
+            replace(archive_completed, retrieval_cache=cache_receipt)
+            if cache_receipt is not None
+            else archive_completed
+        )
 
     def abort_write(self, *, session: WriteSession) -> None:
         archive_session, _admission, _content_type, _metadata = _decode_write_token(session)

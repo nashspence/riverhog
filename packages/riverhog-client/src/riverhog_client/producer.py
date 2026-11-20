@@ -5,17 +5,20 @@ from __future__ import annotations
 import builtins
 import hashlib
 import itertools
+import sqlite3
 import tempfile
 import threading
 import time
 from collections import OrderedDict
-from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
-from dataclasses import dataclass, replace
+from collections.abc import Callable, Iterable, Iterator, Mapping, MutableMapping, Sequence
+from dataclasses import dataclass
 from dataclasses import field as dataclass_field
+from functools import partial, wraps
 from pathlib import Path
-from typing import Any, BinaryIO
+from typing import Any, BinaryIO, Concatenate
 
 from pydantic import TypeAdapter
+from riverhog_canonical_json import canonical_json_bytes
 from riverhog_protocol import (
     CollectionDescription,
     CollectionTag,
@@ -26,22 +29,34 @@ from riverhog_protocol.collection_upload_transport import (
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadRegistrationConstraintsDocument,
     CollectionUploadUnitWorkDocument,
-    validate_collection_upload_artifact_custody_receipt,
 )
-from riverhog_protocol.errors import NotFound
 from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.provenance_transport import MaterializationHintDocument
 from riverhog_protocol.storage_names import ArchiveStoreName
-from riverhog_provenance import BoundedSourceObserver, ObservationResult, StreamSource
+from riverhog_provenance import BoundedSourceObserver, JournalStore, ObservationResult, StreamSource
 from time_formats import parse_utc_timestamp, utc_epoch_ns_now
 
-from riverhog_client.canonical_production import (
-    ProducerAttribution,
-    bind_produced_member,
-    member_materialization_decision,
+from riverhog_client._prepared_primary_closing import (
+    advance_closing,
+    advance_custody,
+    freeze_inventory,
 )
+from riverhog_client._prepared_primary_pending_sources import (
+    PendingSourceIndex,
+    PendingSourceMetadata,
+)
+from riverhog_client._prepared_primary_publisher import (
+    DeclaredPrimaryObservation,
+    PrimaryPublisher,
+    RetainedPrimaryObservation,
+)
+from riverhog_client._prepared_primary_session import open_primary_session
+from riverhog_client._prepared_primary_storage import PrimaryStorage
+from riverhog_client._prepared_primary_store import PrimaryStore
+from riverhog_client._prepared_primary_types import PrimaryStateError
+from riverhog_client.canonical_production import ProducerAttribution
 from riverhog_client.client import ApiClient
-from riverhog_client.initial_tags import create_or_resume_with_initial_collection_tags
+from riverhog_client.initial_tags import PreparedInitialCollectionTags
 from riverhog_client.source_hashing import RawSourceHash, hash_raw_source_chunks
 from riverhog_client.uploads import (
     configured_upload_concurrency,
@@ -61,7 +76,9 @@ class ProducerFile:
     artifact_id: ArtifactId
     materialization_hint: tuple[str, ...] | None = None
     allow_missing_materialization_hint: bool = False
-    observation: ObservationResult | None = None
+    observation: (
+        ObservationResult | DeclaredPrimaryObservation | RetainedPrimaryObservation | None
+    ) = None
     output_id: str | None = None
     causal_input_states: tuple[Mapping[str, Any], ...] = ()
 
@@ -94,7 +111,9 @@ class ProducerStream:
     read_range: RangeReader
     materialization_hint: tuple[str, ...] | None = None
     allow_missing_materialization_hint: bool = False
-    observation: ObservationResult | None = None
+    observation: (
+        ObservationResult | DeclaredPrimaryObservation | RetainedPrimaryObservation | None
+    ) = None
     output_id: str | None = None
     causal_input_states: tuple[Mapping[str, Any], ...] = ()
 
@@ -146,7 +165,9 @@ class _Source:
     sha256: str
     materialization_hint: tuple[str, ...] | None
     allow_missing_materialization_hint: bool
-    observation: ObservationResult | None = None
+    observation: (
+        ObservationResult | DeclaredPrimaryObservation | RetainedPrimaryObservation | None
+    ) = None
     output_id: str | None = None
     causal_input_states: tuple[Mapping[str, Any], ...] = ()
     content: builtins.bytes | None = None
@@ -175,6 +196,146 @@ class _Source:
             self.reader.close()
 
 
+class _PendingSources(MutableMapping[ArtifactId, _Source]):
+    """Materialize one pending window; retain readers only for live payload."""
+
+    def __init__(self, index: PendingSourceIndex) -> None:
+        self._index = index
+        self._live: OrderedDict[ArtifactId, _Source] = OrderedDict()
+        self._closed = False
+
+    @staticmethod
+    def _metadata(source: _Source) -> PendingSourceMetadata:
+        return PendingSourceMetadata.model_validate(
+            {
+                "member": _member_identity(source),
+                "registration_identity_sha256": _registration_identity_sha256(source),
+                "raw_parts": source.raw_parts,
+            }
+        )
+
+    @staticmethod
+    def _source(metadata: PendingSourceMetadata) -> _Source:
+        return _Source(
+            artifact_id=metadata.member.artifact_id,
+            bytes=metadata.member.bytes,
+            sha256=metadata.member.sha256,
+            materialization_hint=None,
+            allow_missing_materialization_hint=True,
+            raw_parts=(
+                metadata.raw_parts.model_dump(mode="json")
+                if metadata.raw_parts is not None
+                else None
+            ),
+        )
+
+    def __getitem__(self, key: ArtifactId) -> _Source:
+        if self._closed:
+            raise KeyError(key)
+        live = self._live.get(key)
+        if live is not None:
+            return live
+        node = self._index.get(key)
+        if node is None:
+            raise KeyError(key)
+        return self._source(node.source)
+
+    def __setitem__(self, key: ArtifactId, source: _Source) -> None:
+        if self._closed:
+            raise PrimaryStateError("pending source view is closed")
+        if source.artifact_id != key:
+            raise ValueError("pending source key differs from its original identity")
+        self._live[key] = source
+
+    def __delitem__(self, key: ArtifactId) -> None:
+        if key not in self:
+            raise KeyError(key)
+        self.release(key)
+
+    def __iter__(self) -> Iterator[ArtifactId]:
+        if self._closed:
+            return
+        for node in self._index.rows():
+            yield node.source.member.artifact_id
+        for key in self._live:
+            if self._index.get(key) is None:
+                yield key
+
+    def __len__(self) -> int:
+        if self._closed:
+            return 0
+        return self._index.count + sum(self._index.get(key) is None for key in self._live)
+
+    def pending_values(self) -> Iterator[_Source]:
+        if not self._closed:
+            for node in self._index.rows():
+                yield self._source(node.source)
+
+    def live_values(self) -> Iterable[_Source]:
+        return self._live.values()
+
+    def admit(self, source: _Source) -> None:
+        self._index.record(self._metadata(source), payload_sealed=False)
+
+    def matches_registration(self, source: _Source) -> bool:
+        live = self._live.get(source.artifact_id)
+        if live is not None:
+            return _registered_identity(live) == _registered_identity(source)
+        node = self._index.get(source.artifact_id)
+        return node is None or (
+            node.source.registration_identity_sha256 == _registration_identity_sha256(source)
+        )
+
+    def record_registration(self, source: _Source, *, payload_sealed: bool) -> None:
+        node = self._index.get(source.artifact_id)
+        if node is None:
+            raise PrimaryStateError("registration omitted original retained custody")
+        if _source_identity(self._source(node.source)) != _source_identity(source):
+            raise PrimaryStateError("pending registration changed its original identity")
+        self._index.record(node.source, payload_sealed=payload_sealed)
+        if payload_sealed:
+            owned = self._live.get(source.artifact_id)
+            if owned is not None:
+                owned.close()
+                self._live.pop(source.artifact_id)
+
+    def move_to_end(self, key: ArtifactId) -> None:
+        self._index.rotate_front(key)
+
+    def release(self, key: ArtifactId) -> None:
+        self._index.retire(key)
+        owned = self._live.get(key)
+        if owned is not None:
+            owned.close()
+            self._live.pop(key)
+
+    def clear(self) -> None:
+        self._live.clear()
+        self._closed = True
+
+
+def _member_identity(source: ProducerArtifactIdentity | _Source) -> ArtifactMemberIdentityDocument:
+    return ArtifactMemberIdentityDocument.model_validate(
+        {
+            "artifact_id": source.artifact_id,
+            "bytes": str(source.bytes),
+            "sha256": source.sha256,
+        }
+    )
+
+
+def _producer_operation[**P, T](
+    call: Callable[Concatenate[IncrementalCollectionProducer, P], T],
+) -> Callable[Concatenate[IncrementalCollectionProducer, P], T]:
+    @wraps(call)
+    def run(self: IncrementalCollectionProducer, /, *args: P.args, **kwargs: P.kwargs) -> T:
+        # This construction's lifecycle waits for its payload calls before releasing readers.
+        with self._operation_lock:
+            return call(self, *args, **kwargs)
+
+    return run
+
+
 class CollectionProducer:
     """Stream protocol-complete files into one finalized Riverhog collection.
 
@@ -188,6 +349,13 @@ class CollectionProducer:
         self,
         api: ApiClient,
         *,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
         producer_app: str,
         adapter_id: str,
         adapter_version: str,
@@ -199,6 +367,13 @@ class CollectionProducer:
         tags: Sequence[CollectionTag] = (),
     ) -> None:
         self.api = api
+        self.primary_store = primary_store
+        self._storage_preparation = storage_preparation
+        self._provenance_connection_factory = provenance_connection_factory
+        self._on_provenance_storage_open = on_provenance_storage_open
+        self._initial_tags_connection_factory = initial_tags_connection_factory
+        self._on_initial_tags_storage_open = on_initial_tags_storage_open
+        self.member_inventory = member_inventory
         self.producer_app = producer_app
         self.adapter_id = adapter_id
         self.adapter_version = adapter_version
@@ -248,12 +423,23 @@ class CollectionProducer:
         progress: ReadProgress | None = None,
     ) -> ProducedCollection:
         source_inputs = iter(files)
-        try:
-            first_input = next(source_inputs)
-        except StopIteration as exc:
-            raise ValueError("producer collection must contain at least one source file") from exc
+        first_input: ProducerInput | None = None
+        if not self.primary_store.session_bound:
+            try:
+                first_input = next(source_inputs)
+            except StopIteration as exc:
+                raise ValueError(
+                    "producer collection must contain at least one source file"
+                ) from exc
         producer = IncrementalCollectionProducer(
             self.api,
+            primary_store=self.primary_store,
+            member_inventory=self.member_inventory,
+            storage_preparation=self._storage_preparation,
+            provenance_connection_factory=self._provenance_connection_factory,
+            on_provenance_storage_open=self._on_provenance_storage_open,
+            initial_tags_connection_factory=self._initial_tags_connection_factory,
+            on_initial_tags_storage_open=self._on_initial_tags_storage_open,
             producer_app=self.producer_app,
             adapter_id=self.adapter_id,
             adapter_version=self.adapter_version,
@@ -270,6 +456,15 @@ class CollectionProducer:
             progress=progress,
         )
         try:
+            if producer._finalized is not None:
+                return producer.finish(poll_seconds=poll_seconds, timeout_seconds=timeout_seconds)
+            if first_input is None:
+                try:
+                    first_input = next(source_inputs)
+                except StopIteration as exc:
+                    raise ValueError(
+                        "producer collection must contain at least one source file"
+                    ) from exc
             producer.stage_provenance_journals(provenance_journals or ())
             batch: list[ProducerInput] = []
             for item in itertools.chain((first_input,), source_inputs):
@@ -297,6 +492,13 @@ class IncrementalCollectionProducer:
         self,
         api: ApiClient,
         *,
+        primary_store: PrimaryStore,
+        member_inventory: Callable[[], Iterable[ProducerArtifactIdentity]],
+        storage_preparation: Callable[[PrimaryStorage], bool] | None = None,
+        provenance_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_provenance_storage_open: Callable[[JournalStore], None] | None = None,
+        initial_tags_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_initial_tags_storage_open: Callable[[PreparedInitialCollectionTags], None] | None = None,
         producer_app: str,
         adapter_id: str,
         adapter_version: str,
@@ -314,6 +516,16 @@ class IncrementalCollectionProducer:
         completion_requirement: CollectionCompletionRequirementDocument | None = None,
     ) -> None:
         self.api = api
+        self.primary_store = primary_store
+        self._member_inventory = member_inventory
+        self._primary_publisher = PrimaryPublisher(
+            api,
+            primary_store,
+            storage_preparation=storage_preparation,
+            provenance_connection_factory=provenance_connection_factory,
+            on_provenance_storage_open=on_provenance_storage_open,
+        )
+        self._operation_lock = threading.RLock()
         self.progress = progress
         construction_identity = hashlib.sha256(
             (idempotency_key or source_event_id).encode("utf-8")
@@ -328,7 +540,7 @@ class IncrementalCollectionProducer:
             construction_identity=construction_identity,
             completion_requirement=completion_requirement,
         )
-        self._sources: dict[ArtifactId, _Source] = {}
+        self._sources = _PendingSources(PendingSourceIndex(primary_store))
         self._pending_source_resolver: Callable[[ArtifactId], ProducerInput] | None = None
         self._restored_sources: OrderedDict[ArtifactId, _Source] = OrderedDict()
         self._source_lock = threading.RLock()
@@ -339,25 +551,20 @@ class IncrementalCollectionProducer:
         self._heartbeat_thread: threading.Thread | None = None
         self._finalized: ProducedCollection | None = None
         self.constraints: CollectionUploadRegistrationConstraintsDocument | None
-        session = create_or_resume_with_initial_collection_tags(
-            tags,
-            create_or_resume=lambda first_batch, identity: (
-                api.create_or_resume_collection_upload_session(
-                    idempotency_key or construction_identity,
-                    ingest_source=ingest_source,
-                    description=description,
-                    tags=first_batch,
-                    initial_tag_set_identity=identity,
-                    archive_store=archive_store,
-                    use_cache=use_cache,
-                    copy_to=copy_to,
-                    event_context=event_context,
-                    custody_mode="custody-transfer",
-                )
-            ),
-            add_tags=lambda collection_id, batch: api.add_collection_upload_session_tags(
-                collection_id, batch
-            ),
+        session, self._attribution = open_primary_session(
+            api,
+            primary_store,
+            attribution=self._attribution,
+            idempotency_key=idempotency_key,
+            archive_store=archive_store,
+            use_cache=use_cache,
+            copy_to=copy_to,
+            description=description,
+            tags=tags,
+            event_context=event_context,
+            storage_preparation=storage_preparation,
+            initial_tags_connection_factory=initial_tags_connection_factory,
+            on_initial_tags_storage_open=on_initial_tags_storage_open,
         )
         self._heartbeat_interval_seconds = _custody_heartbeat_interval(session)
         self.resumed = bool(session.get("resumed"))
@@ -368,21 +575,12 @@ class IncrementalCollectionProducer:
         if not isinstance(delivery_context_id, str):
             raise RuntimeError("Riverhog upload session omitted its delivery context")
         self.delivery_context_id = delivery_context_id
+        self.construction_identity_sha256 = session.get("construction_identity_sha256")
         if str(session.get("state") or "") == "finalized":
             self._finalized = _finalized_receipt(session)
             self._closed = True
             self.constraints = None
             return
-        self.construction_identity_sha256 = session.get("construction_identity_sha256")
-        if completion_requirement is not None:
-            if not isinstance(self.construction_identity_sha256, str):
-                raise RuntimeError("execution construction omitted its accepted creation identity")
-            self._attribution = replace(
-                self._attribution, construction_identity=self.construction_identity_sha256
-            )
-            api.set_collection_upload_session_completion_requirement(
-                self.collection_id, completion_requirement
-            )
         constraints = session.get("registration_constraints")
         if not isinstance(constraints, Mapping):
             raise RuntimeError("Riverhog upload session did not return registration constraints")
@@ -396,24 +594,31 @@ class IncrementalCollectionProducer:
         )
         self._heartbeat_thread.start()
 
+    @_producer_operation
     def heartbeat(self) -> None:
         if not self._closed:
             self.api.heartbeat_collection_upload_session(self.collection_id)
             self._heartbeat_failure = None
 
+    @_producer_operation
     def stage_provenance_journals(self, journals: Iterable[tuple[str, bytes]]) -> None:
         """Stage a bounded stream of exact provenance journals before sealing."""
 
         for journal_id, content in journals:
             self._stage_journals({str(journal_id): bytes(content)})
 
+    @_producer_operation
     def stop(self) -> None:
+        self._closed = True
         self._heartbeat_stop.set()
         thread = self._heartbeat_thread
-        if thread is not None and thread is not threading.current_thread():
-            thread.join(timeout=5.0)
+        if thread is threading.current_thread():
+            raise RuntimeError("heartbeat worker cannot release its own producer resources")
+        if thread is not None:
+            # A requested stop or a timed-out join is not proof of quiescence.
+            thread.join()
         self._heartbeat_thread = None
-        for source in self._sources.values():
+        for source in self._sources.live_values():
             source.close()
         self._sources.clear()
         for source in self._restored_sources.values():
@@ -424,6 +629,7 @@ class IncrementalCollectionProducer:
         """Restore exact pending readers on demand from caller-owned restart state."""
         self._pending_source_resolver = resolver
 
+    @_producer_operation
     def append_inputs(
         self,
         inputs: Sequence[ProducerInput],
@@ -447,44 +653,53 @@ class IncrementalCollectionProducer:
         }
         if expected and set(expected) != set(supplied_ids):
             raise ValueError("expected producer identities must match the supplied artifact IDs")
-        self._stage_journals(normalized_journals)
         candidates: list[_Source] = []
         receipts: list[ProducerArtifactCustody] = []
-        for item in inputs:
-            expected_identity = expected.get(item.artifact_id)
-            source = (
-                _hash_local_source(
-                    item,
-                    pack_member_bytes=self.constraints.pack_member_bytes,
-                    raw_part_bytes=self.constraints.raw_part_plaintext_bytes,
-                    progress=self.progress,
+        try:
+            for item in inputs:
+                expected_identity = expected.get(item.artifact_id)
+                source = (
+                    _hash_local_source(
+                        item,
+                        pack_member_bytes=self.constraints.pack_member_bytes,
+                        raw_part_bytes=self.constraints.raw_part_plaintext_bytes,
+                        progress=self.progress,
+                    )
+                    if isinstance(item, ProducerFile)
+                    else _verify_stream_source(
+                        item,
+                        pack_member_bytes=self.constraints.pack_member_bytes,
+                        raw_part_bytes=self.constraints.raw_part_plaintext_bytes,
+                        progress=self.progress,
+                    )
                 )
-                if isinstance(item, ProducerFile)
-                else _verify_stream_source(
-                    item,
-                    pack_member_bytes=self.constraints.pack_member_bytes,
-                    raw_part_bytes=self.constraints.raw_part_plaintext_bytes,
-                    progress=self.progress,
-                )
+                if (
+                    expected_identity is not None
+                    and ProducerArtifactIdentity(
+                        source.artifact_id,
+                        source.bytes,
+                        source.sha256,
+                    )
+                    != expected_identity
+                ):
+                    source.close()
+                    raise ValueError(
+                        f"producer source differs from its expected identity: {item.artifact_id}"
+                    )
+                candidates.append(source)
+            receipts.extend(
+                self._append_sources(candidates, provenance_journals=normalized_journals)
             )
-            if (
-                expected_identity is not None
-                and ProducerArtifactIdentity(
-                    source.artifact_id,
-                    source.bytes,
-                    source.sha256,
-                )
-                != expected_identity
-            ):
-                raise ValueError(
-                    f"producer source differs from its expected identity: {item.artifact_id}"
-                )
-            candidates.append(source)
-        receipts.extend(self._append_sources(candidates))
-        if self._needs_upload_scan:
-            receipts.extend(self._upload_available())
-        return tuple(receipts)
+            if self._needs_upload_scan:
+                receipts.extend(self._upload_available())
+            return tuple(receipts)
+        except BaseException:
+            for source in candidates:
+                if self._sources.get(source.artifact_id) is not source:
+                    source.close()
+            raise
 
+    @_producer_operation
     def finish(
         self,
         *,
@@ -492,7 +707,9 @@ class IncrementalCollectionProducer:
         poll_seconds: float = 2.0,
         timeout_seconds: float = 24 * 60 * 60,
     ) -> ProducedCollection:
+        deadline = time.monotonic() + timeout_seconds
         if self._finalized is not None:
+            self._drain_custody(deadline=deadline, poll_seconds=poll_seconds)
             return self._finalized
         if self._closed or self.constraints is None:
             raise RuntimeError("incremental collection producer is already closed")
@@ -502,10 +719,31 @@ class IncrementalCollectionProducer:
         )
         if self._needs_upload_scan:
             self._upload_available()
+        # Completion execution settles retained cleanup before freezing inventory.
+        while True:
+            self._require_heartbeat()
+            if time.monotonic() >= deadline:
+                raise TimeoutError(
+                    "collection upload local recovery exceeded the completion deadline"
+                )
+            if self.primary_store.recover_step():
+                break
+        inventory = self._member_inventory()
+        try:
+            freeze_inventory(self.primary_store, (_member_identity(item) for item in inventory))
+        finally:
+            close_inventory = getattr(inventory, "close", None)
+            if callable(close_inventory):
+                close_inventory()
+        while not advance_closing(
+            self.primary_store,
+            limit=COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
+            settle=self._settle_primary,
+        ):
+            self._require_heartbeat()
         receipt = self.api.complete_collection_upload_session(self.collection_id)
         if str(receipt.get("state") or "") != "finalized":
             self._upload_available(reconcile=False)
-        deadline = time.monotonic() + timeout_seconds
         while str(receipt.get("state") or "") != "finalized":
             if time.monotonic() >= deadline:
                 raise TimeoutError(
@@ -516,7 +754,39 @@ class IncrementalCollectionProducer:
         self._closed = True
         self.stop()
         self._finalized = _finalized_receipt(receipt)
+        self._drain_custody(deadline=deadline, poll_seconds=poll_seconds)
         return self._finalized
+
+    def _settle_primary(self, member: ArtifactMemberIdentityDocument) -> None:
+        record = self.primary_store.load(member)
+        if record is None:
+            raise PrimaryStateError("closing member has no original local preparation")
+        self._primary_publisher.replay(record)
+
+    def _drain_custody(self, *, deadline: float, poll_seconds: float) -> None:
+        waiting = False
+
+        def settle(member: ArtifactMemberIdentityDocument) -> None:
+            nonlocal waiting
+            waiting = (
+                self.resume_artifact_custody(
+                    ProducerArtifactIdentity(member.artifact_id, member.bytes, member.sha256)
+                )
+                is None
+            )
+
+        while not advance_custody(
+            self.primary_store,
+            limit=COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
+            settle=settle,
+        ):
+            if time.monotonic() >= deadline:
+                raise TimeoutError(
+                    f"Riverhog collection {self.collection_id} has unsettled artifact custody"
+                )
+            if waiting:
+                time.sleep(max(0.05, poll_seconds))
+                waiting = False
 
     def _heartbeat_loop(self) -> None:
         api = self.api.spawn()
@@ -545,19 +815,37 @@ class IncrementalCollectionProducer:
             except Exception as exc:
                 raise RuntimeError("collection upload custody lease heartbeat failed") from exc
 
-    def _append_sources(self, values: Sequence[_Source]) -> tuple[ProducerArtifactCustody, ...]:
+    def _append_sources(
+        self, values: Sequence[_Source], *, provenance_journals: Mapping[str, bytes]
+    ) -> tuple[ProducerArtifactCustody, ...]:
         candidates = list(values)
         if len({source.artifact_id for source in candidates}) != len(candidates):
             raise ValueError("incremental producer artifact IDs must be unique")
         for source in candidates:
             existing = self._sources.get(source.artifact_id)
-            if existing is not None and _registered_identity(existing) != _registered_identity(
-                source
-            ):
+            if not self._sources.matches_registration(source):
                 raise RuntimeError(
                     f"resumed producer artifact identity changed: {source.artifact_id}"
                 )
+            if existing is not None and existing is not source:
+                existing.close()
             self._sources[source.artifact_id] = source
+        prepared = {
+            source.artifact_id: self._primary_publisher.prepare(
+                member=_member_identity(source),
+                attribution=self._attribution,
+                observation=source.observation,
+                automatic_observation=partial(_observe_source, source),
+                materialization_hint=source.materialization_hint,
+                allow_missing_materialization_hint=source.allow_missing_materialization_hint,
+                output_id=source.output_id,
+                causal_input_states=source.causal_input_states,
+            )
+            for source in candidates
+        }
+        for source in candidates:
+            self._sources.admit(source)
+        self._stage_journals(provenance_journals)
         registration = [_source_registration(source) for source in candidates]
         constraints = self.constraints
         if constraints is None:
@@ -572,54 +860,7 @@ class IncrementalCollectionProducer:
             )
             for source in source_batch:
                 _register_source_raw_digests(self.api, self.collection_id, source)
-                try:
-                    accepted = self.api.get_collection_upload_session_artifact_provenance_binding(
-                        self.collection_id, source.artifact_id
-                    )
-                except NotFound:
-                    accepted = None
-                if accepted is None:
-                    observation = source.observation or BoundedSourceObserver().observe(
-                        StreamSource(
-                            _SequentialRangeReader(source),
-                            expected_length=source.bytes,
-                        )
-                    )
-                    bind_produced_member(
-                        self.api,
-                        collection_id=self.collection_id,
-                        member=ArtifactMemberIdentityDocument.model_validate(
-                            {
-                                "artifact_id": source.artifact_id,
-                                "bytes": str(source.bytes),
-                                "sha256": source.sha256,
-                            }
-                        ),
-                        observation=observation,
-                        delivery_context_id=self.delivery_context_id,
-                        attribution=self._attribution,
-                        materialization_hint=source.materialization_hint,
-                        allow_missing_materialization_hint=(
-                            source.allow_missing_materialization_hint
-                        ),
-                        output_id=source.output_id,
-                        causal_input_states=source.causal_input_states,
-                    )
-                else:
-                    if accepted.artifact_id != source.artifact_id:
-                        raise RuntimeError(
-                            "Riverhog returned another artifact's provenance binding"
-                        )
-                    self.api.set_collection_upload_session_materialization_decisions(
-                        self.collection_id,
-                        member_materialization_decision(
-                            artifact_id=source.artifact_id,
-                            materialization_hint=source.materialization_hint,
-                            allow_missing_materialization_hint=(
-                                source.allow_missing_materialization_hint
-                            ),
-                        ),
-                    )
+                self._primary_publisher.replay(prepared[source.artifact_id])
             rows = registered.get("artifacts")
             if not isinstance(rows, list):
                 raise RuntimeError("Riverhog returned invalid registered artifacts")
@@ -691,34 +932,44 @@ class IncrementalCollectionProducer:
         return receipts
 
     def _reconcile_pending_sources(self) -> tuple[ProducerArtifactCustody, ...]:
-        receipts: list[ProducerArtifactCustody] = []
         constraints = self.constraints
         if constraints is None:
             raise RuntimeError("incremental collection producer has no registration constraints")
-        pending = list(self._sources.values())
-        for start in range(0, len(pending), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES):
-            source_batch = pending[start : start + COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES]
-            payload = self.api.register_collection_upload_session_artifacts(
-                self.collection_id,
-                [_source_registration(source) for source in source_batch],
-                registration_constraints=constraints,
+        pending = list(
+            itertools.islice(
+                self._sources.pending_values(), COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
             )
-            rows = payload.get("artifacts")
-            if not isinstance(rows, list):
-                raise RuntimeError("Riverhog returned invalid registered artifacts")
-            receipts.extend(self._accept_registered_rows(iter(rows), expected=source_batch))
-        return tuple(receipts)
+        )
+        if not pending:
+            return ()
+        payload = self.api.register_collection_upload_session_artifacts(
+            self.collection_id,
+            [_source_registration(source) for source in pending],
+            registration_constraints=constraints,
+        )
+        rows = payload.get("artifacts")
+        if not isinstance(rows, list):
+            raise RuntimeError("Riverhog returned invalid registered artifacts")
+        receipts = self._accept_registered_rows(iter(rows), expected=pending)
+        for source in pending:
+            if source.artifact_id in self._sources:
+                self._sources.move_to_end(source.artifact_id)
+        return receipts
 
+    @_producer_operation
     def reconcile_custody(self) -> tuple[ProducerArtifactCustody, ...]:
-        """Poll exact pending identities after accepting their required history."""
+        """Poll one rotating batch of exact pending identities after accepting history."""
         self._require_heartbeat()
         return self._reconcile_pending_sources()
 
+    @_producer_operation
     def resume_artifact_custody(
         self, identity: ProducerArtifactIdentity
     ) -> ProducerArtifactCustody | None:
         """Reconcile one previously verified identity without rereading released bytes."""
         self._require_heartbeat()
+        if self.primary_store.load_controls(_member_identity(identity)) is None:
+            raise PrimaryStateError("custody retry has no original local prepared primary")
         source = _Source(
             artifact_id=identity.artifact_id,
             bytes=identity.bytes,
@@ -760,23 +1011,12 @@ class IncrementalCollectionProducer:
                 receipt = CollectionUploadArtifactCustodyReceiptDocument.model_validate(
                     receipt_value
                 )
-                validate_collection_upload_artifact_custody_receipt(
-                    self.collection_id,
-                    ArtifactMemberIdentityDocument.model_validate(
-                        {
-                            "artifact_id": source.artifact_id,
-                            "bytes": str(source.bytes),
-                            "sha256": source.sha256,
-                        }
-                    ),
-                    receipt,
-                )
-                requirement = self._attribution.completion_requirement
-                expected_requirement = None if requirement is None else requirement.identity
-                if receipt.completion_requirement_sha256 != expected_requirement:
-                    raise RuntimeError(
-                        "Riverhog custody receipt changed the completion requirement"
-                    )
+                member = _member_identity(source)
+                record = self.primary_store.load_controls(member)
+                if record is None:
+                    raise PrimaryStateError("custody has no original local prepared primary")
+                self.primary_store.accept_custody(record, receipt)
+                self.primary_store.reclaim(member)
                 receipts.append(
                     ProducerArtifactCustody(
                         artifact=ProducerArtifactIdentity(
@@ -785,18 +1025,13 @@ class IncrementalCollectionProducer:
                         receipt=receipt,
                     )
                 )
-                owned = self._sources.pop(source.artifact_id, None)
-                if owned is not None:
-                    owned.close()
-            elif row.get("payload_sealed") is True:
-                # Only the internal range reader can be released here. The
-                # adapter retains its source until the full custody receipt.
-                owned = self._sources.get(source.artifact_id)
-                if owned is not None:
-                    owned.close()
-                    self._sources[source.artifact_id] = replace(
-                        owned, reader=None, content=None, raw_digest_spool=None, observation=None
-                    )
+                self._sources.release(source.artifact_id)
+            else:
+                # The caller retains source bytes until full custody. Persist
+                # the exact pending state before releasing an internal reader.
+                self._sources.record_registration(
+                    expected_source, payload_sealed=row.get("payload_sealed") is True
+                )
         if expected_by_id:
             raise RuntimeError("Riverhog omitted requested registered artifacts")
         return tuple(receipts)
@@ -1045,6 +1280,23 @@ def _registered_identity(source: _Source) -> tuple[str, int, str, tuple[str, ...
     )
 
 
+def _registration_identity_sha256(source: _Source) -> str:
+    return hashlib.sha256(
+        b"riverhog-producer-registration-identity/v1\n"
+        + canonical_json_bytes(
+            {
+                "member": _member_identity(source).model_dump(mode="json"),
+                "materialization_hint": (
+                    list(source.materialization_hint)
+                    if source.materialization_hint is not None
+                    else None
+                ),
+                "allow_missing_materialization_hint": source.allow_missing_materialization_hint,
+            }
+        )
+    ).hexdigest()
+
+
 def _source_registration(source: _Source) -> dict[str, object]:
     return {
         "artifact_id": source.artifact_id,
@@ -1095,6 +1347,12 @@ class _SequentialRangeReader:
         content = self._source.read_range(self._offset, count)
         self._offset += count
         return content
+
+
+def _observe_source(source: _Source) -> ObservationResult:
+    return BoundedSourceObserver().observe(
+        StreamSource(_SequentialRangeReader(source), expected_length=source.bytes)
+    )
 
 
 def _finalized_receipt(payload: Mapping[str, Any]) -> ProducedCollection:

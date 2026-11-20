@@ -43,6 +43,8 @@ _METADATA_KEY_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$")
 _MAX_IDENTITY_ASSERTIONS_ITEMS = 64
 _MAX_IDENTITY_ASSERTIONS_BYTES = 16 * 1024
 MAX_WRITE_SEGMENT_PAGE_ITEMS = 128
+MAX_OPEN_WRITE_PAGE_ITEMS = 128
+MAX_CLEANUP_INVENTORY_PAGE_ITEMS = 128
 _MAX_WRITE_COMPLETION_PRECONDITION_TOKEN_LENGTH = 4000
 
 Sha256 = Annotated[str, StringConstraints(pattern=_SHA256_PATTERN)]
@@ -264,6 +266,196 @@ class WriteStartRequest(StorageAdapterModel):
     @classmethod
     def canonical_metadata(cls, value: dict[str, str]) -> dict[str, str]:
         return _canonical_identity_assertions(value)
+
+
+class OpenWriteObservation(StorageAdapterModel):
+    """One observed token, without execution closure or permission to adopt it."""
+
+    write_token: str = Field(min_length=1, max_length=4000)
+    begin_request_sha256: Sha256 | None = Field(
+        default=None,
+        description=(
+            "The complete BeginWriteOperation commitment only when the adapter owns "
+            "durable evidence of every original request field. An absent commitment "
+            "does not establish that this token belongs to a caller's request."
+        ),
+    )
+
+
+class OpenWriteListRequest(StorageAdapterModel):
+    """Read one bounded live page for an exact key; observation never begins a write."""
+
+    object_path: str = Field(min_length=1, max_length=4096)
+    target_incarnation: StorageIncarnationId
+    maximum_items: int = Field(
+        default=MAX_OPEN_WRITE_PAGE_ITEMS, ge=1, le=MAX_OPEN_WRITE_PAGE_ITEMS
+    )
+    maximum_response_bytes: PositiveDecimal = Field(default=1024 * 1024)
+    continuation: str | None = Field(default=None, min_length=1, max_length=65536)
+
+    @field_validator("object_path")
+    @classmethod
+    def canonical_path(cls, value: str) -> str:
+        return validate_object_path(value)
+
+
+class OpenWritePage(StorageAdapterModel):
+    """A live observation, not a snapshot or a barrier against delayed provider effects.
+
+    scanned_items includes provider prefix candidates rejected by exact-key filtering.
+    Exhaustion describes this traversal only; it never proves execution has stopped.
+    """
+
+    object_path: str = Field(min_length=1, max_length=4096)
+    target_incarnation: StorageIncarnationId
+    observations: tuple[OpenWriteObservation, ...] = Field(
+        default=(),
+        max_length=MAX_OPEN_WRITE_PAGE_ITEMS,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-exact-key-open-write-observation",
+                "progression": "adapter-live-open-write-continuation",
+            }
+        },
+    )
+    scanned_items: NonnegativeDecimal
+    continuation: str | None = Field(default=None, min_length=1, max_length=65536)
+    exhausted: bool
+
+    @field_validator("object_path")
+    @classmethod
+    def canonical_path(cls, value: str) -> str:
+        return validate_object_path(value)
+
+    @model_validator(mode="after")
+    def exact_page(self) -> Self:
+        self._require_exact_page()
+        return self
+
+    def _require_exact_page(self) -> None:
+        if self.exhausted != (self.continuation is None):
+            raise ValueError("open-write exhaustion differs from its continuation")
+        tokens = [item.write_token for item in self.observations]
+        if len(set(tokens)) != len(tokens) or self.scanned_items < len(tokens):
+            raise ValueError("open-write observations must be unique within the scanned page")
+
+
+def validate_open_write_page_response(
+    request: OpenWriteListRequest, response: OpenWritePage
+) -> None:
+    response._require_exact_page()
+    if (
+        response.object_path != request.object_path
+        or response.target_incarnation != request.target_incarnation
+    ):
+        raise ValueError("open-write observation differs from its exact target")
+    if response.scanned_items > request.maximum_items:
+        raise ValueError("open-write observation exceeds its candidate count grant")
+    if response.continuation is not None and response.continuation == request.continuation:
+        raise ValueError("open-write continuation did not advance")
+    if (
+        len(response.model_dump_json(exclude_none=True).encode("utf-8"))
+        > request.maximum_response_bytes
+    ):
+        raise ValueError("open-write observation exceeds its encoded response grant")
+
+
+CleanupCandidateKind = Literal["object_revision", "deletion_marker", "open_write"]
+
+
+class CleanupCandidate(StorageAdapterModel):
+    """An exact provider-private address to reconcile before separately authorized disposal.
+
+    A candidate may survive interrupted publication or a lost cleanup reply. Neither
+    its presence nor its absence proves closure of any earlier provider invocation.
+    """
+
+    object_path: str = Field(min_length=1, max_length=4096)
+    kind: CleanupCandidateKind
+    token: str = Field(min_length=1, max_length=4000)
+
+    @field_validator("object_path")
+    @classmethod
+    def canonical_path(cls, value: str) -> str:
+        return validate_object_path(value)
+
+
+class CleanupInventoryRequest(StorageAdapterModel):
+    """Observe bounded candidates under one exact namespace without disposing them."""
+
+    object_prefix: str = Field(min_length=1, max_length=4096)
+    target_incarnation: StorageIncarnationId
+    maximum_items: int = Field(
+        default=MAX_CLEANUP_INVENTORY_PAGE_ITEMS, ge=1, le=MAX_CLEANUP_INVENTORY_PAGE_ITEMS
+    )
+    maximum_response_bytes: PositiveDecimal = Field(default=1024 * 1024)
+    continuation: str | None = Field(default=None, min_length=1, max_length=65536)
+
+    @field_validator("object_prefix")
+    @classmethod
+    def canonical_prefix(cls, value: str) -> str:
+        return validate_object_path(value, allow_prefix=True)
+
+
+class CleanupInventoryPage(StorageAdapterModel):
+    """One live inventory page, never quiescence or authority to delete its candidates."""
+
+    object_prefix: str = Field(min_length=1, max_length=4096)
+    target_incarnation: StorageIncarnationId
+    candidates: tuple[CleanupCandidate, ...] = Field(
+        default=(),
+        max_length=MAX_CLEANUP_INVENTORY_PAGE_ITEMS,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-cleanup-namespace-inventory",
+                "progression": "adapter-live-cleanup-inventory-continuation",
+            }
+        },
+    )
+    scanned_items: NonnegativeDecimal
+    continuation: str | None = Field(default=None, min_length=1, max_length=65536)
+    exhausted: bool
+
+    @field_validator("object_prefix")
+    @classmethod
+    def canonical_prefix(cls, value: str) -> str:
+        return validate_object_path(value, allow_prefix=True)
+
+    @model_validator(mode="after")
+    def exact_page(self) -> Self:
+        self._require_exact_page()
+        return self
+
+    def _require_exact_page(self) -> None:
+        if self.exhausted != (self.continuation is None):
+            raise ValueError("cleanup inventory exhaustion differs from its continuation")
+        identities = [(item.object_path, item.kind, item.token) for item in self.candidates]
+        if len(set(identities)) != len(identities) or self.scanned_items < len(identities):
+            raise ValueError("cleanup candidates must be unique within their scanned page")
+        if any(not item.object_path.startswith(self.object_prefix) for item in self.candidates):
+            raise ValueError("cleanup candidate is outside its exact namespace")
+
+
+def validate_cleanup_inventory_response(
+    request: CleanupInventoryRequest, response: CleanupInventoryPage
+) -> None:
+    response._require_exact_page()
+    if (
+        request.object_prefix != response.object_prefix
+        or request.target_incarnation != response.target_incarnation
+    ):
+        raise ValueError("cleanup inventory differs from its exact target")
+    if response.scanned_items > request.maximum_items:
+        raise ValueError("cleanup inventory exceeds its candidate count grant")
+    if response.continuation is not None and response.continuation == request.continuation:
+        raise ValueError("cleanup inventory continuation did not advance")
+    if (
+        len(response.model_dump_json(exclude_none=True).encode("utf-8"))
+        > request.maximum_response_bytes
+    ):
+        raise ValueError("cleanup inventory exceeds its encoded response grant")
 
 
 class WriteSegmentReceipt(StorageAdapterModel):
@@ -839,6 +1031,455 @@ def validate_read_status_response(
         raise ValueError("adapter read status differs from its request")
 
 
+class BeginWriteOperation(StorageAdapterModel):
+    kind: Literal["begin"] = "begin"
+    request: WriteStartRequest
+
+
+class WritePartOperation(StorageAdapterModel):
+    kind: Literal["part"] = "part"
+    request: WriteSegmentRequest
+    stored_sha256: Sha256
+
+
+class CompleteWriteOperation(StorageAdapterModel):
+    kind: Literal["complete"] = "complete"
+    request: WriteCompleteRequest
+
+
+class LookupWriteOperation(StorageAdapterModel):
+    kind: Literal["lookup"] = "lookup"
+    request: CompletedWriteLookupRequest
+
+
+class PutObjectOperation(StorageAdapterModel):
+    kind: Literal["put"] = "put"
+    request: SmallObjectWriteRequest
+
+
+type WriteOperation = Annotated[
+    BeginWriteOperation
+    | WritePartOperation
+    | CompleteWriteOperation
+    | LookupWriteOperation
+    | PutObjectOperation,
+    Field(discriminator="kind"),
+]
+
+
+def write_operation_sha256(operation: WriteOperation) -> str:
+    """Commit the complete canonical provider request, including opaque payload digest."""
+    return sha256(canonical_json_bytes(operation.model_dump(mode="json"))).hexdigest()
+
+
+class WriteCallIdentity(StorageAdapterModel):
+    """Correlation for one already admitted invocation; none of these fields grant access."""
+
+    call_id: Sha256
+    exact_request_sha256: Sha256
+    target_incarnation: StorageIncarnationId
+    dispatch_owner: Sha256
+
+
+class CleanupStepRequest(StorageAdapterModel):
+    """An already retained exact selection in a frozen, never-reused terminal scope.
+
+    The digest identifies the original selected terminal request; it grants no
+    disposal permission or forward-execution closure. The caller owns those
+    prerequisites and retains this complete request before dispatch.
+
+    Request grants include one conservatively reserved adapter HTTP hop, even
+    for direct execution, plus every attempted lower-provider request. This
+    operation performs no implicit descriptor discovery. Implementations either
+    account for their complete single-attempt execution profile or do not dispatch.
+    Control bytes cover the serialized invocation and response JSON together.
+    """
+
+    kind: Literal["dispose"] = "dispose"
+    selected_terminal_sha256: Sha256
+    inventory: CleanupInventoryPage
+    maximum_provider_requests: PositiveDecimal
+    maximum_control_bytes: PositiveDecimal
+    maximum_in_flight: PositiveDecimal
+
+
+class CleanupInventoryStepRequest(StorageAdapterModel):
+    """Budgeted observation in an original selected terminal scope.
+
+    A returned page grants neither disposal authority nor closure of any earlier
+    forward call. The execution envelope accounts only for this physical read.
+    """
+
+    kind: Literal["inventory"] = "inventory"
+    selected_terminal_sha256: Sha256
+    inventory: CleanupInventoryRequest
+    maximum_provider_requests: PositiveDecimal
+    maximum_control_bytes: PositiveDecimal
+    maximum_in_flight: PositiveDecimal
+
+
+type CleanupRequest = Annotated[
+    CleanupStepRequest | CleanupInventoryStepRequest, Field(discriminator="kind")
+]
+
+
+class CleanupInvocation(StorageAdapterModel):
+    """One already admitted physical attempt over a retained exact selection.
+
+    A retry has a new call identity and does not close an earlier uncertain call.
+    The composing owner retains every unresolved attempt and its resource charge.
+    """
+
+    call: WriteCallIdentity
+    request: CleanupRequest
+    adapter_hops_remaining: Literal[0, 1] = 1
+
+    @model_validator(mode="after")
+    def exact_request(self) -> Self:
+        self._require_exact_request()
+        return self
+
+    def _require_exact_request(self, *, request_bytes: int | None = None) -> None:
+        if isinstance(self.request, CleanupStepRequest):
+            CleanupStepRequest.model_validate_json(self.request.model_dump_json())
+        elif isinstance(self.request, CleanupInventoryStepRequest):
+            CleanupInventoryStepRequest.model_validate_json(self.request.model_dump_json())
+        else:
+            raise ValueError("cleanup operation request is invalid")
+        WriteCallIdentity.model_validate_json(self.call.model_dump_json())
+        if type(self.adapter_hops_remaining) is not int or self.adapter_hops_remaining not in {
+            0,
+            1,
+        }:
+            raise ValueError("cleanup adapter-hop profile is invalid")
+        if (
+            self.call.exact_request_sha256 != cleanup_step_sha256(self.request)
+            or self.call.target_incarnation != self.request.inventory.target_incarnation
+        ):
+            raise ValueError("cleanup invocation differs from its exact selection")
+        if (
+            isinstance(self.request, CleanupStepRequest)
+            and self.request.inventory.scanned_items > MAX_CLEANUP_INVENTORY_PAGE_ITEMS
+        ):
+            raise ValueError("cleanup selection exceeds one bounded inventory page")
+        for value in (
+            self.request.maximum_provider_requests,
+            self.request.maximum_control_bytes,
+            self.request.maximum_in_flight,
+        ):
+            if type(value) is not int or value < 1:
+                raise ValueError("cleanup resource grants must be positive integers")
+        reservation = _cleanup_control_reservation(self)
+        if request_bytes is not None:
+            if type(request_bytes) is not int or request_bytes < 0:
+                raise ValueError("cleanup request byte count is invalid")
+            reservation += max(
+                0, request_bytes - len(self.model_dump_json(exclude_none=True).encode())
+            )
+        if reservation > self.request.maximum_control_bytes:
+            raise ValueError("cleanup control grant cannot retain the exact request and response")
+
+
+def cleanup_step_sha256(request: CleanupRequest) -> str:
+    return sha256(canonical_json_bytes(request.model_dump(mode="json"))).hexdigest()
+
+
+class CleanupItemOutcome(StorageAdapterModel):
+    candidate: CleanupCandidate
+    outcome: Literal["disposed", "pending", "deferred", "rejected", "unknown"]
+
+
+class CleanupProgress(StorageAdapterModel):
+    """Exact item results, not proof that any earlier forward invocation stopped."""
+
+    items: tuple[CleanupItemOutcome, ...] = Field(
+        default=(),
+        max_length=MAX_CLEANUP_INVENTORY_PAGE_ITEMS,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-selected-cleanup-item-outcomes",
+                "progression": "adapter-retained-cleanup-selection",
+            }
+        },
+    )
+    provider_requests: NonnegativeDecimal
+    selection_complete: bool
+    continuation: str | None = Field(default=None, min_length=1, max_length=65536)
+    exhausted: bool
+
+
+class CleanupInventoryProgress(StorageAdapterModel):
+    """One bounded observation and its complete transport request charge."""
+
+    inventory: CleanupInventoryPage
+    provider_requests: NonnegativeDecimal
+
+
+class CleanupExecutionResult(StorageAdapterModel):
+    call: WriteCallIdentity
+    execution: Literal["closed", "unknown"]
+    outcome: Literal["cleanup_progress", "cleanup_inventory", "unknown"]
+    result: CleanupProgress | CleanupInventoryProgress | None = None
+
+    @model_validator(mode="after")
+    def result_shape(self) -> Self:
+        self._require_result_shape()
+        return self
+
+    def _require_result_shape(self) -> None:
+        if self.execution not in {"closed", "unknown"} or self.outcome not in {
+            "cleanup_progress",
+            "cleanup_inventory",
+            "unknown",
+        }:
+            raise ValueError("cleanup execution outcome is invalid")
+        if self.outcome == "unknown":
+            if self.execution != "unknown" or self.result is not None:
+                raise ValueError("unknown cleanup cannot claim an adopted result")
+        elif self.outcome == "cleanup_progress":
+            if not isinstance(self.result, CleanupProgress):
+                raise ValueError("cleanup progress requires exact per-item results")
+        elif not isinstance(self.result, CleanupInventoryProgress):
+            raise ValueError("cleanup inventory requires an exact bounded observation")
+
+
+def _cleanup_control_reservation(invocation: CleanupInvocation) -> int:
+    # Reserve the longest item status, request-count decimal and continuation,
+    # even when they would not occur together in an accepted result.
+    request = invocation.request
+    if isinstance(request, CleanupInventoryStepRequest):
+        upper = {
+            "call": invocation.call.model_dump(mode="json"),
+            "execution": "unknown",
+            "outcome": "cleanup_inventory",
+            "result": {
+                "inventory": None,
+                "provider_requests": format_scalar(
+                    "nonnegative", request.maximum_provider_requests
+                ),
+            },
+        }
+        return (
+            len(invocation.model_dump_json(exclude_none=True).encode())
+            + len(canonical_json_bytes(upper))
+            - len(b"null")
+            + request.inventory.maximum_response_bytes
+        )
+    upper = {
+        "call": invocation.call.model_dump(mode="json"),
+        "execution": "unknown",
+        "outcome": "cleanup_progress",
+        "result": {
+            "items": [
+                {"candidate": item.model_dump(mode="json"), "outcome": "rejected"}
+                for item in request.inventory.candidates
+            ],
+            "provider_requests": format_scalar("nonnegative", request.maximum_provider_requests),
+            "selection_complete": False,
+            "continuation": request.inventory.continuation,
+            "exhausted": False,
+        },
+    }
+    return len(invocation.model_dump_json(exclude_none=True).encode()) + len(
+        canonical_json_bytes(upper)
+    )
+
+
+def unknown_cleanup_execution(invocation: CleanupInvocation) -> CleanupExecutionResult:
+    return CleanupExecutionResult(call=invocation.call, execution="unknown", outcome="unknown")
+
+
+def cleanup_execution_result(
+    invocation: CleanupInvocation,
+    items: tuple[CleanupItemOutcome, ...],
+    *,
+    provider_requests: int,
+    execution: Literal["closed", "unknown"],
+) -> CleanupExecutionResult:
+    request = invocation.request
+    if not isinstance(request, CleanupStepRequest):
+        raise ValueError("cleanup disposal result requires its exact selected page")
+    complete = all(item.outcome == "disposed" for item in items)
+    response = CleanupExecutionResult(
+        call=invocation.call,
+        execution=execution,
+        outcome="cleanup_progress",
+        result=CleanupProgress(
+            items=items,
+            provider_requests=provider_requests,
+            selection_complete=complete,
+            continuation=request.inventory.continuation if complete else None,
+            exhausted=complete and request.inventory.exhausted,
+        ),
+    )
+    validate_cleanup_execution(invocation, response)
+    return response
+
+
+def cleanup_inventory_execution_result(
+    invocation: CleanupInvocation,
+    page: CleanupInventoryPage,
+    *,
+    provider_requests: int,
+    execution: Literal["closed", "unknown"],
+) -> CleanupExecutionResult:
+    response = CleanupExecutionResult(
+        call=invocation.call,
+        execution=execution,
+        outcome="cleanup_inventory",
+        result=CleanupInventoryProgress(inventory=page, provider_requests=provider_requests),
+    )
+    validate_cleanup_execution(invocation, response)
+    return response
+
+
+def validate_cleanup_execution(
+    invocation: CleanupInvocation, response: CleanupExecutionResult
+) -> None:
+    invocation._require_exact_request()
+    response._require_result_shape()
+    if response.call != invocation.call:
+        raise ValueError("cleanup execution differs from its original correlation")
+    if response.outcome == "unknown":
+        return
+    result = response.result
+    if isinstance(invocation.request, CleanupInventoryStepRequest):
+        if response.outcome != "cleanup_inventory" or not isinstance(
+            result, CleanupInventoryProgress
+        ):
+            raise ValueError("cleanup inventory response differs from its operation")
+        validate_cleanup_inventory_response(invocation.request.inventory, result.inventory)
+        _validate_cleanup_resources(invocation, response, result.provider_requests)
+        return
+    if response.outcome != "cleanup_progress" or not isinstance(result, CleanupProgress):
+        raise ValueError("cleanup disposal response differs from its operation")
+    selected = invocation.request.inventory
+    if type(result.selection_complete) is not bool or type(result.exhausted) is not bool:
+        raise ValueError("cleanup progression flags must be booleans")
+    if tuple(item.candidate for item in result.items) != selected.candidates:
+        raise ValueError("cleanup result differs from its exact selected items")
+    if any(
+        item.outcome not in {"disposed", "pending", "deferred", "rejected", "unknown"}
+        for item in result.items
+    ):
+        raise ValueError("cleanup item outcome is invalid")
+    if response.execution == "closed" and any(item.outcome == "unknown" for item in result.items):
+        raise ValueError("ambiguous cleanup cannot claim execution closure")
+    complete = all(item.outcome == "disposed" for item in result.items)
+    if (
+        result.selection_complete != complete
+        or result.continuation != (selected.continuation if complete else None)
+        or result.exhausted != (complete and selected.exhausted)
+    ):
+        raise ValueError("cleanup continuation cannot advance an incomplete selection")
+    _validate_cleanup_resources(invocation, response, result.provider_requests)
+
+
+def _validate_cleanup_resources(
+    invocation: CleanupInvocation, response: CleanupExecutionResult, provider_requests: int
+) -> None:
+    if (
+        type(provider_requests) is not int
+        or not 1 <= provider_requests <= invocation.request.maximum_provider_requests
+    ):
+        raise ValueError("cleanup exceeded its complete transport request grant")
+    if (
+        len(invocation.model_dump_json(exclude_none=True).encode())
+        + len(response.model_dump_json(exclude_none=True).encode())
+        > invocation.request.maximum_control_bytes
+    ):
+        raise ValueError("cleanup exceeded its serialized control grant")
+
+
+class WriteInvocation(StorageAdapterModel):
+    call: WriteCallIdentity
+    operation: WriteOperation
+
+    @model_validator(mode="after")
+    def exact_request(self) -> WriteInvocation:
+        self._require_exact_request()
+        return self
+
+    def _require_exact_request(self) -> None:
+        if self.call.exact_request_sha256 != write_operation_sha256(self.operation):
+            raise ValueError("write invocation differs from its exact request commitment")
+
+    @property
+    def stored_bytes(self) -> int:
+        if isinstance(self.operation, (WritePartOperation, PutObjectOperation)):
+            return self.operation.request.stored_bytes
+        return 0
+
+
+class WriteExecutionResult(StorageAdapterModel):
+    """An executor-owned claim, accepted only through its trusted adapter boundary.
+
+    A positive result with unknown execution preserves observation without claiming
+    that delegated work has stopped. A missing response never creates closure.
+    """
+
+    call: WriteCallIdentity
+    execution: Literal["closed", "unknown"]
+    outcome: Literal["no_effect", "session", "part", "completed", "unknown"]
+    result: (
+        WriteSession | WriteSegmentReceipt | CompletedObjectReceipt | ImmutableObjectReceipt | None
+    ) = None
+
+    @model_validator(mode="after")
+    def result_shape(self) -> WriteExecutionResult:
+        self._require_result_shape()
+        return self
+
+    def _require_result_shape(self) -> None:
+        if self.outcome == "unknown":
+            if self.execution != "unknown" or self.result is not None:
+                raise ValueError("unknown execution cannot claim a confirmed outcome")
+        elif self.outcome == "no_effect":
+            if self.execution != "closed" or self.result is not None:
+                raise ValueError("no-effect requires closed execution without a result")
+        elif self.outcome == "session":
+            if not isinstance(self.result, WriteSession):
+                raise ValueError("session outcome requires the exact write session")
+        elif self.outcome == "part":
+            if not isinstance(self.result, WriteSegmentReceipt):
+                raise ValueError("part outcome requires the exact segment receipt")
+        elif not isinstance(self.result, (CompletedObjectReceipt, ImmutableObjectReceipt)):
+            raise ValueError("completed outcome requires the exact object receipt")
+
+
+def unknown_write_execution(invocation: WriteInvocation) -> WriteExecutionResult:
+    return WriteExecutionResult(
+        call=invocation.call, execution="unknown", outcome="unknown", result=None
+    )
+
+
+def validate_write_execution(invocation: WriteInvocation, response: WriteExecutionResult) -> None:
+    invocation._require_exact_request()
+    response._require_result_shape()
+    if response.call != invocation.call:
+        raise ValueError("write execution correlation differs from the admitted invocation")
+    if response.outcome == "unknown":
+        return
+    operation, result = invocation.operation, response.result
+    if isinstance(operation, BeginWriteOperation) and isinstance(result, WriteSession):
+        validate_write_session_response(operation.request, result)
+    elif isinstance(operation, WritePartOperation) and isinstance(result, WriteSegmentReceipt):
+        validate_write_segment_response(operation.request, result)
+        if result.stored_sha256 is not None and result.stored_sha256 != operation.stored_sha256:
+            raise ValueError("write execution segment digest differs from the original content")
+    elif isinstance(operation, (CompleteWriteOperation, LookupWriteOperation)) and isinstance(
+        result, CompletedObjectReceipt
+    ):
+        validate_completed_write_response(operation.request, result)
+    elif isinstance(operation, LookupWriteOperation) and response.outcome == "no_effect":
+        return
+    elif isinstance(operation, PutObjectOperation) and isinstance(result, ImmutableObjectReceipt):
+        validate_small_object_response(operation.request, result)
+    else:
+        raise ValueError("write execution outcome differs from its operation")
+
+
 class StorageAdapterPort(Protocol):
     """Transport-neutral effects required from one configured adapter target.
 
@@ -848,6 +1489,12 @@ class StorageAdapterPort(Protocol):
     """
 
     def descriptor(self) -> AdapterDescriptor: ...
+
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult: ...
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult: ...
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession: ...
 
@@ -859,6 +1506,10 @@ class StorageAdapterPort(Protocol):
         stored_bytes: int,
         content: BinaryContent,
     ) -> WriteSegmentReceipt: ...
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage: ...
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage: ...
 
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage: ...
 
@@ -960,6 +1611,45 @@ class ValidatedStorageAdapterPort:
             )
         return self._descriptor
 
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        try:
+            invocation._require_exact_request()
+            if self.descriptor().storage_incarnation_id != invocation.call.target_incarnation:
+                return unknown_write_execution(invocation)
+            validation = _ContentValidation(content, expected_bytes=invocation.stored_bytes)
+            response = self._adapter.execute_write(invocation, content=validation.content())
+            if not isinstance(response, WriteExecutionResult):
+                return unknown_write_execution(invocation)
+            validate_write_execution(invocation, response)
+            if response.outcome != "unknown":
+                validation.require_complete()
+                operation = invocation.operation
+                expected_sha256 = (
+                    operation.stored_sha256
+                    if isinstance(operation, WritePartOperation)
+                    else operation.request.stored_sha256
+                    if isinstance(operation, PutObjectOperation)
+                    else None
+                )
+                if expected_sha256 is not None and validation.digest.hexdigest() != expected_sha256:
+                    return unknown_write_execution(invocation)
+            return response
+        except Exception:
+            return unknown_write_execution(invocation)
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        try:
+            invocation._require_exact_request()
+            response = self._adapter.execute_cleanup(invocation)
+            if not isinstance(response, CleanupExecutionResult):
+                return unknown_cleanup_execution(invocation)
+            validate_cleanup_execution(invocation, response)
+            return response
+        except Exception:
+            return unknown_cleanup_execution(invocation)
+
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
         validate_write_start_request(request, self.descriptor())
         response = _response(self._adapter.begin_write(request), WriteSession, "write session")
@@ -999,6 +1689,22 @@ class ValidatedStorageAdapterPort:
             and response.stored_sha256 != validation.digest.hexdigest()
         ):
             raise ValueError("adapter segment digest differs from the supplied content")
+        return response
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        response = _response(
+            self._adapter.list_cleanup_candidates(request),
+            CleanupInventoryPage,
+            "cleanup inventory",
+        )
+        validate_cleanup_inventory_response(request, response)
+        return response
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        response = _response(
+            self._adapter.list_open_writes(request), OpenWritePage, "open-write page"
+        )
+        validate_open_write_page_response(request, response)
         return response
 
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
@@ -1134,6 +1840,27 @@ def validated_storage_adapter(adapter: StorageAdapterPort) -> ValidatedStorageAd
 
 
 __all__ = [
+    "CleanupStepRequest",
+    "CleanupInvocation",
+    "CleanupItemOutcome",
+    "CleanupProgress",
+    "CleanupExecutionResult",
+    "cleanup_step_sha256",
+    "unknown_cleanup_execution",
+    "cleanup_execution_result",
+    "validate_cleanup_execution",
+    "BeginWriteOperation",
+    "CompleteWriteOperation",
+    "LookupWriteOperation",
+    "PutObjectOperation",
+    "WriteCallIdentity",
+    "WriteExecutionResult",
+    "WriteInvocation",
+    "WriteOperation",
+    "WritePartOperation",
+    "unknown_write_execution",
+    "validate_write_execution",
+    "write_operation_sha256",
     "ADAPTER_PRIVATE_ASSERTION_PREFIX",
     "MAX_WRITE_SEGMENT_PAGE_ITEMS",
     "STORAGE_ADAPTER_PROTOCOL",

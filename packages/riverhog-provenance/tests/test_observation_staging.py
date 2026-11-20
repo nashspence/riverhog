@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 from contextlib import closing
@@ -20,6 +21,8 @@ from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal import JournalFrame
 from test_entry_preparation import WorkConnection
 from test_generic_semantics import binding_projection, identity, workspace_rows
+
+from scripts.validation_numeric import numeric_policy_from_environment
 
 
 def activity(count=17):
@@ -286,7 +289,12 @@ def growth_samples(tmp_path):
                     },
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 assert metrics["changed_rows"] <= budget + 2
                 assert metrics["historical_payload_fetched_octets"] == 0
                 samples.append(sample)
@@ -338,7 +346,12 @@ def test_actual_cold_observation_metadata_and_membership_growth(tmp_path, record
                     "metrics": dict(metrics),
                     "delegates": {},
                 }
-                validate_execution_samples(projection, binding.declaration.id, [sample])
+                validate_execution_samples(
+                    projection,
+                    binding.declaration.id,
+                    [sample],
+                    numeric_policy=numeric_policy_from_environment(os.environ),
+                )
                 assert metrics["historical_payload_octets"] == 0
                 samples.append(sample)
     record_property("growth_samples", samples)

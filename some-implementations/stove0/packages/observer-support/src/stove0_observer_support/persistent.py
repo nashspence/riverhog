@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 import threading
@@ -10,6 +11,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from pydantic import BaseModel
+from riverhog_canonical_json import canonical_json_bytes
 from stove0_extension_support import ExclusiveStateOwner, ExecutionAdmission, ExecutionPermit
 from stove0_extension_support.authority import validate_live_root_authority
 from stove0_extension_support.dispatch import BoundedExecutionDispatcher, ExecutionDispatch
@@ -239,6 +241,9 @@ class PersistentObserverService:
             ExecutionDispatch(
                 invocation_id=job_id,
                 attempt=attempt,
+                refresh_id=hashlib.sha256(
+                    canonical_json_bytes(invocation.model_dump(mode="json"))
+                ).hexdigest(),
                 authorize=lambda deadline: self._validate_live_authority(
                     invocation, deadline=deadline
                 ),

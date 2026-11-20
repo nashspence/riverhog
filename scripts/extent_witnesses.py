@@ -102,6 +102,127 @@ WITNESSES = (
         gates=("make unit", "make filesystem-recovery-qualification"),
     ),
     SegmentedExtentWitness(
+        id="riverhog-storage-selected-cleanup-progression/v1",
+        owner="riverhog-storage-adapter-protocol",
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "generated:riverhog-storage-adapter",
+                "schemas/CleanupExecutionResult/$defs/CleanupProgress/properties/items",
+            ),
+        ),
+        test_node_ids=(
+            "some-implementations/riverhog/storage/s3-support/tests/test_s3_cleanup_execution.py::"
+            "test_cleanup_steps_cover_every_selected_identity_with_linear_model_requests",
+            "some-implementations/riverhog/storage/filesystem/tests/test_filesystem_cleanup_execution.py::"
+            "test_filesystem_selected_cleanup_replays_after_reopen_and_preserves_other_scope",
+            "some-implementations/riverhog/storage/filesystem/tests/test_filesystem_cleanup_execution.py::"
+            "test_filesystem_exact_cleanup_does_not_enumerate_revision_history",
+            "tests/unit/test_archive_write_execution.py::"
+            "test_owned_http_cleanup_accounts_for_the_complete_lower_provider_request_path",
+            "tests/unit/test_archive_write_execution.py::"
+            "test_owned_cleanup_retains_partial_failures_without_retry_or_false_exhaustion",
+        ),
+        gates=("make unit",),
+        test_scopes=(
+            "Synchronous SDK model disposes every exact version/marker/session at "
+            "16/256/4096 identities with linear counted requests and bounded steps; "
+            "not actual transport or external-provider qualification.",
+            "Actual filesystem owner replays the same retained selection with a new "
+            "attempt identity after cold reopen and preserves unrelated scope.",
+            "Actual exact filesystem deletion preserves 16/256/4096 retained revision "
+            "directories without materializing their history.",
+            "Actual owned HTTP client, authenticated ASGI shell and locked owned SDK "
+            "count the adapter hop and all lower-provider incarnation/delete/abort/"
+            "verification requests against independent grants; local HTTP only.",
+            "The same actual transport path retains partial progress, ambiguous calls "
+            "and remaining parts without automatic retry or false exhaustion; no "
+            "global forward-writer quiescence or external-provider proof.",
+        ),
+    ),
+    SegmentedExtentWitness(
+        id="riverhog-storage-cleanup-inventory-progression/v1",
+        owner="riverhog-storage-adapter-protocol",
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "generated:riverhog-storage-adapter",
+                "schemas/CleanupInventoryPage/properties/candidates",
+            ),
+            _protocol_subject(
+                "generated:riverhog-storage-adapter",
+                "schemas/CleanupExecutionResult/$defs/CleanupInventoryPage/properties/candidates",
+            ),
+        ),
+        test_node_ids=(
+            "some-implementations/riverhog/storage/s3-support/tests/"
+            "test_s3_storage_adapter.py::"
+            "test_cleanup_inventory_pages_every_version_marker_and_write_without_total_limit",
+            "some-implementations/riverhog/storage/filesystem/tests/"
+            "test_filesystem_storage_adapter.py::"
+            "test_cleanup_inventory_retains_all_revisions_sessions_and_cold_continuations",
+            "some-implementations/riverhog/storage/filesystem/tests/"
+            "test_filesystem_inventory.py::"
+            "test_inventory_pages_seek_past_history_without_rescanning_unrelated_objects",
+            "some-implementations/riverhog/storage/s3-support/tests/"
+            "test_s3_dispatch_attempts.py::"
+            "test_cleanup_inventory_and_open_writes_preserve_encoded_keys_through_owned_sdk",
+            "tests/unit/test_archive_write_execution.py::"
+            "test_owned_inventory_cleanup_counts_every_hop_without_hidden_discovery",
+        ),
+        gates=("make unit",),
+        test_scopes=(
+            "Maintained S3 adapter over a paginated SDK model inventories 16/256/4096 "
+            "versions and deletion markers plus independent multipart sessions, with "
+            "one list and incarnation read per page; no external-provider qualification.",
+            "Actual filesystem owner inventories 129 immutable revisions and an open "
+            "session, resumes a cold continuation and preserves unrelated scope.",
+            "Disposable filesystem index measures bounded SQL-program work and indexed "
+            "compound seeks under independent history and unrelated-namespace growth; "
+            "B-tree descent remains logarithmic.",
+            "Locked owned SDK over a local HTTP server parses complete version/marker "
+            "and multipart pages, preserves encoded keys and opaque IDs, and performs "
+            "only the counted GET requests; not an external provider or closure proof.",
+            "Owned local HTTP/ASGI/SDK inventory execution reserves and counts every "
+            "transport request across version and multipart stages, preserves encoded "
+            "keys and tokens, and never treats observation as forward-call closure.",
+        ),
+    ),
+    SegmentedExtentWitness(
+        id="riverhog-storage-open-write-progression/v1",
+        owner="riverhog-storage-adapter-protocol",
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "generated:riverhog-storage-adapter",
+                "schemas/OpenWritePage/properties/observations",
+            ),
+        ),
+        test_node_ids=(
+            "some-implementations/riverhog/storage/s3-support/tests/"
+            "test_s3_storage_adapter.py::"
+            "test_open_write_observation_pages_every_exact_token_with_linear_provider_calls",
+            "some-implementations/riverhog/storage/filesystem/tests/"
+            "test_filesystem_storage_adapter.py::"
+            "test_open_write_observation_is_exact_pure_and_survives_restart",
+            "packages/riverhog-storage-adapter-support/tests/"
+            "test_storage_adapter_support.py::"
+            "test_client_observes_open_writes_without_begin_replay",
+        ),
+        gates=("make unit",),
+        test_scopes=(
+            "Maintained S3 adapter over a paginated SDK model observes every exact token "
+            "beyond the per-page bound, preserves zero-match continuations across adapter "
+            "recreation, and counts one list and incarnation read per page. Does not "
+            "qualify an external provider, an immutable view or execution closure.",
+            "Maintained filesystem owner observes exact durable begin identity through "
+            "cold reopen without beginning, writing or aborting; its layout permits "
+            "one active token per exact key.",
+            "Official HTTP client and binding preserve read-only exact-key observations "
+            "over a shared in-memory adapter fixture without calling begin again.",
+        ),
+    ),
+    SegmentedExtentWitness(
         id="riverhog-storage-write-segment-progression/v1",
         owner="riverhog-storage-adapter-protocol",
         rule_id="bounded-segment/v1",

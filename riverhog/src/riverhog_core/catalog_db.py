@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sqlite3
 import weakref
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -7,7 +8,8 @@ from pathlib import Path
 from typing import Any
 
 from sqlalchemy import create_engine, event
-from sqlalchemy.engine import Engine, make_url
+from sqlalchemy.engine import Connection, Engine, make_url
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session, sessionmaker
 from state_schema import (
     StateSchema,
@@ -19,10 +21,38 @@ from state_schema import (
 
 # The catalog database composition boundary owns registration of every current
 # v1 table with the shared declarative metadata. Model modules remain acyclic.
+from riverhog_core import (
+    catalog_archive_write_models as _catalog_archive_write_models,  # noqa: E402,F401
+)
+from riverhog_core import (
+    catalog_cache_write_models as _catalog_cache_write_models,  # noqa: E402,F401
+)
+from riverhog_core import (
+    catalog_discovery_validation_models as _catalog_discovery_validation_models,  # noqa: E402,F401
+)
+from riverhog_core import (
+    catalog_initial_metadata_models as _catalog_initial_metadata_models,  # noqa: E402,F401
+)
+from riverhog_core import (
+    catalog_journal_validation_models as _catalog_journal_validation_models,  # noqa: E402,F401
+)
 from riverhog_core import catalog_models as _catalog_models  # noqa: E402,F401
+from riverhog_core import (
+    catalog_object_cleanup_models as _catalog_object_cleanup_models,  # noqa: E402,F401
+)
+from riverhog_core import (
+    catalog_primary_facts_models as _catalog_primary_facts_models,  # noqa: E402,F401
+)
 from riverhog_core import (
     catalog_provenance_index_models as _catalog_provenance_index_models,  # noqa: E402,F401
 )
+from riverhog_core import (
+    catalog_provenance_publication_models as _catalog_provenance_publication_models,  # noqa: E402,F401
+)
+from riverhog_core import (
+    catalog_registration_models as _catalog_registration_models,  # noqa: E402,F401
+)
+from riverhog_core import catalog_upload_visibility as _catalog_upload_visibility  # noqa: E402,F401
 from riverhog_core import catalog_workflow_models as _catalog_workflow_models  # noqa: E402,F401
 from riverhog_core.catalog_base import Base
 
@@ -40,6 +70,15 @@ def _normalize_database_url(database_url: str) -> str:
     if "://" not in raw:
         raise ValueError("database URL must be a SQLAlchemy URL")
     return raw
+
+
+def catalog_write_contention(error: OperationalError) -> bool:
+    """Classify database deferral; it supplies no operation outcome or closure."""
+    original = error.orig
+    code = getattr(original, "sqlite_errorcode", None)
+    return (
+        isinstance(code, int) and code & 0xFF in (sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED)
+    ) or getattr(original, "sqlstate", None) in {"40001", "40P01", "55P03"}
 
 
 def create_catalog_engine(database_url: str) -> Engine:
@@ -66,6 +105,30 @@ def create_catalog_engine(database_url: str) -> Engine:
             cursor.execute("PRAGMA journal_mode=WAL;")
             cursor.execute("PRAGMA foreign_keys=ON;")
             cursor.close()
+
+        @event.listens_for(engine, "begin")
+        def begin_sqlite_transaction(connection: Connection) -> None:
+            immediate = connection.get_execution_options().get("sqlite_immediate_writer", False)
+            if type(immediate) is not bool:
+                raise ValueError("SQLite writer selection must be boolean")
+            defer_if_busy = connection.get_execution_options().get("sqlite_defer_if_busy", False)
+            if type(defer_if_busy) is not bool:
+                raise ValueError("SQLite writer deferral must be boolean")
+            connection.info["riverhog_sqlite_early_writer"] = False
+            if immediate and defer_if_busy:
+                cursor = connection.connection.cursor()
+                try:
+                    timeout = int(cursor.execute("PRAGMA busy_timeout").fetchone()[0])
+                    cursor.execute("PRAGMA busy_timeout=0")
+                    try:
+                        connection.exec_driver_sql("BEGIN IMMEDIATE")
+                    finally:
+                        cursor.execute(f"PRAGMA busy_timeout={timeout}")
+                finally:
+                    cursor.close()
+            elif immediate:
+                connection.exec_driver_sql("BEGIN IMMEDIATE")
+            connection.info["riverhog_sqlite_early_writer"] = immediate
 
     return engine
 
@@ -102,6 +165,7 @@ def _load_catalog_models() -> None:
         CollectionArchiveCopyRecord,
         CollectionArchiveObjectRecord,
         CollectionArchiveObjectUploadRecord,
+        CollectionArchiveObjectUploadUnitRecord,
         CollectionArtifactProvenanceRecord,
         CollectionArtifactRecord,
         CollectionDeletionRecord,
@@ -174,6 +238,7 @@ def _load_catalog_models() -> None:
         CollectionArchiveArtifactObjectRecord,
         CollectionArchiveObjectRecord,
         CollectionArchiveObjectUploadRecord,
+        CollectionArchiveObjectUploadUnitRecord,
         CollectionDeletionRecord,
         CollectionDescriptionPublicationRecord,
         CollectionMutableDocumentReclamationRecord,

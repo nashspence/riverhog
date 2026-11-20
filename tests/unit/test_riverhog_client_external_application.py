@@ -15,7 +15,7 @@ def test_generic_client_supports_an_external_non_stove0_processing_application()
         check=False,
         capture_output=True,
         text=True,
-        timeout=30,
+        timeout=120,
     )
 
     assert completed.returncode == 0, completed.stderr

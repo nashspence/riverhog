@@ -239,3 +239,10 @@ def test_spool_rewind_failure_releases_the_validated_result(journal, who, catalo
             catalog=catalog,
         )
     assert not any(path.exists() for path in storage[0])
+
+
+def test_parallel_borrowed_readers_preserve_exact_validated_snapshot(
+    journal, catalog, parallel_snapshot_reads
+):
+    with validate_journal(journal, catalog=catalog) as summary:
+        parallel_snapshot_reads(summary)

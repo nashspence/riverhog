@@ -270,7 +270,7 @@ def relational_schema(ddl: object, *, dialect: str) -> dict[str, object]:
             r"CREATE\s+UNIQUE\s+INDEX\s+"
             r'(?P<name>"(?:""|[^"])+"|[A-Za-z_][A-Za-z0-9_]*)\s+ON\s+'
             r'(?P<table>"(?:""|[^"])+"|[A-Za-z_][A-Za-z0-9_]*)\s*'
-            r"\((?P<columns>.*)\)",
+            r"\((?P<columns>.*?)\)(?:\s+WHERE\s+(?P<predicate>.+))?",
             statement,
             re.IGNORECASE | re.DOTALL,
         )
@@ -281,6 +281,11 @@ def relational_schema(ddl: object, *, dialect: str) -> dict[str, object]:
                     "table": _identifier(unique_match.group("table")),
                     "columns": _identifier_list(unique_match.group("columns")),
                     "definition": statement,
+                    **(
+                        {"predicate": unique_match.group("predicate").strip()}
+                        if unique_match.group("predicate") is not None
+                        else {}
+                    ),
                 }
             )
             continue

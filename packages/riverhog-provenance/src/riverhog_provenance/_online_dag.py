@@ -24,7 +24,7 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
-from .errors import ProvenanceValidationError
+from .errors import JournalValidationCapacity, ProvenanceValidationError
 
 ALGORITHM = "riverhog-journal-online-level-fuel/v1"
 _KINDS = {"derivation", "specialization"}
@@ -210,6 +210,102 @@ def _unit_declaration(*, identifier: str, method: str, retirement: bool) -> Decl
     )
 
 
+def _phase_declaration(operation: str, *, retirement: bool = False) -> Declaration:
+    planning = operation in {
+        "_prepare",
+        "_prepare_start",
+        "_prepare_replacement",
+        "_prepare_retirement",
+    }
+    family = (
+        "retirement"
+        if retirement
+        else "replacement"
+        if operation.endswith("_replacement")
+        else "start"
+        if operation == "_prepare_start"
+        else "transition"
+    )
+    point_admission = family in {"start", "replacement"}
+    base = _unit_declaration(
+        identifier="riverhog-provenance.sqlite-online-graph-" + family + ".growth/v1",
+        method="retire" if retirement else "advance",
+        retirement=retirement,
+    )
+    statements = next(bound.expression for bound in base.bounds if bound.metric == "sql_statements")
+    arguments = Expression(
+        "product",
+        terms=(statements, Expression("dimension", name="metadata_row_octets")),
+    )
+    return replace(
+        base,
+        id="riverhog-provenance.sqlite-online-graph-"
+        + family
+        + ("-plan" if planning else "-application")
+        + ".growth/v1",
+        subjects=("riverhog_provenance._online_dag.OnlineDag." + operation,),
+        scope="detached-online-graph-" + family + "-plan"
+        if planning
+        else "owner-transaction-online-graph-" + family + "-application",
+        starts_at="load the exact current run and bounded indexed graph metadata"
+        if planning
+        else "accept one exact admitted graph proposal inside the owner transaction",
+        ends_at="return the detached graph proposal without changing native state"
+        if planning
+        else "return fenced native changes while preserving the owner transaction",
+        dimensions=tuple(
+            replace(dimension, meaning="One point admission for start or run replacement.")
+            if point_admission and dimension.name == "row_budget"
+            else dimension
+            for dimension in base.dimensions
+        ),
+        bounds=tuple(
+            replace(
+                bound, relation="equal", expression=Expression("constant", value=0, unit=bound.unit)
+            )
+            if (planning and bound.metric == "changed_rows")
+            or ((not planning or point_admission) and bound.metric == "adjacency_rows")
+            else bound
+            for bound in base.bounds
+        )
+        + (
+            Bound(
+                "bound_parameter_octets",
+                OCTETS,
+                "upper",
+                arguments,
+                "Actual bound values for the indexed metadata and graph statements.",
+            ),
+            Bound(
+                "written_value_octets",
+                OCTETS,
+                "equal" if planning else "upper",
+                Expression("constant", value=0, unit=OCTETS) if planning else arguments,
+                "Values bound to graph mutations, including exact checkpoint and key fences.",
+            ),
+        ),
+        conditions=(
+            *base.conditions[:3],
+            "Start and replacement use row_budget=1; their metadata envelope includes all "
+            "input operation and replacement run identities.",
+            "Planning runs outside a transaction; application receives the exact prepared proposal "
+            "inside the owning checkpoint transaction.",
+        ),
+        invariants=(
+            *base.invariants,
+            "Planning never writes; application neither commits nor rolls back "
+            "the owner transaction.",
+            "Byte-admitted retirement returns only a key and mutation plan "
+            "that fits its admission.",
+        ),
+        limitations=(
+            *base.limitations,
+            "Caller admission, child composition and transaction publication need their own actual "
+            "execution evidence; this profile does not claim standalone advance or retire ran.",
+        ),
+    )
+
+
 class StaleDagWork(RuntimeError):
     """The retained workspace no longer belongs to this exact run."""
 
@@ -284,6 +380,30 @@ class _Snapshot:
     work: _Work
 
 
+@dataclass(frozen=True, slots=True)
+class _Replacement:
+    kind: str
+    prior_run_id: str
+    before: _Snapshot
+    run_id: str
+
+    @property
+    def after(self) -> _Snapshot:
+        return _Snapshot(self.before.version + 1, _Work())
+
+
+@dataclass(frozen=True, slots=True)
+class _Retirement:
+    kind: str
+    run_id: str
+    plan: _Plan
+    octets: int
+
+    @property
+    def after(self) -> _Snapshot:
+        return _Snapshot(self.plan.before.version + 1, self.plan.work)
+
+
 @dataclass(slots=True)
 class _Plan:
     before: _Snapshot
@@ -293,6 +413,22 @@ class _Plan:
 
     def write(self, sql: str, *parameters: Any) -> None:
         self.writes.append((sql, parameters))
+
+
+def _value_octets(value: Any) -> int:
+    if value is None:
+        return 0
+    if isinstance(value, bytes):
+        return len(value)
+    if isinstance(value, str):
+        return len(value.encode())
+    if type(value) is int:
+        return len(str(value).encode())
+    raise RuntimeError("invalid graph retirement key or control value")
+
+
+def _write_octets(statement: str, parameters: Sequence[Any]) -> int:
+    return len(statement.encode()) + sum(_value_octets(value) for value in parameters)
 
 
 def install(db: sqlite3.Connection) -> None:
@@ -412,6 +548,7 @@ class OnlineDag:
     def progress(self) -> Progress:
         return self._progress(self._load())
 
+    @declare_growth(_phase_declaration("_apply"))
     def _apply(self, plan: _Plan) -> bool:
         """Apply one prepared unit inside its owner's checkpoint transaction."""
         if not self.db.in_transaction:
@@ -451,6 +588,7 @@ class OnlineDag:
             _Snapshot(plan.before.version + 1, plan.work), visits=plan.adjacency_visits
         )
 
+    @declare_growth(_phase_declaration("_prepare_start"))
     def _prepare_start(self, operation_id: str, source: str, target: str) -> _Plan:
         if not isinstance(operation_id, str) or not operation_id:
             raise ValueError("online graph operation requires an exact identity")
@@ -578,6 +716,7 @@ class OnlineDag:
             )
         return len(rows) < budget
 
+    @declare_growth(_phase_declaration("_prepare"))
     def _prepare(self, budget: int) -> _Plan:
         budget = self._budget(budget)
         before = self._load()
@@ -847,39 +986,150 @@ class OnlineDag:
         if outcome == "cycle":
             raise ProvenanceValidationError(f"{self.kind} graph contains a cycle")
 
-    def replace_run(self, run_id: str) -> OnlineDag:
-        """Fence a replaced owned graph; retire its private rows separately."""
+    @declare_growth(_phase_declaration("_prepare_replacement"))
+    def _prepare_replacement(self, run_id: str) -> _Replacement:
         if not isinstance(run_id, str) or not run_id or run_id == self.run_id:
             raise ValueError("replacement graph requires a distinct owned run identity")
         before = self._load()
         self._require_unused_run(run_id)
+        return _Replacement(self.kind, self.run_id, before, run_id)
+
+    @declare_growth(_phase_declaration("_apply_replacement"))
+    def _apply_replacement(self, batch: _Replacement) -> OnlineDag:
+        if not self.db.in_transaction:
+            raise RuntimeError("graph replacement requires an owner transaction")
+        if (batch.kind, batch.prior_run_id) != (self.kind, self.run_id):
+            raise StaleDagWork("graph replacement belongs to another run")
+        before, run_id = (batch.before, batch.run_id)
+        self._require_unused_run(run_id)
+        with closing(
+            self.db.execute(
+                "UPDATE dag_runs SET run_id = ?, version = ?, work = ? "
+                "WHERE kind = ? AND run_id = ? AND version = ?",
+                (
+                    run_id,
+                    str(before.version + 1),
+                    _Work().encoded(),
+                    self.kind,
+                    self.run_id,
+                    str(before.version),
+                ),
+            )
+        ) as cursor:
+            if not cursor.rowcount:
+                raise StaleDagWork("online graph replacement lost its current fence")
+        self.db.execute(
+            "INSERT INTO dag_retired VALUES (?, ?, 0)", (self.kind, self.run_id)
+        ).close()
+        return OnlineDag(self.db, self.kind, run_id)
+
+    def replace_run(self, run_id: str) -> OnlineDag:
+        """Fence a replaced owned graph; retire its private rows separately."""
+        batch = self._prepare_replacement(run_id)
         self.db.execute("BEGIN IMMEDIATE").close()
         try:
-            with closing(
-                self.db.execute(
-                    "UPDATE dag_runs SET run_id = ?, version = ?, work = ? "
-                    "WHERE kind = ? AND run_id = ? AND version = ?",
-                    (
-                        run_id,
-                        str(before.version + 1),
-                        _Work().encoded(),
-                        self.kind,
-                        self.run_id,
-                        str(before.version),
-                    ),
-                )
-            ) as cursor:
-                if not cursor.rowcount:
-                    self.db.rollback()
-                    raise StaleDagWork("online graph replacement lost its current fence")
-            self.db.execute(
-                "INSERT INTO dag_retired VALUES (?, ?, 0)", (self.kind, self.run_id)
-            ).close()
+            after = self._apply_replacement(batch)
             self.db.commit()
         except BaseException:
             self.db.rollback()
             raise
-        return OnlineDag(self.db, self.kind, run_id)
+        return after
+
+    @declare_growth(_phase_declaration("_prepare_retirement", retirement=True))
+    def _prepare_retirement(
+        self, budget: int = 64, *, byte_budget: int | None = None
+    ) -> _Retirement | None:
+        """Remove one bounded page from an older run; never touch the active graph."""
+        budget = self._budget(budget)
+        if byte_budget is not None and (type(byte_budget) is not int or byte_budget < 1):
+            raise ValueError("graph retirement byte admission must be positive")
+        before = self._load()
+        rows = self._rows(
+            "SELECT run_id, phase FROM dag_retired WHERE kind = ? ORDER BY run_id LIMIT 1",
+            (self.kind,),
+        )
+        if not rows:
+            return None
+        retired, phase = rows[0]
+        if retired == self.run_id or type(phase) is not int or (not 0 <= phase < len(_RETIRE)):
+            raise RuntimeError("invalid retired online graph binding")
+        table, keys = _RETIRE[phase]
+        columns = ", ".join(keys)
+        predicates = " AND ".join(key + " = ?" for key in keys)
+        deletion = f"DELETE FROM {table} WHERE kind = ? AND run_id = ? AND {predicates}"
+        transition_values: tuple[Any, ...]
+        if phase + 1 == len(_RETIRE):
+            transition = "DELETE FROM dag_retired WHERE kind = ? AND run_id = ? AND phase = ?"
+            transition_values = (self.kind, retired, phase)
+        else:
+            transition = (
+                "UPDATE dag_retired SET phase = ? WHERE kind = ? AND run_id = ? AND phase = ?"
+            )
+            transition_values = (phase + 1, self.kind, retired, phase)
+        selected = budget
+        exhausted = False
+        if byte_budget is not None:
+            lengths = ", ".join(f"length(CAST({key} AS BLOB))" for key in keys)
+            metadata = self._rows(
+                f"SELECT {lengths} FROM {table} WHERE kind = ? AND run_id = ? "
+                f"ORDER BY {columns} LIMIT ?",
+                (self.kind, retired, budget),
+            )
+            used, selected = 0, 0
+            fixed = _write_octets(deletion, (self.kind, retired))
+            for row in metadata:
+                if any(type(value) is not int or value < 0 for value in row):
+                    raise RuntimeError("retired graph lost its exact key extents")
+                cost = fixed + 2 * sum(row)
+                if used + cost > byte_budget:
+                    break
+                used += cost
+                selected += 1
+            exhausted = len(metadata) < budget and selected == len(metadata)
+            if exhausted and used + _write_octets(transition, transition_values) > byte_budget:
+                if not selected:
+                    raise JournalValidationCapacity(
+                        "graph retirement cannot admit its next control write"
+                    )
+                exhausted = False
+            if metadata and not selected:
+                raise JournalValidationCapacity(
+                    "graph retirement cannot admit its next existing key"
+                )
+        page = self._rows(
+            f"SELECT {columns} FROM {table} WHERE kind = ? AND run_id = ? "
+            f"ORDER BY {columns} LIMIT ?",
+            (self.kind, retired, selected),
+        )
+        plan = _Plan(before, replace(before.work))
+        for row in page:
+            plan.write(
+                deletion,
+                self.kind,
+                retired,
+                *row,
+            )
+        if byte_budget is None:
+            exhausted = len(page) < budget
+        if exhausted:
+            plan.write(transition, *transition_values)
+        octets = sum(_value_octets(value) for row in page for value in row) + sum(
+            _write_octets(statement, parameters) for statement, parameters in plan.writes
+        )
+        if byte_budget is not None and octets > byte_budget:
+            raise JournalValidationCapacity(
+                "graph retirement keys changed beyond its admitted extent"
+            )
+        return _Retirement(self.kind, self.run_id, plan, octets)
+
+    @declare_growth(_phase_declaration("_apply_retirement", retirement=True))
+    def _apply_retirement(self, batch: _Retirement) -> None:
+        if not self.db.in_transaction:
+            raise RuntimeError("graph retirement requires an owner transaction")
+        if (batch.kind, batch.run_id) != (self.kind, self.run_id):
+            raise StaleDagWork("graph retirement belongs to another run")
+        if not self._apply(batch.plan):
+            raise StaleDagWork("graph retirement lost its current fence")
 
     @declare_growth(
         _unit_declaration(
@@ -890,48 +1140,8 @@ class OnlineDag:
     )
     def retire(self, budget: int = 64) -> bool:
         """Remove one bounded page from an older run; never touch the active graph."""
-        budget = self._budget(budget)
-        before = self._load()
-        rows = self._rows(
-            "SELECT run_id, phase FROM dag_retired WHERE kind = ? ORDER BY run_id LIMIT 1",
-            (self.kind,),
-        )
-        if not rows:
+        batch = self._prepare_retirement(budget)
+        if batch is None:
             return False
-        retired, phase = rows[0]
-        if retired == self.run_id or type(phase) is not int or not 0 <= phase < len(_RETIRE):
-            raise RuntimeError("invalid retired online graph binding")
-        table, keys = _RETIRE[phase]
-        columns = ", ".join(keys)
-        page = self._rows(
-            f"SELECT {columns} FROM {table} WHERE kind = ? AND run_id = ? "
-            f"ORDER BY {columns} LIMIT ?",
-            (self.kind, retired, budget),
-        )
-        plan = _Plan(before, replace(before.work))
-        predicates = " AND ".join(key + " = ?" for key in keys)
-        for row in page:
-            plan.write(
-                f"DELETE FROM {table} WHERE kind = ? AND run_id = ? AND {predicates}",
-                self.kind,
-                retired,
-                *row,
-            )
-        if len(page) < budget:
-            if phase + 1 == len(_RETIRE):
-                plan.write(
-                    "DELETE FROM dag_retired WHERE kind = ? AND run_id = ? AND phase = ?",
-                    self.kind,
-                    retired,
-                    phase,
-                )
-            else:
-                plan.write(
-                    "UPDATE dag_retired SET phase = ? WHERE kind = ? AND run_id = ? AND phase = ?",
-                    phase + 1,
-                    self.kind,
-                    retired,
-                    phase,
-                )
-        self._commit(plan)
+        self._commit(batch.plan)
         return True

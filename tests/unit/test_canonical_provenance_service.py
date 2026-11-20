@@ -30,14 +30,14 @@ from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.canonical_provenance import SqlAlchemyCanonicalProvenanceService
 from riverhog_protocol.errors import NotFound, PreconditionFailed
 
+from tests.support.provenance_archive import archive_reader_fixture
 from tests.unit.db_helpers import sqlite_url
-from tests.unit.test_provenance_archive_read import _archive
 
 
 def _service(path: Path) -> tuple[SqlAlchemyCanonicalProvenanceService, str]:
     database_url = sqlite_url(path)
     initialize_db(database_url)
-    reader, _objects, journal_id, journal_text = _archive()
+    reader, _objects, journal_id, journal_text = archive_reader_fixture()
     with session_scope(make_session_factory(database_url)) as session:
         session.add(
             CollectionRecord(

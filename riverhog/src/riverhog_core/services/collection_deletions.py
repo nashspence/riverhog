@@ -96,6 +96,7 @@ class SqlAlchemyCollectionDeletionService:
         *,
         session_factory: SessionFactory | None = None,
     ) -> None:
+        self._registration_tuning = config.registration
         self._archive_stores = archive_stores
         self._retrieval_cache = retrieval_cache
         self._session_factory = session_factory or make_session_factory(config.database_url)
@@ -470,6 +471,15 @@ class SqlAlchemyCollectionDeletionService:
                     for row in rows
                 ]
                 session.execute(delete(table).where(or_(*predicates)))
+                return True
+
+            from riverhog_core.services.collection_registration_cleanup import (
+                reclaim_collection_registrations,
+            )
+
+            if reclaim_collection_registrations(
+                session, collection_id, limits=self._registration_tuning.emission_limits()
+            ):
                 return True
 
             event_sequence = plan.get(_CATALOG_EVENT_SEQUENCE_KEY)

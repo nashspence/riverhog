@@ -140,6 +140,7 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "id",
         "app",
         "token_sha256",
+        "access_generation",
         "monthly_download_quota_bytes",
         "created_at",
         "expires_at",

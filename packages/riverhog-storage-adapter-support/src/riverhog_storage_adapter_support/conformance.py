@@ -14,18 +14,27 @@ from pydantic import BaseModel, ConfigDict, model_validator
 from riverhog_storage_adapter_protocol import (
     STORAGE_ADAPTER_PROTOCOL,
     AdapterDescriptor,
+    CleanupInventoryProgress,
+    CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
+    CleanupInvocation,
+    CleanupProgress,
+    CleanupStepRequest,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
     DeletePrefixRequest,
     ObjectHeadRequest,
     ObjectLocator,
     ObjectReadRequest,
+    OpenWriteListRequest,
     ReadPreparationRequest,
     SmallObjectWriteRequest,
+    WriteCallIdentity,
     WriteCompleteRequest,
     WriteSegmentListRequest,
     WriteSession,
     WriteStartRequest,
+    cleanup_step_sha256,
     validate_object_path,
 )
 
@@ -88,6 +97,7 @@ def _expected_checks(descriptor: AdapterDescriptor) -> tuple[str, ...]:
     if descriptor.maximum_segment_count is None or descriptor.maximum_segment_count >= 2:
         checks.append("sparse-write-reconciliation")
     checks.append("write-begin-recovery")
+    checks.append("read-only-open-write-observation")
     checks.append("write-segment-idempotent-authority")
     if descriptor.maximum_segment_count is None or descriptor.maximum_segment_count >= 2:
         checks.append("write-traversal-invalidation")
@@ -100,6 +110,9 @@ def _expected_checks(descriptor: AdapterDescriptor) -> tuple[str, ...]:
             "write-completed-object-authority",
             "write-stream",
             "read-preparation",
+            "cleanup-inventory",
+            "bounded-cleanup-inventory",
+            "bounded-selected-cleanup",
             "write-abort",
             "exact-deletion",
             "version-aware-prefix-cleanup",
@@ -275,6 +288,29 @@ def run_storage_adapter_conformance(
         if recovered_session != session:
             raise AssertionError("lost begin response created a different write session")
         checks.append("write-begin-recovery")
+        continuation = None
+        seen_continuations: set[str] = set()
+        observed_tokens: set[str] = set()
+        while True:
+            page = continuation_client.list_open_writes(
+                OpenWriteListRequest(
+                    object_path=write_path,
+                    target_incarnation=descriptor.storage_incarnation_id,
+                    maximum_items=1,
+                    continuation=continuation,
+                )
+            )
+            observed_tokens.update(item.write_token for item in page.observations)
+            if page.exhausted:
+                break
+            assert page.continuation is not None
+            if page.continuation in seen_continuations:
+                raise AssertionError("open-write observation repeated its continuation")
+            seen_continuations.add(page.continuation)
+            continuation = page.continuation
+        if observed_tokens != {session.write_token}:
+            raise AssertionError("open-write observation differs from the exact known session")
+        checks.append("read-only-open-write-observation")
         first_segment = client.write_segment(
             session=session,
             number=1,
@@ -432,6 +468,107 @@ def run_storage_adapter_conformance(
             write_request.model_copy(update={"object_path": f"{normalized_prefix}/aborted.bin"})
         )
         persisted_aborted = WriteSession.model_validate_json(aborted.model_dump_json())
+        continuation = None
+        seen_inventory_positions: set[str] = set()
+        found_write = False
+        found_revision = False
+        while True:
+            inventory_page = continuation_client.list_cleanup_candidates(
+                CleanupInventoryRequest(
+                    object_prefix=cleanup_prefix,
+                    target_incarnation=descriptor.storage_incarnation_id,
+                    maximum_items=1,
+                    continuation=continuation,
+                )
+            )
+            found_write |= any(
+                item.kind == "open_write"
+                and item.object_path == aborted.object_path
+                and item.token == aborted.write_token
+                for item in inventory_page.candidates
+            )
+            found_revision |= any(
+                item.kind == "object_revision" and item.object_path == write_path
+                for item in inventory_page.candidates
+            )
+            if inventory_page.exhausted:
+                break
+            assert inventory_page.continuation is not None
+            if inventory_page.continuation in seen_inventory_positions:
+                raise AssertionError("cleanup inventory repeated its continuation")
+            seen_inventory_positions.add(inventory_page.continuation)
+            continuation = inventory_page.continuation
+        if not found_write or not found_revision:
+            raise AssertionError("cleanup inventory omitted known provider state")
+        checks.append("cleanup-inventory")
+        # The conformance owner retains this exact selection before dispatch;
+        # no producer runs concurrently in this disposable namespace.
+        inventory_operation = CleanupInventoryStepRequest(
+            selected_terminal_sha256=hashlib.sha256(cleanup_prefix.encode()).hexdigest(),
+            inventory=CleanupInventoryRequest(
+                object_prefix=aborted.object_path,
+                target_incarnation=descriptor.storage_incarnation_id,
+                maximum_items=1,
+                maximum_response_bytes=65536,
+            ),
+            maximum_provider_requests=4,
+            maximum_control_bytes=1024 * 1024,
+            maximum_in_flight=2,
+        )
+        inventory_call = WriteCallIdentity(
+            call_id=hashlib.sha256(uuid.uuid4().bytes).hexdigest(),
+            exact_request_sha256=cleanup_step_sha256(inventory_operation),
+            target_incarnation=descriptor.storage_incarnation_id,
+            dispatch_owner=hashlib.sha256(uuid.uuid4().bytes).hexdigest(),
+        )
+        inventory_response = continuation_client.execute_cleanup(
+            CleanupInvocation(call=inventory_call, request=inventory_operation)
+        )
+        if (
+            inventory_response.execution != "closed"
+            or inventory_response.outcome != "cleanup_inventory"
+            or not isinstance(inventory_response.result, CleanupInventoryProgress)
+        ):
+            raise AssertionError("bounded cleanup inventory did not close its own observation")
+        selected_page = inventory_response.result.inventory
+        checks.append("bounded-cleanup-inventory")
+        if (
+            len(selected_page.candidates) != 1
+            or selected_page.candidates[0].kind != "open_write"
+            or selected_page.candidates[0].token != aborted.write_token
+        ):
+            raise AssertionError("cleanup selection differs from its known session")
+        selected_request = CleanupStepRequest(
+            selected_terminal_sha256=hashlib.sha256(cleanup_prefix.encode()).hexdigest(),
+            inventory=selected_page,
+            maximum_provider_requests=4,
+            maximum_control_bytes=1024 * 1024,
+            maximum_in_flight=2,
+        )
+        selected_call = WriteCallIdentity(
+            call_id=hashlib.sha256(uuid.uuid4().bytes).hexdigest(),
+            exact_request_sha256=cleanup_step_sha256(selected_request),
+            target_incarnation=descriptor.storage_incarnation_id,
+            dispatch_owner=hashlib.sha256(uuid.uuid4().bytes).hexdigest(),
+        )
+        invocation = CleanupInvocation(call=selected_call, request=selected_request)
+        for _attempt in range(2):
+            invocation = invocation.model_copy(
+                update={
+                    "call": invocation.call.model_copy(
+                        update={"call_id": hashlib.sha256(uuid.uuid4().bytes).hexdigest()}
+                    )
+                }
+            )
+            cleanup_result = continuation_client.execute_cleanup(invocation)
+            if (
+                cleanup_result.execution != "closed"
+                or cleanup_result.outcome != "cleanup_progress"
+                or not isinstance(cleanup_result.result, CleanupProgress)
+                or not cleanup_result.result.selection_complete
+            ):
+                raise AssertionError("exact session cleanup did not settle its selected item")
+        checks.append("bounded-selected-cleanup")
         continuation_client.abort_write(persisted_aborted)
         continuation_client.abort_write(persisted_aborted)
         checks.append("write-abort")

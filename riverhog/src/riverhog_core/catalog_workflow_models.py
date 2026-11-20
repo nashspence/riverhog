@@ -120,6 +120,7 @@ class CollectionProcessingClaimRecord(Base):
             "AND outcome_validation_count >= 0",
             name="ck_collection_processing_claims_artifact_count",
         ),
+        Index("ix_collection_processing_claims_output", "output_collection_id", "id"),
         Index(
             "ix_collection_processing_claims_owner_state",
             "consumer_app",

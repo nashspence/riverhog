@@ -11,10 +11,19 @@ from typing import Literal
 from config_validation import load_validated_yaml_config, read_secret_file
 from pydantic import BaseModel, ConfigDict, Field
 from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
+from riverhog_storage_adapter_protocol import MAX_CLEANUP_INVENTORY_PAGE_ITEMS
 from time_formats import parse_duration
 
+from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
+from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
+from riverhog_core.archive_input_grants import ArchiveInputGrants
+from riverhog_core.archive_write_grants import ArchiveWriteGrants
+from riverhog_core.cache_write_grants import CacheWriteGrants
+from riverhog_core.cleanup_execution_tuning import CleanupExecutionTuning
 from riverhog_core.collection_plan import CollectionVolumePolicy
+from riverhog_core.journal_storage_grants import JournalStorageGrants
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
+from riverhog_core.registration_tuning import RegistrationTuning
 from riverhog_core.runtime_config import (
     DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR,
     DEFAULT_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES,
@@ -30,6 +39,14 @@ from riverhog_core.throughput import ArchiveThroughputTuning
 _VOLUME = CollectionVolumePolicy()
 _THROUGHPUT = ArchiveThroughputTuning()
 _RANGE = PackRangeRetrievalPolicy()
+_REGISTRATION = RegistrationTuning()
+_ARCHIVE_WRITE = ArchiveWriteGrants()
+_CACHE_WRITE = CacheWriteGrants()
+_ARCHIVE_CLEANUP = ArchiveCleanupGrants()
+_CLEANUP_EXECUTION = CleanupExecutionTuning()
+_ARCHIVE_EXECUTION = ArchiveExecutionTuning()
+_ARCHIVE_INPUT = ArchiveInputGrants()
+_JOURNAL_STORAGE = JournalStorageGrants()
 
 
 class _Document(BaseModel):
@@ -116,6 +133,251 @@ class ThroughputDocument(_Document):
         )
 
 
+class ArchiveWriteDocument(_Document):
+    calls: int = Field(
+        default=_ARCHIVE_WRITE.calls,
+        ge=1,
+        strict=True,
+        description="Retained effect records per upload construction, including unsettled reports.",
+    )
+    control_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.control_bytes),
+        description="Retained effect request/report bytes per upload construction.",
+    )
+    preparation_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.preparation_bytes),
+        description="Original encryption preparation and identity bytes per volume.",
+    )
+    metadata_preparation_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.metadata_preparation_bytes),
+        description="Original immutable metadata ciphertext/request and identity bytes per object.",
+    )
+    native_receipt_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.native_receipt_bytes),
+        description="Serialized source and receipt reservation per retained native seal receiver.",
+    )
+    terminal_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.terminal_bytes),
+        description="Retained terminal request/result bytes per selected request.",
+    )
+
+    result_bytes: str = Field(
+        default=str(_ARCHIVE_WRITE.result_bytes),
+        description="Reserved exact outcome bytes per admitted provider call.",
+    )
+
+    def grants(self) -> ArchiveWriteGrants:
+        return ArchiveWriteGrants(
+            calls=self.calls,
+            control_bytes=_bytes(self.control_bytes, "archive_write.control_bytes", 1),
+            preparation_bytes=_bytes(self.preparation_bytes, "archive_write.preparation_bytes", 1),
+            metadata_preparation_bytes=_bytes(
+                self.metadata_preparation_bytes, "archive_write.metadata_preparation_bytes", 1
+            ),
+            native_receipt_bytes=_bytes(
+                self.native_receipt_bytes, "archive_write.native_receipt_bytes", 1
+            ),
+            terminal_bytes=_bytes(self.terminal_bytes, "archive_write.terminal_bytes", 1),
+            result_bytes=_bytes(self.result_bytes, "archive_write.result_bytes", 1),
+        )
+
+
+class ArchiveCleanupDocument(_Document):
+    calls: int = Field(
+        default=_ARCHIVE_CLEANUP.calls,
+        ge=1,
+        strict=True,
+        description="Outstanding cleanup attempts per selected terminal.",
+    )
+    control_bytes: str = Field(
+        default=str(_ARCHIVE_CLEANUP.control_bytes),
+        description="Retained selected pages and complete outstanding cleanup attempt charges.",
+    )
+    provider_requests: int = Field(
+        default=_ARCHIVE_CLEANUP.provider_requests,
+        ge=1,
+        strict=True,
+        description="Reserved provider requests across outstanding cleanup attempts.",
+    )
+    in_flight: int = Field(
+        default=_ARCHIVE_CLEANUP.in_flight,
+        ge=1,
+        strict=True,
+        description="Reserved in-flight provider work across outstanding cleanup attempts.",
+    )
+
+    def grants(self) -> ArchiveCleanupGrants:
+        return ArchiveCleanupGrants(
+            calls=self.calls,
+            control_bytes=_bytes(self.control_bytes, "archive_cleanup.control_bytes", 1),
+            provider_requests=self.provider_requests,
+            in_flight=self.in_flight,
+        )
+
+
+class CleanupExecutionDocument(_Document):
+    inventory_items: int = Field(
+        default=_CLEANUP_EXECUTION.inventory_items,
+        ge=1,
+        le=MAX_CLEANUP_INVENTORY_PAGE_ITEMS,
+        strict=True,
+    )
+    inventory_bytes: str = str(_CLEANUP_EXECUTION.inventory_bytes)
+    provider_requests: int = Field(default=_CLEANUP_EXECUTION.provider_requests, ge=1, strict=True)
+    control_bytes: str = str(_CLEANUP_EXECUTION.control_bytes)
+    in_flight: int = Field(default=_CLEANUP_EXECUTION.in_flight, ge=1, strict=True)
+
+    def tuning(self) -> CleanupExecutionTuning:
+        return CleanupExecutionTuning(
+            inventory_items=self.inventory_items,
+            inventory_bytes=_bytes(self.inventory_bytes, "cleanup_execution.inventory_bytes", 1),
+            provider_requests=self.provider_requests,
+            control_bytes=_bytes(self.control_bytes, "cleanup_execution.control_bytes", 1),
+            in_flight=self.in_flight,
+        )
+
+
+class CacheWriteDocument(_Document):
+    calls: int = Field(
+        default=_CACHE_WRITE.calls,
+        ge=1,
+        strict=True,
+        description="Retained cache begin/child effects per upload construction.",
+    )
+    control_bytes: str = Field(
+        default=str(_CACHE_WRITE.control_bytes),
+        description="Retained cache requests, reports and original population continuations.",
+    )
+    result_bytes: str = Field(
+        default=str(_CACHE_WRITE.result_bytes),
+        description="Reserved original cache outcome bytes per admitted provider call.",
+    )
+    cleanup_bytes: str = Field(
+        default=str(_CACHE_WRITE.cleanup_bytes),
+        description="Retained cleanup identity bytes per original cache population.",
+    )
+
+    def grants(self) -> CacheWriteGrants:
+        return CacheWriteGrants(
+            calls=self.calls,
+            control_bytes=_bytes(self.control_bytes, "cache_write.control_bytes", 1),
+            result_bytes=_bytes(self.result_bytes, "cache_write.result_bytes", 1),
+            cleanup_bytes=_bytes(self.cleanup_bytes, "cache_write.cleanup_bytes", 1),
+        )
+
+
+class ArchiveInputDocument(_Document):
+    inputs: int = Field(default=_ARCHIVE_INPUT.inputs, ge=1, strict=True)
+    inputs_per_target: int = Field(default=_ARCHIVE_INPUT.inputs_per_target, ge=1, strict=True)
+    plaintext_bytes: str = str(_ARCHIVE_INPUT.plaintext_bytes)
+    plaintext_bytes_per_target: str = str(_ARCHIVE_INPUT.plaintext_bytes_per_target)
+
+    def grants(self) -> ArchiveInputGrants:
+        return ArchiveInputGrants(
+            inputs=self.inputs,
+            inputs_per_target=self.inputs_per_target,
+            plaintext_bytes=_bytes(self.plaintext_bytes, "archive_input.plaintext_bytes", 1),
+            plaintext_bytes_per_target=_bytes(
+                self.plaintext_bytes_per_target, "archive_input.plaintext_bytes_per_target", 1
+            ),
+        )
+
+
+class ArchiveExecutionDocument(_Document):
+    forward_workers: int = Field(default=_ARCHIVE_EXECUTION.forward_workers, ge=1, strict=True)
+    terminal_workers: int = Field(default=_ARCHIVE_EXECUTION.terminal_workers, ge=1, strict=True)
+    forward_workers_per_target: int = Field(
+        default=_ARCHIVE_EXECUTION.forward_workers_per_target, ge=1, strict=True
+    )
+    terminal_workers_per_target: int = Field(
+        default=_ARCHIVE_EXECUTION.terminal_workers_per_target, ge=1, strict=True
+    )
+
+    retained_constructions: int = Field(
+        default=_ARCHIVE_EXECUTION.retained_constructions, ge=1, strict=True
+    )
+    retained_constructions_per_target: int = Field(
+        default=_ARCHIVE_EXECUTION.retained_constructions_per_target, ge=1, strict=True
+    )
+
+    retained_terminals: int = Field(
+        default=_ARCHIVE_EXECUTION.retained_terminals, ge=1, strict=True
+    )
+    retained_terminals_per_target: int = Field(
+        default=_ARCHIVE_EXECUTION.retained_terminals_per_target, ge=1, strict=True
+    )
+
+    receive_poll_interval_ms: int = Field(
+        default=_ARCHIVE_EXECUTION.receive_poll_interval_ms, ge=1, strict=True
+    )
+
+    def tuning(self) -> ArchiveExecutionTuning:
+        return ArchiveExecutionTuning(
+            forward_workers=self.forward_workers,
+            terminal_workers=self.terminal_workers,
+            forward_workers_per_target=self.forward_workers_per_target,
+            terminal_workers_per_target=self.terminal_workers_per_target,
+            retained_constructions=self.retained_constructions,
+            retained_constructions_per_target=self.retained_constructions_per_target,
+            retained_terminals=self.retained_terminals,
+            retained_terminals_per_target=self.retained_terminals_per_target,
+            receive_poll_interval_ms=self.receive_poll_interval_ms,
+        )
+
+
+class JournalStorageDocument(_Document):
+    connections: int = Field(default=_JOURNAL_STORAGE.connections, ge=1, strict=True)
+    cursors: int = Field(default=_JOURNAL_STORAGE.cursors, ge=1, strict=True)
+    operations: int = Field(default=_JOURNAL_STORAGE.operations, ge=1, strict=True)
+    file_records: int = Field(default=_JOURNAL_STORAGE.file_records, ge=2, strict=True)
+    corpus_file_records: int = Field(
+        default=_JOURNAL_STORAGE.corpus_file_records, ge=3, strict=True
+    )
+
+    def grants(self) -> JournalStorageGrants:
+        return JournalStorageGrants(
+            connections=self.connections,
+            cursors=self.cursors,
+            operations=self.operations,
+            file_records=self.file_records,
+            corpus_file_records=self.corpus_file_records,
+        )
+
+
+class RegistrationDocument(_Document):
+    candidates_per_step: int = Field(default=_REGISTRATION.candidates_per_step, ge=1, strict=True)
+    plans_per_step: int = Field(default=_REGISTRATION.plans_per_step, ge=1, strict=True)
+    coverage_rows_per_step: int = Field(
+        default=_REGISTRATION.coverage_rows_per_step, ge=1, strict=True
+    )
+    metadata_bytes_per_step: str = str(_REGISTRATION.metadata_bytes_per_step)
+    input_transitions_per_step: int = Field(
+        default=_REGISTRATION.input_transitions_per_step, ge=1, strict=True
+    )
+    summary_page_bytes: str = Field(
+        default=str(_REGISTRATION.summary_page_bytes),
+        description="Canonical summary bytes per page; bounded controls are charged separately.",
+    )
+    execution_quantum: str = "1s"
+    retry_delay: str = "30s"
+
+    def tuning(self) -> RegistrationTuning:
+        return RegistrationTuning(
+            candidates_per_step=self.candidates_per_step,
+            plans_per_step=self.plans_per_step,
+            coverage_rows_per_step=self.coverage_rows_per_step,
+            metadata_bytes_per_step=_bytes(
+                self.metadata_bytes_per_step, "registration.metadata_bytes_per_step", 1
+            ),
+            input_transitions_per_step=self.input_transitions_per_step,
+            summary_page_bytes=_bytes(
+                self.summary_page_bytes, "registration.summary_page_bytes", 1
+            ),
+            execution_quantum=parse_duration(self.execution_quantum),
+            retry_delay=parse_duration(self.retry_delay),
+        )
+
+
 class RangePolicyDocument(_Document):
     merge_gap_ciphertext_bytes: str = str(_RANGE.merge_gap_ciphertext_bytes)
     max_request_ciphertext_bytes: str = str(_RANGE.max_request_ciphertext_bytes)
@@ -155,6 +417,17 @@ class RiverhogDocument(_Document):
     log_level: str = "INFO"
     public_base_url: str | None = None
     archive_scrypt_work_factor: int = Field(default=DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR, ge=1, le=22)
+    journal_validation_workspace: Path = Field(
+        default=Path("/scratch/journal-validation"),
+        description="Absolute private persistent workspace shared by workers resuming these jobs.",
+    )
+    journal_validation_concurrency: int = Field(
+        default=2,
+        ge=1,
+        strict=True,
+        description="Maximum active native validation sessions; other jobs wait for capacity.",
+    )
+    journal_storage: JournalStorageDocument = Field(default_factory=JournalStorageDocument)
     archive_upload_sweep_interval: str = "30s"
     collection_upload_custody_lease: str = "1h"
     retrieval_restore_poll_interval: str = "5m"
@@ -174,6 +447,13 @@ class RiverhogDocument(_Document):
     catalog_sync_history_retention: str = "30d"
     catalog_sync_page_size_max: int = Field(default=100, ge=1, le=100)
     catalog_sync_history_reap_batch_size: int = Field(default=100, ge=1)
+    archive_input: ArchiveInputDocument = Field(default_factory=ArchiveInputDocument)
+    archive_execution: ArchiveExecutionDocument = Field(default_factory=ArchiveExecutionDocument)
+    archive_write: ArchiveWriteDocument = Field(default_factory=ArchiveWriteDocument)
+    archive_cleanup: ArchiveCleanupDocument = Field(default_factory=ArchiveCleanupDocument)
+    cleanup_execution: CleanupExecutionDocument = Field(default_factory=CleanupExecutionDocument)
+    cache_write: CacheWriteDocument = Field(default_factory=CacheWriteDocument)
+    registration: RegistrationDocument = Field(default_factory=RegistrationDocument)
     volume_policy: VolumePolicyDocument = Field(default_factory=VolumePolicyDocument)
     throughput: ThroughputDocument = Field(default_factory=ThroughputDocument)
     range_policy: RangePolicyDocument = Field(default_factory=RangePolicyDocument)
@@ -265,6 +545,9 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         log_level=document.log_level,
         public_base_url=document.public_base_url,
         archive_scrypt_work_factor=document.archive_scrypt_work_factor,
+        journal_validation_workspace=document.journal_validation_workspace,
+        journal_validation_concurrency=document.journal_validation_concurrency,
+        journal_storage=document.journal_storage.grants(),
         archive_upload_sweep_interval=parse_duration(document.archive_upload_sweep_interval),
         collection_upload_custody_lease=parse_duration(document.collection_upload_custody_lease),
         retrieval_restore_poll_interval=parse_duration(document.retrieval_restore_poll_interval),
@@ -288,6 +571,13 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         catalog_sync_history_retention=parse_duration(document.catalog_sync_history_retention),
         catalog_sync_page_size_max=document.catalog_sync_page_size_max,
         catalog_sync_history_reap_batch_size=document.catalog_sync_history_reap_batch_size,
+        archive_input=document.archive_input.grants(),
+        archive_execution=document.archive_execution.tuning(),
+        archive_write=document.archive_write.grants(),
+        archive_cleanup=document.archive_cleanup.grants(),
+        cleanup_execution=document.cleanup_execution.tuning(),
+        cache_write=document.cache_write.grants(),
+        registration=document.registration.tuning(),
         volume_policy=document.volume_policy.policy(),
         throughput_tuning=document.throughput.tuning(),
         range_policy=document.range_policy.policy(),

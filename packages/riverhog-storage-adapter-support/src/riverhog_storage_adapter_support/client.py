@@ -13,6 +13,10 @@ from riverhog_canonical_json import parse_identity_json
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
     BinaryContent,
+    CleanupExecutionResult,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
+    CleanupInvocation,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -24,6 +28,8 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWritePage,
     ReadPreparationRequest,
     ReadStatus,
     SmallObjectWriteRequest,
@@ -31,19 +37,27 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterErrorCode,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteExecutionResult,
+    WriteInvocation,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSegmentRequest,
     WriteSession,
     WriteStartRequest,
+    unknown_cleanup_execution,
+    unknown_write_execution,
+    validate_cleanup_execution,
+    validate_cleanup_inventory_response,
     validate_completed_write_response,
     validate_object_metadata_response,
     validate_object_read_response,
+    validate_open_write_page_response,
     validate_read_status_response,
     validate_small_object_response,
     validate_storage_incarnation_id,
     validate_write_completion_request,
+    validate_write_execution,
     validate_write_segment_page_response,
     validate_write_segment_request,
     validate_write_segment_response,
@@ -103,7 +117,8 @@ class StorageAdapterClient:
         self._expected_incarnation_id: str | None = None
         self._owns_client = client is None
         self._client = client or httpx.Client(
-            http2=True,
+            # HTTP/2 GOAWAY handling can resubmit a fully sent request.
+            http2=False,
             timeout=timeout,
             limits=httpx.Limits(
                 max_connections=maximum_connections,
@@ -171,6 +186,74 @@ class StorageAdapterClient:
     def check_readiness(self) -> None:
         self._require_success(self._request("GET", "/health/ready"))
 
+    def execute_write(
+        self, invocation: WriteInvocation, *, content: BinaryContent = b""
+    ) -> WriteExecutionResult:
+        try:
+            if self.descriptor().storage_incarnation_id != invocation.call.target_incarnation:
+                return unknown_write_execution(invocation)
+            response = self._model(
+                "POST",
+                "/v1/writes/execute",
+                WriteExecutionResult,
+                content=framed_body(invocation, content),
+                headers={
+                    "Content-Length": str(framed_body_length(invocation)),
+                    "Content-Type": FRAMED_BODY_MEDIA_TYPE,
+                },
+            )
+            validate_write_execution(invocation, response)
+            if not self._owns_client and response.execution == "closed":
+                # A supplied transport may have retried or forked this invocation.
+                if response.outcome == "no_effect":
+                    return unknown_write_execution(invocation)
+                return response.model_copy(update={"execution": "unknown"})
+            return response
+        except Exception:
+            return unknown_write_execution(invocation)
+
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        """Dispatch one bounded hop without descriptor discovery or transport replay."""
+        try:
+            invocation._require_exact_request()
+            if (
+                not self._owns_client
+                or invocation.adapter_hops_remaining != 1
+                or (
+                    self._expected_incarnation_id is not None
+                    and self._expected_incarnation_id != invocation.call.target_incarnation
+                )
+            ):
+                return unknown_cleanup_execution(invocation)
+            delegated = invocation.model_copy(update={"adapter_hops_remaining": 0})
+            body = delegated.model_dump_json(exclude_none=True).encode()
+            remaining = invocation.request.maximum_control_bytes - len(body)
+            headers = {
+                **self._headers,
+                "Content-Type": "application/json",
+                "Riverhog-Expected-Storage-Incarnation": invocation.call.target_incarnation,
+            }
+            with self._client.stream(
+                "POST",
+                f"{self.base_url}/v1/cleanup/execute",
+                content=body,
+                headers=headers,
+                follow_redirects=False,
+            ) as response:
+                if response.status_code != 200:
+                    return unknown_cleanup_execution(invocation)
+                received = bytearray()
+                for chunk in response.iter_bytes(chunk_size=min(65536, remaining + 1)):
+                    if len(received) + len(chunk) > remaining:
+                        return unknown_cleanup_execution(invocation)
+                    received.extend(chunk)
+            parse_identity_json(bytes(received))
+            result = CleanupExecutionResult.model_validate_json(received)
+            validate_cleanup_execution(invocation, result)
+            return result
+        except Exception:
+            return unknown_cleanup_execution(invocation)
+
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
         self._validate_request(validate_write_start_request, request, self.descriptor())
         response = self._model("POST", "/v1/writes/begin", WriteSession, request)
@@ -202,6 +285,16 @@ class StorageAdapterClient:
             },
         )
         self._validate(validate_write_segment_response, request, response)
+        return response
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        response = self._model("POST", "/v1/cleanup/inventory", CleanupInventoryPage, request)
+        self._validate(validate_cleanup_inventory_response, request, response)
+        return response
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        response = self._model("POST", "/v1/writes/open", OpenWritePage, request)
+        self._validate(validate_open_write_page_response, request, response)
         return response
 
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
@@ -281,6 +374,7 @@ class StorageAdapterClient:
             f"{self.base_url}/v1/objects/read",
             headers=self._request_headers("/v1/objects/read"),
             json=request.model_dump(mode="json", exclude_none=True),
+            follow_redirects=False,
         )
         response = context.__enter__()
         try:
@@ -451,6 +545,8 @@ class StorageAdapterClient:
                     else None
                 ),
                 content=content,
+                # A supplied client must not replay this request at a redirect.
+                follow_redirects=False,
             )
         except httpx.HTTPError as exc:
             raise StorageAdapterProtocolError(f"storage adapter request failed: {exc}") from exc

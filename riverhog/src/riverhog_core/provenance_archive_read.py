@@ -29,6 +29,7 @@ from riverhog_archive_contracts import (
     BindingTreeCommitment,
     MemberHistoryBinding,
     MemberHistoryDocument,
+    MemberHistoryHeads,
     MemberHistoryImport,
     MemberHistoryRoot,
     MemberHistoryStore,
@@ -51,6 +52,7 @@ from riverhog_archive_contracts import (
 )
 from riverhog_canonical_json import require_canonical_json
 
+from riverhog_core.provenance_metadata_index import ProvenanceMetadataIndex
 from riverhog_core.scratch_workspace import scratch_directory
 
 ObjectReader = Callable[[str], Iterator[bytes]]
@@ -68,11 +70,16 @@ class ProvenanceArchiveSummary:
 
 def _read_bounded(chunks: Iterator[bytes], maximum: int) -> bytes:
     content = bytearray()
-    for chunk in chunks:
-        if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
-            raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
-        content.extend(chunk)
-    return bytes(content)
+    try:
+        for chunk in chunks:
+            if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
+                raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
+            content.extend(chunk)
+        return bytes(content)
+    finally:
+        close = getattr(chunks, "close", None)
+        if close is not None:
+            close()
 
 
 class CanonicalProvenanceArchiveReader:
@@ -83,14 +90,21 @@ class CanonicalProvenanceArchiveReader:
         expected_root_sha256: str,
         archive_generation: str,
         artifact_set_sha256: str,
+        metadata_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_metadata_storage_open: Callable[[ProvenanceMetadataIndex], None] | None = None,
+        history_verification_connection_factory: Callable[..., sqlite3.Connection] | None = None,
+        on_history_verification_storage_open: Callable[[MemberHistoryHeads], None] | None = None,
     ) -> None:
         self._read_object = read_object
         self._expected_root_sha256 = expected_root_sha256
         self._archive_generation = archive_generation
         self._artifact_set_sha256 = artifact_set_sha256
-        self._prepared_db: sqlite3.Connection | None = None
+        self._metadata_connection_factory = metadata_connection_factory
+        self._on_metadata_storage_open = on_metadata_storage_open
+        self._history_verification_connection_factory = history_verification_connection_factory
+        self._on_history_verification_storage_open = on_history_verification_storage_open
+        self._metadata_index: ProvenanceMetadataIndex | None = None
         self._prepared_summary: ProvenanceArchiveSummary | None = None
-        self._prepared_cursors: set[sqlite3.Cursor] = set()
 
     @contextmanager
     def cached(self) -> Iterator[CanonicalProvenanceArchiveReader]:
@@ -125,55 +139,65 @@ class CanonicalProvenanceArchiveReader:
                 expected_root_sha256=self._expected_root_sha256,
                 archive_generation=self._archive_generation,
                 artifact_set_sha256=self._artifact_set_sha256,
+                metadata_connection_factory=self._metadata_connection_factory,
+                on_metadata_storage_open=self._on_metadata_storage_open,
+                history_verification_connection_factory=self._history_verification_connection_factory,
+                on_history_verification_storage_open=self._on_history_verification_storage_open,
             )
+
+    def _require_metadata_open(self) -> None:
+        if self._metadata_index is not None:
+            self._metadata_index.require_open()
+
+    @property
+    def retained_metadata_storage(self) -> ProvenanceMetadataIndex | None:
+        """The actual metadata owner, including any unconfirmed cleanup."""
+        return self._metadata_index
+
+    def close_prepared(self) -> None:
+        """Explicitly settle or retry metadata cleanup before releasing the index."""
+        index = self._metadata_index
+        if index is not None:
+            index.close()
+            if index.cleanup_complete:
+                self._metadata_index = None
+                self._prepared_summary = None
 
     @contextmanager
     def prepared(self) -> Iterator[CanonicalProvenanceArchiveReader]:
         """Verify once and seek immutable volume metadata through a disk index."""
-        if self._prepared_db is not None:
+        self._require_metadata_open()
+        if self._metadata_index is not None:
+            if self._prepared_summary is None:
+                raise RuntimeError("provenance metadata preparation is not ready")
             yield self
+            self._require_metadata_open()
             return
-        with scratch_directory(prefix="riverhog-provenance-metadata-") as scratch:
-            # The operation owns this index. Its serial HTTP iterator may
-            # advance and close on different worker threads.
-            db = sqlite3.connect(Path(scratch) / "metadata.sqlite3", check_same_thread=False)
 
-            def remember(document: ProvenanceVolumeDocument | ProvenanceTerminalDocument) -> None:
-                if isinstance(document, ProvenanceTerminalDocument):
-                    kind, journal_id = "terminal", None
-                else:
-                    kind, journal_id = document.payload.kind, document.journal_id
-                db.execute(
-                    "INSERT INTO volumes VALUES (?, ?, ?, ?)",
-                    (
-                        format_archive_sequence(document.sequence),
-                        kind,
-                        journal_id,
-                        document.to_json_bytes(),
-                    ),
-                )
+        def retain(index: ProvenanceMetadataIndex) -> None:
+            self._metadata_index = index
+            if self._on_metadata_storage_open is not None:
+                self._on_metadata_storage_open(index)
 
-            try:
-                db.executescript(
-                    "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
-                    "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
-                    "journal TEXT, body BLOB); "
-                    "CREATE INDEX volume_journals ON volumes(journal, sequence); "
-                    "CREATE INDEX volume_kinds ON volumes(kind, sequence);"
-                )
-                summary = self._scan(remember)
-                db.commit()
-                db.execute("PRAGMA query_only = ON")
-                self._prepared_db = db
-                self._prepared_summary = summary
-                yield self
-            finally:
-                self._prepared_db = None
-                self._prepared_summary = None
-                for cursor in self._prepared_cursors:
-                    cursor.close()
-                self._prepared_cursors.clear()
-                db.close()
+        try:
+            index = ProvenanceMetadataIndex(
+                connection_factory=self._metadata_connection_factory,
+                on_storage_open=retain,
+            )
+            summary = self._scan(index.remember)
+            index.seal()
+            self._prepared_summary = summary
+            index.require_open()
+            yield self
+            index.require_open()
+        finally:
+            retained = self._metadata_index
+            if retained is not None:
+                if retained.cleanup_complete:
+                    self._metadata_index = None
+                    self._prepared_summary = None
+                elif not retained.closing:
+                    self.close_prepared()
 
     def _history_pages(self, authority: RecordSetRef) -> Iterator[RecordPage]:
         """Read a bounded set through its mandatory terminal, with no total cap."""
@@ -194,7 +218,11 @@ class CanonicalProvenanceArchiveReader:
         raise ProvenanceArchiveReadError("member history set lacks its terminal")
 
     def history_store(self) -> MemberHistoryStore:
-        return MemberHistoryStore(self._read_object)
+        return MemberHistoryStore(
+            self._read_object,
+            connection_factory=self._history_verification_connection_factory,
+            on_storage_open=self._on_history_verification_storage_open,
+        )
 
     def structure_object(self, object_id: str) -> bytes:
         # The requested hash or record-set authority identifies this bounded
@@ -209,6 +237,33 @@ class CanonicalProvenanceArchiveReader:
             raise ProvenanceArchiveReadError("history structure differs from its identity")
         return raw
 
+    def history_descriptor(self, binding: MemberHistoryBinding) -> MemberHistoryDocument:
+        """Read one exact bound descriptor; its set terminals are separate obligations."""
+        self._root()
+        return binding.verify_descriptor(
+            _read_bounded(
+                self._read_object(member_history_object_path(binding.history_sha256)),
+                binding.history_bytes,
+            )
+        )
+
+    def history_page(self, authority: RecordSetRef, ordinal: int) -> RecordPage:
+        """Read only the selected bounded page; the consumer verifies the full commitment."""
+        if type(ordinal) is not int or not 0 <= ordinal <= authority.record_count:
+            raise ProvenanceArchiveReadError("member history page position is invalid")
+        self._root()
+        page = RecordPage.from_json_bytes(
+            _read_bounded(
+                self._read_object(
+                    history_record_page_object_path(authority.records_sha256, ordinal)
+                ),
+                PAGE_BYTES_MAX,
+            )
+        )
+        if page.authority != authority or page.ordinal != ordinal:
+            raise ProvenanceArchiveReadError("member history page authority changed")
+        return page
+
     def member_history(self, binding: MemberHistoryBinding) -> MemberHistoryDocument:
         """Verify the exact descriptor and both complete structural selections.
 
@@ -217,16 +272,14 @@ class CanonicalProvenanceArchiveReader:
         source-proof closure at the explicitly requested extent.
         """
 
-        raw = _read_bounded(
-            self._read_object(member_history_object_path(binding.history_sha256)),
-            binding.history_bytes,
-        )
-        descriptor = binding.verify_descriptor(raw)
+        descriptor = self.history_descriptor(binding)
         try:
             verify_member_history_sets(
                 descriptor,
                 root_pages=self._history_pages(descriptor.roots),
                 import_pages=self._history_pages(descriptor.imports),
+                connection_factory=self._history_verification_connection_factory,
+                on_storage_open=self._on_history_verification_storage_open,
             )
         except ValueError as exc:
             raise ProvenanceArchiveReadError(str(exc)) from exc
@@ -258,6 +311,7 @@ class CanonicalProvenanceArchiveReader:
     def source_binding_proof(
         self, imported: MemberHistoryImport
     ) -> SourceMemberHistoryBindingProof:
+        self._root()
         raw = _read_bounded(
             self._read_object(
                 source_binding_proof_object_path(imported.source_binding_proof_sha256)
@@ -287,6 +341,7 @@ class CanonicalProvenanceArchiveReader:
         return commitment
 
     def _root(self) -> ProvenanceRootDocument:
+        self._require_metadata_open()
         if self._prepared_summary is not None:
             return self._prepared_summary.root
         raw = _read_bounded(
@@ -308,31 +363,9 @@ class CanonicalProvenanceArchiveReader:
         journal_id: str | None = None,
         kind: str | None = None,
     ) -> Iterator[ProvenanceVolumeDocument | ProvenanceTerminalDocument]:
-        if self._prepared_db is not None:
-            filters = []
-            values = []
-            if journal_id is not None:
-                filters.append("journal = ?")
-                values.append(journal_id)
-            if kind is not None:
-                filters.append("kind = ?")
-                values.append(kind)
-            where = " WHERE " + " AND ".join(filters) if filters else ""
-            cursor = self._prepared_db.execute(
-                "SELECT kind, body FROM volumes" + where + " ORDER BY sequence", values
-            )
-            self._prepared_cursors.add(cursor)
-            try:
-                for selected_kind, raw in cursor:
-                    yield (
-                        ProvenanceTerminalDocument.from_json_bytes(raw)
-                        if selected_kind == "terminal"
-                        else ProvenanceVolumeDocument.from_json_bytes(raw)
-                    )
-            finally:
-                if cursor in self._prepared_cursors:
-                    self._prepared_cursors.remove(cursor)
-                    cursor.close()
+        self._require_metadata_open()
+        if self._metadata_index is not None and self._prepared_summary is not None:
+            yield from self._metadata_index.descriptors(journal_id=journal_id, kind=kind)
             return
         sequence = 0
         while True:
@@ -357,9 +390,55 @@ class CanonicalProvenanceArchiveReader:
                 yield document
             sequence += 1
 
+    def payload_bytes(self, document: ProvenanceVolumeDocument) -> bytes:
+        """Read a payload selected by a previously authenticated descriptor scan.
+
+        The owner supplies descriptor membership evidence. This method checks
+        fixed archive authority and the complete payload length and digest.
+        """
+        root = self._root()
+        if (document.archive_generation, document.artifact_set_sha256) != (
+            root.archive_generation,
+            root.artifact_set_sha256,
+        ):
+            raise ProvenanceArchiveReadError("payload descriptor belongs to another archive")
+        raw = _read_bounded(self._read_object(document.payload.path), document.payload.bytes)
+        if (
+            len(raw) != document.payload.bytes
+            or hashlib.sha256(raw).hexdigest() != document.payload.sha256
+        ):
+            raise ProvenanceArchiveReadError("provenance payload differs from its exact descriptor")
+        return raw
+
+    def descriptor_at(self, sequence: int) -> ProvenanceVolumeDocument | ProvenanceTerminalDocument:
+        """Read one candidate descriptor at its exact archive position.
+
+        This authenticates the selected root and fixed descriptor authority.
+        Its membership in the complete ordered volume commitment is established
+        by the consuming scan, not by this isolated read.
+        """
+        root = self._root()
+        path = f"provenance/metadata/volume-{format_archive_sequence(sequence)}.json.age"
+        raw = _read_bounded(self._read_object(path), PROVENANCE_METADATA_BYTES_MAX)
+        value = require_canonical_json(raw)
+        if not isinstance(value, dict):
+            raise ProvenanceArchiveReadError("provenance volume is not an object")
+        document: ProvenanceVolumeDocument | ProvenanceTerminalDocument
+        if value.get("format") == PROVENANCE_TERMINAL_FORMAT:
+            document = ProvenanceTerminalDocument.from_json_bytes(raw)
+        else:
+            document = ProvenanceVolumeDocument.from_json_bytes(raw)
+        if document.sequence != sequence or (
+            document.archive_generation,
+            document.artifact_set_sha256,
+        ) != (root.archive_generation, root.artifact_set_sha256):
+            raise ProvenanceArchiveReadError("provenance descriptor position or authority changed")
+        return document
+
     def scan(self) -> ProvenanceArchiveSummary:
         """Verify the complete root-selected descriptor sequence without payload reads."""
 
+        self._require_metadata_open()
         if self._prepared_summary is not None:
             return self._prepared_summary
         return self._scan()
@@ -449,6 +528,7 @@ class CanonicalProvenanceArchiveReader:
     ) -> Iterator[bytes]:
         """Read exact journal bytes; every touched segment is verified in full."""
 
+        index = self._metadata_index
         self.scan()
         if (
             type(offset) is not int
@@ -475,6 +555,8 @@ class CanonicalProvenanceArchiveReader:
             wanted_end = journal_bytes if size is None else offset + size
             if end <= offset or start >= wanted_end:
                 continue
+            if index is not None:
+                index.require_open()
             content = _read_bounded(
                 self._read_object(document.payload.path), document.payload.bytes
             )
@@ -488,6 +570,8 @@ class CanonicalProvenanceArchiveReader:
             begin = max(offset, start) - start
             stop = min(wanted_end, end) - start
             emitted += stop - begin
+            if index is not None:
+                index.require_open()
             yield content[begin:stop]
         if journal_bytes is None or journal_sha256 is None:
             raise ProvenanceArchiveReadError("provenance journal is absent")
@@ -541,9 +625,40 @@ class CanonicalProvenanceArchiveReader:
         for journal_id, _bytes, _sha256 in self.iter_journal_headers():
             yield journal_id
 
+    def binding_page(self, document: ProvenanceVolumeDocument) -> tuple[MemberHistoryBinding, ...]:
+        """Verify one previously authenticated binding page without a metadata rescan."""
+        if document.payload.kind != "bindings":
+            raise ProvenanceArchiveReadError("descriptor does not select a binding page")
+        content = self.payload_bytes(document)
+        value = require_canonical_json(content)
+        if not isinstance(value, dict) or set(value) != {"format", "bindings"}:
+            raise ProvenanceArchiveReadError("provenance binding page is invalid")
+        if value["format"] != PROVENANCE_BINDINGS_FORMAT:
+            raise ProvenanceArchiveReadError("provenance binding page format changed")
+        raw_bindings = value["bindings"]
+        if not isinstance(raw_bindings, list) or not all(
+            isinstance(row, dict) for row in raw_bindings
+        ):
+            raise ProvenanceArchiveReadError("provenance binding page rows are invalid")
+        try:
+            bindings = validate_member_history_binding_page(
+                cast(list[Mapping[str, Any]], raw_bindings),
+                max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
+            )
+        except ValueError as exc:
+            raise ProvenanceArchiveReadError("provenance binding page rows are invalid") from exc
+        if (
+            len(bindings) != document.binding_count
+            or bindings[0].artifact_id != document.first_artifact_id
+            or bindings[-1].artifact_id != document.last_artifact_id
+        ):
+            raise ProvenanceArchiveReadError("provenance binding page range changed")
+        return bindings
+
     def iter_bindings(self) -> Iterator[dict[str, object]]:
         """Stream exact member-ordered binding pages from the selected archive."""
 
+        index = self._metadata_index
         self.scan()
         last_id: str | None = None
         for document in self._descriptors(kind="bindings"):
@@ -551,42 +666,12 @@ class CanonicalProvenanceArchiveReader:
                 return
             if document.payload.kind != "bindings":
                 continue
-            content = _read_bounded(
-                self._read_object(document.payload.path), document.payload.bytes
-            )
-            if (
-                len(content) != document.payload.bytes
-                or hashlib.sha256(content).hexdigest() != document.payload.sha256
-            ):
-                raise ProvenanceArchiveReadError("provenance binding page changed")
-            value = require_canonical_json(content)
-            if not isinstance(value, dict) or set(value) != {"format", "bindings"}:
-                raise ProvenanceArchiveReadError("provenance binding page is invalid")
-            if value["format"] != PROVENANCE_BINDINGS_FORMAT:
-                raise ProvenanceArchiveReadError("provenance binding page format changed")
-            raw_bindings = value["bindings"]
-            if not isinstance(raw_bindings, list) or not all(
-                isinstance(row, dict) for row in raw_bindings
-            ):
-                raise ProvenanceArchiveReadError("provenance binding page rows are invalid")
-            try:
-                bindings = validate_member_history_binding_page(
-                    cast(list[Mapping[str, Any]], raw_bindings),
-                    max_members=PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
-                )
-            except ValueError as exc:
-                raise ProvenanceArchiveReadError(
-                    "provenance binding page rows are invalid"
-                ) from exc
-            if (
-                len(bindings) != document.binding_count
-                or bindings[0].artifact_id != document.first_artifact_id
-                or bindings[-1].artifact_id != document.last_artifact_id
-            ):
-                raise ProvenanceArchiveReadError("provenance binding page range changed")
+            bindings = self.binding_page(document)
             for binding in bindings:
                 if last_id is not None and binding.artifact_id <= last_id:
                     raise ProvenanceArchiveReadError("provenance bindings are not member ordered")
+                if index is not None:
+                    index.require_open()
                 last_id = binding.artifact_id
                 yield binding.to_mapping()
 

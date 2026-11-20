@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import sqlite3
 import subprocess
 import sys
@@ -15,9 +16,15 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import parse_journal, validate_journal
 from sqlalchemy import delete, event, select, update
 
+from scripts.validation_numeric import numeric_policy_from_environment
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
-from tests.unit.test_journal_validation_handoff import complete_capture, service_for, terminal
+from tests.unit.test_journal_validation_handoff import (
+    complete_capture,
+    native_outcome,
+    service_for,
+    terminal,
+)
 from tests.unit.test_staged_journal_range import JOURNAL, Journal
 
 Frame, Scan = epochs.Frame, epochs.Scan
@@ -147,25 +154,35 @@ def test_native_replay_remains_the_only_acceptance_authority(tmp_path, monkeypat
     raw = source(journal_id=JOURNAL)
     with retained(tmp_path, raw) as (engine, factory):
         complete_capture(factory)
-        native = owner._compute_upload_journal_validation
-        calls = []
+        service = service_for(factory)
+        native = service._journal_validation_owner.advance
+        observed = []
 
-        def observed(*args):
-            assert engine.pool.checkedout() == 0
+        def detached(*args, **kwargs):
             assert progress(factory)[-1] == "complete"
-            assert terminal(factory)["anchor"] is None
-            calls.append(True)
-            return native(*args)
+            assert engine.pool.checkedout() == 0 and terminal(factory)["anchor"] is None
+            observed.append(True)
+            return native(*args, **kwargs)
 
-        monkeypatch.setattr(owner, "_compute_upload_journal_validation", observed)
-        service_for(factory)._advance_provenance_journal_validation(1, JOURNAL)
-        assert calls == [True]
-        with validate_journal(raw) as expected:
-            assert terminal(factory)["anchor"] == expected.anchor
+        monkeypatch.setattr(service._journal_validation_owner, "advance", detached)
+        try:
+            for _ in range(10000):
+                service._advance_provenance_journal_validation(1, JOURNAL)
+                if terminal(factory)["state"] == "sealed":
+                    break
+            else:
+                pytest.fail("small native handoff did not complete")
+            assert len(observed) > 1
+            with validate_journal(raw) as expected:
+                assert terminal(factory)["anchor"] == expected.anchor
+        finally:
+            service.close()
 
 
 @pytest.mark.parametrize("suffix", [b"\x1e{}\n", b"\x1e[1]\n", b"\x1e", b"x"])
-def test_late_speculative_failure_never_outranks_an_earlier_native_prefix_error(tmp_path, suffix):
+def test_late_speculative_failure_never_outranks_an_earlier_native_prefix_error(
+    tmp_path, suffix, *, journal_constructions
+):
     document = parse_journal(source(journal_id=JOURNAL))[0].document
     document["sequence"] = "7"
     raw = b"\x1e" + canonical_json_bytes(document) + b"\n" + suffix
@@ -175,7 +192,7 @@ def test_late_speculative_failure_never_outranks_an_earlier_native_prefix_error(
         work = complete_capture(factory)
         finish(factory, work)
         assert progress(factory)[-1] == "deferred"
-        outcome = owner._compute_upload_journal_validation(factory, work)
+        outcome = native_outcome(factory, work, journal_constructions=journal_constructions)
         assert outcome.failure == str(expected.value)
         assert terminal(factory)["anchor"] is None
 
@@ -330,7 +347,9 @@ class ObservedWindow:
 )
 def test_actual_fenced_epoch_frame_window_work(tmp_path, monkeypatch, record_property):
     binding = growth_binding(epochs._read_epoch_frames)
-    projection = project_bindings((binding,))
+    projection = project_bindings(
+        (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
+    )
     digest = hashlib.sha256(
         canonical_json_bytes(projection["declarations"][binding.declaration.id])
     ).hexdigest()
@@ -396,7 +415,15 @@ def test_actual_fenced_epoch_frame_window_work(tmp_path, monkeypatch, record_pro
                 event.remove(engine, "before_cursor_execute", sql)
             assert len(actual) == min(count, requested) == counts["returned_positions"]
             assert counts["closed"] and not payload_reads and engine.pool.checkedout() == 0
-            for statement, parameters in statements:
+            selects = [
+                (statement, parameters)
+                for statement, parameters in statements
+                if statement.lstrip().upper().startswith("SELECT")
+            ]
+            starts = sum(statement.strip().upper() == "BEGIN" for statement, _ in statements)
+            assert len(selects) == 2 and starts == 1
+            assert len(statements) == len(selects) + starts
+            for statement, parameters in selects:
                 with engine.connect() as connection:
                     result = connection.exec_driver_sql(
                         "EXPLAIN QUERY PLAN " + statement, parameters
@@ -418,6 +445,11 @@ def test_actual_fenced_epoch_frame_window_work(tmp_path, monkeypatch, record_pro
                 },
                 "delegates": {},
             }
-            validate_execution_samples(projection, binding.declaration.id, [sample])
+            validate_execution_samples(
+                projection,
+                binding.declaration.id,
+                [sample],
+                numeric_policy=numeric_policy_from_environment(os.environ),
+            )
             samples.append(sample)
     record_property("growth_samples", samples)

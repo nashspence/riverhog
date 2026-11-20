@@ -168,6 +168,11 @@ class ObservationResult:
     def catalog(self) -> ContractCatalog:
         return self._catalog
 
+    @property
+    def graph_json(self) -> bytes:
+        """Return the exact original serialized graph for durable retry retention."""
+        return self._graph_json
+
     def graph_fragment(self) -> dict[str, Any]:
         return cast(dict[str, Any], json.loads(self._graph_json))
 

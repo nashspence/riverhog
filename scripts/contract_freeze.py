@@ -72,6 +72,7 @@ from stove0_target_support.schemas import _parser as target_schemas_parser
 from typer.main import get_command
 
 from scripts import growth_contract
+from scripts.validation_numeric import qualification_numeric_policy
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_FREEZE_EXCEPTIONS = ROOT / "qualification/contract-freeze-exceptions.toml"
@@ -2869,6 +2870,7 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         ROOT,
         cast(Mapping[str, Mapping[str, object]], external["python"]),
         cast(Mapping[str, object], external["growth"]),
+        numeric_policy=qualification_numeric_policy(),
         packages={
             str(item["module"]): ROOT / str(item["path"])
             for item in python_package_detections(ROOT, projects)
@@ -3042,6 +3044,7 @@ def contract_projection() -> dict[str, object]:
     }
     external_contract["growth"] = growth_contract.declaration_projection(
         python_surfaces,
+        numeric_policy=qualification_numeric_policy(),
         packages={
             str(item["module"]): ROOT / str(item["path"])
             for item in python_package_detections(ROOT, projects)

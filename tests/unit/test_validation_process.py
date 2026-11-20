@@ -76,7 +76,7 @@ def test_cancelled_validation_joins_child_and_descendant_cleanup(
         "from scripts.validation_evidence import ValidationWork\n"
         f"work = ValidationWork('cancellation-proof', (sys.executable, {str(owner)!r}), "
         "target_seconds=0.001)\n"
-        "ci_qualification.validation_workloads = lambda: (work,)\n"
+        "ci_qualification.validation_workloads = lambda **_selection: (work,)\n"
         f"raise SystemExit(ci_timing.execute_validation(work.name, Path({str(output)!r}), "
         "'cancelled-owner'))\n"
     )

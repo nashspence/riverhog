@@ -166,6 +166,11 @@ def _attempt_identity(
     prior_stored_bytes: int | None,
     prior_stored_sha256: str | None,
 ) -> str:
+    """Commit document/destination identities, including the public recovery key selector.
+
+    The passphrase ID selects separately held encryption material; no passphrase
+    or password verifier enters this retry identity.
+    """
     digest = hashlib.sha256(_ATTEMPT_IDENTITY_DOMAIN)
     for value in (
         str(collection_id),

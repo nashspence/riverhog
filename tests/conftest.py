@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-import yaml
 
 
 @pytest.fixture(scope="session")
@@ -149,33 +148,9 @@ def _explicit_riverhog_test_config(monkeypatch: pytest.MonkeyPatch, tmp_path: Pa
 
     if os.environ.get("RIVERHOG_CONFIG"):
         return
-    secrets = {
-        "database-url": "postgresql+psycopg://riverhog:riverhog@127.0.0.1:5432/riverhog",
-        "bootstrap-token": "riverhog-pytest-bootstrap-token",
-        "browse-key": "riverhog-pytest-browse-token-signing-key-v1",
-        "archive-passphrase": "riverhog-pytest-archive-passphrase",
-        "adapter-token": "riverhog-pytest-adapter-token",
-    }
-    for name, value in secrets.items():
-        (tmp_path / name).write_text(value + "\n", encoding="utf-8")
-    config = {
-        "database_url_file": str(tmp_path / "database-url"),
-        "bootstrap_token_file": str(tmp_path / "bootstrap-token"),
-        "browse_token_signing_key_file": str(tmp_path / "browse-key"),
-        "archive_passphrase_files": {
-            "riverhog-pytest-key-v1": str(tmp_path / "archive-passphrase")
-        },
-        "archive_active_passphrase_id": "riverhog-pytest-key-v1",
-        "archive_write_store": "archive",
-        "archive_stores": {
-            "archive": {
-                "base_url": "https://archive.invalid",
-                "token_file": str(tmp_path / "adapter-token"),
-            }
-        },
-    }
-    path = tmp_path / "riverhog.yaml"
-    path.write_text(yaml.safe_dump(config, sort_keys=True), encoding="utf-8")
+    from tests.support.runtime_config import write_test_runtime_config
+
+    path = write_test_runtime_config(tmp_path)
     monkeypatch.setenv("RIVERHOG_CONFIG", str(path))
 
 
@@ -236,7 +211,15 @@ def executed_raw_source_growth(tmp_path_factory):
         "RIVERHOG_CI_TIMING_DIR": str(output),
     }
     observed = subprocess.run(
-        [sys.executable, "-m", "pytest", "-q", "-p", "scripts.ci_timing"],
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "--basetemp=" + str(temporary / "pytest"),
+            "-p",
+            "scripts.ci_timing",
+        ],
         cwd=root,
         env=env,
         capture_output=True,
@@ -248,10 +231,12 @@ def executed_raw_source_growth(tmp_path_factory):
     # Resolve and verify against the same checkout that actually executed; the
     # parent interpreter retains its own workspace imports.
     collect = """
+import os
 import sys
 from pathlib import Path
 from riverhog_canonical_json import canonical_json_bytes
 from scripts.validation_witnesses import collect_test_witnesses
+from scripts.validation_numeric import numeric_policy_from_environment
 root, output = Path(sys.argv[1]), Path(sys.argv[2])
 source, destination = sys.argv[3], Path(sys.argv[4])
 evidence = []
@@ -259,6 +244,7 @@ results = collect_test_witnesses(
     tuple((output / "pytest").glob("*/native-owner-execution/*/*.json")), root=root,
     expected=("riverhog-raw-source-primitive-work/v1",), source_sha=source,
     run_id="native-owner-execution", evidence=evidence,
+    numeric_policy=numeric_policy_from_environment(os.environ),
 )
 assert results == {"riverhog-raw-source-primitive-work/v1": "pass"}
 destination.write_bytes(canonical_json_bytes(evidence))

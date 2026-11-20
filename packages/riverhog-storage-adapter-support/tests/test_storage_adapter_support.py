@@ -3,8 +3,11 @@ from __future__ import annotations
 import ast
 import hashlib
 import struct
+import threading
 from collections.abc import Iterator
+from contextlib import closing, contextmanager
 from dataclasses import dataclass, field
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import GeneratorType
 
@@ -14,6 +17,14 @@ from http_api_contracts import canonical_json_bytes
 from pydantic import ValidationError
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
+    BeginWriteOperation,
+    CleanupCandidate,
+    CleanupExecutionResult,
+    CleanupInventoryPage,
+    CleanupInventoryRequest,
+    CleanupInventoryStepRequest,
+    CleanupInvocation,
+    CleanupItemOutcome,
     CompletedObjectReceipt,
     CompletedWriteLookupRequest,
     DeleteObjectRequest,
@@ -25,6 +36,9 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
+    OpenWriteListRequest,
+    OpenWriteObservation,
+    OpenWritePage,
     ReadPreparationRequest,
     ReadReady,
     ReadStatus,
@@ -38,6 +52,10 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentRequest,
     WriteSession,
     WriteStartRequest,
+    cleanup_execution_result,
+    cleanup_inventory_execution_result,
+    unknown_cleanup_execution,
+    write_operation_sha256,
 )
 from riverhog_storage_adapter_support import (
     FRAMED_BODY_FORMAT,
@@ -96,6 +114,34 @@ class MemoryAdapter:
             maximum_segment_count=10_000,
         )
 
+    def execute_cleanup(self, invocation: CleanupInvocation) -> CleanupExecutionResult:
+        invocation._require_exact_request()
+        if invocation.call.target_incarnation != self.descriptor().storage_incarnation_id:
+            return unknown_cleanup_execution(invocation)
+        if isinstance(invocation.request, CleanupInventoryStepRequest):
+            return cleanup_inventory_execution_result(
+                invocation,
+                self.list_cleanup_candidates(invocation.request.inventory),
+                provider_requests=1,
+                execution="closed",
+            )
+        for item in invocation.request.inventory.candidates:
+            if item.kind == "open_write":
+                self.created.pop(item.token, None)
+            elif item.object_path in self.objects:
+                row = self.objects[item.object_path]
+                if (row[3] or "null") == item.token:
+                    self.objects.pop(item.object_path)
+        return cleanup_execution_result(
+            invocation,
+            tuple(
+                CleanupItemOutcome(candidate=item, outcome="disposed")
+                for item in invocation.request.inventory.candidates
+            ),
+            provider_requests=1,
+            execution="closed",
+        )
+
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
         for write_token, current in self.created.items():
             if current == request:
@@ -127,6 +173,66 @@ class MemoryAdapter:
             number=number,
             segment_token=f"part-{number}",
             stored_bytes=len(content),
+        )
+
+    def list_cleanup_candidates(self, request: CleanupInventoryRequest) -> CleanupInventoryPage:
+        if request.target_incarnation != self.descriptor().storage_incarnation_id:
+            raise StorageAdapterRejection("provider_unavailable", "inventory target changed")
+        candidates = sorted(
+            [
+                CleanupCandidate(object_path=path, kind="object_revision", token=row[3] or "null")
+                for path, row in self.objects.items()
+                if path.startswith(request.object_prefix)
+            ]
+            + [
+                CleanupCandidate(object_path=start.object_path, kind="open_write", token=token)
+                for token, start in self.created.items()
+                if start.object_path.startswith(request.object_prefix)
+                and start.object_path not in self.objects
+            ],
+            key=lambda item: (item.object_path, item.kind, item.token),
+        )
+        after = (
+            None
+            if request.continuation is None
+            else CleanupCandidate.model_validate_json(request.continuation)
+        )
+        selected = tuple(
+            item
+            for item in candidates
+            if after is None
+            or (item.object_path, item.kind, item.token)
+            > (after.object_path, after.kind, after.token)
+        )[: request.maximum_items]
+        exhausted = len(selected) < request.maximum_items
+        return CleanupInventoryPage(
+            object_prefix=request.object_prefix,
+            target_incarnation=request.target_incarnation,
+            candidates=selected,
+            scanned_items=len(selected),
+            exhausted=exhausted,
+            continuation=None if exhausted else selected[-1].model_dump_json(),
+        )
+
+    def list_open_writes(self, request: OpenWriteListRequest) -> OpenWritePage:
+        if request.target_incarnation != self.descriptor().storage_incarnation_id:
+            raise StorageAdapterRejection("provider_unavailable", "observation target changed")
+        if request.continuation is not None:
+            raise StorageAdapterRejection("traversal_invalidated", "unknown continuation")
+        observed = tuple(
+            OpenWriteObservation(
+                write_token=token,
+                begin_request_sha256=write_operation_sha256(BeginWriteOperation(request=start)),
+            )
+            for token, start in self.created.items()
+            if start.object_path == request.object_path
+        )
+        return OpenWritePage(
+            object_path=request.object_path,
+            target_incarnation=request.target_incarnation,
+            observations=observed,
+            scanned_items=len(observed),
+            exhausted=True,
         )
 
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
@@ -826,6 +932,61 @@ def test_binding_closes_errors_without_exposing_provider_exception_text() -> Non
     assert b"internal_failure" in body
 
 
+@pytest.mark.parametrize("framed", [False, True])
+def test_binding_fault_logs_only_declared_operation(
+    framed: bool, caplog: pytest.LogCaptureFixture
+) -> None:
+    private_detail = "provider-token-canary\r\nforged-log-entry"
+
+    class FailingAdapter(MemoryAdapter):
+        def begin_write(self, request: WriteStartRequest) -> WriteSession:
+            raise RuntimeError(private_detail + request.object_path)
+
+        def put_small_object(
+            self, request: SmallObjectWriteRequest, content: bytes | Iterator[bytes]
+        ) -> ImmutableObjectReceipt:
+            raise RuntimeError(private_detail + request.object_path)
+
+    binding = StorageAdapterHttpBinding(FailingAdapter())
+    if framed:
+        request = SmallObjectWriteRequest(
+            object_path="archives/private-canary/object",
+            stored_bytes=1,
+            stored_sha256=hashlib.sha256(b"x").hexdigest(),
+            content_type="application/octet-stream",
+            required_identity_assertions={"riverhog-format": "fixture/v1"},
+            placement_policy="archive_default",
+            mode="create_only",
+        )
+        chunks = tuple(framed_body(request, b"x"))
+        path = "/v1/objects/put"
+        response = binding.handle_framed("post", path, chunks, content_length=sum(map(len, chunks)))
+    else:
+        start = WriteStartRequest(
+            object_path="archives/private-canary/object",
+            expected_bytes=1,
+            content_type="application/octet-stream",
+            required_identity_assertions={"riverhog-format": "fixture/v1"},
+            placement_policy="archive_default",
+        )
+        path = "/v1/writes/begin"
+        response = binding.handle("post", path, start.model_dump_json(exclude_none=True).encode())
+
+    assert response.status == 500
+    assert isinstance(response.body, bytes)
+    assert b"private-canary" not in response.body
+    records = [record for record in caplog.records if record.name == "riverhog.storage_adapter"]
+    assert len(records) == 1
+    record = records[0]
+    assert record.getMessage() == "storage adapter capability failed"
+    assert record.__dict__["method"] == "POST"
+    assert record.__dict__["path"] == path
+    assert record.exc_info is None and record.stack_info is None
+    assert "provider-token-canary" not in caplog.text
+    assert "forged-log-entry" not in caplog.text
+    assert "private-canary" not in caplog.text
+
+
 def test_adapter_implementation_value_error_is_a_server_fault() -> None:
     class FaultingAdapter(MemoryAdapter):
         def begin_write(
@@ -1004,13 +1165,61 @@ def test_client_surfaces_the_closed_adapter_error() -> None:
         http.close()
 
 
+@contextmanager
+def _owned_client(adapter: MemoryAdapter) -> Iterator[StorageAdapterClient]:
+    binding = StorageAdapterHttpBinding(adapter)
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, _format: str, *args: object) -> None:
+            pass
+
+        def do_GET(self) -> None:
+            self.dispatch()
+
+        def do_POST(self) -> None:
+            self.dispatch()
+
+        def dispatch(self) -> None:
+            body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
+            response = binding.handle(
+                self.command,
+                self.path,
+                body,
+                expected_incarnation=self.headers.get("Riverhog-Expected-Storage-Incarnation"),
+            )
+            content = response.body if isinstance(response.body, bytes) else b"".join(response.body)
+            self.send_response(response.status)
+            for key, value in response.headers:
+                self.send_header(key, value)
+            self.end_headers()
+            self.wfile.write(content)
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    server.daemon_threads = False
+    thread = threading.Thread(target=lambda: server.serve_forever(poll_interval=0.01))
+    thread.start()
+    try:
+        with closing(
+            StorageAdapterClient(
+                f"http://127.0.0.1:{server.server_port}",
+                token="fixture-token",
+                allow_insecure_http=True,
+                timeout=5,
+            )
+        ) as client:
+            yield client
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+        assert not thread.is_alive()
+
+
 def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> None:
     state = MemoryAdapterState()
     adapter = MemoryAdapter(state)
     restarted_adapter = MemoryAdapter(state)
-    client, http = _client(adapter)
-    continuation_client, continuation_http = _client(restarted_adapter)
-    try:
+    with _owned_client(adapter) as client, _owned_client(restarted_adapter) as continuation_client:
         result = run_storage_adapter_conformance(
             client,
             continuation_client=continuation_client,
@@ -1027,6 +1236,7 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
             "identity-conflict",
             "sparse-write-reconciliation",
             "write-begin-recovery",
+            "read-only-open-write-observation",
             "write-segment-idempotent-authority",
             "write-traversal-invalidation",
             "write-continuation-replay",
@@ -1036,6 +1246,9 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
             "write-completed-object-authority",
             "write-stream",
             "read-preparation",
+            "cleanup-inventory",
+            "bounded-cleanup-inventory",
+            "bounded-selected-cleanup",
             "write-abort",
             "exact-deletion",
             "version-aware-prefix-cleanup",
@@ -1045,8 +1258,77 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
         with pytest.raises(ValidationError, match="exact check set"):
             type(result).model_validate(changed)
         assert not adapter.objects
+
+
+def test_client_observes_open_writes_without_begin_replay() -> None:
+    adapter = MemoryAdapter()
+    start = WriteStartRequest(
+        object_path="archive/volume",
+        expected_bytes=7,
+        content_type="application/octet-stream",
+        required_identity_assertions={"identity": "original"},
+        placement_policy="archive_default",
+    )
+    session = adapter.begin_write(start)
+    requests: list[httpx.Request] = []
+    client, http = _client(adapter, requests=requests)
+    try:
+        request = OpenWriteListRequest(
+            object_path=start.object_path,
+            target_incarnation=adapter.descriptor().storage_incarnation_id,
+            maximum_items=1,
+        )
+        first = client.list_open_writes(request)
+        second = client.list_open_writes(request)
+        assert first == second
+        assert first.exhausted and first.continuation is None
+        assert first.observations == (
+            OpenWriteObservation(
+                write_token=session.write_token,
+                begin_request_sha256=write_operation_sha256(BeginWriteOperation(request=start)),
+            ),
+        )
+        assert [request.url.path for request in requests] == [
+            "/v1/adapter",
+            "/v1/writes/open",
+            "/v1/writes/open",
+        ]
+        assert len(adapter.created) == 1 and not adapter.objects and not adapter.segments
     finally:
-        continuation_client.close()
-        continuation_http.close()
+        client.close()
+        http.close()
+
+
+def test_http_cleanup_inventory_observes_objects_and_sessions_without_disposal() -> None:
+    adapter = MemoryAdapter()
+    start = WriteStartRequest(
+        object_path="archive/open",
+        expected_bytes=1,
+        content_type="application/octet-stream",
+        required_identity_assertions={},
+        placement_policy="archive_default",
+    )
+    session = adapter.begin_write(start)
+    adapter.objects["archive/old"] = (b"x", "application/octet-stream", {}, "v1", "archive_default")
+    client, http = _client(adapter)
+    try:
+        request = CleanupInventoryRequest(
+            object_prefix="archive/",
+            target_incarnation=adapter.descriptor().storage_incarnation_id,
+            maximum_items=1,
+        )
+        observed = []
+        while True:
+            page = client.list_cleanup_candidates(request)
+            observed.extend(page.candidates)
+            if page.exhausted:
+                break
+            request = request.model_copy(update={"continuation": page.continuation})
+        assert {(item.kind, item.object_path, item.token) for item in observed} == {
+            ("object_revision", "archive/old", "v1"),
+            ("open_write", session.object_path, session.write_token),
+        }
+        assert session.write_token in adapter.created and "archive/old" in adapter.objects
+    finally:
         client.close()
         http.close()
