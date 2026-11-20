@@ -17,6 +17,7 @@ from typing import Any
 from riverhog_canonical_json import format_scalar, parse_scalar
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_protocol.pack_ingress import canonical_json_bytes
+from riverhog_recovery_policy import RecoveryPolicy
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session, load_only, undefer
 from state_schema import read_snapshot
@@ -48,6 +49,8 @@ from riverhog_core.services.archive_upload_terminal_tags import (
 )
 from riverhog_core.services.collection_registration_cleanup import freeze_registration_execution
 from riverhog_core.services.collection_upload_authority import require_archive_write_control
+
+_DEFAULT_RECOVERY_POLICY = RecoveryPolicy()
 
 Guard = Callable[[Session], None]
 ApplyResult = Callable[
@@ -84,12 +87,33 @@ def _positive(value: int) -> None:
         raise ValueError("archive write grants must be positive integers")
 
 
-def initialize_archive_write_control(session: Session, upload: CollectionUploadRecord) -> None:
+def initialize_archive_write_control(
+    session: Session,
+    upload: CollectionUploadRecord,
+    *,
+    recovery_policy: RecoveryPolicy = _DEFAULT_RECOVERY_POLICY,
+) -> None:
     """Called only in the transaction that allocates a new upload construction."""
     session.add(
         ArchiveWriteControlRecord(
             collection_id=upload.collection_id,
             construction_json=upload_construction(upload),
+            recovery_policy_json=_json(recovery_policy.to_mapping()),
+            recovery_accounting_json=_json(
+                {
+                    "format": "riverhog-recovery-accounting/v1",
+                    "useful_ns": "0",
+                    "charged_ns": "0",
+                    "reserved_ns": "0",
+                    "successful_checkpoints": "0",
+                    "next_grant_sequence": "0",
+                    "cost_epoch_open": True,
+                    "credit_certain": True,
+                    "optional_admission_sealed": False,
+                    "active_grants": [],
+                }
+            ),
+            recovery_revision="0",
             epoch=secrets.token_hex(32),
             gate="open",
             next_call="0",

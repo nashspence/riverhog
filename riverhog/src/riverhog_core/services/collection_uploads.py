@@ -916,7 +916,7 @@ class SqlAlchemyCollectionUploadService:
             session.flush()
             from .archive_write_admission import initialize_archive_write_control
 
-            initialize_archive_write_control(session, upload)
+            initialize_archive_write_control(session, upload, recovery_policy=self._config.recovery)
             for destination in destinations:
                 session.add(
                     CollectionUploadCopyIntentRecord(

@@ -8,9 +8,10 @@ authority to adopt state, perform effects, or release resources.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, fields
 from fractions import Fraction
-from typing import Literal, get_args
+from typing import Literal, Self, TypedDict, cast, get_args
 
 RecoveryMode = Literal["adaptive", "restart"]
 DecisionReason = Literal[
@@ -55,6 +56,14 @@ def _flag(value: object, name: str) -> None:
         raise ValueError(f"{name} requires a boolean")
 
 
+class _PolicyInput(TypedDict, total=False):
+    recovery_mode: RecoveryMode
+    replay_target_seconds: float
+    max_optional_overhead_fraction: float
+    max_optional_checkpoints: int | None
+    retained_checkpoint_generations: int
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RecoveryPolicy:
     """Optional recovery settings, fixed by an execution's configuration owner."""
@@ -81,6 +90,29 @@ class RecoveryPolicy:
         )
         object.__setattr__(self, "replay_target_seconds", target)
         object.__setattr__(self, "max_optional_overhead_fraction", fraction)
+
+    @classmethod
+    def from_mapping(cls, value: Mapping[str, object]) -> Self:
+        """Validate the original operator values before any parser coercion."""
+        if not isinstance(value, Mapping):
+            raise ValueError("recovery policy requires a mapping")
+        if any(type(key) is not str for key in value):
+            raise ValueError("recovery policy keys must be strings")
+        names = {item.name for item in fields(cls) if item.init}
+        unknown = set(value) - names
+        if unknown:
+            raise ValueError(f"unknown recovery policy fields: {sorted(unknown)}")
+        return cls(**cast(_PolicyInput, dict(value)))
+
+    def to_mapping(self) -> dict[str, str | float | int | None]:
+        """Return only the effective operational policy, without runtime authority."""
+        return {
+            "recovery_mode": self.recovery_mode,
+            "replay_target_seconds": self.replay_target_seconds,
+            "max_optional_overhead_fraction": self.max_optional_overhead_fraction,
+            "max_optional_checkpoints": self.max_optional_checkpoints,
+            "retained_checkpoint_generations": self.retained_checkpoint_generations,
+        }
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

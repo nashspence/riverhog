@@ -15,6 +15,7 @@ from riverhog_archive_contracts import (
     normalize_passphrase_id,
 )
 from riverhog_protocol import CATALOG_SYNC_PAGE_SIZE_MAX
+from riverhog_recovery_policy import RecoveryPolicy
 from sqlalchemy.engine import make_url
 
 from riverhog_core.archive_cleanup_grants import ArchiveCleanupGrants
@@ -131,6 +132,7 @@ class RuntimeConfig:
     journal_validation_workspace: Path = Path("/scratch/journal-validation")
     journal_validation_concurrency: int = 2
     journal_storage: JournalStorageGrants = field(default_factory=JournalStorageGrants)
+    recovery: RecoveryPolicy = field(default_factory=RecoveryPolicy)
     archive_upload_sweep_interval: timedelta = field(default_factory=lambda: timedelta(seconds=30))
     collection_upload_custody_lease: timedelta = field(default_factory=lambda: timedelta(hours=1))
     retrieval_restore_poll_interval: timedelta = field(default_factory=lambda: timedelta(minutes=5))
@@ -183,6 +185,8 @@ class RuntimeConfig:
         return cls(**values)
 
     def __post_init__(self) -> None:
+        if not isinstance(self.recovery, RecoveryPolicy):
+            raise ValueError("recovery requires its validated operational policy")
         if not self.journal_validation_workspace.is_absolute():
             raise ValueError("journal_validation_workspace must be an absolute retained directory")
         if (

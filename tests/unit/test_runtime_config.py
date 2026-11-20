@@ -648,3 +648,61 @@ def test_cleanup_execution_operator_bounds_are_separate_from_outstanding_retenti
         )
         with pytest.raises(ValueError):
             load_runtime_config()
+
+
+def test_recovery_document_uses_one_policy_and_operator_overrides(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from riverhog_recovery_policy import RecoveryPolicy
+
+    path, document = _document(tmp_path, monkeypatch)
+    assert load_runtime_config().recovery == RecoveryPolicy()
+    selected = {
+        "recovery_mode": "restart",
+        "replay_target_seconds": 210,
+        "max_optional_overhead_fraction": 0,
+        "max_optional_checkpoints": 0,
+        "retained_checkpoint_generations": 1,
+    }
+    document["recovery"] = selected
+    _write(path, document)
+    assert load_runtime_config().recovery == RecoveryPolicy.from_mapping(selected)
+
+
+@pytest.mark.parametrize(
+    ("name", "value"),
+    [
+        ("recovery_mode", "unknown"),
+        ("recovery_mode", True),
+        ("replay_target_seconds", True),
+        ("replay_target_seconds", "120"),
+        ("replay_target_seconds", 0),
+        ("replay_target_seconds", float("inf")),
+        ("replay_target_seconds", float("nan")),
+        ("max_optional_overhead_fraction", True),
+        ("max_optional_overhead_fraction", "0.125"),
+        ("max_optional_overhead_fraction", -0.1),
+        ("max_optional_overhead_fraction", 1),
+        ("max_optional_overhead_fraction", float("nan")),
+        ("max_optional_checkpoints", True),
+        ("max_optional_checkpoints", 1.5),
+        ("max_optional_checkpoints", -1),
+        ("retained_checkpoint_generations", True),
+        ("retained_checkpoint_generations", 0),
+        ("retained_checkpoint_generations", None),
+        ("unknown", 1),
+    ],
+)
+def test_recovery_document_rejects_raw_invalid_values(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, name: str, value: object
+) -> None:
+    path, document = _document(tmp_path, monkeypatch)
+    document["recovery"] = {name: value}
+    _write(path, document)
+    with pytest.raises(ValueError):
+        load_runtime_config()
+
+
+def test_runtime_requires_a_validated_recovery_policy(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="validated operational policy"):
+        _config(tmp_path, recovery={"recovery_mode": "restart"})

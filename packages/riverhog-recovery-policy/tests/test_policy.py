@@ -257,3 +257,20 @@ def test_reservation_proposals_cannot_invent_negative_or_suppressed_credit(
 ) -> None:
     with pytest.raises(ValueError):
         CheckpointDecision(reason, reservation)  # type: ignore[arg-type]
+
+
+def test_operator_mapping_preserves_defaults_and_round_trips() -> None:
+    policy = RecoveryPolicy.from_mapping({})
+    assert policy == RecoveryPolicy()
+    assert RecoveryPolicy.from_mapping(policy.to_mapping()) == policy
+    configured = RecoveryPolicy.from_mapping(
+        {"recovery_mode": "restart", "max_optional_checkpoints": 0}
+    )
+    assert configured.recovery_mode == "restart"
+    assert configured.max_optional_checkpoints == 0
+
+
+@pytest.mark.parametrize("value", [{"unknown": 1}, {1: "adaptive"}, {"recovery_mode": True}])
+def test_operator_mapping_rejects_unknown_or_coerced_values(value) -> None:
+    with pytest.raises(ValueError):
+        RecoveryPolicy.from_mapping(value)

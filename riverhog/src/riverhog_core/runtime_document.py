@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Mapping
 from importlib import resources
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from config_validation import load_validated_yaml_config, read_secret_file
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from riverhog_archive_contracts import ARCHIVE_PACK_ARTIFACTS_MAX
+from riverhog_recovery_policy import RecoveryPolicy
 from riverhog_storage_adapter_protocol import MAX_CLEANUP_INVENTORY_PAGE_ITEMS
 from time_formats import parse_duration
 
@@ -47,6 +49,7 @@ _CLEANUP_EXECUTION = CleanupExecutionTuning()
 _ARCHIVE_EXECUTION = ArchiveExecutionTuning()
 _ARCHIVE_INPUT = ArchiveInputGrants()
 _JOURNAL_STORAGE = JournalStorageGrants()
+_RECOVERY = RecoveryPolicy()
 
 
 class _Document(BaseModel):
@@ -395,6 +398,36 @@ class RangePolicyDocument(_Document):
         )
 
 
+class RecoveryDocument(_Document):
+    recovery_mode: Literal["adaptive", "restart"] = _RECOVERY.recovery_mode
+    replay_target_seconds: float = Field(
+        default=_RECOVERY.replay_target_seconds, gt=0, allow_inf_nan=False, strict=True
+    )
+    max_optional_overhead_fraction: float = Field(
+        default=_RECOVERY.max_optional_overhead_fraction,
+        ge=0,
+        lt=1,
+        allow_inf_nan=False,
+        strict=True,
+    )
+    max_optional_checkpoints: int | None = Field(
+        default=_RECOVERY.max_optional_checkpoints, ge=0, strict=True
+    )
+    retained_checkpoint_generations: int = Field(
+        default=_RECOVERY.retained_checkpoint_generations, ge=1, strict=True
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def raw_policy(cls, value: Any) -> Any:
+        if isinstance(value, Mapping):
+            RecoveryPolicy.from_mapping(value)
+        return value
+
+    def policy(self) -> RecoveryPolicy:
+        return RecoveryPolicy.from_mapping(self.model_dump())
+
+
 class RiverhogDocument(_Document):
     model_config = ConfigDict(
         extra="forbid",
@@ -428,6 +461,7 @@ class RiverhogDocument(_Document):
         description="Maximum active native validation sessions; other jobs wait for capacity.",
     )
     journal_storage: JournalStorageDocument = Field(default_factory=JournalStorageDocument)
+    recovery: RecoveryDocument = Field(default_factory=RecoveryDocument)
     archive_upload_sweep_interval: str = "30s"
     collection_upload_custody_lease: str = "1h"
     retrieval_restore_poll_interval: str = "5m"
@@ -548,6 +582,7 @@ def load_runtime_document(path: Path) -> RuntimeConfig:
         journal_validation_workspace=document.journal_validation_workspace,
         journal_validation_concurrency=document.journal_validation_concurrency,
         journal_storage=document.journal_storage.grants(),
+        recovery=document.recovery.policy(),
         archive_upload_sweep_interval=parse_duration(document.archive_upload_sweep_interval),
         collection_upload_custody_lease=parse_duration(document.collection_upload_custody_lease),
         retrieval_restore_poll_interval=parse_duration(document.retrieval_restore_poll_interval),
