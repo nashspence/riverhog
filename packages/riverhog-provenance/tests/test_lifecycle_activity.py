@@ -12,12 +12,11 @@ import pytest
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import _generic_semantics as semantics
-from riverhog_provenance import create_journal, journal_store, validate_graph, validate_journal
+from riverhog_provenance import create_journal, validate_graph, validate_journal
 from riverhog_provenance._activity_projection import read_activity
 from riverhog_provenance._assertion_staging import AssertionStagingCapacity
 from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal import JournalFrame
-from riverhog_provenance.journal_store import _StoredValidator
 from test_assertion_staging import connect, contents, create, identity, proposed_octets, work
 from test_entry_preparation import WorkConnection
 from test_journal_lifecycle import lifecycle_graph
@@ -237,13 +236,17 @@ def test_public_lifecycle_uses_projection_and_preserves_native_error_order(
         assert calls and row["activity_id"] in calls
 
 
-def test_closed_snapshot_refuses_lifecycle_activity_lookup():
-    store = journal_store.JournalStore()
-    stored = object.__new__(_StoredValidator)
-    stored.store = store
-    store.close()
+def test_closed_snapshot_refuses_lifecycle_activity_lookup(graph, who, catalog):
+    graph, _, event = lifecycle_graph(graph, who)
+    graph["relations"] = [event("usage")]
+    raw = create_journal(graph, recorded_by_agent_id=who, catalog=catalog)
+    summary = validate_journal(raw, catalog=catalog)
+    activity = graph["activities"][-1]["id"]
+    objects = summary.graph_validation.objects
+    assert objects[activity]["type"] == "activity"
+    summary.close()
     with pytest.raises(RuntimeError, match="closed"):
-        stored.row_semantics({"type": "usage"})
+        objects[activity]
 
 
 def test_staging_reopen_copies_raw_fields_and_keeps_prefix_private(tmp_path):
