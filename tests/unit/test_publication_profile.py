@@ -7,6 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 from riverhog_archive_contracts import BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT
+from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 
 from scripts import performance_measurement as performance
 from scripts import transfer_profile, validation_identity, validation_process
@@ -184,6 +185,7 @@ def test_parent_rejects_invalid_or_interrupted_completion_after_receiving_the_he
 def test_real_native_profile_verifies_one_collection_through_explicit_reader_cache_states(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    record_property,
 ) -> None:
     sentinel = str(tmp_path / "unavailable-deployed-config")
     monkeypatch.setenv("RIVERHOG_CONFIG", sentinel)
@@ -191,6 +193,22 @@ def test_real_native_profile_verifies_one_collection_through_explicit_reader_cac
     received_deadlines = []
     original_finish = canonical_history_scale.IncrementalCollectionProducer.finish
     original_api = canonical_history_scale._api
+    original_close = SqlAlchemyCollectionUploadService.close
+    receivers = []
+
+    def receive(service):
+        original_close(service)
+        receivers.append("core-publication-owners")
+
+    def phase(value):
+        if value["phase"] == "publication-resources-received":
+            assert receivers == ["core-publication-owners"]
+            assert (tmp_path / "profile-workspace/collection/source-0.bin").exists()
+        if value["phase"] == "verification":
+            assert receivers == ["core-publication-owners"]
+        phases.append(value)
+
+    monkeypatch.setattr(SqlAlchemyCollectionUploadService, "close", receive)
 
     def spawned_api(*args, **kwargs):
         api = original_api(*args, **kwargs)
@@ -213,7 +231,7 @@ def test_real_native_profile_verifies_one_collection_through_explicit_reader_cac
     result = publication_profile.run_publication_profile(
         PublicationGeometry((17,), 1, 1, 1, shared_claim_members=1),
         tmp_path / "profile-workspace",
-        record_phase=phases.append,
+        record_phase=phase,
         finalization_timeout_seconds=3600,
     )
     assert received_deadlines == [3600]
@@ -222,6 +240,28 @@ def test_real_native_profile_verifies_one_collection_through_explicit_reader_cac
     assert os.environ["RIVERHOG_CONFIG"] == sentinel
     assert result["completion_verified"] is True
     assert phases[-1]["phase"] == "cleanup-received"
+    assert receivers == ["core-publication-owners", "core-publication-owners"]
+    sequence = [p["phase"] for p in phases]
+    assert (
+        sequence.index("publication-admitted")
+        < sequence.index("publication-result-received")
+        < sequence.index("publication-resources-received")
+        < sequence.index("publication-fixture-verification")
+        < sequence.index("verification")
+    )
+    workflow = result["publication_workflow"]
+    record_property("publication_workflow", json.dumps(workflow, sort_keys=True))
+    assert 0 < workflow["result_elapsed_ns"] <= workflow["receiving_elapsed_ns"]
+    assert workflow["post_result_tail_ns"] == (
+        workflow["receiving_elapsed_ns"] - workflow["result_elapsed_ns"]
+    )
+    assert workflow["fixture_preparation_ns"] > 0
+    assert workflow["clock"]["monotonic"] is True
+    assert workflow["clock"]["resolution_seconds"] > 0
+    assert all(
+        measurement["verified"]["archive_root_sha256"] == workflow["archive_root_sha256"]
+        for measurement in result["measurements"]
+    )
     assert any(p["phase"] == "append-inputs" and p.get("completed") == 1 for p in phases)
     assert any(p["phase"] == "member-histories-staged" for p in phases)
     measurements = result["measurements"]
@@ -298,3 +338,121 @@ def test_resource_deadline_argument_requires_a_positive_publication_scenario(
         args = parser.parse_args(argv)
         transfer_profile._validate_args(args, parser)
     assert caught.value.code == 2
+
+
+def test_publication_milestones_keep_one_clock_and_exclude_fixture_verification(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    clock = iter([100, 300, 350])
+    monkeypatch.setattr(publication_profile.time, "perf_counter_ns", lambda: next(clock))
+    timeline = publication_profile._PublicationTimeline(50)
+    timeline.observe({"phase": "publication-admitted"})
+    timeline.observe({"phase": "publication-result-received", "archive_root_sha256": "a" * 64})
+    timeline.observe({"phase": "publication-resources-received", "archive_root_sha256": "a" * 64})
+    # Later observer work cannot alter the frozen workflow intervals.
+    timeline.observe({"phase": "publication-fixture-verification"})
+    timeline.observe({"phase": "verification"})
+    observed = timeline.verified("a" * 64)
+    assert observed["fixture_preparation_ns"] == 50
+    assert observed["result_elapsed_ns"] == 200
+    assert observed["receiving_elapsed_ns"] == 250
+    assert observed["post_result_tail_ns"] == 50
+    assert observed["clock"]["origin_ns"] == 100
+
+
+@pytest.mark.parametrize(
+    "fault",
+    [
+        "unadmitted",
+        "duplicate-admission",
+        "missing-root",
+        "changed-root",
+        "duplicate-result",
+        "duplicate-receiving",
+        "backwards-clock",
+        "unreceived",
+        "unverified-root",
+    ],
+)
+def test_publication_milestones_reject_unbound_or_incomplete_observations(
+    monkeypatch: pytest.MonkeyPatch,
+    fault: str,
+) -> None:
+    now = 100
+
+    def tick():
+        nonlocal now
+        now += 10
+        return now
+
+    monkeypatch.setattr(publication_profile.time, "perf_counter_ns", tick)
+    timeline = publication_profile._PublicationTimeline(50)
+    result = {"phase": "publication-result-received", "archive_root_sha256": "a" * 64}
+    receiving = {"phase": "publication-resources-received", "archive_root_sha256": "a" * 64}
+    with pytest.raises(ValueError):
+        if fault == "unadmitted":
+            timeline.observe(result)
+        timeline.observe({"phase": "publication-admitted"})
+        if fault == "duplicate-admission":
+            timeline.observe({"phase": "publication-admitted"})
+        if fault == "missing-root":
+            timeline.observe({"phase": "publication-result-received"})
+        if fault == "backwards-clock":
+            now = 0
+        timeline.observe(result)
+        if fault == "duplicate-result":
+            timeline.observe(result)
+        if fault == "changed-root":
+            timeline.observe({**receiving, "archive_root_sha256": "b" * 64})
+        if fault == "unreceived":
+            timeline.verified("a" * 64)
+        timeline.observe(receiving)
+        if fault == "duplicate-receiving":
+            timeline.observe(receiving)
+        timeline.verified("b" * 64)
+
+
+def test_publication_observer_refusal_before_operation_admission_receives_fixture_owners(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = RuntimeError("original observer refused admission")
+    original_container = canonical_history_scale._container
+    original_api = canonical_history_scale._api
+    receivers = []
+
+    def container(*args, **kwargs):
+        owned = original_container(*args, **kwargs)
+        close = owned.close
+
+        # ServiceContainer uses slots, so observe its actual class receiver.
+        def receive(current):
+            close()
+            receivers.append("container")
+
+        monkeypatch.setattr(type(owned), "close", receive)
+        return owned
+
+    def api(*args, **kwargs):
+        owned = original_api(*args, **kwargs)
+        close = owned.close
+
+        def receive():
+            close()
+            receivers.append("api")
+
+        owned.close = receive
+        return owned
+
+    def phase(value):
+        if value["phase"] == "publication-admitted":
+            raise original
+
+    monkeypatch.setattr(canonical_history_scale, "_container", container)
+    monkeypatch.setattr(canonical_history_scale, "_api", api)
+    with pytest.raises(RuntimeError) as caught:
+        canonical_history_scale.publish_shared_history(
+            tmp_path, members=1, geometry=PublicationGeometry((17,), 1), progress=phase
+        )
+    assert caught.value is original
+    assert receivers == ["api", "container"]

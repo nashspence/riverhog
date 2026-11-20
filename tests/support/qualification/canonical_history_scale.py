@@ -100,6 +100,7 @@ def publish_shared_history(
     database_url: str | None = None,
     geometry: PublicationGeometry | None = None,
     progress: Callable[[dict[str, object]], None] | None = None,
+    receive_workflow: Callable[[ServiceContainer], None] | None = None,
     finalization_timeout_seconds: int = PUBLICATION_TIMEOUT_SECONDS,
 ) -> SharedHistoryFixture:
     """Publish exact payloads, selected shared roots and retained/required history.
@@ -136,283 +137,311 @@ def publish_shared_history(
         "shared-history-qualification", access=[{"permission": "*", "resource": "*"}]
     )
     api = _api(transport, key["token"], workers=container, join_workers=False)
-    sources = []
-    payload_identities = {}
-    for offset in range(members):
-        source = directory / f"source-{offset}.bin"
-        if geometry is None:
-            source.write_bytes(f"exact payload {offset}".encode())
-        else:
-            write_payload(source, member=offset, size=geometry.payload_sizes[offset])
-        sources.append(
-            ProducerFile(
-                source,
-                ArtifactId(uuid4().hex + uuid4().hex),
-                allow_missing_materialization_hint=True,
-            )
-        )
-        with source.open("rb") as stream:
-            digest = hashlib.file_digest(stream, "sha256").hexdigest()
-        payload_identities[str(sources[-1].artifact_id)] = (source.stat().st_size, digest)
-    primaries = []
-    history_bindings = []
-    claims = []
-    who = new_id()
-    event_id = uuid4().hex
-    primary_policy = PrimaryStatePolicy(
-        scope=PrimaryScope(service="qualification-service", account="qualification-account")
-    )
-    primary_store = PrimaryStore(
-        directory / "prepared-primary",
-        allocation_id=event_id,
-        scope=primary_policy.scope,
-        limits=primary_policy.limits(),
-        initialize=True,
-    )
-    producer = IncrementalCollectionProducer(
-        api,
-        primary_store=primary_store,
-        member_inventory=lambda: ordered_primary_inventory(
-            primary_store,
-            (
-                ProducerArtifactIdentity(
-                    source.artifact_id,
-                    *payload_identities[str(source.artifact_id)],
-                )
-                for source in sources
-            ),
-        ),
-        producer_app="shared-history-qualification",
-        adapter_id="qualification-ingress/v1",
-        adapter_version="1",
-        ingest_source="qualification",
-        source_event_id=event_id,
-        use_cache=False,
-    )
     try:
-        # This witness measures history extent, independently of the PostgreSQL
-        # upload-concurrency rail. Keep its SQLite unit fixture deterministic.
-        emit("append-inputs", completed=0, members=members)
-        for count, source in enumerate(sources, 1):
-            producer.append_inputs((source,))
-            if count == members or count & (count - 1) == 0:
-                emit("append-inputs", completed=count, members=members)
-        collection_id = int(producer.collection_id)
-        journal_bytes = 0
-        dependency_sizes = []
-        first_endpoint = None
-        for offset, source in enumerate(sources):
-            binding = api.get_collection_upload_session_artifact_provenance_binding(
-                collection_id, source.artifact_id
-            )
-            assert binding is not None
-            with api.stream_collection_upload_session_provenance_journal(
-                collection_id, binding.journal.journal_id
-            ) as chunks:
-                raw = b"".join(chunks)
-            journal_bytes += len(raw)
-            prefix_bytes = 0
-            with validate_journal(raw, require_profiles=False) as summary:
-                state = summary.graph_validation.objects[binding.delivery_association_id]["state"]
-                endpoint = external_reference(summary, state["object_id"])
-                if first_endpoint is None:
-                    first_endpoint = endpoint
-                for frame in summary.frames:
-                    prefix_bytes += len(frame.encoded)
-                    if frame.reference == endpoint["entry"]:
-                        break
-                if offset < claim_members:
-                    claims.append(
-                        assertion(
-                            "extension",
-                            who,
-                            subject=endpoint,
-                            property=SHARED_PREDICATE,
-                            value={
-                                "type": "text",
-                                "value": f"member-token-{offset:06d}:" + "x" * 2048,
-                            },
-                        )
-                    )
-            dependency_sizes.append(prefix_bytes)
-            primaries.append((source, binding))
-        emit("primary-history-received", members=members)
-        retained = []
-        supplemental_bytes = 0
-        required_bytes = 0
-        if geometry is not None:
-            assert first_endpoint is not None
-            for index in range(geometry.retained_journals):
-                recorder = new_id()
-                raw = create_journal(
-                    {
-                        "agents": [
-                            assertion(
-                                "agent",
-                                recorder,
-                                object_id=recorder,
-                                kind="software",
-                                name="retained history recorder",
-                            )
-                        ],
-                        "extensions": [
-                            assertion(
-                                "extension",
-                                recorder,
-                                subject=first_endpoint,
-                                property=SHARED_PREDICATE,
-                                value={"type": "text", "value": f"retained-journal-{index}"},
-                            )
-                        ],
-                    },
-                    recorded_by_agent_id=recorder,
+        sources = []
+        payload_identities = {}
+        for offset in range(members):
+            source = directory / f"source-{offset}.bin"
+            if geometry is None:
+                source.write_bytes(f"exact payload {offset}".encode())
+            else:
+                write_payload(source, member=offset, size=geometry.payload_sizes[offset])
+            sources.append(
+                ProducerFile(
+                    source,
+                    ArtifactId(uuid4().hex + uuid4().hex),
+                    allow_missing_materialization_hint=True,
                 )
+            )
+            with source.open("rb") as stream:
+                digest = hashlib.file_digest(stream, "sha256").hexdigest()
+            payload_identities[str(sources[-1].artifact_id)] = (source.stat().st_size, digest)
+        primaries = []
+        history_bindings = []
+        claims = []
+        who = new_id()
+        event_id = uuid4().hex
+        primary_policy = PrimaryStatePolicy(
+            scope=PrimaryScope(service="qualification-service", account="qualification-account")
+        )
+        emit("publication-admitted", members=members)
+        primary_store = PrimaryStore(
+            directory / "prepared-primary",
+            allocation_id=event_id,
+            scope=primary_policy.scope,
+            limits=primary_policy.limits(),
+            initialize=True,
+        )
+        producer = IncrementalCollectionProducer(
+            api,
+            primary_store=primary_store,
+            member_inventory=lambda: ordered_primary_inventory(
+                primary_store,
+                (
+                    ProducerArtifactIdentity(
+                        source.artifact_id,
+                        *payload_identities[str(source.artifact_id)],
+                    )
+                    for source in sources
+                ),
+            ),
+            producer_app="shared-history-qualification",
+            adapter_id="qualification-ingress/v1",
+            adapter_version="1",
+            ingest_source="qualification",
+            source_event_id=event_id,
+            use_cache=False,
+        )
+        try:
+            # This witness measures history extent, independently of the PostgreSQL
+            # upload-concurrency rail. Keep its SQLite unit fixture deterministic.
+            emit("append-inputs", completed=0, members=members)
+            for count, source in enumerate(sources, 1):
+                producer.append_inputs((source,))
+                if count == members or count & (count - 1) == 0:
+                    emit("append-inputs", completed=count, members=members)
+            collection_id = int(producer.collection_id)
+            journal_bytes = 0
+            dependency_sizes = []
+            first_endpoint = None
+            for offset, source in enumerate(sources):
+                binding = api.get_collection_upload_session_artifact_provenance_binding(
+                    collection_id, source.artifact_id
+                )
+                assert binding is not None
+                with api.stream_collection_upload_session_provenance_journal(
+                    collection_id, binding.journal.journal_id
+                ) as chunks:
+                    raw = b"".join(chunks)
+                journal_bytes += len(raw)
+                prefix_bytes = 0
                 with validate_journal(raw, require_profiles=False) as summary:
-                    retained.append(HistoryJournalAnchor.from_mapping(summary.anchor))
-                    if index < geometry.required_journals:
-                        required_bytes += len(raw)
+                    state = summary.graph_validation.objects[binding.delivery_association_id][
+                        "state"
+                    ]
+                    endpoint = external_reference(summary, state["object_id"])
+                    if first_endpoint is None:
+                        first_endpoint = endpoint
+                    for frame in summary.frames:
+                        prefix_bytes += len(frame.encoded)
+                        if frame.reference == endpoint["entry"]:
+                            break
+                    if offset < claim_members:
                         claims.append(
                             assertion(
                                 "extension",
                                 who,
-                                subject=external_reference(summary, recorder),
+                                subject=endpoint,
                                 property=SHARED_PREDICATE,
-                                value={"type": "text", "value": f"required-journal-{index}"},
+                                value={
+                                    "type": "text",
+                                    "value": f"member-token-{offset:06d}:" + "x" * 2048,
+                                },
                             )
                         )
-                    api.upload_collection_upload_session_provenance_journal(
-                        collection_id,
-                        summary.journal_id,
-                        content=(raw,),
-                        byte_count=len(raw),
-                        sha256=hashlib.sha256(raw).hexdigest(),
-                    )
-                supplemental_bytes += len(raw)
-        shared = create_journal(
-            {
-                "agents": [
-                    assertion(
-                        "agent", who, object_id=who, kind="software", name="qualification producer"
-                    )
-                ],
-                "extensions": claims,
-            },
-            recorded_by_agent_id=who,
-        )
-        shared_summary = validate_journal(shared, require_profiles=False)
-        try:
-            api.upload_collection_upload_session_provenance_journal(
-                collection_id,
-                shared_summary.journal_id,
-                content=(shared,),
-                byte_count=len(shared),
-                sha256=hashlib.sha256(shared).hexdigest(),
-            )
-            for member, (source, binding) in enumerate(primaries):
-                with MemberHistoryBuilder(
-                    artifact_id=source.artifact_id,
-                    bytes=payload_identities[str(source.artifact_id)][0],
-                    sha256=payload_identities[str(source.artifact_id)][1],
-                    primary=MemberHistoryPrimary.from_mapping(
+                dependency_sizes.append(prefix_bytes)
+                primaries.append((source, binding))
+            emit("primary-history-received", members=members)
+            retained = []
+            supplemental_bytes = 0
+            required_bytes = 0
+            if geometry is not None:
+                assert first_endpoint is not None
+                for index in range(geometry.retained_journals):
+                    recorder = new_id()
+                    raw = create_journal(
                         {
-                            "journal": binding.journal.model_dump(mode="json"),
-                            "delivery_association_id": binding.delivery_association_id,
-                        }
-                    ),
-                ) as histories:
-                    if geometry is None or member < geometry.shared_root_members:
-                        histories.add_root(
-                            MemberHistoryRoot(
-                                HistoryJournalAnchor.from_mapping(shared_summary.anchor), "bound"
+                            "agents": [
+                                assertion(
+                                    "agent",
+                                    recorder,
+                                    object_id=recorder,
+                                    kind="software",
+                                    name="retained history recorder",
+                                )
+                            ],
+                            "extensions": [
+                                assertion(
+                                    "extension",
+                                    recorder,
+                                    subject=first_endpoint,
+                                    property=SHARED_PREDICATE,
+                                    value={"type": "text", "value": f"retained-journal-{index}"},
+                                )
+                            ],
+                        },
+                        recorded_by_agent_id=recorder,
+                    )
+                    with validate_journal(raw, require_profiles=False) as summary:
+                        retained.append(HistoryJournalAnchor.from_mapping(summary.anchor))
+                        if index < geometry.required_journals:
+                            required_bytes += len(raw)
+                            claims.append(
+                                assertion(
+                                    "extension",
+                                    who,
+                                    subject=external_reference(summary, recorder),
+                                    property=SHARED_PREDICATE,
+                                    value={"type": "text", "value": f"required-journal-{index}"},
+                                )
                             )
+                        api.upload_collection_upload_session_provenance_journal(
+                            collection_id,
+                            summary.journal_id,
+                            content=(raw,),
+                            byte_count=len(raw),
+                            sha256=hashlib.sha256(raw).hexdigest(),
                         )
-                    if member == 0:
-                        for anchor in retained:
-                            histories.add_root(MemberHistoryRoot(anchor, "retained"))
-                    selected, descriptor = histories.seal()
-                    history_bindings.append(selected)
-                    for authority in (descriptor.roots, descriptor.imports):
-                        for page in histories.pages(authority):
-                            api.stage_collection_upload_session_history_structure(
-                                collection_id, page.to_json_bytes()
-                            )
-                    api.stage_collection_upload_session_history_structure(
-                        collection_id, descriptor.to_json_bytes()
-                    )
-                    api.bind_collection_upload_session_member_histories(
-                        collection_id,
-                        MemberHistoryBindingBatchDocument.model_validate(
-                            {"bindings": [selected.to_mapping()]}
-                        ),
-                    )
-                count = member + 1
-                if count == members or count & (count - 1) == 0:
-                    emit("member-histories-staged", completed=count, members=members)
-            assert all(source.source.exists() for source in sources)
-            emit("finalization", members=members)
-            finalized = producer.finish(
-                poll_seconds=PUBLICATION_POLL_SECONDS,
-                timeout_seconds=finalization_timeout_seconds,
+                    supplemental_bytes += len(raw)
+            shared = create_journal(
+                {
+                    "agents": [
+                        assertion(
+                            "agent",
+                            who,
+                            object_id=who,
+                            kind="software",
+                            name="qualification producer",
+                        )
+                    ],
+                    "extensions": claims,
+                },
+                recorded_by_agent_id=who,
             )
-            assert finalized.archive_root_sha256 is not None
-            assert finalized.receipt["state"] == "finalized"
+            shared_summary = validate_journal(shared, require_profiles=False)
+            try:
+                api.upload_collection_upload_session_provenance_journal(
+                    collection_id,
+                    shared_summary.journal_id,
+                    content=(shared,),
+                    byte_count=len(shared),
+                    sha256=hashlib.sha256(shared).hexdigest(),
+                )
+                for member, (source, binding) in enumerate(primaries):
+                    with MemberHistoryBuilder(
+                        artifact_id=source.artifact_id,
+                        bytes=payload_identities[str(source.artifact_id)][0],
+                        sha256=payload_identities[str(source.artifact_id)][1],
+                        primary=MemberHistoryPrimary.from_mapping(
+                            {
+                                "journal": binding.journal.model_dump(mode="json"),
+                                "delivery_association_id": binding.delivery_association_id,
+                            }
+                        ),
+                    ) as histories:
+                        if geometry is None or member < geometry.shared_root_members:
+                            histories.add_root(
+                                MemberHistoryRoot(
+                                    HistoryJournalAnchor.from_mapping(shared_summary.anchor),
+                                    "bound",
+                                )
+                            )
+                        if member == 0:
+                            for anchor in retained:
+                                histories.add_root(MemberHistoryRoot(anchor, "retained"))
+                        selected, descriptor = histories.seal()
+                        history_bindings.append(selected)
+                        for authority in (descriptor.roots, descriptor.imports):
+                            for page in histories.pages(authority):
+                                api.stage_collection_upload_session_history_structure(
+                                    collection_id, page.to_json_bytes()
+                                )
+                        api.stage_collection_upload_session_history_structure(
+                            collection_id, descriptor.to_json_bytes()
+                        )
+                        api.bind_collection_upload_session_member_histories(
+                            collection_id,
+                            MemberHistoryBindingBatchDocument.model_validate(
+                                {"bindings": [selected.to_mapping()]}
+                            ),
+                        )
+                    count = member + 1
+                    if count == members or count & (count - 1) == 0:
+                        emit("member-histories-staged", completed=count, members=members)
+                assert all(source.source.exists() for source in sources)
+                emit("finalization", members=members)
+                finalized = producer.finish(
+                    poll_seconds=PUBLICATION_POLL_SECONDS,
+                    timeout_seconds=finalization_timeout_seconds,
+                )
+                assert finalized.archive_root_sha256 is not None
+                assert finalized.receipt["state"] == "finalized"
+                emit(
+                    "publication-result-received",
+                    collection_id=collection_id,
+                    archive_root_sha256=finalized.archive_root_sha256,
+                )
+            finally:
+                shared_summary.close()
         finally:
-            shared_summary.close()
-    finally:
-        producer.stop()
-        primary_store.close()
-    with session_scope(container.session_factory) as session:
-        collection = session.get(CollectionRecord, collection_id)
-        assert collection is not None
-        assert collection.archive_root_sha256 == finalized.archive_root_sha256
-        rows = list(
-            session.scalars(
-                select(CollectionArtifactRecord).where(
-                    CollectionArtifactRecord.collection_id == collection_id
+            try:
+                producer.stop()
+            finally:
+                primary_store.close()
+        if receive_workflow is not None:
+            receive_workflow(container)
+            emit(
+                "publication-resources-received", archive_root_sha256=finalized.archive_root_sha256
+            )
+        emit("publication-fixture-verification")
+        with session_scope(container.session_factory) as session:
+            collection = session.get(CollectionRecord, collection_id)
+            assert collection is not None
+            assert collection.archive_root_sha256 == finalized.archive_root_sha256
+            rows = list(
+                session.scalars(
+                    select(CollectionArtifactRecord).where(
+                        CollectionArtifactRecord.collection_id == collection_id
+                    )
                 )
             )
-        )
-        assert {row.artifact_id: (row.bytes, row.sha256) for row in rows} == payload_identities
-        assert all(row.custody_receipt_json for row in rows)
-        state = session.get(State, collection_id)
-        assert state is not None and state.active_build_id is not None
-        generation = session.get(Generation, state.active_build_id)
-        assert generation is not None and generation.generation_id is not None
-        generation_id = generation.generation_id
-        expected_snapshots = int(
-            session.scalar(
-                select(func.count())
-                .select_from(Snapshot)
-                .where(Snapshot.build_id == state.active_build_id)
+            assert {row.artifact_id: (row.bytes, row.sha256) for row in rows} == payload_identities
+            assert all(row.custody_receipt_json for row in rows)
+            state = session.get(State, collection_id)
+            assert state is not None and state.active_build_id is not None
+            generation = session.get(Generation, state.active_build_id)
+            assert generation is not None and generation.generation_id is not None
+            generation_id = generation.generation_id
+            expected_snapshots = int(
+                session.scalar(
+                    select(func.count())
+                    .select_from(Snapshot)
+                    .where(Snapshot.build_id == state.active_build_id)
+                )
+                or 0
             )
-            or 0
-        )
-        # Remove all producer scratch. The following rebuild must use custody.
-        session.execute(
-            delete(CollectionUploadRecord).where(
-                CollectionUploadRecord.collection_id == collection_id
+            # Remove all producer scratch. The following rebuild must use custody.
+            session.execute(
+                delete(CollectionUploadRecord).where(
+                    CollectionUploadRecord.collection_id == collection_id
+                )
             )
+        for source in sources:
+            source.source.unlink()
+        return SharedHistoryFixture(
+            container,
+            api,
+            collection_id,
+            tuple(str(s.artifact_id) for s in sources),
+            generation_id,
+            len(shared),
+            journal_bytes + len(shared) + supplemental_bytes,
+            journal_bytes
+            + fanout * (sum(dependency_sizes[:claim_members]) + len(shared) + required_bytes)
+            - sum(dependency_sizes[: min(fanout, claim_members)]),
+            expected_snapshots,
+            shared_summary.journal_id,
+            payload_identities,
+            tuple(history_bindings),
+            finalized.archive_root_sha256,
+            tuple(source.source for source in sources),
         )
-    for source in sources:
-        source.source.unlink()
-    return SharedHistoryFixture(
-        container,
-        api,
-        collection_id,
-        tuple(str(s.artifact_id) for s in sources),
-        generation_id,
-        len(shared),
-        journal_bytes + len(shared) + supplemental_bytes,
-        journal_bytes
-        + fanout * (sum(dependency_sizes[:claim_members]) + len(shared) + required_bytes)
-        - sum(dependency_sizes[: min(fanout, claim_members)]),
-        expected_snapshots,
-        shared_summary.journal_id,
-        payload_identities,
-        tuple(history_bindings),
-        finalized.archive_root_sha256,
-        tuple(source.source for source in sources),
-    )
+    except BaseException:
+        try:
+            api.close()
+        finally:
+            container.close()
+        raise
 
 
 def measure_archive_rebuild(
