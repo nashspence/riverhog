@@ -15,6 +15,7 @@ import sqlite3
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, MutableSet
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -45,6 +46,7 @@ from ._description_projection import read_description_metadata
 from ._fixity_projection import read_fixity_metadata
 from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
+from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._observation_coverage import ObservationCoverage
 from ._observation_projection import has_observer, read_observation_metadata
@@ -131,7 +133,8 @@ class GenericState:
     def done(self) -> bool:
         return self.phase in {"done", "rejected"}
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {
                 "phase": self.phase,
@@ -143,6 +146,9 @@ class GenericState:
                 "edge_run": self.edge_run,
             }
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str) -> GenericState:
@@ -1316,6 +1322,9 @@ class GenericSemantics:
             }
         )
         self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[GenericState](self.epoch)
+        self._edge: SemanticEdge | None = None
+        self._edge_key: tuple[str, str, tuple[str, bytes, str]] | None = None
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
         with closing(self.db.execute(sql, parameters)) as rows:
@@ -1468,7 +1477,8 @@ class GenericSemantics:
         if row[1:4] != prefix:
             raise StaleGenericSemantics("accepted prefix changed during common semantics")
         self._subject()
-        return GenericState.from_json(row[4]), prefix
+        state = self._control.get(row[4]) or GenericState.from_json(row[4])
+        return state, prefix
 
     @observe_preparation
     def load(self) -> GenericState:
@@ -1498,7 +1508,11 @@ class GenericSemantics:
                 }
             )
         ).hexdigest()
-        return SemanticEdge(
+        key = state.edge_run, attempt, prefix
+        if self._edge_key == key and self._edge is not None and self._edge.epoch is self.epoch:
+            self._edge.checker._check_algorithm()
+            return self._edge
+        child = SemanticEdge(
             self.db,
             kind=self.kind,
             run_id=state.edge_run,
@@ -1510,6 +1524,22 @@ class GenericSemantics:
             target=value[right]["object_id"],
             epoch=self.epoch,
         )
+        self._edge_key, self._edge = key, child
+        return child
+
+    def _receive_edge(self, batch: GenericBatch) -> None:
+        self.epoch.require_receiving(self.db)
+        edge = batch.edge
+        if edge is None:
+            return
+        child = self._edge
+        if (
+            child is None
+            or child.epoch is not self.epoch
+            or (child.attempt_id, child.binding) != (edge.attempt_id, edge.binding)
+        ):
+            raise RuntimeError("Native semantic edge lost its original child receiving")
+        child._control.receive(edge.after)
 
     @staticmethod
     def _charge_edge(meter: _Meter, batch: EdgeAdmission | EdgeBatch, row_budget: int) -> None:

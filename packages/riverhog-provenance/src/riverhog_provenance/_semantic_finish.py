@@ -13,6 +13,7 @@ import re
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -31,6 +32,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from .common import fingerprint
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
@@ -69,7 +71,8 @@ class FinishState:
     def done(self) -> bool:
         return self.phase == "done"
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {
                 "phase": self.phase,
@@ -81,6 +84,9 @@ class FinishState:
                 "version": str(self.version),
             }
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str) -> FinishState:
@@ -441,6 +447,7 @@ class SemanticFinish:
             }
         )
         self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[FinishState](self.epoch)
 
     @property
     def db(self) -> sqlite3.Connection:
@@ -563,7 +570,7 @@ class SemanticFinish:
         prefix = self._prefix()
         if header[1:4] != prefix:
             raise StaleSemanticFinish("accepted prefix changed during semantic finish")
-        state = FinishState.from_json(header[4])
+        state = self._control.get(header[4]) or FinishState.from_json(header[4])
         current = None
         for identity in (state.completed, state.current):
             if identity is None:

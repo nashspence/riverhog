@@ -14,6 +14,7 @@ import sqlite3
 from collections.abc import Callable
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -34,6 +35,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._online_dag import OnlineDag, _Plan, _Snapshot, _Work
 from ._semantic_source import SemanticSource
@@ -56,8 +58,12 @@ class EdgeState:
     def done(self) -> bool:
         return self.phase == "done"
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes({"phase": self.phase, "version": str(self.version)}).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str) -> EdgeState:
@@ -510,6 +516,7 @@ class SemanticEdge:
             }
         )
         self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[EdgeState](self.epoch)
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
         with closing(self.db.execute(sql, parameters)) as rows:
@@ -679,7 +686,8 @@ class SemanticEdge:
         if row[1:4] != prefix:
             raise StaleSemanticEdge("accepted prefix changed during semantic graph work")
         self._subject()
-        state, graph = EdgeState.from_json(row[4]), self._dag()
+        state = self._control.get(row[4]) or EdgeState.from_json(row[4])
+        graph = self._dag()
         operation = self._operation(prefix)
         if state.phase == "start":
             if graph.work.phase not in {"idle", "complete"} or graph.work.operation_id == operation:

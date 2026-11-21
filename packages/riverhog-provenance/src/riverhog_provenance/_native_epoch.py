@@ -38,11 +38,14 @@ class EpochContext:
     def quiescent(self) -> bool:
         return self._phase == "quiescent" and not self.db.in_transaction
 
-    def require_quiescent(self) -> None:
+    def require_usable(self) -> None:
         if self._failure is not None:
             raise RuntimeError(
                 "Native executor requires reconstruction after a failed epoch"
             ) from (self._failure)
+
+    def require_quiescent(self) -> None:
+        self.require_usable()
         if not self.quiescent:
             raise RuntimeError("Native private epoch is already active or has a foreign writer")
 

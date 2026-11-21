@@ -13,6 +13,7 @@ import re
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -31,6 +32,7 @@ from riverhog_provenance_contracts import canonical_document
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -63,7 +65,8 @@ class StageState:
     def done(self) -> bool:
         return self.phase == "done"
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {
                 "phase": self.phase,
@@ -72,6 +75,9 @@ class StageState:
                 "observer_cursor": str(self.observer_cursor),
             }
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str, count: int) -> StageState:
@@ -483,6 +489,7 @@ class AssertionStaging:
             }
         )
         self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[StageState](self.epoch)
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
         with closing(self.db.execute(sql, parameters)) as rows:
@@ -617,7 +624,7 @@ class AssertionStaging:
         prefix = self._prefix()
         if header[2:5] != prefix:
             raise StaleAssertionStaging("accepted prefix changed during assertion staging")
-        state = StageState.from_json(header[5], self.count)
+        state = self._control.get(header[5]) or StageState.from_json(header[5], self.count)
         if state.position:
             category, source = self.rows[state.position - 1]
             link = self._one(

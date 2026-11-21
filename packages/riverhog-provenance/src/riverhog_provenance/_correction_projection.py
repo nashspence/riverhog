@@ -12,6 +12,7 @@ import re
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import (
@@ -27,6 +28,7 @@ from riverhog_growth_contracts import (
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from ._admission_growth import admission_declaration
+from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from .errors import JournalValidationCapacity
 
@@ -204,7 +206,8 @@ class CorrectionState:
     def done(self) -> bool:
         return self.phase == "done"
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {
                 "phase": self.phase,
@@ -212,6 +215,9 @@ class CorrectionState:
                 "version": str(self.version),
             }
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str, operation: str) -> CorrectionState:
@@ -335,6 +341,7 @@ class CorrectionWork:
         self.attempt_id = attempt_id
         self.source_binding = source_binding
         self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[CorrectionState](self.epoch)
 
     def _require_detached(self) -> None:
         if self.db.in_transaction:
@@ -429,7 +436,7 @@ class CorrectionWork:
             raise StaleCorrectionWork("correction checkpoint differs from its owned inputs")
         if row[0] != ALGORITHM:
             raise RuntimeError("unknown correction projection algorithm")
-        return CorrectionState.from_json(row[1], self.operation)
+        return self._control.get(row[1]) or CorrectionState.from_json(row[1], self.operation)
 
     def _read_header(self) -> CorrectionState:
         self._require_detached()

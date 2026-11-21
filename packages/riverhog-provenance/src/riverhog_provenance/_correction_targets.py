@@ -13,6 +13,7 @@ import re
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -29,6 +30,7 @@ from riverhog_growth_contracts import (
 
 from ._admission_growth import admission_declaration
 from ._journal_prefix import PrefixState, _reference
+from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -224,10 +226,14 @@ class TargetState:
     def done(self) -> bool:
         return self.phase == "done"
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {"phase": self.phase, "position": str(self.position), "version": str(self.version)}
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str, count: int) -> TargetState:
@@ -358,6 +364,7 @@ class CorrectionTargets:
         self.sequence, self.journal_id = document["sequence"], document["journal_id"]
         self.count = len(self.targets)
         self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[TargetState](self.epoch)
 
     def _detached(self) -> None:
         if self.db.in_transaction:
@@ -482,7 +489,8 @@ class CorrectionTargets:
             raise RuntimeError("correction target count differs from its source")
         if row[2] != self._prefix():
             raise StaleCorrectionTargets("accepted prefix changed during correction work")
-        return TargetState.from_json(row[3], self.count), row[2]
+        state = self._control.get(row[3]) or TargetState.from_json(row[3], self.count)
+        return state, row[2]
 
     def _header(self) -> tuple[TargetState, str]:
         self._detached()

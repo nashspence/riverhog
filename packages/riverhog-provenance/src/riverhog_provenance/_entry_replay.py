@@ -2515,7 +2515,10 @@ class EntryReplay:
             else:
                 batch = child.prepare(row_budget=self._budget.rows, byte_budget=self._remaining())
 
+        changed: Any = None
+
         def apply() -> ValidationCheckpoint:
+            nonlocal changed
             changed = child._admit(batch) if admission else child._apply(batch)
             return replace(
                 state,
@@ -2525,7 +2528,14 @@ class EntryReplay:
                 child_sha256=_digest(changed),
             )
 
-        return self._commit(before, apply)
+        def receive(_snapshot: ValidationSnapshot) -> None:
+            if changed is None:
+                raise RuntimeError("Native child lost its original pending control")
+            child._control.receive(changed)
+            if isinstance(child, GenericSemantics) and not admission:
+                child._receive_edge(batch)
+
+        return self._commit(before, apply, receive=receive)
 
     @staticmethod
     def _graph_digest(graph: OnlineDag, after: _Snapshot | None = None) -> str:

@@ -12,6 +12,7 @@ import re
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -31,6 +32,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
@@ -64,10 +66,14 @@ class PreparationState:
     def done(self) -> bool:
         return self.phase == "done"
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {"phase": self.phase, "retired": str(self.retired), "version": str(self.version)}
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str) -> PreparationState:
@@ -478,6 +484,7 @@ class EntryPreparation:
             }
         )
         self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[PreparationState](self.epoch)
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
         with closing(self.db.execute(sql, parameters)) as rows:
@@ -627,7 +634,7 @@ class EntryPreparation:
         prefix = self._prefix()
         if row[1:4] != prefix:
             raise StaleEntryPreparation("accepted prefix changed during entry preparation")
-        state = PreparationState.from_json(row[4])
+        state = self._control.get(row[4]) or PreparationState.from_json(row[4])
         self._boundaries(state)
         return state, prefix
 

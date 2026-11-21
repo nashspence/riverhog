@@ -479,6 +479,9 @@ class OnlineDag:
         if kind not in _KINDS or not isinstance(run_id, str) or not run_id:
             raise ValueError("online graph requires an owned graph kind and run identity")
         self.db, self.kind, self.run_id = db, kind, run_id
+        self._check_algorithm()
+
+    def _check_algorithm(self) -> None:
         rows = self._rows("SELECT algorithm FROM dag_algorithm WHERE singleton = 1")
         if rows != [(ALGORITHM,)]:
             raise RuntimeError("online graph algorithm binding differs")
