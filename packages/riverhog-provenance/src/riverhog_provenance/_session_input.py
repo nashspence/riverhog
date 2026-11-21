@@ -11,6 +11,7 @@ from riverhog_canonical_json import canonical_json_bytes
 
 from ._entry_replay import EntryReplayCapacity
 from ._native_epoch import EpochContext
+from ._native_frame import NativeFrame
 from ._native_work import WorkAmount
 from ._session_checkpoint import StaleValidationCheckpoint, ValidationSnapshot
 from .errors import IncompleteSourceError, ProvenanceValidationError
@@ -263,7 +264,7 @@ class RetainedInput:
                 )
             if reservation is not None:
                 reservation.consume(WorkAmount(octets=len(raw), source_octets=len(raw)))
-            frame = JournalFrame(raw)
+            frame = NativeFrame(raw, self.ledger.epoch)
         try:
             _ = frame.document
         except (ValueError, TypeError) as exc:

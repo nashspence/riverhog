@@ -40,6 +40,7 @@ from ._entry_preparation import EntryPreparation
 from ._generic_semantics import GenericAtom, GenericSemantics
 from ._journal_prefix import JournalPrefix, PreparedEntry
 from ._native_epoch import EpochContext, observe_preparation
+from ._native_frame import NativeFrame, own_frame
 from ._online_dag import OnlineDag, _Snapshot
 from ._semantic_finish import SemanticFinish
 from ._semantic_program import ROW_TYPES, Nodes
@@ -2256,6 +2257,7 @@ class EntryReplay:
 
     @observe_preparation
     def _cache(self, frame: JournalFrame) -> _CurrentEntry:
+        frame = own_frame(frame, self.epoch)
         prepared = self.prefix.prepare(frame, self.catalog)
         current = _CurrentEntry(
             frame,
@@ -2287,13 +2289,12 @@ class EntryReplay:
             raise RuntimeError("retained entry atom differs from its parent checkpoint")
         self._claim(metadata[2])
         value = self._one("SELECT value FROM journal_validation_frame WHERE singleton=1")
-        if (
-            value is None
-            or type(value[0]) is not bytes
-            or hashlib.sha256(value[0]).hexdigest() != state.frame_sha256
-        ):
+        if value is None or type(value[0]) is not bytes:
             raise RuntimeError("retained entry atom is missing or changed")
-        self._current = self._cache(JournalFrame(value[0]))
+        frame = NativeFrame(value[0], self.epoch)
+        if frame.sha256 != state.frame_sha256:
+            raise RuntimeError("retained entry atom is missing or changed")
+        self._current = self._cache(frame)
         return self._current
 
     def _commit(

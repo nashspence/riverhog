@@ -29,6 +29,7 @@ from ._entry_replay import EntryReplay, EntryReplayCapacity, ReplayBudget
 from ._entry_replay import install as install_replay
 from ._journal_prefix import JournalPrefix
 from ._native_epoch import EpochContext
+from ._native_frame import NativeFrame
 from ._native_work import WorkAmount, WorkQuantum
 from ._session_checkpoint import ValidationLedger, ValidationSnapshot
 from ._session_checkpoint import install as install_parent
@@ -319,7 +320,7 @@ class _ChunkInput:
             nullcontext() if work is None or size == 0 else work.reserve(WorkAmount(octets=size))
         )
         with admission as reservation:
-            frame = JournalFrame(bytes(self.buffer))
+            frame = NativeFrame(bytes(self.buffer), self.epoch)
             if reservation is not None:
                 reservation.consume(WorkAmount(octets=size))
         try:
