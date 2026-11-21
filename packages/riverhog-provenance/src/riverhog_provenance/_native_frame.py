@@ -34,6 +34,7 @@ class NativeFrame(JournalFrame):
         self._epoch.require_usable()
         document = self._document
         if document is None:
+            self._epoch.account(WorkAmount(octets=len(self.json_bytes)))
             document = super(NativeFrame, self).document
             object.__setattr__(self, "_document", document)
         return document
@@ -43,9 +44,7 @@ class NativeFrame(JournalFrame):
         self._epoch.require_usable()
         digest = self._sha256
         if digest is None:
-            work = self._epoch.work
-            if work is not None and self.json_bytes:
-                work.consume(WorkAmount(octets=len(self.json_bytes)))
+            self._epoch.account(WorkAmount(octets=len(self.json_bytes)))
             digest = super(NativeFrame, self).sha256
             object.__setattr__(self, "_sha256", digest)
         return digest

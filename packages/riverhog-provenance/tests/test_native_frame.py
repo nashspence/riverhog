@@ -213,3 +213,112 @@ def test_failed_original_epoch_cannot_reuse_even_an_already_parsed_and_hashed_fr
             _ = frame.sha256
         with pytest.raises(RuntimeError, match="requires reconstruction"):
             own_frame(frame, epoch)
+
+
+def test_parse_consumes_its_input_once_without_fresh_source_credit(monkeypatch):
+    decoded, hashed = observe_frames(monkeypatch)
+    with closing(sqlite3.connect(":memory:", factory=SqliteProgressConnection)) as db:
+        epoch = EpochContext(db)
+        raw = b'{"sequence":"0"}'
+        frame, received = NativeFrame(raw, epoch), None
+        for ordinal in range(2):
+            work = WorkQuantum(WorkAmount(rows=1, octets=len(raw), source_octets=1, transitions=1))
+            with epoch.execution(None, work=work):
+                current = frame.document
+                assert current == {"sequence": "0"} and frame.document is current
+                if received is not None:
+                    assert current is received
+                received = current
+            assert work.consumed == (WorkAmount(octets=len(raw)) if ordinal == 0 else WorkAmount())
+            work.require_received()
+        assert decoded == [frame] and hashed == []
+
+
+def test_parse_capacity_refuses_before_decoding_and_retries_the_same_original_frame(monkeypatch):
+    decoded, hashed = observe_frames(monkeypatch)
+    with closing(sqlite3.connect(":memory:", factory=SqliteProgressConnection)) as db:
+        epoch = EpochContext(db)
+        raw = b'{"sequence":"0"}'
+        frame = NativeFrame(raw, epoch)
+        small = WorkQuantum(WorkAmount(rows=1, octets=len(raw) - 1, source_octets=1, transitions=1))
+        with pytest.raises(NativeWorkCapacity):
+            with epoch.execution(None, work=small):
+                _ = frame.document
+        assert decoded == hashed == [] and frame._document is frame._sha256 is None
+        assert small.consumed == small.held == WorkAmount() and epoch.quiescent
+        assert own_frame(frame, epoch) is frame
+        enough = WorkQuantum(WorkAmount(rows=1, octets=len(raw), source_octets=1, transitions=1))
+        with epoch.execution(None, work=enough):
+            assert frame.document == {"sequence": "0"}
+        assert decoded == [frame] and hashed == []
+        assert enough.consumed == WorkAmount(octets=len(raw)) and enough.held == WorkAmount()
+        small.require_received()
+        enough.require_received()
+
+
+def test_failed_parse_keeps_actual_input_cost_without_a_successful_cached_view(monkeypatch):
+    decoded, hashed = observe_frames(monkeypatch)
+    with closing(sqlite3.connect(":memory:", factory=SqliteProgressConnection)) as db:
+        epoch = EpochContext(db)
+        raw = b'{"sequence":'
+        frame = NativeFrame(raw, epoch)
+        for _ in range(2):
+            work = WorkQuantum(WorkAmount(rows=1, octets=len(raw), source_octets=1, transitions=1))
+            with epoch.execution(None, work=work):
+                with pytest.raises(ValueError, match="invalid provenance JSON"):
+                    _ = frame.document
+            assert frame._document is frame._sha256 is None and epoch.quiescent
+            assert work.consumed == WorkAmount(octets=len(raw)) and work.held == WorkAmount()
+            work.require_received()
+        assert decoded == [frame, frame] and hashed == []
+
+
+def test_parse_and_hash_consume_the_original_application_reservation(monkeypatch):
+    decoded, hashed = observe_frames(monkeypatch)
+    with closing(sqlite3.connect(":memory:", factory=SqliteProgressConnection)) as db:
+        epoch, raw = EpochContext(db), b'{"sequence":"0"}'
+        frame = NativeFrame(raw, epoch)
+        work = WorkQuantum(WorkAmount(rows=1, octets=3 * len(raw), source_octets=1, transitions=1))
+        received = []
+
+        def mutation(original):
+            assert original is epoch and work.held == WorkAmount(octets=2 * len(raw))
+            view = frame.document
+            assert work.consumed == work.held == WorkAmount(octets=len(raw))
+            digest = frame.sha256
+            assert work.consumed == WorkAmount(octets=2 * len(raw)) and work.held == WorkAmount()
+            return view, digest
+
+        def receive(value):
+            epoch.require_receiving(db)
+            assert frame.document is value[0] and frame.sha256 == value[1]
+            received.append(value)
+
+        with epoch.execution(None, work=work):
+            result = epoch.apply(
+                mutation, receive=receive, admission=WorkAmount(octets=2 * len(raw))
+            )
+        assert received == [result] and decoded == hashed == [frame]
+        assert epoch.quiescent and work.consumed == WorkAmount(octets=2 * len(raw))
+        assert work.held == WorkAmount()
+        work.require_received()
+
+
+def test_hash_cannot_bypass_original_application_admission_with_unreserved_capacity(monkeypatch):
+    decoded, hashed = observe_frames(monkeypatch)
+    with closing(sqlite3.connect(":memory:", factory=SqliteProgressConnection)) as db:
+        epoch, raw = EpochContext(db), b'{"sequence":"0"}'
+        frame = NativeFrame(raw, epoch)
+        work = WorkQuantum(WorkAmount(rows=1, octets=3 * len(raw), source_octets=1, transitions=1))
+        with pytest.raises(RuntimeError, match="exceeds its original admission"):
+            with epoch.execution(None, work=work):
+                epoch.apply(
+                    lambda _original: (frame.document, frame.sha256),
+                    receive=lambda _value: pytest.fail("unadmitted hash was received"),
+                    admission=WorkAmount(octets=len(raw)),
+                )
+        assert decoded == [frame] and hashed == [] and frame._sha256 is None
+        assert work.consumed == WorkAmount(octets=len(raw)) and work.held == WorkAmount()
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            _ = frame.document
+        work.require_received()

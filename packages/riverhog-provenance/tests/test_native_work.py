@@ -409,7 +409,7 @@ def test_complete_frame_transfer_uses_aggregate_budget_not_the_scan_window(
         assert session.advance(JournalValidationBudget(source_octets=7)).phase == "entry-admission"
         assert len(seen) == 1
         assert seen[0].consumed == WorkAmount(
-            rows=10, octets=2 * size, source_octets=size if retained else 0, transitions=1
+            rows=10, octets=3 * size, source_octets=size if retained else 0, transitions=1
         )
         seen[0].require_received()
         if retained:
