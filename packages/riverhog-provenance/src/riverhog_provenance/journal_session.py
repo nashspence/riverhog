@@ -78,7 +78,9 @@ class JournalValidationWorkBudget:
     """
 
     rows: int = 64 * 64
-    octets: int = 4 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
+    # One existing maximum entry can be copied, decoded, content-hashed,
+    # framed and source-hashed, with room for its bounded owner metadata.
+    octets: int = 6 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
     source_octets: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
     transitions: int = 64
 

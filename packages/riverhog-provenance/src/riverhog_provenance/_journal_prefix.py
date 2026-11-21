@@ -705,7 +705,11 @@ class JournalPrefix:
             ):
                 raise ProvenanceValidationError("checkpoint prefix commitment mismatch")
         digest = CheckpointSHA256.from_state(state.sha256_state)
-        digest.update_bytes(frame.encoded)
+        framed_octets = len(frame.json_bytes) + 2
+        self.epoch.account(WorkAmount(octets=framed_octets))
+        encoded = b"".join((b"\x1e", frame.json_bytes, b"\n"))
+        self.epoch.account(WorkAmount(octets=framed_octets))
+        digest.update_bytes(encoded)
         return PreparedEntry(
             state,
             state.to_json(),
