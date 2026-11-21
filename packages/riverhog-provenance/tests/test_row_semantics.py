@@ -526,7 +526,7 @@ def test_root_operation_is_bound_and_unknown_codec_is_not_rebuilt(tmp_path, cata
             current.advance()
 
 
-@pytest.mark.parametrize("change", [{"stage": "9"}, {"stage": "3", "cursor": "4"}, {"node": "1"}])
+@pytest.mark.parametrize("change", [{"stage": 9}, {"stage": 3, "cursor": 4}, {"node": 1}])
 def test_corrupt_row_cursor_refuses_without_replay(tmp_path, catalog, change):
     row = subject("activity")
     path = tmp_path / "row.sqlite3"
@@ -534,9 +534,10 @@ def test_corrupt_row_cursor_refuses_without_replay(tmp_path, catalog, change):
     with closing(connect(path)) as db:
         current = work(db, row, catalog, operation="row")
         current.initialize()
-        value = {"operation": "row", "node": "0", "stage": "0", "cursor": "0", **change}
+        value = {"operation": "row", "node": 0, "stage": 0, "cursor": 0, **change}
         db.execute(
-            "UPDATE generic_semantic_frames SET value=?", (canonical_json_bytes(value).decode(),)
+            "UPDATE generic_semantic_frames SET operation=?,node=?,stage=?,cursor=?",
+            (value["operation"], value["node"], value["stage"], value["cursor"]),
         ).close()
         db.commit()
         before = snapshot(db)
@@ -596,13 +597,13 @@ def test_actual_process_death_in_row_suboperations(tmp_path, catalog, seam):
             position(
                 current,
                 {
-                    "frame-insert": ("row", "3"),
-                    "frame-update": ("row", "3"),
-                    "frame-delete": ("association", "1"),
-                    "output-insert": ("profile", "0"),
-                    "undo-insert": ("profile", "0"),
-                    "before-commit": ("row", "4"),
-                    "after-commit": ("row", "4"),
+                    "frame-insert": ("row", 3),
+                    "frame-update": ("row", 3),
+                    "frame-delete": ("association", 1),
+                    "output-insert": ("profile", 0),
+                    "undo-insert": ("profile", 0),
+                    "before-commit": ("row", 4),
+                    "after-commit": ("row", 4),
                     "reject-frames": "reject-frames",
                     "rollback-output": "reject-outputs",
                     "rollback-marker": "reject-outputs",
@@ -705,7 +706,7 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
                 current = work(db, row, catalog, operation="row")
                 current.initialize()
                 if stage:
-                    position(current, ("row", str(stage)))
+                    position(current, ("row", stage))
                 child_dimensions = (
                     semantic_child_dimensions(current, budget)
                     if kind in {"derivation", "specialization"}

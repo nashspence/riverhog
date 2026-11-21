@@ -666,7 +666,7 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
                         original.backup(db)
                     current = work(db, row, catalog, operation="row")
                     current.initialize()
-                    position(current, ("row", str(stage)))
+                    position(current, ("row", stage))
                     retained = workspace_rows(db)
                     prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                     width = envelope(current, prefix)

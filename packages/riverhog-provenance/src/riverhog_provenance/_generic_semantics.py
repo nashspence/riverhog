@@ -64,7 +64,7 @@ from .graph_certificates import (
     JournalGraphCertificates,
 )
 
-ALGORITHM = "riverhog-generic-semantics/v12"
+ALGORITHM = "riverhog-generic-semantics/v13"
 MAX_STEPS = 64
 _HEADER_OCTETS = 2048
 _FRAME_OCTETS = 512
@@ -89,6 +89,8 @@ _STAGES = {
     "typed": 1,
     "content": 1,
 }
+
+_FRAME_OPERATION_CHARACTERS = max(map(len, _STAGES))
 
 
 class _GraphRequest(Exception):
@@ -261,6 +263,61 @@ def _encode_frame(frame: Frame) -> str:
     ).decode()
 
 
+def _frame_values(frame: Frame) -> tuple[str, int, int, int]:
+    return frame.operation, frame.node, frame.stage, frame.cursor
+
+
+def _validate_frame(frame: Frame, nodes: Nodes) -> Frame:
+    if type(frame.operation) is not str or any(
+        type(value) is not int for value in (frame.node, frame.stage, frame.cursor)
+    ):
+        raise ValueError("frame field types")
+    if (
+        frame.operation not in _STAGES
+        or not 0 <= frame.stage <= _STAGES[frame.operation]
+        or not 0 <= frame.node < len(nodes.values)
+        or not 0 <= frame.cursor <= PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
+    ):
+        raise ValueError("frame identity")
+    source = nodes.values[frame.node]
+    if type(source) is not dict:
+        raise ValueError("semantic frame does not identify an object")
+    if frame.operation == "content" and type(source.get("digests")) is not list:
+        raise ValueError("semantic content frame does not identify its collection")
+    if frame.operation == "row" and (
+        source.get("type") not in ROW_TYPES
+        or frame.stage > ROW_STAGES[source["type"]]
+        or frame.node != 0
+    ):
+        raise ValueError("semantic row frame differs from its admitted subject")
+    arrays = {
+        "generic": {0: "evidence", 1: "identifiers", 2: "profiles", 3: "metadata"},
+        "filesystem": {
+            0: "identifiers",
+            1: "native_identifiers",
+            2: "principals",
+            3: "timestamps",
+        },
+        "native": {4: "interpretations"},
+        "content": {0: "digests"},
+    }
+    array = arrays.get(frame.operation, {}).get(frame.stage)
+    if frame.operation == "row" and source["type"] == "activity":
+        array = {3: "associations", 4: "contexts", 5: "details"}.get(frame.stage)
+    elif frame.operation == "row" and source["type"] in {"reported_description", "observation"}:
+        array = {4: "coverage", 5: "profiles", 12: "evidence", 16: "metadata"}.get(frame.stage)
+    maximum = (
+        len(source.get(array, []))
+        if array is not None
+        else 4
+        if frame.operation == "filesystem" and frame.stage == 5
+        else 0
+    )
+    if frame.cursor > maximum:
+        raise ValueError("semantic cursor differs from its source collection")
+    return frame
+
+
 def _decode_frame(raw: str, nodes: Nodes) -> Frame:
     try:
         if type(raw) is not str or len(raw) > _FRAME_OCTETS:
@@ -271,54 +328,14 @@ def _decode_frame(raw: str, nodes: Nodes) -> Frame:
         for key in ("node", "stage", "cursor"):
             if type(value[key]) is not str or re.fullmatch(r"0|[1-9][0-9]*", value[key]) is None:
                 raise ValueError("frame cursor")
-        frame = Frame(
-            value["operation"], int(value["node"]), int(value["stage"]), int(value["cursor"])
+        frame = _validate_frame(
+            Frame(
+                value["operation"], int(value["node"]), int(value["stage"]), int(value["cursor"])
+            ),
+            nodes,
         )
-        if (
-            frame.operation not in _STAGES
-            or not 0 <= frame.stage <= _STAGES[frame.operation]
-            or not 0 <= frame.node < len(nodes.values)
-            or not 0 <= frame.cursor <= PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
-        ):
-            raise ValueError("frame identity")
         if _encode_frame(frame) != raw:
             raise ValueError("noncanonical frame")
-        source = nodes.values[frame.node]
-        if type(source) is not dict:
-            raise ValueError("semantic frame does not identify an object")
-        if frame.operation == "content" and type(source.get("digests")) is not list:
-            raise ValueError("semantic content frame does not identify its collection")
-        if frame.operation == "row" and (
-            source.get("type") not in ROW_TYPES
-            or frame.stage > ROW_STAGES[source["type"]]
-            or frame.node != 0
-        ):
-            raise ValueError("semantic row frame differs from its admitted subject")
-        arrays = {
-            "generic": {0: "evidence", 1: "identifiers", 2: "profiles", 3: "metadata"},
-            "filesystem": {
-                0: "identifiers",
-                1: "native_identifiers",
-                2: "principals",
-                3: "timestamps",
-            },
-            "native": {4: "interpretations"},
-            "content": {0: "digests"},
-        }
-        array = arrays.get(frame.operation, {}).get(frame.stage)
-        if frame.operation == "row" and source["type"] == "activity":
-            array = {3: "associations", 4: "contexts", 5: "details"}.get(frame.stage)
-        elif frame.operation == "row" and source["type"] in {"reported_description", "observation"}:
-            array = {4: "coverage", 5: "profiles", 12: "evidence", 16: "metadata"}.get(frame.stage)
-        maximum = (
-            len(source.get(array, []))
-            if array is not None
-            else 4
-            if frame.operation == "filesystem" and frame.stage == 5
-            else 0
-        )
-        if frame.cursor > maximum:
-            raise ValueError("semantic cursor differs from its source collection")
         return frame
     except (ValueError, TypeError, KeyError) as exc:
         raise RuntimeError("corrupt generic semantic frame") from exc
@@ -796,9 +813,13 @@ def install(db: sqlite3.Connection) -> None:
         "prefix_attempt TEXT NOT NULL, prefix_binding BLOB NOT NULL, prefix TEXT NOT NULL, "
         "checkpoint TEXT NOT NULL)"
     ).close()
+    # Node/cursor address an existing byte-bounded entry; stage is a finite
+    # interpreter state. These fields fit SQLite integers independently of
+    # the exact-integer domains of archive and parent-control counters.
     db.execute(
         "CREATE TABLE generic_semantic_frames(attempt_id TEXT, frame_id INTEGER, parent INTEGER, "
-        "value TEXT NOT NULL, PRIMARY KEY(attempt_id,frame_id))"
+        "operation TEXT NOT NULL,node INTEGER NOT NULL,stage INTEGER NOT NULL,"
+        "cursor INTEGER NOT NULL, PRIMARY KEY(attempt_id,frame_id))"
     ).close()
     db.execute(
         "CREATE TABLE generic_semantic_keys(id INTEGER PRIMARY KEY, attempt_id TEXT, "
@@ -1253,13 +1274,25 @@ class _Stack:
     def _row(self, identity: int) -> tuple[int | None, Frame]:
         if identity not in self.cache:
             row = self.owner._one(
-                "SELECT parent,substr(value,1,?) FROM generic_semantic_frames "
-                "WHERE attempt_id=? AND frame_id=?",
-                (_FRAME_OCTETS + 1, self.owner.attempt_id, identity),
+                "SELECT CASE WHEN typeof(parent)='integer' THEN parent END,typeof(parent),"
+                "CASE WHEN typeof(operation)='text' THEN substr(operation,1,?) END,"
+                "CASE WHEN typeof(node)='integer' THEN node END,"
+                "CASE WHEN typeof(stage)='integer' THEN stage END,"
+                "CASE WHEN typeof(cursor)='integer' THEN cursor END "
+                "FROM generic_semantic_frames WHERE attempt_id=? AND frame_id=?",
+                (_FRAME_OPERATION_CHARACTERS + 1, self.owner.attempt_id, identity),
             )
-            if row is None or row[0] is not None and not 0 <= row[0] < identity:
+            if row is None:
                 raise RuntimeError("missing or invalid generic semantic stack frame")
-            self.cache[identity] = row[0], _decode_frame(row[1], self.owner.atom.nodes)
+            try:
+                if row[1] not in {"null", "integer"} or (
+                    row[0] is not None and not 0 <= row[0] < identity
+                ):
+                    raise ValueError("frame parent")
+                frame = _validate_frame(Frame(*row[2:]), self.owner.atom.nodes)
+            except (ValueError, TypeError, KeyError) as exc:
+                raise RuntimeError("corrupt generic semantic frame") from exc
+            self.cache[identity] = row[0], frame
         return self.cache[identity]
 
     def peek(self) -> Frame | None:
@@ -1533,8 +1566,8 @@ class GenericSemantics:
             (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.after.to_json()),
         ).close()
         self._write(
-            "INSERT INTO generic_semantic_frames VALUES (?,?,?,?)",
-            (self.attempt_id, 0, None, _encode_frame(Frame(self.operation, 0))),
+            "INSERT INTO generic_semantic_frames VALUES (?,?,?,?,?,?,?)",
+            (self.attempt_id, 0, None, *_frame_values(Frame(self.operation, 0))),
         ).close()
         return batch.after
 
@@ -1796,10 +1829,11 @@ class GenericSemantics:
                     parent, frame = item
                     writes.append(
                         (
-                            "INSERT INTO generic_semantic_frames VALUES (?,?,?,?) "
+                            "INSERT INTO generic_semantic_frames VALUES (?,?,?,?,?,?,?) "
                             "ON CONFLICT(attempt_id,frame_id) DO UPDATE SET "
-                            "parent=excluded.parent,value=excluded.value",
-                            (self.attempt_id, identity, parent, _encode_frame(frame)),
+                            "parent=excluded.parent,operation=excluded.operation,"
+                            "node=excluded.node,stage=excluded.stage,cursor=excluded.cursor",
+                            (self.attempt_id, identity, parent, *_frame_values(frame)),
                         )
                     )
             for key in keys.pending:
@@ -1836,10 +1870,10 @@ class GenericSemantics:
                 else:
                     writes.append(
                         (
-                            "UPDATE generic_semantic_frames SET value=? "
-                            "WHERE attempt_id=? AND frame_id=?",
+                            "UPDATE generic_semantic_frames SET operation=?,node=?,stage=?,"
+                            "cursor=? WHERE attempt_id=? AND frame_id=?",
                             (
-                                _encode_frame(replace(edge_frame, stage=3)),
+                                *_frame_values(replace(edge_frame, stage=3)),
                                 self.attempt_id,
                                 state.top,
                             ),

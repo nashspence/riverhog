@@ -450,7 +450,7 @@ def test_late_time_rejection_undoes_only_its_new_binding_end(tmp_path, catalog):
         prefix = snapshot(db)["journal_prefix"]
         current = semantic_work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "2"))
+        position(current, ("row", 2))
         assert len(outputs(db)) == len(before) + 1
         assert db.execute("SELECT 1 FROM generic_semantic_outputs WHERE name='ends'").fetchone()
         finish(current, budget=1)
@@ -467,7 +467,7 @@ def test_stale_binding_end_proposal_cannot_replace_output_or_progress(tmp_path, 
     with closing(connect(path)) as db:
         current = semantic_work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "1"))
+        position(current, ("row", 1))
         batch = current.prepare(step_budget=1)
         current.advance(step_budget=1)
         before = snapshot(db)
@@ -486,7 +486,7 @@ def test_reopen_after_binding_end_output_does_not_repeat_duplicate_detection(tmp
     with closing(connect(path)) as db:
         current = semantic_work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "2"))
+        position(current, ("row", 2))
         before = outputs(db)
     with closing(connect(path)) as db:
         current = semantic_work(db, row, catalog, operation="row")
@@ -535,7 +535,7 @@ def test_process_death_in_binding_end_commit_or_undo(tmp_path, catalog, seam):
             if rejected
             else "outputs"
             if seam == "output-retirement"
-            else ("row", "1"),
+            else ("row", 1),
         )
         before = snapshot(db)
     old = "current=work(db,json.loads(Path(input_path).read_text()),ContractCatalog())"
@@ -587,7 +587,7 @@ def test_cold_binding_end_step_has_independent_retained_set_history(tmp_path, ca
         db.commit()
         current = semantic_work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "1"))
+        position(current, ("row", 1))
     binding, projection, _ = binding_projection(GenericSemantics.advance)
     with closing(connect(path, factory=CommonWorkConnection)) as db:
         current = semantic_work(db, row, catalog, operation="row")

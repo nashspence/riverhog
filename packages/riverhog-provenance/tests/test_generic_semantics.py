@@ -350,13 +350,9 @@ def test_corrupt_or_missing_cursor_is_not_rebuilt(tmp_path, catalog, change):
         elif change == "missing-frame":
             db.execute("DELETE FROM generic_semantic_frames").close()
         else:
-            value = json.loads(
-                db.execute("SELECT value FROM generic_semantic_frames").fetchone()[0]
-            )
-            value[change] = "1000000" if change == "node" else "2"
             db.execute(
-                "UPDATE generic_semantic_frames SET value=?",
-                (canonical_json_bytes(value).decode(),),
+                "UPDATE generic_semantic_frames SET " + change + "=?",
+                (1000000 if change == "node" else 2,),
             ).close()
         db.commit()
         changes = db.total_changes
@@ -464,6 +460,16 @@ def test_byte_admission_does_not_silently_skip_a_large_key(tmp_path, catalog):
         assert len(outputs(db)) == 1
 
 
+def stack_frame(current, state=None):
+    state = current.load() if state is None else state
+    values = current.db.execute(
+        "SELECT operation,node,stage,cursor FROM generic_semantic_frames "
+        "WHERE attempt_id=? AND frame_id=?",
+        (current.attempt_id, state.top),
+    ).fetchone()
+    return dict(zip(("operation", "node", "stage", "cursor"), values, strict=True))
+
+
 def position(current, target):
     for _ in range(16 * (len(current.atom.nodes.values) + 1)):
         state = current.load()
@@ -471,14 +477,10 @@ def position(current, target):
             if state.phase == target:
                 return
         elif state.phase == "walk":
-            raw = current.db.execute(
-                "SELECT value FROM generic_semantic_frames WHERE attempt_id=? AND frame_id=?",
-                (current.attempt_id, state.top),
-            ).fetchone()[0]
-            frame = json.loads(raw)
+            frame = stack_frame(current, state)
             if target == "unresolved-profile" and (frame["operation"], frame["stage"]) == (
                 "profile",
-                "0",
+                0,
             ):
                 value = current.atom.nodes.values[int(frame["node"])]
                 if value["profile"]["contract_id"] == "urn:test:unavailable":
@@ -613,15 +615,15 @@ def test_real_process_death_preserves_a_common_unit_or_its_commit(tmp_path, cata
         if not seam.startswith("init-"):
             current.initialize()
             target = {
-                "header": ("generic", "0"),
-                "frame-insert": ("generic", "0"),
-                "frame-update": ("generic", "0"),
-                "frame-delete": ("evidence", "3"),
-                "metadata-key": ("generic", "3"),
-                "output-insert": ("typed", "0"),
-                "undo-insert": ("typed", "0"),
-                "before-commit": ("typed", "0"),
-                "after-commit": ("typed", "0"),
+                "header": ("generic", 0),
+                "frame-insert": ("generic", 0),
+                "frame-update": ("generic", 0),
+                "frame-delete": ("evidence", 3),
+                "metadata-key": ("generic", 3),
+                "output-insert": ("typed", 0),
+                "undo-insert": ("typed", 0),
+                "before-commit": ("typed", 0),
+                "after-commit": ("typed", 0),
                 "key-cleanup": "keys",
                 "output-retirement": "outputs",
                 "reject-frames": "reject-frames",
@@ -812,17 +814,12 @@ def semantic_child_dimensions(current, budget):
     )
     admission = False
     if state.phase == "walk":
-        frame = json.loads(
-            current.db.execute(
-                "SELECT value FROM generic_semantic_frames WHERE attempt_id=? AND frame_id=?",
-                (current.attempt_id, state.top),
-            ).fetchone()[0]
-        )
-        assert frame["operation"] == "row" and frame["stage"] in {"0", "1", "2", "3"}
+        frame = stack_frame(current, state)
+        assert frame["operation"] == "row" and frame["stage"] in {0, 1, 2, 3}
         assert current.certificates is None
         # Two fixed reference steps precede the row's graph handoff. These fixtures
         # admit both references and enough bytes; a resumed row is already at stage3.
-        admission = int(frame["stage"]) <= 2 and budget >= 3 - int(frame["stage"])
+        admission = frame["stage"] <= 2 and budget >= 3 - frame["stage"]
     result = {
         "edge_retained_rows": retained,
         "edge_metadata_row_octets": max(width, native["metadata_row_octets"]),
@@ -1070,7 +1067,7 @@ def common_semantic_samples(tmp_path, catalog, measured_operation, *, samples):
                 elif phase in {"keys", "outputs", "reject-frames", "reject-keys", "reject-outputs"}:
                     position(current, phase)
                 elif phase == "metadata-key":
-                    position(current, ("generic", "3"))
+                    position(current, ("generic", 3))
                 elif phase == "unresolved-profile":
                     position(current, phase)
                 else:

@@ -434,7 +434,7 @@ def test_variable_slot_admission_stale_proposals_and_reopen_preserve_uniqueness(
     with closing(connect(path)) as db:
         current = semantic_work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "4"))
+        position(current, ("row", 4))
         before = snapshot(db)
         with pytest.raises(GenericSemanticsCapacity):
             current.advance(step_budget=1, byte_budget=16384)
@@ -620,7 +620,7 @@ def test_process_death_in_delivery_slot_commit_or_row_output_undo(tmp_path, cata
             if rejected
             else "outputs"
             if seam == "output-retirement"
-            else ("row", "4"),
+            else ("row", 4),
         )
         before = snapshot(db)
     old = "current=work(db,json.loads(Path(input_path).read_text()),ContractCatalog())"
@@ -672,7 +672,7 @@ def test_cold_delivery_uniqueness_uses_only_its_indexed_slot(tmp_path, catalog, 
         db.commit()
         current = semantic_work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "4"))
+        position(current, ("row", 4))
         retained = workspace_rows(db)
         envelope = 8192 + len(current.binding)
         prefix = db.execute("SELECT * FROM journal_prefix").fetchone()

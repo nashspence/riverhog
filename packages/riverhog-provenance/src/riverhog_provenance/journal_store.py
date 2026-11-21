@@ -458,7 +458,7 @@ class _Findings(MutableSequence[str]):
         self.store.db.execute("INSERT OR IGNORE INTO findings VALUES (?, ?)", (value, value))
 
 
-WORKSPACE_FORMAT = "riverhog-retained-journal-source-workspace/v1"
+WORKSPACE_FORMAT = "riverhog-retained-journal-source-workspace/v2"
 
 
 class InvalidJournalWorkspace(RuntimeError):

@@ -510,13 +510,12 @@ def trajectories(root, catalog, build, specifications=TRAJECTORIES):
                             if state.phase == "walk":
                                 row = store.db.execute(
                                     (
-                                        "SELECT value FROM generic_semantic_frames "
+                                        "SELECT operation,stage FROM generic_semantic_frames "
                                         "WHERE attempt_id=? AND frame_id=?"
                                     ),
                                     (child.attempt_id, state.top),
                                 ).fetchone()
-                                frame = json.loads(row[0])
-                                key += (frame["operation"], frame["stage"])
+                                key += tuple(row)
                     if key not in seen:
                         seen.add(key)
                         path = root / f"trajectory-{ordinal}-checkpoint-{len(seen)}.sqlite3"

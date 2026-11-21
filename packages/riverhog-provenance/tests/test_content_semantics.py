@@ -36,6 +36,7 @@ from test_generic_semantics import (
     position,
     require_reclaimed,
     snapshot,
+    stack_frame,
     subject,
     work,
     workspace_rows,
@@ -85,12 +86,7 @@ def native(value, catalog):
 
 
 def frame(current):
-    state = current.load()
-    raw = current.db.execute(
-        "SELECT value FROM generic_semantic_frames WHERE attempt_id=? AND frame_id=?",
-        (current.attempt_id, state.top),
-    ).fetchone()[0]
-    return json.loads(raw)
+    return stack_frame(current)
 
 
 def typed_digest(current):
@@ -104,10 +100,10 @@ def typed_digest(current):
 
 
 def content_cursor(current, cursor):
-    position(current, ("content", "0"))
-    while int(frame(current)["cursor"]) < cursor:
-        current.advance(step_budget=min(64, cursor - int(frame(current)["cursor"])))
-    assert int(frame(current)["cursor"]) == cursor
+    position(current, ("content", 0))
+    while frame(current)["cursor"] < cursor:
+        current.advance(step_budget=min(64, cursor - frame(current)["cursor"]))
+    assert frame(current)["cursor"] == cursor
 
 
 @pytest.mark.parametrize("budget", [1, 15, 16, 17, 64])
@@ -189,10 +185,10 @@ def test_one_content_step_does_not_drain_the_digest_collection(tmp_path, catalog
         monkeypatch.setattr(semantics._ProjectedValidator, "content", forbidden)
         current.advance(step_budget=1)
         assert frame(current)["operation"] == "content"
-        assert frame(current)["cursor"] == "0"
+        assert frame(current)["cursor"] == 0
         before = db.execute("SELECT count(*) FROM generic_semantic_keys").fetchone()[0]
         current.advance(step_budget=1)
-        assert frame(current)["cursor"] == "1"
+        assert frame(current)["cursor"] == 1
         assert db.execute("SELECT count(*) FROM generic_semantic_keys").fetchone()[0] == before + 1
         finish(current)
         current.result()
@@ -274,9 +270,7 @@ def test_wide_digest_key_admission_stale_proposal_and_reopen(tmp_path, catalog):
         require_reclaimed(db)
 
 
-@pytest.mark.parametrize(
-    "change", [{"cursor": "999"}, {"stage": "2"}, {"node": "0"}, {"node": "999999"}]
-)
+@pytest.mark.parametrize("change", [{"cursor": 999}, {"stage": 2}, {"node": 0}, {"node": 999999}])
 def test_content_frame_corruption_fails_before_mutation(tmp_path, catalog, change):
     value = row()
     path = tmp_path / "corrupt.sqlite3"
@@ -284,11 +278,19 @@ def test_content_frame_corruption_fails_before_mutation(tmp_path, catalog, chang
     with closing(connect(path)) as db:
         current = work(db, value, catalog)
         current.initialize()
-        position(current, ("content", "0"))
+        position(current, ("content", 0))
         retained = {**frame(current), **change}
         db.execute(
-            "UPDATE generic_semantic_frames SET value=? WHERE attempt_id=? AND frame_id=?",
-            (canonical_json_bytes(retained).decode(), current.attempt_id, current.load().top),
+            "UPDATE generic_semantic_frames SET operation=?,node=?,stage=?,cursor=? "
+            "WHERE attempt_id=? AND frame_id=?",
+            (
+                retained["operation"],
+                retained["node"],
+                retained["stage"],
+                retained["cursor"],
+                current.attempt_id,
+                current.load().top,
+            ),
         ).close()
         db.commit()
         before = snapshot(db)
@@ -361,9 +363,9 @@ def test_process_death_preserves_content_progress_keys_and_output_undo(tmp_path,
                 if seam == "output-retirement"
                 else "keys"
                 if seam == "key-cleanup"
-                else ("content", "1")
+                else ("content", 1)
                 if seam == "frame-delete"
-                else ("content", "0")
+                else ("content", 0)
             )
             position(current, target)
         before = snapshot(db)
@@ -458,7 +460,7 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
                 elif phase in {"keys", "reject-frames", "reject-keys"}:
                     position(current, phase)
                 elif phase == "content-pop":
-                    position(current, ("content", "1"))
+                    position(current, ("content", 1))
                 else:
                     cursor = (
                         count // 2

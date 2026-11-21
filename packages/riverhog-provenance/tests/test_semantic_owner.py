@@ -119,7 +119,7 @@ def test_parent_owns_commit_and_rollback_of_child_progress(tmp_path, catalog, ad
             batch = current.prepare_admission()
         else:
             current.initialize()
-            position(current, ("typed", "0"))
+            position(current, ("typed", 0))
             batch = current.prepare(step_budget=1)
             assert any(sql == "@output" for sql, _ in batch.writes)
         before = snapshot(db)
@@ -247,7 +247,7 @@ def test_real_process_death_commits_both_markers_or_neither(tmp_path, catalog, m
         current = work(db, row, catalog)
         if mode == "apply":
             current.initialize()
-            position(current, ("typed", "0"))
+            position(current, ("typed", 0))
         before = snapshot(db)
         with closing(sqlite3.connect(":memory:")) as expected_db:
             db.backup(expected_db)

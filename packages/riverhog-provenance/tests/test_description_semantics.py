@@ -408,11 +408,11 @@ def test_process_death_preserves_description_keys_outputs_and_progress(tmp_path,
             if seam == "output-retirement"
             else "keys"
             if seam == "key-cleanup"
-            else ("row", "3")
+            else ("row", 3)
             if seam == "frame-insert"
-            else ("content", "1")
+            else ("content", 1)
             if seam == "frame-delete"
-            else ("row", "4")
+            else ("row", 4)
         )
         position(current, target)
         before = snapshot(db)
@@ -494,7 +494,7 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
                     position(current, "reject-keys")
                 else:
                     stage = 2 if phase == "context" else 5 if phase == "profile" else 4
-                    position(current, ("row", str(stage)))
+                    position(current, ("row", stage))
                     stop = (
                         count // 2
                         if phase == "coverage-middle"
@@ -604,7 +604,7 @@ def test_actual_cold_description_metadata_work(tmp_path, record_property):
 
 @pytest.mark.parametrize(
     "change",
-    [{"stage": "7"}, {"stage": "4", "cursor": "18"}, {"stage": "5", "cursor": "18"}, {"node": "1"}],
+    [{"stage": 7}, {"stage": 4, "cursor": 18}, {"stage": 5, "cursor": 18}, {"node": 1}],
 )
 def test_corrupt_description_frame_refuses_without_replay(tmp_path, catalog, change):
     row = subject()
@@ -613,9 +613,10 @@ def test_corrupt_description_frame_refuses_without_replay(tmp_path, catalog, cha
     with closing(connect(path)) as db:
         current = work(db, row, catalog, operation="row")
         current.initialize()
-        value = {"operation": "row", "node": "0", "stage": "0", "cursor": "0", **change}
+        value = {"operation": "row", "node": 0, "stage": 0, "cursor": 0, **change}
         db.execute(
-            "UPDATE generic_semantic_frames SET value=?", (canonical_json_bytes(value).decode(),)
+            "UPDATE generic_semantic_frames SET operation=?,node=?,stage=?,cursor=?",
+            (value["operation"], value["node"], value["stage"], value["cursor"]),
         ).close()
         db.commit()
         before = snapshot(db)
@@ -662,7 +663,7 @@ def test_wide_coverage_key_admission_stale_proposal_and_reopen(tmp_path, catalog
     with closing(connect(path)) as db:
         current = work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "4"))
+        position(current, ("row", 4))
         before = snapshot(db)
         with pytest.raises(GenericSemanticsCapacity):
             current.prepare(step_budget=1, byte_budget=65536)

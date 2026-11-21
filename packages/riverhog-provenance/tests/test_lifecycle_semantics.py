@@ -227,7 +227,7 @@ def test_late_time_rejection_rolls_back_new_events_and_preserves_old_external_ou
         prefix = snapshot(db)["journal_prefix"]
         current = work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "3"))
+        position(current, ("row", 3))
         assert any(name == kind for name, _, _ in outputs(db))
         assert db.execute("SELECT 1 FROM generic_semantic_outputs WHERE name=?", (kind,)).fetchone()
         finish(current, budget=1)
@@ -269,7 +269,7 @@ def test_actual_process_death_in_lifecycle_aggregate_commit_or_undo(tmp_path, ca
                 if rejected
                 else "outputs"
                 if seam == "output-retirement"
-                else ("row", "2")
+                else ("row", 2)
             ),
         )
         before = snapshot(db)
@@ -317,7 +317,7 @@ def test_stale_aggregate_proposal_cannot_replace_newer_output_or_progress(tmp_pa
     with closing(connect(path)) as db:
         current = work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "2"))
+        position(current, ("row", 2))
         batch = current.prepare(step_budget=1)
         current.advance(step_budget=1)
         before = snapshot(db)
@@ -339,7 +339,7 @@ def test_ordinary_reopen_loads_after_aggregate_without_repeating_earlier_reads(
     with closing(connect(path)) as db:
         current = work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "3"))
+        position(current, ("row", 3))
         before = snapshot(db)
     with closing(connect(path)) as db:
         current = work(db, row, catalog, operation="row")
@@ -392,7 +392,7 @@ def test_corrupt_retained_event_fails_without_reset_or_large_payload_read(
         db.commit()
         current = work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "2"))
+        position(current, ("row", 2))
         before = snapshot(db)
         statements = []
         db.set_trace_callback(statements.append)
@@ -428,7 +428,7 @@ def test_cold_lifecycle_unit_uses_metadata_with_independent_aggregate_history(
         db.commit()
         current = work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "2"))
+        position(current, ("row", 2))
         retained = workspace_rows(db)
         envelope = 8192 + len(current.binding)
         prefix = db.execute("SELECT * FROM journal_prefix").fetchone()

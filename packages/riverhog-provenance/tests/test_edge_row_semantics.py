@@ -801,11 +801,11 @@ def position_parent(current, phase, *, budget=1):
         state = current.load()
         if state.phase == "walk":
             frame = current.db.execute(
-                "SELECT value FROM generic_semantic_frames WHERE attempt_id=? AND frame_id=?",
+                "SELECT operation,stage FROM generic_semantic_frames "
+                "WHERE attempt_id=? AND frame_id=?",
                 (current.attempt_id, state.top),
             ).fetchone()
-            value = json.loads(frame[0])
-            if value["operation"] == "row" and value["stage"] == ("2" if phase == "admit" else "3"):
+            if frame == ("row", 2 if phase == "admit" else 3):
                 return
         assert not state.done, (phase, state.phase)
         current.advance(step_budget=1 if phase == "admit" else budget)

@@ -318,13 +318,13 @@ def test_actual_process_death_preserves_observation_capture_outputs_and_undo(
             if seam == "key-cleanup"
             else "outputs"
             if seam == "output-retirement"
-            else ("row", "9")
+            else ("row", 9)
             if seam in {"output-insert", "undo-insert"}
-            else ("row", "13")
+            else ("row", 13)
             if seam == "frame-insert"
-            else ("identifier", "2")
+            else ("identifier", 2)
             if seam == "frame-delete"
-            else ("row", "16")
+            else ("row", 16)
         )
         position(current, target)
         before = snapshot(db)
@@ -370,11 +370,11 @@ def test_actual_process_death_preserves_observation_capture_outputs_and_undo(
 @pytest.mark.parametrize(
     "change",
     [
-        {"stage": "18"},
-        {"stage": "12", "cursor": "2"},
-        {"stage": "16", "cursor": "18"},
-        {"stage": "11", "cursor": "1"},
-        {"node": "1"},
+        {"stage": 18},
+        {"stage": 12, "cursor": 2},
+        {"stage": 16, "cursor": 18},
+        {"stage": 11, "cursor": 1},
+        {"node": 1},
     ],
 )
 def test_corrupt_observation_control_frames_fail_without_modifying_progress(
@@ -386,9 +386,10 @@ def test_corrupt_observation_control_frames_fail_without_modifying_progress(
     with closing(connect(path)) as db:
         current = work(db, value, catalog, operation="row")
         current.initialize()
-        frame = {"operation": "row", "node": "0", "stage": "0", "cursor": "0", **change}
+        frame = {"operation": "row", "node": 0, "stage": 0, "cursor": 0, **change}
         db.execute(
-            "UPDATE generic_semantic_frames SET value=?", (canonical_json_bytes(frame).decode(),)
+            "UPDATE generic_semantic_frames SET operation=?,node=?,stage=?,cursor=?",
+            (frame["operation"], frame["node"], frame["stage"], frame["cursor"]),
         ).close()
         db.commit()
         before = snapshot(db)
@@ -443,7 +444,7 @@ def test_wide_observation_correlation_requires_admission_and_survives_stale_work
     with closing(connect(path)) as db:
         current = work(db, value, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "16"))
+        position(current, ("row", 16))
         before = snapshot(db)
         with pytest.raises(GenericSemanticsCapacity):
             current.prepare(step_budget=1, byte_budget=65536)
@@ -536,7 +537,7 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
                 elif phase in {"reject-keys", "reject-outputs"}:
                     position(current, phase)
                 else:
-                    position(current, ("row", str(stage)))
+                    position(current, ("row", stage))
                     for _ in range(
                         count
                         if phase == "evidence-last"
@@ -738,7 +739,7 @@ def test_ordinary_advance_and_rejected_result_reuse_the_admitted_coverage_index(
     with closing(connect(path)) as db:
         current = work(db, value, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "16"))
+        position(current, ("row", 16))
 
         def forbidden(*_args, **_kwargs):
             raise AssertionError("the admitted coverage index was rebuilt during continuation")
@@ -859,7 +860,7 @@ def test_capture_target_corruption_is_bounded_and_cannot_publish_progress(tmp_pa
     with closing(connect(path)) as db:
         current = work(db, row, catalog, operation="row")
         current.initialize()
-        position(current, ("row", "9"))
+        position(current, ("row", 9))
         db.execute(
             "INSERT INTO maps VALUES ('captures',?,?)", (encode_index_key(identity(38)), value)
         ).close()

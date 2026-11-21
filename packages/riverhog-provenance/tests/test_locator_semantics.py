@@ -500,7 +500,7 @@ def test_locator_process_death_preserves_parent_and_output(tmp_path, catalog, ki
         current = work(db, row, catalog, operation="row")
         current.initialize()
         if kind == "profile":
-            position(current, ("profile", "0"))
+            position(current, ("profile", 0))
         before = owned(db)
         with closing(sqlite3.connect(":memory:")) as expected_db:
             db.backup(expected_db)
@@ -654,7 +654,7 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
     binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
     cases = [(mode, ("row", str(stage))) for mode in VALID_MODES for stage in range(10)]
     cases += [(mode, ("row", str(stage))) for mode, stage in FAILURE_STAGES.items()]
-    cases += [("database", ("profile", "0")), ("interval-missing-capture", ("row", "8"))]
+    cases += [("database", ("profile", 0)), ("interval-missing-capture", ("row", 8))]
     samples = []
     for ordinal, (mode, target) in enumerate(cases):
         for count, budget in REGIMES:
