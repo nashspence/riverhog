@@ -7,7 +7,7 @@ import os
 from collections.abc import Mapping
 from importlib import resources
 from pathlib import Path
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from config_validation import load_validated_yaml_config, read_secret_file
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -400,16 +400,14 @@ class RangePolicyDocument(_Document):
 
 class RecoveryDocument(_Document):
     recovery_mode: Literal["adaptive", "restart"] = _RECOVERY.recovery_mode
-    replay_target_seconds: float = Field(
-        default=_RECOVERY.replay_target_seconds, gt=0, allow_inf_nan=False, strict=True
-    )
-    max_optional_overhead_fraction: float = Field(
-        default=_RECOVERY.max_optional_overhead_fraction,
-        ge=0,
-        lt=1,
-        allow_inf_nan=False,
-        strict=True,
-    )
+    replay_target_seconds: (
+        Annotated[int, Field(gt=0, strict=True)]
+        | Annotated[float, Field(gt=0, allow_inf_nan=False, strict=True)]
+    ) = _RECOVERY.replay_target_seconds
+    max_optional_overhead_fraction: (
+        Annotated[int, Field(ge=0, lt=1, strict=True)]
+        | Annotated[float, Field(ge=0, lt=1, allow_inf_nan=False, strict=True)]
+    ) = _RECOVERY.max_optional_overhead_fraction
     max_optional_checkpoints: int | None = Field(
         default=_RECOVERY.max_optional_checkpoints, ge=0, strict=True
     )

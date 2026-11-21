@@ -9,8 +9,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Mapping
-from dataclasses import dataclass, fields
-from fractions import Fraction
+from dataclasses import dataclass, field, fields
 from typing import Literal, Self, TypedDict, cast, get_args
 
 RecoveryMode = Literal["adaptive", "restart"]
@@ -24,25 +23,23 @@ DecisionReason = Literal[
     "count-limit",
     "unreconciled-accounting",
     "unknown-saved-replay",
+    "unknown-restore-cost",
     "unknown-checkpoint-cost",
     "near-completion",
     "below-replay-target",
     "candidate-too-expensive",
+    "overrun-debt",
     "workflow-budget-exhausted",
     "checkpoint-admitted",
 ]
 
 
-def _finite(value: object, name: str, *, nonnegative: bool = True) -> float:
-    if type(value) is not int and type(value) is not float:
-        raise ValueError(f"{name} requires a finite number")
-    try:
-        result = float(value)
-    except OverflowError as exc:
-        raise ValueError(f"{name} requires a finite number") from exc
-    if not math.isfinite(result) or nonnegative and result < 0:
-        raise ValueError(f"{name} requires a finite {'nonnegative ' if nonnegative else ''}number")
-    return result
+def _ratio(value: object, name: str) -> tuple[int, int]:
+    if type(value) is int:
+        return value, 1
+    if type(value) is float and math.isfinite(value):
+        return value.as_integer_ratio()
+    raise ValueError(f"{name} requires an explicit finite number")
 
 
 def _count(value: object, name: str, *, positive: bool = False) -> int:
@@ -73,23 +70,31 @@ class RecoveryPolicy:
     max_optional_overhead_fraction: float = 0.125
     max_optional_checkpoints: int | None = None
     retained_checkpoint_generations: int = 2
+    target_ns: int = field(init=False, repr=False)
+    _fraction_numerator: int = field(init=False, repr=False)
+    _fraction_complement: int = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         if type(self.recovery_mode) is not str or self.recovery_mode not in ("adaptive", "restart"):
             raise ValueError("recovery_mode requires adaptive or restart")
-        target = _finite(self.replay_target_seconds, "replay_target_seconds")
-        if target <= 0:
+        numerator, denominator = _ratio(self.replay_target_seconds, "replay_target_seconds")
+        if numerator <= 0:
             raise ValueError("replay_target_seconds must be positive")
-        fraction = _finite(self.max_optional_overhead_fraction, "max_optional_overhead_fraction")
-        if fraction >= 1:
-            raise ValueError("max_optional_overhead_fraction must be less than one")
+        fraction, divisor = _ratio(
+            self.max_optional_overhead_fraction, "max_optional_overhead_fraction"
+        )
+        if not 0 <= fraction < divisor:
+            raise ValueError("max_optional_overhead_fraction must be nonnegative and less than one")
         if self.max_optional_checkpoints is not None:
             _count(self.max_optional_checkpoints, "max_optional_checkpoints")
         _count(
             self.retained_checkpoint_generations, "retained_checkpoint_generations", positive=True
         )
-        object.__setattr__(self, "replay_target_seconds", target)
-        object.__setattr__(self, "max_optional_overhead_fraction", fraction)
+        object.__setattr__(
+            self, "target_ns", (numerator * 1_000_000_000 + denominator - 1) // denominator
+        )
+        object.__setattr__(self, "_fraction_numerator", fraction)
+        object.__setattr__(self, "_fraction_complement", divisor - fraction)
 
     @classmethod
     def from_mapping(cls, value: Mapping[str, object]) -> Self:
@@ -114,6 +119,9 @@ class RecoveryPolicy:
             "retained_checkpoint_generations": self.retained_checkpoint_generations,
         }
 
+    def _affords(self, cost_ns: int, useful_ns: int) -> bool:
+        return cost_ns * self._fraction_complement <= useful_ns * self._fraction_numerator
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RecoveryAccounting:
@@ -123,38 +131,46 @@ class RecoveryAccounting:
     concurrent children do not each contribute their full overlapping duration.
     Failed candidates remain charged. An owner with uncertain crash accounting
     keeps reconciled false until its known obligations are conservatively received.
+    Held count slots cover possible publications, separately from actual successes.
     """
 
-    useful_elapsed_seconds: float = 0.0
-    charged_optional_seconds: float = 0.0
-    reserved_optional_seconds: float = 0.0
+    useful_ns: int = 0
+    charged_ns: int = 0
+    reserved_ns: int = 0
     successful_checkpoints: int = 0
+    held_count_slots: int = 0
     reconciled: bool = True
 
     def __post_init__(self) -> None:
         for name in (
-            "useful_elapsed_seconds",
-            "charged_optional_seconds",
-            "reserved_optional_seconds",
+            "useful_ns",
+            "charged_ns",
+            "reserved_ns",
+            "successful_checkpoints",
+            "held_count_slots",
         ):
-            object.__setattr__(self, name, _finite(getattr(self, name), name))
-        _count(self.successful_checkpoints, "successful_checkpoints")
+            _count(getattr(self, name), name)
         _flag(self.reconciled, "reconciled")
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class CheckpointCandidate:
-    """A consistent owner's recovery proposal with finite, provenance-owned estimates.
+    """An owner's consistent candidate, with explicit nanosecond estimate provenance.
 
-    saved_replay_seconds is net useful recomputation saved after candidate load
-    and revalidation. None means unknown. checkpoint_cost_seconds includes every
-    incremental creation/publication/lifecycle cost, including a genuine zero.
-    The owner retains the estimate's source and observation conditions.
+    replay_ns is gross useful replay avoided; restore_ns includes candidate load
+    and revalidation. cost_ns covers all incremental creation/publication/lifecycle
+    work. None means unknown, including its required nonempty provenance label.
+    Estimates are rounded by their owner: costs upward, useful credit downward.
     """
 
-    saved_replay_seconds: float | None
-    checkpoint_cost_seconds: float | None
-    remaining_useful_seconds: float | None = None
+    replay_ns: int | None
+    restore_ns: int | None
+    cost_ns: int | None
+    remaining_ns: int | None
+    replay_provenance: str
+    restore_provenance: str
+    cost_provenance: str
+    remaining_provenance: str
     consistent: bool = True
     storage_admitted: bool = True
     checkpoint_in_flight: bool = False
@@ -162,12 +178,13 @@ class CheckpointCandidate:
     mandatory_anchor_ready: bool = False
 
     def __post_init__(self) -> None:
-        for name in ("saved_replay_seconds", "checkpoint_cost_seconds", "remaining_useful_seconds"):
-            value = getattr(self, name)
+        for name in ("replay", "restore", "cost", "remaining"):
+            value = getattr(self, f"{name}_ns")
             if value is not None:
-                object.__setattr__(
-                    self, name, _finite(value, name, nonnegative=name != "saved_replay_seconds")
-                )
+                _count(value, f"{name}_ns")
+            provenance = getattr(self, f"{name}_provenance")
+            if type(provenance) is not str or not provenance.strip():
+                raise ValueError(f"{name} requires nonempty estimate or unknown provenance")
         for name in (
             "consistent",
             "storage_admitted",
@@ -177,35 +194,43 @@ class CheckpointCandidate:
         ):
             _flag(getattr(self, name), name)
 
+    @property
+    def net_saved_ns(self) -> int | None:
+        if self.replay_ns is None or self.restore_ns is None:
+            return None
+        return net_saved_replay_ns(
+            restart_from_frontier_ns=self.replay_ns,
+            restart_from_candidate_ns=self.restore_ns,
+        )
+
 
 @dataclass(frozen=True, slots=True)
 class CheckpointDecision:
-    """A bounded reason and proposed cost reservation for the current owner snapshot."""
+    """A bounded reason and proposed reservation for the current owner snapshot."""
 
     reason: DecisionReason
-    reserved_seconds: float = 0.0
+    reserved_ns: int = 0
+    net_saved_ns: int | None = None
 
     def __post_init__(self) -> None:
         if type(self.reason) is not str or self.reason not in get_args(DecisionReason):
             raise ValueError("checkpoint decision requires a known admission reason")
-        reservation = _finite(self.reserved_seconds, "reserved_seconds")
-        if self.reason != "checkpoint-admitted" and reservation != 0:
+        _count(self.reserved_ns, "reserved_ns")
+        if self.net_saved_ns is not None:
+            _count(self.net_saved_ns, "net_saved_ns")
+        if self.reason != "checkpoint-admitted" and self.reserved_ns != 0:
             raise ValueError("a suppressed candidate cannot reserve optional cost")
-        object.__setattr__(self, "reserved_seconds", reservation)
 
     @property
     def admitted(self) -> bool:
         return self.reason == "checkpoint-admitted"
 
 
-def net_saved_replay_seconds(
-    *, restart_from_frontier_seconds: float, restart_from_candidate_seconds: float
-) -> float:
-    """Subtract candidate load/revalidation/replay from the existing restart cost."""
-
-    frontier = _finite(restart_from_frontier_seconds, "restart_from_frontier_seconds")
-    candidate = _finite(restart_from_candidate_seconds, "restart_from_candidate_seconds")
-    return frontier - candidate
+def net_saved_replay_ns(*, restart_from_frontier_ns: int, restart_from_candidate_ns: int) -> int:
+    """Subtract candidate load/revalidation/replay without granting negative credit."""
+    frontier = _count(restart_from_frontier_ns, "restart_from_frontier_ns")
+    candidate = _count(restart_from_candidate_ns, "restart_from_candidate_ns")
+    return max(0, frontier - candidate)
 
 
 def decide_checkpoint(
@@ -213,63 +238,62 @@ def decide_checkpoint(
     accounting: RecoveryAccounting,
     candidate: CheckpointCandidate,
 ) -> CheckpointDecision:
-    """Require all three admission inequalities before proposing optional work.
+    """Require all three exact integer inequalities before proposing optional work.
 
-    Exact arithmetic over the admitted finite scalar estimates prevents overflow
-    or rounding from creating recovery credits. It does not make the estimates
-    exact observations or promise a physical elapsed-time ratio.
+    This arithmetic prevents scalar overflow and roundoff from creating credit.
+    Estimates and physical elapsed-time ratios remain observations, not guarantees.
     """
-
     if not isinstance(policy, RecoveryPolicy):
         raise TypeError("checkpoint admission requires its recovery policy")
     if not isinstance(accounting, RecoveryAccounting):
         raise TypeError("checkpoint admission requires its logical workflow accounting")
     if not isinstance(candidate, CheckpointCandidate):
         raise TypeError("checkpoint admission requires its owner candidate")
+    saved = candidate.net_saved_ns
+
+    def suppressed(reason: DecisionReason) -> CheckpointDecision:
+        return CheckpointDecision(reason, net_saved_ns=saved)
+
     if candidate.completion_ready:
-        return CheckpointDecision("completion-ready")
+        return suppressed("completion-ready")
     if candidate.mandatory_anchor_ready:
-        return CheckpointDecision("mandatory-anchor-ready")
+        return suppressed("mandatory-anchor-ready")
     if policy.recovery_mode == "restart":
-        return CheckpointDecision("restart-mode")
+        return suppressed("restart-mode")
     if not candidate.consistent:
-        return CheckpointDecision("inconsistent-candidate")
-    if not candidate.storage_admitted:
-        return CheckpointDecision("storage-not-admitted")
-    if candidate.checkpoint_in_flight:
-        return CheckpointDecision("checkpoint-in-flight")
+        return suppressed("inconsistent-candidate")
     if (
         policy.max_optional_checkpoints is not None
-        and accounting.successful_checkpoints >= policy.max_optional_checkpoints
+        and accounting.successful_checkpoints + accounting.held_count_slots
+        >= policy.max_optional_checkpoints
     ):
-        return CheckpointDecision("count-limit")
-    if not accounting.reconciled:
-        return CheckpointDecision("unreconciled-accounting")
-    saved = candidate.saved_replay_seconds
-    cost = candidate.checkpoint_cost_seconds
-    if saved is None:
-        return CheckpointDecision("unknown-saved-replay")
+        return suppressed("count-limit")
+    if not candidate.storage_admitted:
+        return suppressed("storage-not-admitted")
+    if candidate.checkpoint_in_flight:
+        return suppressed("checkpoint-in-flight")
+    cost = candidate.cost_ns
     if cost is None:
-        return CheckpointDecision("unknown-checkpoint-cost")
-    if (
-        candidate.remaining_useful_seconds is not None
-        and candidate.remaining_useful_seconds <= cost
-    ):
-        return CheckpointDecision("near-completion")
-    if saved < policy.replay_target_seconds:
-        return CheckpointDecision("below-replay-target")
-    beta = Fraction(policy.max_optional_overhead_fraction)
-    complement = 1 - beta
-    if Fraction(cost) * complement > beta * Fraction(saved):
-        return CheckpointDecision("candidate-too-expensive")
-    obligation = (
-        Fraction(accounting.charged_optional_seconds)
-        + Fraction(accounting.reserved_optional_seconds)
-        + Fraction(cost)
-    )
-    if obligation * complement > beta * Fraction(accounting.useful_elapsed_seconds):
-        return CheckpointDecision("workflow-budget-exhausted")
-    return CheckpointDecision("checkpoint-admitted", cost)
+        return suppressed("unknown-checkpoint-cost")
+    if candidate.remaining_ns is not None and candidate.remaining_ns <= cost:
+        return suppressed("near-completion")
+    if candidate.replay_ns is None:
+        return suppressed("unknown-saved-replay")
+    if candidate.restore_ns is None:
+        return suppressed("unknown-restore-cost")
+    if not accounting.reconciled:
+        return suppressed("unreconciled-accounting")
+    assert saved is not None
+    if saved < policy.target_ns:
+        return suppressed("below-replay-target")
+    if not policy._affords(cost, saved):
+        return suppressed("candidate-too-expensive")
+    obligation = accounting.charged_ns + accounting.reserved_ns
+    if not policy._affords(obligation, accounting.useful_ns):
+        return suppressed("overrun-debt")
+    if not policy._affords(obligation + cost, accounting.useful_ns):
+        return suppressed("workflow-budget-exhausted")
+    return CheckpointDecision("checkpoint-admitted", cost, saved)
 
 
 __all__ = [
@@ -279,6 +303,6 @@ __all__ = [
     "RecoveryAccounting",
     "CheckpointCandidate",
     "CheckpointDecision",
-    "net_saved_replay_seconds",
+    "net_saved_replay_ns",
     "decide_checkpoint",
 ]

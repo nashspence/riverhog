@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import math
-import sys
 from dataclasses import dataclass, replace
-from fractions import Fraction
 from threading import RLock
 
 from ._policy import (
@@ -14,32 +11,17 @@ from ._policy import (
     RecoveryAccounting,
     RecoveryPolicy,
     _count,
-    _finite,
     _flag,
     decide_checkpoint,
 )
-
-
-def _scalar(value: Fraction, *, upward: bool) -> tuple[float, bool]:
-    """Round charges up and credit down; saturation never makes cost spendable."""
-    maximum = sys.float_info.max
-    if value > Fraction(maximum):
-        return maximum, True
-    result = float(value)
-    exact = Fraction(result)
-    if upward and exact < value:
-        result = math.nextafter(result, math.inf)
-    elif not upward and exact > value:
-        result = math.nextafter(result, -math.inf)
-    return result, False
 
 
 @dataclass(frozen=True, slots=True)
 class CheckpointCharge:
     """Actual received optional cost, distinct from its admitted estimate."""
 
-    reserved_seconds: float
-    actual_seconds: float
+    reserved_ns: int
+    actual_ns: int
     overrun: bool
 
 
@@ -72,13 +54,15 @@ class RecoveryBudget:
             raise TypeError("workflow accounting requires its owner summary")
         self._policy = policy
         self._limit = active_checkpoint_limit
-        self._useful = Fraction(accounting.useful_elapsed_seconds)
-        self._charged = Fraction(accounting.charged_optional_seconds)
-        self._recovered_reservation = Fraction(accounting.reserved_optional_seconds)
+        self._useful = accounting.useful_ns
+        self._charged = accounting.charged_ns
+        self._recovered_reservation = accounting.reserved_ns
         self._held = self._recovered_reservation
+        self._recovered_slots = accounting.held_count_slots
+        self._held_slots = accounting.held_count_slots
         self._successful = accounting.successful_checkpoints
         self._reconciled = recovered is None
-        self._credit_cursor: float | None = None
+        self._credit_cursor: int | None = None
         self._pending: set[CheckpointReservation] = set()
         self._lock = RLock()
 
@@ -91,7 +75,7 @@ class RecoveryBudget:
         return RecoveryDomain(self)
 
     def record_completed_interval(
-        self, start: float, finish: float, *, repeated_replay: bool = False
+        self, start_ns: int, finish_ns: int, *, repeated_replay: bool = False
     ) -> None:
         """Credit only actual completed useful work selected by the root owner.
 
@@ -99,29 +83,27 @@ class RecoveryBudget:
         Gaps earn nothing. Child scopes have no corresponding credit method.
         No interval history is retained or scanned.
         """
-        start = _finite(start, "start")
-        finish = _finite(finish, "finish")
+        start = _count(start_ns, "start_ns")
+        finish = _count(finish_ns, "finish_ns")
         _flag(repeated_replay, "repeated_replay")
         if finish < start:
             raise ValueError("completed work interval ends before it starts")
         with self._lock:
             cursor = start if self._credit_cursor is None else max(start, self._credit_cursor)
             if not repeated_replay and finish > cursor:
-                self._useful += Fraction(finish) - Fraction(cursor)
+                self._useful += finish - cursor
             self._credit_cursor = (
                 finish if self._credit_cursor is None else max(finish, self._credit_cursor)
             )
 
     def _accounting(self) -> RecoveryAccounting:
-        useful, _ = _scalar(self._useful, upward=False)
-        charged, charged_saturated = _scalar(self._charged, upward=True)
-        reserved, reserved_saturated = _scalar(self._held, upward=True)
         return RecoveryAccounting(
-            useful_elapsed_seconds=useful,
-            charged_optional_seconds=charged,
-            reserved_optional_seconds=reserved,
+            useful_ns=self._useful,
+            charged_ns=self._charged,
+            reserved_ns=self._held,
             successful_checkpoints=self._successful,
-            reconciled=self._reconciled and not charged_saturated and not reserved_saturated,
+            held_count_slots=self._held_slots,
+            reconciled=self._reconciled,
         )
 
     def accounting(self) -> RecoveryAccounting:
@@ -135,23 +117,23 @@ class RecoveryBudget:
         with self._lock:
             return tuple(self._pending)
 
-    def reconcile_recovered(
-        self, *, actual_seconds: float, additional_published_checkpoints: int
-    ) -> None:
+    def reconcile_recovered(self, *, actual_ns: int, additional_published_checkpoints: int) -> None:
         """Receive the owner's known original outcomes since its saved anchor.
 
         The domain owner must establish actual costs, publication and receiving.
         This method proves none of them. Existing charged costs/counts survive;
         lost advisory credit and repeated replay are never restored as new work.
         """
-        actual = _finite(actual_seconds, "actual_seconds")
+        actual = _count(actual_ns, "actual_ns")
         _count(additional_published_checkpoints, "additional_published_checkpoints")
         with self._lock:
             if self._reconciled or self._pending:
                 raise RuntimeError("reconciliation requires an unresolved recovered root")
-            self._charged += Fraction(actual)
+            self._charged += actual
             self._held -= self._recovered_reservation
-            self._recovered_reservation = Fraction(0)
+            self._recovered_reservation = 0
+            self._held_slots -= self._recovered_slots
+            self._recovered_slots = 0
             self._successful += additional_published_checkpoints
             self._reconciled = True
 
@@ -187,39 +169,38 @@ class RecoveryDomain:
             if len(root._pending) >= root._limit:
                 candidate = replace(candidate, storage_admitted=False)
             accounting = root._accounting()
-            # Pending attempts reserve possible success slots without reporting
-            # them as completed publications in the root summary.
-            proposed = replace(
-                accounting,
-                successful_checkpoints=accounting.successful_checkpoints + len(root._pending),
-            )
-            decision = decide_checkpoint(root.policy, proposed, candidate)
+            decision = decide_checkpoint(root.policy, accounting, candidate)
             if not decision.admitted:
                 return decision, None
-            grant = CheckpointReservation(self, decision.reserved_seconds)
+            grant = CheckpointReservation(self, decision.reserved_ns)
             root._pending.add(grant)
-            root._held += Fraction(grant.reserved_seconds)
+            root._held += grant.reserved_ns
+            root._held_slots += 1
             self._pending = grant
             return decision, grant
 
 
 class CheckpointReservation:
-    """An original root charge; abandonment and cancellation never refund it.
+    """An original root charge with separate selection and cleanup receiving.
 
-    The domain retains this grant before starting optional construction. Receive
-    after the owning operation establishes actual cost/outcome and receiving.
-    A successful receipt here is accounting, not checkpoint validity or custody.
+    The owner supplies positive original selection/cost/receiving evidence.
+    These methods account for that evidence; they do not establish authority,
+    persist a selector, validate a generation or prove resource quiescence.
     """
 
-    def __init__(self, domain: RecoveryDomain, reserved_seconds: float) -> None:
+    def __init__(self, domain: RecoveryDomain, reserved_ns: int) -> None:
         if not isinstance(domain, RecoveryDomain):
             raise TypeError("checkpoint reservation requires its original recovery domain")
         self._domain = domain
-        self._reserved = _finite(reserved_seconds, "reserved_seconds")
+        self._reserved = _count(reserved_ns, "reserved_ns")
+        self._remaining = self._reserved
+        self._charged = 0
+        self._generation: str | None = None
         self._received = False
+        self._final: tuple[int, bool, CheckpointCharge] | None = None
 
     @property
-    def reserved_seconds(self) -> float:
+    def reserved_ns(self) -> int:
         return self._reserved
 
     @property
@@ -227,17 +208,76 @@ class CheckpointReservation:
         with self._domain._owner._lock:
             return self._received
 
-    def receive(self, *, actual_seconds: float, published: bool) -> CheckpointCharge:
-        actual = _finite(actual_seconds, "actual_seconds")
-        _flag(published, "published")
+    @property
+    def selected_generation(self) -> str | None:
+        with self._domain._owner._lock:
+            return self._generation
+
+    def _require_pending(self) -> None:
+        root = self._domain._owner
+        if self._received or self not in root._pending or self._domain._pending is not self:
+            raise RuntimeError("only the original pending reservation can receive")
+
+    def select_generation(self, generation: str) -> None:
+        """Count an owner-confirmed selection once, retaining its unreceived tail."""
+        if type(generation) is not str or not generation.strip():
+            raise ValueError("checkpoint selection requires its exact generation identity")
         root = self._domain._owner
         with root._lock:
-            if self._received or self not in root._pending or self._domain._pending is not self:
-                raise RuntimeError("only the original pending reservation can receive once")
-            root._charged += Fraction(actual)
-            root._held -= Fraction(self._reserved)
-            root._successful += int(published)
+            self._require_pending()
+            if self._generation is not None:
+                if self._generation != generation:
+                    raise ValueError("a grant cannot select another generation")
+                return
+            self._generation = generation
+            root._successful += 1
+            root._held_slots -= 1
+
+    def _record_cost(self, total_actual_ns: int, remaining_reserved_ns: int) -> None:
+        if total_actual_ns < self._charged:
+            raise ValueError("original actual cost cannot decrease")
+        root = self._domain._owner
+        root._charged += total_actual_ns - self._charged
+        root._held += remaining_reserved_ns - self._remaining
+        self._charged = total_actual_ns
+        self._remaining = remaining_reserved_ns
+
+    def record_cost(self, *, total_actual_ns: int, remaining_reserved_ns: int) -> None:
+        """Replace cumulative actuals and the owner's complete unreceived cost tail."""
+        _count(total_actual_ns, "total_actual_ns")
+        _count(remaining_reserved_ns, "remaining_reserved_ns")
+        with self._domain._owner._lock:
+            self._require_pending()
+            self._record_cost(total_actual_ns, remaining_reserved_ns)
+
+    def receive(
+        self, *, total_actual_ns: int, nonpublication_proven: bool = False
+    ) -> CheckpointCharge:
+        """Receive the original's whole lifecycle cost and actual cleanup.
+
+        A failed attempt needs known nonpublication as well as complete receiving.
+        A known selection cannot be retracted. Matching final receipts may retry
+        a lost reply through this original; a lookalike has no receiving authority.
+        """
+        _count(total_actual_ns, "total_actual_ns")
+        _flag(nonpublication_proven, "nonpublication_proven")
+        root = self._domain._owner
+        with root._lock:
+            if self._final is not None:
+                if self._final[:2] != (total_actual_ns, nonpublication_proven):
+                    raise ValueError("original complete receiving evidence changed")
+                return self._final[2]
+            self._require_pending()
+            if (self._generation is None) != nonpublication_proven:
+                raise ValueError("receiving requires exact selection or known nonpublication")
+            self._record_cost(total_actual_ns, 0)
+            if self._generation is None:
+                root._held_slots -= 1
             root._pending.remove(self)
             self._domain._pending = None
             self._received = True
-            return CheckpointCharge(self._reserved, actual, actual > self._reserved)
+            charge = CheckpointCharge(
+                self._reserved, total_actual_ns, total_actual_ns > self._reserved
+            )
+            self._final = total_actual_ns, nonpublication_proven, charge
+            return charge

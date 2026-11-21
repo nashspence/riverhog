@@ -98,7 +98,14 @@ def initialize_archive_write_control(
         ArchiveWriteControlRecord(
             collection_id=upload.collection_id,
             construction_json=upload_construction(upload),
-            recovery_policy_json=_json(recovery_policy.to_mapping()),
+            # Operational policy numbers keep their exact selected meaning;
+            # they are outside the protected archive identity JSON domain.
+            recovery_policy_json=json.dumps(
+                recovery_policy.to_mapping(),
+                allow_nan=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ),
             recovery_accounting_json=_json(
                 {
                     "format": "riverhog-recovery-accounting/v1",

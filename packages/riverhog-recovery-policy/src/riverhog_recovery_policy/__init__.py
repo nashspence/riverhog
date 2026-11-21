@@ -14,7 +14,7 @@ from ._policy import (
     RecoveryMode,
     RecoveryPolicy,
     decide_checkpoint,
-    net_saved_replay_seconds,
+    net_saved_replay_ns,
 )
 
 __all__ = [
@@ -28,6 +28,6 @@ __all__ = [
     "CheckpointReservation",
     "RecoveryBudget",
     "RecoveryDomain",
-    "net_saved_replay_seconds",
+    "net_saved_replay_ns",
     "decide_checkpoint",
 ]

@@ -706,3 +706,18 @@ def test_recovery_document_rejects_raw_invalid_values(
 def test_runtime_requires_a_validated_recovery_policy(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="validated operational policy"):
         _config(tmp_path, recovery={"recovery_mode": "restart"})
+
+
+@pytest.mark.parametrize("target", [0.1, 2**53 + 1, 10**100])
+def test_recovery_document_preserves_exact_selected_numeric_value(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, target: int | float
+) -> None:
+    from riverhog_recovery_policy import RecoveryPolicy
+
+    path, document = _document(tmp_path, monkeypatch)
+    document["recovery"] = {"replay_target_seconds": target}
+    _write(path, document)
+    actual = load_runtime_config().recovery
+    assert type(actual.replay_target_seconds) is type(target)
+    assert actual.replay_target_seconds == target
+    assert actual.target_ns == RecoveryPolicy(replay_target_seconds=target).target_ns

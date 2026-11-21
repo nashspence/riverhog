@@ -108,3 +108,15 @@ def test_incompatible_policy_storage_is_refused_without_reinitializing(tmp_path)
             ).one()
             assert tuple(row) == (before[0], before[1], before[3], before[4])
             assert session.execute(text("SELECT count(*) FROM collection_uploads")).scalar_one() > 0
+
+
+@pytest.mark.parametrize("target", [0.1, 2**53 + 1])
+def test_original_admission_preserves_exact_policy_numeric_value(tmp_path, target):
+    with _case(tmp_path) as case:
+        policy = RecoveryPolicy(replay_target_seconds=target)
+        case.service._config = replace(case.config, recovery=policy)
+        collection_id = _open(case.service, "exact-recovery-policy")
+        selected = json.loads(_snapshot(case.factory, collection_id)[2])
+        assert type(selected["replay_target_seconds"]) is type(target)
+        assert selected["replay_target_seconds"] == target
+        assert RecoveryPolicy.from_mapping(selected).target_ns == policy.target_ns
