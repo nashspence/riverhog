@@ -11,7 +11,7 @@ from riverhog_provenance import validate_journal
 from riverhog_provenance._entry_replay import EntryReplay, EntryReplayCapacity, ReplayBudget
 from riverhog_provenance.journal_store import JournalStore
 from test_child_admission_growth import octets
-from test_entry_replay import owned_summary
+from test_entry_replay import owned_summary, warm_cache
 from test_entry_replay_growth import REGIMES, ReplayConnection, finish_entry, observe_replay, owner
 from test_entry_replay_growth import admission_histories as admission_histories
 from test_entry_replay_publication_growth import restore
@@ -107,7 +107,9 @@ def restoration_fixture(build, regime, catalog, *, cold):
         store.db.execute("PRAGMA synchronous=FULL").close()
         store.db.execute("PRAGMA cache_size=-64").close()
         current = owner(store, catalog, case["source_binding"], case["epoch"])
-        current._current = None if cold else cached
+        current._current = None if cold else warm_cache(current, before)
+        if not cold:
+            case["cached"] = current._current
         current._start(before, ReplayBudget())
         real_claim = current._claim
 

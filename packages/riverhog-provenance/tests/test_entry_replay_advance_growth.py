@@ -20,7 +20,7 @@ from riverhog_provenance._semantic_program import Nodes
 from riverhog_provenance._session_checkpoint import ValidationLedger
 from riverhog_provenance.journal_store import JournalStore
 from test_child_admission_growth import octets
-from test_entry_replay import owned_summary
+from test_entry_replay import owned_summary, warm_cache
 from test_entry_replay_child_growth import (
     _STAGING_IDENTITY_LINK,
     FAMILIES,
@@ -526,9 +526,7 @@ def advance_fixture(case, catalog, budget, *, cold, measured=False):
         active = state.phase not in {"frame", "terminal", "done"}
         if active:
             current._start(case["before"], budget)
-            current._current = (
-                replace(case["cached"]) if case.get("cached") is not None else current._entry(state)
-            )
+            current._current = warm_cache(current, case["before"])
         cached = current._current
         if not measured:
             yield current
@@ -539,7 +537,7 @@ def advance_fixture(case, catalog, budget, *, cold, measured=False):
         store.db.execute("PRAGMA synchronous=FULL").close()
         store.db.execute("PRAGMA cache_size=-64").close()
         current = owner(store, catalog, case["source_binding"], case["epoch"], **options)
-        current._current = None if cold or cached is None else replace(cached)
+        current._current = None if cold or cached is None else warm_cache(current, case["before"])
         if not cold and active and "family" in case and not state.phase.endswith("-admission"):
             current._start(case["before"], budget)
             current._child(state, current._current, state.phase, state.child_id)

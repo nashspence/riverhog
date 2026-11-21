@@ -1029,28 +1029,22 @@ def _row_declaration() -> Declaration:
                 "native_hashed_octets",
                 OCTETS,
                 "upper",
-                atom_bytes(2),
-                (
-                    "Current selected payload integrity and its canonical immutable "
-                    "semantic atom identity each hash once."
-                ),
+                atom_bytes(1),
+                "Hash the exact selected payload once and retain that same native atom identity.",
             ),
             Bound(
                 "decoded_json_octets",
                 OCTETS,
                 "upper",
-                atom_bytes(2),
-                "Decode the selected row and the immutable private copy used by its node index.",
+                atom_bytes(1),
+                "Decode one private read-only row shared by its original semantic node index.",
             ),
             Bound(
                 "encoded_json_octets",
                 OCTETS,
-                "upper",
-                atom_bytes(1),
-                (
-                    "The exact schema-admitted selected row is canonically encoded once for"
-                    " its private atom."
-                ),
+                "equal",
+                atom_bytes(0),
+                "Retain the original canonical staging bytes without re-encoding the atom.",
             ),
             Bound(
                 "native_schema_calls",
@@ -1939,9 +1933,9 @@ def _row_transition_declaration(mode: str, row_operation: Callable[..., Any]) ->
                     ),
                 )
                 for metric, copies in (
-                    ("native_hashed_octets", 2),
-                    ("decoded_json_octets", 2),
-                    ("encoded_json_octets", 1),
+                    ("native_hashed_octets", 1),
+                    ("decoded_json_octets", 1),
+                    ("encoded_json_octets", 0),
                 )
             ),
             Bound(
@@ -2418,12 +2412,14 @@ class EntryReplay:
         )
         if selected is None or selected.assertion_id != state.row_key or selected.raw is None:
             raise RuntimeError("retained assertion atom differs from its parent checkpoint")
-        if self._atom_digest(selected.raw) != state.row_sha256:
+        digest = self._atom_digest(selected.raw)
+        if digest != state.row_sha256:
             raise RuntimeError("retained assertion atom differs from its parent checkpoint")
         self._claim(len(selected.raw))
         row = self._atom_document(selected.raw)
-        current.row_key, current.row_sha256, current.row = state.row_key, state.row_sha256, row
-        current.atom = GenericAtom.admit(row)
+        atom = GenericAtom._borrow(selected.raw, digest, row, epoch=self.epoch)
+        current.row_key, current.row_sha256, current.row = state.row_key, digest, row
+        current.atom = atom
         return row
 
     def _atom_digest(self, raw: bytes) -> str:
@@ -2712,12 +2708,11 @@ class EntryReplay:
             after = replace(state, version=state.version + 1, row_after=selected.assertion_id)
         else:
             self._claim(len(selected.raw))
-            current.row_key, current.row_sha256, current.row = (
-                selected.assertion_id,
-                self._atom_digest(selected.raw),
-                self._atom_document(selected.raw),
-            )
-            current.atom = GenericAtom.admit(current.row)
+            digest = self._atom_digest(selected.raw)
+            row = self._atom_document(selected.raw)
+            atom = GenericAtom._borrow(selected.raw, digest, row, epoch=self.epoch)
+            current.row_key, current.row_sha256, current.row = selected.assertion_id, digest, row
+            current.atom = atom
             after = replace(
                 state,
                 version=state.version + 1,

@@ -36,7 +36,7 @@ from riverhog_provenance._semantic_program import Nodes
 from riverhog_provenance._session_checkpoint import ValidationLedger
 from riverhog_provenance.journal_store import JournalStore
 from test_child_admission_growth import octets
-from test_entry_replay import owned_summary
+from test_entry_replay import owned_summary, warm_cache
 from test_entry_replay_growth import REGIMES, observe_replay, owner
 from test_entry_replay_growth import admission_histories as admission_histories
 from test_entry_replay_publication_growth import restore
@@ -825,7 +825,7 @@ def child_samples(root, catalog, build, *, samples, specifications=TRAJECTORIES,
                     with closing(sqlite3.connect(case["path"])) as seed:
                         seed.backup(store.db)
                     current = owner(store, catalog, case["source_binding"], case["epoch"])
-                    current._current = replace(case["cached"])
+                    current._current = warm_cache(current, case["before"])
                     budget = ReplayBudget(rows=rows)
                     current._start(case["before"], budget)
                     dimensions, original = dimensions_for(
@@ -839,7 +839,7 @@ def child_samples(root, catalog, build, *, samples, specifications=TRAJECTORIES,
                         with closing(sqlite3.connect(oracle_path)) as seed:
                             seed.backup(oracle_store.db)
                         oracle = owner(oracle_store, catalog, case["source_binding"], case["epoch"])
-                        oracle._current = replace(case["cached"])
+                        oracle._current = warm_cache(oracle, case["before"])
                         oracle._start(case["before"], budget)
                         with pytest.MonkeyPatch.context() as patch:
                             patch.setattr(
@@ -853,7 +853,7 @@ def child_samples(root, catalog, build, *, samples, specifications=TRAJECTORIES,
                     store.db.execute("PRAGMA synchronous=FULL").close()
                     store.db.execute("PRAGMA cache_size=-64").close()
                     current = owner(store, catalog, case["source_binding"], case["epoch"])
-                    current._current = replace(case["cached"])
+                    current._current = warm_cache(current, case["before"])
                     current._start(case["before"], budget)
                     if not cold_child and not admission:
                         current._child(

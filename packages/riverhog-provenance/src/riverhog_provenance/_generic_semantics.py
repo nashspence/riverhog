@@ -14,7 +14,7 @@ import re
 import sqlite3
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, MutableSet
 from contextlib import closing
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from functools import cached_property
 from typing import Any
 
@@ -108,6 +108,33 @@ class GenericAtom:
     encoded: bytes
     sha256: str
     nodes: Nodes
+    _epoch: EpochContext | None = field(default=None, repr=False, compare=False)
+
+    @classmethod
+    def _borrow(
+        cls,
+        encoded: bytes,
+        sha256: str,
+        document: dict[str, Any],
+        *,
+        epoch: EpochContext,
+    ) -> GenericAtom:
+        """Borrow an original executor's exact staged bytes and read-only view.
+
+        The conductor has already checked this pinned canonical staging atom,
+        content digest and parsed view. This retains that same data custody;
+        it supplies no source, catalog, workspace or semantic authorization.
+        """
+        epoch.require_quiescent()
+        if type(encoded) is not bytes or type(document) is not dict:
+            raise TypeError("Native semantic custody requires exact bytes and a parsed object")
+        if type(sha256) is not str or re.fullmatch(r"[0-9a-f]{64}", sha256) is None:
+            raise ValueError("Native semantic custody requires its exact content digest")
+        require_canonical_uuid_urn(document["assertion_id"])
+        require_canonical_uuid_urn(document["id"])
+        if len(encoded) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
+            raise ValueError("semantic row exceeds its owning entry envelope")
+        return cls(encoded, sha256, Nodes(document), epoch)
 
     @classmethod
     def admit(cls, row: Mapping[str, Any]) -> GenericAtom:
@@ -1277,6 +1304,10 @@ class GenericSemantics:
             raise ValueError("an explicit generic semantic attempt is required")
         if type(source_binding) is not SemanticSource or type(atom) is not GenericAtom:
             raise ValueError("exact admitted semantic source and row are required")
+        original_epoch = bind_epoch(db, epoch)
+        original_epoch.require_usable()
+        if atom._epoch is not None and atom._epoch is not original_epoch:
+            raise StaleGenericSemantics("semantic atom belongs to another Native executor")
         if catalog.checkpoint_sha256() != source_binding.catalog_sha256:
             raise StaleGenericSemantics("semantic catalog differs from its execution pin")
         self.db, self.attempt_id, self.source, self.atom, self.catalog = (
@@ -1322,7 +1353,7 @@ class GenericSemantics:
                 else self.certificate_binding.checkpoint_sha256(),
             }
         )
-        self.epoch = bind_epoch(self.db, epoch)
+        self.epoch = original_epoch
         self._control = ChildControl[GenericState](self.epoch)
         self._edge: SemanticEdge | None = None
         self._edge_key: tuple[str, str, tuple[str, bytes, str]] | None = None

@@ -7,7 +7,6 @@ import sqlite3
 import sys
 from contextlib import closing, contextmanager
 from copy import deepcopy
-from dataclasses import replace
 
 import pytest
 from riverhog_canonical_json import canonical_json_bytes
@@ -19,7 +18,7 @@ from riverhog_provenance._entry_replay import EntryReplay, ReplayBudget
 from riverhog_provenance._observation_coverage import ObservationCoverage
 from riverhog_provenance._semantic_program import Nodes
 from riverhog_provenance.journal_store import JournalStore
-from test_entry_replay import owned_summary
+from test_entry_replay import owned_summary, warm_cache
 from test_entry_replay_growth import REGIMES, ReplayConnection, finish_entry, observe_replay, owner
 from test_entry_replay_growth import admission_histories as admission_histories
 from test_entry_replay_publication_growth import restore
@@ -208,7 +207,8 @@ def row_fixture(build, specification, catalog, *, cold):
         store.db.execute("PRAGMA synchronous=FULL").close()
         store.db.execute("PRAGMA cache_size=-64").close()
         current = owner(store, catalog, case["source_binding"], case["epoch"])
-        current._current = replace(cached, child_kind=None, child_id=None, child=None)
+        current._current = warm_cache(current, before)
+        case["row"] = current._current.row
         if cold:
             current._current.row_key, current._current.row_sha256 = None, None
             current._current.row, current._current.atom = None, None

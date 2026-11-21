@@ -25,7 +25,7 @@ from riverhog_provenance._semantic_program import Nodes
 from riverhog_provenance._session_checkpoint import ValidationLedger
 from riverhog_provenance.journal_store import JournalStore
 from test_child_admission_growth import octets
-from test_entry_replay import owned_summary
+from test_entry_replay import owned_summary, warm_cache
 from test_entry_replay_child_growth import ChildConnection, node_kernels
 from test_entry_replay_growth import REGIMES, observe_replay, owner
 from test_entry_replay_growth import admission_histories as admission_histories
@@ -293,7 +293,7 @@ def transition_samples(
                 with closing(sqlite3.connect(case["path"])) as seed:
                     seed.backup(store.db)
                 current = owner(store, catalog, case["source_binding"], case["epoch"])
-                current._current = replace(case["cached"])
+                current._current = warm_cache(current, case["before"])
                 current._start(case["before"], ReplayBudget())
                 operation, dimensions, original = transition_inputs(current, case, cold=cold)
                 with closing(JournalStore()) as expected_store:
@@ -301,7 +301,7 @@ def transition_samples(
                     expected_owner = owner(
                         expected_store, catalog, case["source_binding"], case["epoch"]
                     )
-                    expected_owner._current = replace(case["cached"])
+                    expected_owner._current = warm_cache(expected_owner, case["before"])
                     expected_owner._start(case["before"], ReplayBudget())
                     expected = operation(expected_owner, case["before"], expected_owner._current)
                     expected_rows = snapshot(expected_store.db)
@@ -311,7 +311,7 @@ def transition_samples(
                 store.db.execute("PRAGMA synchronous=FULL").close()
                 store.db.execute("PRAGMA cache_size=-64").close()
                 current = owner(store, catalog, case["source_binding"], case["epoch"])
-                current._current = replace(case["cached"])
+                current._current = warm_cache(current, case["before"])
                 if cold:
                     current._current.row_key = current._current.row_sha256 = None
                     current._current.row = current._current.atom = None
@@ -422,7 +422,7 @@ def test_parent_failure_rolls_back_row_transition_and_reconstructed_retry(
         with closing(sqlite3.connect(case["path"])) as seed:
             seed.backup(store.db)
         current = owner(store, catalog, case["source_binding"], case["epoch"])
-        current._current = replace(case["cached"])
+        current._current = warm_cache(current, case["before"])
         current._start(case["before"], ReplayBudget())
         operation = EntryReplay._admit_row if phase == "row-admit" else EntryReplay._lifecycle
         original = snapshot(store.db)
@@ -443,7 +443,7 @@ def test_parent_failure_rolls_back_row_transition_and_reconstructed_retry(
             operation(current, case["before"], current._current)
         assert snapshot(store.db) == original and not store.db.in_transaction
         current = owner(store, catalog, case["source_binding"], case["epoch"])
-        current._current = replace(case["cached"])
+        current._current = warm_cache(current, case["before"])
         current._start(case["before"], ReplayBudget())
         assert current.ledger.load() == case["before"]
         result = operation(current, case["before"], current._current)

@@ -22,7 +22,7 @@ from riverhog_provenance._session_checkpoint import StaleValidationCheckpoint, V
 from riverhog_provenance._session_checkpoint import install as install_parent
 from riverhog_provenance.journal_store import JournalStore
 from test_child_admission_growth import octets
-from test_entry_replay import owned_summary
+from test_entry_replay import owned_summary, warm_cache
 from test_entry_replay_growth import (
     REGIMES,
     ReplayConnection,
@@ -187,7 +187,8 @@ def measured_store(store, case, catalog):
     current = owner(
         store, catalog, case["source_binding"], case["epoch"], expected_anchor=case["anchor"]
     )
-    current._current = case["cached"]
+    current._current = warm_cache(current, case["before"])
+    case["cached"] = current._current
     yield current, path
 
 

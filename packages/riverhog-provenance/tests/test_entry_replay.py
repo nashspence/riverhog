@@ -52,6 +52,15 @@ def initialize(store, catalog, **options):
     return result
 
 
+def warm_cache(current, before):
+    """Build warm data under this original owner before measuring its reuse."""
+    current._start(before, ReplayBudget())
+    cached = current._entry(before.checkpoint)
+    if before.checkpoint.row_key is not None:
+        current._row(before.checkpoint, cached)
+    return cached
+
+
 def owned_summary(store, state):
     store.frame_count = state.frame_count
     store.freeze()
