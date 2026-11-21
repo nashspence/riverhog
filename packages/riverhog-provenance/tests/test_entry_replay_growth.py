@@ -652,6 +652,10 @@ def test_frame_and_parent_rollback_together_after_publication_failure(
             with pytest.raises(StaleValidationCheckpoint, match="superseded"):
                 current.admit(case["candidate"])
         assert not store.db.in_transaction and snapshot(store.db) == before
+        assert current._current is None
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            current.admit(case["candidate"])
+        current = owner(store, catalog, case["source_binding"])
         current.admit(case["candidate"])
         finish_entry(current)
         assert current.prefix.finish().hexdigest == hashlib.sha256(case["raw"]).hexdigest()

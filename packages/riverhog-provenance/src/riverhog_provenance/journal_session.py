@@ -28,6 +28,7 @@ from sha256_continuation import sha256_compress
 from ._entry_replay import EntryReplay, EntryReplayCapacity, ReplayBudget
 from ._entry_replay import install as install_replay
 from ._journal_prefix import JournalPrefix, PrefixState
+from ._native_epoch import EpochContext
 from ._session_checkpoint import ValidationLedger, ValidationSnapshot
 from ._session_checkpoint import install as install_parent
 from ._session_input import RetainedInput
@@ -1271,18 +1272,17 @@ class JournalValidationSession:
 
     def _initialize(self, *, retained: bool) -> None:
         db = self._store.db
-        try:
-            db.execute("BEGIN IMMEDIATE").close()
+
+        def apply(epoch: EpochContext) -> None:
+            epoch.require(db)
             install_parent(db)
             install_replay(db)
             if retained:
                 install_input(self._ledger)
             self._prefix._initialize()
             self._ledger._initialize()
-            db.commit()
-        except BaseException:
-            db.rollback()
-            raise
+
+        self._ledger.epoch.apply(apply, receive=lambda _state: None)
 
     @classmethod
     @declare_growth(
@@ -1456,15 +1456,13 @@ class JournalValidationSession:
     def _move(self, before: ValidationSnapshot, phase: str) -> ValidationSnapshot:
         after = replace(before.checkpoint, version=before.checkpoint.version + 1, phase=phase)
         db = self._store.db
-        try:
-            db.execute("BEGIN IMMEDIATE").close()
+
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
+            epoch.require(db)
             self._ledger._fence(before)
-            result = self._ledger._publish(before, after)
-            db.commit()
-        except BaseException:
-            db.rollback()
-            raise
-        return result
+            return self._ledger._publish(before, after)
+
+        return self._ledger.epoch.apply(apply, receive=lambda _state: None)
 
     def _finish(self, before: ValidationSnapshot) -> ValidationSnapshot:
         state = self._prefix.finish()

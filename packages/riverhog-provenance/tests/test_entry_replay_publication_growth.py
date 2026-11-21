@@ -302,5 +302,8 @@ def test_failed_publication_rolls_back_all_writes_and_retains_cache(
                     current._publish(case["before"], current._current)
             assert not store.db.in_transaction and snapshot(store.db) == case["original"]
             assert current._current is case["cached"]
-            current._publish(case["before"], current._current)
+            with pytest.raises(RuntimeError, match="requires reconstruction"):
+                current._publish(case["before"], current._current)
+            current = owner(store, catalog, case["source_binding"], case["epoch"])
+            current.advance()
             assert_published(current, case)

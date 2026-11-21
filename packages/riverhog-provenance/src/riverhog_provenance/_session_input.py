@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 from riverhog_canonical_json import canonical_json_bytes
 
 from ._entry_replay import EntryReplayCapacity
+from ._native_epoch import EpochContext
 from ._session_checkpoint import StaleValidationCheckpoint, ValidationSnapshot
 from .errors import IncompleteSourceError, ProvenanceValidationError
 from .framing import JournalFramePosition, JournalFramingCursor, advance_journal_framing
@@ -171,8 +172,9 @@ class RetainedInput:
         if len(encoded.encode()) > _HEADER_OCTETS:
             raise EntryReplayCapacity("source cursor cannot admit its owning scalar widths")
         db = self.ledger.db
-        try:
-            db.execute("BEGIN IMMEDIATE").close()
+
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
+            epoch.require(db)
             self.ledger._fence(before)
             with closing(
                 db.execute(
@@ -183,15 +185,14 @@ class RetainedInput:
             ) as rows:
                 if rows.rowcount != 1:
                     raise StaleValidationCheckpoint("source cursor proposal was superseded")
-            changed = self.ledger._publish(
+            return self.ledger._publish(
                 before, replace(before.checkpoint, version=before.checkpoint.version + 1)
             )
-            db.commit()
-        except BaseException:
-            db.rollback()
-            raise
-        self.state = after
-        return changed
+
+        def receive(_snapshot: ValidationSnapshot) -> None:
+            self.state = after
+
+        return self.ledger.epoch.apply(apply, receive=receive)
 
     def _available(self, before: ValidationSnapshot, octets: int) -> int:
         control = 16384 + 16 * (

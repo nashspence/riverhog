@@ -39,6 +39,7 @@ from ._correction_targets import CorrectionTargets
 from ._entry_preparation import EntryPreparation
 from ._generic_semantics import GenericAtom, GenericSemantics
 from ._journal_prefix import JournalPrefix, PreparedEntry
+from ._native_epoch import EpochContext
 from ._online_dag import OnlineDag, _Snapshot
 from ._semantic_finish import SemanticFinish
 from ._semantic_program import ROW_TYPES, Nodes
@@ -2230,6 +2231,7 @@ class EntryReplay:
     def _start(self, before: ValidationSnapshot, budget: ReplayBudget) -> None:
         if self.certificates is not None and self.certificates.binding != self.certificate_binding:
             raise StaleValidationCheckpoint("entry replay certificate manifest changed")
+        self.ledger.epoch.require_quiescent()
         self._budget = budget
         # Reserve actual repeated fixed-shape owner/source/checkpoint metadata.
         prefix_octets = sum(
@@ -2263,7 +2265,6 @@ class EntryReplay:
                 require_profiles=self.require_profiles,
             ),
         )
-        self._current = current
         return current
 
     @declare_growth(_restoration_declaration(), delegates=(("prefix", JournalPrefix.prepare),))
@@ -2289,21 +2290,23 @@ class EntryReplay:
             or hashlib.sha256(value[0]).hexdigest() != state.frame_sha256
         ):
             raise RuntimeError("retained entry atom is missing or changed")
-        return self._cache(JournalFrame(value[0]))
+        self._current = self._cache(JournalFrame(value[0]))
+        return self._current
 
     def _commit(
-        self, before: ValidationSnapshot, mutate: Callable[[], ValidationCheckpoint]
+        self,
+        before: ValidationSnapshot,
+        mutate: Callable[[], ValidationCheckpoint],
+        *,
+        receive: Callable[[ValidationSnapshot], None] = lambda _state: None,
     ) -> ValidationSnapshot:
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
+            epoch.require(self.db)
             self.ledger._fence(before)
             after = mutate()
-            result = self.ledger._publish(before, after)
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return result
+            return self.ledger._publish(before, after)
+
+        return self.ledger.epoch.apply(apply, receive=receive)
 
     def _move(self, before: ValidationSnapshot, phase: str) -> ValidationSnapshot:
         after = replace(
@@ -2352,7 +2355,10 @@ class EntryReplay:
             ).close()
             return after
 
-        return self._commit(before, apply)
+        def receive(_snapshot: ValidationSnapshot) -> None:
+            self._current = current
+
+        return self._commit(before, apply, receive=receive)
 
     @declare_growth(
         _row_declaration(),
@@ -2530,9 +2536,10 @@ class EntryReplay:
                     child_sha256=self._graph_digest(new, replacement.after),
                 )
 
-            result = self._commit(before, apply)
-            self.store._dag_runs[kind] = replacement.run_id
-            return result
+            def receive(_snapshot: ValidationSnapshot) -> None:
+                self.store._dag_runs[kind] = replacement.run_id
+
+            return self._commit(before, apply, receive=receive)
         if state.child_id != graph.run_id or state.child_sha256 != self._graph_digest(graph):
             raise StaleValidationCheckpoint("retired graph differs from its parent checkpoint")
         batch = graph._prepare_retirement(self._budget.rows, byte_budget=self._remaining())
@@ -2568,23 +2575,23 @@ class EntryReplay:
         after = ValidationCheckpoint(
             version=state.version + 1, frame_ordinal=state.frame_ordinal + 1
         )
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
+
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
+            epoch.require(self.db)
             self.ledger._fence(before)
             accepted = self.prefix._apply(publication)
             self.db.execute("DELETE FROM journal_validation_frame WHERE singleton=1").close()
-            result = self.ledger._publish(
+            return self.ledger._publish(
                 before,
                 after,
                 prefix=(self.prefix.attempt_id, self.prefix.binding, accepted.to_json()),
             )
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        self.store.frame_count = after.frame_ordinal
-        self._current = None
-        return result
+
+        def receive(_snapshot: ValidationSnapshot) -> None:
+            self.store.frame_count = after.frame_ordinal
+            self._current = None
+
+        return self.ledger.epoch.apply(apply, receive=receive)
 
     @declare_growth(
         _row_transition_declaration("admission", _row),
@@ -2640,9 +2647,10 @@ class EntryReplay:
                 child_sha256=None,
             )
 
-        result = self._commit(before, lifecycle)
-        current.row_key, current.row_sha256, current.row, current.atom = None, None, None, None
-        return result
+        def receive(_snapshot: ValidationSnapshot) -> None:
+            current.row_key, current.row_sha256, current.row, current.atom = None, None, None, None
+
+        return self._commit(before, lifecycle, receive=receive)
 
     @declare_growth(
         _advance_declaration(_entry, _admit_row, _lifecycle, _child_step, _graph_step, _publish),

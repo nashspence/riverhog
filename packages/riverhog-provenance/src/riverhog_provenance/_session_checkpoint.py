@@ -31,6 +31,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_epoch import EpochContext
 
 ALGORITHM = "riverhog-journal-validation-checkpoint/v1"
 _HEADER_CHARACTERS = 8192
@@ -394,7 +395,13 @@ class ValidationLedger:
     """Fixed-shape worker and parent fence; the session owns every transaction."""
 
     def __init__(
-        self, db: sqlite3.Connection, *, attempt_id: str, binding: bytes, worker_epoch: int
+        self,
+        db: sqlite3.Connection,
+        *,
+        attempt_id: str,
+        binding: bytes,
+        worker_epoch: int,
+        epoch: EpochContext | None = None,
     ) -> None:
         if type(attempt_id) is not str or re.fullmatch(r"[0-9a-f]{32}", attempt_id) is None:
             raise ValueError("validation requires an exact owned attempt identity")
@@ -402,6 +409,9 @@ class ValidationLedger:
             raise ValueError("invalid private validation binding envelope")
         if type(worker_epoch) is not int or worker_epoch < 0:
             raise ValueError("validation requires a nonnegative worker epoch")
+        if epoch is not None and epoch.db is not db:
+            raise ValueError("validation ledger requires its original epoch connection")
+        self.epoch = EpochContext(db) if epoch is None else epoch
         self.db, self.attempt_id, self.binding, self.worker_epoch = (
             db,
             attempt_id,
@@ -410,8 +420,7 @@ class ValidationLedger:
         )
 
     def _detached(self) -> None:
-        if self.db.in_transaction:
-            raise RuntimeError("validation preparation requires a closed owner transaction")
+        self.epoch.require_quiescent()
 
     def _prefix(self) -> tuple[tuple[str, bytes, str], PrefixState]:
         with closing(
@@ -472,15 +481,7 @@ class ValidationLedger:
         delegates=(("initialization", _initialize),),
     )
     def initialize(self) -> ValidationSnapshot:
-        self._detached()
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
-            result = self._initialize()
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return result
+        return self.epoch.apply(lambda _epoch: self._initialize(), receive=lambda _state: None)
 
     def _read(self) -> ValidationSnapshot:
         with closing(
@@ -576,8 +577,9 @@ class ValidationLedger:
         self._detached()
         before = self.load()
         after = replace(before.checkpoint, version=before.checkpoint.version + 1)
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
+
+        def apply(epoch: EpochContext) -> None:
+            epoch.require(self.db)
             self._fence(before)
             with closing(
                 self.db.execute(
@@ -597,10 +599,13 @@ class ValidationLedger:
             ) as cursor:
                 if cursor.rowcount != 1:
                     raise StaleValidationCheckpoint("validation worker replacement was superseded")
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return ValidationLedger(
-            self.db, attempt_id=self.attempt_id, binding=self.binding, worker_epoch=worker_epoch
+
+        self.epoch.apply(apply, receive=lambda _state: None)
+        replacement = ValidationLedger(
+            self.db,
+            attempt_id=self.attempt_id,
+            binding=self.binding,
+            worker_epoch=worker_epoch,
+            epoch=self.epoch,
         )
+        return replacement
