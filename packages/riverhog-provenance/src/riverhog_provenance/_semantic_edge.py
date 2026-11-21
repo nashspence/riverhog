@@ -517,7 +517,9 @@ class SemanticEdge:
                 "target": target,
             }
         )
-        self._control = ChildControl[EdgeState](self.epoch)
+        self._control = ChildControl[EdgeState](
+            self.epoch, EdgeState, (ALGORITHM, self.attempt_id, self.binding)
+        )
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
         self.epoch.account(WorkAmount(rows=1))

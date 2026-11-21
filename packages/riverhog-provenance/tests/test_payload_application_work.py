@@ -137,7 +137,7 @@ def test_failed_original_frame_insert_keeps_copy_cost_and_rolls_back_whole_publi
     assert db.execute("SELECT checkpoint FROM journal_prefix").fetchone() == before_prefix
     assert db.execute("SELECT value FROM frames").fetchone() is None
     assert db.execute("SELECT value FROM journal_validation_frame").fetchone() == (raw,)
-    assert session._ledger._received is before_parent and session._replay._current is current
+    assert session._ledger._control.state is before_parent and session._replay._current is current
     assert seen[0].consumed.octets == len(raw) and seen[0].consumed.source_octets == 0
     assert seen[0].held == WorkAmount()
     with pytest.raises(RuntimeError, match="requires reconstruction"):

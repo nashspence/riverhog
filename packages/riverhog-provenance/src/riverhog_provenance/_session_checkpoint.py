@@ -32,6 +32,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_conductor import LiveControl
 from ._native_epoch import EpochContext, observe_preparation
 from ._native_work import WorkAmount
 
@@ -422,7 +423,9 @@ class ValidationLedger:
         if epoch is not None and epoch.db is not db:
             raise ValueError("validation ledger requires its original epoch connection")
         self.epoch = EpochContext(db) if epoch is None else epoch
-        self._received: ValidationSnapshot | None = None
+        self._control = LiveControl[ValidationSnapshot](
+            self.epoch, ValidationSnapshot, (ALGORITHM, attempt_id, binding, worker_epoch)
+        )
         self.db, self.attempt_id, self.binding, self.worker_epoch = (
             db,
             attempt_id,
@@ -460,7 +463,7 @@ class ValidationLedger:
         ):
             raise StaleValidationCheckpoint("validation prefix belongs to another attempt")
         prefix = (row[0], row[1], row[2])
-        received = self._received
+        received = self._control.state
         state = (
             received.accepted
             if received is not None and received.prefix == prefix
@@ -534,7 +537,7 @@ class ValidationLedger:
             row = cursor.fetchone()
         if row is None:
             raise StaleValidationCheckpoint("validation attempt, inputs or worker changed")
-        received = self._received
+        received = self._control.state
         same_control = received is not None and received.checkpoint.to_json() == row[0]
         state = (
             received.checkpoint
@@ -553,12 +556,12 @@ class ValidationLedger:
     def load(self) -> ValidationSnapshot:
         self._detached()
         result = self._read()
-        self._received = result
+        self._control.observe(result)
         return result
 
     def _receive(self, snapshot: ValidationSnapshot) -> None:
         self.epoch.require_receiving(self.db)
-        self._received = snapshot
+        self._control.receive(snapshot)
 
     @declare_growth(_checkpoint_declaration("_fence"))
     def _fence(self, before: ValidationSnapshot) -> None:

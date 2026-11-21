@@ -121,7 +121,7 @@ def test_live_typed_parent_does_not_cache_positive_authority(journal, catalog, c
         session._store.db.commit()
         with pytest.raises(RuntimeError):
             session.progress()
-        assert session._ledger._received is before
+        assert session._ledger._control.state is before
 
 
 def test_retained_live_progress_keeps_fresh_source_authority_and_never_reads_payload(
@@ -160,7 +160,7 @@ def test_failed_original_parent_receiving_discards_executor_without_exposing_pen
         def receive(ledger, pending):
             if ledger is session._ledger:
                 assert pending.checkpoint.version == before.checkpoint.version + 1
-                assert ledger._received is before
+                assert ledger._control.state is before
                 assert not ledger.db.in_transaction and not ledger.epoch.quiescent
                 raise failure
             original(ledger, pending)
@@ -168,7 +168,7 @@ def test_failed_original_parent_receiving_discards_executor_without_exposing_pen
         monkeypatch.setattr(ValidationLedger, "_receive", receive)
         with pytest.raises(RuntimeError) as caught:
             session.advance()
-        assert caught.value is failure and session._ledger._received is before
+        assert caught.value is failure and session._ledger._control.state is before
         assert session._replay._current is None
         with pytest.raises(RuntimeError, match="requires reconstruction"):
             session.progress()

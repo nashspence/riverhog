@@ -144,7 +144,7 @@ def test_actual_native_cancellation_before_commit_rolls_back_without_live_public
         finally:
             session._store.db.set_trace_callback(None)
         assert caught.value is failure
-        assert session._ledger._received is before
+        assert session._ledger._control.state is before
         assert session._replay._current is None
         assert not session._store.db.in_transaction
         with closing(

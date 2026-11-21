@@ -10,6 +10,7 @@ from typing import Concatenate, Protocol
 
 from sqlite_admission import observe_sqlite_execution
 
+from ._native_conductor import NativeConductor
 from ._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum, WorkReservation
 
 
@@ -30,6 +31,7 @@ class EpochContext:
 
     def __init__(self, db: sqlite3.Connection) -> None:
         self.db = db
+        self.conductor = NativeConductor()
         self._phase = "quiescent"
         self._failure: BaseException | None = None
         self._execution_active = False

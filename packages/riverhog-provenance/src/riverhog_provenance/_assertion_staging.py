@@ -490,7 +490,9 @@ class AssertionStaging:
             }
         )
         self.epoch = bind_epoch(self.db, epoch)
-        self._control = ChildControl[StageState](self.epoch)
+        self._control = ChildControl[StageState](
+            self.epoch, StageState, (ALGORITHM, self.attempt_id, self.binding)
+        )
 
     def _inspect_row(self) -> None:
         self.epoch.account(WorkAmount(rows=1))

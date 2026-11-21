@@ -448,7 +448,9 @@ class SemanticFinish:
             }
         )
         self.epoch = bind_epoch(self.db, epoch)
-        self._control = ChildControl[FinishState](self.epoch)
+        self._control = ChildControl[FinishState](
+            self.epoch, FinishState, (ALGORITHM, self.attempt_id, self.binding)
+        )
 
     @property
     def db(self) -> sqlite3.Connection:

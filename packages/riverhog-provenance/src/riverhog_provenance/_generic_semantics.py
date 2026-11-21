@@ -1413,7 +1413,9 @@ class GenericSemantics:
             }
         )
         self.epoch = original_epoch
-        self._control = ChildControl[GenericState](self.epoch)
+        self._control = ChildControl[GenericState](
+            self.epoch, GenericState, (ALGORITHM, self.attempt_id, self.binding)
+        )
         self._edge: SemanticEdge | None = None
         self._edge_key: tuple[str, str, tuple[str, bytes, str]] | None = None
 

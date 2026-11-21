@@ -343,7 +343,11 @@ class CorrectionWork:
         self.attempt_id = attempt_id
         self.source_binding = source_binding
         self.epoch = bind_epoch(self.db, epoch)
-        self._control = ChildControl[CorrectionState](self.epoch)
+        self._control = ChildControl[CorrectionState](
+            self.epoch,
+            CorrectionState,
+            (ALGORITHM, self.operation, self.attempt_id, self.source_binding),
+        )
 
     def _inspect_row(self) -> None:
         self.epoch.account(WorkAmount(rows=1))

@@ -79,7 +79,7 @@ def test_original_parent_application_reserves_before_begin_and_receives_unused_w
         def received(owner, pending):
             assert owner is parent and owner.epoch.work is original
             assert not db.in_transaction and not owner.epoch.quiescent
-            assert owner._received is before
+            assert owner._control.state is before
             assert original.consumed == WorkAmount(rows=4 + 2 * accepted)
             assert original.held == WorkAmount(rows=2 - 2 * accepted)
             receiving.append(pending)
@@ -203,7 +203,7 @@ def test_failed_parent_mutation_keeps_attempt_cost_and_invalidates_original_exec
             db.set_authorizer(None)
         assert original.consumed == WorkAmount(rows=4 + 2 * accepted)
         assert original.held == WorkAmount() and not db.in_transaction
-        assert parent._received is before
+        assert parent._control.state is before
         assert db.execute("SELECT checkpoint FROM journal_validation").fetchone() == (
             before.checkpoint.to_json(),
         )

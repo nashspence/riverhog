@@ -7,7 +7,7 @@ from contextlib import closing
 import pytest
 from riverhog_provenance import validate_journal
 from riverhog_provenance._journal_prefix import JournalPrefix
-from riverhog_provenance._session_input import RetainedInput
+from riverhog_provenance._native_conductor import LiveControl
 from riverhog_provenance.journal_session import JournalValidationSession
 from riverhog_provenance.journal_store import JournalStore
 from sqlite_admission import SqliteProgressConnection
@@ -48,12 +48,12 @@ def test_actual_frame_admission_receives_live_atom_only_after_original_commit(
         session.advance()
         assert session._input.pending and session._replay._current is None
         db = session._store.db
-        received = session._ledger._received
+        received = session._ledger._control.state
         db.failure = failure
         with pytest.raises(OSError, match="original private commit") as caught:
             session.advance()
         assert session._replay._current is None
-        assert session._ledger._received is received
+        assert session._ledger._control.state is received
         assert not session._ledger.epoch.quiescent
         with closing(db.execute("SELECT count(*) FROM journal_validation_frame")) as rows:
             assert rows.fetchone() == ((0,) if failure == "before" else (1,))
@@ -141,20 +141,20 @@ def test_actual_retained_input_receiving_failure_requires_a_new_verified_executo
 ):
     path = directory(tmp_path)
     source = OwnedSource(journal, catalog)
-    original = RetainedInput.__setattr__
+    original = LiveControl.receive
     with open_session(
         path, source, catalog, create=True, journal_constructions=journal_constructions
     ) as session:
         cursor = session._input.cursor
         failure = RuntimeError("original source-cursor receiving failed")
 
-        def receive(owner, name, value):
-            if owner is session._input and name == "state":
+        def receive(control, value):
+            if control is session._input._control:
                 assert not session._ledger.epoch.quiescent
                 raise failure
-            original(owner, name, value)
+            original(control, value)
 
-        monkeypatch.setattr(RetainedInput, "__setattr__", receive)
+        monkeypatch.setattr(LiveControl, "receive", receive)
         with pytest.raises(RuntimeError) as caught:
             session.advance()
         assert caught.value is failure
@@ -162,7 +162,7 @@ def test_actual_retained_input_receiving_failure_requires_a_new_verified_executo
         assert not session._ledger.epoch.quiescent
         with pytest.raises(RuntimeError, match="requires reconstruction"):
             session.progress()
-    monkeypatch.setattr(RetainedInput, "__setattr__", original)
+    monkeypatch.setattr(LiveControl, "receive", original)
     with open_session(
         path, source, catalog, epoch=1, journal_constructions=journal_constructions
     ) as resumed:

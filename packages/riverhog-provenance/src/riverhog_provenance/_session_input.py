@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 from riverhog_canonical_json import canonical_json_bytes
 
 from ._entry_replay import EntryReplayCapacity
+from ._native_conductor import LiveControl
 from ._native_epoch import EpochContext
 from ._native_frame import NativeFrame
 from ._native_work import WorkAmount
@@ -107,8 +108,20 @@ class RetainedInput:
     def __init__(self, ledger: ValidationLedger, source: JournalValidationSource) -> None:
         self.ledger, self.source = ledger, source
         self.binding = source.binding
-        self.state = self._load()
+        self._control = LiveControl[_InputState](
+            ledger.epoch,
+            _InputState,
+            (ALGORITHM, ledger.attempt_id, ledger.binding, ledger.worker_epoch),
+        )
+        self._control.observe(self._load())
         self._check(ledger.load())
+
+    @property
+    def state(self) -> _InputState:
+        state = self._control.state
+        if state is None:
+            raise RuntimeError("Native conductor lost its admitted source cursor")
+        return state
 
     @property
     def cursor(self) -> JournalFramingCursor:
@@ -135,7 +148,10 @@ class RetainedInput:
             row = cursor.fetchone()
         if row is None:
             raise RuntimeError("retained source cursor is missing")
-        return _InputState.decode(row[0])
+        state = self._control.state
+        return (
+            state if state is not None and state.encode() == row[0] else _InputState.decode(row[0])
+        )
 
     def _check(self, before: ValidationSnapshot) -> None:
         state = self.state
@@ -194,7 +210,7 @@ class RetainedInput:
 
         def receive(snapshot: ValidationSnapshot) -> None:
             self.ledger._receive(snapshot)
-            self.state = after
+            self._control.receive(after)
 
         return self.ledger.epoch.apply(
             apply,

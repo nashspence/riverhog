@@ -365,7 +365,9 @@ class CorrectionTargets:
         self.sequence, self.journal_id = document["sequence"], document["journal_id"]
         self.count = len(self.targets)
         self.epoch = bind_epoch(self.db, epoch)
-        self._control = ChildControl[TargetState](self.epoch)
+        self._control = ChildControl[TargetState](
+            self.epoch, TargetState, (ALGORITHM, self.attempt_id, self.source_binding)
+        )
 
     def _inspect_row(self) -> None:
         self.epoch.account(WorkAmount(rows=1))
