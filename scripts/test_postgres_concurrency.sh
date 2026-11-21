@@ -131,7 +131,7 @@ compose run --rm --no-deps \
   --env "RIVERHOG_TEST_POSTGRES_URL=${database_url}" \
   "${COMPOSE_RUN_TTY_ARGS[@]}" \
   test \
-  -q \
+  -q --instafail --maxfail=1 \
   "${postgres_tests[@]}"
 
 if [[ -z "${POSTGRES_TESTS:-}" || "${RIVERHOG_PROVIDER_CHECKPOINT_HOST_TEST:-}" == "1" ]]; then
