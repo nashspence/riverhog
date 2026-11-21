@@ -47,6 +47,7 @@ updates:
 
   - package-ecosystem: docker
     directories:
+      - /tools/linux-qualification
       - /some-implementations/stove0/application/server
       - /some-implementations/stove0/observers/exiftool
       - /some-implementations/stove0/observers/ffprobe

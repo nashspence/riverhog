@@ -142,6 +142,7 @@ help:
 		'  MISE_BIN=/abs/path/to/mise Use a specific mise binary instead of mise on PATH.' \
 		'  RIVERHOG_QUALIFICATION_MOUNT_FIXTURE=/path/to/fixture.json Select Linux listener mount_point and setup/teardown argv.' \
 		'  RIVERHOG_QUALIFICATION_MOUNT_LOCK=/path/to/fixture.lock Hold the shared fixture lock through listener settling and teardown.' \
+		'  Linux qualification runner: tools/linux-qualification/README.md (image and runtime prerequisites).' \
 		'  COMPOSE_ENV_FILE=/abs/path/to/overrides.env' \
 		'  TEST_COMPOSE_PROJECT_NAME=riverhog-shared'
 
