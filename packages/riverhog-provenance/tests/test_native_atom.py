@@ -14,6 +14,7 @@ from riverhog_provenance._generic_semantics import (
 from riverhog_provenance._native_epoch import EpochContext
 from riverhog_provenance._native_work import WorkAmount, WorkQuantum
 from riverhog_provenance._semantic_program import Nodes
+from riverhog_provenance.journal_session import JournalValidationWorkBudget
 from test_native_epoch_integration import _reach
 from test_owner_row_work import context
 
@@ -27,7 +28,15 @@ def session(tmp_path, journal, catalog, journal_constructions, request):
 
 
 def quantum(octets):
-    return WorkQuantum(WorkAmount(rows=64, octets=octets, source_octets=1, transitions=1))
+    # These cases isolate byte admission; use the owning default for row work.
+    return WorkQuantum(
+        WorkAmount(
+            rows=JournalValidationWorkBudget().rows,
+            octets=octets,
+            source_octets=1,
+            transitions=1,
+        )
+    )
 
 
 @pytest.mark.parametrize("cold", [False, True])
@@ -140,7 +149,8 @@ def test_failed_index_does_not_publish_partial_owned_row_cache_and_can_retry(ses
     work = quantum(3 * len(selected.raw))
     changes, failure = replay.db.total_changes, OSError("original native node index failed")
 
-    def fail(_nodes, _document):
+    def fail(_nodes, _document, **kwargs):
+        assert kwargs["epoch"] is epoch
         assert current.row is None and current.atom is None
         raise failure
 

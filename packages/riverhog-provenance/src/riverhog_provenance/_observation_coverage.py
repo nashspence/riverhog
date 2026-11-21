@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from riverhog_growth_contracts import (
     COUNT,
@@ -17,7 +17,11 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import PROFILE
 
+from ._native_work import WorkAmount
 from .constants import PRIMARY_CONTENT_CATEGORY
+
+if TYPE_CHECKING:
+    from ._native_epoch import EpochContext
 
 
 def _declaration() -> Declaration:
@@ -82,11 +86,15 @@ def _declaration() -> Declaration:
 
 class ObservationCoverage:
     @declare_growth(_declaration())
-    def __init__(self, value: Mapping[str, Any]) -> None:
+    def __init__(self, value: Mapping[str, Any], *, epoch: EpochContext | None = None) -> None:
         self.statuses: dict[tuple[str, str], str] = {}
         self.primary_complete = False
         self.incomplete = False
         for item in value.get("coverage", []):
+            if epoch is not None:
+                epoch.check()
+                if epoch.work is not None:
+                    epoch.account(WorkAmount(rows=1))
             profile, category, status = item["profile_id"], item["category"], item["status"]
             self.statuses.setdefault((profile, category), status)
             if profile == PROFILE and category == PRIMARY_CONTENT_CATEGORY and status == "complete":

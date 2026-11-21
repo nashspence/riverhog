@@ -6,7 +6,10 @@ import pytest
 from riverhog_provenance._changed_assertions import read_changed_assertion
 from riverhog_provenance._native_epoch import EpochContext
 from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum
-from riverhog_provenance.journal_session import JournalValidationSession
+from riverhog_provenance.journal_session import (
+    JournalValidationSession,
+    JournalValidationWorkBudget,
+)
 from test_assertion_staging import connect
 from test_changed_assertions import Connection, prepare
 from test_native_epoch_integration import _reach
@@ -14,7 +17,15 @@ from test_retained_journal_session import OwnedSource, directory, open_session
 
 
 def quantum(octets):
-    return WorkQuantum(WorkAmount(rows=64, octets=octets, source_octets=1, transitions=1))
+    # These cases isolate byte admission; use the owning default for row work.
+    return WorkQuantum(
+        WorkAmount(
+            rows=JournalValidationWorkBudget().rows,
+            octets=octets,
+            source_octets=1,
+            transitions=1,
+        )
+    )
 
 
 @pytest.fixture(params=[False, True], ids=["ordinary", "retained"])

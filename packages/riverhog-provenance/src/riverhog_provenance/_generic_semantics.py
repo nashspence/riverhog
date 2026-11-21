@@ -134,7 +134,7 @@ class GenericAtom:
         require_canonical_uuid_urn(document["id"])
         if len(encoded) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
             raise ValueError("semantic row exceeds its owning entry envelope")
-        return cls(encoded, sha256, Nodes(document), epoch)
+        return cls(encoded, sha256, Nodes(document, epoch=epoch), epoch)
 
     @classmethod
     def admit(cls, row: Mapping[str, Any]) -> GenericAtom:

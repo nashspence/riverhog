@@ -25,10 +25,12 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import PROFILE, canonical_document
 
+from ._native_work import WorkAmount
 from ._observation_coverage import ObservationCoverage
 from .errors import ProvenanceValidationError, UnresolvedContractError
 
 if TYPE_CHECKING:
+    from ._native_epoch import EpochContext
     from .graph import _Validator
 
 ROW_STAGES = {
@@ -182,15 +184,22 @@ class Nodes:
     @declare_growth(
         _composed_index_declaration(), delegates=(("coverage", ObservationCoverage.__init__),)
     )
-    def __init__(self, value: Mapping[str, Any]) -> None:
+    def __init__(self, value: Mapping[str, Any], *, epoch: EpochContext | None = None) -> None:
         self.values: list[Any] = []
         self.identities: dict[int, int] = {}
         pending: list[Any] = [value]
         while pending:
             item = pending.pop()
-            if id(item) in self.identities:
+            identity = id(item)
+            known = identity in self.identities
+            if epoch is not None:
+                epoch.check()
+                if epoch.work is not None:
+                    slots = 0 if known or not isinstance(item, (Mapping, list)) else len(item)
+                    epoch.account(WorkAmount(rows=1 + slots))
+            if known:
                 continue
-            self.identities[id(item)] = len(self.values)
+            self.identities[identity] = len(self.values)
             self.values.append(item)
             if isinstance(item, Mapping):
                 children = list(item.values())
@@ -203,7 +212,7 @@ class Nodes:
             )
 
         self.observation = (
-            ObservationCoverage(value) if value.get("type") == "observation" else None
+            ObservationCoverage(value, epoch=epoch) if value.get("type") == "observation" else None
         )
 
     def identity(self, value: Any) -> int:

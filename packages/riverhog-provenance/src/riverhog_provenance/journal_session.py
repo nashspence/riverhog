@@ -70,14 +70,17 @@ class JournalValidationSource(Protocol):
 class JournalValidationWorkBudget:
     """Aggregate inspected work, separate from each child's page/atom admission.
 
-    Rows count actual semantic inspections, including repeated point probes.
+    Rows count actual semantic inspections, including repeated point probes,
+    JSON containers/value slots and observation coverage rows.
     Octets count processed representations; source octets count fresh source
     reads, including complete-frame reads distinct from scan windows. Control
     transitions also bound work with no row or source bytes. These are limits
     per executor invocation and confer no archive-wide acceptance limit.
     """
 
-    rows: int = 64 * 64
+    # The existing entry-byte envelope also bounds its JSON container,
+    # value-slot and coverage visits; keep room for bounded owner control.
+    rows: int = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
     # One existing maximum entry can be copied, decoded, content-hashed,
     # framed and source-hashed, with room for its bounded owner metadata.
     octets: int = 6 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536

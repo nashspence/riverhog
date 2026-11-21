@@ -61,6 +61,13 @@ class EpochContext:
         else:
             work.consume(amount)
 
+    def check(self) -> None:
+        """Run the original bounded live-memory execution check."""
+        self.require_usable()
+        check = self._execution_check
+        if check is not None and check() is not None:
+            raise TypeError("Native execution check must return None or raise its cause")
+
     @property
     def quiescent(self) -> bool:
         return self._phase == "quiescent" and not self.db.in_transaction
@@ -97,8 +104,7 @@ class EpochContext:
             work.bind_execution(self)
         self._execution_active, self._execution_check, self._work = True, check, work
         try:
-            if check is not None and check() is not None:
-                raise TypeError("Native execution check must return None or raise its cause")
+            self.check()
             yield
             self.require_quiescent()
             if work is not None:
