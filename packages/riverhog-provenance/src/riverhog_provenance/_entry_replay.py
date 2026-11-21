@@ -2548,6 +2548,7 @@ class EntryReplay:
                     AssertionStaging,
                     SemanticFinish,
                     CorrectionWork,
+                    GenericSemantics,
                 ),
             )
             else None
@@ -2575,7 +2576,7 @@ class EntryReplay:
             row = self._one("SELECT run_id FROM dag_runs WHERE kind=?", (kind,))
             if row is None:
                 raise RuntimeError("entry replay lost its active graph")
-            graph = OnlineDag(self.db, kind, row[0])
+            graph = OnlineDag(self.db, kind, row[0], epoch=self.epoch)
         if phase == "replace":
             with self.epoch.preparing():
                 replacement = graph._prepare_replacement(uuid4().hex)
@@ -2593,7 +2594,9 @@ class EntryReplay:
             def receive(_snapshot: ValidationSnapshot) -> None:
                 self.store._dag_runs[kind] = replacement.run_id
 
-            return self._commit(before, apply, receive=receive)
+            return self._commit(
+                before, apply, receive=receive, admission=graph._application_admission(replacement)
+            )
         with self.epoch.preparing():
             stale = state.child_id != graph.run_id or state.child_sha256 != self._graph_digest(
                 graph
@@ -2616,7 +2619,7 @@ class EntryReplay:
                 child_sha256=self._graph_digest(graph, batch.after),
             )
 
-        return self._commit(before, retire)
+        return self._commit(before, retire, admission=graph._application_admission(batch))
 
     @declare_growth(
         _publication_declaration(),

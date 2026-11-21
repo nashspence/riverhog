@@ -37,6 +37,7 @@ from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from ._online_dag import OnlineDag, _Plan, _Snapshot, _Work
 from ._semantic_source import SemanticSource
 from .errors import ProvenanceValidationError
@@ -500,7 +501,8 @@ class SemanticEdge:
             target,
         )
         self.sequence, self.journal_id = source_binding.sequence, source_binding.journal_id
-        self.checker = OnlineDag(db, kind, run_id)
+        self.epoch = bind_epoch(self.db, epoch)
+        self.checker = OnlineDag(db, kind, run_id, epoch=self.epoch)
         self.binding = canonical_json_bytes(
             {
                 "algorithm": ALGORITHM,
@@ -515,12 +517,25 @@ class SemanticEdge:
                 "target": target,
             }
         )
-        self.epoch = bind_epoch(self.db, epoch)
         self._control = ChildControl[EdgeState](self.epoch)
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        self.epoch.account(WorkAmount(rows=1))
         with closing(self.db.execute(sql, parameters)) as rows:
             return rows.fetchone()
+
+    def _write(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1))
+        return self.db.execute(sql, parameters)
+
+    @staticmethod
+    def _application_admission(batch: EdgeAdmission | EdgeBatch) -> WorkAmount:
+        if isinstance(batch, EdgeAdmission):
+            return WorkAmount(rows=5)
+        graph = batch.graph_plan
+        return WorkAmount(rows=4) + (
+            WorkAmount() if graph is None else OnlineDag._application_admission(graph)
+        )
 
     def _detached(self) -> None:
         if self.db.in_transaction:
@@ -633,7 +648,7 @@ class SemanticEdge:
         ):
             raise StaleSemanticEdge("semantic graph admission was superseded")
         self._subject()
-        self.db.execute(
+        self._write(
             "INSERT INTO journal_semantic_edges VALUES (?,?,?,?,?,?,?,?) "
             "ON CONFLICT(kind) DO UPDATE SET algorithm=excluded.algorithm, "
             "attempt_id=excluded.attempt_id,binding=excluded.binding, "
@@ -753,7 +768,7 @@ class SemanticEdge:
                 raise StaleSemanticEdge("finished semantic graph worker was replaced")
         else:
             with closing(
-                self.db.execute(
+                self._write(
                     "UPDATE journal_semantic_edges SET checkpoint=? WHERE kind=? "
                     "AND attempt_id=? "
                     "AND binding=? AND prefix_attempt=? AND prefix_binding=? AND prefix=? "

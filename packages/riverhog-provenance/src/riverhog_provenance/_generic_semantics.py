@@ -48,6 +48,7 @@ from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from ._observation_coverage import ObservationCoverage
 from ._observation_projection import has_observer, read_observation_metadata
 from ._relation_projection import read_relation_metadata
@@ -1327,8 +1328,45 @@ class GenericSemantics:
         self._edge_key: tuple[str, str, tuple[str, bytes, str]] | None = None
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        self.epoch.account(WorkAmount(rows=1))
         with closing(self.db.execute(sql, parameters)) as rows:
             return rows.fetchone()
+
+    def _many(self, sql: str, parameters: tuple[Any, ...], *, limit: int) -> list[tuple[Any, ...]]:
+        self._detached()
+        original = self.epoch.work
+        admitted = None if original is None else original.reserve(WorkAmount(rows=1 + limit))
+        try:
+            if admitted is not None:
+                admitted.consume(WorkAmount(rows=1))
+            with closing(self.db.execute(sql, parameters)) as cursor:
+                rows = cursor.fetchall()
+            if len(rows) > limit:
+                raise RuntimeError("semantic cleanup exceeds its original bounded row admission")
+            if admitted is not None:
+                admitted.consume(WorkAmount(rows=len(rows)))
+            return rows
+        finally:
+            if admitted is not None:
+                admitted.close()
+
+    def _write(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1))
+        return self.db.execute(sql, parameters)
+
+    @staticmethod
+    def _application_admission(batch: GenericAdmission | GenericBatch) -> WorkAmount:
+        if isinstance(batch, GenericAdmission):
+            return WorkAmount(rows=8)
+        edge = batch.edge
+        nested = (
+            WorkAmount()
+            if edge is None
+            else (WorkAmount(rows=1) + SemanticEdge._application_admission(edge))
+        )
+        # Output insertion/verification and rollback each need at most three
+        # one-row operations. Unused admission stays with the original epoch.
+        return WorkAmount(rows=3 + 3 * len(batch.writes)) + nested
 
     def _detached(self) -> None:
         if self.db.in_transaction:
@@ -1429,7 +1467,7 @@ class GenericSemantics:
             raise StaleGenericSemantics("common semantic admission was superseded")
         self._subject()
         self._require_reclaimed()
-        self.db.execute(
+        self._write(
             "INSERT INTO journal_generic_semantics VALUES (1,?,?,?,?,?,?,?) "
             "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
             "attempt_id=excluded.attempt_id,binding=excluded.binding, "
@@ -1437,7 +1475,7 @@ class GenericSemantics:
             "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
             (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.after.to_json()),
         ).close()
-        self.db.execute(
+        self._write(
             "INSERT INTO generic_semantic_frames VALUES (?,?,?,?)",
             (self.attempt_id, 0, None, _encode_frame(Frame(self.operation, 0))),
         ).close()
@@ -1630,6 +1668,7 @@ class GenericSemantics:
                     dict(outputs),
                 )
                 try:
+                    self.epoch.account(WorkAmount(rows=1))
                     program.step()
                 except (GenericSemanticsCapacity, ValueError, _GraphRequest) as error:
                     stack.top, stack.serial, stack.cache, stack.changes = snapshot[:4]
@@ -1746,14 +1785,12 @@ class GenericSemantics:
                     )
                     after = replace(after, phase="walk", edge_run=None)
         elif state.phase == "reject-frames":
-            with closing(
-                self.db.execute(
-                    "SELECT frame_id FROM generic_semantic_frames WHERE attempt_id=? "
-                    "ORDER BY frame_id LIMIT ?",
-                    (self.attempt_id, step_budget + 1),
-                )
-            ) as rows:
-                values = rows.fetchall()
+            values = self._many(
+                "SELECT frame_id FROM generic_semantic_frames WHERE attempt_id=? "
+                "ORDER BY frame_id LIMIT ?",
+                (self.attempt_id, step_budget + 1),
+                limit=step_budget + 1,
+            )
             for (identity,) in values[:step_budget]:
                 try:
                     meter.claim(_FRAME_OCTETS)
@@ -1773,14 +1810,12 @@ class GenericSemantics:
                 version=state.version + 1,
             )
         elif state.phase in {"keys", "reject-keys"}:
-            with closing(
-                self.db.execute(
-                    "SELECT id,length(key) FROM generic_semantic_keys "
-                    "INDEXED BY generic_semantic_cleanup WHERE attempt_id=? ORDER BY id LIMIT ?",
-                    (self.attempt_id, step_budget + 1),
-                )
-            ) as rows:
-                values = rows.fetchall()
+            values = self._many(
+                "SELECT id,length(key) FROM generic_semantic_keys "
+                "INDEXED BY generic_semantic_cleanup WHERE attempt_id=? ORDER BY id LIMIT ?",
+                (self.attempt_id, step_budget + 1),
+                limit=step_budget + 1,
+            )
             for identity, length in values[:step_budget]:
                 try:
                     meter.claim(length + 512)
@@ -1801,15 +1836,13 @@ class GenericSemantics:
             )
             after = replace(state, phase=phase, version=state.version + 1)
         elif state.phase in {"outputs", "reject-outputs"}:
-            with closing(
-                self.db.execute(
-                    "SELECT id,length(key) FROM generic_semantic_outputs "
-                    "INDEXED BY generic_semantic_output_cleanup WHERE attempt_id=? "
-                    "ORDER BY id LIMIT ?",
-                    (self.attempt_id, step_budget + 1),
-                )
-            ) as rows:
-                values = rows.fetchall()
+            values = self._many(
+                "SELECT id,length(key) FROM generic_semantic_outputs "
+                "INDEXED BY generic_semantic_output_cleanup WHERE attempt_id=? "
+                "ORDER BY id LIMIT ?",
+                (self.attempt_id, step_budget + 1),
+                limit=step_budget + 1,
+            )
             for identity, length in values[:step_budget]:
                 try:
                     meter.claim((5 if state.phase == "reject-outputs" else 2) * length + 512)
@@ -1855,7 +1888,7 @@ class GenericSemantics:
                 raise StaleGenericSemantics("finished common semantic worker was replaced")
             return batch.after
         with closing(
-            self.db.execute(
+            self._write(
                 "UPDATE journal_generic_semantics SET checkpoint=? WHERE singleton=1 "
                 "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
                 "AND prefix_binding=? AND prefix=? AND checkpoint=?",
@@ -1888,14 +1921,14 @@ class GenericSemantics:
                     ):
                         raise RuntimeError("semantic finding differs from its identity")
                     with closing(
-                        self.db.execute(
+                        self._write(
                             "INSERT INTO findings VALUES (?,?) ON CONFLICT(key) DO NOTHING",
                             (finding, finding),
                         )
                     ) as cursor:
                         inserted = cursor.rowcount
                     if inserted:
-                        self.db.execute(
+                        self._write(
                             "INSERT INTO generic_semantic_outputs(attempt_id,name,key,finding) "
                             "VALUES (?,?,?,?)",
                             (self.attempt_id, name, key, finding),
@@ -1909,14 +1942,14 @@ class GenericSemantics:
                         raise RuntimeError("retained semantic finding differs from its identity")
                     continue
                 with closing(
-                    self.db.execute(
+                    self._write(
                         "INSERT INTO maps VALUES (?,?,?) ON CONFLICT(name,key) DO NOTHING",
                         parameters,
                     )
                 ) as cursor:
                     inserted = cursor.rowcount
                 if inserted:
-                    self.db.execute(
+                    self._write(
                         "INSERT INTO generic_semantic_outputs(attempt_id,name,key) VALUES (?,?,?)",
                         (self.attempt_id, name, key),
                     ).close()
@@ -1945,7 +1978,7 @@ class GenericSemantics:
                         "FROM generic_semantic_outputs WHERE id=? AND attempt_id=?)"
                     )
                     with closing(
-                        self.db.execute(
+                        self._write(
                             delete,
                             (*parameters, self.attempt_id),
                         )
@@ -1953,7 +1986,7 @@ class GenericSemantics:
                         if cursor.rowcount != 1:
                             raise RuntimeError("semantic undo no longer owns its output")
                 with closing(
-                    self.db.execute(
+                    self._write(
                         "DELETE FROM generic_semantic_outputs WHERE id=? AND attempt_id=?",
                         (*parameters, self.attempt_id),
                     )
@@ -1961,7 +1994,7 @@ class GenericSemantics:
                     if cursor.rowcount != 1:
                         raise RuntimeError("semantic output reclamation lost its row")
             else:
-                self.db.execute(sql, parameters).close()
+                self._write(sql, parameters).close()
         return batch.after
 
     def commit(self, batch: GenericBatch) -> GenericState:

@@ -24,6 +24,8 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
+from ._native_epoch import EpochContext, bind_epoch
+from ._native_work import WorkAmount
 from .errors import JournalValidationCapacity, ProvenanceValidationError
 
 ALGORITHM = "riverhog-journal-online-level-fuel/v1"
@@ -475,10 +477,13 @@ class OnlineDag:
     distinct owned run; ordinary process replacement reopens the same run.
     """
 
-    def __init__(self, db: sqlite3.Connection, kind: str, run_id: str) -> None:
+    def __init__(
+        self, db: sqlite3.Connection, kind: str, run_id: str, *, epoch: EpochContext | None = None
+    ) -> None:
         if kind not in _KINDS or not isinstance(run_id, str) or not run_id:
             raise ValueError("online graph requires an owned graph kind and run identity")
         self.db, self.kind, self.run_id = db, kind, run_id
+        self.epoch = bind_epoch(db, epoch)
         self._check_algorithm()
 
     def _check_algorithm(self) -> None:
@@ -486,9 +491,43 @@ class OnlineDag:
         if rows != [(ALGORITHM,)]:
             raise RuntimeError("online graph algorithm binding differs")
 
-    def _rows(self, sql: str, parameters: Sequence[Any] = ()) -> list[tuple[Any, ...]]:
-        with closing(self.db.execute(sql, parameters)) as cursor:
-            return cursor.fetchall()
+    def _rows(
+        self, sql: str, parameters: Sequence[Any] = (), *, limit: int | None = None
+    ) -> list[tuple[Any, ...]]:
+        if limit is None:
+            # Singleton/indexed probes debit attempts, including misses.
+            self.epoch.account(WorkAmount(rows=1))
+            with closing(self.db.execute(sql, parameters)) as cursor:
+                return cursor.fetchall()
+        if self.db.in_transaction:
+            raise RuntimeError("graph range preparation requires a closed original writer")
+        original = self.epoch.work
+        admitted = None if original is None else original.reserve(WorkAmount(rows=1 + limit))
+        try:
+            if admitted is not None:
+                admitted.consume(WorkAmount(rows=1))
+            with closing(self.db.execute(sql, parameters)) as cursor:
+                rows = cursor.fetchall()
+            if len(rows) > limit:
+                raise RuntimeError("graph range exceeds its original bounded row admission")
+            if admitted is not None:
+                admitted.consume(WorkAmount(rows=len(rows)))
+            return rows
+        finally:
+            if admitted is not None:
+                admitted.close()
+
+    def _write(self, sql: str, parameters: Sequence[Any] = ()) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1))
+        return self.db.execute(sql, parameters)
+
+    @staticmethod
+    def _application_admission(batch: _Plan | _Replacement | _Retirement) -> WorkAmount:
+        if isinstance(batch, _Replacement):
+            # Unused-run probes, two row writes and the replacement's algorithm probe.
+            return WorkAmount(rows=len(_RETIRE) + 4)
+        plan = batch.plan if isinstance(batch, _Retirement) else batch
+        return WorkAmount(rows=1 + len(plan.writes))
 
     @staticmethod
     def _budget(value: int) -> int:
@@ -524,7 +563,7 @@ class OnlineDag:
                 raise StaleDagWork("online graph run changed")
             if not rows:
                 self._require_unused_run(self.run_id)
-                self.db.execute(
+                self._write(
                     "INSERT INTO dag_runs VALUES (?, ?, '0', ?)",
                     (self.kind, self.run_id, _Work().encoded()),
                 ).close()
@@ -557,7 +596,7 @@ class OnlineDag:
         if not self.db.in_transaction:
             raise RuntimeError("online graph application requires an owner transaction")
         with closing(
-            self.db.execute(
+            self._write(
                 "UPDATE dag_runs SET version = ?, work = ? "
                 "WHERE kind = ? AND run_id = ? AND version = ?",
                 (
@@ -572,7 +611,7 @@ class OnlineDag:
             changed = cursor.rowcount
         if changed:
             for statement, parameters in plan.writes:
-                self.db.execute(statement, parameters).close()
+                self._write(statement, parameters).close()
         return bool(changed)
 
     def _commit(self, plan: _Plan) -> Progress:
@@ -706,6 +745,7 @@ class OnlineDag:
             f"SELECT {columns} FROM {table} WHERE kind = ? AND run_id = ? "
             f"AND operation_id = ? ORDER BY {columns} LIMIT ?",
             (self.kind, self.run_id, plan.work.operation_id, budget),
+            limit=budget,
         )
         predicates = " AND ".join(key + " = ?" for key in keys)
         for row in rows:
@@ -769,6 +809,7 @@ class OnlineDag:
                 "AND incoming.run_id = ? AND incoming.target = ? "
                 "AND incoming.source > ? ORDER BY incoming.source LIMIT ?",
                 (work.operation_id, *scope, work.active, after, budget),
+                limit=budget,
             )
             consumed = 0
             for predecessor, seen in rows:
@@ -793,6 +834,7 @@ class OnlineDag:
                 "SELECT vertex FROM dag_queue WHERE kind = ? AND run_id = ? "
                 "AND operation_id = ? AND direction = 'back' ORDER BY vertex LIMIT ?",
                 (*operation, budget),
+                limit=budget,
             )
             for (vertex,) in rows:
                 plan.write(
@@ -823,6 +865,7 @@ class OnlineDag:
                 "SELECT source FROM dag_incoming WHERE kind = ? AND run_id = ? "
                 "AND target = ? ORDER BY source LIMIT ?",
                 (*scope, work.promoting, budget),
+                limit=budget,
             )
             for (predecessor,) in rows:
                 self._undo(plan, "incoming", work.promoting, predecessor, "1")
@@ -861,6 +904,7 @@ class OnlineDag:
                 "AND seen.vertex = edges.target WHERE edges.kind = ? AND edges.run_id = ? "
                 "AND edges.source = ? AND edges.target > ? ORDER BY edges.target LIMIT ?",
                 (work.operation_id, *scope, work.active, work.after or "", budget),
+                limit=budget,
             )
             for successor, level, seen in rows:
                 plan.adjacency_visits += 1
@@ -894,6 +938,7 @@ class OnlineDag:
                 "WHERE kind = ? AND run_id = ? AND operation_id = ? "
                 "ORDER BY relation, first_key, second_key LIMIT ?",
                 (*operation, budget),
+                limit=budget,
             )
             for relation, first, second, old in rows:
                 if relation == "level":
@@ -1006,7 +1051,7 @@ class OnlineDag:
         before, run_id = (batch.before, batch.run_id)
         self._require_unused_run(run_id)
         with closing(
-            self.db.execute(
+            self._write(
                 "UPDATE dag_runs SET run_id = ?, version = ?, work = ? "
                 "WHERE kind = ? AND run_id = ? AND version = ?",
                 (
@@ -1021,10 +1066,8 @@ class OnlineDag:
         ) as cursor:
             if not cursor.rowcount:
                 raise StaleDagWork("online graph replacement lost its current fence")
-        self.db.execute(
-            "INSERT INTO dag_retired VALUES (?, ?, 0)", (self.kind, self.run_id)
-        ).close()
-        return OnlineDag(self.db, self.kind, run_id)
+        self._write("INSERT INTO dag_retired VALUES (?, ?, 0)", (self.kind, self.run_id)).close()
+        return OnlineDag(self.db, self.kind, run_id, epoch=self.epoch)
 
     def replace_run(self, run_id: str) -> OnlineDag:
         """Fence a replaced owned graph; retire its private rows separately."""
@@ -1077,6 +1120,7 @@ class OnlineDag:
                 f"SELECT {lengths} FROM {table} WHERE kind = ? AND run_id = ? "
                 f"ORDER BY {columns} LIMIT ?",
                 (self.kind, retired, budget),
+                limit=budget,
             )
             used, selected = 0, 0
             fixed = _write_octets(deletion, (self.kind, retired))
@@ -1103,6 +1147,7 @@ class OnlineDag:
             f"SELECT {columns} FROM {table} WHERE kind = ? AND run_id = ? "
             f"ORDER BY {columns} LIMIT ?",
             (self.kind, retired, selected),
+            limit=selected,
         )
         plan = _Plan(before, replace(before.work))
         for row in page:
