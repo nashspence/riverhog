@@ -27,7 +27,7 @@ from sha256_continuation import sha256_compress
 
 from ._entry_replay import EntryReplay, EntryReplayCapacity, ReplayBudget
 from ._entry_replay import install as install_replay
-from ._journal_prefix import JournalPrefix, PrefixState
+from ._journal_prefix import JournalPrefix
 from ._native_epoch import EpochContext
 from ._session_checkpoint import ValidationLedger, ValidationSnapshot
 from ._session_checkpoint import install as install_parent
@@ -195,12 +195,12 @@ def _checkpoint_progress(
     source_octets: int,
 ) -> JournalValidationProgress:
     state = snapshot.checkpoint
-    accepted = PrefixState.from_json(snapshot.prefix[2])
+    accepted = snapshot.accepted
     checkpoint_digest = hashlib.sha256()
     for value in (
         ledger.binding,
         str(ledger.worker_epoch).encode(),
-        state.to_json().encode(),
+        snapshot.checkpoint.to_json().encode(),
         *(part.encode() if isinstance(part, str) else part for part in snapshot.prefix),
     ):
         checkpoint_digest.update(str(len(value)).encode() + b":" + value)
@@ -1273,16 +1273,16 @@ class JournalValidationSession:
     def _initialize(self, *, retained: bool) -> None:
         db = self._store.db
 
-        def apply(epoch: EpochContext) -> None:
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
             epoch.require(db)
             install_parent(db)
             install_replay(db)
             if retained:
                 install_input(self._ledger)
             self._prefix._initialize()
-            self._ledger._initialize()
+            return self._ledger._initialize()
 
-        self._ledger.epoch.apply(apply, receive=lambda _state: None)
+        self._ledger.epoch.apply(apply, receive=self._ledger._receive)
 
     @classmethod
     @declare_growth(
@@ -1462,7 +1462,7 @@ class JournalValidationSession:
             self._ledger._fence(before)
             return self._ledger._publish(before, after)
 
-        return self._ledger.epoch.apply(apply, receive=lambda _state: None)
+        return self._ledger.epoch.apply(apply, receive=self._ledger._receive)
 
     def _finish(self, before: ValidationSnapshot) -> ValidationSnapshot:
         state = self._prefix.finish()

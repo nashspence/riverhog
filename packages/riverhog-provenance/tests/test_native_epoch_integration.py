@@ -46,10 +46,12 @@ def test_actual_frame_admission_receives_live_atom_only_after_original_commit(
         session.advance()
         assert session._input.pending and session._replay._current is None
         db = session._store.db
+        received = session._ledger._received
         db.failure = failure
         with pytest.raises(OSError, match="original private commit") as caught:
             session.advance()
         assert session._replay._current is None
+        assert session._ledger._received is received
         assert not session._ledger.epoch.quiescent
         with closing(db.execute("SELECT count(*) FROM journal_validation_frame")) as rows:
             assert rows.fetchone() == ((0,) if failure == "before" else (1,))

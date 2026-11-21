@@ -269,7 +269,7 @@ def session_observer(session, dimensions, operation, *, failed_operations=(), ba
 
 
 def progress_dimensions(session, before):
-    accepted = session_owner.PrefixState.from_json(before.prefix[2])
+    accepted = before.accepted
     return {
         "metadata_row_octets": 1024
         + 2
@@ -336,7 +336,7 @@ def session_dimensions(session, budget, operation, *, cold):
             caller_pull_octets=0,
             caller_slice_octets=0,
         )
-        accepted = session_owner.PrefixState.from_json(before.prefix[2])
+        accepted = before.accepted
         if state.phase not in {"frame", "terminal", "done"}:
             cached = session._replay._current
             case = {"before": before, "cached": cached, "candidate": cached.frame}
@@ -620,7 +620,7 @@ def session_cases(
             for units in range(1000000):
                 before = session._ledger.load()
                 state = before.checkpoint
-                accepted = session_owner.PrefixState.from_json(before.prefix[2])
+                accepted = before.accepted
                 current = session._replay._current
                 selected = None
                 if state.phase == "frame":

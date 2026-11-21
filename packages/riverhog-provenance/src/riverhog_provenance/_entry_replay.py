@@ -2306,7 +2306,11 @@ class EntryReplay:
             after = mutate()
             return self.ledger._publish(before, after)
 
-        return self.ledger.epoch.apply(apply, receive=receive)
+        def received(snapshot: ValidationSnapshot) -> None:
+            self.ledger._receive(snapshot)
+            receive(snapshot)
+
+        return self.ledger.epoch.apply(apply, receive=received)
 
     def _move(self, before: ValidationSnapshot, phase: str) -> ValidationSnapshot:
         after = replace(
@@ -2593,7 +2597,8 @@ class EntryReplay:
                 prefix=(self.prefix.attempt_id, self.prefix.binding, accepted.to_json()),
             )
 
-        def receive(_snapshot: ValidationSnapshot) -> None:
+        def receive(snapshot: ValidationSnapshot) -> None:
+            self.ledger._receive(snapshot)
             self.store.frame_count = after.frame_ordinal
             self._current = None
 

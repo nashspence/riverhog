@@ -14,6 +14,7 @@ import sqlite3
 from collections.abc import Callable
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -96,7 +97,8 @@ class ValidationCheckpoint:
     child_id: str | None = None
     child_sha256: str | None = None
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {
                 "version": str(self.version),
@@ -111,6 +113,53 @@ class ValidationCheckpoint:
                 "child_sha256": self.child_sha256,
             }
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
+
+    def _validate(self, encoded: str) -> None:
+        if type(encoded) is not str or len(encoded) > _HEADER_CHARACTERS:
+            raise ValueError("checkpoint envelope")
+        for value in (self.version, self.frame_ordinal, self.frame_octets):
+            if type(value) is not int or value < 0:
+                raise ValueError("checkpoint scalar")
+        if type(self.phase) is not str or self.phase not in _PHASES:
+            raise ValueError("checkpoint phase")
+        for digest in (self.frame_sha256, self.row_sha256, self.child_sha256):
+            if digest is not None and (
+                type(digest) is not str or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+            ):
+                raise ValueError("checkpoint atom digest")
+        for identity in (self.row_after, self.row_key):
+            if identity is not None:
+                require_canonical_uuid_urn(identity)
+        if self.child_id is not None and (
+            type(self.child_id) is not str or re.fullmatch(r"[0-9a-f]{32}", self.child_id) is None
+        ):
+            raise ValueError("checkpoint child identity")
+        if self.phase in {"frame", "terminal", "done"}:
+            if (
+                self.frame_sha256 is not None
+                or self.frame_octets
+                or self.row_after is not None
+                or self.row_key is not None
+                or self.row_sha256 is not None
+                or self.child_id is not None
+                or self.child_sha256 is not None
+            ):
+                raise ValueError("checkpoint inactive frame")
+        elif self.phase != "failed" and (self.frame_sha256 is None or self.frame_octets == 0):
+            raise ValueError("checkpoint active frame")
+        if self.phase in _CHILD_PHASES and (self.child_id is None or self.child_sha256 is None):
+            raise ValueError("checkpoint active child")
+        if self.phase in _ROW_PHASES and (self.row_key is None or self.row_sha256 is None):
+            raise ValueError("checkpoint active row")
+        if (
+            self.row_key is not None
+            and self.row_after is not None
+            and self.row_key <= self.row_after
+        ):
+            raise ValueError("checkpoint row cursor")
 
     @classmethod
     def from_json(cls, raw: str) -> ValidationCheckpoint:
@@ -143,48 +192,7 @@ class ValidationCheckpoint:
                 value["child_id"],
                 value["child_sha256"],
             )
-            if type(state.phase) is not str or state.phase not in _PHASES:
-                raise ValueError("checkpoint phase")
-            for digest in (state.frame_sha256, state.row_sha256, state.child_sha256):
-                if digest is not None and (
-                    type(digest) is not str or re.fullmatch(r"[0-9a-f]{64}", digest) is None
-                ):
-                    raise ValueError("checkpoint atom digest")
-            for identity in (state.row_after, state.row_key):
-                if identity is not None:
-                    require_canonical_uuid_urn(identity)
-            if state.child_id is not None and (
-                type(state.child_id) is not str
-                or re.fullmatch(r"[0-9a-f]{32}", state.child_id) is None
-            ):
-                raise ValueError("checkpoint child identity")
-            if state.phase in {"frame", "terminal", "done"}:
-                if (
-                    state.frame_sha256 is not None
-                    or state.frame_octets
-                    or state.row_after is not None
-                    or state.row_key is not None
-                    or state.row_sha256 is not None
-                    or state.child_id is not None
-                    or state.child_sha256 is not None
-                ):
-                    raise ValueError("checkpoint inactive frame")
-            elif state.phase != "failed" and (
-                state.frame_sha256 is None or state.frame_octets == 0
-            ):
-                raise ValueError("checkpoint active frame")
-            if state.phase in _CHILD_PHASES and (
-                state.child_id is None or state.child_sha256 is None
-            ):
-                raise ValueError("checkpoint active child")
-            if state.phase in _ROW_PHASES and (state.row_key is None or state.row_sha256 is None):
-                raise ValueError("checkpoint active row")
-            if (
-                state.row_key is not None
-                and state.row_after is not None
-                and state.row_key <= state.row_after
-            ):
-                raise ValueError("checkpoint row cursor")
+            state._validate(raw)
             if state.to_json() != raw:
                 raise ValueError("noncanonical checkpoint")
             return state
@@ -196,6 +204,7 @@ class ValidationCheckpoint:
 class ValidationSnapshot:
     checkpoint: ValidationCheckpoint
     prefix: tuple[str, bytes, str]
+    accepted: PrefixState
 
 
 def install(db: sqlite3.Connection) -> None:
@@ -412,6 +421,7 @@ class ValidationLedger:
         if epoch is not None and epoch.db is not db:
             raise ValueError("validation ledger requires its original epoch connection")
         self.epoch = EpochContext(db) if epoch is None else epoch
+        self._received: ValidationSnapshot | None = None
         self.db, self.attempt_id, self.binding, self.worker_epoch = (
             db,
             attempt_id,
@@ -438,7 +448,13 @@ class ValidationLedger:
             or len(row[1]) > PREFIX_BINDING_OCTETS_MAX
         ):
             raise StaleValidationCheckpoint("validation prefix belongs to another attempt")
-        state = PrefixState.from_json(row[2])
+        prefix = (row[0], row[1], row[2])
+        received = self._received
+        state = (
+            received.accepted
+            if received is not None and received.prefix == prefix
+            else PrefixState.from_json(row[2])
+        )
         if state.frame_count:
             with closing(
                 self.db.execute(
@@ -453,7 +469,7 @@ class ValidationLedger:
                 or previous[0] != state.previous_json.encode()
             ):
                 raise StaleValidationCheckpoint("validation prefix predecessor link changed")
-        return (row[0], row[1], row[2]), state
+        return prefix, state
 
     @declare_growth(_checkpoint_declaration("_initialize"))
     def _initialize(self) -> ValidationSnapshot:
@@ -463,6 +479,7 @@ class ValidationLedger:
         if accepted.frame_count:
             raise RuntimeError("validation initialization requires an empty accepted prefix")
         state = ValidationCheckpoint()
+        encoded = state.to_json()
         self.db.execute(
             "INSERT INTO journal_validation VALUES(1,?,?,?,?,?,?,?,?)",
             (
@@ -470,18 +487,18 @@ class ValidationLedger:
                 self.attempt_id,
                 self.binding,
                 str(self.worker_epoch),
-                state.to_json(),
+                encoded,
                 *prefix,
             ),
         ).close()
-        return ValidationSnapshot(state, prefix)
+        return ValidationSnapshot(state, prefix, accepted)
 
     @declare_growth(
         _checkpoint_declaration("initialize", delegates=(("initialization", _initialize),)),
         delegates=(("initialization", _initialize),),
     )
     def initialize(self) -> ValidationSnapshot:
-        return self.epoch.apply(lambda _epoch: self._initialize(), receive=lambda _state: None)
+        return self.epoch.apply(lambda _epoch: self._initialize(), receive=self._receive)
 
     def _read(self) -> ValidationSnapshot:
         with closing(
@@ -504,16 +521,30 @@ class ValidationLedger:
             row = cursor.fetchone()
         if row is None:
             raise StaleValidationCheckpoint("validation attempt, inputs or worker changed")
-        state = ValidationCheckpoint.from_json(row[0])
+        received = self._received
+        same_control = received is not None and received.checkpoint.to_json() == row[0]
+        state = (
+            received.checkpoint
+            if same_control and received is not None
+            else ValidationCheckpoint.from_json(row[0])
+        )
         prefix, accepted = self._prefix()
         if tuple(row[1:]) != prefix or accepted.frame_count != state.frame_ordinal:
             raise StaleValidationCheckpoint("validation accepted-prefix marker changed")
-        return ValidationSnapshot(state, prefix)
+        if same_control and received is not None and received.prefix == prefix:
+            return received
+        return ValidationSnapshot(state, prefix, accepted)
 
     @declare_growth(_checkpoint_declaration("load"))
     def load(self) -> ValidationSnapshot:
         self._detached()
-        return self._read()
+        result = self._read()
+        self._received = result
+        return result
+
+    def _receive(self, snapshot: ValidationSnapshot) -> None:
+        self.epoch.require_receiving(self.db)
+        self._received = snapshot
 
     @declare_growth(_checkpoint_declaration("_fence"))
     def _fence(self, before: ValidationSnapshot) -> None:
@@ -534,14 +565,14 @@ class ValidationLedger:
             raise RuntimeError("validation publication requires an owner transaction")
         if after.version != before.checkpoint.version + 1:
             raise ValueError("validation checkpoint must advance exactly one version")
-        # Validate even internally constructed state before retaining it.
-        ValidationCheckpoint.from_json(after.to_json())
+        encoded = after.to_json()
+        try:
+            after._validate(encoded)
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            raise RuntimeError("corrupt journal validation checkpoint") from exc
         selected = before.prefix if prefix is None else prefix
-        current, _accepted = self._prefix()
-        if (
-            selected != current
-            or PrefixState.from_json(selected[2]).frame_count != after.frame_ordinal
-        ):
+        current, accepted = self._prefix()
+        if selected != current or accepted.frame_count != after.frame_ordinal:
             raise StaleValidationCheckpoint("validation publication lost its exact prefix")
         with closing(
             self.db.execute(
@@ -551,7 +582,7 @@ class ValidationLedger:
                 "AND binding=? AND worker_epoch=? "
                 "AND checkpoint=? AND prefix_attempt=? AND prefix_binding=? AND prefix=?",
                 (
-                    after.to_json(),
+                    encoded,
                     *selected,
                     ALGORITHM,
                     self.attempt_id,
@@ -564,7 +595,7 @@ class ValidationLedger:
         ) as cursor:
             if cursor.rowcount != 1:
                 raise StaleValidationCheckpoint("validation proposal was superseded")
-        return ValidationSnapshot(after, selected)
+        return ValidationSnapshot(after, selected, accepted)
 
     @declare_growth(
         _checkpoint_declaration("replace_worker", delegates=(("load", load), ("fence", _fence))),
@@ -577,8 +608,17 @@ class ValidationLedger:
         self._detached()
         before = self.load()
         after = replace(before.checkpoint, version=before.checkpoint.version + 1)
+        encoded = after.to_json()
+        after._validate(encoded)
+        replacement = ValidationLedger(
+            self.db,
+            attempt_id=self.attempt_id,
+            binding=self.binding,
+            worker_epoch=worker_epoch,
+            epoch=self.epoch,
+        )
 
-        def apply(epoch: EpochContext) -> None:
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
             epoch.require(self.db)
             self._fence(before)
             with closing(
@@ -588,7 +628,7 @@ class ValidationLedger:
                     "AND worker_epoch=? AND checkpoint=?",
                     (
                         str(worker_epoch),
-                        after.to_json(),
+                        encoded,
                         ALGORITHM,
                         self.attempt_id,
                         self.binding,
@@ -600,12 +640,7 @@ class ValidationLedger:
                 if cursor.rowcount != 1:
                     raise StaleValidationCheckpoint("validation worker replacement was superseded")
 
-        self.epoch.apply(apply, receive=lambda _state: None)
-        replacement = ValidationLedger(
-            self.db,
-            attempt_id=self.attempt_id,
-            binding=self.binding,
-            worker_epoch=worker_epoch,
-            epoch=self.epoch,
-        )
+            return ValidationSnapshot(after, before.prefix, before.accepted)
+
+        self.epoch.apply(apply, receive=replacement._receive)
         return replacement

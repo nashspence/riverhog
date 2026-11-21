@@ -46,6 +46,11 @@ class EpochContext:
         if db is not self.db or self._phase != "applying" or not db.in_transaction:
             raise RuntimeError("Native mutation requires its original active private epoch")
 
+    def require_receiving(self, db: sqlite3.Connection) -> None:
+        """Receive live control only after this exact original commit returned."""
+        if db is not self.db or self._phase != "receiving" or db.in_transaction:
+            raise RuntimeError("Native live control requires original post-commit receiving")
+
     def apply[T](
         self,
         mutation: Callable[[EpochContext], T],

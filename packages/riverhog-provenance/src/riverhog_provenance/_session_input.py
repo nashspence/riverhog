@@ -134,10 +134,8 @@ class RetainedInput:
         return _InputState.decode(row[0])
 
     def _check(self, before: ValidationSnapshot) -> None:
-        from ._journal_prefix import PrefixState
-
         state = self.state
-        accepted = PrefixState.from_json(before.prefix[2])
+        accepted = before.accepted
         cursor, pending = state.cursor, state.pending
         if self.source.binding != self.binding:
             raise StaleValidationCheckpoint("retained source binding changed")
@@ -189,7 +187,8 @@ class RetainedInput:
                 before, replace(before.checkpoint, version=before.checkpoint.version + 1)
             )
 
-        def receive(_snapshot: ValidationSnapshot) -> None:
+        def receive(snapshot: ValidationSnapshot) -> None:
+            self.ledger._receive(snapshot)
             self.state = after
 
         return self.ledger.epoch.apply(apply, receive=receive)
