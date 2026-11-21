@@ -2541,7 +2541,14 @@ class EntryReplay:
         application_work = (
             child._application_admission(batch)
             if isinstance(
-                child, (EntryPreparation, CorrectionTargets, AssertionStaging, SemanticFinish)
+                child,
+                (
+                    EntryPreparation,
+                    CorrectionTargets,
+                    AssertionStaging,
+                    SemanticFinish,
+                    CorrectionWork,
+                ),
             )
             else None
         )

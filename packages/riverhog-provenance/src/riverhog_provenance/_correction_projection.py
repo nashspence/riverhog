@@ -13,6 +13,7 @@ import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
 from functools import cached_property
+from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import (
@@ -30,6 +31,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from .errors import JournalValidationCapacity
 
 ALGORITHM = "riverhog-correction-projection/v1"
@@ -343,19 +345,51 @@ class CorrectionWork:
         self.epoch = bind_epoch(self.db, epoch)
         self._control = ChildControl[CorrectionState](self.epoch)
 
+    def _inspect_row(self) -> None:
+        self.epoch.account(WorkAmount(rows=1))
+
+    def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        self._inspect_row()
+        with closing(self.db.execute(sql, parameters)) as rows:
+            return rows.fetchone()
+
+    def _many(self, sql: str, parameters: tuple[Any, ...], *, limit: int) -> list[tuple[Any, ...]]:
+        self._require_detached()
+        original = self.epoch.work
+        admitted = None if original is None else original.reserve(WorkAmount(rows=1 + limit))
+        try:
+            if admitted is not None:
+                admitted.consume(WorkAmount(rows=1))
+            with closing(self.db.execute(sql, parameters)) as cursor:
+                rows = cursor.fetchall()
+            if len(rows) > limit:
+                raise RuntimeError("correction seed range exceeds its original row admission")
+            if admitted is not None:
+                admitted.consume(WorkAmount(rows=len(rows)))
+            return rows
+        finally:
+            if admitted is not None:
+                admitted.close()
+
+    def _write(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self._inspect_row()
+        return self.db.execute(sql, parameters)
+
+    def _application_admission(self, batch: CorrectionAdmission | CorrectionBatch) -> WorkAmount:
+        if isinstance(batch, CorrectionAdmission):
+            return WorkAmount(rows=2)
+        return WorkAmount(rows=1 if batch.before.done else 1 + len(batch.keys))
+
     def _require_detached(self) -> None:
         if self.db.in_transaction:
             raise RuntimeError("correction work requires a closed owner transaction")
 
     def _admission(self) -> CorrectionAdmission:
-        with closing(
-            self.db.execute(
-                "SELECT algorithm, attempt_id, substr(checkpoint, 1, ?) "
-                "FROM journal_correction_work WHERE operation = ?",
-                (_HEADER_OCTETS + 1, self.operation),
-            )
-        ) as cursor:
-            old = cursor.fetchone()
+        old = self._one(
+            "SELECT algorithm, attempt_id, substr(checkpoint, 1, ?) "
+            "FROM journal_correction_work WHERE operation = ?",
+            (_HEADER_OCTETS + 1, self.operation),
+        )
         version = 0
         if old is not None:
             if old[0] != ALGORITHM:
@@ -397,7 +431,7 @@ class CorrectionWork:
             raise RuntimeError("child admission requires an owner transaction")
         if self._admission() != batch:
             raise StaleCorrectionWork("child admission was superseded")
-        self.db.execute(
+        self._write(
             "INSERT INTO journal_correction_work VALUES (?, ?, ?, ?, ?) "
             "ON CONFLICT(operation) DO UPDATE SET algorithm=excluded.algorithm, "
             "attempt_id=excluded.attempt_id, binding=excluded.binding, "
@@ -424,14 +458,11 @@ class CorrectionWork:
         return state
 
     def _read_checkpoint(self) -> CorrectionState:
-        with closing(
-            self.db.execute(
-                "SELECT algorithm, substr(checkpoint, 1, ?) FROM journal_correction_work "
-                "WHERE operation = ? AND attempt_id = ? AND binding = ?",
-                (_HEADER_OCTETS + 1, self.operation, self.attempt_id, self.source_binding),
-            )
-        ) as cursor:
-            row = cursor.fetchone()
+        row = self._one(
+            "SELECT algorithm, substr(checkpoint, 1, ?) FROM journal_correction_work "
+            "WHERE operation = ? AND attempt_id = ? AND binding = ?",
+            (_HEADER_OCTETS + 1, self.operation, self.attempt_id, self.source_binding),
+        )
         if row is None:
             raise StaleCorrectionWork("correction checkpoint differs from its owned inputs")
         if row[0] != ALGORITHM:
@@ -448,14 +479,14 @@ class CorrectionWork:
         if self.operation == "retire":
             completed = len(_TABLES) if state.done else _TABLES.index(state.phase)
             for table in _TABLES[:completed]:
-                with closing(
-                    self.db.execute(
+                if (
+                    self._one(
                         f"SELECT rowid FROM {table} WHERE rowid >= ? ORDER BY rowid LIMIT 1",
                         (-(2**63),),
                     )
-                ) as cursor:
-                    if cursor.fetchone() is not None:
-                        raise RuntimeError("correction checkpoint has an unretired prior relation")
+                    is not None
+                ):
+                    raise RuntimeError("correction checkpoint has an unretired prior relation")
         else:
             if state.after is not None:
                 for sql in (
@@ -463,21 +494,18 @@ class CorrectionWork:
                     "SELECT assertion_id FROM assertions INDEXED BY active_changed_seed "
                     "WHERE active = 1 AND assertion_id = ?",
                 ):
-                    with closing(self.db.execute(sql, (state.after,))) as cursor:
-                        if cursor.fetchone() != (state.after,):
-                            raise RuntimeError(
-                                "correction seed has a missing or changed cursor link"
-                            )
+                    if self._one(sql, (state.after,)) != (state.after,):
+                        raise RuntimeError("correction seed has a missing or changed cursor link")
             if state.done:
-                with closing(
-                    self.db.execute(
+                if (
+                    self._one(
                         "SELECT assertion_id FROM assertions INDEXED BY active_changed_seed "
                         "WHERE active = 1 AND assertion_id > ? ORDER BY assertion_id LIMIT 1",
                         (state.after or "",),
                     )
-                ) as cursor:
-                    if cursor.fetchone() is not None:
-                        raise RuntimeError("correction seed completed before its active tail")
+                    is not None
+                ):
+                    raise RuntimeError("correction seed completed before its active tail")
         return state
 
     @declare_growth(_phase_declaration("prepare"))
@@ -496,14 +524,11 @@ class CorrectionWork:
             last = -(2**63)
             for _ in range(row_budget):
                 comparison = ">=" if not keys else ">"
-                with closing(
-                    self.db.execute(
-                        f"SELECT rowid, {_ROW_OCTETS[phase]} FROM {phase} "
-                        f"WHERE rowid {comparison} ? ORDER BY rowid LIMIT 1",
-                        (last,),
-                    )
-                ) as cursor:
-                    row = cursor.fetchone()
+                row = self._one(
+                    f"SELECT rowid, {_ROW_OCTETS[phase]} FROM {phase} "
+                    f"WHERE rowid {comparison} ? ORDER BY rowid LIMIT 1",
+                    (last,),
+                )
                 if row is None:
                     if not keys:
                         ordinal = _TABLES.index(phase) + 1
@@ -522,14 +547,12 @@ class CorrectionWork:
         elif not state.done:
             # A native canonical UUID URN occupies exactly 45 UTF-8 octets.
             limit = min(row_budget, max(1, byte_budget // 45))
-            with closing(
-                self.db.execute(
-                    "SELECT assertion_id FROM assertions INDEXED BY active_changed_seed "
-                    "WHERE active = 1 AND assertion_id > ? ORDER BY assertion_id LIMIT ?",
-                    (after or "", limit),
-                )
-            ) as cursor:
-                rows = cursor.fetchall()
+            rows = self._many(
+                "SELECT assertion_id FROM assertions INDEXED BY active_changed_seed "
+                "WHERE active = 1 AND assertion_id > ? ORDER BY assertion_id LIMIT ?",
+                (after or "", limit),
+                limit=limit,
+            )
             for (identity,) in rows:
                 require_canonical_uuid_urn(identity)
                 octets = len(identity.encode())
@@ -573,7 +596,7 @@ class CorrectionWork:
                 raise StaleCorrectionWork("finished correction proposal was superseded")
             return current
         with closing(
-            self.db.execute(
+            self._write(
                 "UPDATE journal_correction_work SET checkpoint = ? WHERE operation = ? "
                 "AND algorithm = ? AND attempt_id = ? AND binding = ? AND checkpoint = ?",
                 (
@@ -591,7 +614,7 @@ class CorrectionWork:
         for key in batch.keys:
             if self.operation == "retire":
                 with closing(
-                    self.db.execute(
+                    self._write(
                         f"DELETE FROM {before.phase} WHERE rowid = ?",
                         (key,),
                     )
@@ -599,7 +622,7 @@ class CorrectionWork:
                     if cursor.rowcount != 1:
                         raise RuntimeError("correction aggregate changed outside its work fence")
             else:
-                self.db.execute("INSERT OR IGNORE INTO changes VALUES (?)", (key,)).close()
+                self._write("INSERT OR IGNORE INTO changes VALUES (?)", (key,)).close()
         return batch.after
 
     def commit(self, batch: CorrectionBatch) -> CorrectionState:
