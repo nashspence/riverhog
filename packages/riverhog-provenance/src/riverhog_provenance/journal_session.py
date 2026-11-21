@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 from collections.abc import Callable, Iterable, Mapping
-from contextlib import closing
+from contextlib import closing, nullcontext
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Protocol, Self, cast
@@ -29,6 +29,7 @@ from ._entry_replay import EntryReplay, EntryReplayCapacity, ReplayBudget
 from ._entry_replay import install as install_replay
 from ._journal_prefix import JournalPrefix
 from ._native_epoch import EpochContext
+from ._native_work import WorkAmount, WorkQuantum
 from ._session_checkpoint import ValidationLedger, ValidationSnapshot
 from ._session_checkpoint import install as install_parent
 from ._session_input import RetainedInput
@@ -65,13 +66,40 @@ class JournalValidationSource(Protocol):
 
 
 @dataclass(frozen=True, slots=True)
+class JournalValidationWorkBudget:
+    """Aggregate inspected work, separate from each child's page/atom admission.
+
+    Rows count actual semantic inspections, including repeated point probes.
+    Octets count processed representations; source octets count fresh source
+    reads, including complete-frame reads distinct from scan windows. Control
+    transitions also bound work with no row or source bytes. These are limits
+    per executor invocation and confer no archive-wide acceptance limit.
+    """
+
+    rows: int = 64 * 64
+    octets: int = 4 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
+    source_octets: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
+    transitions: int = 64
+
+    def __post_init__(self) -> None:
+        values = self.rows, self.octets, self.source_octets, self.transitions
+        if any(type(value) is not int or value < 1 for value in values):
+            raise ValueError("journal aggregate work limits must be positive integers")
+
+
+@dataclass(frozen=True, slots=True)
 class JournalValidationBudget:
+    """Per-child admission and the aggregate work granted to one invocation."""
+
     rows: int = 64
     octets: int = 4 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
     source_octets: int = 65536
+    work: JournalValidationWorkBudget = JournalValidationWorkBudget()
 
     def __post_init__(self) -> None:
         ReplayBudget(self.rows, self.octets)
+        if not isinstance(self.work, JournalValidationWorkBudget):
+            raise ValueError("journal validation requires its explicit aggregate work budget")
         if type(self.source_octets) is not int or not 1 <= self.source_octets <= self.octets:
             raise ValueError("journal source budget must be positive and fit the work byte budget")
 
@@ -224,7 +252,8 @@ _DEFAULT_BUDGET = JournalValidationBudget()
 class _ChunkInput:
     """One caller chunk and one entry atom; no durable source custody."""
 
-    def __init__(self, chunks: Iterable[bytes]) -> None:
+    def __init__(self, chunks: Iterable[bytes], epoch: EpochContext) -> None:
+        self.epoch = epoch
         self.chunks = iter(chunks)
         self.chunk = b""
         self.offset = 0
@@ -249,15 +278,25 @@ class _ChunkInput:
                 # One source pull is a unit even when it yields no octets.
                 if not chunk:
                     return
-        piece = self.chunk[self.offset : self.offset + min(octets, 65536)]
-        before = self.cursor
-        result = advance_journal_framing(
-            before,
-            piece,
-            byte_budget=octets,
-            frame_budget=1,
-            at_end=self.eof,
+        size = min(len(self.chunk) - self.offset, octets, 65536)
+        work = self.epoch.work
+        admission = (
+            nullcontext()
+            if work is None or size == 0
+            else work.reserve(WorkAmount(octets=size, source_octets=size))
         )
+        with admission as reservation:
+            piece = self.chunk[self.offset : self.offset + size]
+            if reservation is not None:
+                reservation.consume(WorkAmount(octets=len(piece), source_octets=len(piece)))
+            before = self.cursor
+            result = advance_journal_framing(
+                before,
+                piece,
+                byte_budget=octets,
+                frame_budget=1,
+                at_end=self.eof,
+            )
         consumed = result.cursor.byte_offset - before.byte_offset
         if result.failure is not None:
             raise ProvenanceValidationError(result.failure)
@@ -274,7 +313,15 @@ class _ChunkInput:
             raise RuntimeError("journal source has no complete frame")
         if 2 * len(self.buffer) + 65536 > octets:
             raise EntryReplayCapacity("journal validation cannot admit its existing frame atom")
-        frame = JournalFrame(bytes(self.buffer))
+        work = self.epoch.work
+        size = len(self.buffer)
+        admission = (
+            nullcontext() if work is None or size == 0 else work.reserve(WorkAmount(octets=size))
+        )
+        with admission as reservation:
+            frame = JournalFrame(bytes(self.buffer))
+            if reservation is not None:
+                reservation.consume(WorkAmount(octets=size))
         try:
             _ = frame.document
         except (ValueError, TypeError) as exc:
@@ -1265,7 +1312,7 @@ class JournalValidationSession:
             self._replay = EntryReplay(
                 self._store, prefix=self._prefix, ledger=self._ledger, catalog=self._catalog
             )
-            self._input = _ChunkInput(chunks)
+            self._input = _ChunkInput(chunks, self._ledger.epoch)
         except BaseException:
             self._store.close()
             raise
@@ -1528,7 +1575,16 @@ class JournalValidationSession:
         if not isinstance(budget, JournalValidationBudget):
             raise TypeError("journal validation requires its explicit work budget")
         try:
-            with self._ledger.epoch.execution(check):
+            work = WorkQuantum(
+                WorkAmount(
+                    budget.work.rows,
+                    budget.work.octets,
+                    budget.work.source_octets,
+                    budget.work.transitions,
+                )
+            )
+            with self._ledger.epoch.execution(check, work=work):
+                work.consume(WorkAmount(transitions=1))
                 if self._source is not None and (
                     self._source.binding != self._source_binding
                     or self._source.verify_current() is not True

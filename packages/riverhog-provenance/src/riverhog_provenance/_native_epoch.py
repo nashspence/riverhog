@@ -10,6 +10,8 @@ from typing import Concatenate, Protocol
 
 from sqlite_admission import observe_sqlite_execution
 
+from ._native_work import WorkQuantum
+
 
 class EpochContext:
     """One original private writer, including its post-commit live updates.
@@ -33,6 +35,11 @@ class EpochContext:
         self._execution_active = False
         self._execution_check: Callable[[], None] | None = None
         self._preparing = False
+        self._work: WorkQuantum | None = None
+
+    @property
+    def work(self) -> WorkQuantum | None:
+        return self._work
 
     @property
     def quiescent(self) -> bool:
@@ -55,21 +62,33 @@ class EpochContext:
             raise RuntimeError("Native mutation requires its original active private epoch")
 
     @contextmanager
-    def execution(self, check: Callable[[], None] | None) -> Iterator[None]:
+    def execution(
+        self, check: Callable[[], None] | None, *, work: WorkQuantum | None = None
+    ) -> Iterator[None]:
         """Bind one owner's bounded live-memory check for its admitted execution."""
         self.require_quiescent()
         if self._execution_active:
             raise RuntimeError("the original Native execution is already active")
         if check is not None and not callable(check):
             raise TypeError("Native execution requires a callable check")
-        self._execution_active, self._execution_check = True, check
+        if work is not None and not isinstance(work, WorkQuantum):
+            raise TypeError("Native execution requires its explicit original work quantum")
+        if work is not None:
+            work.bind_execution(self)
+        self._execution_active, self._execution_check, self._work = True, check, work
         try:
             if check is not None and check() is not None:
                 raise TypeError("Native execution check must return None or raise its cause")
             yield
             self.require_quiescent()
+            if work is not None:
+                try:
+                    work.require_received()
+                except BaseException as error:
+                    self._phase, self._failure = "unusable", error
+                    raise
         finally:
-            self._execution_active, self._execution_check = False, None
+            self._execution_active, self._execution_check, self._work = False, None, None
 
     @contextmanager
     def preparing(self) -> Iterator[None]:

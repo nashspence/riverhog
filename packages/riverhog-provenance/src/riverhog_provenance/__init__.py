@@ -99,6 +99,7 @@ from .journal_session import (
     JournalValidationProgress,
     JournalValidationSession,
     JournalValidationSource,
+    JournalValidationWorkBudget,
 )
 from .journal_store import InvalidJournalWorkspace, JournalStore
 from .model import (
@@ -158,6 +159,7 @@ __all__ = [
     "JournalReclamationProgress",
     "reclaim_retired_journal_workspace",
     "JournalValidationBudget",
+    "JournalValidationWorkBudget",
     "JournalValidationProgress",
     "JournalValidationSession",
     "JournalValidationSource",
