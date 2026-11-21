@@ -495,10 +495,14 @@ class EntryPreparation:
         with closing(self.db.execute(sql, parameters)) as rows:
             return rows.fetchone()
 
+    def _write(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1))
+        return self.db.execute(sql, parameters)
+
     def _application_admission(self, batch: PreparationAdmission | PreparationBatch) -> WorkAmount:
         if isinstance(batch, PreparationAdmission):
-            # Accepted prefix and prior child admission, one indexed probe each.
-            return WorkAmount(rows=2)
+            # Accepted prefix and prior admission probes, then the one-row publication.
+            return WorkAmount(rows=3)
         phase = batch.before.phase
         if phase not in {"journal", "entry", "changes", "done"}:
             raise ValueError("unknown preparation application phase")
@@ -507,8 +511,14 @@ class EntryPreparation:
         # Prefix and exact checkpoint, then existing identity/boundary probes.
         probes = 2 + int(phase != "journal") + int(phase in {"changes", "done"})
         probes += int(phase == "done") + int(phase in {"journal", "entry"})
-        # Only changes application iterates returned retired identifiers.
-        return WorkAmount(rows=probes + (batch.row_budget if phase == "changes" else 0))
+        if phase == "journal":
+            mutations = 1 + int(batch.identity_before is None)
+        elif phase in {"entry", "changes"}:
+            # Changes executes one bounded DELETE RETURNING and one control update.
+            mutations = 2
+        else:
+            mutations = 0
+        return WorkAmount(rows=probes + mutations + (batch.row_budget if phase == "changes" else 0))
 
     def _detached(self) -> None:
         if self.db.in_transaction:
@@ -609,7 +619,7 @@ class EntryPreparation:
             raise RuntimeError("child admission requires an owner transaction")
         if self._admission() != batch:
             raise StaleEntryPreparation("child admission was superseded")
-        self.db.execute(
+        self._write(
             "INSERT INTO journal_entry_preparation VALUES (1,?,?,?,?,?,?,?) "
             "ON CONFLICT(singleton) DO UPDATE SET "
             "algorithm=excluded.algorithm,attempt_id=excluded.attempt_id,"
@@ -724,7 +734,7 @@ class EntryPreparation:
             if self._identity(self.source.journal_id) != batch.identity_before:
                 raise StaleEntryPreparation("journal identity changed before admission")
             if batch.identity_before is None:
-                self.db.execute(
+                self._write(
                     "INSERT INTO identities VALUES (?,?,?)",
                     (self.source.journal_id, "journal", b""),
                 ).close()
@@ -732,11 +742,12 @@ class EntryPreparation:
         elif state.phase == "entry":
             if self._identity(self.entry_id) is not None:
                 raise StaleEntryPreparation("entry identity changed before admission")
-            self.db.execute(
+            self._write(
                 "INSERT INTO identities VALUES (?,?,?)", (self.entry_id, "entry", self.body)
             ).close()
             after = replace(state, phase="changes", version=state.version + 1)
         elif state.phase == "changes":
+            self.epoch.account(WorkAmount(rows=1))
             retired = self.store._reset_changed_assertions(
                 row_budget=batch.row_budget,
                 inspect_row=None if self.epoch.work is None else self._inspect_row,
@@ -749,7 +760,7 @@ class EntryPreparation:
             )
         if after != state:
             with closing(
-                self.db.execute(
+                self._write(
                     "UPDATE journal_entry_preparation SET checkpoint=? WHERE singleton=1 "
                     "AND algorithm=? AND attempt_id=? AND binding=? AND "
                     "prefix_attempt=? AND prefix_binding=? AND prefix=? AND "

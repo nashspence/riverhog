@@ -172,9 +172,9 @@ def test_a_writer_cannot_account_unreserved_work_from_the_rest_of_the_quantum():
 
 
 @pytest.mark.parametrize(
-    "phase,expected", [("journal", 3), ("entry", 4), ("changes", 7), ("done", 5)]
+    "phase,expected", [("journal", 5), ("entry", 6), ("changes", 9), ("done", 5)]
 )
-def test_real_preparation_application_envelope_covers_its_point_probes_and_retired_rows(
+def test_real_preparation_application_envelope_covers_queries_mutations_and_retired_rows(
     tmp_path, phase, expected
 ):
     path = tmp_path / "preparation.sqlite3"
@@ -200,7 +200,9 @@ def test_real_preparation_application_envelope_covers_its_point_probes_and_retir
             finally:
                 db.set_trace_callback(None)
         probes = sum(sql.startswith("SELECT ") for sql in trace)
-        assert probes == (4 if phase == "changes" else expected)
+        assert probes == {"journal": 3, "entry": 4, "changes": 4, "done": 5}[phase]
+        mutations = sum(sql.startswith(("INSERT ", "UPDATE ", "DELETE ")) for sql in trace)
+        assert original.consumed.rows == probes + mutations + (3 if phase == "changes" else 0)
         assert original.consumed == WorkAmount(rows=expected)
         assert original.held == WorkAmount() and epoch.quiescent
         assert current._control.get(state.to_json()) is state
@@ -209,20 +211,35 @@ def test_real_preparation_application_envelope_covers_its_point_probes_and_retir
         original.require_received()
 
 
-def test_real_child_admission_uses_its_original_two_probe_reservation(tmp_path):
+def test_real_child_admission_reserves_both_probes_and_original_mutation_before_begin(tmp_path):
     path = tmp_path / "preparation.sqlite3"
     create(path)
     with closing(connect(path)) as db:
-        epoch, original = EpochContext(db), quantum(2)
+        epoch, original = EpochContext(db), quantum(3)
         current = work(db, frame(), epoch=epoch)
         batch = current.prepare_admission()
+        refused, trace = quantum(2), []
+        db.set_trace_callback(trace.append)
+        try:
+            with epoch.execution(None, work=refused):
+                with pytest.raises(NativeWorkCapacity):
+                    epoch.apply(
+                        lambda _active: current._admit(batch),
+                        receive=current._control.receive,
+                        admission=current._application_admission(batch),
+                    )
+        finally:
+            db.set_trace_callback(None)
+        assert trace == [] and epoch.quiescent
+        assert refused.consumed == refused.held == WorkAmount()
+        refused.require_received()
         with epoch.execution(None, work=original):
             state = epoch.apply(
                 lambda _active: current._admit(batch),
                 receive=current._control.receive,
                 admission=current._application_admission(batch),
             )
-        assert original.consumed == WorkAmount(rows=2)
+        assert original.consumed == WorkAmount(rows=3)
         assert current._control.get(state.to_json()) is state and epoch.quiescent
         original.require_received()
 
@@ -234,7 +251,7 @@ def test_partial_retirement_observation_remains_charged_after_original_rollback(
     create(path)
     with closing(connect(path)) as db:
         queued(db, 7)
-        epoch, original = EpochContext(db), quantum(7)
+        epoch, original = EpochContext(db), quantum(9)
         current = work(db, frame(), epoch=epoch)
         current.initialize()
         position(current, "changes")
@@ -257,7 +274,7 @@ def test_partial_retirement_observation_remains_charged_after_original_rollback(
                     admission=current._application_admission(batch),
                 )
         assert caught.value is failure
-        assert original.consumed == WorkAmount(rows=5) and original.held == WorkAmount()
+        assert original.consumed == WorkAmount(rows=6) and original.held == WorkAmount()
         assert db.execute("SELECT count(*) FROM changes").fetchone() == (7,)
         assert len(calls) == 5 and epoch._application_work is None
         original.require_received()
@@ -302,23 +319,23 @@ def test_actual_session_reserves_preparation_before_any_writer_and_retries_same_
         try:
             with pytest.raises(NativeWorkCapacity):
                 session.advance(
-                    JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=22))
+                    JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=24))
                 )
         finally:
             session._store.db.set_trace_callback(None)
         assert not any(sql.startswith("BEGIN") for sql in trace)
         assert session.progress() == before and session._store.db.total_changes == changes
         refused, envelope = plans[0]
-        assert envelope == WorkAmount(rows=5)
+        assert envelope == WorkAmount(rows=7)
         assert refused.consumed.rows == 12 and refused.held == WorkAmount()
         assert session._failure is None and session._ledger.epoch.quiescent
         refused.require_received()
         after = session.advance(
-            JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=23))
+            JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=25))
         )
         assert after != before and child.load().done
         received = plans[1][0]
-        assert received is not refused and received.consumed.rows == 20
+        assert received is not refused and received.consumed.rows == 22
         assert received.held == WorkAmount() and session._ledger.epoch.quiescent
         received.require_received()
     assert session.storage_received
