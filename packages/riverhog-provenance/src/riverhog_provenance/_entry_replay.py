@@ -2387,7 +2387,7 @@ class EntryReplay:
         ):
             return current.row
         selected = read_changed_assertion(
-            self.db, after=state.row_after, byte_budget=self._remaining()
+            self.db, after=state.row_after, byte_budget=self._remaining(), work=self.epoch.work
         )
         if (
             selected is None
@@ -2646,7 +2646,7 @@ class EntryReplay:
         state = before.checkpoint
         with self.epoch.preparing():
             selected = read_changed_assertion(
-                self.db, after=state.row_after, byte_budget=self._remaining()
+                self.db, after=state.row_after, byte_budget=self._remaining(), work=self.epoch.work
             )
         if selected is None:
             return self._move(before, "finish-admission")
