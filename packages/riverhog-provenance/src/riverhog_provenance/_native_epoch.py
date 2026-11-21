@@ -34,6 +34,7 @@ class EpochContext:
         self._failure: BaseException | None = None
         self._execution_active = False
         self._execution_check: Callable[[], None] | None = None
+        self._check_failure: BaseException | None = None
         self._preparing = False
         self._work: WorkQuantum | None = None
         self._application_work: WorkReservation | None = None
@@ -61,12 +62,24 @@ class EpochContext:
         else:
             work.consume(amount)
 
+    def _run_check(self, check: Callable[[], object]) -> None:
+        try:
+            if check() is not None:
+                raise TypeError("Native execution check must return None or raise its cause")
+        except BaseException as error:
+            self._check_failure = error
+            raise
+
     def check(self) -> None:
         """Run the original bounded live-memory execution check."""
         self.require_usable()
         check = self._execution_check
-        if check is not None and check() is not None:
-            raise TypeError("Native execution check must return None or raise its cause")
+        if check is not None:
+            self._run_check(check)
+
+    def raised_by_check(self, error: BaseException) -> bool:
+        """Distinguish this exact execution cause from a semantic rejection."""
+        return self._check_failure is error
 
     @property
     def quiescent(self) -> bool:
@@ -103,6 +116,7 @@ class EpochContext:
         if work is not None:
             work.bind_execution(self)
         self._execution_active, self._execution_check, self._work = True, check, work
+        self._check_failure = None
         try:
             self.check()
             yield
@@ -115,6 +129,7 @@ class EpochContext:
                     raise
         finally:
             self._execution_active, self._execution_check, self._work = False, None, None
+            self._check_failure = None
 
     @contextmanager
     def preparing(self) -> Iterator[None]:
@@ -126,7 +141,7 @@ class EpochContext:
         self.require_quiescent()
         self._preparing = True
         try:
-            with observe_sqlite_execution(self.db, check):
+            with observe_sqlite_execution(self.db, self.check):
                 yield
         finally:
             self._preparing = False
@@ -160,6 +175,11 @@ class EpochContext:
         ):
             raise RuntimeError("Native application cannot replace its original execution check")
         selected_check = self._execution_check if check is None else check
+
+        def check_original() -> None:
+            if selected_check is not None:
+                self._run_check(selected_check)
+
         if admission is not None and (
             not isinstance(admission, WorkAmount) or not any(admission.coordinates)
         ):
@@ -173,14 +193,14 @@ class EpochContext:
             observation = (
                 nullcontext()
                 if selected_check is None
-                else observe_sqlite_execution(self.db, selected_check)
+                else observe_sqlite_execution(self.db, check_original)
             )
             with observation:
                 self.db.execute("BEGIN IMMEDIATE").close()
                 result = mutation(self)
                 self.require(self.db)
-                if selected_check is not None and selected_check() is not None:
-                    raise TypeError("Native execution check must return None or raise its cause")
+                if selected_check is not None:
+                    check_original()
                 self._phase = "committing"
                 self.db.commit()
             self._phase = "receiving"

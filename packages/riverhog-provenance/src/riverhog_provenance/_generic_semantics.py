@@ -896,24 +896,37 @@ class _Lifecycle(MutableMapping[str, dict[str, Any]]):
         self.owner, self.name, self.meter, self.writes = owner, name, meter, writes
 
     @staticmethod
-    def _decode(encoded: bytes) -> dict[str, Any]:
+    def _validate(value: Any) -> None:
+        if type(value) is not dict or set(value) not in (
+            {"activity_id"},
+            {"activity_id", "at"},
+        ):
+            raise ValueError("metadata shape")
+        require_canonical_uuid_urn(value["activity_id"])
+        if "at" in value and (type(value["at"]) is not str or len(value["at"]) > 30):
+            raise ValueError("timestamp envelope")
+
+    def _decode(self, encoded: bytes) -> dict[str, Any]:
+        if type(encoded) is not bytes or len(encoded) > _LIFECYCLE_OCTETS:
+            raise RuntimeError("invalid retained lifecycle metadata") from ValueError(
+                "metadata envelope"
+            )
+        # Parsing and canonical verification are separate input passes.
+        self.owner.epoch.check()
+        self.owner.epoch.account(WorkAmount(octets=len(encoded)))
         try:
-            if type(encoded) is not bytes or len(encoded) > _LIFECYCLE_OCTETS:
-                raise ValueError("metadata envelope")
-            value = json.loads(encoded)
-            if type(value) is not dict or set(value) not in (
-                {"activity_id"},
-                {"activity_id", "at"},
-            ):
-                raise ValueError("metadata shape")
-            require_canonical_uuid_urn(value["activity_id"])
-            if "at" in value and (type(value["at"]) is not str or len(value["at"]) > 30):
-                raise ValueError("timestamp envelope")
-            if canonical_document(value) != encoded:
-                raise ValueError("metadata encoding")
-            return value
+            value: dict[str, Any] = json.loads(encoded)
+            self._validate(value)
         except (ValueError, TypeError, KeyError) as exc:
             raise RuntimeError("invalid retained lifecycle metadata") from exc
+        self.owner.epoch.check()
+        self.owner.epoch.account(WorkAmount(octets=len(encoded)))
+        try:
+            if canonical_document(value) != encoded:
+                raise ValueError("metadata encoding")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise RuntimeError("invalid retained lifecycle metadata") from exc
+        return value
 
     def __getitem__(self, key: str) -> dict[str, Any]:
         encoded_key = b"j" + canonical_json_bytes(key)
@@ -942,10 +955,16 @@ class _Lifecycle(MutableMapping[str, dict[str, Any]]):
         if key != value["state"]["object_id"]:
             raise RuntimeError("lifecycle event differs from its state key")
         encoded_key = b"j" + canonical_json_bytes(key)
-        encoded = canonical_document(
-            {field: value[field] for field in ("activity_id", "at") if field in value}
-        )
-        self._decode(encoded)
+        metadata: dict[str, Any] = {
+            field: value[field] for field in ("activity_id", "at") if field in value
+        }
+        encoded = canonical_document(metadata)
+        try:
+            if len(encoded) > _LIFECYCLE_OCTETS:
+                raise ValueError("metadata envelope")
+            self._validate(metadata)
+        except (ValueError, TypeError, KeyError) as exc:
+            raise RuntimeError("invalid retained lifecycle metadata") from exc
         self.meter.claim(4 * len(encoded_key) + len(encoded))
         self.writes[self.name, encoded_key] = encoded
 
@@ -1041,11 +1060,18 @@ class _CaptureTargets(MutableMapping[str, str]):
             if storage != "blob":
                 raise RuntimeError("invalid retained capture target storage")
         self.meter.claim(len(pending))
+        self.owner.epoch.check()
+        self.owner.epoch.account(WorkAmount(octets=len(pending)))
         try:
             value = json.loads(pending)
             if type(value) is not str:
                 raise ValueError("capture target must be a UUID string")
             require_canonical_uuid_urn(value)
+        except (ValueError, TypeError, UnicodeError) as exc:
+            raise RuntimeError("invalid retained capture target metadata") from exc
+        self.owner.epoch.check()
+        self.owner.epoch.account(WorkAmount(octets=len(pending)))
+        try:
             if canonical_json_bytes(value) != pending:
                 raise ValueError("noncanonical capture target")
         except (ValueError, TypeError, UnicodeError) as exc:
@@ -1698,10 +1724,13 @@ class GenericSemantics:
                     set(keys.pending),
                     dict(outputs),
                 )
+                self.epoch.check()
                 try:
                     self.epoch.account(WorkAmount(rows=1))
                     program.step()
                 except (GenericSemanticsCapacity, ValueError, _GraphRequest) as error:
+                    if self.epoch.raised_by_check(error):
+                        raise
                     stack.top, stack.serial, stack.cache, stack.changes = snapshot[:4]
                     keys.pending.clear()
                     keys.pending.update(snapshot[4])
@@ -1795,6 +1824,8 @@ class GenericSemantics:
                 try:
                     child.result()
                 except ValueError as error:
+                    if self.epoch.raised_by_check(error):
+                        raise
                     after = replace(
                         after,
                         phase="reject-frames",
@@ -2115,6 +2146,8 @@ class GenericSemantics:
             try:
                 program.step()
             except ValueError as error:
+                if self.epoch.raised_by_check(error):
+                    raise
                 if _error_identity(error) != state.error_sha256:
                     raise RuntimeError(
                         "retained semantic rejection differs from its atom"
