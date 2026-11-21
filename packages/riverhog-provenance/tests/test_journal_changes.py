@@ -139,8 +139,8 @@ def test_native_frame_replay_retires_only_the_prior_changed_set(journal, who, ca
     counts = []
     reset = journal_store.JournalStore._reset_changed_assertions
 
-    def observed(self, *, row_budget):
-        count = reset(self, row_budget=row_budget)
+    def observed(self, *, row_budget, **kwargs):
+        count = reset(self, row_budget=row_budget, **kwargs)
         counts.append(count)
         return count
 

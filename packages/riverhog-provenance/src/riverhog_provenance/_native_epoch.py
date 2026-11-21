@@ -10,7 +10,7 @@ from typing import Concatenate, Protocol
 
 from sqlite_admission import observe_sqlite_execution
 
-from ._native_work import WorkQuantum
+from ._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum, WorkReservation
 
 
 class EpochContext:
@@ -36,10 +36,30 @@ class EpochContext:
         self._execution_check: Callable[[], None] | None = None
         self._preparing = False
         self._work: WorkQuantum | None = None
+        self._application_work: WorkReservation | None = None
 
     @property
     def work(self) -> WorkQuantum | None:
         return self._work
+
+    def account(self, amount: WorkAmount) -> None:
+        """Charge actual work against this original execution/application."""
+        self.require_usable()
+        work = self._work
+        if work is None or not any(amount.coordinates):
+            return
+        admitted = self._application_work
+        if admitted is not None:
+            try:
+                admitted.consume(amount)
+            except NativeWorkCapacity as error:
+                raise RuntimeError(
+                    "actual Native application work exceeds its original admission"
+                ) from error
+        elif self._phase != "quiescent" or self.db.in_transaction:
+            raise RuntimeError("Native application work requires pre-writer admission")
+        else:
+            work.consume(amount)
 
     @property
     def quiescent(self) -> bool:
@@ -116,8 +136,14 @@ class EpochContext:
         *,
         receive: Callable[[T], None],
         check: Callable[[], None] | None = None,
+        admission: WorkAmount | None = None,
     ) -> T:
-        """Commit pending semantic state, then receive its corresponding live state."""
+        """Reserve before the writer, commit, then receive the original live state.
+
+        An ordinary admission refusal opens no transaction. Actual application
+        work remains charged on failure; only unused admission is returned
+        after original post-commit receiving or failed-epoch cleanup.
+        """
         self.require_quiescent()
         if self._preparing:
             raise RuntimeError("Native preparation must be received before private application")
@@ -128,6 +154,14 @@ class EpochContext:
         ):
             raise RuntimeError("Native application cannot replace its original execution check")
         selected_check = self._execution_check if check is None else check
+        if admission is not None and (
+            not isinstance(admission, WorkAmount) or not any(admission.coordinates)
+        ):
+            raise ValueError("Native application requires positive explicit work admission")
+        reserved = (
+            None if self._work is None or admission is None else self._work.reserve(admission)
+        )
+        self._application_work = reserved
         self._phase = "applying"
         try:
             observation = (
@@ -147,6 +181,9 @@ class EpochContext:
             receive(result)
             if self.db.in_transaction:
                 raise RuntimeError("Native live receiving left a private writer open")
+            if reserved is not None:
+                reserved.close()
+                reserved = None
             self._phase = "quiescent"
             return result
         except BaseException as error:
@@ -155,6 +192,10 @@ class EpochContext:
             # The exact execution registration has exited before private cleanup.
             self.db.rollback()
             raise
+        finally:
+            self._application_work = None
+            if reserved is not None:
+                reserved.close()
 
 
 def bind_epoch(db: sqlite3.Connection, original: EpochContext | None) -> EpochContext:

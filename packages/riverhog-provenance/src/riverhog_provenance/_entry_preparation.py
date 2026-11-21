@@ -34,6 +34,7 @@ from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -486,9 +487,28 @@ class EntryPreparation:
         self.epoch = bind_epoch(self.db, epoch)
         self._control = ChildControl[PreparationState](self.epoch)
 
+    def _inspect_row(self) -> None:
+        self.epoch.account(WorkAmount(rows=1))
+
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        self._inspect_row()
         with closing(self.db.execute(sql, parameters)) as rows:
             return rows.fetchone()
+
+    def _application_admission(self, batch: PreparationAdmission | PreparationBatch) -> WorkAmount:
+        if isinstance(batch, PreparationAdmission):
+            # Accepted prefix and prior child admission, one indexed probe each.
+            return WorkAmount(rows=2)
+        phase = batch.before.phase
+        if phase not in {"journal", "entry", "changes", "done"}:
+            raise ValueError("unknown preparation application phase")
+        if type(batch.row_budget) is not int or not 1 <= batch.row_budget <= MAX_ROWS:
+            raise ValueError("preparation application requires its bounded row admission")
+        # Prefix and exact checkpoint, then existing identity/boundary probes.
+        probes = 2 + int(phase != "journal") + int(phase in {"changes", "done"})
+        probes += int(phase == "done") + int(phase in {"journal", "entry"})
+        # Only changes application iterates returned retired identifiers.
+        return WorkAmount(rows=probes + (batch.row_budget if phase == "changes" else 0))
 
     def _detached(self) -> None:
         if self.db.in_transaction:
@@ -717,7 +737,10 @@ class EntryPreparation:
             ).close()
             after = replace(state, phase="changes", version=state.version + 1)
         elif state.phase == "changes":
-            retired = self.store._reset_changed_assertions(row_budget=batch.row_budget)
+            retired = self.store._reset_changed_assertions(
+                row_budget=batch.row_budget,
+                inspect_row=None if self.epoch.work is None else self._inspect_row,
+            )
             after = replace(
                 state,
                 phase="done" if retired == 0 else "changes",

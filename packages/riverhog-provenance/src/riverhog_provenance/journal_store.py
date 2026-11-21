@@ -1042,7 +1042,9 @@ class JournalStore:
             ),
         )
     )
-    def _reset_changed_assertions(self, *, row_budget: int) -> int:
+    def _reset_changed_assertions(
+        self, *, row_budget: int, inspect_row: Callable[[], None] | None = None
+    ) -> int:
         """Retire metadata without traversing or rewriting assertion payloads."""
         if type(row_budget) is not int or row_budget < 1:
             raise ValueError("changed-identity row budget must be positive")
@@ -1054,7 +1056,13 @@ class JournalStore:
                 (row_budget,),
             )
         ) as rows:
-            return sum(1 for _ in rows)
+            if inspect_row is None:
+                return sum(1 for _ in rows)
+            count = 0
+            for _ in rows:
+                inspect_row()
+                count += 1
+            return count
 
     def require_open(self) -> None:
         if self._closing or not self._cleanup.alive or self._lease.closed:

@@ -41,6 +41,7 @@ from ._generic_semantics import GenericAtom, GenericSemantics
 from ._journal_prefix import JournalPrefix, PreparedEntry
 from ._native_epoch import EpochContext, observe_preparation
 from ._native_frame import NativeFrame, own_frame
+from ._native_work import WorkAmount
 from ._online_dag import OnlineDag, _Snapshot
 from ._semantic_finish import SemanticFinish
 from ._semantic_program import ROW_TYPES, Nodes
@@ -2303,6 +2304,7 @@ class EntryReplay:
         mutate: Callable[[], ValidationCheckpoint],
         *,
         receive: Callable[[ValidationSnapshot], None] = lambda _state: None,
+        admission: WorkAmount | None = None,
     ) -> ValidationSnapshot:
         def apply(epoch: EpochContext) -> ValidationSnapshot:
             epoch.require(self.db)
@@ -2314,7 +2316,7 @@ class EntryReplay:
             self.ledger._receive(snapshot)
             receive(snapshot)
 
-        return self.ledger.epoch.apply(apply, receive=received)
+        return self.ledger.epoch.apply(apply, receive=received, admission=admission)
 
     def _move(self, before: ValidationSnapshot, phase: str) -> ValidationSnapshot:
         after = replace(
@@ -2536,7 +2538,10 @@ class EntryReplay:
             if isinstance(child, GenericSemantics) and not admission:
                 child._receive_edge(batch)
 
-        return self._commit(before, apply, receive=receive)
+        application_work = (
+            child._application_admission(batch) if isinstance(child, EntryPreparation) else None
+        )
+        return self._commit(before, apply, receive=receive, admission=application_work)
 
     @staticmethod
     def _graph_digest(graph: OnlineDag, after: _Snapshot | None = None) -> str:
