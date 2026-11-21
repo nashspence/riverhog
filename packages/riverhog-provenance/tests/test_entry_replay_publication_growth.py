@@ -274,12 +274,13 @@ def test_advance_uses_the_atomic_publication_boundary(
             calls = []
 
             def publish(before, cached):
-                calls.append((before, cached.prepared.frame))
+                assert cached.prepared.frame is cached.frame
+                calls.append((before, cached.frame.json_bytes))
                 return real_publish(before, cached)
 
             monkeypatch.setattr(current, "_publish", publish)
             assert current.advance().checkpoint == case["after"]
-            assert calls == [(case["before"], case["candidate"])]
+            assert calls == [(case["before"], case["candidate"].json_bytes)]
             assert_published(current, case)
 
 
