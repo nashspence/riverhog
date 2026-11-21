@@ -923,8 +923,15 @@ class JournalStore:
         )
     )
     def _lifecycle_bounds_hold(
-        self, state: str, *, generated_at: str | None, invalidated_at: str | None
+        self,
+        state: str,
+        *,
+        generated_at: str | None,
+        invalidated_at: str | None,
+        inspect_row: Callable[[], None] | None = None,
     ) -> bool:
+        if inspect_row is not None:
+            inspect_row()
         with closing(
             self.db.execute(
                 "SELECT earliest, latest_usage FROM lifecycle_extrema WHERE state_id = ?",

@@ -14,7 +14,7 @@ import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import (
@@ -32,6 +32,7 @@ from ._admission_growth import admission_declaration
 from ._journal_prefix import PrefixState, _reference
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
 
@@ -366,18 +367,36 @@ class CorrectionTargets:
         self.epoch = bind_epoch(self.db, epoch)
         self._control = ChildControl[TargetState](self.epoch)
 
+    def _inspect_row(self) -> None:
+        self.epoch.account(WorkAmount(rows=1))
+
+    def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        # Count logical indexed probe attempts, including misses, before SQL.
+        self._inspect_row()
+        with closing(self.db.execute(sql, parameters)) as rows:
+            return rows.fetchone()
+
+    def _write(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        # Each statement addresses one logical row; index/VM work is separate.
+        self._inspect_row()
+        return self.db.execute(sql, parameters)
+
+    def _application_admission(self, batch: TargetAdmission | TargetBatch) -> WorkAmount:
+        if isinstance(batch, TargetAdmission):
+            return WorkAmount(rows=4)
+        if batch.before.done:
+            return WorkAmount(rows=2)
+        return WorkAmount(rows=1 + len(batch.rows))
+
     def _detached(self) -> None:
         if self.db.in_transaction:
             raise RuntimeError("correction targets require a closed owner transaction")
 
     def _prefix(self) -> str:
-        with closing(
-            self.db.execute(
-                "SELECT substr(checkpoint, 1, ?) FROM journal_prefix WHERE singleton = 1",
-                (_HEADER_OCTETS + 1,),
-            )
-        ) as cursor:
-            row = cursor.fetchone()
+        row = self._one(
+            "SELECT substr(checkpoint, 1, ?) FROM journal_prefix WHERE singleton = 1",
+            (_HEADER_OCTETS + 1,),
+        )
         if row is None:
             raise RuntimeError("missing accepted prefix for correction targets")
         checkpoint = row[0]
@@ -390,14 +409,11 @@ class CorrectionTargets:
 
     def _admission(self) -> TargetAdmission:
         prefix = self._prefix()
-        with closing(
-            self.db.execute(
-                "SELECT algorithm, attempt_id, target_count, substr(checkpoint, 1, "
-                "?) FROM journal_correction_targets WHERE singleton = 1",
-                (_HEADER_OCTETS + 1,),
-            )
-        ) as cursor:
-            old = cursor.fetchone()
+        old = self._one(
+            "SELECT algorithm, attempt_id, target_count, substr(checkpoint, 1, "
+            "?) FROM journal_correction_targets WHERE singleton = 1",
+            (_HEADER_OCTETS + 1,),
+        )
         version = 0
         if old is not None:
             if old[0] != ALGORITHM:
@@ -406,14 +422,14 @@ class CorrectionTargets:
             if old[1] == self.attempt_id or not prior.done:
                 raise StaleCorrectionTargets("correction target operation is already bound")
             version = prior.version + 1
-        with closing(
-            self.db.execute(
+        if (
+            self._one(
                 "SELECT position FROM correction_targets WHERE position >= 0 ORDER "
                 "BY position LIMIT 1"
             )
-        ) as cursor:
-            if cursor.fetchone() is not None:
-                raise RuntimeError("unreclaimed correction target directory")
+            is not None
+        ):
+            raise RuntimeError("unreclaimed correction target directory")
         state = TargetState(version=version)
         return TargetAdmission(
             self.source_binding, self.attempt_id, prefix, None if old is None else tuple(old), state
@@ -443,7 +459,7 @@ class CorrectionTargets:
             raise RuntimeError("child admission requires an owner transaction")
         if self._admission() != batch:
             raise StaleCorrectionTargets("child admission was superseded")
-        self.db.execute(
+        self._write(
             "INSERT INTO journal_correction_targets VALUES (1, ?, ?, ?, ?, ?, ?) "
             "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
             "attempt_id=excluded.attempt_id, binding=excluded.binding, "
@@ -472,15 +488,12 @@ class CorrectionTargets:
         return state
 
     def _read_checkpoint(self) -> tuple[TargetState, str]:
-        with closing(
-            self.db.execute(
-                "SELECT algorithm, target_count, substr(prefix, 1, ?), "
-                "substr(checkpoint, 1, ?) FROM journal_correction_targets WHERE "
-                "singleton = 1 AND attempt_id = ? AND binding = ?",
-                (_HEADER_OCTETS + 1, _HEADER_OCTETS + 1, self.attempt_id, self.source_binding),
-            )
-        ) as cursor:
-            row = cursor.fetchone()
+        row = self._one(
+            "SELECT algorithm, target_count, substr(prefix, 1, ?), "
+            "substr(checkpoint, 1, ?) FROM journal_correction_targets WHERE "
+            "singleton = 1 AND attempt_id = ? AND binding = ?",
+            (_HEADER_OCTETS + 1, _HEADER_OCTETS + 1, self.attempt_id, self.source_binding),
+        )
         if row is None:
             raise StaleCorrectionTargets("correction target inputs were superseded")
         if row[0] != ALGORITHM:
@@ -500,6 +513,7 @@ class CorrectionTargets:
         position, identity, sequence = row
         if type(position) is not int or not 0 <= position < self.count:
             raise RuntimeError("correction target directory ordinal differs from source")
+        self._inspect_row()
         target = self.targets[position]
         if (identity, sequence) != (target["assertion_id"], target["entry"]["sequence"]):
             raise RuntimeError("correction target directory differs from its exact source")
@@ -508,13 +522,12 @@ class CorrectionTargets:
         state, prefix = self._header()
         edges = []
         for order in ("ASC", "DESC"):
-            with closing(
-                self.db.execute(
+            edges.append(
+                self._one(
                     f"SELECT position, assertion_id, sequence FROM correction_targets "
                     f"WHERE position >= 0 ORDER BY position {order} LIMIT 1"
                 )
-            ) as cursor:
-                edges.append(cursor.fetchone())
+            )
         first, last = edges
         end = state.position if state.phase == "verify" else self.count
         start = state.position if state.phase in {"clean", "done"} else 0
@@ -527,29 +540,24 @@ class CorrectionTargets:
             self._source_row(first)
             self._source_row(last)
         if state.phase == "apply" and state.position:
-            with closing(
-                self.db.execute(
-                    "SELECT t.position, t.assertion_id, t.sequence, a.sequence, a.active "
-                    "FROM correction_targets t LEFT JOIN assertions a ON a.assertion_id "
-                    "= t.assertion_id WHERE t.position = ?",
-                    (state.position - 1,),
-                )
-            ) as cursor:
-                link = cursor.fetchone()
+            link = self._one(
+                "SELECT t.position, t.assertion_id, t.sequence, a.sequence, a.active "
+                "FROM correction_targets t LEFT JOIN assertions a ON a.assertion_id "
+                "= t.assertion_id WHERE t.position = ?",
+                (state.position - 1,),
+            )
             if link is None:
                 raise RuntimeError("missing retired correction cursor link")
             self._source_row(link[:3])
             if link[3:] != (link[2], 0):
                 raise RuntimeError("changed retired correction cursor link")
         if state.phase in {"clean", "done"} and self.count:
+            self._inspect_row()
             target = self.targets[max(0, state.position - 1)]
-            with closing(
-                self.db.execute(
-                    "SELECT sequence, active FROM assertions WHERE assertion_id = ?",
-                    (target["assertion_id"],),
-                )
-            ) as cursor:
-                link = cursor.fetchone()
+            link = self._one(
+                "SELECT sequence, active FROM assertions WHERE assertion_id = ?",
+                (target["assertion_id"],),
+            )
             if link != (target["entry"]["sequence"], 0):
                 raise RuntimeError("changed correction reclamation cursor link")
         return state, prefix
@@ -580,6 +588,7 @@ class CorrectionTargets:
                         }[phase]
                     break
                 if phase == "verify":
+                    self._inspect_row()
                     target = self.targets[position]
                     identity = target["assertion_id"]
                     candidate = (position, identity, target["entry"]["sequence"])
@@ -599,8 +608,7 @@ class CorrectionTargets:
                             "ON a.assertion_id = t.assertion_id "
                             "WHERE t.position >= ? ORDER BY t.position LIMIT 1"
                         )
-                    with closing(self.db.execute(sql, (position,))) as cursor:
-                        row = cursor.fetchone()
+                    row = self._one(sql, (position,))
                     if row is None or row[0] != position:
                         raise RuntimeError("missing correction target work row")
                     candidate = row[:3]
@@ -619,24 +627,21 @@ class CorrectionTargets:
                         )
                     break
                 if phase == "verify":
-                    with closing(
-                        self.db.execute(
+                    duplicate = (
+                        self._one(
                             "SELECT 1 FROM correction_targets WHERE assertion_id = ?", (identity,)
                         )
-                    ) as cursor:
-                        duplicate = cursor.fetchone() is not None
+                        is not None
+                    )
                     if identity in seen or duplicate:
                         raise ProvenanceValidationError("duplicate correction target")
                     seen.add(identity)
-                    with closing(
-                        self.db.execute(
-                            "SELECT a.sequence, a.active, substr(f.reference, 1, ?) FROM "
-                            "assertions a LEFT JOIN frames f ON f.sequence = a.sequence WHERE "
-                            "a.assertion_id = ?",
-                            (_HEADER_OCTETS + 1, identity),
-                        )
-                    ) as cursor:
-                        prior = cursor.fetchone()
+                    prior = self._one(
+                        "SELECT a.sequence, a.active, substr(f.reference, 1, ?) FROM "
+                        "assertions a LEFT JOIN frames f ON f.sequence = a.sequence WHERE "
+                        "a.assertion_id = ?",
+                        (_HEADER_OCTETS + 1, identity),
+                    )
                     if prior is None:
                         raise ProvenanceValidationError(
                             "correction target has no exact earlier assertion"
@@ -681,7 +686,7 @@ class CorrectionTargets:
                 raise StaleCorrectionTargets("finished correction proposal was superseded")
             return current
         with closing(
-            self.db.execute(
+            self._write(
                 "UPDATE journal_correction_targets SET checkpoint = ? WHERE "
                 "singleton = 1 AND algorithm = ? AND attempt_id = ? AND binding = ? "
                 "AND target_count = ? AND prefix = ? AND checkpoint = ? AND "
@@ -717,7 +722,7 @@ class CorrectionTargets:
                     "= ? AND sequence = ?",
                     row,
                 )
-            with closing(self.db.execute(sql, parameters)) as cursor:
+            with closing(self._write(sql, parameters)) as cursor:
                 if cursor.rowcount != 1:
                     raise RuntimeError("correction target changed outside its work fence")
         return batch.after

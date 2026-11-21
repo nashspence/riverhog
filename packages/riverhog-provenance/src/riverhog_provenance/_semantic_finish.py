@@ -34,6 +34,7 @@ from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from .common import fingerprint
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -457,9 +458,32 @@ class SemanticFinish:
         if self.db.in_transaction:
             raise RuntimeError("semantic finish requires a closed owner transaction")
 
+    def _inspect_row(self) -> None:
+        self.epoch.account(WorkAmount(rows=1))
+
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        # Count logical indexed probe attempts, including misses, before SQL.
+        self._inspect_row()
         with closing(self.db.execute(sql, parameters)) as rows:
             return rows.fetchone()
+
+    def _write(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        # Each statement addresses one logical row; index/VM work is separate.
+        self._inspect_row()
+        return self.db.execute(sql, parameters)
+
+    def _application_admission(self, batch: FinishAdmission | FinishBatch) -> WorkAmount:
+        if isinstance(batch, FinishAdmission):
+            return WorkAmount(rows=3)
+        if batch.before.done:
+            state = batch.before
+            return WorkAmount(
+                rows=2
+                + int(state.completed is not None)
+                + int(state.current is not None)
+                + int(state.scan is not None)
+            )
+        return WorkAmount(rows=1 + len(batch.writes))
 
     def _prefix(self) -> tuple[str, bytes, str]:
         row = self._one(
@@ -528,7 +552,7 @@ class SemanticFinish:
             raise RuntimeError("child admission requires an owner transaction")
         if self._admission() != batch:
             raise StaleSemanticFinish("child admission was superseded")
-        self.db.execute(
+        self._write(
             "INSERT INTO journal_semantic_finish VALUES (1,?,?,?,?,?,?,?) "
             "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
             "attempt_id=excluded.attempt_id, binding=excluded.binding, "
@@ -676,7 +700,10 @@ class SemanticFinish:
                     stamps.append(stamp)
                 generated_at, invalidated_at = stamps
                 if not self.store._lifecycle_bounds_hold(
-                    current[2], generated_at=generated_at, invalidated_at=invalidated_at
+                    current[2],
+                    generated_at=generated_at,
+                    invalidated_at=invalidated_at,
+                    inspect_row=None if self.epoch.work is None else self._inspect_row,
                 ):
                     after = replace(
                         state,
@@ -768,6 +795,7 @@ class SemanticFinish:
                 if "content" in value:
                     subject = value["state"]["object_id"]
                     size, digest = fingerprint(value["content"])
+                    self._inspect_row()
                     with closing(
                         self.db.execute(
                             "SELECT 1 FROM fixities WHERE state=? LIMIT 2",
@@ -775,6 +803,8 @@ class SemanticFinish:
                         )
                     ) as rows:
                         existing = rows.fetchall()
+                        for _row in existing:
+                            self._inspect_row()
                     same = self._one(
                         "SELECT 1 FROM fixities WHERE state=? AND size=? AND sha256=?",
                         (subject, str(size), digest),
@@ -810,7 +840,7 @@ class SemanticFinish:
                 raise StaleSemanticFinish("finished semantic proposal was superseded")
             return current
         with closing(
-            self.db.execute(
+            self._write(
                 "UPDATE journal_semantic_finish SET checkpoint=? WHERE singleton=1 "
                 "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
                 "AND prefix_binding=? AND prefix=? AND checkpoint=? AND EXISTS(SELECT 1 "
@@ -830,7 +860,7 @@ class SemanticFinish:
             if cursor.rowcount != 1:
                 raise StaleSemanticFinish("semantic proposal was superseded")
         for sql, parameters in batch.writes:
-            self.db.execute(sql, parameters).close()
+            self._write(sql, parameters).close()
         return batch.after
 
     def commit(self, batch: FinishBatch) -> FinishState:

@@ -2539,7 +2539,11 @@ class EntryReplay:
                 child._receive_edge(batch)
 
         application_work = (
-            child._application_admission(batch) if isinstance(child, EntryPreparation) else None
+            child._application_admission(batch)
+            if isinstance(
+                child, (EntryPreparation, CorrectionTargets, AssertionStaging, SemanticFinish)
+            )
+            else None
         )
         return self._commit(before, apply, receive=receive, admission=application_work)
 
