@@ -7,7 +7,6 @@ import sqlite3
 import sys
 from collections.abc import Iterator
 from contextlib import closing, contextmanager, nullcontext
-from copy import copy
 from dataclasses import replace
 from pathlib import Path
 from tempfile import mkdtemp
@@ -27,6 +26,7 @@ from riverhog_provenance.journal_session import (
 )
 from riverhog_provenance.replay_binding import JournalReplayBinding
 from test_child_admission_growth import octets
+from test_entry_replay import warm_cache
 from test_entry_replay_advance_growth import AdvanceConnection, advance_inputs, advance_observer
 from test_entry_replay_graph_growth import graph_histories as graph_histories
 from test_entry_replay_graph_growth import initialize_graph_cache
@@ -803,7 +803,7 @@ def session_fixture(case, catalog, *, cold, measured=False, summary=False, journ
         before = session._ledger.load()
         session._store.frame_count = before.checkpoint.frame_ordinal
         if case["cached"] is not None:
-            session._replay._current = replace(case["cached"])
+            session._replay._current = warm_cache(session._replay, before)
         if not cold and session._replay._current is not None:
             state = before.checkpoint
             if state.phase in {
@@ -859,7 +859,9 @@ def session_fixture(case, catalog, *, cold, measured=False, summary=False, journ
             else:
                 session._input.chunks.db = session._store.db
                 session._input.epoch = session._ledger.epoch
-            session._replay._current = None if cold else copy(case["cached"])
+            session._replay._current = (
+                None if cold or case["cached"] is None else warm_cache(session._replay, before)
+            )
             if (
                 not cold
                 and session._replay._current is not None
