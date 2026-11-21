@@ -47,6 +47,7 @@ from riverhog_core.services.archive_upload_terminal_tags import (
     retain_terminal_tag_selector,
     upload_terminal_tag_selector,
 )
+from riverhog_core.services.collection_recovery import initial_recovery_accounting
 from riverhog_core.services.collection_registration_cleanup import freeze_registration_execution
 from riverhog_core.services.collection_upload_authority import require_archive_write_control
 
@@ -94,10 +95,11 @@ def initialize_archive_write_control(
     recovery_policy: RecoveryPolicy = _DEFAULT_RECOVERY_POLICY,
 ) -> None:
     """Called only in the transaction that allocates a new upload construction."""
+    construction = upload_construction(upload)
     session.add(
         ArchiveWriteControlRecord(
             collection_id=upload.collection_id,
-            construction_json=upload_construction(upload),
+            construction_json=construction,
             # Operational policy numbers keep their exact selected meaning;
             # they are outside the protected archive identity JSON domain.
             recovery_policy_json=json.dumps(
@@ -106,19 +108,8 @@ def initialize_archive_write_control(
                 sort_keys=True,
                 separators=(",", ":"),
             ),
-            recovery_accounting_json=_json(
-                {
-                    "format": "riverhog-recovery-accounting/v1",
-                    "useful_ns": "0",
-                    "charged_ns": "0",
-                    "reserved_ns": "0",
-                    "successful_checkpoints": "0",
-                    "next_grant_sequence": "0",
-                    "cost_epoch_open": True,
-                    "credit_certain": True,
-                    "optional_admission_sealed": False,
-                    "active_grants": [],
-                }
+            recovery_accounting_json=initial_recovery_accounting(
+                upload.collection_id, construction
             ),
             recovery_revision="0",
             epoch=secrets.token_hex(32),
