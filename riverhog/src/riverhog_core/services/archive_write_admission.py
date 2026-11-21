@@ -34,6 +34,7 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
 from riverhog_core.collection_construction import upload_construction
+from riverhog_core.collection_recovery_state import initial_recovery_accounting
 from riverhog_core.provider_write_dispatch import (
     ArmedProviderWrite,
     ClosedProviderWrite,
@@ -47,7 +48,6 @@ from riverhog_core.services.archive_upload_terminal_tags import (
     retain_terminal_tag_selector,
     upload_terminal_tag_selector,
 )
-from riverhog_core.services.collection_recovery import initial_recovery_accounting
 from riverhog_core.services.collection_registration_cleanup import freeze_registration_execution
 from riverhog_core.services.collection_upload_authority import require_archive_write_control
 

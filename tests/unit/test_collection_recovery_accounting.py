@@ -11,10 +11,8 @@ from riverhog_canonical_json import format_scalar
 from riverhog_core.catalog_archive_write_models import ArchiveWriteControlRecord as Control
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord
-from riverhog_core.services.collection_recovery import (
-    CollectionRecoveryAccounting,
-    RecoveryRootBinding,
-)
+from riverhog_core.collection_recovery_state import RecoveryRootBinding
+from riverhog_core.services.collection_recovery import CollectionRecoveryAccounting
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from riverhog_recovery_policy import CheckpointCandidate, RecoveryPolicy
