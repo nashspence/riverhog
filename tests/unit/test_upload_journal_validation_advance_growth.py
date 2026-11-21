@@ -69,7 +69,7 @@ def mixed_connection(native, lifecycle):
                 def callback():
                     return actual() if self.recording else 0
 
-            return sqlite3.Connection.set_progress_handler(self, callback, steps)
+            return super().set_progress_handler(callback, steps)
 
         @contextmanager
         def pause(self):
@@ -602,7 +602,7 @@ class Recorder(opening.Recorder):
             self.validate(function, node)
             self.attach(function, node)
 
-    def native_work(self, operation, session, *args):
+    def native_work(self, operation, session, *args, **kwargs):
         db = session._store.db
         with self.paused(), pytest.MonkeyPatch.context() as patch:
             child_tests = importlib.import_module("test_entry_replay_child_growth")
@@ -673,7 +673,7 @@ class Recorder(opening.Recorder):
                 complete,
             ):
                 try:
-                    result = operation(session, *args)
+                    result = operation(session, *args, **kwargs)
                 except owner.JournalValidationCapacity as error:
                     assert operation is ADVANCE and self.native_capacity is not None
                     rejected, result = error, None
@@ -855,8 +855,8 @@ class Recorder(opening.Recorder):
                         patch.setattr(
                             owner.JournalValidationSession,
                             name,
-                            lambda session, *args, _operation=operation: self.native_work(
-                                _operation, session, *args
+                            lambda session, *args, _operation=operation, **kwargs: self.native_work(
+                                _operation, session, *args, **kwargs
                             ),
                         )
                     patch.setattr(
@@ -873,9 +873,9 @@ class Recorder(opening.Recorder):
                     )
                     actual_slot = owner._Slot
 
-                    def slot():
+                    def slot(**kwargs):
                         self.add("allocated_slots")
-                        value = actual_slot()
+                        value = actual_slot(**kwargs)
                         value.lock = Lock(value.lock, self)
                         return value
 
