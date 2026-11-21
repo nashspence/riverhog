@@ -30,6 +30,9 @@ from sqlalchemy.orm import sessionmaker
 from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import CatalogRecorder, octets
 from tests.support.validation_workspace import leased_workspace
+from tests.unit.test_canonical_discovery_corpus_jobs import (
+    _source_control,
+)
 from tests.unit.test_canonical_discovery_corpus_jobs import (  # noqa: F401
     fixed_inputs as fixed_inputs,
 )
@@ -102,23 +105,21 @@ def cases(tmp_path_factory, fixed_inputs):
                         for column in Generation.__table__.columns
                     }
                     session.add(
-                        UploadControl(
+                        _source_control(
                             collection_id=1,
                             construction_json="x" * metadata_width,
                             epoch="a" * 64,
                             gate="open",
-                            next_call="0",
                         )
                     )
                     controls = []
                     for index in range(retained):
                         session.add(
-                            UploadControl(
+                            _source_control(
                                 collection_id=index + 2,
                                 construction_json="x" * metadata_width,
                                 epoch="b" * 64,
                                 gate="closed",
-                                next_call="0",
                             )
                         )
                         other_build = str(UUID(int=index + 1))
