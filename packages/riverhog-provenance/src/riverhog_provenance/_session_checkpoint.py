@@ -32,7 +32,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
-from ._native_epoch import EpochContext
+from ._native_epoch import EpochContext, observe_preparation
 
 ALGORITHM = "riverhog-journal-validation-checkpoint/v1"
 _HEADER_CHARACTERS = 8192
@@ -536,6 +536,7 @@ class ValidationLedger:
         return ValidationSnapshot(state, prefix, accepted)
 
     @declare_growth(_checkpoint_declaration("load"))
+    @observe_preparation
     def load(self) -> ValidationSnapshot:
         self._detached()
         result = self._read()

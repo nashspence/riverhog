@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import sqlite3
-from collections.abc import Callable
-from contextlib import nullcontext
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager, nullcontext
+from functools import wraps
+from typing import Concatenate, Protocol
 
 from sqlite_admission import observe_sqlite_execution
 
@@ -28,6 +30,9 @@ class EpochContext:
         self.db = db
         self._phase = "quiescent"
         self._failure: BaseException | None = None
+        self._execution_active = False
+        self._execution_check: Callable[[], None] | None = None
+        self._preparing = False
 
     @property
     def quiescent(self) -> bool:
@@ -46,6 +51,38 @@ class EpochContext:
         if db is not self.db or self._phase != "applying" or not db.in_transaction:
             raise RuntimeError("Native mutation requires its original active private epoch")
 
+    @contextmanager
+    def execution(self, check: Callable[[], None] | None) -> Iterator[None]:
+        """Bind one owner's bounded live-memory check for its admitted execution."""
+        self.require_quiescent()
+        if self._execution_active:
+            raise RuntimeError("the original Native execution is already active")
+        if check is not None and not callable(check):
+            raise TypeError("Native execution requires a callable check")
+        self._execution_active, self._execution_check = True, check
+        try:
+            if check is not None and check() is not None:
+                raise TypeError("Native execution check must return None or raise its cause")
+            yield
+            self.require_quiescent()
+        finally:
+            self._execution_active, self._execution_check = False, None
+
+    @contextmanager
+    def preparing(self) -> Iterator[None]:
+        """Observe detached reads; receive their registration before a writer begins."""
+        check = self._execution_check
+        if check is None or self._preparing:
+            yield
+            return
+        self.require_quiescent()
+        self._preparing = True
+        try:
+            with observe_sqlite_execution(self.db, check):
+                yield
+        finally:
+            self._preparing = False
+
     def require_receiving(self, db: sqlite3.Connection) -> None:
         """Receive live control only after this exact original commit returned."""
         if db is not self.db or self._phase != "receiving" or db.in_transaction:
@@ -60,16 +97,27 @@ class EpochContext:
     ) -> T:
         """Commit pending semantic state, then receive its corresponding live state."""
         self.require_quiescent()
+        if self._preparing:
+            raise RuntimeError("Native preparation must be received before private application")
+        if (
+            check is not None
+            and self._execution_check is not None
+            and check is not self._execution_check
+        ):
+            raise RuntimeError("Native application cannot replace its original execution check")
+        selected_check = self._execution_check if check is None else check
         self._phase = "applying"
         try:
             observation = (
-                nullcontext() if check is None else observe_sqlite_execution(self.db, check)
+                nullcontext()
+                if selected_check is None
+                else observe_sqlite_execution(self.db, selected_check)
             )
             with observation:
                 self.db.execute("BEGIN IMMEDIATE").close()
                 result = mutation(self)
                 self.require(self.db)
-                if check is not None and check() is not None:
+                if selected_check is not None and selected_check() is not None:
                     raise TypeError("Native execution check must return None or raise its cause")
                 self._phase = "committing"
                 self.db.commit()
@@ -85,3 +133,26 @@ class EpochContext:
             # The exact execution registration has exited before private cleanup.
             self.db.rollback()
             raise
+
+
+def bind_epoch(db: sqlite3.Connection, original: EpochContext | None) -> EpochContext:
+    if original is not None and original.db is not db:
+        raise ValueError("Native child requires its original epoch connection")
+    return EpochContext(db) if original is None else original
+
+
+class _PreparationOwner(Protocol):
+    epoch: EpochContext
+
+
+def observe_preparation[Owner: _PreparationOwner, **P, R](
+    operation: Callable[Concatenate[Owner, P], R],
+) -> Callable[Concatenate[Owner, P], R]:
+    @wraps(operation)
+    def observed(owner: Owner, /, *args: P.args, **kwargs: P.kwargs) -> R:
+        if owner.epoch._execution_check is None:
+            return operation(owner, *args, **kwargs)
+        with owner.epoch.preparing():
+            return operation(owner, *args, **kwargs)
+
+    return observed

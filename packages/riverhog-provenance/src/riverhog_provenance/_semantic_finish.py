@@ -31,6 +31,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from .common import fingerprint
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -418,6 +419,7 @@ class SemanticFinish:
         frame: JournalFrame,
         catalog_sha256: str,
         require_profiles: bool,
+        epoch: EpochContext | None = None,
     ) -> None:
         if type(attempt_id) is not str or not attempt_id:
             raise ValueError("an explicit semantic finish attempt is required")
@@ -438,6 +440,7 @@ class SemanticFinish:
                 "require_profiles": require_profiles,
             }
         )
+        self.epoch = bind_epoch(self.db, epoch)
 
     @property
     def db(self) -> sqlite3.Connection:
@@ -501,6 +504,7 @@ class SemanticFinish:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> FinishAdmission:
         self._detached()
         return self._admission()
@@ -595,10 +599,12 @@ class SemanticFinish:
         self._detached()
         return self._read_checkpoint()
 
+    @observe_preparation
     def load(self) -> FinishState:
         return self._load()[0]
 
     @declare_growth(_phase_declaration("prepare"))
+    @observe_preparation
     def prepare(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> FinishBatch:
         if type(row_budget) is not int or not 1 <= row_budget <= MAX_ROWS:
             raise ValueError("semantic finish row budget must be between one and 64")

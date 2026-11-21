@@ -31,6 +31,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -445,6 +446,7 @@ class EntryPreparation:
         frame: JournalFrame,
         catalog_sha256: str,
         require_profiles: bool,
+        epoch: EpochContext | None = None,
     ) -> None:
         if (
             type(attempt_id) is not str
@@ -475,6 +477,7 @@ class EntryPreparation:
                 "entry_id": self.entry_id,
             }
         )
+        self.epoch = bind_epoch(self.db, epoch)
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
         with closing(self.db.execute(sql, parameters)) as rows:
@@ -562,6 +565,7 @@ class EntryPreparation:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> PreparationAdmission:
         self._detached()
         return self._admission()
@@ -627,10 +631,12 @@ class EntryPreparation:
         self._boundaries(state)
         return state, prefix
 
+    @observe_preparation
     def load(self) -> PreparationState:
         return self._load()[0]
 
     @declare_growth(_phase_declaration("prepare"))
+    @observe_preparation
     def prepare(
         self, *, row_budget: int = MAX_ROWS, byte_budget: int = _DEFAULT_BYTES
     ) -> PreparationBatch:
@@ -753,6 +759,7 @@ class EntryPreparation:
         return self.commit(self.prepare(row_budget=row_budget, byte_budget=byte_budget))
 
     @declare_growth(_result_declaration())
+    @observe_preparation
     def result(self) -> None:
         if not self.load().done:
             raise RuntimeError("entry preparation remains quarantined")

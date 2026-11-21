@@ -45,6 +45,7 @@ from ._description_projection import read_description_metadata
 from ._fixity_projection import read_fixity_metadata
 from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._observation_coverage import ObservationCoverage
 from ._observation_projection import has_observer, read_observation_metadata
 from ._relation_projection import read_relation_metadata
@@ -1263,6 +1264,7 @@ class GenericSemantics:
         catalog: ContractCatalog,
         operation: str = "generic",
         certificates: JournalGraphCertificates | None = None,
+        epoch: EpochContext | None = None,
     ) -> None:
         if type(attempt_id) is not str or not attempt_id:
             raise ValueError("an explicit generic semantic attempt is required")
@@ -1313,6 +1315,7 @@ class GenericSemantics:
                 else self.certificate_binding.checkpoint_sha256(),
             }
         )
+        self.epoch = bind_epoch(self.db, epoch)
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
         with closing(self.db.execute(sql, parameters)) as rows:
@@ -1382,6 +1385,7 @@ class GenericSemantics:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> GenericAdmission:
         self._detached()
         prefix = self._prefix()
@@ -1466,6 +1470,7 @@ class GenericSemantics:
         self._subject()
         return GenericState.from_json(row[4]), prefix
 
+    @observe_preparation
     def load(self) -> GenericState:
         return self._load()[0]
 
@@ -1503,6 +1508,7 @@ class GenericSemantics:
             object_id=self.object_id,
             source=value[left]["object_id"],
             target=value[right]["object_id"],
+            epoch=self.epoch,
         )
 
     @staticmethod
@@ -1551,6 +1557,7 @@ class GenericSemantics:
         )
 
     @declare_growth(_composed_declaration("prepare"), delegates=_edge_delegates("prepare"))
+    @observe_preparation
     def prepare(
         self, *, step_budget: int = MAX_STEPS, byte_budget: int = _DEFAULT_BYTES
     ) -> GenericBatch:
@@ -1954,6 +1961,7 @@ class GenericSemantics:
     @declare_growth(
         _composed_result_declaration(), delegates=(("edge_result", SemanticEdge.result),)
     )
+    @observe_preparation
     def result(self) -> None:
         state, _prefix = self._load()
         if not state.done:

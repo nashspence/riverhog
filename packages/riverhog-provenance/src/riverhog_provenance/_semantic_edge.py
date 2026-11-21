@@ -34,6 +34,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._online_dag import OnlineDag, _Plan, _Snapshot, _Work
 from ._semantic_source import SemanticSource
 from .errors import ProvenanceValidationError
@@ -477,6 +478,7 @@ class SemanticEdge:
         object_id: str,
         source: str,
         target: str,
+        epoch: EpochContext | None = None,
     ) -> None:
         if type(attempt_id) is not str or not attempt_id:
             raise ValueError("an explicit semantic graph attempt is required")
@@ -507,6 +509,7 @@ class SemanticEdge:
                 "target": target,
             }
         )
+        self.epoch = bind_epoch(self.db, epoch)
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
         with closing(self.db.execute(sql, parameters)) as rows:
@@ -583,6 +586,7 @@ class SemanticEdge:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> EdgeAdmission:
         self._detached()
         prefix = self._prefix()
@@ -689,10 +693,12 @@ class SemanticEdge:
             raise StaleSemanticEdge("semantic graph continuation changed")
         return state, prefix, graph
 
+    @observe_preparation
     def load(self) -> EdgeState:
         return self._load()[0]
 
     @declare_growth(_composed_declaration("prepare"), delegates=_graph_delegates("prepare"))
+    @observe_preparation
     def prepare(self, *, row_budget: int = 64) -> EdgeBatch:
         OnlineDag._budget(row_budget)
         state, prefix, graph = self._load()
@@ -782,6 +788,7 @@ class SemanticEdge:
         return self.commit(self.prepare(row_budget=row_budget))
 
     @declare_growth(_terminal_declaration())
+    @observe_preparation
     def result(self) -> None:
         state, _prefix, graph = self._load()
         if not state.done:

@@ -27,6 +27,7 @@ from riverhog_growth_contracts import (
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from ._admission_growth import admission_declaration
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from .errors import JournalValidationCapacity
 
 ALGORITHM = "riverhog-correction-projection/v1"
@@ -315,7 +316,13 @@ def _phase_declaration(operation: str) -> Declaration:
 
 class CorrectionWork:
     def __init__(
-        self, db: sqlite3.Connection, *, operation: str, attempt_id: str, source_binding: str
+        self,
+        db: sqlite3.Connection,
+        *,
+        operation: str,
+        attempt_id: str,
+        source_binding: str,
+        epoch: EpochContext | None = None,
     ) -> None:
         if operation not in {"retire", "seed"}:
             raise ValueError("unknown correction projection operation")
@@ -327,6 +334,7 @@ class CorrectionWork:
         self.operation = operation
         self.attempt_id = attempt_id
         self.source_binding = source_binding
+        self.epoch = bind_epoch(self.db, epoch)
 
     def _require_detached(self) -> None:
         if self.db.in_transaction:
@@ -365,6 +373,7 @@ class CorrectionWork:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> CorrectionAdmission:
         self._require_detached()
         return self._admission()
@@ -426,6 +435,7 @@ class CorrectionWork:
         self._require_detached()
         return self._read_checkpoint()
 
+    @observe_preparation
     def load(self) -> CorrectionState:
         state = self._read_header()
         if self.operation == "retire":
@@ -464,6 +474,7 @@ class CorrectionWork:
         return state
 
     @declare_growth(_phase_declaration("prepare"))
+    @observe_preparation
     def prepare(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> CorrectionBatch:
         if type(row_budget) is not int or not 1 <= row_budget <= MAX_ROWS:
             raise ValueError("correction row budget must be between one and 64")

@@ -29,6 +29,7 @@ from riverhog_growth_contracts import (
 
 from ._admission_growth import admission_declaration
 from ._journal_prefix import PrefixState, _reference
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
 
@@ -336,7 +337,14 @@ def _phase_declaration(operation: str) -> Declaration:
 
 
 class CorrectionTargets:
-    def __init__(self, db: sqlite3.Connection, *, attempt_id: str, frame: JournalFrame) -> None:
+    def __init__(
+        self,
+        db: sqlite3.Connection,
+        *,
+        attempt_id: str,
+        frame: JournalFrame,
+        epoch: EpochContext | None = None,
+    ) -> None:
         if type(attempt_id) is not str or not attempt_id:
             raise ValueError("an explicit correction attempt is required")
         if len(frame.json_bytes) > PROVENANCE_JOURNAL_ENTRY_BYTES_MAX:
@@ -349,6 +357,7 @@ class CorrectionTargets:
         self.targets = document["body"]["retracts"]
         self.sequence, self.journal_id = document["sequence"], document["journal_id"]
         self.count = len(self.targets)
+        self.epoch = bind_epoch(self.db, epoch)
 
     def _detached(self) -> None:
         if self.db.in_transaction:
@@ -410,6 +419,7 @@ class CorrectionTargets:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> TargetAdmission:
         self._detached()
         return self._admission()
@@ -536,10 +546,12 @@ class CorrectionTargets:
                 raise RuntimeError("changed correction reclamation cursor link")
         return state, prefix
 
+    @observe_preparation
     def load(self) -> TargetState:
         return self._load()[0]
 
     @declare_growth(_phase_declaration("prepare"))
+    @observe_preparation
     def prepare(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> TargetBatch:
         if type(row_budget) is not int or not 1 <= row_budget <= MAX_ROWS:
             raise ValueError("correction target row budget must be between one and 64")

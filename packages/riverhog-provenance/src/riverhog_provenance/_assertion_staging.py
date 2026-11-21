@@ -31,6 +31,7 @@ from riverhog_provenance_contracts import canonical_document
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
 from .graph import iter_assertions
@@ -455,6 +456,7 @@ class AssertionStaging:
         frame: JournalFrame,
         catalog_sha256: str,
         require_profiles: bool,
+        epoch: EpochContext | None = None,
     ) -> None:
         from .journal import _body_assertions
 
@@ -480,6 +482,7 @@ class AssertionStaging:
                 "require_profiles": require_profiles,
             }
         )
+        self.epoch = bind_epoch(self.db, epoch)
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
         with closing(self.db.execute(sql, parameters)) as rows:
@@ -547,6 +550,7 @@ class AssertionStaging:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> StageAdmission:
         self._detached()
         return self._admission()
@@ -721,10 +725,12 @@ class AssertionStaging:
         self._detached()
         return self._read_checkpoint()
 
+    @observe_preparation
     def load(self) -> StageState:
         return self._load()[0]
 
     @declare_growth(_phase_declaration("prepare"))
+    @observe_preparation
     def prepare(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> StageBatch:
         from .journal import _identity_signature
 
