@@ -590,13 +590,15 @@ class JournalPrefix:
     def expected_anchor(self) -> dict[str, Any] | None:
         return None if self.anchor_json is None else json.loads(self.anchor_json)
 
-    def _execute(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
-        self.epoch.account(WorkAmount(rows=1))
+    def _execute(
+        self, sql: str, parameters: tuple[Any, ...] = (), *, copy_octets: int = 0
+    ) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1, octets=copy_octets))
         return self.db.execute(sql, parameters)
 
     @staticmethod
-    def _application_admission() -> WorkAmount:
-        return WorkAmount(rows=2)
+    def _application_admission(batch: PrefixPublication) -> WorkAmount:
+        return WorkAmount(rows=2, octets=len(batch.prepared.frame.json_bytes))
 
     def _initialize(self) -> PrefixState:
         if not self.db.in_transaction:
@@ -779,6 +781,7 @@ class JournalPrefix:
                 prepared.reference_json.encode(),
                 after.sha256_state,
             ),
+            copy_octets=len(frame.json_bytes),
         ).close()
         return after
 

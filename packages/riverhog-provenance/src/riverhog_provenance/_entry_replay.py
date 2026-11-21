@@ -2232,8 +2232,10 @@ class EntryReplay:
     def _account_row(self) -> None:
         self.epoch.account(WorkAmount(rows=1))
 
-    def _write(self, sql: str, values: tuple[Any, ...] = ()) -> sqlite3.Cursor:
-        self._account_row()
+    def _write(
+        self, sql: str, values: tuple[Any, ...] = (), *, copy_octets: int = 0
+    ) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1, octets=copy_octets))
         return self.db.execute(sql, values)
 
     def _one(self, sql: str, values: tuple[Any, ...] = (), *, copy_octets: int = 0) -> Any:
@@ -2383,6 +2385,7 @@ class EntryReplay:
                     current.source.sha256,
                     current.frame.json_bytes,
                 ),
+                copy_octets=len(current.frame.json_bytes),
             ).close()
             return after
 
@@ -2391,7 +2394,12 @@ class EntryReplay:
             if on_admitted is not None:
                 on_admitted()
 
-        return self._commit(before, apply, receive=receive, admission=WorkAmount(rows=1))
+        return self._commit(
+            before,
+            apply,
+            receive=receive,
+            admission=WorkAmount(rows=1, octets=len(current.frame.json_bytes)),
+        )
 
     @declare_growth(
         _row_declaration(),
@@ -2683,7 +2691,7 @@ class EntryReplay:
             receive=receive,
             admission=(
                 self.ledger._application_admission()
-                + self.prefix._application_admission()
+                + self.prefix._application_admission(publication)
                 + WorkAmount(rows=1)
             ),
         )
