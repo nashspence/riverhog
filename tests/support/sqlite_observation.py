@@ -1,10 +1,22 @@
 """Measure real admitted connections and cursors without changing their grants."""
 
+import sqlite3
 from contextlib import contextmanager
 from functools import cache
 
 import pytest
 import sqlite_admission
+
+
+def observed_connection_factory(observation, original):
+    if issubclass(observation, original):
+        return observation
+    return type("ObservedConnection", (observation, original), {})
+
+
+def connect_observed(driver, observation, *args, **options):
+    original = options.pop("factory", sqlite3.Connection)
+    return driver(*args, factory=observed_connection_factory(observation, original), **options)
 
 
 class CursorObservation:

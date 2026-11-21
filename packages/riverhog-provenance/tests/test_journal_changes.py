@@ -22,6 +22,7 @@ from riverhog_provenance import (
 )
 
 from scripts.validation_numeric import numeric_policy_from_environment
+from tests.support.sqlite_observation import connect_observed
 
 
 class ObservedCursor(sqlite3.Cursor):
@@ -56,7 +57,7 @@ def store(monkeypatch):
     connect = journal_store.sqlite3.connect
 
     def observed_connect(*args, **kwargs):
-        return connect(*args, factory=ObservedConnection, **kwargs)
+        return connect_observed(connect, ObservedConnection, *args, **kwargs)
 
     monkeypatch.setattr(journal_store.sqlite3, "connect", observed_connect)
     value = journal_store.JournalStore()
@@ -193,7 +194,7 @@ def test_native_metadata_retirement_records_actual_bounded_work(monkeypatch, rec
     connect = journal_store.sqlite3.connect
 
     def observed_connect(*args, **kwargs):
-        return connect(*args, factory=ObservedConnection, **kwargs)
+        return connect_observed(connect, ObservedConnection, *args, **kwargs)
 
     monkeypatch.setattr(journal_store.sqlite3, "connect", observed_connect)
     for queued, budget in [

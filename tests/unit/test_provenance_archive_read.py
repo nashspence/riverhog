@@ -41,6 +41,7 @@ from riverhog_core.provenance_archive_read import (
 )
 
 from tests.support.provenance_archive import archive_reader_fixture
+from tests.support.sqlite_observation import connect_observed
 
 
 def test_root_bound_reader_streams_exact_journal_and_member_bindings() -> None:
@@ -136,7 +137,7 @@ def test_prepared_reader_closes_partly_consumed_cursors_before_directory_cleanup
     original_connect = sqlite3.connect
 
     def connect(*args: Any, **kwargs: Any) -> sqlite3.Connection:
-        return original_connect(*args, **kwargs, factory=TrackedConnection)
+        return connect_observed(original_connect, TrackedConnection, *args, **kwargs)
 
     monkeypatch.setattr(archive_read.sqlite3, "connect", connect)
     monkeypatch.setattr(archive_read.ProvenanceMetadataIndex, "_remove_directory", checked_remove)

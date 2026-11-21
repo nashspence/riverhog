@@ -17,6 +17,7 @@ from collections.abc import (
     Sequence,
 )
 from contextlib import closing
+from functools import partial
 from pathlib import Path
 from tempfile import mkdtemp
 from threading import Lock
@@ -34,7 +35,11 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
-from sqlite_admission import SqliteConnectionSettings, configure_sqlite_connection
+from sqlite_admission import (
+    SqliteConnectionSettings,
+    SqliteProgressConnection,
+    configure_sqlite_connection,
+)
 
 from ._assertion_staging import install as install_assertion_staging
 from ._changed_assertions import read_changed_assertion
@@ -656,7 +661,11 @@ class JournalStore:
                 raise TypeError("retained storage requires its original construction scope")
             connect = construction.scope.connect
         else:
-            connect = sqlite3.connect if connection_factory is None else connection_factory
+            connect = (
+                partial(sqlite3.connect, factory=SqliteProgressConnection)
+                if connection_factory is None
+                else connection_factory
+            )
         try:
             if retained:
                 connection = connect(

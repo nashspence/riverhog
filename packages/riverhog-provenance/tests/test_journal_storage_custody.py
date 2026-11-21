@@ -12,6 +12,8 @@ from riverhog_provenance.journal_store import JournalStore
 from sqlite_admission import SqliteCleanupPending
 from test_retained_journal_session import ATTEMPT, OwnedSource, finish
 
+from tests.support.sqlite_observation import connect_observed
+
 
 def fault_connection(monkeypatch, *, fail=False, after=False):
     actual_connect = sqlite3.connect
@@ -28,7 +30,7 @@ def fault_connection(monkeypatch, *, fail=False, after=False):
             return super().close()
 
     def connect(*args, **kwargs):
-        result = actual_connect(*args, factory=Connection, **kwargs)
+        result = connect_observed(actual_connect, Connection, *args, **kwargs)
         state["connections"].append(result)
         return result
 

@@ -25,6 +25,7 @@ from riverhog_provenance import (
 from riverhog_provenance.graph import time_ns
 
 from scripts.validation_numeric import numeric_policy_from_environment
+from tests.support.sqlite_observation import connect_observed
 
 
 def lifecycle_graph(graph, who):
@@ -234,7 +235,7 @@ def test_actual_indexed_extrema_work(monkeypatch, record_property):
     connect = journal_store.sqlite3.connect
 
     def observed_connect(*args, **kwargs):
-        return connect(*args, factory=ObservedConnection, **kwargs)
+        return connect_observed(connect, ObservedConnection, *args, **kwargs)
 
     monkeypatch.setattr(journal_store.sqlite3, "connect", observed_connect)
     binding = growth_binding(journal_store.JournalStore._lifecycle_bounds_hold)
