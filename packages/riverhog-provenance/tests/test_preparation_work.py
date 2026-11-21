@@ -302,7 +302,7 @@ def test_actual_session_reserves_preparation_before_any_writer_and_retries_same_
         try:
             with pytest.raises(NativeWorkCapacity):
                 session.advance(
-                    JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=12))
+                    JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=22))
                 )
         finally:
             session._store.db.set_trace_callback(None)
@@ -310,15 +310,15 @@ def test_actual_session_reserves_preparation_before_any_writer_and_retries_same_
         assert session.progress() == before and session._store.db.total_changes == changes
         refused, envelope = plans[0]
         assert envelope == WorkAmount(rows=5)
-        assert refused.consumed.rows == 8 and refused.held == WorkAmount()
+        assert refused.consumed.rows == 12 and refused.held == WorkAmount()
         assert session._failure is None and session._ledger.epoch.quiescent
         refused.require_received()
         after = session.advance(
-            JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=13))
+            JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=23))
         )
         assert after != before and child.load().done
         received = plans[1][0]
-        assert received is not refused and received.consumed.rows == 12
+        assert received is not refused and received.consumed.rows == 20
         assert received.held == WorkAmount() and session._ledger.epoch.quiescent
         received.require_received()
     assert session.storage_received

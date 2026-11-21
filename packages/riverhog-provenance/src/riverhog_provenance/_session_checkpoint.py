@@ -33,6 +33,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
 from ._native_epoch import EpochContext, observe_preparation
+from ._native_work import WorkAmount
 
 ALGORITHM = "riverhog-journal-validation-checkpoint/v1"
 _HEADER_CHARACTERS = 8192
@@ -432,9 +433,19 @@ class ValidationLedger:
     def _detached(self) -> None:
         self.epoch.require_quiescent()
 
+    def _execute(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1))
+        return self.db.execute(sql, parameters)
+
+    @staticmethod
+    def _application_admission() -> WorkAmount:
+        # Fence: parent, prefix and possible predecessor. Publication: prefix,
+        # possible predecessor and the conditional parent row mutation.
+        return WorkAmount(rows=6)
+
     def _prefix(self) -> tuple[tuple[str, bytes, str], PrefixState]:
         with closing(
-            self.db.execute(
+            self._execute(
                 "SELECT substr(attempt_id,1,33),substr(binding,1,?),substr(checkpoint,1,?) "
                 "FROM journal_prefix WHERE singleton=1",
                 (PREFIX_BINDING_OCTETS_MAX + 1, _HEADER_CHARACTERS + 1),
@@ -457,7 +468,7 @@ class ValidationLedger:
         )
         if state.frame_count:
             with closing(
-                self.db.execute(
+                self._execute(
                     "SELECT substr(reference,1,513) FROM frames WHERE sequence=?",
                     (str(state.frame_count - 1),),
                 )
@@ -480,7 +491,7 @@ class ValidationLedger:
             raise RuntimeError("validation initialization requires an empty accepted prefix")
         state = ValidationCheckpoint()
         encoded = state.to_json()
-        self.db.execute(
+        self._execute(
             "INSERT INTO journal_validation VALUES(1,?,?,?,?,?,?,?,?)",
             (
                 ALGORITHM,
@@ -498,11 +509,13 @@ class ValidationLedger:
         delegates=(("initialization", _initialize),),
     )
     def initialize(self) -> ValidationSnapshot:
-        return self.epoch.apply(lambda _epoch: self._initialize(), receive=self._receive)
+        return self.epoch.apply(
+            lambda _epoch: self._initialize(), receive=self._receive, admission=WorkAmount(rows=2)
+        )
 
     def _read(self) -> ValidationSnapshot:
         with closing(
-            self.db.execute(
+            self._execute(
                 "SELECT substr(checkpoint,1,?),substr(prefix_attempt,1,33),"
                 "substr(prefix_binding,1,?),substr(prefix,1,?) "
                 "FROM journal_validation WHERE singleton=1 AND algorithm=? AND attempt_id=? "
@@ -576,7 +589,7 @@ class ValidationLedger:
         if selected != current or accepted.frame_count != after.frame_ordinal:
             raise StaleValidationCheckpoint("validation publication lost its exact prefix")
         with closing(
-            self.db.execute(
+            self._execute(
                 "UPDATE journal_validation SET checkpoint=?,"
                 "prefix_attempt=?,prefix_binding=?,prefix=? "
                 "WHERE singleton=1 AND algorithm=? AND attempt_id=? "
@@ -623,7 +636,7 @@ class ValidationLedger:
             epoch.require(self.db)
             self._fence(before)
             with closing(
-                self.db.execute(
+                self._execute(
                     "UPDATE journal_validation SET worker_epoch=?,checkpoint=? WHERE singleton=1 "
                     "AND algorithm=? AND attempt_id=? AND binding=? "
                     "AND worker_epoch=? AND checkpoint=?",
@@ -643,5 +656,5 @@ class ValidationLedger:
 
             return ValidationSnapshot(after, before.prefix, before.accepted)
 
-        self.epoch.apply(apply, receive=replacement._receive)
+        self.epoch.apply(apply, receive=replacement._receive, admission=WorkAmount(rows=4))
         return replacement

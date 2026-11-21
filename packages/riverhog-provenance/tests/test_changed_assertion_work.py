@@ -132,25 +132,37 @@ def test_actual_session_row_selection_and_cold_row_restore_use_the_original_quan
         if phase == "generic-admission":
             current.row_key, current.row_sha256, current.row, current.atom = None, None, None, None
         original, seen = _entry_replay.read_changed_assertion, []
+        selector_costs = []
 
         def selected(*args, **kwargs):
             work = kwargs["work"]
             assert work is session._ledger.epoch.work and not session._store.db.in_transaction
             seen.append(work)
-            return original(*args, **kwargs)
+            spent = work.consumed.rows
+            try:
+                return original(*args, **kwargs)
+            finally:
+                selector_costs.append(work.consumed.rows - spent)
 
         monkeypatch.setattr(_entry_replay, "read_changed_assertion", selected)
         before, changes = session.progress(), session._store.db.total_changes
+        predecessor = bool(session._ledger.load().accepted.frame_count)
+        parent_probes = 2 * (2 + predecessor)
+        parent_mutation = 4 + 2 * predecessor
         with pytest.raises(NativeWorkCapacity):
-            session.advance(JournalValidationBudget(work=JournalValidationWorkBudget(rows=2)))
+            session.advance(
+                JournalValidationBudget(work=JournalValidationWorkBudget(rows=parent_probes + 2))
+            )
         assert session.progress() == before
         assert session._store.db.total_changes == changes
         assert session._failure is None and session._ledger.epoch.quiescent
-        assert seen[0].consumed.rows == 2 and seen[0].consumed.source_octets == 0
+        assert seen[0].consumed.rows == parent_probes + 2 and seen[0].consumed.source_octets == 0
         seen[0].require_received()
-        after = session.advance(JournalValidationBudget(work=JournalValidationWorkBudget(rows=3)))
+        after = session.advance(JournalValidationBudget(work=JournalValidationWorkBudget(rows=128)))
         assert after != before and len(seen) == 2 and seen[1] is not seen[0]
-        assert seen[1].consumed.rows == 3 and seen[1].consumed.source_octets == 0
+        assert selector_costs == [2, 3]
+        assert seen[1].consumed.rows >= parent_probes + 3 + parent_mutation
+        assert seen[1].consumed.source_octets == 0
         seen[1].require_received()
         assert session._ledger.epoch.quiescent
     assert session.storage_received

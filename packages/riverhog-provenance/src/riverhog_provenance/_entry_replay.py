@@ -2316,7 +2316,11 @@ class EntryReplay:
             self.ledger._receive(snapshot)
             receive(snapshot)
 
-        return self.ledger.epoch.apply(apply, receive=received, admission=admission)
+        return self.ledger.epoch.apply(
+            apply,
+            receive=received,
+            admission=self.ledger._application_admission() + (admission or WorkAmount()),
+        )
 
     def _move(self, before: ValidationSnapshot, phase: str) -> ValidationSnapshot:
         after = replace(
@@ -2655,7 +2659,9 @@ class EntryReplay:
             self.store.frame_count = after.frame_ordinal
             self._current = None
 
-        return self.ledger.epoch.apply(apply, receive=receive)
+        return self.ledger.epoch.apply(
+            apply, receive=receive, admission=self.ledger._application_admission()
+        )
 
     @declare_growth(
         _row_transition_declaration("admission", _row),

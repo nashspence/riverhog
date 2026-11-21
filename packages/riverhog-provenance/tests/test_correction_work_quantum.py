@@ -237,19 +237,22 @@ def test_actual_native_correction_keeps_original_child_on_refusal_then_retries(
             active.append(child.epoch.work)
             return one(sql, parameters)
 
+        parent_probes = 2 * (2 + bool(session._ledger.load().accepted.frame_count))
         monkeypatch.setattr(child, "_one", probe)
         db.set_trace_callback(trace.append)
         try:
             with pytest.raises(NativeWorkCapacity):
                 session.advance(
-                    JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=1))
+                    JournalValidationBudget(
+                        rows=1, work=JournalValidationWorkBudget(rows=parent_probes + 1)
+                    )
                 )
         finally:
             db.set_trace_callback(None)
         assert not any(sql.startswith("BEGIN") for sql in trace)
         assert session.progress() == before and db.total_changes == changes
         refused = active[0]
-        assert refused.consumed.rows == 1 and refused.held == WorkAmount()
+        assert refused.consumed.rows == parent_probes + 1 and refused.held == WorkAmount()
         active.clear()
         after = session.advance(JournalValidationBudget(rows=1))
         assert after != before and session._replay._current.child is child

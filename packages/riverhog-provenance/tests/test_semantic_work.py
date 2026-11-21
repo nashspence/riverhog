@@ -268,12 +268,15 @@ def test_actual_native_session_preserves_progress_on_capacity_and_retries_same_c
             admissions.append(child.epoch.work)
             return original(sql, parameters)
 
+        parent_probes = 2 * (2 + bool(session._ledger.load().accepted.frame_count))
         monkeypatch.setattr(child, "_one", one)
         db.set_trace_callback(trace.append)
         try:
             with pytest.raises(NativeWorkCapacity):
                 session.advance(
-                    JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=1))
+                    JournalValidationBudget(
+                        rows=1, work=JournalValidationWorkBudget(rows=parent_probes + 1)
+                    )
                 )
         finally:
             db.set_trace_callback(None)
@@ -281,7 +284,7 @@ def test_actual_native_session_preserves_progress_on_capacity_and_retries_same_c
         assert session.progress() == before and db.total_changes == changes
         assert session._failure is None and child.epoch.quiescent
         refused = admissions[0]
-        assert refused.consumed.rows == 1 and refused.held == WorkAmount()
+        assert refused.consumed.rows == parent_probes + 1 and refused.held == WorkAmount()
         admissions.clear()
         after = session.advance(JournalValidationBudget(rows=1))
         assert after != before and session._replay._current.child is child

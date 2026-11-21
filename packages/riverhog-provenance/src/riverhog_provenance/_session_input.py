@@ -193,7 +193,9 @@ class RetainedInput:
             self.ledger._receive(snapshot)
             self.state = after
 
-        return self.ledger.epoch.apply(apply, receive=receive)
+        return self.ledger.epoch.apply(
+            apply, receive=receive, admission=self.ledger._application_admission()
+        )
 
     def _available(self, before: ValidationSnapshot, octets: int) -> int:
         control = 16384 + 16 * (

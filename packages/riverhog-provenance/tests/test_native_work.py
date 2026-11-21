@@ -168,7 +168,7 @@ def test_empty_source_pull_still_consumes_one_control_transition(journal, catalo
         assert all(
             work.consumed.transitions == 1 and not work.remaining.transitions for work in seen
         )
-        assert all(work.consumed.rows == 0 for work in seen)
+        assert all(work.consumed.rows == 2 for work in seen)
     assert session.storage_received
 
 
@@ -296,7 +296,12 @@ def test_actual_scan_accounts_the_returned_window_before_framing_or_cursor_publi
         else:
             assert session.advance(budget).source_octets == before + 7
         assert len(seen) == 1
-        assert seen[0].consumed == WorkAmount(octets=7, source_octets=7, transitions=1)
+        assert seen[0].consumed == WorkAmount(
+            rows=6 if retained and not malformed else 2,
+            octets=7,
+            source_octets=7,
+            transitions=1,
+        )
         seen[0].require_received()
         assert session._ledger.epoch.work is None
     assert session.storage_received
@@ -321,7 +326,7 @@ def test_page_admission_and_aggregate_actual_work_are_independent(journal, catal
         assert seen[0].limits == WorkAmount(
             rows=37, octets=1000, source_octets=131072, transitions=2
         )
-        assert seen[0].consumed == WorkAmount(octets=7, source_octets=7, transitions=1)
+        assert seen[0].consumed == WorkAmount(rows=2, octets=7, source_octets=7, transitions=1)
         seen[0].require_received()
     assert session.storage_received
 
@@ -358,7 +363,7 @@ def test_an_unadmitted_source_window_is_refused_before_pulling_retained_bytes(
         with pytest.raises(NativeWorkCapacity):
             session.advance(tiny)
         assert source.calls == [] and session._input.state is before
-        assert session._failure is None and seen[0].consumed == WorkAmount(transitions=1)
+        assert session._failure is None and seen[0].consumed == WorkAmount(rows=2, transitions=1)
         seen[0].require_received()
         assert session.advance(JournalValidationBudget(source_octets=7)).source_octets == 7
     assert session.storage_received
@@ -404,7 +409,7 @@ def test_complete_frame_transfer_uses_aggregate_budget_not_the_scan_window(
         assert session.advance(JournalValidationBudget(source_octets=7)).phase == "entry-admission"
         assert len(seen) == 1
         assert seen[0].consumed == WorkAmount(
-            octets=2 * size, source_octets=size if retained else 0, transitions=1
+            rows=8, octets=2 * size, source_octets=size if retained else 0, transitions=1
         )
         seen[0].require_received()
         if retained:

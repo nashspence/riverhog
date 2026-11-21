@@ -1330,7 +1330,7 @@ class JournalValidationSession:
             self._prefix._initialize()
             return self._ledger._initialize()
 
-        self._ledger.epoch.apply(apply, receive=self._ledger._receive)
+        self._ledger.epoch.apply(apply, receive=self._ledger._receive, admission=WorkAmount(rows=2))
 
     @classmethod
     @declare_growth(
@@ -1510,7 +1510,9 @@ class JournalValidationSession:
             self._ledger._fence(before)
             return self._ledger._publish(before, after)
 
-        return self._ledger.epoch.apply(apply, receive=self._ledger._receive)
+        return self._ledger.epoch.apply(
+            apply, receive=self._ledger._receive, admission=self._ledger._application_admission()
+        )
 
     def _finish(self, before: ValidationSnapshot) -> ValidationSnapshot:
         with self._ledger.epoch.preparing():
