@@ -419,7 +419,7 @@ def test_parent_publication_failure_rolls_back_graph_and_cached_run(
     catalog, graph_histories, monkeypatch, stage
 ):
     case = next(case for case in graph_histories(GRAPH_CASES[1]) if case["key"][1] == stage)
-    with graph_fixture(case, catalog, rows=1) as (current, _budget):
+    with graph_fixture(case, catalog, rows=1) as (current, budget):
         before, cached = snapshot(current.db), dict(current.store._dag_runs)
         publication = current.ledger._publish
 
@@ -433,5 +433,11 @@ def test_parent_publication_failure_rolls_back_graph_and_cached_run(
                 current._graph_step(case["before"])
         assert not current.db.in_transaction and snapshot(current.db) == before
         assert current.store._dag_runs == cached
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            current._graph_step(case["before"])
+        assert snapshot(current.db) == before and current.store._dag_runs == cached
+        current = owner(current.store, catalog, case["source_binding"], case["epoch"])
+        current._start(case["before"], budget)
+        assert current.ledger.load() == case["before"]
         current._graph_step(case["before"])
         assert current.ledger.load().checkpoint.version == case["before"].checkpoint.version + 1

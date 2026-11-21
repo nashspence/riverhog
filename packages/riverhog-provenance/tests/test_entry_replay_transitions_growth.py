@@ -406,7 +406,7 @@ def test_actual_lifecycle_transition(catalog, row_transition_checkpoints, record
 
 
 @pytest.mark.parametrize("phase", ["row-admit", "lifecycle"])
-def test_parent_failure_rolls_back_row_transition_and_native_retry(
+def test_parent_failure_rolls_back_row_transition_and_reconstructed_retry(
     tmp_path, catalog, admission_histories, monkeypatch, phase
 ):
     cases = transition_cases(tmp_path, catalog, admission_histories, (ROW_TRANSITIONS[-1],))
@@ -437,6 +437,14 @@ def test_parent_failure_rolls_back_row_transition_and_native_retry(
             with pytest.raises(RuntimeError, match="injected parent"):
                 operation(current, case["before"], current._current)
         assert snapshot(store.db) == original and not store.db.in_transaction
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            current.ledger.load()
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            operation(current, case["before"], current._current)
+        assert snapshot(store.db) == original and not store.db.in_transaction
+        current = owner(store, catalog, case["source_binding"], case["epoch"])
+        current._current = replace(case["cached"])
+        current._start(case["before"], ReplayBudget())
         assert current.ledger.load() == case["before"]
         result = operation(current, case["before"], current._current)
         assert result.checkpoint.version == case["before"].checkpoint.version + 1
