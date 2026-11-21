@@ -254,7 +254,7 @@ class CorrectionBatch:
     operation: str
     attempt_id: str
     source_binding: str
-    before_json: str
+    before: CorrectionState
     after: CorrectionState
     keys: tuple[int | str, ...]
 
@@ -532,7 +532,7 @@ class CorrectionWork:
             self.operation,
             self.attempt_id,
             self.source_binding,
-            state.to_json(),
+            state,
             next_state,
             tuple(keys),
         )
@@ -547,7 +547,7 @@ class CorrectionWork:
             self.source_binding,
         ):
             raise StaleCorrectionWork("correction proposal belongs to another operation")
-        before = CorrectionState.from_json(batch.before_json, self.operation)
+        before = batch.before
         if before.done:
             # A finished worker still verifies its fence before reporting completion.
             current = self._read_checkpoint()
@@ -564,7 +564,7 @@ class CorrectionWork:
                     ALGORITHM,
                     self.attempt_id,
                     self.source_binding,
-                    batch.before_json,
+                    batch.before.to_json(),
                 ),
             )
         ) as cursor:
@@ -592,7 +592,7 @@ class CorrectionWork:
             self.source_binding,
         ):
             raise StaleCorrectionWork("correction proposal belongs to another operation")
-        before = CorrectionState.from_json(batch.before_json, self.operation)
+        before = batch.before
         if before.done:
             # A finished worker still verifies its fence before reporting completion.
             current = self._read_header()

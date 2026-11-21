@@ -2328,7 +2328,11 @@ class EntryReplay:
         ),
     )
     def admit(
-        self, frame: JournalFrame, budget: ReplayBudget = _DEFAULT_BUDGET
+        self,
+        frame: JournalFrame,
+        budget: ReplayBudget = _DEFAULT_BUDGET,
+        *,
+        on_admitted: Callable[[], None] | None = None,
     ) -> ValidationSnapshot:
         before = self.ledger.load()
         if before.checkpoint.phase != "frame":
@@ -2357,6 +2361,8 @@ class EntryReplay:
 
         def receive(_snapshot: ValidationSnapshot) -> None:
             self._current = current
+            if on_admitted is not None:
+                on_admitted()
 
         return self._commit(before, apply, receive=receive)
 

@@ -1542,8 +1542,11 @@ class JournalValidationSession:
                     return self._progress(changed)
             if self._input.pending:
                 frame = self._input.frame(budget.octets)
-                after = self._replay.admit(frame, ReplayBudget(budget.rows, budget.octets))
-                self._input.admitted()
+                after = self._replay.admit(
+                    frame,
+                    ReplayBudget(budget.rows, budget.octets),
+                    on_admitted=self._input.admitted,
+                )
                 return self._progress(after)
             if self._input.complete:
                 return self._progress(self._move(before, "terminal"))

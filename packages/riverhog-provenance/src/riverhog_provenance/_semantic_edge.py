@@ -85,7 +85,7 @@ class EdgeBatch:
     binding: bytes
     attempt_id: str
     prefix: tuple[str, bytes, str]
-    before_json: str
+    before: EdgeState
     after: EdgeState
     graph_before: _Snapshot
     graph_plan: _Plan | None
@@ -709,7 +709,7 @@ class SemanticEdge:
                 after = replace(state, version=state.version + 1)
         if plan is not None and plan.before != graph:
             raise StaleSemanticEdge("graph changed during detached semantic planning")
-        return EdgeBatch(self.binding, self.attempt_id, prefix, state.to_json(), after, graph, plan)
+        return EdgeBatch(self.binding, self.attempt_id, prefix, state, after, graph, plan)
 
     @declare_growth(_composed_declaration("_apply"), delegates=_graph_delegates("_apply"))
     def _apply(self, batch: EdgeBatch) -> EdgeState:
@@ -717,7 +717,7 @@ class SemanticEdge:
             raise RuntimeError("semantic graph application requires an owner transaction")
         if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
             raise StaleSemanticEdge("semantic graph proposal belongs to another input")
-        before = EdgeState.from_json(batch.before_json)
+        before = batch.before
         if self._prefix() != batch.prefix or self._dag() != batch.graph_before:
             raise StaleSemanticEdge("semantic graph or accepted prefix changed before commit")
         self._subject()
@@ -731,7 +731,7 @@ class SemanticEdge:
                     self.attempt_id,
                     self.binding,
                     *batch.prefix,
-                    batch.before_json,
+                    batch.before.to_json(),
                     ALGORITHM,
                 ),
             )
@@ -750,7 +750,7 @@ class SemanticEdge:
                         self.attempt_id,
                         self.binding,
                         *batch.prefix,
-                        batch.before_json,
+                        batch.before.to_json(),
                         ALGORITHM,
                     ),
                 )

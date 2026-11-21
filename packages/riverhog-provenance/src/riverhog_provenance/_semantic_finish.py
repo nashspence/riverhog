@@ -162,7 +162,7 @@ class FinishBatch:
     binding: bytes
     attempt_id: str
     prefix: tuple[str, bytes, str]
-    before_json: str
+    before: FinishState
     after: FinishState
     writes: tuple[tuple[str, tuple[Any, ...]], ...]
 
@@ -782,9 +782,7 @@ class SemanticFinish:
                         )
         if not state.done:
             after = replace(after, version=state.version + 1)
-        return FinishBatch(
-            self.binding, self.attempt_id, prefix, state.to_json(), after, tuple(writes)
-        )
+        return FinishBatch(self.binding, self.attempt_id, prefix, state, after, tuple(writes))
 
     @declare_growth(_phase_declaration("_apply"))
     def _apply(self, batch: FinishBatch) -> FinishState:
@@ -792,7 +790,7 @@ class SemanticFinish:
             raise RuntimeError("child application requires an owner transaction")
         if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
             raise StaleSemanticFinish("semantic proposal belongs to another input")
-        before = FinishState.from_json(batch.before_json)
+        before = batch.before
         if before.done:
             current, prefix, _ = self._read_checkpoint()
             if current != before or prefix != batch.prefix:
@@ -811,7 +809,7 @@ class SemanticFinish:
                     self.attempt_id,
                     self.binding,
                     *batch.prefix,
-                    batch.before_json,
+                    batch.before.to_json(),
                     *batch.prefix,
                 ),
             )
@@ -826,7 +824,7 @@ class SemanticFinish:
         self._detached()
         if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
             raise StaleSemanticFinish("semantic proposal belongs to another input")
-        before = FinishState.from_json(batch.before_json)
+        before = batch.before
         if before.done:
             current, prefix, _ = self._load()
             if current != before or prefix != batch.prefix:

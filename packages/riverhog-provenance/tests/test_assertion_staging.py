@@ -739,7 +739,7 @@ def test_real_process_death_preserves_one_atomic_staging_unit(tmp_path, seam, re
             db.execute(
                 "DELETE FROM identities WHERE id IN (?,?)", (value.assertion_id, value.object_id)
             )
-        db.execute("UPDATE journal_assertion_staging SET checkpoint=?", (batch.before_json,))
+        db.execute("UPDATE journal_assertion_staging SET checkpoint=?", (batch.before.to_json(),))
         db.commit()
         assert contents(db) == before
     result = subprocess.run(

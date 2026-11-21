@@ -106,7 +106,7 @@ class PreparationBatch:
     attempt_id: str
     binding: bytes
     prefix: tuple[str, bytes, str]
-    before_json: str
+    before: PreparationState
     identity_before: tuple[Any, ...] | None
     row_budget: int
 
@@ -665,7 +665,7 @@ class EntryPreparation:
             if row_budget < 1:
                 raise EntryPreparationCapacity("byte budget does not admit a changed identity")
         return PreparationBatch(
-            self.attempt_id, self.binding, prefix, state.to_json(), identity_before, row_budget
+            self.attempt_id, self.binding, prefix, state, identity_before, row_budget
         )
 
     @declare_growth(_phase_declaration("_apply"))
@@ -674,7 +674,7 @@ class EntryPreparation:
             raise RuntimeError("child application requires an owner transaction")
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
             raise StaleEntryPreparation("preparation proposal belongs to another input")
-        state = PreparationState.from_json(batch.before_json)
+        state = batch.before
         if self._prefix() != batch.prefix:
             raise StaleEntryPreparation("accepted prefix changed before preparation commit")
         self._boundaries(state)
@@ -682,7 +682,7 @@ class EntryPreparation:
             "SELECT 1 FROM journal_entry_preparation WHERE singleton=1 AND algorithm=? "
             "AND attempt_id=? AND binding=? AND prefix_attempt=? AND "
             "prefix_binding=? AND prefix=? AND checkpoint=?",
-            (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before_json),
+            (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before.to_json()),
         )
         if row is None:
             raise StaleEntryPreparation("preparation checkpoint was replaced")
@@ -724,7 +724,7 @@ class EntryPreparation:
                         self.attempt_id,
                         self.binding,
                         *batch.prefix,
-                        batch.before_json,
+                        batch.before.to_json(),
                     ),
                 )
             ) as cursor:
@@ -736,7 +736,7 @@ class EntryPreparation:
         self._detached()
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
             raise StaleEntryPreparation("preparation proposal belongs to another input")
-        state = PreparationState.from_json(batch.before_json)
+        state = batch.before
         self.db.execute("BEGIN IMMEDIATE").close()
         try:
             state = self._apply(batch)

@@ -271,7 +271,7 @@ class TargetBatch:
     attempt_id: str
     source_binding: str
     prefix_json: str
-    before_json: str
+    before: TargetState
     after: TargetState
     rows: tuple[tuple[int, str, str], ...]
 
@@ -646,9 +646,7 @@ class CorrectionTargets:
                 admitted += octets
                 position += 1
         after = state if state.done else TargetState(phase, position, state.version + 1)
-        return TargetBatch(
-            self.attempt_id, self.source_binding, prefix, state.to_json(), after, tuple(rows)
-        )
+        return TargetBatch(self.attempt_id, self.source_binding, prefix, state, after, tuple(rows))
 
     @declare_growth(_phase_declaration("_apply"))
     def _apply(self, batch: TargetBatch) -> TargetState:
@@ -656,7 +654,7 @@ class CorrectionTargets:
             raise RuntimeError("child application requires an owner transaction")
         if (batch.attempt_id, batch.source_binding) != (self.attempt_id, self.source_binding):
             raise StaleCorrectionTargets("correction proposal belongs to another input")
-        before = TargetState.from_json(batch.before_json, self.count)
+        before = batch.before
         if before.done:
             current, prefix = self._read_checkpoint()
             if current != before or prefix != batch.prefix_json:
@@ -676,7 +674,7 @@ class CorrectionTargets:
                     self.source_binding,
                     self.count,
                     batch.prefix_json,
-                    batch.before_json,
+                    batch.before.to_json(),
                     batch.prefix_json,
                 ),
             )
@@ -708,7 +706,7 @@ class CorrectionTargets:
         self._detached()
         if (batch.attempt_id, batch.source_binding) != (self.attempt_id, self.source_binding):
             raise StaleCorrectionTargets("correction proposal belongs to another input")
-        before = TargetState.from_json(batch.before_json, self.count)
+        before = batch.before
         if before.done:
             current, prefix = self._header()
             if current != before or prefix != batch.prefix_json:

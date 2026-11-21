@@ -1246,7 +1246,7 @@ class GenericBatch:
     binding: bytes
     attempt_id: str
     prefix: tuple[str, bytes, str]
-    before_json: str
+    before: GenericState
     after: GenericState
     writes: tuple[tuple[str, tuple[Any, ...]], ...]
     edge: EdgeAdmission | EdgeBatch | None = None
@@ -1520,7 +1520,7 @@ class GenericSemantics:
             if batch.prior is not None:
                 values.extend(batch.prior)
         else:
-            values.append(batch.before_json)
+            values.append(batch.before.to_json())
             if batch.graph_plan is not None:
                 values.append(batch.graph_plan.work.encoded())
                 for _statement, parameters in batch.graph_plan.writes:
@@ -1684,7 +1684,7 @@ class GenericSemantics:
             edge = child.prepare(row_budget=step_budget)
             self._charge_edge(meter, edge, step_budget)
             after = replace(state, version=state.version + 1)
-            if edge.after.done and edge.after.to_json() == edge.before_json:
+            if edge.after.done and edge.after == edge.before:
                 try:
                     child.result()
                 except ValueError as error:
@@ -1793,7 +1793,7 @@ class GenericSemantics:
             )
             after = replace(state, phase=phase, version=state.version + 1)
         return GenericBatch(
-            self.binding, self.attempt_id, prefix, state.to_json(), after, tuple(writes), edge
+            self.binding, self.attempt_id, prefix, state, after, tuple(writes), edge
         )
 
     @declare_growth(_composed_declaration("_apply"), delegates=_edge_delegates("_apply"))
@@ -1805,14 +1805,14 @@ class GenericSemantics:
         if self._prefix() != batch.prefix:
             raise StaleGenericSemantics("accepted prefix changed before semantic commit")
         self._subject()
-        if batch.after == GenericState.from_json(batch.before_json):
+        if batch.after == batch.before:
             if batch.writes or batch.edge is not None:
                 raise RuntimeError("completed semantic proposal contains writes")
             row = self._one(
                 "SELECT 1 FROM journal_generic_semantics WHERE singleton=1 "
                 "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
                 "AND prefix_binding=? AND prefix=? AND checkpoint=?",
-                (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before_json),
+                (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before.to_json()),
             )
             if row is None:
                 raise StaleGenericSemantics("finished common semantic worker was replaced")
@@ -1828,7 +1828,7 @@ class GenericSemantics:
                     self.attempt_id,
                     self.binding,
                     *batch.prefix,
-                    batch.before_json,
+                    batch.before.to_json(),
                 ),
             )
         ) as cursor:
@@ -1837,7 +1837,7 @@ class GenericSemantics:
         if isinstance(batch.edge, EdgeAdmission):
             self._edge_work(batch.after, batch.prefix)._admit(batch.edge)
         elif isinstance(batch.edge, EdgeBatch):
-            before = GenericState.from_json(batch.before_json)
+            before = batch.before
             self._edge_work(before, batch.prefix)._apply(batch.edge)
         for sql, parameters in batch.writes:
             if sql == "@output":

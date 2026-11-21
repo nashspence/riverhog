@@ -146,7 +146,7 @@ class StageBatch:
     attempt_id: str
     binding: bytes
     prefix: tuple[str, bytes, str]
-    before_json: str
+    before: StageState
     after: StageState
     rows: tuple[StageRow, ...]
     observers: tuple[tuple[str, str], ...] = ()
@@ -766,7 +766,7 @@ class AssertionStaging:
                 self.attempt_id,
                 self.binding,
                 prefix,
-                state.to_json(),
+                state,
                 after,
                 (),
                 tuple(observers),
@@ -944,9 +944,7 @@ class AssertionStaging:
                 state.version + 1,
             )
         )
-        return StageBatch(
-            self.attempt_id, self.binding, prefix, state.to_json(), after, tuple(rows)
-        )
+        return StageBatch(self.attempt_id, self.binding, prefix, state, after, tuple(rows))
 
     @declare_growth(_phase_declaration("_apply"))
     def _apply(self, batch: StageBatch) -> StageState:
@@ -954,7 +952,7 @@ class AssertionStaging:
             raise RuntimeError("child application requires an owner transaction")
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
             raise StaleAssertionStaging("staging proposal belongs to another input")
-        before = StageState.from_json(batch.before_json, self.count)
+        before = batch.before
         if before.done:
             current, prefix = self._read_checkpoint()
             if current != before or prefix != batch.prefix:
@@ -975,7 +973,7 @@ class AssertionStaging:
                     self.binding,
                     self.count,
                     *batch.prefix,
-                    batch.before_json,
+                    batch.before.to_json(),
                     *batch.prefix,
                 ),
             )
@@ -1064,7 +1062,7 @@ class AssertionStaging:
         self._detached()
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
             raise StaleAssertionStaging("staging proposal belongs to another input")
-        before = StageState.from_json(batch.before_json, self.count)
+        before = batch.before
         if before.done:
             current, prefix = self._load()
             if current != before or prefix != batch.prefix:

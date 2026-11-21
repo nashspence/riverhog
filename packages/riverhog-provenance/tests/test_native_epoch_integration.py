@@ -152,3 +152,40 @@ def test_actual_retained_input_receiving_failure_requires_a_new_verified_executo
         result = resumed.result()
     with result, validate_journal(journal, catalog=catalog) as expected:
         assert result.materialize() == expected.materialize()
+
+
+@pytest.mark.parametrize("fail", [False, True])
+def test_actual_stream_buffer_receiving_stays_in_the_original_admission_epoch(
+    journal, catalog, monkeypatch, fail
+):
+    with JournalValidationSession((journal,), attempt_id=ATTEMPT, catalog=catalog) as session:
+        session.advance()
+        source = session._input
+        assert source.pending
+        admitted = type(source).admitted
+        failure = RuntimeError("original stream-buffer receiving failed")
+        events = []
+
+        def receive(owner):
+            assert owner is source
+            assert not session._store.db.in_transaction
+            assert not session._ledger.epoch.quiescent
+            assert session._replay._current is not None
+            events.append(1)
+            if fail:
+                raise failure
+            admitted(owner)
+
+        monkeypatch.setattr(type(source), "admitted", receive)
+        if fail:
+            with pytest.raises(RuntimeError) as caught:
+                session.advance()
+            assert caught.value is failure
+            assert source.pending and not session._ledger.epoch.quiescent
+            with pytest.raises(RuntimeError, match="requires reconstruction"):
+                session.progress()
+        else:
+            session.advance()
+            assert not source.pending and session._ledger.epoch.quiescent
+        assert events == [1]
+    assert session.storage_received

@@ -22,6 +22,8 @@ from test_generic_semantics import connect, create, finish, position, subject, w
 def store_batch(batch, path):
     payload = asdict(batch)
     payload["after"] = batch.after.to_json()
+    if isinstance(batch, GenericBatch):
+        payload["before"] = batch.before.to_json()
     path.write_text(
         json.dumps(
             {"admission": isinstance(batch, GenericAdmission), "value": payload},
@@ -43,6 +45,7 @@ def load_batch(path):
             value["prior"] = tuple(value["prior"])
         return GenericAdmission(**value)
     assert value["edge"] is None
+    value["before"] = GenericState.from_json(value["before"])
     value["writes"] = tuple((sql, tuple(parameters)) for sql, parameters in value["writes"])
     return GenericBatch(**value)
 
