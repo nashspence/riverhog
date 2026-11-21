@@ -34,6 +34,7 @@ dependencies = [
   "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-growth-contracts>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
+  "riverhog-recovery-policy>=0.1,<0.2",
   "riverhog-provenance>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
   "riverhog-storage-adapter-protocol>=0.1,<0.2",
@@ -63,6 +64,7 @@ riverhog-archive-contracts = { workspace = true }
 riverhog-canonical-json = { workspace = true }
 riverhog-growth-contracts = { workspace = true }
 riverhog-protocol = { workspace = true }
+riverhog-recovery-policy = { workspace = true }
 riverhog-provenance = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 riverhog-storage-adapter-protocol = { workspace = true }

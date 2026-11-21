@@ -39,6 +39,9 @@ from ._correction_targets import CorrectionTargets
 from ._entry_preparation import EntryPreparation
 from ._generic_semantics import GenericAtom, GenericSemantics
 from ._journal_prefix import JournalPrefix, PreparedEntry
+from ._native_epoch import EpochContext, observe_preparation
+from ._native_frame import NativeFrame, own_frame
+from ._native_work import WorkAmount
 from ._online_dag import OnlineDag, _Snapshot
 from ._semantic_finish import SemanticFinish
 from ._semantic_program import ROW_TYPES, Nodes
@@ -2222,6 +2225,7 @@ class EntryReplay:
         self._current: _CurrentEntry | None = None
         self._spent = 0
         self._budget = ReplayBudget()
+        self.epoch = ledger.epoch
 
     def _one(self, sql: str, values: tuple[Any, ...] = ()) -> Any:
         with closing(self.db.execute(sql, values)) as cursor:
@@ -2230,6 +2234,7 @@ class EntryReplay:
     def _start(self, before: ValidationSnapshot, budget: ReplayBudget) -> None:
         if self.certificates is not None and self.certificates.binding != self.certificate_binding:
             raise StaleValidationCheckpoint("entry replay certificate manifest changed")
+        self.ledger.epoch.require_quiescent()
         self._budget = budget
         # Reserve actual repeated fixed-shape owner/source/checkpoint metadata.
         prefix_octets = sum(
@@ -2251,7 +2256,9 @@ class EntryReplay:
             raise EntryReplayCapacity("entry replay cannot admit fixed owner/child control")
         return left
 
+    @observe_preparation
     def _cache(self, frame: JournalFrame) -> _CurrentEntry:
+        frame = own_frame(frame, self.epoch)
         prepared = self.prefix.prepare(frame, self.catalog)
         current = _CurrentEntry(
             frame,
@@ -2263,10 +2270,10 @@ class EntryReplay:
                 require_profiles=self.require_profiles,
             ),
         )
-        self._current = current
         return current
 
     @declare_growth(_restoration_declaration(), delegates=(("prefix", JournalPrefix.prepare),))
+    @observe_preparation
     def _entry(self, state: ValidationCheckpoint) -> _CurrentEntry:
         if self._current is not None:
             if self._current.source.sha256 != state.frame_sha256:
@@ -2283,27 +2290,37 @@ class EntryReplay:
             raise RuntimeError("retained entry atom differs from its parent checkpoint")
         self._claim(metadata[2])
         value = self._one("SELECT value FROM journal_validation_frame WHERE singleton=1")
-        if (
-            value is None
-            or type(value[0]) is not bytes
-            or hashlib.sha256(value[0]).hexdigest() != state.frame_sha256
-        ):
+        if value is None or type(value[0]) is not bytes:
             raise RuntimeError("retained entry atom is missing or changed")
-        return self._cache(JournalFrame(value[0]))
+        frame = NativeFrame(value[0], self.epoch)
+        if frame.sha256 != state.frame_sha256:
+            raise RuntimeError("retained entry atom is missing or changed")
+        self._current = self._cache(frame)
+        return self._current
 
     def _commit(
-        self, before: ValidationSnapshot, mutate: Callable[[], ValidationCheckpoint]
+        self,
+        before: ValidationSnapshot,
+        mutate: Callable[[], ValidationCheckpoint],
+        *,
+        receive: Callable[[ValidationSnapshot], None] = lambda _state: None,
+        admission: WorkAmount | None = None,
     ) -> ValidationSnapshot:
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
+            epoch.require(self.db)
             self.ledger._fence(before)
             after = mutate()
-            result = self.ledger._publish(before, after)
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return result
+            return self.ledger._publish(before, after)
+
+        def received(snapshot: ValidationSnapshot) -> None:
+            self.ledger._receive(snapshot)
+            receive(snapshot)
+
+        return self.ledger.epoch.apply(
+            apply,
+            receive=received,
+            admission=self.ledger._application_admission() + (admission or WorkAmount()),
+        )
 
     def _move(self, before: ValidationSnapshot, phase: str) -> ValidationSnapshot:
         after = replace(
@@ -2325,7 +2342,11 @@ class EntryReplay:
         ),
     )
     def admit(
-        self, frame: JournalFrame, budget: ReplayBudget = _DEFAULT_BUDGET
+        self,
+        frame: JournalFrame,
+        budget: ReplayBudget = _DEFAULT_BUDGET,
+        *,
+        on_admitted: Callable[[], None] | None = None,
     ) -> ValidationSnapshot:
         before = self.ledger.load()
         if before.checkpoint.phase != "frame":
@@ -2352,12 +2373,18 @@ class EntryReplay:
             ).close()
             return after
 
-        return self._commit(before, apply)
+        def receive(_snapshot: ValidationSnapshot) -> None:
+            self._current = current
+            if on_admitted is not None:
+                on_admitted()
+
+        return self._commit(before, apply, receive=receive)
 
     @declare_growth(
         _row_declaration(),
         delegates=(("admission", read_changed_assertion), ("index", Nodes.__init__)),
     )
+    @observe_preparation
     def _row(self, state: ValidationCheckpoint, current: _CurrentEntry) -> dict[str, Any]:
         if (
             current.row_key == state.row_key
@@ -2366,7 +2393,7 @@ class EntryReplay:
         ):
             return current.row
         selected = read_changed_assertion(
-            self.db, after=state.row_after, byte_budget=self._remaining()
+            self.db, after=state.row_after, byte_budget=self._remaining(), work=self.epoch.work
         )
         if (
             selected is None
@@ -2388,13 +2415,20 @@ class EntryReplay:
             current.child_kind == kind
             and current.child_id == identity
             and current.child is not None
+            and current.child.epoch is self.ledger.epoch
         ):
             return current.child
         if kind == "targets":
-            child: _Child = CorrectionTargets(self.db, attempt_id=identity, frame=current.frame)
+            child: _Child = CorrectionTargets(
+                self.db, attempt_id=identity, frame=current.frame, epoch=self.ledger.epoch
+            )
         elif kind in {"retire", "seed"}:
             child = CorrectionWork(
-                self.db, operation=kind, attempt_id=identity, source_binding=current.source.sha256
+                self.db,
+                operation=kind,
+                attempt_id=identity,
+                source_binding=current.source.sha256,
+                epoch=self.ledger.epoch,
             )
         elif kind in {"generic", "row"}:
             self._row(state, current)
@@ -2408,6 +2442,7 @@ class EntryReplay:
                 catalog=self.catalog,
                 operation=kind,
                 certificates=self.certificates,
+                epoch=self.ledger.epoch,
             )
         elif kind == "staging":
             child = AssertionStaging(
@@ -2416,6 +2451,7 @@ class EntryReplay:
                 frame=current.frame,
                 catalog_sha256=self.prefix.catalog_sha256,
                 require_profiles=self.require_profiles,
+                epoch=self.ledger.epoch,
             )
         elif kind == "entry":
             child = EntryPreparation(
@@ -2424,6 +2460,7 @@ class EntryReplay:
                 frame=current.frame,
                 catalog_sha256=self.prefix.catalog_sha256,
                 require_profiles=self.require_profiles,
+                epoch=self.ledger.epoch,
             )
         elif kind == "finish":
             child = SemanticFinish(
@@ -2432,6 +2469,7 @@ class EntryReplay:
                 frame=current.frame,
                 catalog_sha256=self.prefix.catalog_sha256,
                 require_profiles=self.require_profiles,
+                epoch=self.ledger.epoch,
             )
         else:
             raise RuntimeError("unknown native entry child")
@@ -2484,7 +2522,10 @@ class EntryReplay:
             else:
                 batch = child.prepare(row_budget=self._budget.rows, byte_budget=self._remaining())
 
+        changed: Any = None
+
         def apply() -> ValidationCheckpoint:
+            nonlocal changed
             changed = child._admit(batch) if admission else child._apply(batch)
             return replace(
                 state,
@@ -2494,7 +2535,29 @@ class EntryReplay:
                 child_sha256=_digest(changed),
             )
 
-        return self._commit(before, apply)
+        def receive(_snapshot: ValidationSnapshot) -> None:
+            if changed is None:
+                raise RuntimeError("Native child lost its original pending control")
+            child._control.receive(changed)
+            if isinstance(child, GenericSemantics) and not admission:
+                child._receive_edge(batch)
+
+        application_work = (
+            child._application_admission(batch)
+            if isinstance(
+                child,
+                (
+                    EntryPreparation,
+                    CorrectionTargets,
+                    AssertionStaging,
+                    SemanticFinish,
+                    CorrectionWork,
+                    GenericSemantics,
+                ),
+            )
+            else None
+        )
+        return self._commit(before, apply, receive=receive, admission=application_work)
 
     @staticmethod
     def _graph_digest(graph: OnlineDag, after: _Snapshot | None = None) -> str:
@@ -2513,12 +2576,14 @@ class EntryReplay:
     def _graph_step(self, before: ValidationSnapshot) -> ValidationSnapshot:
         state = before.checkpoint
         kind, phase = state.phase.split("-", 1)
-        row = self._one("SELECT run_id FROM dag_runs WHERE kind=?", (kind,))
-        if row is None:
-            raise RuntimeError("entry replay lost its active graph")
-        graph = OnlineDag(self.db, kind, row[0])
+        with self.epoch.preparing():
+            row = self._one("SELECT run_id FROM dag_runs WHERE kind=?", (kind,))
+            if row is None:
+                raise RuntimeError("entry replay lost its active graph")
+            graph = OnlineDag(self.db, kind, row[0], epoch=self.epoch)
         if phase == "replace":
-            replacement = graph._prepare_replacement(uuid4().hex)
+            with self.epoch.preparing():
+                replacement = graph._prepare_replacement(uuid4().hex)
 
             def apply() -> ValidationCheckpoint:
                 new = graph._apply_replacement(replacement)
@@ -2530,12 +2595,20 @@ class EntryReplay:
                     child_sha256=self._graph_digest(new, replacement.after),
                 )
 
-            result = self._commit(before, apply)
-            self.store._dag_runs[kind] = replacement.run_id
-            return result
-        if state.child_id != graph.run_id or state.child_sha256 != self._graph_digest(graph):
+            def receive(_snapshot: ValidationSnapshot) -> None:
+                self.store._dag_runs[kind] = replacement.run_id
+
+            return self._commit(
+                before, apply, receive=receive, admission=graph._application_admission(replacement)
+            )
+        with self.epoch.preparing():
+            stale = state.child_id != graph.run_id or state.child_sha256 != self._graph_digest(
+                graph
+            )
+        if stale:
             raise StaleValidationCheckpoint("retired graph differs from its parent checkpoint")
-        batch = graph._prepare_retirement(self._budget.rows, byte_budget=self._remaining())
+        with self.epoch.preparing():
+            batch = graph._prepare_retirement(self._budget.rows, byte_budget=self._remaining())
         if batch is None:
             return self._move(
                 before, "specialization-replace" if kind == "derivation" else "seed-admission"
@@ -2550,7 +2623,7 @@ class EntryReplay:
                 child_sha256=self._graph_digest(graph, batch.after),
             )
 
-        return self._commit(before, retire)
+        return self._commit(before, retire, admission=graph._application_admission(batch))
 
     @declare_growth(
         _publication_declaration(),
@@ -2564,27 +2637,31 @@ class EntryReplay:
     def _publish(self, before: ValidationSnapshot, current: _CurrentEntry) -> ValidationSnapshot:
         "Atomically accept one checked native frame and replace its quarantine checkpoint."
         state = before.checkpoint
-        publication = self.prefix.prepare_publication(current.prepared)
+        with self.epoch.preparing():
+            publication = self.prefix.prepare_publication(current.prepared)
         after = ValidationCheckpoint(
             version=state.version + 1, frame_ordinal=state.frame_ordinal + 1
         )
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
+
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
+            epoch.require(self.db)
             self.ledger._fence(before)
             accepted = self.prefix._apply(publication)
             self.db.execute("DELETE FROM journal_validation_frame WHERE singleton=1").close()
-            result = self.ledger._publish(
+            return self.ledger._publish(
                 before,
                 after,
                 prefix=(self.prefix.attempt_id, self.prefix.binding, accepted.to_json()),
             )
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        self.store.frame_count = after.frame_ordinal
-        self._current = None
-        return result
+
+        def receive(snapshot: ValidationSnapshot) -> None:
+            self.ledger._receive(snapshot)
+            self.store.frame_count = after.frame_ordinal
+            self._current = None
+
+        return self.ledger.epoch.apply(
+            apply, receive=receive, admission=self.ledger._application_admission()
+        )
 
     @declare_growth(
         _row_transition_declaration("admission", _row),
@@ -2592,9 +2669,10 @@ class EntryReplay:
     )
     def _admit_row(self, before: ValidationSnapshot, current: _CurrentEntry) -> ValidationSnapshot:
         state = before.checkpoint
-        selected = read_changed_assertion(
-            self.db, after=state.row_after, byte_budget=self._remaining()
-        )
+        with self.epoch.preparing():
+            selected = read_changed_assertion(
+                self.db, after=state.row_after, byte_budget=self._remaining(), work=self.epoch.work
+            )
         if selected is None:
             return self._move(before, "finish-admission")
         if selected.raw is None:
@@ -2640,9 +2718,10 @@ class EntryReplay:
                 child_sha256=None,
             )
 
-        result = self._commit(before, lifecycle)
-        current.row_key, current.row_sha256, current.row, current.atom = None, None, None, None
-        return result
+        def receive(_snapshot: ValidationSnapshot) -> None:
+            current.row_key, current.row_sha256, current.row, current.atom = None, None, None, None
+
+        return self._commit(before, lifecycle, receive=receive)
 
     @declare_growth(
         _advance_declaration(_entry, _admit_row, _lifecycle, _child_step, _graph_step, _publish),
@@ -2666,7 +2745,8 @@ class EntryReplay:
         if state.phase == "lifecycle":
             return self._lifecycle(before, current)
         if state.phase == "recording":
-            self.store._check_entry_recording(current.document)
+            with self.epoch.preparing():
+                self.store._check_entry_recording(current.document)
             return self._move(before, "publish")
         if state.phase == "publish":
             return self._publish(before, current)

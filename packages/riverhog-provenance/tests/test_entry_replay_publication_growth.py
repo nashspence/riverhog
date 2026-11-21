@@ -274,12 +274,13 @@ def test_advance_uses_the_atomic_publication_boundary(
             calls = []
 
             def publish(before, cached):
-                calls.append((before, cached.prepared.frame))
+                assert cached.prepared.frame is cached.frame
+                calls.append((before, cached.frame.json_bytes))
                 return real_publish(before, cached)
 
             monkeypatch.setattr(current, "_publish", publish)
             assert current.advance().checkpoint == case["after"]
-            assert calls == [(case["before"], case["candidate"])]
+            assert calls == [(case["before"], case["candidate"].json_bytes)]
             assert_published(current, case)
 
 
@@ -302,5 +303,8 @@ def test_failed_publication_rolls_back_all_writes_and_retains_cache(
                     current._publish(case["before"], current._current)
             assert not store.db.in_transaction and snapshot(store.db) == case["original"]
             assert current._current is case["cached"]
-            current._publish(case["before"], current._current)
+            with pytest.raises(RuntimeError, match="requires reconstruction"):
+                current._publish(case["before"], current._current)
+            current = owner(store, catalog, case["source_binding"], case["epoch"])
+            current.advance()
             assert_published(current, case)

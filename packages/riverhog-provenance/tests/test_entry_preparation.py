@@ -639,7 +639,7 @@ def preparation_phase_samples(tmp_path, operation):
                 with db.observe() as metrics:
                     batch = current.prepare(row_budget=budget, byte_budget=byte_budget)
                 assert not db.in_transaction and snapshot(db) == before
-                assert batch.before_json == state.to_json() and batch.prefix == prefix
+                assert batch.before == state and batch.prefix == prefix
             else:
                 batch = current.prepare(row_budget=budget, byte_budget=byte_budget)
                 db.execute("BEGIN IMMEDIATE").close()

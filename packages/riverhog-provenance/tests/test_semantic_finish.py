@@ -15,7 +15,6 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import journal_store, validate_journal
 from riverhog_provenance._journal_prefix import PrefixState
 from riverhog_provenance._semantic_finish import (
-    FinishState,
     SemanticFinish,
     SemanticFinishCapacity,
     StaleSemanticFinish,
@@ -540,7 +539,7 @@ def test_native_wrapper_runs_the_private_phase_without_publishing_early(
         state = original_apply(self, batch)
         assert self.db.execute("SELECT * FROM journal_prefix").fetchall() == prefix
         assert self.db.in_transaction
-        observed.append(FinishState.from_json(batch.before_json).phase)
+        observed.append(batch.before.phase)
         return state
 
     monkeypatch.setattr(SemanticFinish, "prepare", prepare)
@@ -625,7 +624,7 @@ def test_real_process_death_keeps_a_complete_sqlite_unit(tmp_path, phase, seam):
         current.commit(batch)
         expected = contents(db)
     with closing(connect(path)) as db:
-        db.execute("UPDATE journal_semantic_finish SET checkpoint=?", (batch.before_json,))
+        db.execute("UPDATE journal_semantic_finish SET checkpoint=?", (batch.before.to_json(),))
         if phase == "content":
             db.execute("DELETE FROM fixities")
         db.commit()
@@ -835,7 +834,7 @@ def semantic_finish_samples(tmp_path, measured_operation, *, samples):
                 if measured_operation == "prepare":
                     with db.observe() as metrics:
                         batch = current.prepare(row_budget=quantum, byte_budget=admission)
-                    assert not db.in_transaction and batch.before_json == current.load().to_json()
+                    assert not db.in_transaction and batch.before == current.load()
                 elif measured_operation == "_apply":
                     batch = current.prepare(row_budget=quantum, byte_budget=admission)
                     db.execute("BEGIN IMMEDIATE").close()

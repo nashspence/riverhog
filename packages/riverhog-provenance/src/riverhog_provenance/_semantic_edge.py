@@ -14,6 +14,7 @@ import sqlite3
 from collections.abc import Callable
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -34,6 +35,9 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_control import ChildControl
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from ._online_dag import OnlineDag, _Plan, _Snapshot, _Work
 from ._semantic_source import SemanticSource
 from .errors import ProvenanceValidationError
@@ -55,8 +59,12 @@ class EdgeState:
     def done(self) -> bool:
         return self.phase == "done"
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes({"phase": self.phase, "version": str(self.version)}).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str) -> EdgeState:
@@ -85,7 +93,7 @@ class EdgeBatch:
     binding: bytes
     attempt_id: str
     prefix: tuple[str, bytes, str]
-    before_json: str
+    before: EdgeState
     after: EdgeState
     graph_before: _Snapshot
     graph_plan: _Plan | None
@@ -477,6 +485,7 @@ class SemanticEdge:
         object_id: str,
         source: str,
         target: str,
+        epoch: EpochContext | None = None,
     ) -> None:
         if type(attempt_id) is not str or not attempt_id:
             raise ValueError("an explicit semantic graph attempt is required")
@@ -492,7 +501,8 @@ class SemanticEdge:
             target,
         )
         self.sequence, self.journal_id = source_binding.sequence, source_binding.journal_id
-        self.checker = OnlineDag(db, kind, run_id)
+        self.epoch = bind_epoch(self.db, epoch)
+        self.checker = OnlineDag(db, kind, run_id, epoch=self.epoch)
         self.binding = canonical_json_bytes(
             {
                 "algorithm": ALGORITHM,
@@ -507,10 +517,25 @@ class SemanticEdge:
                 "target": target,
             }
         )
+        self._control = ChildControl[EdgeState](self.epoch)
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        self.epoch.account(WorkAmount(rows=1))
         with closing(self.db.execute(sql, parameters)) as rows:
             return rows.fetchone()
+
+    def _write(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1))
+        return self.db.execute(sql, parameters)
+
+    @staticmethod
+    def _application_admission(batch: EdgeAdmission | EdgeBatch) -> WorkAmount:
+        if isinstance(batch, EdgeAdmission):
+            return WorkAmount(rows=5)
+        graph = batch.graph_plan
+        return WorkAmount(rows=4) + (
+            WorkAmount() if graph is None else OnlineDag._application_admission(graph)
+        )
 
     def _detached(self) -> None:
         if self.db.in_transaction:
@@ -583,6 +608,7 @@ class SemanticEdge:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> EdgeAdmission:
         self._detached()
         prefix = self._prefix()
@@ -622,7 +648,7 @@ class SemanticEdge:
         ):
             raise StaleSemanticEdge("semantic graph admission was superseded")
         self._subject()
-        self.db.execute(
+        self._write(
             "INSERT INTO journal_semantic_edges VALUES (?,?,?,?,?,?,?,?) "
             "ON CONFLICT(kind) DO UPDATE SET algorithm=excluded.algorithm, "
             "attempt_id=excluded.attempt_id,binding=excluded.binding, "
@@ -675,7 +701,8 @@ class SemanticEdge:
         if row[1:4] != prefix:
             raise StaleSemanticEdge("accepted prefix changed during semantic graph work")
         self._subject()
-        state, graph = EdgeState.from_json(row[4]), self._dag()
+        state = self._control.get(row[4]) or EdgeState.from_json(row[4])
+        graph = self._dag()
         operation = self._operation(prefix)
         if state.phase == "start":
             if graph.work.phase not in {"idle", "complete"} or graph.work.operation_id == operation:
@@ -689,10 +716,12 @@ class SemanticEdge:
             raise StaleSemanticEdge("semantic graph continuation changed")
         return state, prefix, graph
 
+    @observe_preparation
     def load(self) -> EdgeState:
         return self._load()[0]
 
     @declare_growth(_composed_declaration("prepare"), delegates=_graph_delegates("prepare"))
+    @observe_preparation
     def prepare(self, *, row_budget: int = 64) -> EdgeBatch:
         OnlineDag._budget(row_budget)
         state, prefix, graph = self._load()
@@ -709,7 +738,7 @@ class SemanticEdge:
                 after = replace(state, version=state.version + 1)
         if plan is not None and plan.before != graph:
             raise StaleSemanticEdge("graph changed during detached semantic planning")
-        return EdgeBatch(self.binding, self.attempt_id, prefix, state.to_json(), after, graph, plan)
+        return EdgeBatch(self.binding, self.attempt_id, prefix, state, after, graph, plan)
 
     @declare_growth(_composed_declaration("_apply"), delegates=_graph_delegates("_apply"))
     def _apply(self, batch: EdgeBatch) -> EdgeState:
@@ -717,7 +746,7 @@ class SemanticEdge:
             raise RuntimeError("semantic graph application requires an owner transaction")
         if (batch.binding, batch.attempt_id) != (self.binding, self.attempt_id):
             raise StaleSemanticEdge("semantic graph proposal belongs to another input")
-        before = EdgeState.from_json(batch.before_json)
+        before = batch.before
         if self._prefix() != batch.prefix or self._dag() != batch.graph_before:
             raise StaleSemanticEdge("semantic graph or accepted prefix changed before commit")
         self._subject()
@@ -731,7 +760,7 @@ class SemanticEdge:
                     self.attempt_id,
                     self.binding,
                     *batch.prefix,
-                    batch.before_json,
+                    batch.before.to_json(),
                     ALGORITHM,
                 ),
             )
@@ -739,7 +768,7 @@ class SemanticEdge:
                 raise StaleSemanticEdge("finished semantic graph worker was replaced")
         else:
             with closing(
-                self.db.execute(
+                self._write(
                     "UPDATE journal_semantic_edges SET checkpoint=? WHERE kind=? "
                     "AND attempt_id=? "
                     "AND binding=? AND prefix_attempt=? AND prefix_binding=? AND prefix=? "
@@ -750,7 +779,7 @@ class SemanticEdge:
                         self.attempt_id,
                         self.binding,
                         *batch.prefix,
-                        batch.before_json,
+                        batch.before.to_json(),
                         ALGORITHM,
                     ),
                 )
@@ -782,6 +811,7 @@ class SemanticEdge:
         return self.commit(self.prepare(row_budget=row_budget))
 
     @declare_growth(_terminal_declaration())
+    @observe_preparation
     def result(self) -> None:
         state, _prefix, graph = self._load()
         if not state.done:

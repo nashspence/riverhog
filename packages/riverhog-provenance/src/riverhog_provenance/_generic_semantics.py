@@ -15,6 +15,7 @@ import sqlite3
 from collections.abc import Callable, Iterator, Mapping, MutableMapping, MutableSet
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -45,6 +46,9 @@ from ._description_projection import read_description_metadata
 from ._fixity_projection import read_fixity_metadata
 from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
+from ._native_control import ChildControl
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from ._observation_coverage import ObservationCoverage
 from ._observation_projection import has_observer, read_observation_metadata
 from ._relation_projection import read_relation_metadata
@@ -130,7 +134,8 @@ class GenericState:
     def done(self) -> bool:
         return self.phase in {"done", "rejected"}
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {
                 "phase": self.phase,
@@ -142,6 +147,9 @@ class GenericState:
                 "edge_run": self.edge_run,
             }
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str) -> GenericState:
@@ -1246,7 +1254,7 @@ class GenericBatch:
     binding: bytes
     attempt_id: str
     prefix: tuple[str, bytes, str]
-    before_json: str
+    before: GenericState
     after: GenericState
     writes: tuple[tuple[str, tuple[Any, ...]], ...]
     edge: EdgeAdmission | EdgeBatch | None = None
@@ -1263,6 +1271,7 @@ class GenericSemantics:
         catalog: ContractCatalog,
         operation: str = "generic",
         certificates: JournalGraphCertificates | None = None,
+        epoch: EpochContext | None = None,
     ) -> None:
         if type(attempt_id) is not str or not attempt_id:
             raise ValueError("an explicit generic semantic attempt is required")
@@ -1313,10 +1322,51 @@ class GenericSemantics:
                 else self.certificate_binding.checkpoint_sha256(),
             }
         )
+        self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[GenericState](self.epoch)
+        self._edge: SemanticEdge | None = None
+        self._edge_key: tuple[str, str, tuple[str, bytes, str]] | None = None
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        self.epoch.account(WorkAmount(rows=1))
         with closing(self.db.execute(sql, parameters)) as rows:
             return rows.fetchone()
+
+    def _many(self, sql: str, parameters: tuple[Any, ...], *, limit: int) -> list[tuple[Any, ...]]:
+        self._detached()
+        original = self.epoch.work
+        admitted = None if original is None else original.reserve(WorkAmount(rows=1 + limit))
+        try:
+            if admitted is not None:
+                admitted.consume(WorkAmount(rows=1))
+            with closing(self.db.execute(sql, parameters)) as cursor:
+                rows = cursor.fetchall()
+            if len(rows) > limit:
+                raise RuntimeError("semantic cleanup exceeds its original bounded row admission")
+            if admitted is not None:
+                admitted.consume(WorkAmount(rows=len(rows)))
+            return rows
+        finally:
+            if admitted is not None:
+                admitted.close()
+
+    def _write(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1))
+        return self.db.execute(sql, parameters)
+
+    @staticmethod
+    def _application_admission(batch: GenericAdmission | GenericBatch) -> WorkAmount:
+        if isinstance(batch, GenericAdmission):
+            return WorkAmount(rows=8)
+        edge = batch.edge
+        nested = (
+            WorkAmount()
+            if edge is None
+            else (WorkAmount(rows=1) + SemanticEdge._application_admission(edge))
+        )
+        # Output insertion/verification and rollback each need at most three
+        # one-row operations. Unused admission stays with the original epoch.
+        return WorkAmount(rows=3 + 3 * len(batch.writes)) + nested
 
     def _detached(self) -> None:
         if self.db.in_transaction:
@@ -1382,6 +1432,7 @@ class GenericSemantics:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> GenericAdmission:
         self._detached()
         prefix = self._prefix()
@@ -1416,7 +1467,7 @@ class GenericSemantics:
             raise StaleGenericSemantics("common semantic admission was superseded")
         self._subject()
         self._require_reclaimed()
-        self.db.execute(
+        self._write(
             "INSERT INTO journal_generic_semantics VALUES (1,?,?,?,?,?,?,?) "
             "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
             "attempt_id=excluded.attempt_id,binding=excluded.binding, "
@@ -1424,7 +1475,7 @@ class GenericSemantics:
             "prefix=excluded.prefix,checkpoint=excluded.checkpoint",
             (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.after.to_json()),
         ).close()
-        self.db.execute(
+        self._write(
             "INSERT INTO generic_semantic_frames VALUES (?,?,?,?)",
             (self.attempt_id, 0, None, _encode_frame(Frame(self.operation, 0))),
         ).close()
@@ -1464,8 +1515,10 @@ class GenericSemantics:
         if row[1:4] != prefix:
             raise StaleGenericSemantics("accepted prefix changed during common semantics")
         self._subject()
-        return GenericState.from_json(row[4]), prefix
+        state = self._control.get(row[4]) or GenericState.from_json(row[4])
+        return state, prefix
 
+    @observe_preparation
     def load(self) -> GenericState:
         return self._load()[0]
 
@@ -1493,7 +1546,11 @@ class GenericSemantics:
                 }
             )
         ).hexdigest()
-        return SemanticEdge(
+        key = state.edge_run, attempt, prefix
+        if self._edge_key == key and self._edge is not None and self._edge.epoch is self.epoch:
+            self._edge.checker._check_algorithm()
+            return self._edge
+        child = SemanticEdge(
             self.db,
             kind=self.kind,
             run_id=state.edge_run,
@@ -1503,7 +1560,24 @@ class GenericSemantics:
             object_id=self.object_id,
             source=value[left]["object_id"],
             target=value[right]["object_id"],
+            epoch=self.epoch,
         )
+        self._edge_key, self._edge = key, child
+        return child
+
+    def _receive_edge(self, batch: GenericBatch) -> None:
+        self.epoch.require_receiving(self.db)
+        edge = batch.edge
+        if edge is None:
+            return
+        child = self._edge
+        if (
+            child is None
+            or child.epoch is not self.epoch
+            or (child.attempt_id, child.binding) != (edge.attempt_id, edge.binding)
+        ):
+            raise RuntimeError("Native semantic edge lost its original child receiving")
+        child._control.receive(edge.after)
 
     @staticmethod
     def _charge_edge(meter: _Meter, batch: EdgeAdmission | EdgeBatch, row_budget: int) -> None:
@@ -1520,7 +1594,7 @@ class GenericSemantics:
             if batch.prior is not None:
                 values.extend(batch.prior)
         else:
-            values.append(batch.before_json)
+            values.append(batch.before.to_json())
             if batch.graph_plan is not None:
                 values.append(batch.graph_plan.work.encoded())
                 for _statement, parameters in batch.graph_plan.writes:
@@ -1551,6 +1625,7 @@ class GenericSemantics:
         )
 
     @declare_growth(_composed_declaration("prepare"), delegates=_edge_delegates("prepare"))
+    @observe_preparation
     def prepare(
         self, *, step_budget: int = MAX_STEPS, byte_budget: int = _DEFAULT_BYTES
     ) -> GenericBatch:
@@ -1593,6 +1668,7 @@ class GenericSemantics:
                     dict(outputs),
                 )
                 try:
+                    self.epoch.account(WorkAmount(rows=1))
                     program.step()
                 except (GenericSemanticsCapacity, ValueError, _GraphRequest) as error:
                     stack.top, stack.serial, stack.cache, stack.changes = snapshot[:4]
@@ -1684,7 +1760,7 @@ class GenericSemantics:
             edge = child.prepare(row_budget=step_budget)
             self._charge_edge(meter, edge, step_budget)
             after = replace(state, version=state.version + 1)
-            if edge.after.done and edge.after.to_json() == edge.before_json:
+            if edge.after.done and edge.after == edge.before:
                 try:
                     child.result()
                 except ValueError as error:
@@ -1709,14 +1785,12 @@ class GenericSemantics:
                     )
                     after = replace(after, phase="walk", edge_run=None)
         elif state.phase == "reject-frames":
-            with closing(
-                self.db.execute(
-                    "SELECT frame_id FROM generic_semantic_frames WHERE attempt_id=? "
-                    "ORDER BY frame_id LIMIT ?",
-                    (self.attempt_id, step_budget + 1),
-                )
-            ) as rows:
-                values = rows.fetchall()
+            values = self._many(
+                "SELECT frame_id FROM generic_semantic_frames WHERE attempt_id=? "
+                "ORDER BY frame_id LIMIT ?",
+                (self.attempt_id, step_budget + 1),
+                limit=step_budget + 1,
+            )
             for (identity,) in values[:step_budget]:
                 try:
                     meter.claim(_FRAME_OCTETS)
@@ -1736,14 +1810,12 @@ class GenericSemantics:
                 version=state.version + 1,
             )
         elif state.phase in {"keys", "reject-keys"}:
-            with closing(
-                self.db.execute(
-                    "SELECT id,length(key) FROM generic_semantic_keys "
-                    "INDEXED BY generic_semantic_cleanup WHERE attempt_id=? ORDER BY id LIMIT ?",
-                    (self.attempt_id, step_budget + 1),
-                )
-            ) as rows:
-                values = rows.fetchall()
+            values = self._many(
+                "SELECT id,length(key) FROM generic_semantic_keys "
+                "INDEXED BY generic_semantic_cleanup WHERE attempt_id=? ORDER BY id LIMIT ?",
+                (self.attempt_id, step_budget + 1),
+                limit=step_budget + 1,
+            )
             for identity, length in values[:step_budget]:
                 try:
                     meter.claim(length + 512)
@@ -1764,15 +1836,13 @@ class GenericSemantics:
             )
             after = replace(state, phase=phase, version=state.version + 1)
         elif state.phase in {"outputs", "reject-outputs"}:
-            with closing(
-                self.db.execute(
-                    "SELECT id,length(key) FROM generic_semantic_outputs "
-                    "INDEXED BY generic_semantic_output_cleanup WHERE attempt_id=? "
-                    "ORDER BY id LIMIT ?",
-                    (self.attempt_id, step_budget + 1),
-                )
-            ) as rows:
-                values = rows.fetchall()
+            values = self._many(
+                "SELECT id,length(key) FROM generic_semantic_outputs "
+                "INDEXED BY generic_semantic_output_cleanup WHERE attempt_id=? "
+                "ORDER BY id LIMIT ?",
+                (self.attempt_id, step_budget + 1),
+                limit=step_budget + 1,
+            )
             for identity, length in values[:step_budget]:
                 try:
                     meter.claim((5 if state.phase == "reject-outputs" else 2) * length + 512)
@@ -1793,7 +1863,7 @@ class GenericSemantics:
             )
             after = replace(state, phase=phase, version=state.version + 1)
         return GenericBatch(
-            self.binding, self.attempt_id, prefix, state.to_json(), after, tuple(writes), edge
+            self.binding, self.attempt_id, prefix, state, after, tuple(writes), edge
         )
 
     @declare_growth(_composed_declaration("_apply"), delegates=_edge_delegates("_apply"))
@@ -1805,20 +1875,20 @@ class GenericSemantics:
         if self._prefix() != batch.prefix:
             raise StaleGenericSemantics("accepted prefix changed before semantic commit")
         self._subject()
-        if batch.after == GenericState.from_json(batch.before_json):
+        if batch.after == batch.before:
             if batch.writes or batch.edge is not None:
                 raise RuntimeError("completed semantic proposal contains writes")
             row = self._one(
                 "SELECT 1 FROM journal_generic_semantics WHERE singleton=1 "
                 "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
                 "AND prefix_binding=? AND prefix=? AND checkpoint=?",
-                (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before_json),
+                (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before.to_json()),
             )
             if row is None:
                 raise StaleGenericSemantics("finished common semantic worker was replaced")
             return batch.after
         with closing(
-            self.db.execute(
+            self._write(
                 "UPDATE journal_generic_semantics SET checkpoint=? WHERE singleton=1 "
                 "AND algorithm=? AND attempt_id=? AND binding=? AND prefix_attempt=? "
                 "AND prefix_binding=? AND prefix=? AND checkpoint=?",
@@ -1828,7 +1898,7 @@ class GenericSemantics:
                     self.attempt_id,
                     self.binding,
                     *batch.prefix,
-                    batch.before_json,
+                    batch.before.to_json(),
                 ),
             )
         ) as cursor:
@@ -1837,7 +1907,7 @@ class GenericSemantics:
         if isinstance(batch.edge, EdgeAdmission):
             self._edge_work(batch.after, batch.prefix)._admit(batch.edge)
         elif isinstance(batch.edge, EdgeBatch):
-            before = GenericState.from_json(batch.before_json)
+            before = batch.before
             self._edge_work(before, batch.prefix)._apply(batch.edge)
         for sql, parameters in batch.writes:
             if sql == "@output":
@@ -1851,14 +1921,14 @@ class GenericSemantics:
                     ):
                         raise RuntimeError("semantic finding differs from its identity")
                     with closing(
-                        self.db.execute(
+                        self._write(
                             "INSERT INTO findings VALUES (?,?) ON CONFLICT(key) DO NOTHING",
                             (finding, finding),
                         )
                     ) as cursor:
                         inserted = cursor.rowcount
                     if inserted:
-                        self.db.execute(
+                        self._write(
                             "INSERT INTO generic_semantic_outputs(attempt_id,name,key,finding) "
                             "VALUES (?,?,?,?)",
                             (self.attempt_id, name, key, finding),
@@ -1872,14 +1942,14 @@ class GenericSemantics:
                         raise RuntimeError("retained semantic finding differs from its identity")
                     continue
                 with closing(
-                    self.db.execute(
+                    self._write(
                         "INSERT INTO maps VALUES (?,?,?) ON CONFLICT(name,key) DO NOTHING",
                         parameters,
                     )
                 ) as cursor:
                     inserted = cursor.rowcount
                 if inserted:
-                    self.db.execute(
+                    self._write(
                         "INSERT INTO generic_semantic_outputs(attempt_id,name,key) VALUES (?,?,?)",
                         (self.attempt_id, name, key),
                     ).close()
@@ -1908,7 +1978,7 @@ class GenericSemantics:
                         "FROM generic_semantic_outputs WHERE id=? AND attempt_id=?)"
                     )
                     with closing(
-                        self.db.execute(
+                        self._write(
                             delete,
                             (*parameters, self.attempt_id),
                         )
@@ -1916,7 +1986,7 @@ class GenericSemantics:
                         if cursor.rowcount != 1:
                             raise RuntimeError("semantic undo no longer owns its output")
                 with closing(
-                    self.db.execute(
+                    self._write(
                         "DELETE FROM generic_semantic_outputs WHERE id=? AND attempt_id=?",
                         (*parameters, self.attempt_id),
                     )
@@ -1924,7 +1994,7 @@ class GenericSemantics:
                     if cursor.rowcount != 1:
                         raise RuntimeError("semantic output reclamation lost its row")
             else:
-                self.db.execute(sql, parameters).close()
+                self._write(sql, parameters).close()
         return batch.after
 
     def commit(self, batch: GenericBatch) -> GenericState:
@@ -1954,6 +2024,7 @@ class GenericSemantics:
     @declare_growth(
         _composed_result_declaration(), delegates=(("edge_result", SemanticEdge.result),)
     )
+    @observe_preparation
     def result(self) -> None:
         state, _prefix = self._load()
         if not state.done:

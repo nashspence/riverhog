@@ -22,6 +22,7 @@ from riverhog_provenance import graph_certificates as certificate_codec
 from riverhog_provenance import replay_binding as codec_owner
 from sqlalchemy import event
 
+from tests.support.sqlite_observation import connect_observed
 from tests.unit import test_upload_journal_certificate_lifecycle_growth as certificate_tests
 from tests.unit import test_upload_journal_owned_source_growth as fences
 from tests.unit import test_upload_journal_source_construction_growth as construction
@@ -357,8 +358,7 @@ class Recorder(fences.Recorder):
                 return sqlite3.SQLITE_OK
 
         def observed_connect(*args, **kwargs):
-            kwargs.setdefault("factory", Connection)
-            return connect(*args, **kwargs)
+            return connect_observed(connect, Connection, *args, **kwargs)
 
         def sql(_conn, cursor, statement, parameters, _context, many):
             assert not many and isinstance(cursor, Cursor)

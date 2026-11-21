@@ -21,6 +21,8 @@ from riverhog_provenance import (
 )
 from riverhog_provenance import journal as owner
 
+from tests.support.sqlite_observation import connect_observed
+
 
 class ObservedCursor(sqlite3.Cursor):
     closed = False
@@ -55,7 +57,7 @@ def storage(journal, monkeypatch, tmp_path):
 
     def connection(path, **kwargs):
         if str(path).endswith("snapshot.sqlite3"):
-            actual = connect(path, factory=ObservedConnection, **kwargs)
+            actual = connect_observed(connect, ObservedConnection, path, **kwargs)
             connections.append(actual)
             return actual
         return connect(path, **kwargs)

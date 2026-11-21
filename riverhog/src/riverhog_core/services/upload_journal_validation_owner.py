@@ -7,7 +7,7 @@ from collections.abc import Callable
 from contextlib import ExitStack
 from dataclasses import dataclass, field, replace
 from pathlib import Path
-from threading import Lock
+from threading import Event, Lock
 from typing import Any, cast
 
 from riverhog_growth_contracts import (
@@ -441,6 +441,7 @@ class _OwnedSource:
 @dataclass(slots=True)
 class _Slot:
     lock: Lock = field(default_factory=Lock)
+    stopping: Event = field(default_factory=Event)
     construction: JournalConstruction | None = None
     session: JournalValidationSession | None = None
     resources: ExitStack = field(default_factory=ExitStack)
@@ -452,6 +453,11 @@ class _Slot:
     source: _OwnedSource | None = None
     work: source_owner._UploadJournalValidationWork | None = None
     catalog_sha256: str | None = None
+
+    def check_execution(self) -> None:
+        """Observe only this original slot's live stop request during Native work."""
+        if self.stopping.is_set() or self.closing:
+            raise InterruptedError("Native journal validation is stopping")
 
     def receive_workspace(self) -> None:
         if self.construction is not None and not self.construction.dependents_received:
@@ -1858,6 +1864,7 @@ class UploadJournalValidationOwner:
         self._lock = Lock()
         self._slots: dict[tuple[int, str, str], _Slot] = {}
         self._closed = False
+        self._stopping = Event()
 
     def _reserve(self, key: tuple[int, str, str]) -> _Slot | None:
         with self._lock:
@@ -1867,7 +1874,7 @@ class UploadJournalValidationOwner:
             if slot is None:
                 if len(self._slots) >= self.concurrency:
                     return None
-                slot = _Slot()
+                slot = _Slot(stopping=self._stopping)
                 self._slots[key] = slot
             # Nonblocking acquisition does no work while holding the pool mutex.
             return slot if slot.lock.acquire(blocking=False) else None
@@ -1939,6 +1946,7 @@ class UploadJournalValidationOwner:
             raise pending
 
     def close(self) -> None:
+        self._stopping.set()
         with self._lock:
             self._closed = True
             slots = tuple(self._slots.items())
@@ -2059,7 +2067,7 @@ class UploadJournalValidationOwner:
             before = current.progress()
             outcome = None
             try:
-                after = current.advance(budget)
+                after = current.advance(budget, check=slot.check_execution)
             except (ProvenanceValidationError, ValueError) as error:
                 after = current.progress()
                 outcome = source_owner._UploadJournalValidationOutcome(str(error)[:1000])

@@ -20,9 +20,9 @@ def test_actual_preparation_and_native_quanta_stay_warm_across_work_and_takeover
 ):
     actual, calls = JournalValidationSession.advance, []
 
-    def advance(self, budget=None):
+    def advance(self, budget=None, *, check=None):
         calls.append(budget)
-        return actual(self, budget)
+        return actual(self, budget, check=check)
 
     with prepared(tmp_path / "source", journal_constructions=journal_constructions) as case:
         monkeypatch.setattr(JournalValidationSession, "advance", advance)

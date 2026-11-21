@@ -17,6 +17,7 @@ from collections.abc import (
     Sequence,
 )
 from contextlib import closing
+from functools import partial
 from pathlib import Path
 from tempfile import mkdtemp
 from threading import Lock
@@ -34,19 +35,17 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
-from riverhog_provenance_contracts import ContractCatalog
-from sqlite_admission import SqliteConnectionSettings, configure_sqlite_connection
+from sqlite_admission import (
+    SqliteConnectionSettings,
+    SqliteProgressConnection,
+    configure_sqlite_connection,
+)
 
-from ._assertion_staging import AssertionStaging
 from ._assertion_staging import install as install_assertion_staging
 from ._changed_assertions import read_changed_assertion
-from ._correction_projection import CorrectionWork
 from ._correction_projection import install as install_correction_projection
-from ._correction_targets import CorrectionTargets
 from ._correction_targets import install as install_correction_targets
-from ._entry_preparation import EntryPreparation
 from ._entry_preparation import install as install_entry_preparation
-from ._generic_semantics import GenericAtom, GenericSemantics
 from ._generic_semantics import install as install_generic_semantics
 from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
@@ -54,13 +53,11 @@ from ._journal_prefix import install as install_journal_prefix
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
 from ._semantic_edge import install as install_semantic_edges
-from ._semantic_finish import SemanticFinish
 from ._semantic_finish import install as install_semantic_finish
-from ._semantic_source import SemanticSource
 from ._semantic_source import install as install_semantic_source
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ProvenanceValidationError
-from .graph import GraphValidation, _Validator, time_ns
+from .graph import GraphValidation, time_ns
 from .journal_construction import JournalConstruction
 
 
@@ -461,94 +458,6 @@ class _Findings(MutableSequence[str]):
         self.store.db.execute("INSERT OR IGNORE INTO findings VALUES (?, ?)", (value, value))
 
 
-class _StoredValidator(_Validator):
-    def __init__(
-        self,
-        store: JournalStore,
-        rows: Iterable[dict[str, Any]],
-        *,
-        catalog: ContractCatalog,
-        journal_id: str,
-        require_profiles: bool,
-        frame: Any,
-    ) -> None:
-        self.store, self.rows, self.frame = store, rows, frame
-        self.catalog, self.journal_id, self.require_profiles = catalog, journal_id, require_profiles
-        self.current_row: dict[str, Any] | None = None
-        self.semantic_source = SemanticSource.from_frame(
-            frame, catalog_sha256=catalog.checkpoint_sha256(), require_profiles=require_profiles
-        )
-        self.objects = store.objects
-        self.externals = _Map(store, "externals")
-        self.profiles = _Map(store, "profiles")
-        self.findings = _Findings(store)
-
-    def _semantics(self, value: Mapping[str, Any], operation: str) -> None:
-        self.store.db.commit()
-        work = GenericSemantics(
-            self.store.db,
-            attempt_id=uuid4().hex,
-            source_binding=self.semantic_source,
-            atom=GenericAtom.admit(value),
-            catalog=self.catalog,
-            operation=operation,
-        )
-        work.initialize()
-        while not work.advance().done:
-            pass
-        work.result()
-
-    def generic(self, value: Mapping[str, Any]) -> None:
-        self._semantics(value, "generic")
-
-    def row_semantics(self, value: Mapping[str, Any]) -> None:
-        self._semantics(value, "row")
-
-    def aggregates(self) -> tuple[Any, ...]:
-        return (
-            _Map(self.store, "generation"),
-            _Map(self.store, "invalidation"),
-            (),
-            (),
-            _Map(self.store, "captures"),
-            _Set(self.store, "ends"),
-            _Set(self.store, "slots"),
-        )
-
-    def validation_rows(self) -> Iterable[dict[str, Any]]:
-        for row in self.rows:
-            self.current_row = row
-            yield row
-            # The native row checks run before this iterator resumes.
-            if row["type"] in ("usage", "invalidation") and "at" in row:
-                self.store._record_lifecycle_time(
-                    row["state"]["object_id"], row["type"], time_ns(row["at"])
-                )
-            self.current_row = None
-
-    def finish(
-        self,
-        generation: Mapping[str, Any],
-        invalidation: Mapping[str, Any],
-        derivations: Iterable[tuple[str, str]],
-        specializations: Iterable[tuple[str, str]],
-    ) -> None:
-        # Native row checks precede these reverse checks. Each post-row unit
-        # owns its transaction and remains private until prefix publication.
-        self.store.db.commit()
-        work = SemanticFinish(
-            self.store,
-            attempt_id=uuid4().hex,
-            frame=self.frame,
-            catalog_sha256=self.catalog.checkpoint_sha256(),
-            require_profiles=self.require_profiles,
-        )
-        work.initialize()
-        atom_admission = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 4096
-        while not work.advance(byte_budget=atom_admission).done:
-            pass
-
-
 WORKSPACE_FORMAT = "riverhog-retained-journal-source-workspace/v1"
 
 
@@ -752,7 +661,11 @@ class JournalStore:
                 raise TypeError("retained storage requires its original construction scope")
             connect = construction.scope.connect
         else:
-            connect = sqlite3.connect if connection_factory is None else connection_factory
+            connect = (
+                partial(sqlite3.connect, factory=SqliteProgressConnection)
+                if connection_factory is None
+                else connection_factory
+            )
         try:
             if retained:
                 connection = connect(
@@ -1010,8 +923,15 @@ class JournalStore:
         )
     )
     def _lifecycle_bounds_hold(
-        self, state: str, *, generated_at: str | None, invalidated_at: str | None
+        self,
+        state: str,
+        *,
+        generated_at: str | None,
+        invalidated_at: str | None,
+        inspect_row: Callable[[], None] | None = None,
     ) -> bool:
+        if inspect_row is not None:
+            inspect_row()
         with closing(
             self.db.execute(
                 "SELECT earliest, latest_usage FROM lifecycle_extrema WHERE state_id = ?",
@@ -1129,7 +1049,9 @@ class JournalStore:
             ),
         )
     )
-    def _reset_changed_assertions(self, *, row_budget: int) -> int:
+    def _reset_changed_assertions(
+        self, *, row_budget: int, inspect_row: Callable[[], None] | None = None
+    ) -> int:
         """Retire metadata without traversing or rewriting assertion payloads."""
         if type(row_budget) is not int or row_budget < 1:
             raise ValueError("changed-identity row budget must be positive")
@@ -1141,7 +1063,13 @@ class JournalStore:
                 (row_budget,),
             )
         ) as rows:
-            return sum(1 for _ in rows)
+            if inspect_row is None:
+                return sum(1 for _ in rows)
+            count = 0
+            for _ in rows:
+                inspect_row()
+                count += 1
+            return count
 
     def require_open(self) -> None:
         if self._closing or not self._cleanup.alive or self._lease.closed:
@@ -1320,93 +1248,6 @@ class JournalStore:
             if selected.raw is not None:
                 yield json.loads(selected.raw)
             completed = selected.assertion_id
-
-    def accept(
-        self,
-        document: Mapping[str, Any],
-        frame: Any,
-        *,
-        catalog: ContractCatalog,
-        require_profiles: bool,
-    ) -> None:
-        journal_id = document["journal_id"]
-        self.db.commit()
-        preparation = EntryPreparation(
-            self,
-            attempt_id=uuid4().hex,
-            frame=frame,
-            catalog_sha256=catalog.checkpoint_sha256(),
-            require_profiles=require_profiles,
-        )
-        preparation.initialize()
-        while not preparation.advance().done:
-            pass
-        preparation.result()
-        correction = document["entry_kind"] == "correction"
-        if correction:
-            # Entry identity staging is private; target units own fresh transactions.
-            self.db.commit()
-            correction_attempt = uuid4().hex
-            targets = CorrectionTargets(self.db, attempt_id=correction_attempt, frame=frame)
-            targets.initialize()
-            # Existing rows originate in admitted entries; charge their actual
-            # logical bytes without fetching or rehashing historical payloads.
-            atom_admission = 2 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 4096
-            while not targets.advance(byte_budget=atom_admission).done:
-                pass
-        # Each source-ordered staging page owns its identities, facts and cursor.
-        # All work remains private until subsequent native semantics accept it.
-        self.db.commit()
-        staging = AssertionStaging(
-            self.db,
-            attempt_id=uuid4().hex,
-            frame=frame,
-            catalog_sha256=catalog.checkpoint_sha256(),
-            require_profiles=require_profiles,
-        )
-        staging.initialize()
-        staging_admission = 4 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 8192
-        while not staging.advance(byte_budget=staging_admission).done:
-            pass
-        if correction:
-            # Earlier native checks/staging remain entry-local, private work.
-            # Each projection phase starts without inheriting that transaction.
-            self.db.commit()
-            correction_source = frame.sha256
-            retirement = CorrectionWork(
-                self.db,
-                operation="retire",
-                attempt_id=correction_attempt,
-                source_binding=correction_source,
-            )
-            retirement.initialize()
-            while not retirement.retire(byte_budget=atom_admission).done:
-                pass
-            for kind, run in self._dag_runs.items():
-                checker = OnlineDag(self.db, kind, run).replace_run(uuid4().hex)
-                self._dag_runs[kind] = checker.run_id
-                while checker.retire():
-                    pass
-            seeding = CorrectionWork(
-                self.db,
-                operation="seed",
-                attempt_id=correction_attempt,
-                source_binding=correction_source,
-            )
-            seeding.initialize()
-            while not seeding.seed().done:
-                pass
-        rows = self._changed_assertion_rows()
-        validator = _StoredValidator(
-            self,
-            rows,
-            catalog=catalog,
-            journal_id=journal_id,
-            require_profiles=require_profiles,
-            frame=frame,
-        )
-        validator.run()
-        self._check_entry_recording(document)
 
     @property
     def frames(self) -> Sequence[Any]:

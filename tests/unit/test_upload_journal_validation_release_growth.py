@@ -26,7 +26,7 @@ from riverhog_provenance import JournalValidationSession
 from sqlalchemy import event, select
 
 from scripts.validation_numeric import numeric_policy_from_environment, numeric_policy_snapshot
-from tests.support.sqlite_observation import observed_connection_type
+from tests.support.sqlite_observation import connect_observed, observed_connection_type
 from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_journal_capture import advance, retained
 from tests.unit.test_journal_summary_consumers import source
@@ -304,10 +304,13 @@ class Recorder:
                         self.add("lease_descriptor_closes", count)
 
         def observed_connect(*args, **kwargs):
-            if self.recording() and (not catalog_reads or "factory" not in kwargs):
+            if self.recording() and (
+                not catalog_reads
+                or "factory" not in kwargs
+                or kwargs["factory"] is sqlite_admission.SqliteProgressConnection
+            ):
                 raise AssertionError("retained release opened a database")
-            kwargs.setdefault("factory", Connection)
-            return connect(*args, **kwargs)
+            return connect_observed(connect, Connection, *args, **kwargs)
 
         def sql(*_args):
             self.add("catalog_calls")

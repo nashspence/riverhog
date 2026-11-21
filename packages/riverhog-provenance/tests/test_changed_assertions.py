@@ -17,6 +17,7 @@ from test_assertion_staging import connect, create, identity
 from test_entry_preparation import logical_octets, owner
 
 from scripts.validation_numeric import numeric_policy_from_environment
+from tests.support.sqlite_observation import connect_observed
 
 
 class Cursor(sqlite3.Cursor):
@@ -217,7 +218,7 @@ def test_native_row_checks_observe_no_open_assertion_cursor(journal, catalog, mo
     original_admission = GenericSemantics.prepare_admission
 
     def tracked_connect(*args, **kwargs):
-        connection = original_connect(*args, **kwargs, factory=Connection)
+        connection = connect_observed(original_connect, Connection, *args, **kwargs)
         connections.append(connection)
         return connection
 

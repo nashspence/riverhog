@@ -26,7 +26,7 @@ from test_semantic_edge import observed_work, parameter_octets
 from test_semantic_owner import snapshot
 
 from scripts.validation_numeric import numeric_policy_from_environment
-from tests.support.sqlite_observation import observed_connection_type
+from tests.support.sqlite_observation import observed_connection_factory, observed_connection_type
 
 
 class LifecycleRows:
@@ -364,8 +364,10 @@ class LifecycleRecorder:
             return actual
 
         def connect(*args, **kwargs):
-            assert "factory" not in kwargs
-            kwargs["factory"] = lambda *values, **options: LifecycleConnection(
+            selected = observed_connection_factory(
+                LifecycleConnection, kwargs.pop("factory", sqlite3.Connection)
+            )
+            kwargs["factory"] = lambda *values, **options: selected(
                 *values, observer=owner, **options
             )
             if owner.recording:

@@ -40,6 +40,7 @@ COPY packages/riverhog-age packages/riverhog-age
 COPY packages/riverhog-archive-contracts packages/riverhog-archive-contracts
 COPY packages/sqlite-admission packages/sqlite-admission
 COPY packages/riverhog-provenance packages/riverhog-provenance
+COPY packages/riverhog-recovery-policy packages/riverhog-recovery-policy
 COPY packages/workspace-reclamation packages/workspace-reclamation
 COPY packages/retained-resource packages/retained-resource
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts

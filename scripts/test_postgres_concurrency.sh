@@ -40,6 +40,7 @@ database_url="postgresql+psycopg://$(compose_env_value POSTGRES_USER riverhog):$
 default_tests=(
   tests/integration/test_catalog_schema_postgres.py
   tests/integration/test_app_key_usage_postgres.py
+  tests/integration/test_collection_recovery_postgres.py
   tests/integration/test_immutable_archive_preparation_concurrency.py
     tests/integration/test_immutable_archive_admission_concurrency.py
   tests/integration/test_collection_deletion_concurrency.py
@@ -131,7 +132,7 @@ compose run --rm --no-deps \
   --env "RIVERHOG_TEST_POSTGRES_URL=${database_url}" \
   "${COMPOSE_RUN_TTY_ARGS[@]}" \
   test \
-  -q \
+  -q --instafail --maxfail=1 \
   "${postgres_tests[@]}"
 
 if [[ -z "${POSTGRES_TESTS:-}" || "${RIVERHOG_PROVIDER_CHECKPOINT_HOST_TEST:-}" == "1" ]]; then

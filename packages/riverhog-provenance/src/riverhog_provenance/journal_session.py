@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import sqlite3
 from collections.abc import Callable, Iterable, Mapping
-from contextlib import closing
+from contextlib import closing, nullcontext
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Protocol, Self, cast
@@ -27,7 +27,10 @@ from sha256_continuation import sha256_compress
 
 from ._entry_replay import EntryReplay, EntryReplayCapacity, ReplayBudget
 from ._entry_replay import install as install_replay
-from ._journal_prefix import JournalPrefix, PrefixState
+from ._journal_prefix import JournalPrefix
+from ._native_epoch import EpochContext
+from ._native_frame import NativeFrame
+from ._native_work import WorkAmount, WorkQuantum
 from ._session_checkpoint import ValidationLedger, ValidationSnapshot
 from ._session_checkpoint import install as install_parent
 from ._session_input import RetainedInput
@@ -64,13 +67,40 @@ class JournalValidationSource(Protocol):
 
 
 @dataclass(frozen=True, slots=True)
+class JournalValidationWorkBudget:
+    """Aggregate inspected work, separate from each child's page/atom admission.
+
+    Rows count actual semantic inspections, including repeated point probes.
+    Octets count processed representations; source octets count fresh source
+    reads, including complete-frame reads distinct from scan windows. Control
+    transitions also bound work with no row or source bytes. These are limits
+    per executor invocation and confer no archive-wide acceptance limit.
+    """
+
+    rows: int = 64 * 64
+    octets: int = 4 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
+    source_octets: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
+    transitions: int = 64
+
+    def __post_init__(self) -> None:
+        values = self.rows, self.octets, self.source_octets, self.transitions
+        if any(type(value) is not int or value < 1 for value in values):
+            raise ValueError("journal aggregate work limits must be positive integers")
+
+
+@dataclass(frozen=True, slots=True)
 class JournalValidationBudget:
+    """Per-child admission and the aggregate work granted to one invocation."""
+
     rows: int = 64
     octets: int = 4 * PROVENANCE_JOURNAL_ENTRY_BYTES_MAX + 65536
     source_octets: int = 65536
+    work: JournalValidationWorkBudget = JournalValidationWorkBudget()
 
     def __post_init__(self) -> None:
         ReplayBudget(self.rows, self.octets)
+        if not isinstance(self.work, JournalValidationWorkBudget):
+            raise ValueError("journal validation requires its explicit aggregate work budget")
         if type(self.source_octets) is not int or not 1 <= self.source_octets <= self.octets:
             raise ValueError("journal source budget must be positive and fit the work byte budget")
 
@@ -194,12 +224,12 @@ def _checkpoint_progress(
     source_octets: int,
 ) -> JournalValidationProgress:
     state = snapshot.checkpoint
-    accepted = PrefixState.from_json(snapshot.prefix[2])
+    accepted = snapshot.accepted
     checkpoint_digest = hashlib.sha256()
     for value in (
         ledger.binding,
         str(ledger.worker_epoch).encode(),
-        state.to_json().encode(),
+        snapshot.checkpoint.to_json().encode(),
         *(part.encode() if isinstance(part, str) else part for part in snapshot.prefix),
     ):
         checkpoint_digest.update(str(len(value)).encode() + b":" + value)
@@ -223,7 +253,8 @@ _DEFAULT_BUDGET = JournalValidationBudget()
 class _ChunkInput:
     """One caller chunk and one entry atom; no durable source custody."""
 
-    def __init__(self, chunks: Iterable[bytes]) -> None:
+    def __init__(self, chunks: Iterable[bytes], epoch: EpochContext) -> None:
+        self.epoch = epoch
         self.chunks = iter(chunks)
         self.chunk = b""
         self.offset = 0
@@ -248,15 +279,25 @@ class _ChunkInput:
                 # One source pull is a unit even when it yields no octets.
                 if not chunk:
                     return
-        piece = self.chunk[self.offset : self.offset + min(octets, 65536)]
-        before = self.cursor
-        result = advance_journal_framing(
-            before,
-            piece,
-            byte_budget=octets,
-            frame_budget=1,
-            at_end=self.eof,
+        size = min(len(self.chunk) - self.offset, octets, 65536)
+        work = self.epoch.work
+        admission = (
+            nullcontext()
+            if work is None or size == 0
+            else work.reserve(WorkAmount(octets=size, source_octets=size))
         )
+        with admission as reservation:
+            piece = self.chunk[self.offset : self.offset + size]
+            if reservation is not None:
+                reservation.consume(WorkAmount(octets=len(piece), source_octets=len(piece)))
+            before = self.cursor
+            result = advance_journal_framing(
+                before,
+                piece,
+                byte_budget=octets,
+                frame_budget=1,
+                at_end=self.eof,
+            )
         consumed = result.cursor.byte_offset - before.byte_offset
         if result.failure is not None:
             raise ProvenanceValidationError(result.failure)
@@ -273,7 +314,15 @@ class _ChunkInput:
             raise RuntimeError("journal source has no complete frame")
         if 2 * len(self.buffer) + 65536 > octets:
             raise EntryReplayCapacity("journal validation cannot admit its existing frame atom")
-        frame = JournalFrame(bytes(self.buffer))
+        work = self.epoch.work
+        size = len(self.buffer)
+        admission = (
+            nullcontext() if work is None or size == 0 else work.reserve(WorkAmount(octets=size))
+        )
+        with admission as reservation:
+            frame = NativeFrame(bytes(self.buffer), self.epoch)
+            if reservation is not None:
+                reservation.consume(WorkAmount(octets=size))
         try:
             _ = frame.document
         except (ValueError, TypeError) as exc:
@@ -1264,25 +1313,24 @@ class JournalValidationSession:
             self._replay = EntryReplay(
                 self._store, prefix=self._prefix, ledger=self._ledger, catalog=self._catalog
             )
-            self._input = _ChunkInput(chunks)
+            self._input = _ChunkInput(chunks, self._ledger.epoch)
         except BaseException:
             self._store.close()
             raise
 
     def _initialize(self, *, retained: bool) -> None:
         db = self._store.db
-        try:
-            db.execute("BEGIN IMMEDIATE").close()
+
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
+            epoch.require(db)
             install_parent(db)
             install_replay(db)
             if retained:
                 install_input(self._ledger)
             self._prefix._initialize()
-            self._ledger._initialize()
-            db.commit()
-        except BaseException:
-            db.rollback()
-            raise
+            return self._ledger._initialize()
+
+        self._ledger.epoch.apply(apply, receive=self._ledger._receive, admission=WorkAmount(rows=2))
 
     @classmethod
     @declare_growth(
@@ -1456,44 +1504,45 @@ class JournalValidationSession:
     def _move(self, before: ValidationSnapshot, phase: str) -> ValidationSnapshot:
         after = replace(before.checkpoint, version=before.checkpoint.version + 1, phase=phase)
         db = self._store.db
-        try:
-            db.execute("BEGIN IMMEDIATE").close()
+
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
+            epoch.require(db)
             self._ledger._fence(before)
-            result = self._ledger._publish(before, after)
-            db.commit()
-        except BaseException:
-            db.rollback()
-            raise
-        return result
+            return self._ledger._publish(before, after)
+
+        return self._ledger.epoch.apply(
+            apply, receive=self._ledger._receive, admission=self._ledger._application_admission()
+        )
 
     def _finish(self, before: ValidationSnapshot) -> ValidationSnapshot:
-        state = self._prefix.finish()
-        if (
-            not self._input.complete
-            or self._input.pending
-            or state.byte_count != self._input.cursor.byte_offset
-        ):
-            raise RuntimeError("journal terminal source and accepted prefix differ")
-        with closing(
-            self._store.db.execute("SELECT 1 FROM journal_validation_frame WHERE singleton=1")
-        ) as rows:
-            if rows.fetchone() is not None:
-                raise RuntimeError("journal validation has an unfinished frame atom")
-        if self._source is not None:
-            binding = self._source_binding
-            if binding is None or self._source.binding != binding:
-                raise RuntimeError("journal validation lost its exact source binding")
-            if self._source.verify_current() is not True:
-                raise IncompleteSourceError("retained validation source is no longer current")
+        with self._ledger.epoch.preparing():
+            state = self._prefix.finish()
             if (
-                state.journal_id != binding.journal_id
-                or state.byte_count != int(binding.source_bytes)
-                or state.hexdigest != binding.source_sha256
-                or state.frame_count != int(binding.frame_count)
+                not self._input.complete
+                or self._input.pending
+                or state.byte_count != self._input.cursor.byte_offset
             ):
-                raise IncompleteSourceError(
-                    "validated journal differs from its exact retained binding"
-                )
+                raise RuntimeError("journal terminal source and accepted prefix differ")
+            with closing(
+                self._store.db.execute("SELECT 1 FROM journal_validation_frame WHERE singleton=1")
+            ) as rows:
+                if rows.fetchone() is not None:
+                    raise RuntimeError("journal validation has an unfinished frame atom")
+            if self._source is not None:
+                binding = self._source_binding
+                if binding is None or self._source.binding != binding:
+                    raise RuntimeError("journal validation lost its exact source binding")
+                if self._source.verify_current() is not True:
+                    raise IncompleteSourceError("retained validation source is no longer current")
+                if (
+                    state.journal_id != binding.journal_id
+                    or state.byte_count != int(binding.source_bytes)
+                    or state.hexdigest != binding.source_sha256
+                    or state.frame_count != int(binding.frame_count)
+                ):
+                    raise IncompleteSourceError(
+                        "validated journal differs from its exact retained binding"
+                    )
         after = self._move(before, "done") if before.checkpoint.phase != "done" else before
         self._store.freeze()
         summary = JournalSummary(
@@ -1511,50 +1560,73 @@ class JournalValidationSession:
 
     @declare_growth(_session_declaration("advance"), delegates=_session_delegates("advance"))
     def advance(
-        self, budget: JournalValidationBudget = _DEFAULT_BUDGET
+        self,
+        budget: JournalValidationBudget = _DEFAULT_BUDGET,
+        *,
+        check: Callable[[], None] | None = None,
     ) -> JournalValidationProgress:
+        """Advance bounded work under an optional owner's execution check.
+
+        The check reads bounded live cancellation/deadline state and returns None
+        or raises its original cause. It must not read sources, wait or perform
+        effects. Detached preparation and original private commits use the owned
+        SQLite dispatcher; cleanup and post-commit receiving remain independent.
+        """
         self._require_open()
         if self._failure is not None:
             raise RuntimeError("journal validation session failed") from self._failure
         if not isinstance(budget, JournalValidationBudget):
             raise TypeError("journal validation requires its explicit work budget")
         try:
-            if self._source is not None and (
-                self._source.binding != self._source_binding
-                or self._source.verify_current() is not True
-            ):
-                raise IncompleteSourceError("retained validation source is no longer current")
-            before = self._ledger.load()
-            # The entry conductor admits the same fixed owner/prefix controls.
-            self._replay._start(before, ReplayBudget(budget.rows, budget.octets))
-            phase = before.checkpoint.phase
-            if phase == "terminal":
-                return self._progress(self._finish(before))
-            if phase == "done":
-                if self._summary is None:
-                    return self._progress(self._finish(before))
-                return self._progress(before)
-            if phase != "frame":
-                return self._progress(
-                    self._replay.advance(ReplayBudget(budget.rows, budget.octets))
+            work = WorkQuantum(
+                WorkAmount(
+                    budget.work.rows,
+                    budget.work.octets,
+                    budget.work.source_octets,
+                    budget.work.transitions,
                 )
-            if isinstance(self._input, RetainedInput):
-                changed = self._input.synchronize(before, budget.octets)
-                if changed is not None:
-                    return self._progress(changed)
-            if self._input.pending:
-                frame = self._input.frame(budget.octets)
-                after = self._replay.admit(frame, ReplayBudget(budget.rows, budget.octets))
-                self._input.admitted()
+            )
+            with self._ledger.epoch.execution(check, work=work):
+                work.consume(WorkAmount(transitions=1))
+                if self._source is not None and (
+                    self._source.binding != self._source_binding
+                    or self._source.verify_current() is not True
+                ):
+                    raise IncompleteSourceError("retained validation source is no longer current")
+                before = self._ledger.load()
+                # The entry conductor admits the same fixed owner/prefix controls.
+                self._replay._start(before, ReplayBudget(budget.rows, budget.octets))
+                phase = before.checkpoint.phase
+                if phase == "terminal":
+                    return self._progress(self._finish(before))
+                if phase == "done":
+                    if self._summary is None:
+                        return self._progress(self._finish(before))
+                    return self._progress(before)
+                if phase != "frame":
+                    return self._progress(
+                        self._replay.advance(ReplayBudget(budget.rows, budget.octets))
+                    )
+                if isinstance(self._input, RetainedInput):
+                    changed = self._input.synchronize(before, budget.octets)
+                    if changed is not None:
+                        return self._progress(changed)
+                if self._input.pending:
+                    frame = self._input.frame(budget.octets)
+                    after = self._replay.admit(
+                        frame,
+                        ReplayBudget(budget.rows, budget.octets),
+                        on_admitted=self._input.admitted,
+                    )
+                    return self._progress(after)
+                if self._input.complete:
+                    return self._progress(self._move(before, "terminal"))
+                if isinstance(self._input, RetainedInput):
+                    after = self._input.scan(before, budget.octets, budget.source_octets)
+                else:
+                    self._input.scan(budget.source_octets)
+                    after = before
                 return self._progress(after)
-            if self._input.complete:
-                return self._progress(self._move(before, "terminal"))
-            if isinstance(self._input, RetainedInput):
-                after = self._input.scan(before, budget.octets, budget.source_octets)
-            else:
-                self._input.scan(budget.source_octets)
-                after = before
-            return self._progress(after)
         except JournalValidationCapacity:
             raise
         except BaseException as exc:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from contextlib import closing
 from dataclasses import replace
@@ -23,6 +24,7 @@ from riverhog_core.catalog_provenance_index_models import (
 )
 from riverhog_core.services.upload_journal_result_receiving import UploadJournalResultResources
 from riverhog_provenance_contracts import ContractCatalog
+from riverhog_recovery_policy import RecoveryPolicy
 from sqlalchemy import delete, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
@@ -366,17 +368,39 @@ def test_discovery_job_retirement_keeps_the_complete_original_and_version_fence(
     _retirement_stale(case.factory, claimed(case))
 
 
+def _source_control(*, collection_id, construction_json="{}", epoch="a" * 64, gate="closed"):
+    return UploadControl(
+        collection_id=collection_id,
+        construction_json=construction_json,
+        recovery_policy_json=json.dumps(
+            RecoveryPolicy().to_mapping(), sort_keys=True, separators=(",", ":")
+        ),
+        recovery_accounting_json=json.dumps(
+            {
+                "format": "riverhog-recovery-accounting/v1",
+                "useful_ns": "0",
+                "charged_ns": "0",
+                "reserved_ns": "0",
+                "successful_checkpoints": "0",
+                "next_grant_sequence": "0",
+                "cost_epoch_open": True,
+                "credit_certain": True,
+                "optional_admission_sealed": False,
+                "active_grants": [],
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ),
+        recovery_revision="0",
+        epoch=epoch,
+        gate=gate,
+        next_call="0",
+    )
+
+
 def _source_gate(factory, *, gate="closed", collection_id=1):
     with factory() as session, session.begin():
-        session.add(
-            UploadControl(
-                collection_id=collection_id,
-                construction_json="{}",
-                epoch="a" * 64,
-                gate=gate,
-                next_call="0",
-            )
-        )
+        session.add(_source_control(collection_id=collection_id, gate=gate))
 
 
 def _closed_source(factory, job, admission, catalog, frozen):

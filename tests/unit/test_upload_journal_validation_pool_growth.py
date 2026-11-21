@@ -96,9 +96,9 @@ def observe(recorder, operation):
     declaration = growth_binding(operation).declaration
     recorder.metrics = {bound.metric: 0 for bound in declaration.bounds}
 
-    def allocated():
+    def allocated(**kwargs):
         recorder.add("allocated_slots")
-        slot = SLOT()
+        slot = SLOT(**kwargs)
         slot.lock = Lock(slot.lock, recorder)
         return slot
 

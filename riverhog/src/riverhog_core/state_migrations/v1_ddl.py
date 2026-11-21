@@ -6326,6 +6326,9 @@ SQLITE_DDL += (
 CREATE TABLE archive_write_controls (
 	collection_id INTEGER NOT NULL,
 	construction_json TEXT NOT NULL,
+	recovery_policy_json TEXT NOT NULL,
+	recovery_accounting_json TEXT NOT NULL,
+	recovery_revision TEXT NOT NULL,
 	epoch VARCHAR(64) NOT NULL,
 	gate VARCHAR NOT NULL,
 	next_call TEXT NOT NULL,
@@ -6360,6 +6363,9 @@ POSTGRESQL_DDL += (
 CREATE TABLE archive_write_controls (
 	collection_id BIGINT NOT NULL,
 	construction_json TEXT NOT NULL,
+	recovery_policy_json TEXT NOT NULL,
+	recovery_accounting_json TEXT NOT NULL,
+	recovery_revision TEXT NOT NULL,
 	epoch VARCHAR(64) NOT NULL,
 	gate VARCHAR NOT NULL,
 	next_call TEXT NOT NULL,

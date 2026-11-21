@@ -13,6 +13,7 @@ import re
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -31,6 +32,9 @@ from riverhog_provenance_contracts import canonical_document
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_control import ChildControl
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
 from .graph import iter_assertions
@@ -62,7 +66,8 @@ class StageState:
     def done(self) -> bool:
         return self.phase == "done"
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {
                 "phase": self.phase,
@@ -71,6 +76,9 @@ class StageState:
                 "observer_cursor": str(self.observer_cursor),
             }
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str, count: int) -> StageState:
@@ -146,7 +154,7 @@ class StageBatch:
     attempt_id: str
     binding: bytes
     prefix: tuple[str, bytes, str]
-    before_json: str
+    before: StageState
     after: StageState
     rows: tuple[StageRow, ...]
     observers: tuple[tuple[str, str], ...] = ()
@@ -455,6 +463,7 @@ class AssertionStaging:
         frame: JournalFrame,
         catalog_sha256: str,
         require_profiles: bool,
+        epoch: EpochContext | None = None,
     ) -> None:
         from .journal import _body_assertions
 
@@ -480,14 +489,41 @@ class AssertionStaging:
                 "require_profiles": require_profiles,
             }
         )
+        self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[StageState](self.epoch)
+
+    def _inspect_row(self) -> None:
+        self.epoch.account(WorkAmount(rows=1))
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        # Count logical indexed probe attempts, including misses, before SQL.
+        self._inspect_row()
         with closing(self.db.execute(sql, parameters)) as rows:
             return rows.fetchone()
+
+    def _write(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        # Each statement addresses one logical row; index/VM work is separate.
+        self._inspect_row()
+        return self.db.execute(sql, parameters)
 
     def _detached(self) -> None:
         if self.db.in_transaction:
             raise RuntimeError("assertion staging requires a closed owner transaction")
+
+    def _application_admission(self, batch: StageAdmission | StageBatch) -> WorkAmount:
+        if isinstance(batch, StageAdmission):
+            return WorkAmount(rows=4)
+        if batch.before.done:
+            # Header/prefix and every applicable original cursor-link probe.
+            return WorkAmount(rows=9)
+        # Each admitted row has at most eleven one-row writes. Observer pages
+        # carry their own exact membership count and optional completion write.
+        return WorkAmount(
+            rows=1
+            + 11 * len(batch.rows)
+            + len(batch.observers)
+            + int(batch.complete_observers is not None)
+        )
 
     def _prefix(self) -> tuple[str, bytes, str]:
         row = self._one(
@@ -547,6 +583,7 @@ class AssertionStaging:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> StageAdmission:
         self._detached()
         return self._admission()
@@ -563,7 +600,7 @@ class AssertionStaging:
             raise RuntimeError("child admission requires an owner transaction")
         if self._admission() != batch:
             raise StaleAssertionStaging("child admission was superseded")
-        self.db.execute(
+        self._write(
             "INSERT INTO journal_assertion_staging VALUES (1,?,?,?,?,?,?,?,?) "
             "ON CONFLICT(singleton) DO UPDATE SET algorithm=excluded.algorithm, "
             "attempt_id=excluded.attempt_id,binding=excluded.binding,row_"
@@ -613,7 +650,7 @@ class AssertionStaging:
         prefix = self._prefix()
         if header[2:5] != prefix:
             raise StaleAssertionStaging("accepted prefix changed during assertion staging")
-        state = StageState.from_json(header[5], self.count)
+        state = self._control.get(header[5]) or StageState.from_json(header[5], self.count)
         if state.position:
             category, source = self.rows[state.position - 1]
             link = self._one(
@@ -721,10 +758,12 @@ class AssertionStaging:
         self._detached()
         return self._read_checkpoint()
 
+    @observe_preparation
     def load(self) -> StageState:
         return self._load()[0]
 
     @declare_growth(_phase_declaration("prepare"))
+    @observe_preparation
     def prepare(self, *, row_budget: int = MAX_ROWS, byte_budget: int = 65536) -> StageBatch:
         from .journal import _identity_signature
 
@@ -766,7 +805,7 @@ class AssertionStaging:
                 self.attempt_id,
                 self.binding,
                 prefix,
-                state.to_json(),
+                state,
                 after,
                 (),
                 tuple(observers),
@@ -944,9 +983,7 @@ class AssertionStaging:
                 state.version + 1,
             )
         )
-        return StageBatch(
-            self.attempt_id, self.binding, prefix, state.to_json(), after, tuple(rows)
-        )
+        return StageBatch(self.attempt_id, self.binding, prefix, state, after, tuple(rows))
 
     @declare_growth(_phase_declaration("_apply"))
     def _apply(self, batch: StageBatch) -> StageState:
@@ -954,14 +991,14 @@ class AssertionStaging:
             raise RuntimeError("child application requires an owner transaction")
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
             raise StaleAssertionStaging("staging proposal belongs to another input")
-        before = StageState.from_json(batch.before_json, self.count)
+        before = batch.before
         if before.done:
             current, prefix = self._read_checkpoint()
             if current != before or prefix != batch.prefix:
                 raise StaleAssertionStaging("finished staging proposal was superseded")
             return current
         with closing(
-            self.db.execute(
+            self._write(
                 "UPDATE journal_assertion_staging SET checkpoint=? WHERE singleton=1 AND "
                 "algorithm=? AND attempt_id=? AND binding=? AND "
                 "row_count=? AND prefix_attempt=? "
@@ -975,7 +1012,7 @@ class AssertionStaging:
                     self.binding,
                     self.count,
                     *batch.prefix,
-                    batch.before_json,
+                    batch.before.to_json(),
                     *batch.prefix,
                 ),
             )
@@ -983,15 +1020,15 @@ class AssertionStaging:
             if cursor.rowcount != 1:
                 raise StaleAssertionStaging("staging proposal was superseded")
         for row in batch.rows:
-            self.db.execute(
+            self._write(
                 "INSERT INTO identities VALUES (?, 'assertion', ?)", (row.assertion_id, b"")
             ).close()
-            self.db.execute(
+            self._write(
                 "INSERT OR IGNORE INTO identities VALUES (?, 'referent', ?)",
                 (row.object_id, row.signature),
             ).close()
             try:
-                self.db.execute(
+                self._write(
                     "INSERT INTO assertions VALUES (?,?,?,?,?,?,?,?,1)",
                     (
                         row.assertion_id,
@@ -1009,48 +1046,48 @@ class AssertionStaging:
                     "duplicate effective entity/record identity"
                 ) from exc
             if row.activity is not None:
-                self.db.execute(
+                self._write(
                     "INSERT INTO activity_projection VALUES (?,?,?,?)",
                     (row.assertion_id, *row.activity),
                 ).close()
             if row.binding is not None:
-                self.db.execute(
+                self._write(
                     "INSERT INTO binding_projection VALUES (?,?)",
                     (row.assertion_id, *row.binding),
                 ).close()
             if row.delivery is not None:
-                self.db.execute(
+                self._write(
                     "INSERT INTO delivery_projection VALUES (?,?,?,?)",
                     (row.assertion_id, *row.delivery),
                 ).close()
-            self.db.execute(
+            self._write(
                 "INSERT INTO description_projection VALUES (?,?,?,?)",
                 (row.assertion_id, *row.description),
             ).close()
             if row.fixity is not None:
-                self.db.execute(
+                self._write(
                     "INSERT INTO fixity_projection VALUES (?,?,?)",
                     (row.assertion_id, *row.fixity),
                 ).close()
             if row.relation is not None:
-                self.db.execute(
+                self._write(
                     "INSERT INTO relation_projection VALUES (?,?,?)",
                     (row.assertion_id, *row.relation),
                 ).close()
             if row.observation is not None:
-                self.db.execute(
+                self._write(
                     "INSERT INTO observation_projection VALUES (?,?,?,?)",
                     (row.assertion_id, *row.observation),
                 ).close()
-            self.db.execute("INSERT INTO changes VALUES (?)", (row.assertion_id,)).close()
+            self._write("INSERT INTO changes VALUES (?)", (row.assertion_id,)).close()
         for assertion_id, agent_id in batch.observers:
-            self.db.execute(
+            self._write(
                 "INSERT INTO observation_observers VALUES (?,?) ON CONFLICT DO NOTHING",
                 (assertion_id, agent_id),
             ).close()
         if batch.complete_observers is not None:
             with closing(
-                self.db.execute(
+                self._write(
                     "UPDATE observation_projection SET observers_complete=1 "
                     "WHERE assertion_id=? AND observers_complete=0",
                     (batch.complete_observers,),
@@ -1064,7 +1101,7 @@ class AssertionStaging:
         self._detached()
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
             raise StaleAssertionStaging("staging proposal belongs to another input")
-        before = StageState.from_json(batch.before_json, self.count)
+        before = batch.before
         if before.done:
             current, prefix = self._load()
             if current != before or prefix != batch.prefix:

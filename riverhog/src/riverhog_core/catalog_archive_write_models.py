@@ -25,6 +25,9 @@ class ArchiveWriteControlRecord(Base):
         COLLECTION_ID_TYPE, primary_key=True, autoincrement=False
     )
     construction_json: Mapped[str] = mapped_column(Text)
+    recovery_policy_json: Mapped[str] = mapped_column(Text)
+    recovery_accounting_json: Mapped[str] = mapped_column(Text)
+    recovery_revision: Mapped[str] = mapped_column(Text)
     epoch: Mapped[str] = mapped_column(String(64))
     gate: Mapped[str] = mapped_column(String)
     next_call: Mapped[str] = mapped_column(Text)

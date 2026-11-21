@@ -7,7 +7,7 @@ from collections.abc import Callable, Iterator
 from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from threading import Lock
+from threading import Event, Lock
 from uuid import uuid4
 
 from riverhog_archive_contracts import HistoryJournalAnchor
@@ -64,6 +64,7 @@ from riverhog_core.services.discovery_validation_growth import declare_owner_gro
 @dataclass(slots=True)
 class _Slot:
     lock: Lock = field(default_factory=Lock)
+    stopping: Event = field(default_factory=Event)
     resources: ExitStack = field(default_factory=ExitStack)
     lease: ValidationWorkspaceLease = field(default_factory=ValidationWorkspaceLease)
     metadata: DiscoveryMetadata | None = None
@@ -79,6 +80,11 @@ class _Slot:
     preparation_initialized: bool = False
     certificates: DiscoveryJournalGraphCertificates | None = None
     closing: bool = False
+
+    def check_execution(self) -> None:
+        """Observe only this original slot's live stop request during Native work."""
+        if self.stopping.is_set() or self.closing:
+            raise InterruptedError("Native journal validation is stopping")
 
     def retain_corpus(self, corpus: RetainedCorpusValidator) -> None:
         if self.corpus is not None:
@@ -186,7 +192,7 @@ class DiscoveryValidationWork:
         if certificates is None:
             return None
         native = self.journal(work, certificates=certificates)
-        return None if native is None else native.advance(budget)
+        return None if native is None else native.advance(budget, check=self._slot.check_execution)
 
     def journal(
         self,
@@ -442,6 +448,7 @@ class DiscoveryValidationOwner:
         self._lock = Lock()
         self._slots: dict[str, _Slot] = {}
         self._closed = False
+        self._stopping = Event()
 
     def _reserve(self, build_id: str) -> _Slot | None:
         with self._lock:
@@ -451,7 +458,7 @@ class DiscoveryValidationOwner:
             if slot is None:
                 if len(self._slots) >= self.concurrency:
                     return None
-                slot = _Slot()
+                slot = _Slot(stopping=self._stopping)
                 self._slots[build_id] = slot
             return slot if slot.lock.acquire(blocking=False) else None
 
@@ -615,6 +622,7 @@ class DiscoveryValidationOwner:
             raise errors[0]
 
     def close(self) -> None:
+        self._stopping.set()
         with self._lock:
             self._closed = True
             slots = tuple(self._slots.items())

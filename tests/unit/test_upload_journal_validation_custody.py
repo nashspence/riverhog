@@ -19,6 +19,7 @@ from tests.unit.test_upload_journal_validation_release_growth import build_cases
 class UncertainClose:
     def __init__(self, connection, *, after=False, failures=1):
         self.connection, self.after, self.failures = connection, after, failures
+        self._close = connection.close
         self.calls = 0
 
     def __getattr__(self, name):
@@ -29,9 +30,9 @@ class UncertainClose:
         if self.failures:
             self.failures -= 1
             if self.after:
-                self.connection.close()
+                self._close()
             raise OSError("Native database close unconfirmed")
-        self.connection.close()
+        self._close()
 
 
 def assert_lease(root, workspace_id, *, busy):
@@ -120,7 +121,7 @@ def test_failed_initialization_keeps_early_native_storage_and_application_custod
 
 
 def test_terminal_cleanup_attempts_once_and_preserves_confirmed_outcome(
-    tmp_path, *, journal_constructions
+    tmp_path, monkeypatch, *, journal_constructions
 ):
     root = tmp_path / "native"
     with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
@@ -133,9 +134,12 @@ def test_terminal_cleanup_attempts_once_and_preserves_confirmed_outcome(
             slot = next(iter(owner._slots.values()))
             storage = slot.session._store._storage
             fault = UncertainClose(storage.connection, failures=2)
-            storage.connection = fault
+            original = storage.connection
+            monkeypatch.setattr(original, "close", fault.close)
+            assert original is slot.session._ledger.epoch.db
             with pytest.raises(OSError, match="unconfirmed"):
                 finish(owner, work)
+            assert storage.connection is original
             terminal = selected(factory)
             assert terminal.state == "complete" and fault.calls == 1 and slot.closing
             assert_lease(root, terminal.workspace_id, busy=True)

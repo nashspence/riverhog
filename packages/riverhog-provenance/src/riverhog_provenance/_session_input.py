@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import json
-from contextlib import closing
+from contextlib import closing, nullcontext
 from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING
 
 from riverhog_canonical_json import canonical_json_bytes
 
 from ._entry_replay import EntryReplayCapacity
+from ._native_epoch import EpochContext
+from ._native_frame import NativeFrame
+from ._native_work import WorkAmount
 from ._session_checkpoint import StaleValidationCheckpoint, ValidationSnapshot
 from .errors import IncompleteSourceError, ProvenanceValidationError
 from .framing import JournalFramePosition, JournalFramingCursor, advance_journal_framing
@@ -133,10 +136,8 @@ class RetainedInput:
         return _InputState.decode(row[0])
 
     def _check(self, before: ValidationSnapshot) -> None:
-        from ._journal_prefix import PrefixState
-
         state = self.state
-        accepted = PrefixState.from_json(before.prefix[2])
+        accepted = before.accepted
         cursor, pending = state.cursor, state.pending
         if self.source.binding != self.binding:
             raise StaleValidationCheckpoint("retained source binding changed")
@@ -171,8 +172,9 @@ class RetainedInput:
         if len(encoded.encode()) > _HEADER_OCTETS:
             raise EntryReplayCapacity("source cursor cannot admit its owning scalar widths")
         db = self.ledger.db
-        try:
-            db.execute("BEGIN IMMEDIATE").close()
+
+        def apply(epoch: EpochContext) -> ValidationSnapshot:
+            epoch.require(db)
             self.ledger._fence(before)
             with closing(
                 db.execute(
@@ -183,15 +185,17 @@ class RetainedInput:
             ) as rows:
                 if rows.rowcount != 1:
                     raise StaleValidationCheckpoint("source cursor proposal was superseded")
-            changed = self.ledger._publish(
+            return self.ledger._publish(
                 before, replace(before.checkpoint, version=before.checkpoint.version + 1)
             )
-            db.commit()
-        except BaseException:
-            db.rollback()
-            raise
-        self.state = after
-        return changed
+
+        def receive(snapshot: ValidationSnapshot) -> None:
+            self.ledger._receive(snapshot)
+            self.state = after
+
+        return self.ledger.epoch.apply(
+            apply, receive=receive, admission=self.ledger._application_admission()
+        )
 
     def _available(self, before: ValidationSnapshot, octets: int) -> int:
         control = 16384 + 16 * (
@@ -220,12 +224,21 @@ class RetainedInput:
             raise RuntimeError("retained source already has a pending frame or terminal state")
         remaining = int(self.binding.source_bytes) - self.cursor.byte_offset
         size = min(remaining, source_octets, self._available(before, octets))
-        raw = self.source.read_window(self.cursor.byte_offset, size) if size else b""
-        if type(raw) is not bytes or not (1 <= len(raw) <= size if size else len(raw) == 0):
-            raise IncompleteSourceError("retained validation source did not supply its window")
-        step = advance_journal_framing(
-            self.cursor, raw, byte_budget=octets, frame_budget=1, at_end=len(raw) == remaining
+        work = self.ledger.epoch.work
+        admission = (
+            nullcontext()
+            if work is None or size == 0
+            else work.reserve(WorkAmount(octets=size, source_octets=size))
         )
+        with admission as reservation:
+            raw = self.source.read_window(self.cursor.byte_offset, size) if size else b""
+            if type(raw) is not bytes or not (1 <= len(raw) <= size if size else len(raw) == 0):
+                raise IncompleteSourceError("retained validation source did not supply its window")
+            if reservation is not None:
+                reservation.consume(WorkAmount(octets=len(raw), source_octets=len(raw)))
+            step = advance_journal_framing(
+                self.cursor, raw, byte_budget=octets, frame_budget=1, at_end=len(raw) == remaining
+            )
         if step.failure is not None:
             raise ProvenanceValidationError(step.failure)
         pending = step.positions[0] if step.positions else None
@@ -237,10 +250,23 @@ class RetainedInput:
             raise RuntimeError("retained source has no complete frame")
         if 2 * pending.json_bytes + 65536 > octets:
             raise EntryReplayCapacity("journal validation cannot admit its existing frame atom")
-        raw = self.source.read_exact(pending.byte_offset + 1, pending.json_bytes)
-        if type(raw) is not bytes or len(raw) != pending.json_bytes:
-            raise IncompleteSourceError("retained validation source did not supply its exact frame")
-        frame = JournalFrame(raw)
+        work = self.ledger.epoch.work
+        admission = (
+            nullcontext()
+            if work is None or pending.json_bytes == 0
+            else work.reserve(
+                WorkAmount(octets=pending.json_bytes, source_octets=pending.json_bytes)
+            )
+        )
+        with admission as reservation:
+            raw = self.source.read_exact(pending.byte_offset + 1, pending.json_bytes)
+            if type(raw) is not bytes or len(raw) != pending.json_bytes:
+                raise IncompleteSourceError(
+                    "retained validation source did not supply its exact frame"
+                )
+            if reservation is not None:
+                reservation.consume(WorkAmount(octets=len(raw), source_octets=len(raw)))
+            frame = NativeFrame(raw, self.ledger.epoch)
         try:
             _ = frame.document
         except (ValueError, TypeError) as exc:

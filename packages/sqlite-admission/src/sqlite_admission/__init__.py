@@ -10,6 +10,7 @@ from threading import Lock, RLock
 from types import TracebackType
 from typing import Any, Literal, Self, overload
 
+from sqlite_admission.progress import SqliteProgressConnection, observe_sqlite_execution
 from sqlite_admission.settings import (
     SqliteConfigurationError,
     SqliteConnectionSettings,
@@ -448,7 +449,7 @@ _connect = sqlite3.connect
 _admissions: set[SqliteConnectionAdmission] = set()
 
 
-class _Connection(sqlite3.Connection):
+class _Connection(SqliteProgressConnection):
     _reservation: _ConnectionLease
 
     def __init__(self, *args: Any, **options: Any) -> None:
@@ -880,4 +881,6 @@ __all__ = [
     "SqliteConfigurationError",
     "SqliteConnectionSettings",
     "configure_sqlite_connection",
+    "SqliteProgressConnection",
+    "observe_sqlite_execution",
 ]

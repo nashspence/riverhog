@@ -12,6 +12,7 @@ import re
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -31,6 +32,9 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_control import ChildControl
+from ._native_epoch import EpochContext, bind_epoch, observe_preparation
+from ._native_work import WorkAmount
 from ._semantic_source import SemanticSource
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -63,10 +67,14 @@ class PreparationState:
     def done(self) -> bool:
         return self.phase == "done"
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {"phase": self.phase, "retired": str(self.retired), "version": str(self.version)}
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str) -> PreparationState:
@@ -106,7 +114,7 @@ class PreparationBatch:
     attempt_id: str
     binding: bytes
     prefix: tuple[str, bytes, str]
-    before_json: str
+    before: PreparationState
     identity_before: tuple[Any, ...] | None
     row_budget: int
 
@@ -445,6 +453,7 @@ class EntryPreparation:
         frame: JournalFrame,
         catalog_sha256: str,
         require_profiles: bool,
+        epoch: EpochContext | None = None,
     ) -> None:
         if (
             type(attempt_id) is not str
@@ -475,10 +484,31 @@ class EntryPreparation:
                 "entry_id": self.entry_id,
             }
         )
+        self.epoch = bind_epoch(self.db, epoch)
+        self._control = ChildControl[PreparationState](self.epoch)
+
+    def _inspect_row(self) -> None:
+        self.epoch.account(WorkAmount(rows=1))
 
     def _one(self, sql: str, parameters: tuple[Any, ...] = ()) -> Any:
+        self._inspect_row()
         with closing(self.db.execute(sql, parameters)) as rows:
             return rows.fetchone()
+
+    def _application_admission(self, batch: PreparationAdmission | PreparationBatch) -> WorkAmount:
+        if isinstance(batch, PreparationAdmission):
+            # Accepted prefix and prior child admission, one indexed probe each.
+            return WorkAmount(rows=2)
+        phase = batch.before.phase
+        if phase not in {"journal", "entry", "changes", "done"}:
+            raise ValueError("unknown preparation application phase")
+        if type(batch.row_budget) is not int or not 1 <= batch.row_budget <= MAX_ROWS:
+            raise ValueError("preparation application requires its bounded row admission")
+        # Prefix and exact checkpoint, then existing identity/boundary probes.
+        probes = 2 + int(phase != "journal") + int(phase in {"changes", "done"})
+        probes += int(phase == "done") + int(phase in {"journal", "entry"})
+        # Only changes application iterates returned retired identifiers.
+        return WorkAmount(rows=probes + (batch.row_budget if phase == "changes" else 0))
 
     def _detached(self) -> None:
         if self.db.in_transaction:
@@ -562,6 +592,7 @@ class EntryPreparation:
             planning=True,
         )
     )
+    @observe_preparation
     def prepare_admission(self) -> PreparationAdmission:
         self._detached()
         return self._admission()
@@ -623,14 +654,16 @@ class EntryPreparation:
         prefix = self._prefix()
         if row[1:4] != prefix:
             raise StaleEntryPreparation("accepted prefix changed during entry preparation")
-        state = PreparationState.from_json(row[4])
+        state = self._control.get(row[4]) or PreparationState.from_json(row[4])
         self._boundaries(state)
         return state, prefix
 
+    @observe_preparation
     def load(self) -> PreparationState:
         return self._load()[0]
 
     @declare_growth(_phase_declaration("prepare"))
+    @observe_preparation
     def prepare(
         self, *, row_budget: int = MAX_ROWS, byte_budget: int = _DEFAULT_BYTES
     ) -> PreparationBatch:
@@ -665,7 +698,7 @@ class EntryPreparation:
             if row_budget < 1:
                 raise EntryPreparationCapacity("byte budget does not admit a changed identity")
         return PreparationBatch(
-            self.attempt_id, self.binding, prefix, state.to_json(), identity_before, row_budget
+            self.attempt_id, self.binding, prefix, state, identity_before, row_budget
         )
 
     @declare_growth(_phase_declaration("_apply"))
@@ -674,7 +707,7 @@ class EntryPreparation:
             raise RuntimeError("child application requires an owner transaction")
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
             raise StaleEntryPreparation("preparation proposal belongs to another input")
-        state = PreparationState.from_json(batch.before_json)
+        state = batch.before
         if self._prefix() != batch.prefix:
             raise StaleEntryPreparation("accepted prefix changed before preparation commit")
         self._boundaries(state)
@@ -682,7 +715,7 @@ class EntryPreparation:
             "SELECT 1 FROM journal_entry_preparation WHERE singleton=1 AND algorithm=? "
             "AND attempt_id=? AND binding=? AND prefix_attempt=? AND "
             "prefix_binding=? AND prefix=? AND checkpoint=?",
-            (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before_json),
+            (ALGORITHM, self.attempt_id, self.binding, *batch.prefix, batch.before.to_json()),
         )
         if row is None:
             raise StaleEntryPreparation("preparation checkpoint was replaced")
@@ -704,7 +737,10 @@ class EntryPreparation:
             ).close()
             after = replace(state, phase="changes", version=state.version + 1)
         elif state.phase == "changes":
-            retired = self.store._reset_changed_assertions(row_budget=batch.row_budget)
+            retired = self.store._reset_changed_assertions(
+                row_budget=batch.row_budget,
+                inspect_row=None if self.epoch.work is None else self._inspect_row,
+            )
             after = replace(
                 state,
                 phase="done" if retired == 0 else "changes",
@@ -724,7 +760,7 @@ class EntryPreparation:
                         self.attempt_id,
                         self.binding,
                         *batch.prefix,
-                        batch.before_json,
+                        batch.before.to_json(),
                     ),
                 )
             ) as cursor:
@@ -736,7 +772,7 @@ class EntryPreparation:
         self._detached()
         if (batch.attempt_id, batch.binding) != (self.attempt_id, self.binding):
             raise StaleEntryPreparation("preparation proposal belongs to another input")
-        state = PreparationState.from_json(batch.before_json)
+        state = batch.before
         self.db.execute("BEGIN IMMEDIATE").close()
         try:
             state = self._apply(batch)
@@ -753,6 +789,7 @@ class EntryPreparation:
         return self.commit(self.prepare(row_budget=row_budget, byte_budget=byte_budget))
 
     @declare_growth(_result_declaration())
+    @observe_preparation
     def result(self) -> None:
         if not self.load().done:
             raise RuntimeError("entry preparation remains quarantined")

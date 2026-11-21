@@ -17,6 +17,7 @@ from typing import Any
 from riverhog_canonical_json import format_scalar, parse_scalar
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_protocol.pack_ingress import canonical_json_bytes
+from riverhog_recovery_policy import RecoveryPolicy
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session, load_only, undefer
 from state_schema import read_snapshot
@@ -33,6 +34,7 @@ from riverhog_core.catalog_archive_write_models import (
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord, CollectionUploadRecord
 from riverhog_core.collection_construction import upload_construction
+from riverhog_core.collection_recovery_state import initial_recovery_accounting
 from riverhog_core.provider_write_dispatch import (
     ArmedProviderWrite,
     ClosedProviderWrite,
@@ -48,6 +50,8 @@ from riverhog_core.services.archive_upload_terminal_tags import (
 )
 from riverhog_core.services.collection_registration_cleanup import freeze_registration_execution
 from riverhog_core.services.collection_upload_authority import require_archive_write_control
+
+_DEFAULT_RECOVERY_POLICY = RecoveryPolicy()
 
 Guard = Callable[[Session], None]
 ApplyResult = Callable[
@@ -84,12 +88,30 @@ def _positive(value: int) -> None:
         raise ValueError("archive write grants must be positive integers")
 
 
-def initialize_archive_write_control(session: Session, upload: CollectionUploadRecord) -> None:
+def initialize_archive_write_control(
+    session: Session,
+    upload: CollectionUploadRecord,
+    *,
+    recovery_policy: RecoveryPolicy = _DEFAULT_RECOVERY_POLICY,
+) -> None:
     """Called only in the transaction that allocates a new upload construction."""
+    construction = upload_construction(upload)
     session.add(
         ArchiveWriteControlRecord(
             collection_id=upload.collection_id,
-            construction_json=upload_construction(upload),
+            construction_json=construction,
+            # Operational policy numbers keep their exact selected meaning;
+            # they are outside the protected archive identity JSON domain.
+            recovery_policy_json=json.dumps(
+                recovery_policy.to_mapping(),
+                allow_nan=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ),
+            recovery_accounting_json=initial_recovery_accounting(
+                upload.collection_id, construction
+            ),
+            recovery_revision="0",
             epoch=secrets.token_hex(32),
             gate="open",
             next_call="0",

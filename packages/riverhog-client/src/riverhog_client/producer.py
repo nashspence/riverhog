@@ -729,18 +729,40 @@ class IncrementalCollectionProducer:
             if self.primary_store.recover_step():
                 break
         inventory = self._member_inventory()
+
+        def inventory_members() -> Iterator[ArtifactMemberIdentityDocument]:
+            for item in inventory:
+                if time.monotonic() >= deadline:
+                    raise TimeoutError(
+                        "collection upload inventory exceeded the completion deadline"
+                    )
+                # Inventory storage owns its mutex. A failed heartbeat is
+                # retried by the execution owner outside that storage scope.
+                if self._heartbeat_failure is not None:
+                    raise RuntimeError("collection upload custody lease heartbeat failed") from (
+                        self._heartbeat_failure
+                    )
+                yield _member_identity(item)
+
         try:
-            freeze_inventory(self.primary_store, (_member_identity(item) for item in inventory))
+            freeze_inventory(self.primary_store, inventory_members())
         finally:
             close_inventory = getattr(inventory, "close", None)
             if callable(close_inventory):
                 close_inventory()
-        while not advance_closing(
-            self.primary_store,
-            limit=COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
-            settle=self._settle_primary,
-        ):
+        while True:
             self._require_heartbeat()
+            if time.monotonic() >= deadline:
+                raise TimeoutError("collection upload closing exceeded the completion deadline")
+            if advance_closing(
+                self.primary_store,
+                limit=COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
+                settle=self._settle_primary,
+            ):
+                break
+        self._require_heartbeat()
+        if time.monotonic() >= deadline:
+            raise TimeoutError("collection upload closing exceeded the completion deadline")
         receipt = self.api.complete_collection_upload_session(self.collection_id)
         if str(receipt.get("state") or "") != "finalized":
             self._upload_available(reconcile=False)

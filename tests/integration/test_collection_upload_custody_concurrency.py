@@ -835,13 +835,13 @@ def test_native_journal_validation_releases_catalog_lock_and_fences_replaced_att
             )
         expected_failure = str(rejected.value)[:1000]
 
-    def waiting(native_session, budget):
+    def waiting(native_session, budget, **kwargs):
         assert first._session_factory.kw["bind"].pool.checkedout() == 0
         assert replacement._session_factory.kw["bind"].pool.checkedout() == 0
         paused.set()
         if not resume.wait(30):
             raise TimeoutError("native validation was not resumed")
-        return native(native_session, budget)
+        return native(native_session, budget, **kwargs)
 
     def reach_native_validation():
         for _ in range(10000):
@@ -855,7 +855,10 @@ def test_native_journal_validation_releases_catalog_lock_and_fences_replaced_att
     with ThreadPoolExecutor(max_workers=1) as pool:
         future = pool.submit(reach_native_validation)
         try:
-            assert paused.wait(10)
+            if not paused.wait(10):
+                if future.done():
+                    future.result()
+                pytest.fail("Native validation did not reach its detached execution")
             with session_scope(replacement._session_factory) as session:
                 session.execute(text("SET LOCAL lock_timeout = '2s'"))
                 record = session.scalar(

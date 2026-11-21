@@ -11,6 +11,7 @@ from __future__ import annotations
 import sqlite3
 from contextlib import closing
 from dataclasses import dataclass
+from typing import Any
 
 from riverhog_growth_contracts import (
     COUNT,
@@ -23,6 +24,7 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
+from ._native_work import WorkAmount, WorkQuantum
 from .errors import JournalValidationCapacity
 
 
@@ -139,32 +141,45 @@ def _declaration() -> Declaration:
     )
 
 
+def _probe(
+    db: sqlite3.Connection, sql: str, values: tuple[str, ...], work: WorkQuantum | None
+) -> Any:
+    # One logical indexed inspection, including a miss; this is neither a
+    # returned-row counter nor a count of SQLite VM/B-tree instructions.
+    if work is not None:
+        work.consume(WorkAmount(rows=1))
+    with closing(db.execute(sql, values)) as cursor:
+        return cursor.fetchone()
+
+
 @declare_growth(_declaration())
 def read_changed_assertion(
-    db: sqlite3.Connection, *, after: str | None, byte_budget: int
+    db: sqlite3.Connection,
+    *,
+    after: str | None,
+    byte_budget: int,
+    work: WorkQuantum | None = None,
 ) -> ChangedAssertion | None:
     if after is not None:
         require_canonical_uuid_urn(after)
     if type(byte_budget) is not int or byte_budget < 1:
         raise ValueError("changed assertion byte admission must be positive")
-    with closing(
-        db.execute(
-            "SELECT assertion_id FROM changes WHERE assertion_id > ? ORDER BY assertion_id LIMIT 1",
-            ("" if after is None else after,),
-        )
-    ) as cursor:
-        selected = cursor.fetchone()
+    selected = _probe(
+        db,
+        "SELECT assertion_id FROM changes WHERE assertion_id > ? ORDER BY assertion_id LIMIT 1",
+        ("" if after is None else after,),
+        work,
+    )
     if selected is None:
         return None
     identity = selected[0]
     require_canonical_uuid_urn(identity)
-    with closing(
-        db.execute(
-            "SELECT length(value) FROM assertions WHERE assertion_id = ? AND active = 1",
-            (identity,),
-        )
-    ) as cursor:
-        metadata = cursor.fetchone()
+    metadata = _probe(
+        db,
+        "SELECT length(value) FROM assertions WHERE assertion_id = ? AND active = 1",
+        (identity,),
+        work,
+    )
     if metadata is None:
         return ChangedAssertion(identity, None)
     length = metadata[0]
@@ -172,12 +187,12 @@ def read_changed_assertion(
         raise RuntimeError("invalid changed assertion payload length")
     if length > byte_budget:
         raise ChangedAssertionCapacity("the selected assertion needs more byte admission")
-    with closing(
-        db.execute(
-            "SELECT value FROM assertions WHERE assertion_id = ? AND active = 1", (identity,)
-        )
-    ) as cursor:
-        payload = cursor.fetchone()
+    payload = _probe(
+        db,
+        "SELECT value FROM assertions WHERE assertion_id = ? AND active = 1",
+        (identity,),
+        work,
+    )
     if payload is None or type(payload[0]) is not bytes or len(payload[0]) != length:
         raise RuntimeError("changed assertion source moved during atom admission")
     return ChangedAssertion(identity, payload[0])
