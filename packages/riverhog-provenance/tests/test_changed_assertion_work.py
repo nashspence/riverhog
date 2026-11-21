@@ -47,7 +47,7 @@ def test_actual_indexed_probe_attempts_are_distinct_from_returned_rows(
         assert metrics["sql_statements"] == probes
         assert metrics["returned_rows"] == returned
         assert metrics["changed_rows"] == 0 and metrics["sqlite_vm_instructions"] > probes
-        assert work.consumed == WorkAmount(rows=probes)
+        assert work.consumed == WorkAmount(rows=probes, octets=metrics["returned_atom_octets"])
         assert epoch.quiescent and epoch.work is None
         work.require_received()
 

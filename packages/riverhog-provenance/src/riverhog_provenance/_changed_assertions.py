@@ -142,12 +142,19 @@ def _declaration() -> Declaration:
 
 
 def _probe(
-    db: sqlite3.Connection, sql: str, values: tuple[str, ...], work: WorkQuantum | None
+    db: sqlite3.Connection,
+    sql: str,
+    values: tuple[str, ...],
+    work: WorkQuantum | None,
+    *,
+    copy_octets: int = 0,
 ) -> Any:
     # One logical indexed inspection, including a miss; this is neither a
     # returned-row counter nor a count of SQLite VM/B-tree instructions.
     if work is not None:
-        work.consume(WorkAmount(rows=1))
+        # The exact pinned payload extent admits this copy attempt before
+        # dispatch, including an original SQL/fetch failure, without source credit.
+        work.consume(WorkAmount(rows=1, octets=copy_octets))
     with closing(db.execute(sql, values)) as cursor:
         return cursor.fetchone()
 
@@ -192,6 +199,7 @@ def read_changed_assertion(
         "SELECT value FROM assertions WHERE assertion_id = ? AND active = 1",
         (identity,),
         work,
+        copy_octets=length,
     )
     if payload is None or type(payload[0]) is not bytes or len(payload[0]) != length:
         raise RuntimeError("changed assertion source moved during atom admission")

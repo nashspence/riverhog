@@ -2236,8 +2236,8 @@ class EntryReplay:
         self._account_row()
         return self.db.execute(sql, values)
 
-    def _one(self, sql: str, values: tuple[Any, ...] = ()) -> Any:
-        self._account_row()
+    def _one(self, sql: str, values: tuple[Any, ...] = (), *, copy_octets: int = 0) -> Any:
+        self.epoch.account(WorkAmount(rows=1, octets=copy_octets))
         with closing(self.db.execute(sql, values)) as cursor:
             return cursor.fetchone()
 
@@ -2299,8 +2299,11 @@ class EntryReplay:
         ):
             raise RuntimeError("retained entry atom differs from its parent checkpoint")
         self._claim(metadata[2])
-        value = self._one("SELECT value FROM journal_validation_frame WHERE singleton=1")
-        if value is None or type(value[0]) is not bytes:
+        value = self._one(
+            "SELECT value FROM journal_validation_frame WHERE singleton=1",
+            copy_octets=metadata[2],
+        )
+        if value is None or type(value[0]) is not bytes or len(value[0]) != metadata[2]:
             raise RuntimeError("retained entry atom is missing or changed")
         frame = NativeFrame(value[0], self.epoch)
         if frame.sha256 != state.frame_sha256:
@@ -2405,17 +2408,23 @@ class EntryReplay:
         selected = read_changed_assertion(
             self.db, after=state.row_after, byte_budget=self._remaining(), work=self.epoch.work
         )
-        if (
-            selected is None
-            or selected.assertion_id != state.row_key
-            or selected.raw is None
-            or hashlib.sha256(selected.raw).hexdigest() != state.row_sha256
-        ):
+        if selected is None or selected.assertion_id != state.row_key or selected.raw is None:
+            raise RuntimeError("retained assertion atom differs from its parent checkpoint")
+        if self._atom_digest(selected.raw) != state.row_sha256:
             raise RuntimeError("retained assertion atom differs from its parent checkpoint")
         self._claim(len(selected.raw))
-        row: dict[str, Any] = json.loads(selected.raw)
+        row = self._atom_document(selected.raw)
         current.row_key, current.row_sha256, current.row = state.row_key, state.row_sha256, row
         current.atom = GenericAtom.admit(row)
+        return row
+
+    def _atom_digest(self, raw: bytes) -> str:
+        self.epoch.account(WorkAmount(octets=len(raw)))
+        return hashlib.sha256(raw).hexdigest()
+
+    def _atom_document(self, raw: bytes) -> dict[str, Any]:
+        self.epoch.account(WorkAmount(octets=len(raw)))
+        row: dict[str, Any] = json.loads(raw)
         return row
 
     def _child(
@@ -2697,8 +2706,8 @@ class EntryReplay:
             self._claim(len(selected.raw))
             current.row_key, current.row_sha256, current.row = (
                 selected.assertion_id,
-                hashlib.sha256(selected.raw).hexdigest(),
-                json.loads(selected.raw),
+                self._atom_digest(selected.raw),
+                self._atom_document(selected.raw),
             )
             current.atom = GenericAtom.admit(current.row)
             after = replace(
