@@ -70,7 +70,7 @@ def owner(store, catalog, source_binding, epoch=2, **options):
         **options,
     )
     ledger = ValidationLedger(
-        store.db, attempt_id=ATTEMPT, binding=prefix.binding, worker_epoch=epoch
+        store.db, attempt_id=ATTEMPT, binding=prefix.binding, worker_epoch=epoch, epoch=prefix.epoch
     )
     return EntryReplay(store, prefix=prefix, ledger=ledger, catalog=catalog)
 

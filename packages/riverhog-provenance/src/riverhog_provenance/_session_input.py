@@ -95,6 +95,7 @@ def install(ledger: ValidationLedger) -> None:
         "CREATE TABLE journal_validation_input("
         "singleton INTEGER PRIMARY KEY CHECK(singleton=1),checkpoint TEXT NOT NULL)"
     ).close()
+    ledger.epoch.account(WorkAmount(rows=1))
     ledger.db.execute(
         "INSERT INTO journal_validation_input VALUES(1,?)", (_InputState().encode(),)
     ).close()
@@ -124,6 +125,7 @@ class RetainedInput:
     def _load(self) -> _InputState:
         if self.ledger.db.in_transaction:
             raise RuntimeError("source cursor loading requires a closed owner transaction")
+        self.ledger.epoch.account(WorkAmount(rows=1))
         with closing(
             self.ledger.db.execute(
                 "SELECT substr(checkpoint,1,?) FROM journal_validation_input WHERE singleton=1",
@@ -176,6 +178,7 @@ class RetainedInput:
         def apply(epoch: EpochContext) -> ValidationSnapshot:
             epoch.require(db)
             self.ledger._fence(before)
+            epoch.account(WorkAmount(rows=1))
             with closing(
                 db.execute(
                     "UPDATE journal_validation_input SET checkpoint=? "
@@ -194,7 +197,9 @@ class RetainedInput:
             self.state = after
 
         return self.ledger.epoch.apply(
-            apply, receive=receive, admission=self.ledger._application_admission()
+            apply,
+            receive=receive,
+            admission=self.ledger._application_admission() + WorkAmount(rows=1),
         )
 
     def _available(self, before: ValidationSnapshot, octets: int) -> int:

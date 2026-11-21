@@ -2204,6 +2204,8 @@ class EntryReplay:
     ) -> None:
         if store.db is not prefix.db or store.db is not ledger.db:
             raise ValueError("entry replay requires one owned checkpoint connection")
+        if prefix.epoch is not ledger.epoch:
+            raise ValueError("entry replay requires one original prefix and parent epoch")
         if (
             prefix.attempt_id != ledger.attempt_id
             or catalog.checkpoint_sha256() != prefix.catalog_sha256
@@ -2227,7 +2229,15 @@ class EntryReplay:
         self._budget = ReplayBudget()
         self.epoch = ledger.epoch
 
+    def _account_row(self) -> None:
+        self.epoch.account(WorkAmount(rows=1))
+
+    def _write(self, sql: str, values: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self._account_row()
+        return self.db.execute(sql, values)
+
     def _one(self, sql: str, values: tuple[Any, ...] = ()) -> Any:
+        self._account_row()
         with closing(self.db.execute(sql, values)) as cursor:
             return cursor.fetchone()
 
@@ -2363,7 +2373,7 @@ class EntryReplay:
         )
 
         def apply() -> ValidationCheckpoint:
-            self.db.execute(
+            self._write(
                 "INSERT INTO journal_validation_frame VALUES(1,?,?,?)",
                 (
                     str(before.checkpoint.frame_ordinal),
@@ -2378,7 +2388,7 @@ class EntryReplay:
             if on_admitted is not None:
                 on_admitted()
 
-        return self._commit(before, apply, receive=receive)
+        return self._commit(before, apply, receive=receive, admission=WorkAmount(rows=1))
 
     @declare_growth(
         _row_declaration(),
@@ -2647,7 +2657,7 @@ class EntryReplay:
             epoch.require(self.db)
             self.ledger._fence(before)
             accepted = self.prefix._apply(publication)
-            self.db.execute("DELETE FROM journal_validation_frame WHERE singleton=1").close()
+            self._write("DELETE FROM journal_validation_frame WHERE singleton=1").close()
             return self.ledger._publish(
                 before,
                 after,
@@ -2660,7 +2670,13 @@ class EntryReplay:
             self._current = None
 
         return self.ledger.epoch.apply(
-            apply, receive=receive, admission=self.ledger._application_admission()
+            apply,
+            receive=receive,
+            admission=(
+                self.ledger._application_admission()
+                + self.prefix._application_admission()
+                + WorkAmount(rows=1)
+            ),
         )
 
     @declare_growth(
@@ -2701,11 +2717,15 @@ class EntryReplay:
     def _lifecycle(self, before: ValidationSnapshot, current: _CurrentEntry) -> ValidationSnapshot:
         state = before.checkpoint
         row = self._row(state, current)
+        dated = row["type"] in {"usage", "invalidation"} and "at" in row
 
         def lifecycle() -> ValidationCheckpoint:
-            if row["type"] in {"usage", "invalidation"} and "at" in row:
+            if dated:
                 self.store._record_lifecycle_time(
-                    row["state"]["object_id"], row["type"], time_ns(row["at"])
+                    row["state"]["object_id"],
+                    row["type"],
+                    time_ns(row["at"]),
+                    inspect_row=self._account_row,
                 )
             return replace(
                 state,
@@ -2721,7 +2741,9 @@ class EntryReplay:
         def receive(_snapshot: ValidationSnapshot) -> None:
             current.row_key, current.row_sha256, current.row, current.atom = None, None, None, None
 
-        return self._commit(before, lifecycle, receive=receive)
+        return self._commit(
+            before, lifecycle, receive=receive, admission=WorkAmount(rows=2) if dated else None
+        )
 
     @declare_growth(
         _advance_declaration(_entry, _admit_row, _lifecycle, _child_step, _graph_step, _publish),
@@ -2746,7 +2768,7 @@ class EntryReplay:
             return self._lifecycle(before, current)
         if state.phase == "recording":
             with self.epoch.preparing():
-                self.store._check_entry_recording(current.document)
+                self.store._check_entry_recording(current.document, inspect_row=self._account_row)
             return self._move(before, "publish")
         if state.phase == "publish":
             return self._publish(before, current)

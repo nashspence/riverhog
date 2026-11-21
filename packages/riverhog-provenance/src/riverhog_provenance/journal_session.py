@@ -1308,6 +1308,7 @@ class JournalValidationSession:
                 attempt_id=attempt_id,
                 binding=self._prefix.binding,
                 worker_epoch=0,
+                epoch=self._prefix.epoch,
             )
             self._initialize(retained=False)
             self._replay = EntryReplay(
@@ -1330,7 +1331,9 @@ class JournalValidationSession:
             self._prefix._initialize()
             return self._ledger._initialize()
 
-        self._ledger.epoch.apply(apply, receive=self._ledger._receive, admission=WorkAmount(rows=2))
+        self._ledger.epoch.apply(
+            apply, receive=self._ledger._receive, admission=WorkAmount(rows=4 + int(retained))
+        )
 
     @classmethod
     @declare_growth(
@@ -1461,6 +1464,7 @@ class JournalValidationSession:
                         attempt_id=attempt_id,
                         binding=result._prefix.binding,
                         worker_epoch=old_epoch,
+                        epoch=result._prefix.epoch,
                     )
                     result._ledger = previous.replace_worker(worker_epoch)
                 else:
@@ -1470,6 +1474,7 @@ class JournalValidationSession:
                         attempt_id=attempt_id,
                         binding=result._prefix.binding,
                         worker_epoch=worker_epoch,
+                        epoch=result._prefix.epoch,
                     )
                     result._initialize(retained=True)
                 result._replay = EntryReplay(
@@ -1523,6 +1528,7 @@ class JournalValidationSession:
                 or state.byte_count != self._input.cursor.byte_offset
             ):
                 raise RuntimeError("journal terminal source and accepted prefix differ")
+            self._ledger.epoch.account(WorkAmount(rows=1))
             with closing(
                 self._store.db.execute("SELECT 1 FROM journal_validation_frame WHERE singleton=1")
             ) as rows:

@@ -271,7 +271,7 @@ def test_actual_frame_publication_reserves_new_prefix_predecessor_and_receives_i
             assert owner is parent and work is not None
             assert pending.accepted.frame_count == 1 and not owner.db.in_transaction
             assert not owner.epoch.quiescent
-            assert work.consumed.rows == 9 and work.held.rows == 1
+            assert work.consumed.rows == 12 and work.held.rows == 1
             seen.append(work)
             receive(owner, pending)
 

@@ -93,7 +93,7 @@ def test_native_failure_precedes_later_source_framing(journal, catalog, monkeypa
         pulls.append(2)
         yield b"invalid following bytes"
 
-    def reject(_self, _document):
+    def reject(_self, _document, **_options):
         raise ProvenanceValidationError("earlier native recorder failure")
 
     monkeypatch.setattr(JournalStore, "_check_entry_recording", reject)

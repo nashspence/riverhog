@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from contextlib import closing
 
 import pytest
 from riverhog_provenance import validate_journal
+from riverhog_provenance._journal_prefix import JournalPrefix
 from riverhog_provenance._session_input import RetainedInput
 from riverhog_provenance.journal_session import JournalValidationSession
 from riverhog_provenance.journal_store import JournalStore
@@ -108,7 +110,23 @@ def test_actual_postcommit_cache_failure_discards_executor_and_keeps_storage_rec
             session.advance()
         assert caught.value is failure
         assert not session._ledger.epoch.quiescent
-        assert session._prefix.load().frame_count == before + 1
+        failed_prefix = session._prefix
+        with pytest.raises(RuntimeError, match="requires reconstruction") as unusable:
+            failed_prefix.load()
+        assert unusable.value.__cause__ is failure
+        inputs = json.loads(failed_prefix.binding)
+        verified = JournalPrefix(
+            session._store.db,
+            attempt_id=failed_prefix.attempt_id,
+            source_binding=inputs["source_binding"],
+            catalog=catalog,
+            require_profiles=inputs["require_profiles"],
+            expected_anchor=failed_prefix.expected_anchor,
+            require_exact_tail=failed_prefix.require_exact_tail,
+        )
+        assert verified.epoch is not failed_prefix.epoch
+        assert verified.binding == failed_prefix.binding
+        assert verified.load().frame_count == before + 1
         with pytest.raises(RuntimeError, match="requires reconstruction"):
             session.progress()
         with pytest.raises(RuntimeError, match="terminal result"):

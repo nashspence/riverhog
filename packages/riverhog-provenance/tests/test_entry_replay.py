@@ -37,7 +37,9 @@ def make(store, catalog, **options):
         require_profiles=True,
         **options,
     )
-    parent = ValidationLedger(store.db, attempt_id=ATTEMPT, binding=prefix.binding, worker_epoch=2)
+    parent = ValidationLedger(
+        store.db, attempt_id=ATTEMPT, binding=prefix.binding, worker_epoch=2, epoch=prefix.epoch
+    )
     return EntryReplay(store, prefix=prefix, ledger=parent, catalog=catalog)
 
 
@@ -331,7 +333,7 @@ def test_capacity_refuses_before_the_owned_frame_is_published(journal, catalog):
 
 
 def test_semantic_failure_precedes_a_later_framing_failure(journal, catalog, monkeypatch):
-    def reject(_self, _document):
+    def reject(_self, _document, **_options):
         raise ProvenanceValidationError("earlier recorder failure")
 
     monkeypatch.setattr(JournalStore, "_check_entry_recording", reject)

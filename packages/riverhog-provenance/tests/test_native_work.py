@@ -297,7 +297,7 @@ def test_actual_scan_accounts_the_returned_window_before_framing_or_cursor_publi
             assert session.advance(budget).source_octets == before + 7
         assert len(seen) == 1
         assert seen[0].consumed == WorkAmount(
-            rows=6 if retained and not malformed else 2,
+            rows=7 if retained and not malformed else 2,
             octets=7,
             source_octets=7,
             transitions=1,
@@ -409,7 +409,7 @@ def test_complete_frame_transfer_uses_aggregate_budget_not_the_scan_window(
         assert session.advance(JournalValidationBudget(source_octets=7)).phase == "entry-admission"
         assert len(seen) == 1
         assert seen[0].consumed == WorkAmount(
-            rows=8, octets=2 * size, source_octets=size if retained else 0, transitions=1
+            rows=10, octets=2 * size, source_octets=size if retained else 0, transitions=1
         )
         seen[0].require_received()
         if retained:

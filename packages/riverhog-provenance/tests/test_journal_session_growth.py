@@ -847,6 +847,7 @@ def session_fixture(case, catalog, *, cold, measured=False, summary=False, journ
                 attempt_id=ATTEMPT,
                 binding=session._prefix.binding,
                 worker_epoch=epoch,
+                epoch=session._prefix.epoch,
             )
             session._replay = EntryReplay(
                 session._store, prefix=session._prefix, ledger=session._ledger, catalog=catalog
@@ -857,6 +858,7 @@ def session_fixture(case, catalog, *, cold, measured=False, summary=False, journ
                 session._source = session._input.source = ports
             else:
                 session._input.chunks.db = session._store.db
+                session._input.epoch = session._ledger.epoch
             session._replay._current = None if cold else copy(case["cached"])
             if (
                 not cold

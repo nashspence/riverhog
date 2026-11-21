@@ -33,6 +33,8 @@ from riverhog_provenance_contracts import (
 )
 from sha256_continuation import CheckpointSHA256, sha256_compress
 
+from ._native_epoch import EpochContext, bind_epoch
+from ._native_work import WorkAmount
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .errors import ProvenanceValidationError
 from .graph import time_ns
@@ -561,12 +563,14 @@ class JournalPrefix:
         require_profiles: bool,
         expected_anchor: Mapping[str, Any] | None = None,
         require_exact_tail: bool = False,
+        epoch: EpochContext | None = None,
     ) -> None:
         if any(type(value) is not str or not value for value in (attempt_id, source_binding)):
             raise ValueError("prefix requires exact owned attempt and source identities")
         if type(require_profiles) is not bool or type(require_exact_tail) is not bool:
             raise ValueError("prefix requires exact validation modes")
         self.db, self.attempt_id = db, attempt_id
+        self.epoch = bind_epoch(db, epoch)
         self.catalog_sha256 = catalog.checkpoint_sha256()
         # Detach the caller's mapping: this owner binds the complete original mode.
         self.anchor_json = canonical_json_bytes(dict(expected_anchor)) if expected_anchor else None
@@ -586,14 +590,22 @@ class JournalPrefix:
     def expected_anchor(self) -> dict[str, Any] | None:
         return None if self.anchor_json is None else json.loads(self.anchor_json)
 
+    def _execute(self, sql: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        self.epoch.account(WorkAmount(rows=1))
+        return self.db.execute(sql, parameters)
+
+    @staticmethod
+    def _application_admission() -> WorkAmount:
+        return WorkAmount(rows=2)
+
     def _initialize(self) -> PrefixState:
         if not self.db.in_transaction:
             raise RuntimeError("prefix initialization requires an owner transaction")
-        with closing(self.db.execute("SELECT 1 FROM frames LIMIT 1")) as rows:
+        with closing(self._execute("SELECT 1 FROM frames LIMIT 1")) as rows:
             if rows.fetchone() is not None:
                 raise RuntimeError("prefix initialization requires a fresh frame directory")
         state = PrefixState.empty()
-        self.db.execute(
+        self._execute(
             "INSERT INTO journal_prefix VALUES (1, ?, ?, ?)",
             (self.attempt_id, self.binding, state.to_json()),
         ).close()
@@ -613,7 +625,7 @@ class JournalPrefix:
 
     def load(self) -> PrefixState:
         with closing(
-            self.db.execute(
+            self._execute(
                 "SELECT substr(checkpoint, 1, ?) FROM journal_prefix WHERE singleton = 1 "
                 "AND attempt_id = ? AND binding = ?",
                 (_CHECKPOINT_CHARACTERS + 1, self.attempt_id, self.binding),
@@ -625,7 +637,7 @@ class JournalPrefix:
         state = PrefixState.from_json(row[0])
         if state.frame_count:
             with closing(
-                self.db.execute(
+                self._execute(
                     "SELECT substr(reference, 1, 512) FROM frames WHERE sequence = ?",
                     (str(state.frame_count - 1),),
                 )
@@ -747,7 +759,7 @@ class JournalPrefix:
         if (prepared.attempt_id, prepared.binding) != (self.attempt_id, self.binding):
             raise StaleJournalPrefix("journal prefix proposal belongs to another replay")
         with closing(
-            self.db.execute(
+            self._execute(
                 "UPDATE journal_prefix SET checkpoint = ? WHERE singleton = 1 "
                 "AND attempt_id = ? AND binding = ? AND checkpoint = ?",
                 (after.to_json(), self.attempt_id, self.binding, prepared.before_json),
@@ -755,7 +767,7 @@ class JournalPrefix:
         ) as rows:
             if rows.rowcount != 1:
                 raise StaleJournalPrefix("journal prefix proposal was superseded")
-        self.db.execute(
+        self._execute(
             "INSERT INTO frames VALUES (?, ?, ?, ?)",
             (
                 str(before.frame_count),

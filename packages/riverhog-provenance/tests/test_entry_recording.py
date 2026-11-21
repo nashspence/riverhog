@@ -162,9 +162,9 @@ def test_public_journal_routes_recording_after_assertion_validation(
     original = JournalStore._check_entry_recording
     seen = []
 
-    def recording(store, value):
+    def recording(store, value, **options):
         seen.append(value["id"])
-        return original(store, value)
+        return original(store, value, **options)
 
     monkeypatch.setattr(JournalStore, "_check_entry_recording", recording)
     message = "entry recorder must resolve" if wrong_agent else "recording context does not resolve"

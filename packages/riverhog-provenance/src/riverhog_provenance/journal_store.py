@@ -820,7 +820,16 @@ class JournalStore:
                 "retained journal storage is corrupt or incomplete"
             ) from exc
 
-    def _record_lifecycle_time(self, state: str, kind: str, instant: int) -> None:
+    def _record_lifecycle_time(
+        self,
+        state: str,
+        kind: str,
+        instant: int,
+        *,
+        inspect_row: Callable[[], None] | None = None,
+    ) -> None:
+        if inspect_row is not None:
+            inspect_row()
         with closing(
             self.db.execute(
                 "SELECT earliest, latest_usage FROM lifecycle_extrema WHERE state_id = ?",
@@ -832,6 +841,8 @@ class JournalStore:
         latest = int(prior[1]) if prior and prior[1] is not None else None
         if kind == "usage":
             latest = max(instant, latest) if latest is not None else instant
+        if inspect_row is not None:
+            inspect_row()
         self.db.execute(
             "INSERT INTO lifecycle_extrema VALUES (?, ?, ?) "
             "ON CONFLICT(state_id) DO UPDATE SET "
@@ -1218,10 +1229,14 @@ class JournalStore:
             ),
         )
     )
-    def _check_entry_recording(self, document: Mapping[str, Any]) -> None:
+    def _check_entry_recording(
+        self, document: Mapping[str, Any], *, inspect_row: Callable[[], None] | None = None
+    ) -> None:
         """Check one entry's effective recorder/context without reading retained bodies."""
 
         def matches(identity: str, kind: str) -> bool:
+            if inspect_row is not None:
+                inspect_row()
             with closing(
                 self.db.execute(
                     "SELECT type = ? FROM assertions INDEXED BY semantic_reference_type "
