@@ -102,9 +102,10 @@ def build_cases(root, *, large=True, journal_constructions):
                             assert record == active
                         key = work.collection_id, work.journal_id, work.attempt_id
                         progress = current._slots[key].processed
-                        assert progress is not None and record["terminal_progress_json"] is None
+                        assert progress is not None and record["outcome_json"] is None
                     else:
-                        progress = owner.decode_progress(record["terminal_progress_json"])
+                        progress = step.processed
+                        assert progress is not None
                     if not progresses or progress != progresses[-1]:
                         progresses.append(progress)
                     if step.outcome is not None:
@@ -207,7 +208,7 @@ def measure(
         "control_octets": control_octets,
     }
     recorder = Recorder()
-    if mode in {"encode_progress", "decode_progress", "outcome"}:
+    if mode == "outcome":
         # These actual codec functions have no engine or transaction at all.
         # The observer's warmed connection is created before measurement.
         cold = False
@@ -330,7 +331,7 @@ def sql_samples(mode, cases, samples):
                     )
                     assert (
                         retired.source_binding_json == old.source_binding_json
-                        and retired.terminal_progress_json == old.terminal_progress_json
+                        and retired.outcome_json == old.outcome_json
                     )
                 samples.append(sample)
                 reset(case, case.opening)
@@ -396,7 +397,7 @@ def sql_samples(mode, cases, samples):
                         changed=changes,
                     )
                     if changes:
-                        assert result.state == "active" and result.terminal_progress_json is None
+                        assert result.state == "active" and result.outcome_json is None
                         assert (
                             replace(result, state=argument.state, version=argument.version)
                             == argument
@@ -471,10 +472,7 @@ def sql_samples(mode, cases, samples):
                                 and row.state == "retiring"
                                 and row.version != fields["version"]
                             )
-                            assert (
-                                row.terminal_progress_json == fields["terminal_progress_json"]
-                                and row.outcome_json == fields["outcome_json"]
-                            )
+                            assert row.outcome_json == fields["outcome_json"]
                     samples.append(sample)
             elif mode == "publish_outcome":
                 first, last = case.progresses[0], case.progresses[-1]
@@ -502,11 +500,11 @@ def sql_samples(mode, cases, samples):
                         RuntimeError,
                     ),
                     (
-                        {**case.active, "terminal_progress_json": owner.encode_progress(last)},
-                        replace(active, terminal_progress_json=owner.encode_progress(last)),
+                        case.active,
+                        replace(active, outcome_json=canonical(case.outcome)),
                         case.work,
-                        first,
-                        {},
+                        last,
+                        {"outcome": case.outcome},
                         0,
                         RuntimeError,
                     ),
@@ -527,7 +525,7 @@ def sql_samples(mode, cases, samples):
                             **extra,
                         ),
                         controls=(
-                            argument.terminal_progress_json,
+                            argument.outcome_json,
                             encoded_progress,
                             encoded_outcome,
                             extra.get("lost"),
@@ -546,11 +544,6 @@ def sql_samples(mode, cases, samples):
                             result.source_binding_json == argument.source_binding_json
                             and result.certificate_binding_json == argument.certificate_binding_json
                         )
-                        assert result.terminal_progress_json == (
-                            argument.terminal_progress_json
-                            if progress is None
-                            else encoded_progress
-                        )
                         assert result.outcome_json == (encoded_outcome or None)
                         assert result.state == (
                             "lost"
@@ -567,62 +560,33 @@ def sql_samples(mode, cases, samples):
             reset(case)
 
 
-def codec_samples(mode, cases, samples):
+def outcome_samples(cases, samples):
     for case in cases:
         reset(case)
-        for progress in (
-            case.progresses[0],
-            case.progresses[len(case.progresses) // 2],
-            case.progresses[-1],
+        terminal_job = read_job(case.complete)
+        result, sample = measure(
+            case,
+            "outcome",
+            partial(owner.outcome, terminal_job),
+            controls=(terminal_job.outcome_json,),
+            job=terminal_job,
+        )
+        assert result == case.outcome
+        samples.append(sample)
+        for argument in (
+            read_job(case.active),
+            replace(terminal_job, outcome_json="{"),
+            replace(terminal_job, outcome_json=terminal_job.outcome_json + " "),
         ):
-            raw = canonical(progress)
-            if mode == "encode_progress":
-                result, sample = measure(
-                    case, mode, partial(owner.encode_progress, progress), controls=(raw,)
-                )
-                assert result == raw
-                samples.append(sample)
-            elif mode == "decode_progress":
-                result, sample = measure(
-                    case, mode, partial(owner.decode_progress, raw), controls=(raw,)
-                )
-                assert result == progress
-                samples.append(sample)
-        if mode == "decode_progress":
-            for raw in ("{", canonical(case.progresses[0]) + " ", "{}"):
-                _, sample = measure(
-                    case,
-                    mode,
-                    partial(owner.decode_progress, raw),
-                    controls=(raw,),
-                    error=RuntimeError,
-                )
-                samples.append(sample)
-        if mode == "outcome":
-            terminal_job = read_job(case.complete)
-            result, sample = measure(
+            _, sample = measure(
                 case,
-                mode,
-                partial(owner.outcome, terminal_job),
-                controls=(terminal_job.outcome_json,),
-                job=terminal_job,
+                "outcome",
+                partial(owner.outcome, argument),
+                controls=(argument.outcome_json,),
+                job=argument,
+                error=RuntimeError,
             )
-            assert result == case.outcome
             samples.append(sample)
-            for argument in (
-                read_job(case.active),
-                replace(terminal_job, outcome_json="{"),
-                replace(terminal_job, outcome_json=terminal_job.outcome_json + " "),
-            ):
-                _, sample = measure(
-                    case,
-                    mode,
-                    partial(owner.outcome, argument),
-                    controls=(argument.outcome_json,),
-                    job=argument,
-                    error=RuntimeError,
-                )
-                samples.append(sample)
 
 
 @pytest.mark.growth_witness(
@@ -703,28 +667,6 @@ def test_actual_job_retire_source_includes_owned_metadata_work(job_cases, record
 
 
 @pytest.mark.growth_witness(
-    "riverhog-validation-job-encode-progress-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.services.upload_journal_validation_jobs.encode_progress",
-)
-def test_actual_job_encode_progress_includes_owned_metadata_work(job_cases, record_property):
-    samples = []
-    record_property("growth_samples", samples)
-    codec_samples("encode_progress", job_cases, samples)
-
-
-@pytest.mark.growth_witness(
-    "riverhog-validation-job-decode-progress-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.services.upload_journal_validation_jobs.decode_progress",
-)
-def test_actual_job_decode_progress_includes_owned_metadata_work(job_cases, record_property):
-    samples = []
-    record_property("growth_samples", samples)
-    codec_samples("decode_progress", job_cases, samples)
-
-
-@pytest.mark.growth_witness(
     "riverhog-validation-job-outcome-work/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_validation_jobs.outcome",
@@ -732,4 +674,4 @@ def test_actual_job_decode_progress_includes_owned_metadata_work(job_cases, reco
 def test_actual_job_outcome_includes_owned_metadata_work(job_cases, record_property):
     samples = []
     record_property("growth_samples", samples)
-    codec_samples("outcome", job_cases, samples)
+    outcome_samples(job_cases, samples)

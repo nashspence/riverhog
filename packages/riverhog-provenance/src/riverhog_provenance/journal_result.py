@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable, Mapping
 from contextlib import closing
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -17,7 +19,7 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
-from riverhog_provenance_contracts import ContractCatalog
+from riverhog_provenance_contracts import ContractCatalog, require_canonical_uuid_urn
 
 from ._journal_prefix import JournalPrefix
 from ._session_checkpoint import ValidationLedger
@@ -27,12 +29,46 @@ from .graph_certificates import JournalGraphCertificateBinding
 from .journal import JournalSummary
 from .journal_construction import JournalConstruction
 from .journal_result_opening import JournalResultOpening
-from .journal_session import (
-    JournalValidationProgress,
-    JournalValidationSource,
-    _checkpoint_progress,
-)
+from .journal_session import JournalValidationSource
 from .journal_store import InvalidJournalWorkspace, JournalStore
+from .replay_binding import JournalReplayBinding
+
+
+@dataclass(frozen=True, slots=True)
+class JournalResultConfirmation:
+    """Owner-confirmed semantic completion, independent of live progress."""
+
+    attempt_id: str
+    worker_epoch: int
+    source: JournalReplayBinding
+    terminal_entry_id: str
+    terminal_sequence: int
+    terminal_json_sha256: str
+
+    def validate_source(self, binding: JournalReplayBinding) -> None:
+        """Validate detached outcome metadata; this grants no source authority."""
+        if (
+            self.source != binding
+            or type(self.worker_epoch) is not int
+            or self.worker_epoch < 0
+            or type(self.attempt_id) is not str
+            or not self.attempt_id
+            or type(self.terminal_sequence) is not int
+            or self.terminal_sequence < 0
+            or self.terminal_sequence != int(binding.frame_count) - 1
+            or type(self.terminal_json_sha256) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", self.terminal_json_sha256) is None
+        ):
+            raise ValueError("terminal confirmation differs from its exact source")
+        require_canonical_uuid_urn(self.terminal_entry_id)
+
+    @property
+    def through(self) -> dict[str, str]:
+        return {
+            "entry_id": self.terminal_entry_id,
+            "sequence": str(self.terminal_sequence),
+            "json_sha256": self.terminal_json_sha256,
+        }
 
 
 def _result_declaration() -> Declaration:
@@ -67,7 +103,7 @@ def _result_declaration() -> Declaration:
         authority="riverhog-provenance",
         subjects=("riverhog_provenance.journal_result.open_retained_journal_result",),
         scope="native-sqlite-owner-confirmed-frozen-result-admission",
-        starts_at="admit the current owner's exact complete checkpoint and retained workspace",
+        starts_at="admit the current owner's exact semantic completion and retained workspace",
         ends_at="return one independently owned frozen result without traversing its views",
         dimensions=(
             Dimension("journal_octets", OCTETS, "Exact octets in the confirmed journal."),
@@ -221,7 +257,7 @@ def open_retained_journal_result(
     source: JournalValidationSource,
     *,
     construction: JournalConstruction,
-    confirmed: JournalValidationProgress,
+    confirmed: JournalResultConfirmation,
     catalog: ContractCatalog | None = None,
     certificates: JournalGraphCertificateBinding | None = None,
     expected_anchor: Mapping[str, Any] | None = None,
@@ -232,7 +268,7 @@ def open_retained_journal_result(
     """Return one independently owned, read-only, exactly confirmed frozen result.
 
     The trusted owner supplies current immutable source authority, its confirmed
-    complete progress and private workspace custody. This does not admit imported
+    semantic outcome and private workspace custody. This does not admit imported
     databases or recreate missing work. No worker epoch is replaced, source range
     is read, accepted frame is replayed, or native checkpoint is written.
 
@@ -250,8 +286,14 @@ def open_retained_journal_result(
     try:
         selected = catalog or ContractCatalog()
         binding = source.binding
-        if confirmed.complete is not True or confirmed.phase != "done":
-            raise InvalidJournalWorkspace("a frozen result requires confirmed complete progress")
+        if not isinstance(confirmed, JournalResultConfirmation):
+            raise TypeError("frozen result requires an explicit terminal confirmation")
+        try:
+            confirmed.validate_source(binding)
+        except (ValueError, TypeError) as error:
+            raise InvalidJournalWorkspace(
+                "frozen result confirmation differs from its source"
+            ) from error
         if binding.catalog_sha256 != selected.checkpoint_sha256():
             raise InvalidJournalWorkspace("frozen result catalog differs from its current owner")
         if source.verify_current() is not True:
@@ -294,11 +336,16 @@ def open_retained_journal_result(
             )
             snapshot = ledger.load()
             source_cursor = RetainedInput(ledger, source)
-            progress = _checkpoint_progress(
-                confirmed.attempt_id, ledger, snapshot, source_cursor.cursor.byte_offset
-            )
-            if progress != confirmed or not source_cursor.complete or source_cursor.pending:
-                raise InvalidJournalWorkspace("frozen result differs from its confirmed checkpoint")
+            if (
+                snapshot.checkpoint.phase != "done"
+                or snapshot.checkpoint.frame_ordinal != int(binding.frame_count)
+                or source_cursor.cursor.byte_offset != int(binding.source_bytes)
+                or not source_cursor.complete
+                or source_cursor.pending
+            ):
+                raise InvalidJournalWorkspace(
+                    "frozen result has no complete exact-source execution"
+                )
             with closing(
                 store.db.execute("SELECT 1 FROM journal_validation_frame WHERE singleton=1")
             ) as rows:
@@ -311,6 +358,7 @@ def open_retained_journal_result(
                 or state.frame_count != int(binding.frame_count)
                 or state.hexdigest != binding.source_sha256
                 or store.frame_count != state.frame_count
+                or state.previous != confirmed.through
             ):
                 raise InvalidJournalWorkspace("frozen result differs from its exact source")
             if source.binding != binding or source.verify_current() is not True:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from contextlib import contextmanager
 from dataclasses import replace
 
@@ -10,7 +11,6 @@ from riverhog_core.journal_validation_workspace import (
 )
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_result as result_owner
-from riverhog_core.services import upload_journal_validation_jobs as jobs
 from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
 from riverhog_provenance import (
     JournalValidationCapacity,
@@ -222,7 +222,7 @@ def test_busy_sealed_result_leaves_the_same_completed_job_pending_for_retry(
         "terminal-anchor",
         "job-state",
         "job-worker",
-        "job-progress",
+        "job-outcome",
         "job-certificate",
         "missing-job",
         "missing-database",
@@ -253,13 +253,15 @@ def test_sealed_result_never_repairs_or_revalidates_changed_authority(
                     values = {"state": "lost"}
                     if fault == "job-worker":
                         values = {"worker_epoch": job.worker_epoch + 1}
-                    elif fault == "job-progress":
+                    elif fault == "job-outcome":
                         values = {
-                            "terminal_progress_json": jobs.encode_progress(
-                                replace(
-                                    jobs.decode_progress(job.terminal_progress_json),
-                                    checkpoint_sha256="0" * 64,
-                                )
+                            "outcome_json": json.dumps(
+                                {
+                                    **json.loads(job.outcome_json),
+                                    "terminal_json_sha256": "0" * 64,
+                                },
+                                sort_keys=True,
+                                separators=(",", ":"),
                             )
                         }
                     elif fault == "job-certificate":

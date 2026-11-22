@@ -206,7 +206,6 @@ class Recorder(fences.Recorder):
                     (
                         job.source_binding_json,
                         job.certificate_binding_json,
-                        job.terminal_progress_json,
                         job.outcome_json,
                         job.failure,
                     )
@@ -974,7 +973,7 @@ def test_actual_opening_preserves_provider_costs_and_transferred_custody(
             )
             if case.recover:
                 catalog_progress = slot.processed
-                assert slot.job.terminal_progress_json is None
+                assert slot.job.outcome_json is None
                 for _ in range(10000):
                     accepted = slot.session.advance()
                     if accepted.accepted_frames:
@@ -995,7 +994,7 @@ def test_actual_opening_preserves_provider_costs_and_transferred_custody(
                 assert result is None
                 adopted = slot.session.progress()
                 published = slot.processed
-                assert slot.job.terminal_progress_json is None
+                assert slot.job.outcome_json is None
                 assert (
                     adopted.accepted_frames == published.accepted_frames == accepted.accepted_frames
                 )

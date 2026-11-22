@@ -110,7 +110,7 @@ def test_source_deletion_queues_bounded_files_then_directory_then_catalog_remova
             session.execute(delete(Journal))
         orphan = selected(factory)
         assert orphan.workspace_id == job.workspace_id and orphan.collection_id is None
-        assert orphan.terminal_progress_json == job.terminal_progress_json
+        assert orphan.outcome_json == job.outcome_json
         cleanup = retirement_owners(factory, root)
         assert (
             retirement_step(

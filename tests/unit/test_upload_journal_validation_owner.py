@@ -16,6 +16,7 @@ from riverhog_provenance import (
     validate_journal,
 )
 from sqlalchemy import delete, select, update
+from sqlalchemy.exc import IntegrityError
 
 from tests.unit.test_journal_capture import retained
 from tests.unit.test_journal_summary_consumers import source
@@ -62,7 +63,6 @@ def test_retained_owner_preserves_native_outcome_and_closes_catalog_readers(
             assert job.state == ("failed" if malformed else "complete")
             assert jobs.outcome(job) == outcome
             if failure is None:
-                assert jobs.decode_progress(job.terminal_progress_json).complete
                 assert outcome.terminal_entry_id == expected_anchor["through"]["entry_id"]
                 assert outcome.terminal_json_sha256 == expected_anchor["through"]["json_sha256"]
             assert (
@@ -88,7 +88,7 @@ def test_live_native_yields_do_not_publish_catalog_progress(tmp_path, *, journal
             original = selected(factory)
             key = work.collection_id, work.journal_id, work.attempt_id
             previous = owner._slots[key].processed
-            assert original.state == "active" and original.terminal_progress_json is None
+            assert original.state == "active" and original.outcome_json is None
             observed = 0
             for _ in range(10000):
                 step = owner.advance(work, catalog=catalog, budget=budget)
@@ -96,7 +96,7 @@ def test_live_native_yields_do_not_publish_catalog_progress(tmp_path, *, journal
                     assert step.outcome.failure is None
                     terminal = selected(factory)
                     assert terminal.state == "complete" and terminal.version != original.version
-                    assert jobs.decode_progress(terminal.terminal_progress_json).complete
+                    assert jobs.outcome(terminal) == step.outcome
                     break
                 assert selected(factory) == original
                 processed = owner._slots[key].processed
@@ -106,6 +106,36 @@ def test_live_native_yields_do_not_publish_catalog_progress(tmp_path, *, journal
             else:
                 pytest.fail("finite Native source did not produce its terminal outcome")
             assert observed > 1
+        finally:
+            owner.close()
+
+
+def test_active_job_cannot_receive_a_terminal_outcome_before_native_completion(
+    tmp_path, *, journal_constructions
+):
+    with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
+        work, _ = ready(factory)
+        owner = UploadJournalValidationOwner(
+            factory, tmp_path / "native", construction_factory=journal_constructions.retain
+        )
+        try:
+            step = owner.advance(
+                work,
+                catalog=source_owner.admission_provenance_catalog(),
+                budget=JournalValidationBudget(work=JournalValidationWorkBudget(transitions=1)),
+            )
+            assert step.processed is not None and step.outcome is None
+            before = selected(factory)
+            assert before.state == "active" and before.outcome_json is None
+            with pytest.raises(IntegrityError):
+                with factory() as session, session.begin():
+                    session.execute(
+                        update(Job)
+                        .where(Job.workspace_id == before.workspace_id)
+                        .values(outcome_json="{}")
+                    )
+            assert selected(factory) == before
+            assert finish(owner, work).failure is None
         finally:
             owner.close()
 
@@ -225,7 +255,7 @@ raise AssertionError('confirmed prefix crash was not reached')
         )
         assert process.returncode == 81, process.stderr.decode()
         previous = selected(factory)
-        assert previous.terminal_progress_json is None
+        assert previous.outcome_json is None
 
         def forbidden(*_args, **_kwargs):
             pytest.fail("replacing a worker replayed an already accepted frame")
@@ -243,7 +273,7 @@ raise AssertionError('confirmed prefix crash was not reached')
             adopted = selected(factory)
             assert adopted.workspace_id == previous.workspace_id
             assert adopted.worker_epoch == previous.worker_epoch + 1
-            assert jobs.decode_progress(adopted.terminal_progress_json).accepted_frames == 1
+            assert jobs.outcome(adopted).frame_count == 1
         finally:
             replacement.close()
 
@@ -268,7 +298,7 @@ def test_job_cleanup_pointer_survives_source_deletion_and_stale_owner_cannot_pub
             orphan = selected(factory)
             assert orphan.workspace_id == before.workspace_id
             assert orphan.collection_id is None and orphan.journal_id is None
-            assert orphan.terminal_progress_json == before.terminal_progress_json
+            assert orphan.outcome_json == before.outcome_json
             assert (root / before.workspace_id / "snapshot.sqlite3").is_file()
         finally:
             owner.close()
@@ -323,10 +353,7 @@ def test_changed_rank_manifest_cannot_advance_even_a_non_graph_unit(
             with pytest.raises(LostJournalValidationWorkspace):
                 owner.advance(work, catalog=source_owner.admission_provenance_catalog())
             after = selected(factory)
-            assert (
-                after.state == "lost"
-                and after.terminal_progress_json == before.terminal_progress_json
-            )
+            assert after.state == "lost" and after.outcome_json == before.outcome_json
             with factory() as session:
                 assert session.get(Journal, (1, JOURNAL)).state == "validating"
         finally:

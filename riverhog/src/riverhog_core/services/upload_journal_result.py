@@ -20,9 +20,9 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance import (
     JOURNAL_FRAMING_ALGORITHM,
+    JournalResultConfirmation,
     JournalSummary,
     JournalValidationCapacity,
-    JournalValidationProgress,
     open_retained_journal_result,
 )
 from riverhog_provenance.graph_certificates import JournalGraphCertificateBinding
@@ -118,13 +118,12 @@ def _confirmed(
     source: Mapping[str, Any],
     job: jobs.ValidationJob,
 ) -> tuple[
-    JournalReplayBinding, JournalGraphCertificateBinding, JournalValidationProgress, dict[str, Any]
+    JournalReplayBinding, JournalGraphCertificateBinding, JournalResultConfirmation, dict[str, Any]
 ]:
-    if job.state != "complete" or job.failure is not None or job.terminal_progress_json is None:
+    if job.state != "complete" or job.failure is not None:
         raise LostJournalValidationWorkspace("sealed journal has no confirmed native result")
     binding = JournalReplayBinding.from_json(job.source_binding_json)
     certificates = JournalGraphCertificateBinding.from_json(job.certificate_binding_json)
-    progress = jobs.decode_progress(job.terminal_progress_json)
     outcome = jobs.outcome(job)
     if (
         job.attempt_id != binding.attempt_id
@@ -145,11 +144,9 @@ def _confirmed(
         or source["failure"] is not None
         or source["validation_byte_offset"] != int(binding.source_bytes)
         or source["validation_sequence"] != int(binding.frame_count)
-        or progress.attempt_id != job.workspace_id
-        or progress.worker_epoch != job.worker_epoch
-        or not progress.complete
-        or progress.phase != "done"
         or outcome.failure is not None
+        or outcome.terminal_entry_id is None
+        or outcome.terminal_json_sha256 is None
         or outcome.frame_count != int(binding.frame_count)
         or outcome.terminal_entry_id != source["terminal_entry_id"]
         or outcome.terminal_sequence != source["terminal_sequence"]
@@ -169,7 +166,16 @@ def _confirmed(
         "prefix_sha256": binding.source_sha256,
         "prefix_bytes": binding.source_bytes,
     }
-    return binding, certificates, progress, anchor
+    confirmation = JournalResultConfirmation(
+        job.workspace_id,
+        job.worker_epoch,
+        binding,
+        outcome.terminal_entry_id,
+        outcome.terminal_sequence,
+        outcome.terminal_json_sha256,
+    )
+    confirmation.validate_source(binding)
+    return binding, certificates, confirmation, anchor
 
 
 @dataclass(frozen=True, slots=True)
@@ -180,7 +186,7 @@ class SealedJournalResultAdmission:
     job: jobs.ValidationJob
     binding: JournalReplayBinding
     certificates: JournalGraphCertificateBinding
-    confirmed: JournalValidationProgress
+    confirmed: JournalResultConfirmation
 
     @property
     def anchor(self) -> dict[str, Any]:

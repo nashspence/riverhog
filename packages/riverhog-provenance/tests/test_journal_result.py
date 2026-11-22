@@ -13,6 +13,7 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
 from riverhog_provenance import (
     IncompleteSourceError,
     JournalFrame,
+    JournalResultConfirmation,
     assertion,
     create_journal,
     encode_entry,
@@ -44,9 +45,18 @@ def completed(tmp_path, journal, catalog, *, certified=False, journal_constructi
         certificates=certificates,
         construction=journal_constructions.retain(),
     ) as session:
-        confirmed = finish(session)
+        finish(session)
         with session.result() as result:
             expected = result.materialize()
+            tail = result.anchor["through"]
+            confirmed = JournalResultConfirmation(
+                ATTEMPT,
+                7,
+                source.binding,
+                tail["entry_id"],
+                int(tail["sequence"]),
+                tail["json_sha256"],
+            )
     source.calls.clear()
     return path, source, confirmed, certificates, expected
 
@@ -414,19 +424,19 @@ def test_frozen_result_sqlite_connection_cannot_write_even_if_query_only_is_disa
 @pytest.mark.parametrize(
     "fault",
     [
-        {"complete": False},
-        {"phase": "terminal"},
-        {"version": 0},
-        {"worker_epoch": 8},
-        {"attempt_id": "b" * 32},
-        {"checkpoint_sha256": "0" * 64},
-        {"accepted_frames": 0},
-        {"accepted_octets": 0},
-        {"accepted_sha256": "0" * 64},
-        {"source_octets": 0},
+        ("worker_epoch", 8),
+        ("attempt_id", "b" * 32),
+        ("terminal_entry_id", "urn:uuid:00000000-0000-4000-8000-000000000099"),
+        ("terminal_sequence", -1),
+        ("terminal_json_sha256", "0" * 64),
+        ("source.source_bytes", "0"),
+        ("source.source_sha256", "0" * 64),
+        ("source.source_version", "987654321"),
+        ("source.frame_count", "0"),
+        ("source.catalog_sha256", "0" * 64),
     ],
 )
-def test_frozen_result_requires_the_exact_confirmed_progress(
+def test_frozen_result_requires_the_exact_confirmed_outcome(
     tmp_path, journal, catalog, fault, *, journal_constructions
 ):
     path, source, confirmed, _, _ = completed(
@@ -434,11 +444,18 @@ def test_frozen_result_requires_the_exact_confirmed_progress(
     )
     before = (path / "snapshot.sqlite3").read_bytes()
     released = []
+    name, value = fault
+    if name.startswith("source."):
+        changed = replace(
+            confirmed, source=replace(confirmed.source, **{name.split(".")[1]: value})
+        )
+    else:
+        changed = replace(confirmed, **{name: value})
     with pytest.raises((InvalidJournalWorkspace, StaleValidationCheckpoint)):
         open_retained_journal_result(
             path,
             source,
-            confirmed=replace(confirmed, **fault),
+            confirmed=changed,
             catalog=catalog,
             on_storage_close=lambda: released.append("closed"),
             construction=journal_constructions.retain(),
@@ -541,7 +558,7 @@ def test_frozen_result_never_recreates_or_repairs_lost_native_state(
             else:
                 db.execute(
                     "INSERT INTO journal_validation_frame VALUES(1,?,?,?)",
-                    (str(confirmed.accepted_frames), "0" * 64, b"unfinished fixture atom"),
+                    (confirmed.source.frame_count, "0" * 64, b"unfinished fixture atom"),
                 )
             db.commit()
     released = []

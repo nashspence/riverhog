@@ -39,8 +39,6 @@ def _job_declaration(mode: str) -> Declaration:
         "publish_outcome": 2,
         "creation_current": 2,
         "retire_source": 1,
-        "encode_progress": 0,
-        "decode_progress": 0,
         "outcome": 0,
     }[mode]
     mutations = {
@@ -55,12 +53,8 @@ def _job_declaration(mode: str) -> Declaration:
         if mode == "select_job"
         else int(mode in {"claim_worker", "activate_worker", "publish_outcome", "retire_source"})
     )
-    decodes = int(mode in {"decode_progress", "outcome"})
-    encodes = (
-        2
-        if mode == "publish_outcome"
-        else int(mode in {"encode_progress", "decode_progress", "outcome"})
-    )
+    decodes = int(mode == "outcome")
+    encodes = int(mode in {"publish_outcome", "outcome"})
 
     def dimension(name: str) -> Expression:
         return Expression("dimension", name=name)
@@ -81,9 +75,7 @@ def _job_declaration(mode: str) -> Declaration:
         id="riverhog-server.validation-job-" + mode.replace("_", "-") + ".growth/v1",
         authority="riverhog-server",
         subjects=("riverhog_core.services.upload_journal_validation_jobs." + mode,),
-        scope=(
-            "exact source/worker catalog ownership and canonical detached progress/outcome metadata"
-        ),
+        scope=("exact source/worker catalog ownership and canonical mandatory outcome metadata"),
         starts_at="accept the selected source/job and complete proposed control values",
         ends_at=("close owned catalog resources and return detached metadata, or reject the call"),
         dimensions=(
@@ -98,16 +90,15 @@ def _job_declaration(mode: str) -> Declaration:
                 (
                     "Largest complete native encoded source/job row in the "
                     "admitted lookup and proposed update inputs, including both "
-                    "bindings and all progress/outcome/failure text."
+                    "bindings and all outcome/failure text."
                 ),
             ),
             Dimension(
                 "control_octets",
                 OCTETS,
                 (
-                    "Sum of complete incoming and previous binding, progress and "
-                    "outcome canonical control widths, including rejected raw "
-                    "texts."
+                    "Sum of complete binding/outcome text widths and incoming "
+                    "live observation scalar widths, including rejected controls."
                 ),
             ),
         ),
@@ -198,10 +189,7 @@ def _job_declaration(mode: str) -> Declaration:
                 COUNT,
                 "upper",
                 count(decodes),
-                (
-                    "Only previous progress or the exact requested canonical "
-                    "control document is decoded."
-                ),
+                ("Only the requested exact mandatory outcome document is decoded."),
             ),
             Bound(
                 "json_encodes",
@@ -209,8 +197,8 @@ def _job_declaration(mode: str) -> Declaration:
                 "upper",
                 count(encodes),
                 (
-                    "Previous progress validation, proposed progress and optional"
-                    " outcome execute their actual canonical encoders."
+                    "Publishing or validating a mandatory outcome executes its "
+                    "actual canonical encoder; live progress is never encoded."
                 ),
             ),
             Bound(
@@ -292,13 +280,12 @@ def _job_declaration(mode: str) -> Declaration:
         ),
         invariants=(
             (
-                "Source, attempt, both bindings, worker epoch and CAS version"
-                " stay exact; stale ownership cannot overwrite confirmed "
-                "progress."
+                "Source, attempt, both bindings, worker epoch and CAS version "
+                "stay exact; stale ownership cannot overwrite a confirmed outcome."
             ),
             (
-                "Monotonicity and complete-outcome checks retain their "
-                "existing order and reject before publication when required."
+                "Worker identity and successful-completion checks precede publication. "
+                "Active rows contain no terminal outcome or processed cursor."
             ),
             (
                 "A new attempt or source deletion retains the old "
@@ -325,34 +312,6 @@ def _version() -> str:
     return hashlib.sha256(uuid4().bytes).hexdigest()
 
 
-def encode_progress(progress: JournalValidationProgress) -> str:
-    return canonical_json_bytes(
-        {
-            key: str(value) if type(value) is int else value
-            for key, value in asdict(progress).items()
-        }
-    ).decode()
-
-
-def decode_progress(raw: str) -> JournalValidationProgress:
-    try:
-        value = json.loads(raw)
-        for field in (
-            "worker_epoch",
-            "version",
-            "accepted_frames",
-            "accepted_octets",
-            "source_octets",
-        ):
-            value[field] = int(value[field])
-        progress = JournalValidationProgress(**value)
-        if type(progress.complete) is not bool or encode_progress(progress) != raw:
-            raise ValueError("noncanonical progress")
-        return progress
-    except (TypeError, ValueError, KeyError) as error:
-        raise RuntimeError("invalid retained native validation progress") from error
-
-
 @dataclass(frozen=True, slots=True)
 class ValidationJob:
     workspace_id: str
@@ -364,7 +323,6 @@ class ValidationJob:
     worker_epoch: int
     version: str
     state: str
-    terminal_progress_json: str | None
     outcome_json: str | None
     failure: str | None
 
@@ -456,7 +414,7 @@ def claim_worker(
             .where(
                 *_identity(job),
                 Job.version == job.version,
-                Job.terminal_progress_json == job.terminal_progress_json,
+                Job.outcome_json == job.outcome_json,
                 Job.state.in_(("opening", "active")),
             )
             .values(version=_version(), worker_epoch=job.worker_epoch + 1)
@@ -487,7 +445,7 @@ def activate_worker(
                 *_identity(job),
                 Job.version == job.version,
                 Job.state == "opening",
-                Job.terminal_progress_json.is_(None),
+                Job.outcome_json.is_(None),
             )
             .values(version=_version(), state="active")
             .returning(Job)
@@ -518,8 +476,8 @@ def publish_outcome(
     """Publish an exact terminal observation/outcome under both current fences."""
     if (outcome is None) == (lost is None):
         raise RuntimeError("Native publication requires exactly one terminal outcome or loss")
-    if job.state in {"opening", "active"} and job.terminal_progress_json is not None:
-        raise RuntimeError("active Native work cannot retain a terminal observation")
+    if job.state in {"opening", "active"} and job.outcome_json is not None:
+        raise RuntimeError("active Native work cannot retain a terminal outcome")
     if progress is not None and (
         progress.attempt_id != job.workspace_id or progress.worker_epoch != job.worker_epoch
     ):
@@ -557,13 +515,12 @@ def publish_outcome(
             .where(
                 *_identity(job),
                 Job.version == job.version,
-                Job.terminal_progress_json == job.terminal_progress_json,
+                Job.outcome_json == job.outcome_json,
                 Job.state.in_(("opening", "active")),
             )
             .values(
                 version=_version(),
                 state=state,
-                terminal_progress_json=None if progress is None else encode_progress(progress),
                 outcome_json=encoded_outcome,
                 failure=lost
                 if lost is not None
@@ -650,12 +607,6 @@ declare_growth(_job_declaration("creation_current"))(creation_current)
 
 
 declare_growth(_job_declaration("retire_source"))(retire_source)
-
-
-declare_growth(_job_declaration("encode_progress"))(encode_progress)
-
-
-declare_growth(_job_declaration("decode_progress"))(decode_progress)
 
 
 declare_growth(_job_declaration("outcome"))(outcome)

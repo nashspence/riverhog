@@ -280,7 +280,6 @@ def _validation_detachment(ready):
             "certificate_binding_json",
             "worker_epoch",
             "attempt_id",
-            "terminal_progress_json",
             "outcome_json",
         ):
             assert getattr(job, name) == values[name]

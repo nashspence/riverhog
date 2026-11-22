@@ -943,7 +943,7 @@ def finite_cases(witness, root, *, large, journal_constructions):
                     slot = current._slots[key]
                     session = slot.session
                     assert session.progress().source_octets == slot.processed.source_octets == 7
-                    assert slot.job.terminal_progress_json is None
+                    assert slot.job.outcome_json is None
                     assert slot.source.source._page is not None
                     # Drive actual fixture work outside the chosen measured units.
                     for _ in range(10000):
@@ -1380,7 +1380,8 @@ def recording_cases(witness, root, *, large, journal_constructions):
                         assert not current._slots and session._closed
                         job = witness.opening.job_tests.selected(factory)
                         assert job["state"] == "failed" and job["failure"] == message
-                        assert owner.jobs.decode_progress(job["terminal_progress_json"]) == before
+                        assert owner.jobs.outcome(owner.jobs.ValidationJob(**job)) == result.outcome
+                        assert result.processed == before
                         result2, cached = recorder.measure(
                             current, cold=False, budget=unit_budget()
                         )

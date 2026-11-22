@@ -2745,7 +2745,6 @@ CREATE TABLE journal_validation_jobs (
 	worker_epoch BIGINT NOT NULL, 
 	version VARCHAR(64) NOT NULL, 
 	state VARCHAR NOT NULL, 
-	terminal_progress_json TEXT,
 	outcome_json TEXT, 
 	failure TEXT, 
 	PRIMARY KEY (workspace_id), 
@@ -2756,6 +2755,7 @@ CREATE TABLE journal_validation_jobs (
 	CONSTRAINT ck_journal_validation_state CHECK (state IN ('opening','active','complete','failed','lost','retiring','directory')), 
 	CONSTRAINT ck_journal_validation_workspace CHECK (length(workspace_id) = 32 AND lower(workspace_id) = workspace_id AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(workspace_id, '0',''),'1',''),'2',''),'3',''),'4',''),'5',''),'6',''),'7',''),'8',''),'9',''),'a',''),'b',''),'c',''),'d',''),'e',''),'f','')) = 0), 
 	CONSTRAINT ck_journal_validation_outcome CHECK (state NOT IN ('complete','failed') OR outcome_json IS NOT NULL), 
+	CONSTRAINT ck_journal_validation_active_outcome CHECK (state NOT IN ('opening','active') OR outcome_json IS NULL),
 	CONSTRAINT ck_journal_validation_jobs_version_hex CHECK (length(version) = 64 AND lower(version) = version AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(version, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 

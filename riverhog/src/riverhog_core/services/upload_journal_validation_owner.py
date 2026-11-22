@@ -481,6 +481,7 @@ class _NativeReceivingPending(BlockingIOError):
 class ValidationAdvance:
     progressed: bool
     outcome: source_owner._UploadJournalValidationOutcome | None = None
+    processed: JournalValidationProgress | None = None
 
 
 def _pool_declaration(mode: str) -> Declaration:
@@ -2106,7 +2107,7 @@ class UploadJournalValidationOwner:
                     raise source_owner._StaleUploadJournalValidation
                 slot.job = published
                 self._drop(key, slot)
-            return ValidationAdvance(after != before or outcome is not None, outcome)
+            return ValidationAdvance(after != before or outcome is not None, outcome, after)
         except (JournalValidationCapacity, SqliteCapacity):
             # A successfully opened atom stays warm; failed initialization retains
             # its early storage handle only until application cleanup confirms.

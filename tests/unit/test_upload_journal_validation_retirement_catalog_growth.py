@@ -38,8 +38,7 @@ def fields(identity, *, state="active", width=0, epoch=0, linked=None):
         "worker_epoch": epoch,
         "version": "0" * 64,
         "state": state,
-        "terminal_progress_json": "opaque progress " + "p" * width,
-        "outcome_json": "opaque outcome " + "o" * width,
+        "outcome_json": None if state in {"opening", "active"} else "opaque outcome " + "o" * width,
         "failure": "previous blocker " + "f" * width,
     }
 

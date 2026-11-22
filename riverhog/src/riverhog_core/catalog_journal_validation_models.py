@@ -29,7 +29,6 @@ class JournalValidationJobRecord(Base):
     worker_epoch: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     version: Mapped[str] = mapped_column(String(64), nullable=False)
     state: Mapped[str] = mapped_column(String, nullable=False, default="opening")
-    terminal_progress_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     outcome_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
 
@@ -66,6 +65,10 @@ class JournalValidationJobRecord(Base):
         CheckConstraint(
             "state NOT IN ('complete','failed') OR outcome_json IS NOT NULL",
             name="ck_journal_validation_outcome",
+        ),
+        CheckConstraint(
+            "state NOT IN ('opening','active') OR outcome_json IS NULL",
+            name="ck_journal_validation_active_outcome",
         ),
         Index(
             "uq_journal_validation_source",
