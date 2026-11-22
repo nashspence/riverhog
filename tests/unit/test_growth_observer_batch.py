@@ -613,7 +613,7 @@ def _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, *, include_
 
     calls = observed_validations(monkeypatch)
     cases = units.real_case(tmp_path / "caller", unrelated=0)
-    roots = []
+    roots, emitted = [], []
     with closing(cases):
         case, current = next(cases)
         with SampleBatch(
@@ -622,17 +622,25 @@ def _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, *, include_
             include_descendants=include_descendants,
             numeric_policy=numeric_policy_from_environment(os.environ),
         ) as batch:
-            recorder = callers.Recorder(case, current, batch=batch)
-            recorder.units.native_budget = units.native.unit_budget()
-            for _ in range(3):
-                result, sample = recorder.measure()
-                assert type(result) is bool
-                assert len(sample["delegates"]["unit"]) == 1
-                roots.append(sample)
-                assert case.engine.pool.checkedout() == 0
-        assert batch.validated_samples == (122 if include_descendants else 6)
+            receive = SampleBatch.receive
+
+            def receiving(current_batch, operation, observed):
+                if current_batch is batch:
+                    emitted.append(observed)
+                return receive(current_batch, operation, observed)
+
+            with monkeypatch.context() as patch:
+                patch.setattr(SampleBatch, "receive", receiving)
+                recorder = callers.Recorder(case, current, batch=batch)
+                recorder.units.native_budget = units.native.unit_budget()
+                for _ in range(3):
+                    result, sample = recorder.measure()
+                    assert type(result) is bool
+                    assert len(sample["delegates"]["unit"]) == 1
+                    roots.append(sample)
+                    assert case.engine.pool.checkedout() == 0
         assert batch.validation_attempts == batch.validation_calls == 2
-        assert batch.validation_groups == (46 if include_descendants else 4)
+        assert batch.validation_groups == len(calls)
         expected = {
             growth.growth_binding(callers.ROOT).declaration.id: 3,
             growth.growth_binding(units.ROOT).declaration.id: 3,
@@ -645,15 +653,18 @@ def _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, *, include_
             id(sample) for root in roots for sample in (root, root["delegates"]["unit"][0])
         }
         assert caller_unit_roots <= received
+
+        expected_ids = {id(sample) for sample in emitted}
+        expected_count, actual_count = len(emitted), batch.validated_samples
+        assert expected_count == len(expected_ids)
+        assert actual_count == expected_count, "every actual descendant must receive exactly once"
+        assert len(validation_roots) == len(received) == expected_count, (
+            "every actual descendant must receive exactly once"
+        )
+        assert received == expected_ids, "every actual descendant must receive exactly once"
+        assert counts == Counter(sample["declaration"] for sample in emitted)
         if include_descendants:
-
-            def nodes(sample):
-                return 1 + sum(
-                    nodes(child) for children in sample["delegates"].values() for child in children
-                )
-
-            assert len(validation_roots) == len(received) == 122
-            assert sum(nodes(sample) for sample in validation_roots) == 1078
+            assert expected_count > len(caller_unit_roots)
         else:
             assert counts == expected
             assert received == caller_unit_roots
@@ -670,11 +681,57 @@ def _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, *, include_
         assert case.engine.pool.checkedout() == 0
     assert cases.gi_frame is None
     assert case.engine.pool.checkedout() == 0
+    return {
+        "validated_samples": batch.validated_samples,
+        "validation_calls": batch.validation_calls,
+        "validation_groups": batch.validation_groups,
+        "declaration_counts": dict(counts),
+    }
 
 
-def test_actual_caller_and_unit_turns_share_a_bounded_observer_batch(tmp_path, monkeypatch):
-    _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, include_descendants=False)
+def test_actual_caller_and_unit_turns_share_a_bounded_observer_batch(
+    tmp_path, monkeypatch, record_property
+):
+    report = _actual_caller_and_unit_turns_share_batch(
+        tmp_path, monkeypatch, include_descendants=False
+    )
+    record_property("batch_receiving", report)
 
 
-def test_actual_caller_and_unit_turns_receive_every_descendant(tmp_path, monkeypatch):
-    _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, include_descendants=True)
+def test_actual_caller_and_unit_turns_receive_every_descendant(
+    tmp_path, monkeypatch, record_property
+):
+    report = _actual_caller_and_unit_turns_share_batch(
+        tmp_path, monkeypatch, include_descendants=True
+    )
+    record_property("batch_receiving", report)
+
+
+@pytest.mark.parametrize("fault", ["omit", "duplicate"])
+def test_actual_caller_batch_detects_incomplete_descendant_receiving(tmp_path, monkeypatch, fault):
+    from tests.unit import test_upload_journal_service_caller_growth as callers
+    from tests.unit import test_upload_journal_service_unit_growth as units
+
+    enter = SampleBatch.__enter__
+    altered = []
+
+    class Pending(list):
+        def append(self, item):
+            operation, observed, _seal = item
+            if not altered and operation not in (callers.ROOT, units.ROOT):
+                altered.append(observed)
+                if fault == "omit":
+                    return
+                super().append(item)
+            super().append(item)
+
+    def entering(batch):
+        result = enter(batch)
+        if batch.operations == (callers.ROOT, units.ROOT):
+            batch._pending = Pending()
+        return result
+
+    monkeypatch.setattr(SampleBatch, "__enter__", entering)
+    with pytest.raises(AssertionError, match="every actual descendant must receive exactly once"):
+        _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, include_descendants=True)
+    assert len(altered) == 1
