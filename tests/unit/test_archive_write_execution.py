@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 import secrets
 import socket
 import threading
 import time
+from collections import deque
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
+from contextvars import ContextVar
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
@@ -49,6 +52,7 @@ from riverhog_storage_adapter_protocol import (
     validated_storage_adapter,
     write_operation_sha256,
 )
+from riverhog_storage_adapter_support import StorageAdapterClient
 
 _CONTENT = b"abc"
 _SHA = hashlib.sha256(_CONTENT).hexdigest()
@@ -121,10 +125,74 @@ def _asgi(app: FastAPI) -> Iterator[str]:
         assert not thread.is_alive()
 
 
+_WRITE_OBSERVATION: ContextVar[deque[dict[str, Any]] | None] = ContextVar(
+    "fixture_storage_write_observation", default=None
+)
+
+
+class _ObservedStorageClient(StorageAdapterClient):
+    """Keep bounded original HTTP evidence without changing unknown outcomes."""
+
+    def execute_write(self, invocation, *, content=b""):
+        events = deque(maxlen=4)
+        token = _WRITE_OBSERVATION.set(events)
+        try:
+            result = super().execute_write(invocation, content=content)
+            if result.outcome == "unknown":
+                descriptor = self._descriptor
+                logging.getLogger("riverhog.tests.storage_execution").warning(
+                    "original storage invocation returned unknown: %s",
+                    {
+                        "operation": invocation.operation.kind,
+                        "owns_client": self._owns_client,
+                        "cached_descriptor_matches_at_return": (
+                            None
+                            if descriptor is None
+                            else descriptor.storage_incarnation_id
+                            == invocation.call.target_incarnation
+                        ),
+                        "model_calls": list(events),
+                    },
+                )
+            return result
+        finally:
+            _WRITE_OBSERVATION.reset(token)
+
+    def _model(self, method, path, model, *args, **kwargs):
+        events = _WRITE_OBSERVATION.get()
+        if events is None:
+            return super()._model(method, path, model, *args, **kwargs)
+        event = {
+            "phase": {
+                "/v1/adapter": "descriptor",
+                "/v1/writes/execute": "execute",
+            }.get(path, "other"),
+            "method": method if method in {"GET", "POST"} else "other",
+        }
+        events.append(event)
+        started = time.monotonic()
+        try:
+            result = super()._model(method, path, model, *args, **kwargs)
+            event["result"] = "returned"
+            if isinstance(result, WriteExecutionResult):
+                event["execution"] = result.execution
+                event["outcome"] = result.outcome
+            return result
+        except Exception as error:
+            event["result"] = "raised"
+            event["error_type"] = type(error).__name__
+            event["cause_type"] = (
+                None if error.__cause__ is None else type(error.__cause__).__name__
+            )
+            status = getattr(error, "status_code", None)
+            event["http_status"] = status if type(status) is int and 100 <= status <= 599 else None
+            raise
+        finally:
+            event["elapsed_seconds"] = time.monotonic() - started
+
+
 @contextmanager
 def _executor(adapter: FilesystemStorageAdapter, mode: str) -> Iterator[Any]:
-    from riverhog_storage_adapter_support import StorageAdapterClient
-
     if mode == "direct":
         yield adapter
         return
@@ -133,7 +201,7 @@ def _executor(adapter: FilesystemStorageAdapter, mode: str) -> Iterator[Any]:
     )
     with _asgi(app) as endpoint:
         supplied = httpx.Client(timeout=2, follow_redirects=True) if mode == "supplied" else None
-        client = StorageAdapterClient(
+        client = _ObservedStorageClient(
             endpoint, token="fixture-token", allow_insecure_http=True, timeout=2, client=supplied
         )
         try:
@@ -278,8 +346,6 @@ def test_lost_http_reply_does_not_stop_the_actual_adapter_executor(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from riverhog_storage_adapter_support import StorageAdapterClient
-
     entered, release, finished = threading.Event(), threading.Event(), threading.Event()
     with _filesystem(tmp_path / "store") as adapter:
         original = adapter.begin_write
@@ -303,7 +369,7 @@ def test_lost_http_reply_does_not_stop_the_actual_adapter_executor(
         )
         try:
             with _asgi(app) as endpoint:
-                client = StorageAdapterClient(
+                client = _ObservedStorageClient(
                     endpoint, token="fixture-token", allow_insecure_http=True, timeout=0.2
                 )
                 try:
@@ -385,8 +451,6 @@ def _wire(
     ],
 )
 def test_owned_http_refuses_mismatched_or_uncertain_reports_without_replay(fault: str) -> None:
-    from riverhog_storage_adapter_support import StorageAdapterClient
-
     invocation = _invocation(BeginWriteOperation(request=_start()), _INCARNATION)
     response = WriteExecutionResult(
         call=invocation.call,
@@ -419,7 +483,7 @@ def test_owned_http_refuses_mismatched_or_uncertain_reports_without_replay(fault
             handler.send(status, json.dumps(response).encode())
 
     with _wire(respond) as (endpoint, requests):
-        client = StorageAdapterClient(
+        client = _ObservedStorageClient(
             endpoint, token="fixture-token", allow_insecure_http=True, timeout=1
         )
         try:
@@ -597,8 +661,6 @@ def test_upload_correlation_cannot_supply_execution_closure() -> None:
 
 
 def test_supplied_transport_replay_preserves_observation_but_never_closure() -> None:
-    from riverhog_storage_adapter_support import StorageAdapterClient
-
     invocation = _invocation(BeginWriteOperation(request=_start()), _INCARNATION)
     response = WriteExecutionResult(
         call=invocation.call,
@@ -630,7 +692,7 @@ def test_supplied_transport_replay_preserves_observation_but_never_closure() -> 
         _wire(respond) as (endpoint, requests),
         httpx.Client(transport=ReplayTransport()) as supplied,
     ):
-        client = StorageAdapterClient(
+        client = _ObservedStorageClient(
             endpoint, token="fixture-token", allow_insecure_http=True, client=supplied
         )
         result = validated_storage_adapter(client).execute_write(invocation)
@@ -936,7 +998,6 @@ def _cleanup_executor(fault: str | None):
         S3TransportTuning,
         create_s3_client,
     )
-    from riverhog_storage_adapter_support import StorageAdapterClient
 
     with _cleanup_provider_wire(fault) as (endpoint, requests):
         sdk = create_s3_client(
@@ -973,7 +1034,7 @@ def _cleanup_executor(fault: str | None):
                 return await call_next(request)
 
             with _asgi(app) as address:
-                client = StorageAdapterClient(
+                client = _ObservedStorageClient(
                     address,
                     token="fixture-token",
                     allow_insecure_http=True,
@@ -1079,8 +1140,6 @@ def test_cleanup_authentication_identity_and_actual_wire_bytes_precede_provider_
         assert httpx.post(address, content=padded, headers=headers, timeout=5).status_code == 413
         assert not requests
 
-    from riverhog_storage_adapter_support import StorageAdapterClient
-
     sent: list[str] = []
     with httpx.Client(
         transport=httpx.MockTransport(
@@ -1099,8 +1158,6 @@ def test_cleanup_authentication_identity_and_actual_wire_bytes_precede_provider_
 
 def test_cleanup_cannot_hide_an_additional_http_adapter_hop() -> None:
     from contextlib import closing
-
-    from riverhog_storage_adapter_support import StorageAdapterClient
 
     with _cleanup_executor(None) as (backend, requests, backend_paths):
         proxy = create_storage_adapter_app(
@@ -1200,3 +1257,108 @@ def test_owned_inventory_cleanup_keeps_failed_observation_unknown_without_retry(
         assert response.result is None
         assert len(requests) == 2 and paths == ["/v1/cleanup/execute"]
         assert {method for method, _ in requests} == {"GET"}
+
+
+@pytest.mark.parametrize("failure", ["transport", "status", "server"])
+def test_owned_http_unknown_observation_preserves_original_result_and_redacts_inputs(
+    tmp_path, monkeypatch, caplog, failure
+):
+    sentinel = "sensitive-fixture-observation"
+    caplog.set_level(logging.WARNING, logger="riverhog.tests.storage_execution")
+    with _filesystem(tmp_path / "store") as adapter, _executor(adapter, "owned-http") as client:
+        client.descriptor()
+        invocation = _invocation(
+            LookupWriteOperation(
+                request=CompletedWriteLookupRequest(
+                    object_path="archives/volume.age",
+                    expected_bytes=3,
+                    expected_content_type="application/octet-stream",
+                    required_identity_assertions={"owner": "original"},
+                    expected_placement_policy="archive_default",
+                )
+            ),
+            adapter.descriptor().storage_incarnation_id,
+        )
+        if failure == "server":
+            monkeypatch.setattr(
+                adapter,
+                "execute_write",
+                lambda original, **kwargs: unknown_write_execution(original),
+            )
+        else:
+
+            def request(*args, **kwargs):
+                if failure == "transport":
+                    raise httpx.ReadTimeout(sentinel)
+                return httpx.Response(503, content=sentinel.encode())
+
+            monkeypatch.setattr(client._client, "request", request)
+        result = client.execute_write(invocation)
+        assert result == unknown_write_execution(invocation)
+        records = [
+            record for record in caplog.records if record.name == "riverhog.tests.storage_execution"
+        ]
+        assert len(records) == 1
+        observed = records[0].args
+        assert observed["operation"] == "lookup" and observed["owns_client"] is True
+        assert observed["cached_descriptor_matches_at_return"] is True
+        assert len(observed["model_calls"]) == 1
+        event = observed["model_calls"][0]
+        assert event["phase"] == "execute" and event["method"] == "POST"
+        assert event["elapsed_seconds"] >= 0
+        if failure == "server":
+            assert event["result"] == "returned" and event["outcome"] == "unknown"
+        else:
+            assert event["result"] == "raised"
+            assert event["error_type"] == "StorageAdapterProtocolError"
+            assert event["cause_type"] == ("ReadTimeout" if failure == "transport" else None)
+            assert event["http_status"] == (None if failure == "transport" else 503)
+        assert sentinel not in caplog.text
+        assert client.base_url not in caplog.text
+        assert "Authorization" not in caplog.text
+
+
+def test_owned_http_unknown_observations_stay_with_each_original_thread(
+    tmp_path, monkeypatch, caplog
+):
+    from concurrent.futures import ThreadPoolExecutor
+
+    caplog.set_level(logging.WARNING, logger="riverhog.tests.storage_execution")
+    barrier = threading.Barrier(2)
+    with _filesystem(tmp_path / "store") as adapter, _executor(adapter, "owned-http") as client:
+        client.descriptor()
+
+        def request(*args, **kwargs):
+            index = barrier.wait(timeout=5)
+            error = httpx.ReadTimeout if index == 0 else httpx.ConnectError
+            raise error("sensitive-fixture-observation")
+
+        monkeypatch.setattr(client._client, "request", request)
+        operation = LookupWriteOperation(
+            request=CompletedWriteLookupRequest(
+                object_path="archives/volume.age",
+                expected_bytes=3,
+                expected_content_type="application/octet-stream",
+                required_identity_assertions={"owner": "original"},
+                expected_placement_policy="archive_default",
+            )
+        )
+        invocations = [
+            _invocation(operation, adapter.descriptor().storage_incarnation_id) for _ in range(2)
+        ]
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = [pool.submit(client.execute_write, invocation) for invocation in invocations]
+            results = [future.result(timeout=5) for future in futures]
+        assert results == [unknown_write_execution(invocation) for invocation in invocations]
+        observations = [
+            record.args
+            for record in caplog.records
+            if record.name == "riverhog.tests.storage_execution"
+        ]
+        assert len(observations) == 2
+        assert all(len(observed["model_calls"]) == 1 for observed in observations)
+        assert {observed["model_calls"][0]["cause_type"] for observed in observations} == {
+            "ReadTimeout",
+            "ConnectError",
+        }
+        assert "sensitive-fixture-observation" not in caplog.text
