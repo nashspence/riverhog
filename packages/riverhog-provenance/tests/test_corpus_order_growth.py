@@ -4,10 +4,10 @@ import builtins
 import hashlib
 import itertools
 import os
+import re
 import sqlite3
 from collections import defaultdict
 from contextlib import contextmanager
-from pathlib import Path
 
 import pytest
 import riverhog_canonical_json as canonical
@@ -101,7 +101,14 @@ class Connection:
     def __init__(self, actual, recorder, *, owned=False):
         self.actual, self.recorder, self.owned = actual, recorder, owned
 
+    def __getattr__(self, name):
+        return getattr(self.actual, name)
+
     def execute(self, query, parameters=()):
+        physical = query
+        query = re.sub(
+            r"corpus_order_(?:derivation|specialization)_(nodes|ready|checkpoint)\b", r"\1", query
+        )
         recorder = self.recorder
         recorder.metrics["sql_statements"] += 1
         assert "assertion_payloads" not in query
@@ -109,24 +116,42 @@ class Connection:
         recorder.queries.add(query)
         if recorder.failure_query is not None and query.startswith(recorder.failure_query):
             raise recorder.failure
-        actual = self.actual.execute(query, parameters)
+        actual = self.actual.execute(physical, parameters)
         if actual.rowcount > 0:
             recorder.metrics["written_rows"] += actual.rowcount
-            if query.startswith("INSERT OR IGNORE INTO nodes"):
-                recorder.metrics["written_octets"] += octets(parameters) + 1
-            elif query.startswith("INSERT INTO nodes"):
+            if query.startswith(("INSERT OR IGNORE INTO nodes", "INSERT INTO nodes")):
                 recorder.metrics["written_octets"] += octets(parameters) + 1
             elif query.startswith("INSERT INTO checkpoint"):
                 recorder.metrics["written_octets"] += 9
             else:
                 assert query.startswith(
-                    ("UPDATE nodes", "INSERT INTO ready", "DELETE FROM ready", "UPDATE checkpoint")
+                    (
+                        "UPDATE nodes",
+                        "INSERT INTO ready",
+                        "DELETE FROM ready",
+                        "DELETE FROM nodes",
+                        "UPDATE checkpoint",
+                    )
                 )
                 recorder.metrics["written_octets"] += octets(parameters)
         return Cursor(actual, recorder, query)
 
-    def rollback(self):
+    def commit(self):
         self.recorder.metrics["sql_statements"] += 1
+        self.actual.commit()
+
+    def rollback(self):
+        self.recorder.metrics["sql_statements"] += (
+            (
+                2
+                if isinstance(self.actual, ordering._OrderConnection)
+                and self.actual._active
+                and self.actual.in_transaction
+                else 0
+            )
+            if isinstance(self.actual, ordering._OrderConnection)
+            else 1
+        )
         self.actual.rollback()
 
     def close(self):
@@ -145,18 +170,12 @@ class Recorder:
 
     @contextmanager
     def observe(self, current, monkeypatch):
-        connect = sqlite3.connect
-
         def stepped():
             self.metrics["sqlite_vm_instructions"] += 1
             return 0
 
         def connected(*args, **kwargs):
-            self.directories.append(Path(args[0]).parent)
-            actual = connect(*args, **kwargs)
-            actual.set_progress_handler(stepped, 1)
-            self.opened += 1
-            return Connection(actual, self, owned=True)
+            pytest.fail("ordering opened another connection")
 
         def decoded(value):
             self.metrics["degree_decoded_octets"] += octets(value)
@@ -191,9 +210,8 @@ class Recorder:
         finally:
             actual.set_progress_handler(None, 0)
             assert self.live == 0
-            assert self.opened == self.closed == 1
-            assert not current._orders
-            assert self.directories and all(not path.exists() for path in self.directories)
+            assert self.opened == self.closed == 0
+            assert not self.directories
 
 
 def dimensions(edges, kind):
@@ -316,19 +334,6 @@ def test_actual_corpus_ordering_visits_complete_sparse_and_dense_edges(
     record_property("growth_samples", records)
 
 
-@pytest.fixture
-def order_directories(tmp_path, monkeypatch):
-    actual, paths = ordering.mkdtemp, []
-
-    def create(**options):
-        path = Path(actual(dir=tmp_path, **options))
-        paths.append(path)
-        return str(path)
-
-    monkeypatch.setattr(ordering, "mkdtemp", create)
-    return paths
-
-
 def reference_acyclic(edges):
     vertices = {value for edge in edges for value in edge}
     reachable = set(edges)
@@ -341,7 +346,7 @@ def reference_acyclic(edges):
 
 
 @pytest.mark.parametrize("kind", ["derivation", "specialization"])
-def test_corpus_ordering_matches_all_three_vertex_directed_graphs(kind, order_directories):
+def test_corpus_ordering_matches_all_three_vertex_directed_graphs(kind):
     possible = list(itertools.product(("a", "b", "c"), repeat=2))
     with corpus.CanonicalCorpusValidator() as current:
         for mask in range(1 << len(possible)):
@@ -356,8 +361,10 @@ def test_corpus_ordering_matches_all_three_vertex_directed_graphs(kind, order_di
                     with pytest.raises(ProvenanceValidationError, match=f"{kind}.*cycle"):
                         current.validate()
             assert current._db.execute("SELECT count(*) FROM edges").fetchone() == (len(edges),)
-            assert order_directories and all(not path.exists() for path in order_directories)
-            order_directories.clear()
+            assert {path.name for path in current._directory.iterdir()} <= {
+                "corpus.sqlite3",
+                "corpus.sqlite3-journal",
+            }
             assert not current._orders
 
 
@@ -372,7 +379,7 @@ def test_corpus_ordering_matches_all_three_vertex_directed_graphs(kind, order_di
         "UPDATE nodes",
     ],
 )
-def test_corpus_ordering_failure_releases_scratch_and_preserves_retry(kind, query, monkeypatch):
+def test_corpus_ordering_failure_preserves_source_and_reconstructs(kind, query, monkeypatch):
     with corpus.CanonicalCorpusValidator() as current:
         edges = edges_for("chain", 17)
         insert(current, edges, kind)
@@ -388,11 +395,15 @@ def test_corpus_ordering_failure_releases_scratch_and_preserves_retry(kind, quer
             ORDER(current, kind)
         assert failed.value is recorder.failure
         assert current._db.execute("SELECT count(*) FROM edges").fetchone() == (len(edges),)
-        current.validate()
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            current.validate()
+    with corpus.CanonicalCorpusValidator() as reconstructed:
+        insert(reconstructed, edges, kind)
+        reconstructed.validate()
 
 
 @pytest.mark.parametrize("kind", ["derivation", "specialization"])
-def test_actual_sqlite_cancellation_retains_corpus_and_allows_retry(kind, order_directories):
+def test_actual_sqlite_cancellation_preserves_source_and_requires_reconstruction(kind):
     with corpus.CanonicalCorpusValidator() as current:
         insert(current, edges_for("chain", 129), kind)
         current._db.commit()
@@ -402,10 +413,17 @@ def test_actual_sqlite_cancellation_retains_corpus_and_allows_retry(kind, order_
                 ORDER(current, kind)
         finally:
             current._db.set_progress_handler(None, 0)
-        assert order_directories and all(not path.exists() for path in order_directories)
+        assert {path.name for path in current._directory.iterdir()} <= {
+            "corpus.sqlite3",
+            "corpus.sqlite3-journal",
+        }
         assert not current._orders
         assert current._db.execute("SELECT count(*) FROM edges").fetchone() == (129,)
-        current.validate()
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            current.validate()
+    with corpus.CanonicalCorpusValidator() as reconstructed:
+        insert(reconstructed, edges_for("chain", 129), kind)
+        reconstructed.validate()
 
 
 def test_corpus_cycle_check_keeps_exact_cross_journal_specialization(journal, who, catalog):
@@ -465,28 +483,6 @@ def test_corpus_reference_errors_precede_cycle_errors():
 
 @pytest.mark.parametrize("kind", ["derivation", "specialization"])
 def test_actual_corpus_ordering_uses_endpoint_and_pending_key_indexes(kind, monkeypatch):
-    connect = sqlite3.connect
-    work_plans = []
-
-    class PlannedConnection:
-        def __init__(self, actual):
-            self.actual = actual
-
-        def execute(self, *args):
-            return self.actual.execute(*args)
-
-        def close(self):
-            try:
-                for query, parameters in (
-                    ("SELECT id FROM ready ORDER BY id LIMIT 1", ()),
-                    ("SELECT degree FROM nodes WHERE id = ?", (identity(1),)),
-                ):
-                    work_plans.append(
-                        self.actual.execute("EXPLAIN QUERY PLAN " + query, parameters).fetchall()
-                    )
-            finally:
-                self.actual.close()
-
     with corpus.CanonicalCorpusValidator() as current:
         insert(current, edges_for("chain", 17), kind)
         source_plan = current._db.execute(
@@ -494,60 +490,72 @@ def test_actual_corpus_ordering_uses_endpoint_and_pending_key_indexes(kind, monk
             "WHERE kind = ? AND source = ? ORDER BY target",
             (kind, identity(1)),
         ).fetchall()
+        view = ordering._CorpusOrder(current._db, kind)
+        work_plans = [
+            view.db.execute("EXPLAIN QUERY PLAN " + query, parameters).fetchall()
+            for query, parameters in (
+                ("SELECT id FROM ready ORDER BY id LIMIT 1", ()),
+                ("SELECT degree FROM nodes WHERE id = ?", (identity(1),)),
+            )
+        ]
         with monkeypatch.context() as patch:
             patch.setattr(
-                corpus.sqlite3, "connect", lambda *a, **k: PlannedConnection(connect(*a, **k))
+                corpus.sqlite3,
+                "connect",
+                lambda *a, **k: pytest.fail("ordering opened another connection"),
             )
             ORDER(current, kind)
         for plan, index in zip(
             [source_plan, *work_plans],
-            ["sqlite_autoindex_edges_1", "sqlite_autoindex_ready_1", "sqlite_autoindex_nodes_1"],
+            [
+                "sqlite_autoindex_edges_1",
+                "sqlite_autoindex_corpus_order_" + kind + "_ready_1",
+                "sqlite_autoindex_corpus_order_" + kind + "_nodes_1",
+            ],
             strict=True,
         ):
             assert any(index in row[-1] for row in plan)
             assert not any("TEMP B-TREE" in row[-1] for row in plan)
+        view.close()
 
 
 @pytest.mark.parametrize("kind", ["derivation", "specialization"])
 @pytest.mark.parametrize("phase", ["build", "pop"])
-def test_real_ordering_database_interrupt_preserves_uncommitted_corpus(
-    kind, phase, monkeypatch, order_directories
+def test_real_ordering_interrupt_preserves_the_received_source_and_original_cause(
+    kind, phase, monkeypatch
 ):
-    connect = sqlite3.connect
-    closed = []
     trigger = "INSERT OR IGNORE INTO nodes" if phase == "build" else "SELECT id FROM ready"
-
-    class InterruptedConnection:
-        def __init__(self, actual):
-            self.actual = actual
-
-        def execute(self, query, parameters=()):
-            if query.startswith(trigger):
-                self.actual.set_progress_handler(lambda: 1, 1)
-            return self.actual.execute(query, parameters)
-
-        def rollback(self):
-            self.actual.rollback()
-
-        def close(self):
-            self.actual.close()
-            closed.append(True)
-
     with corpus.CanonicalCorpusValidator() as current:
         edges = edges_for("chain", 17)
         insert(current, edges, kind)
         assert current._db.in_transaction
-        with monkeypatch.context() as patch:
-            patch.setattr(
-                corpus.sqlite3, "connect", lambda *a, **k: InterruptedConnection(connect(*a, **k))
-            )
-            with pytest.raises(sqlite3.OperationalError, match="interrupted"):
-                ORDER(current, kind)
-        assert closed == [True]
-        assert order_directories and all(not path.exists() for path in order_directories)
+        execute = ordering._OrderConnection.execute
+        originals = []
+
+        def interrupted(view, query, parameters=()):
+            if query.startswith(trigger):
+                current._db.set_progress_handler(lambda: 1, 1)
+                try:
+                    return execute(view, query, parameters)
+                except BaseException as error:
+                    originals.append(error)
+                    raise
+            return execute(view, query, parameters)
+
+        try:
+            with monkeypatch.context() as patch:
+                patch.setattr(ordering._OrderConnection, "execute", interrupted)
+                with pytest.raises(sqlite3.OperationalError, match="interrupted") as caught:
+                    ORDER(current, kind)
+        finally:
+            current._db.set_progress_handler(None, 0)
+        assert originals == [caught.value]
         assert not current._orders
-        assert current._db.in_transaction
         assert current._db.execute(
-            "SELECT source, target FROM edges WHERE kind = ? ORDER BY source, target", (kind,)
+            "SELECT source,target FROM edges WHERE kind=? ORDER BY source,target", (kind,)
         ).fetchall() == sorted(edges)
-        current.validate()
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            current.validate()
+    with corpus.CanonicalCorpusValidator() as reconstructed:
+        insert(reconstructed, edges, kind)
+        reconstructed.validate()

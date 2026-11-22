@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-import shutil
+import re
 import sqlite3
-from collections.abc import Callable
 from contextlib import closing
 from dataclasses import dataclass, replace
-from pathlib import Path
-from tempfile import mkdtemp
 from typing import Any, Protocol, Self, cast
 
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -73,51 +70,77 @@ class _OrderDatabase(Protocol):
 
     def rollback(self) -> None: ...
 
-    def close(self) -> None: ...
+
+class _OrderConnection:
+    """Bounded table routing and one savepoint on the original corpus connection."""
+
+    def __init__(self, db: sqlite3.Connection, kind: str) -> None:
+        self.db, self.kind = db, kind
+        self._active = False
+        self._savepoint = "corpus_order_" + kind + "_quantum"
+
+    def execute(self, query: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
+        if query == "BEGIN IMMEDIATE":
+            if self._active:
+                raise RuntimeError("corpus ordering already has an original quantum")
+            cursor = self.db.execute("SAVEPOINT " + self._savepoint)
+            self._active = True
+            return cursor
+        if query == "COMMIT":
+            if not self._active:
+                raise RuntimeError("corpus ordering lost its original quantum")
+            cursor = self.db.execute("RELEASE " + self._savepoint)
+            self._active = False
+            return cursor
+        query = re.sub(
+            r"\b(nodes|ready|checkpoint)\b",
+            lambda match: "corpus_order_" + self.kind + "_" + match[0],
+            query,
+        )
+        return self.db.execute(query, parameters)
+
+    def rollback(self) -> None:
+        if self._active:
+            # A composing owner receives its own outer failure. Never roll back
+            # unrelated caller work merely to receive this child savepoint.
+            if self.db.in_transaction:
+                self.db.execute("ROLLBACK TO " + self._savepoint).close()
+                self.db.execute("RELEASE " + self._savepoint).close()
+            self._active = False
+
+    @property
+    def in_transaction(self) -> bool:
+        return self.db.in_transaction
+
+
+def install(db: sqlite3.Connection, kind: str) -> None:
+    """Initialize one fixed ordering role in the original corpus schema."""
+    if kind not in ("derivation", "specialization"):
+        raise ValueError("unknown canonical corpus graph kind")
+    table = _OrderConnection(db, kind)
+    for statement in (
+        "CREATE TABLE nodes(id TEXT PRIMARY KEY,degree TEXT NOT NULL)",
+        "CREATE TABLE ready(id TEXT PRIMARY KEY)",
+        "CREATE TABLE checkpoint(singleton INTEGER PRIMARY KEY CHECK(singleton=1),"
+        "phase TEXT,source TEXT,target TEXT,seed TEXT,current TEXT,outgoing TEXT,"
+        "vertices TEXT,completed TEXT,source_edges TEXT)",
+        "INSERT INTO checkpoint VALUES(1,'input','','','','','','0','0','0')",
+    ):
+        table.execute(statement).close()
 
 
 class _CorpusOrder:
-    def __init__(
-        self,
-        source: sqlite3.Connection,
-        kind: str,
-        *,
-        connection_factory: Callable[..., sqlite3.Connection] | None = None,
-        on_storage_open: Callable[[Self], None] | None = None,
-    ) -> None:
+    """One graph role on the corpus owner's original admitted database."""
+
+    def __init__(self, source: sqlite3.Connection, kind: str) -> None:
+        if kind not in ("derivation", "specialization"):
+            raise ValueError("unknown canonical corpus graph kind")
         self.source: _OrderDatabase = source
+        self.db = _OrderConnection(source, kind)
         self.kind = kind
         self._finished: CorpusOrderProgress | None = None
-        self._closing = self._connection_closed = self._released = False
-        # Independent custody prevents parent cleanup from deleting a factory's
-        # unreturned connection files. No finalizer releases uncertain storage.
-        self._directory = Path(mkdtemp(prefix="riverhog-corpus-order-"))
-        connect = sqlite3.connect if connection_factory is None else connection_factory
-        try:
-            self.db: _OrderDatabase = connect(
-                self._directory / "order.sqlite3", isolation_level=None
-            )
-        except BaseException:
-            if connection_factory is None:
-                shutil.rmtree(self._directory)
-            raise
-        try:
-            if on_storage_open is not None:
-                on_storage_open(self)
-            self._write("PRAGMA cache_size=-512")
-            self._write("BEGIN IMMEDIATE")
-            self._write("CREATE TABLE nodes (id TEXT PRIMARY KEY, degree TEXT NOT NULL)")
-            self._write("CREATE TABLE ready (id TEXT PRIMARY KEY)")
-            self._write(
-                "CREATE TABLE checkpoint (singleton INTEGER PRIMARY KEY CHECK(singleton=1),"
-                "phase TEXT,source TEXT,target TEXT,seed TEXT,current TEXT,outgoing TEXT,"
-                "vertices TEXT,completed TEXT,source_edges TEXT)"
-            )
-            self._write("INSERT INTO checkpoint VALUES (1,'input','','','','','','0','0','0')")
-            self._write("COMMIT")
-        except BaseException:
-            self.close()
-            raise
+        self._failure: BaseException | None = None
+        self._closing = False
 
     def __enter__(self) -> Self:
         if self._closing:
@@ -129,16 +152,27 @@ class _CorpusOrder:
 
     def close(self) -> None:
         self._closing = True
-        if not self._connection_closed:
-            self.db.close()
-            self._connection_closed = True
-        if not self._released:
-            try:
-                shutil.rmtree(self._directory)
-            except FileNotFoundError:
-                if self._directory.exists():
-                    raise
-            self._released = True
+
+    def _receive_rollback(self) -> None:
+        """Keep uncertain cleanup with this original; preserve the execution cause."""
+        try:
+            self.db.rollback()
+        except BaseException as error:
+            self._failure = error
+            self._closing = True
+
+    def reset(self) -> None:
+        """Receive a whole-run index after its graph outcome has returned."""
+        self._write("BEGIN IMMEDIATE")
+        try:
+            self._write("DELETE FROM nodes")
+            self._write("DELETE FROM ready")
+            self._save(_State())
+            self._write("COMMIT")
+        except BaseException:
+            self._receive_rollback()
+            raise
+        self._finished = None
 
     @staticmethod
     def _read(
@@ -308,6 +342,10 @@ class _CorpusOrder:
         )
 
     def advance(self, *, row_budget: int, byte_budget: int) -> CorpusOrderProgress:
+        if self._failure is not None:
+            raise RuntimeError(
+                "corpus ordering requires reconstruction after failed rollback receiving"
+            ) from self._failure
         if self._closing:
             raise RuntimeError("corpus ordering is closed")
         if type(row_budget) is not int or row_budget < 1:
@@ -342,7 +380,7 @@ class _CorpusOrder:
                 self._save(state)
                 self._write("COMMIT")
             except BaseException:
-                self.db.rollback()
+                self._receive_rollback()
                 raise
         progress = self._progress(state, processed, admission.used)
         if progress.complete:

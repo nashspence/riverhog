@@ -12,7 +12,6 @@ from riverhog_provenance import (
     validate_canonical_corpus,
     validate_journal,
 )
-from riverhog_provenance import _corpus_order as ordering
 from test_corpus_order_growth import edges_for, insert
 from test_corpus_order_steps import finish, ready
 from test_sqlite_connection_admission import no_default_connection
@@ -30,7 +29,6 @@ def directories(tmp_path, monkeypatch):
         return str(path)
 
     monkeypatch.setattr(corpus, "mkdtemp", create)
-    monkeypatch.setattr(ordering, "mkdtemp", create)
     return paths
 
 
@@ -58,30 +56,13 @@ def test_corpus_refusal_precedes_schema_and_retains_factory_directory(directorie
 
 
 @pytest.mark.parametrize("after", [False, True])
-@pytest.mark.parametrize("child", [False, True])
-def test_unreturned_corpus_connection_keeps_independent_files_and_capacity(
-    directories, child, after
-):
+def test_unreturned_corpus_connection_keeps_original_files_and_capacity(directories, after):
     population = Population()
-    current = None
-    if child:
-        current = CanonicalCorpusValidator(connection_factory=population)
-        insert(current, edges_for("chain", 3), "derivation")
-        ready(current)
     population.unreturned = True
     with pytest.raises(OSError, match="construction unconfirmed"):
-        if child:
-            current.advance_order("derivation")
-        else:
-            CanonicalCorpusValidator(connection_factory=population)
+        CanonicalCorpusValidator(connection_factory=population)
     path = population.attempts[-1][0].parent
     db = population.connections[-1]
-    if current is not None:
-        assert path != current._directory and current._directory not in path.parents
-        assert current._orders == {}
-        current.close()
-        assert not current._directory.exists()
-    del current
     gc.collect()
     assert population.active == 1 and path.is_dir()
     db.execute("CREATE TABLE owned(value TEXT)").close()
@@ -140,115 +121,53 @@ def test_corpus_source_close_keeps_capacity_and_directory_until_confirmed(direct
 
 
 @pytest.mark.parametrize("whole", [False, True])
-def test_order_refusal_precedes_source_walk_and_preserves_exact_corpus(
+def test_ordering_uses_only_the_original_admitted_corpus_connection(
     directories, monkeypatch, whole
 ):
     population = Population(limit=1)
     with CanonicalCorpusValidator(connection_factory=population) as current:
-        insert(current, edges_for("chain", 17), "derivation")
+        for kind in ("derivation", "specialization"):
+            insert(current, edges_for("chain", 17), kind)
         ready(current)
-        current._db.commit()
-        before = (current._directory / "corpus.sqlite3").read_bytes()
-        queries = []
-        current._db.set_trace_callback(queries.append)
+        profile = current._db.execute("PRAGMA synchronous").fetchone()
         with monkeypatch.context() as patch:
             patch.setattr(corpus.sqlite3, "connect", no_default_connection)
-            with pytest.raises(Capacity):
+            for kind in ("derivation", "specialization"):
                 if whole:
-                    current._acyclic("derivation")
+                    current._acyclic(kind)
                 else:
-                    current.advance_order("derivation")
-        current._db.set_trace_callback(None)
-        assert queries == [] and current._orders == {} and population.active == 1
-        assert (current._directory / "corpus.sqlite3").read_bytes() == before
-        path, options = population.attempts[-1]
-        assert options == {"isolation_level": None} and path.name == "order.sqlite3"
-        assert path.parent.is_dir() and path.parent not in current._directory.parents
-        shutil.rmtree(path.parent)
-        population.limit = 2
-        current.validate()
-        assert population.peak == 2 and population.active == 1
-    assert population.active == 0 and all(not path.exists() for path in directories)
+                    assert finish(current, kind, rows=3).completed_vertices == 18
+        assert current._db.execute("PRAGMA synchronous").fetchone() == profile
+        assert len(population.attempts) == population.active == population.peak == 1
+        assert len(directories) == 1
+        assert current._db.execute("SELECT count(*) FROM edges").fetchone() == (34,)
+    assert population.active == 0 and not directories[0].exists()
 
 
 @pytest.mark.parametrize("after", [False, True])
-@pytest.mark.parametrize("whole", [False, True])
-def test_order_schema_failure_retains_child_before_initialization_and_parent_release(
-    directories, monkeypatch, whole, after
-):
-    population = Population()
-    current = CanonicalCorpusValidator(connection_factory=population)
-    insert(current, edges_for("chain", 3), "derivation")
-    ready(current)
-    write = ordering._CorpusOrder._write
-    retained = []
-
-    def interrupted(order, statement, parameters=()):
-        assert current._orders["derivation"] is order
-        if statement.startswith("CREATE TABLE"):
-            retained.append(order)
-            order.db.close_failures, order.db.close_after = 2, after
-            raise InterruptedError("ordering schema interrupted")
-        return write(order, statement, parameters)
-
-    with monkeypatch.context() as patch:
-        patch.setattr(ordering._CorpusOrder, "_write", interrupted)
-        with pytest.raises(OSError, match="close unconfirmed"):
-            if whole:
-                current._acyclic("derivation")
-            else:
-                current.advance_order("derivation")
-    (order,) = retained
-    assert population.active == 2 and current._orders["derivation"] is order
-    gc.collect()
-    assert order._directory.is_dir() and current._directory.is_dir()
-    with pytest.raises(RuntimeError, match="closed"):
-        order.advance(row_budget=1, byte_budget=4096)
-    with pytest.raises(OSError, match="close unconfirmed"):
-        current.close()
-    assert population.active == 2 and current._orders["derivation"] is order
-    assert population.connections[0].execute("SELECT count(*) FROM edges").fetchone() == (3,)
-    current.close()
-    assert not current._orders and population.active == 0
-    assert all(not path.exists() for path in directories)
-    assert order.db.close_calls == 3 and population.connections[0].close_calls == 1
-
-
-@pytest.mark.parametrize("after", [False, True])
-def test_parent_close_retains_two_order_kinds_and_never_reopens_closed_child(
-    directories, monkeypatch, after
-):
-    population = Population()
+def test_parent_receives_both_order_views_before_retrying_its_original_close(directories, after):
+    population = Population(limit=1)
     current = CanonicalCorpusValidator(connection_factory=population)
     for kind in ("derivation", "specialization"):
         insert(current, edges_for("chain", 17), kind)
     ready(current)
-    current._db.commit()
-    before = (current._directory / "corpus.sqlite3").read_bytes()
-    with monkeypatch.context() as patch:
-        patch.setattr(corpus.sqlite3, "connect", no_default_connection)
-        for kind in ("derivation", "specialization"):
-            assert not current.advance_order(kind, row_budget=1).complete
-        assert population.active == population.peak == 3
-        for kind in ("derivation", "specialization"):
-            assert finish(current, kind, rows=3).completed_vertices == 18
-    assert (current._directory / "corpus.sqlite3").read_bytes() == before
-    first, last = (current._orders[kind] for kind in ("derivation", "specialization"))
-    last.db.close_failures, last.db.close_after = 1, after
+    for kind in ("derivation", "specialization"):
+        assert not current.advance_order(kind, row_budget=1).complete
+    orders = tuple(current._orders.values())
+    db = population.connections[0]
+    db.close_failures, db.close_after = 1, after
     with pytest.raises(OSError, match="close unconfirmed"):
         current.close()
-    assert set(current._orders) == {"specialization"}
-    assert population.active == 2 and not first._directory.exists()
-    assert last._directory.is_dir() and current._directory.is_dir()
-    with pytest.raises(RuntimeError, match="closed"):
-        last.advance(row_budget=1, byte_budget=1)
+    assert not current._orders and population.active == 1 and directories[0].is_dir()
+    for order in orders:
+        with pytest.raises(RuntimeError, match="closed"):
+            order.advance(row_budget=1, byte_budget=512)
     with pytest.raises(RuntimeError, match="closed"):
         current.advance_order("derivation")
     current.close()
     current.close()
-    assert population.active == 0 and population.peak == 3
-    assert [db.close_calls for db in population.connections] == [1, 1, 2]
-    assert all(not path.exists() for path in directories)
+    assert db.close_calls == 2 and population.active == 0 and population.peak == 1
+    assert not directories[0].exists()
 
 
 @pytest.mark.parametrize("child", [False, True])
@@ -279,39 +198,26 @@ def test_corpus_directory_cleanup_retry_does_not_release_connection_twice(
             current.close()
         assert path.exists() is not after
         assert population.connections[-1].close_calls == 1
-        assert population.active == int(child)
+        assert population.active == 0
         current.close()
     assert population.active == 0 and all(db.close_calls == 1 for db in population.connections)
     assert len(attempts) == 2 and all(not directory.exists() for directory in directories)
 
 
-@pytest.mark.parametrize("child", [False, True])
 def test_default_corpus_connect_failure_releases_only_its_private_directory(
-    directories, monkeypatch, child
+    directories, monkeypatch
 ):
-    current = None
-    if child:
-        current = CanonicalCorpusValidator()
-        ready(current)
-
     def refused(*_args, **_options):
         raise sqlite3.OperationalError("cannot open")
 
     with monkeypatch.context() as patch:
         patch.setattr(corpus.sqlite3, "connect", refused)
         with pytest.raises(sqlite3.OperationalError, match="cannot open"):
-            if child:
-                current.advance_order("derivation")
-            else:
-                CanonicalCorpusValidator()
-    assert not directories[-1].exists()
-    if current is not None:
-        assert current._directory.is_dir()
-        current.close()
-    assert all(not path.exists() for path in directories)
+            CanonicalCorpusValidator()
+    assert len(directories) == 1 and not directories[0].exists()
 
 
-def test_whole_corpus_helper_uses_admission_for_source_and_each_complete_graph_kind(
+def test_whole_corpus_helper_uses_one_admitted_connection_for_source_and_both_graph_kinds(
     directories, monkeypatch, journal, catalog
 ):
     population, handles = Population(limit=2), []
@@ -322,8 +228,8 @@ def test_whole_corpus_helper_uses_admission_for_source_and_each_complete_graph_k
                 (summary,), connection_factory=population, on_storage_open=handles.append
             )
         assert summary.journal_bytes == len(journal)
-    assert len(handles) == 1 and len(population.connections) == 3
-    assert population.peak == 2 and population.active == 0
+    assert len(handles) == 1 and len(population.connections) == 1
+    assert population.peak == 1 and population.active == 0
     assert all(db.close_calls == 1 for db in population.connections)
     assert all(not path.exists() for path in directories)
 
@@ -349,7 +255,7 @@ def test_missing_directory_entry_during_cleanup_does_not_confirm_root_removal(
         patch.setattr(shutil, "rmtree", missing)
         with pytest.raises(FileNotFoundError, match="nested entry"):
             current.close()
-        assert path.is_dir() and population.active == int(child)
+        assert path.is_dir() and population.active == 0
         assert population.connections[-1].close_calls == 1
     current.close()
     assert population.active == 0 and all(db.close_calls == 1 for db in population.connections)

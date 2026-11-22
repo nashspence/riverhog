@@ -188,43 +188,6 @@ def _restore(corpus: CanonicalCorpusValidator, raw: bytes) -> None:
         raise StaleCorpusWorkspace("retained corpus checkpoint is corrupt") from error
 
 
-class _OrderConnection:
-    """Map private ordering tables and commits into the owner transaction."""
-
-    def __init__(self, db: sqlite3.Connection, kind: str) -> None:
-        self.db, self.kind = db, kind
-
-    def execute(self, query: str, parameters: tuple[Any, ...] = ()) -> sqlite3.Cursor:
-        if query == "BEGIN IMMEDIATE":
-            query = "SAVEPOINT corpus_order_quantum"
-        elif query == "COMMIT":
-            query = "RELEASE corpus_order_quantum"
-        query = re.sub(
-            r"\b(nodes|ready|checkpoint)\b",
-            lambda match: "corpus_order_" + self.kind + "_" + match[0],
-            query,
-        )
-        return self.db.execute(query, parameters)
-
-    def rollback(self) -> None:
-        self.db.rollback()
-
-    def close(self) -> None:
-        pass
-
-
-class _RetainedOrder(_CorpusOrder):
-    """Use the existing ordering algorithm inside the owner's single database."""
-
-    def __init__(self, db: sqlite3.Connection, kind: str) -> None:
-        self.source, self.db = db, _OrderConnection(db, kind)
-        self.kind, self._finished = kind, None
-        self._closing = False
-
-    def close(self) -> None:
-        pass
-
-
 class RetainedCorpusValidator:
     """Retain Native progress under the application's current source and lease.
 
@@ -266,14 +229,8 @@ class RetainedCorpusValidator:
         metadata_byte_budget: int = PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
         on_storage_close: Callable[[], None] | None = None,
         on_storage_open: Callable[[Self], None] | None = None,
-        projection_connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> Self:
-        """Open through the caller's exact retained guard and SQLite scope.
-
-        The optional connection factory belongs only to disposable projections
-        created later by the corpus algorithm. It cannot replace this retained
-        database's single original construction scope.
-        """
+        """Open all corpus and order tables through the exact retained SQLite scope."""
         if not isinstance(construction, CorpusConstruction):
             raise TypeError("retained corpus requires its original construction frame")
         construction.begin()
@@ -288,7 +245,6 @@ class RetainedCorpusValidator:
                 metadata_byte_budget=metadata_byte_budget,
                 on_storage_close=on_storage_close,
                 on_storage_open=on_storage_open,
-                projection_connection_factory=projection_connection_factory,
             )
         finally:
             construction.end()
@@ -306,7 +262,6 @@ class RetainedCorpusValidator:
         metadata_byte_budget: int,
         on_storage_close: Callable[[], None] | None,
         on_storage_open: Callable[[Self], None] | None,
-        projection_connection_factory: Callable[..., sqlite3.Connection] | None,
     ) -> Self:
         construction.require_active()
         if type(worker_epoch) is not int or worker_epoch < 0:
@@ -348,9 +303,7 @@ class RetainedCorpusValidator:
             result._db = construction.scope.connect(
                 path.as_uri() + "?mode=rw", uri=True, check_same_thread=False
             )
-            result._corpus = CanonicalCorpusValidator._from_workspace(
-                result._db, directory, connection_factory=projection_connection_factory
-            )
+            result._corpus = CanonicalCorpusValidator._from_workspace(result._db, directory)
             result._corpus_storage = result._corpus
             # Retain the handle before initialization or fencing can fail.
             # The caller keeps its lease if a following close is unconfirmed.
@@ -427,16 +380,6 @@ class RetainedCorpusValidator:
         )
         _write(db, "CREATE TABLE corpus_source_inputs(anchor BLOB PRIMARY KEY) WITHOUT ROWID")
         _write(db, "CREATE TABLE corpus_selected_inputs(anchor BLOB PRIMARY KEY) WITHOUT ROWID")
-        for kind in ("derivation", "specialization"):
-            order = _RetainedOrder(db, kind)
-            order._write("CREATE TABLE nodes(id TEXT PRIMARY KEY,degree TEXT NOT NULL)")
-            order._write("CREATE TABLE ready(id TEXT PRIMARY KEY)")
-            order._write(
-                "CREATE TABLE checkpoint(singleton INTEGER PRIMARY KEY CHECK(singleton=1),"
-                "phase TEXT,source TEXT,target TEXT,seed TEXT,current TEXT,outgoing TEXT,"
-                "vertices TEXT,completed TEXT,source_edges TEXT)"
-            )
-            order._write("INSERT INTO checkpoint VALUES(1,'input','','','','','','0','0','0')")
 
         schema_cookie = _one(db, "PRAGMA schema_version")[0]
         _write(
@@ -533,7 +476,7 @@ class RetainedCorpusValidator:
                 epoch, version, checkpoint, _, _ = self._load()
                 _restore(self._corpus, checkpoint)
                 self._corpus._orders = {
-                    kind: _RetainedOrder(db, kind) for kind in ("derivation", "specialization")
+                    kind: _CorpusOrder(db, kind) for kind in ("derivation", "specialization")
                 }
                 yield
                 self._verify_current()

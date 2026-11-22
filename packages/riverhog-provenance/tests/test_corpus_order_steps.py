@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import os
+import shutil
 import sqlite3
+from contextlib import closing
 
 import pytest
 import riverhog_provenance._corpus_order as ordering
@@ -181,7 +183,7 @@ def test_actual_order_database_write_cancellation_preserves_committed_checkpoint
 
         def cancelled(query, parameters=()):
             if query.startswith(trigger):
-                order.db.set_progress_handler(lambda: 1, 1)
+                corpus._db.set_progress_handler(lambda: 1, 1)
             return write(query, parameters)
 
         try:
@@ -190,7 +192,7 @@ def test_actual_order_database_write_cancellation_preserves_committed_checkpoint
                 with pytest.raises(sqlite3.OperationalError, match="interrupted"):
                     corpus.advance_order("derivation", row_budget=7)
         finally:
-            order.db.set_progress_handler(None, 0)
+            corpus._db.set_progress_handler(None, 0)
         assert snapshot(order) == before
         assert not order.db.in_transaction
         assert finish(corpus, "derivation", rows=1).completed_vertices == 18
@@ -312,3 +314,65 @@ def test_actual_ordering_quanta_bound_payload_and_sql_work(monkeypatch, record_p
         numeric_policy=numeric_policy_from_environment(os.environ),
     )
     record_property("growth_samples", samples)
+
+
+def test_one_corpus_image_preserves_both_order_roles_and_the_fixed_source(tmp_path):
+    with CanonicalCorpusValidator() as corpus:
+        for kind in ("derivation", "specialization"):
+            insert(corpus, edges_for("chain", 17), kind)
+        ready(corpus)
+        for kind in ("derivation", "specialization"):
+            assert corpus.advance_order(kind, row_budget=3).source_edges == 3
+        assert not corpus._db.in_transaction
+        path = tmp_path / "received-corpus.sqlite3"
+        shutil.copyfile(corpus._directory / "corpus.sqlite3", path)
+        with closing(sqlite3.connect(path)) as db:
+            assert db.execute("SELECT count(*) FROM edges").fetchone() == (34,)
+            for kind in ("derivation", "specialization"):
+                order = ordering._CorpusOrder(db, kind)
+                assert order.db.execute("SELECT source_edges FROM checkpoint").fetchone() == ("3",)
+                for _ in range(1024):
+                    progress = order.advance(row_budget=1, byte_budget=4096)
+                    if progress.complete:
+                        break
+                else:
+                    pytest.fail("received colocated order did not complete")
+                assert progress.source_edges == 17 and progress.completed_vertices == 18
+                order.close()
+        for order in corpus._orders.values():
+            assert order.db.execute("SELECT source_edges FROM checkpoint").fetchone() == ("3",)
+
+
+def test_order_view_rollback_preserves_its_composing_original_transaction():
+    with CanonicalCorpusValidator() as corpus:
+        insert(corpus, edges_for("chain", 3), "derivation")
+        corpus._db.commit()
+        corpus._db.execute("BEGIN IMMEDIATE").close()
+        corpus._db.execute(
+            "INSERT INTO edges VALUES('specialization','original','pending')"
+        ).close()
+        order = ordering._CorpusOrder(corpus._db, "derivation")
+        original = order._write
+        failure = InterruptedError("original ordering mutation failed")
+
+        def interrupted(query, parameters=()):
+            if query.startswith("INSERT OR IGNORE INTO nodes"):
+                raise failure
+            return original(query, parameters)
+
+        order._write = interrupted
+        with pytest.raises(InterruptedError) as caught:
+            order.advance(row_budget=1, byte_budget=4096)
+        assert caught.value is failure and corpus._db.in_transaction
+        assert corpus._db.execute(
+            "SELECT source,target FROM edges WHERE kind='specialization'"
+        ).fetchone() == ("original", "pending")
+        assert order.db.execute("SELECT source_edges FROM checkpoint").fetchone() == ("0",)
+        corpus._db.rollback()
+        assert (
+            corpus._db.execute("SELECT 1 FROM edges WHERE kind='specialization'").fetchone() is None
+        )
+        assert corpus._db.execute(
+            "SELECT count(*) FROM edges WHERE kind='derivation'"
+        ).fetchone() == (3,)
+        order.close()

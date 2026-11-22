@@ -28,6 +28,7 @@ from riverhog_growth_contracts import (
 from riverhog_provenance_contracts import canonical_document, require_canonical_uuid_urn
 
 from ._corpus_order import CorpusOrderProgress, _CorpusOrder
+from ._corpus_order import install as install_order
 from .common import fingerprint
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
 from .corpus_selection import index_assertion, retire_assertion
@@ -62,7 +63,7 @@ def _corpus_order_declaration() -> Declaration:
         authority="riverhog-provenance",
         subjects=("riverhog_provenance.corpus.CanonicalCorpusValidator._acyclic",),
         scope="native-complete-corpus-graph-kind-cycle-check",
-        starts_at="open an owned disk-backed indegree and ready-work index",
+        starts_at="receive a fixed edge index and its empty colocated ordering tables",
         ends_at="accept or reject the graph kind and release all ordering scratch state",
         dimensions=(
             Dimension("edges", COUNT, "Distinct edges of this kind in the accepted corpus index."),
@@ -111,7 +112,7 @@ def _corpus_order_declaration() -> Declaration:
                 COUNT,
                 "upper",
                 multiply(number(32, SCALAR), records),
-                "Includes both connections, schema, empty reads, point updates and queue "
+                "Includes colocated index reset, empty reads, point updates and queue "
                 "operations and atomic checkpoint transactions.",
             ),
             Bound(
@@ -148,8 +149,8 @@ def _corpus_order_declaration() -> Declaration:
                 OCTETS,
                 "upper",
                 multiply(number(8, SCALAR), records, widths),
-                "Full logical node/ready fields for every successful row mutation, including "
-                "deletion.",
+                "Inserted/replaced node and ready values and supplied deletion keys; "
+                "reset deletion rows and internal SQLite work are counted separately.",
             ),
             Bound(
                 "degree_decoded_octets",
@@ -200,7 +201,7 @@ def _corpus_order_declaration() -> Declaration:
         conditions=(
             "The owning corpus edge primary key is (kind, source, target), retaining "
             "exact deduplication.",
-            "The private ordering database uses bounded SQLite cache and disk-backed "
+            "The original corpus database uses bounded SQLite cache and colocated disk-backed "
             "node/ready indexes.",
             "Inputs describe complete endpoint widths; ordering has an explicit B-tree "
             "logarithmic allowance.",
@@ -213,16 +214,15 @@ def _corpus_order_declaration() -> Declaration:
             "Both derivation and specialization are checked independently with the same "
             "exact cycle rule.",
             "Corpus facts and error ordering before cycle checking are unchanged.",
-            "Unconfirmed ordering close retains storage; confirmed close precedes scratch "
-            "release. The ordering phase performs no source corpus writes.",
+            "Ordering changes only its fixed scratch tables on the original corpus connection; "
+            "the corpus owner retains sole connection and directory receiving.",
         ),
         limitations=(
             "This bounds complete-corpus cycle checking, not incremental per-snapshot "
             "graph updates.",
             "Source validation, corpus population, foreign references and "
             "selected-history closure have separate costs.",
-            "File release and elapsed time are observations; scratch has a constant "
-            "number of database files.",
+            "Original corpus file release and elapsed time remain separate observations.",
         ),
     )
 
@@ -1135,7 +1135,6 @@ class CanonicalCorpusValidator:
                 "caller-owned corpus placement requires an absolute directory and factory"
             )
         self._initialize_state()
-        self._connection_factory = connection_factory
         self._owns_directory = directory is None
         self._directory = (
             Path(mkdtemp(prefix="riverhog-canonical-corpus-"))
@@ -1163,17 +1162,17 @@ class CanonicalCorpusValidator:
         cls,
         db: sqlite3.Connection,
         directory: Path,
-        *,
-        connection_factory: Callable[..., sqlite3.Connection] | None = None,
     ) -> Self:
         result = cls.__new__(cls)
         result._initialize_state()
-        result._connection_factory = connection_factory
+        result._owns_transaction = False
         result._owns_directory = False
         result._directory, result._db = directory, db
         return result
 
     def _initialize_state(self) -> None:
+        self._owns_transaction = True
+        self._failure: BaseException | None = None
         self._closed = False
         self._connection_closed = False
         self._semantic_phase = "open"
@@ -1217,10 +1216,16 @@ class CanonicalCorpusValidator:
         for statement in schema.split(";"):
             if statement:
                 self._source_write(statement)
+        for kind in ("derivation", "specialization"):
+            install_order(self._db, kind)
 
     def _require_open(self) -> None:
         if self._closed:
             raise RuntimeError("canonical corpus is closed")
+        if self._failure is not None:
+            raise RuntimeError(
+                "canonical corpus requires reconstruction after failed ordering"
+            ) from self._failure
 
     def __enter__(self) -> Self:
         self._require_open()
@@ -1897,21 +1902,13 @@ class CanonicalCorpusValidator:
             del self._orders[kind]
 
     def _open_order(self, kind: str) -> _CorpusOrder:
-        def retain(order: _CorpusOrder) -> None:
-            self._orders[kind] = order
-
-        try:
-            return _CorpusOrder(
-                self._db,
-                kind,
-                connection_factory=self._connection_factory,
-                on_storage_open=retain,
-            )
-        except BaseException:
-            order = self._orders.get(kind)
-            if order is not None and order._released:
-                del self._orders[kind]
-            raise
+        if self._owns_transaction:
+            # The input is fixed before ordering. Receive its original writer
+            # before a child quantum can fail or SQLite can interrupt it.
+            self._db.commit()
+        order = _CorpusOrder(self._db, kind)
+        self._orders[kind] = order
+        return order
 
     @declare_growth(_order_step_declaration())
     def advance_order(
@@ -1933,7 +1930,13 @@ class CanonicalCorpusValidator:
             raise RuntimeError("corpus ordering requires complete semantics and dependencies")
         if kind not in self._orders:
             self._open_order(kind)
-        return self._orders[kind].advance(row_budget=row_budget, byte_budget=byte_budget)
+        order = self._orders[kind]
+        try:
+            return order.advance(row_budget=row_budget, byte_budget=byte_budget)
+        except BaseException:
+            if order._failure is not None:
+                self._failure = order._failure
+            raise
 
     def validate(self) -> None:
         self._require_open()
@@ -1945,6 +1948,9 @@ class CanonicalCorpusValidator:
             # A later explicit batch validation has a new fixed input set.
             self._semantic_phase = "open"
             self._reset_dependencies()
+            if self._failure is None:
+                for order in self._orders.values():
+                    order.reset()
             self._close_orders()
 
     def _validate_registered(self) -> None:
@@ -1967,6 +1973,23 @@ class CanonicalCorpusValidator:
                 row_budget=1024, byte_budget=PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
             ).complete:
                 pass
+        except ProvenanceValidationError:
+            try:
+                order.reset()
+            except BaseException as cleanup_error:
+                self._failure = cleanup_error
+            raise
+        except BaseException as error:
+            # Do not run more SQL under the failing original execution observer
+            # or guess that a failed transaction left a usable continuation.
+            self._failure = error
+            raise
+        else:
+            try:
+                order.reset()
+            except BaseException as error:
+                self._failure = error
+                raise
         finally:
             order.close()
             del self._orders[kind]
