@@ -255,9 +255,9 @@ def test_sealed_result_never_repairs_or_revalidates_changed_authority(
                         values = {"worker_epoch": job.worker_epoch + 1}
                     elif fault == "job-progress":
                         values = {
-                            "progress_json": jobs.encode_progress(
+                            "terminal_progress_json": jobs.encode_progress(
                                 replace(
-                                    jobs.decode_progress(job.progress_json),
+                                    jobs.decode_progress(job.terminal_progress_json),
                                     checkpoint_sha256="0" * 64,
                                 )
                             )

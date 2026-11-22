@@ -34,26 +34,31 @@ def _job_declaration(mode: str) -> Declaration:
     sql = {
         "select_job": 4,
         "claim_worker": 2,
+        "activate_worker": 2,
         "worker_current": 2,
-        "publish_progress": 2,
+        "publish_outcome": 2,
         "creation_current": 2,
         "retire_source": 1,
         "encode_progress": 0,
         "decode_progress": 0,
         "outcome": 0,
     }[mode]
-    mutations = {"select_job": 2, "claim_worker": 1, "publish_progress": 1, "retire_source": 1}.get(
-        mode, 0
-    )
+    mutations = {
+        "select_job": 2,
+        "claim_worker": 1,
+        "activate_worker": 1,
+        "publish_outcome": 1,
+        "retire_source": 1,
+    }.get(mode, 0)
     versions = (
         2
         if mode == "select_job"
-        else int(mode in {"claim_worker", "publish_progress", "retire_source"})
+        else int(mode in {"claim_worker", "activate_worker", "publish_outcome", "retire_source"})
     )
-    decodes = int(mode in {"decode_progress", "publish_progress", "outcome"})
+    decodes = int(mode in {"decode_progress", "outcome"})
     encodes = (
-        3
-        if mode == "publish_progress"
+        2
+        if mode == "publish_outcome"
         else int(mode in {"encode_progress", "decode_progress", "outcome"})
     )
 
@@ -359,7 +364,7 @@ class ValidationJob:
     worker_epoch: int
     version: str
     state: str
-    progress_json: str | None
+    terminal_progress_json: str | None
     outcome_json: str | None
     failure: str | None
 
@@ -451,10 +456,40 @@ def claim_worker(
             .where(
                 *_identity(job),
                 Job.version == job.version,
-                Job.progress_json == job.progress_json,
+                Job.terminal_progress_json == job.terminal_progress_json,
                 Job.state.in_(("opening", "active")),
             )
             .values(version=_version(), worker_epoch=job.worker_epoch + 1)
+            .returning(Job)
+        ).scalar_one_or_none()
+        return None if changed is None else ValidationJob.read(changed)
+
+
+def activate_worker(
+    factory: SessionFactory,
+    source: source_owner._UploadJournalValidationWork,
+    job: ValidationJob,
+) -> ValidationJob | None:
+    """Receive the original workspace opening; publish no semantic replay cursor."""
+    with factory() as session, session.begin():
+        if (
+            session.scalar(
+                select(Journal.collection_id)
+                .where(*source_owner._upload_journal_validation_fence(source))
+                .with_for_update(skip_locked=True)
+            )
+            is None
+        ):
+            return None
+        changed = session.execute(
+            update(Job)
+            .where(
+                *_identity(job),
+                Job.version == job.version,
+                Job.state == "opening",
+                Job.terminal_progress_json.is_(None),
+            )
+            .values(version=_version(), state="active")
             .returning(Job)
         ).scalar_one_or_none()
         return None if changed is None else ValidationJob.read(changed)
@@ -471,7 +506,7 @@ def worker_current(factory: SessionFactory, job: ValidationJob) -> bool:
             return result.one_or_none() is not None
 
 
-def publish_progress(
+def publish_outcome(
     factory: SessionFactory,
     source: source_owner._UploadJournalValidationWork,
     job: ValidationJob,
@@ -480,30 +515,25 @@ def publish_progress(
     outcome: source_owner._UploadJournalValidationOutcome | None = None,
     lost: str | None = None,
 ) -> ValidationJob | None:
-    "Publish detached metadata after the native commit under both owner fences."
-    if progress is not None:
-        if progress.attempt_id != job.workspace_id or progress.worker_epoch != job.worker_epoch:
-            raise RuntimeError("native progress differs from the selected worker")
-        if job.progress_json is not None:
-            previous = decode_progress(job.progress_json)
-            if (
-                progress.version < previous.version
-                or progress.accepted_frames < previous.accepted_frames
-                or progress.accepted_octets < previous.accepted_octets
-                or progress.source_octets < previous.source_octets
-                or (previous.complete and not progress.complete)
-                or (
-                    progress.accepted_frames == previous.accepted_frames
-                    and (progress.accepted_octets, progress.accepted_sha256)
-                    != (previous.accepted_octets, previous.accepted_sha256)
-                )
-            ):
-                raise RuntimeError("retained native progress moved behind its confirmed prefix")
-    state = "lost" if lost is not None else "active"
+    """Publish an exact terminal observation/outcome under both current fences."""
+    if (outcome is None) == (lost is None):
+        raise RuntimeError("Native publication requires exactly one terminal outcome or loss")
+    if job.state in {"opening", "active"} and job.terminal_progress_json is not None:
+        raise RuntimeError("active Native work cannot retain a terminal observation")
+    if progress is not None and (
+        progress.attempt_id != job.workspace_id or progress.worker_epoch != job.worker_epoch
+    ):
+        raise RuntimeError("native terminal observation differs from the selected worker")
+    if lost is not None and progress is not None:
+        raise RuntimeError("unavailable Native work cannot publish a terminal observation")
+    if outcome is not None:
+        if progress is None:
+            raise RuntimeError("Native outcome requires its original terminal observation")
+        if outcome.failure is None and not progress.complete:
+            raise RuntimeError("successful validation requires complete native progress")
+    state = "lost"
     if outcome is not None:
         state = "failed" if outcome.failure is not None else "complete"
-        if state == "complete" and (progress is None or not progress.complete):
-            raise RuntimeError("successful validation requires complete native progress")
     encoded_outcome = None
     if outcome is not None:
         encoded_outcome = canonical_json_bytes(
@@ -527,13 +557,13 @@ def publish_progress(
             .where(
                 *_identity(job),
                 Job.version == job.version,
-                Job.progress_json == job.progress_json,
+                Job.terminal_progress_json == job.terminal_progress_json,
                 Job.state.in_(("opening", "active")),
             )
             .values(
                 version=_version(),
                 state=state,
-                progress_json=job.progress_json if progress is None else encode_progress(progress),
+                terminal_progress_json=None if progress is None else encode_progress(progress),
                 outcome_json=encoded_outcome,
                 failure=lost
                 if lost is not None
@@ -607,12 +637,13 @@ declare_growth(_job_declaration("select_job"))(select_job)
 
 
 declare_growth(_job_declaration("claim_worker"))(claim_worker)
+declare_growth(_job_declaration("activate_worker"))(activate_worker)
 
 
 declare_growth(_job_declaration("worker_current"))(worker_current)
 
 
-declare_growth(_job_declaration("publish_progress"))(publish_progress)
+declare_growth(_job_declaration("publish_outcome"))(publish_outcome)
 
 
 declare_growth(_job_declaration("creation_current"))(creation_current)

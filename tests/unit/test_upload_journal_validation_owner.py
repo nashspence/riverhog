@@ -10,7 +10,11 @@ from riverhog_core.journal_validation_workspace import LostJournalValidationWork
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_validation_jobs as jobs
 from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
-from riverhog_provenance import JournalValidationBudget, validate_journal
+from riverhog_provenance import (
+    JournalValidationBudget,
+    JournalValidationWorkBudget,
+    validate_journal,
+)
 from sqlalchemy import delete, select, update
 
 from tests.unit.test_journal_capture import retained
@@ -58,7 +62,7 @@ def test_retained_owner_preserves_native_outcome_and_closes_catalog_readers(
             assert job.state == ("failed" if malformed else "complete")
             assert jobs.outcome(job) == outcome
             if failure is None:
-                assert jobs.decode_progress(job.progress_json).complete
+                assert jobs.decode_progress(job.terminal_progress_json).complete
                 assert outcome.terminal_entry_id == expected_anchor["through"]["entry_id"]
                 assert outcome.terminal_json_sha256 == expected_anchor["through"]["json_sha256"]
             assert (
@@ -66,6 +70,42 @@ def test_retained_owner_preserves_native_outcome_and_closes_catalog_readers(
                 == outcome
             )
             assert selected(factory).worker_epoch == 1
+        finally:
+            owner.close()
+
+
+def test_live_native_yields_do_not_publish_catalog_progress(tmp_path, *, journal_constructions):
+    with retained(tmp_path, source(journal_id=JOURNAL)) as (_, factory):
+        work, _ = ready(factory)
+        owner = UploadJournalValidationOwner(
+            factory, tmp_path / "native", construction_factory=journal_constructions.retain
+        )
+        try:
+            catalog = source_owner.admission_provenance_catalog()
+            budget = JournalValidationBudget(work=JournalValidationWorkBudget(transitions=1))
+            first = owner.advance(work, catalog=catalog, budget=budget)
+            assert first.progressed and first.outcome is None
+            original = selected(factory)
+            key = work.collection_id, work.journal_id, work.attempt_id
+            previous = owner._slots[key].processed
+            assert original.state == "active" and original.terminal_progress_json is None
+            observed = 0
+            for _ in range(10000):
+                step = owner.advance(work, catalog=catalog, budget=budget)
+                if step.outcome is not None:
+                    assert step.outcome.failure is None
+                    terminal = selected(factory)
+                    assert terminal.state == "complete" and terminal.version != original.version
+                    assert jobs.decode_progress(terminal.terminal_progress_json).complete
+                    break
+                assert selected(factory) == original
+                processed = owner._slots[key].processed
+                assert processed is not None and processed != previous
+                previous = processed
+                observed += 1
+            else:
+                pytest.fail("finite Native source did not produce its terminal outcome")
+            assert observed > 1
         finally:
             owner.close()
 
@@ -166,12 +206,12 @@ from riverhog_core.services import upload_journal_validation_jobs as jobs
 from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
 factory=sessionmaker(create_catalog_engine(sys.argv[1]))
 work=source_owner._read_upload_journal_validation(factory,1,sys.argv[3])
-original=jobs.publish_progress
+original=jobs.publish_outcome
 def publish(factory,work,job,progress,**kwargs):
  if progress is not None and progress.accepted_frames:
   os._exit(81)
  return original(factory,work,job,progress,**kwargs)
-jobs.publish_progress=publish
+jobs.publish_outcome=publish
 from tests.support.native_construction import JournalConstructions
 constructions=JournalConstructions()
 owner=UploadJournalValidationOwner(factory,Path(sys.argv[2]),construction_factory=constructions.retain)
@@ -185,7 +225,7 @@ raise AssertionError('confirmed prefix crash was not reached')
         )
         assert process.returncode == 81, process.stderr.decode()
         previous = selected(factory)
-        assert jobs.decode_progress(previous.progress_json).accepted_frames == 0
+        assert previous.terminal_progress_json is None
 
         def forbidden(*_args, **_kwargs):
             pytest.fail("replacing a worker replayed an already accepted frame")
@@ -203,7 +243,7 @@ raise AssertionError('confirmed prefix crash was not reached')
             adopted = selected(factory)
             assert adopted.workspace_id == previous.workspace_id
             assert adopted.worker_epoch == previous.worker_epoch + 1
-            assert jobs.decode_progress(adopted.progress_json).accepted_frames == 1
+            assert jobs.decode_progress(adopted.terminal_progress_json).accepted_frames == 1
         finally:
             replacement.close()
 
@@ -228,7 +268,7 @@ def test_job_cleanup_pointer_survives_source_deletion_and_stale_owner_cannot_pub
             orphan = selected(factory)
             assert orphan.workspace_id == before.workspace_id
             assert orphan.collection_id is None and orphan.journal_id is None
-            assert orphan.progress_json == before.progress_json
+            assert orphan.terminal_progress_json == before.terminal_progress_json
             assert (root / before.workspace_id / "snapshot.sqlite3").is_file()
         finally:
             owner.close()
@@ -250,8 +290,12 @@ def test_stale_catalog_worker_cannot_publish_native_progress(
             with factory() as session, session.begin():
                 session.execute(update(Job).values({field: replacement[field]}))
             assert (
-                jobs.publish_progress(
-                    factory, work, before, jobs.decode_progress(before.progress_json)
+                jobs.publish_outcome(
+                    factory,
+                    work,
+                    before,
+                    owner._slots[(work.collection_id, work.journal_id, work.attempt_id)].processed,
+                    outcome=source_owner._UploadJournalValidationOutcome("rejected"),
                 )
                 is None
             )
@@ -279,7 +323,10 @@ def test_changed_rank_manifest_cannot_advance_even_a_non_graph_unit(
             with pytest.raises(LostJournalValidationWorkspace):
                 owner.advance(work, catalog=source_owner.admission_provenance_catalog())
             after = selected(factory)
-            assert after.state == "lost" and after.progress_json == before.progress_json
+            assert (
+                after.state == "lost"
+                and after.terminal_progress_json == before.terminal_progress_json
+            )
             with factory() as session:
                 assert session.get(Journal, (1, JOURNAL)).state == "validating"
         finally:

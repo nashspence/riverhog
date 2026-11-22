@@ -120,11 +120,11 @@ def _confirmed(
 ) -> tuple[
     JournalReplayBinding, JournalGraphCertificateBinding, JournalValidationProgress, dict[str, Any]
 ]:
-    if job.state != "complete" or job.failure is not None or job.progress_json is None:
+    if job.state != "complete" or job.failure is not None or job.terminal_progress_json is None:
         raise LostJournalValidationWorkspace("sealed journal has no confirmed native result")
     binding = JournalReplayBinding.from_json(job.source_binding_json)
     certificates = JournalGraphCertificateBinding.from_json(job.certificate_binding_json)
-    progress = jobs.decode_progress(job.progress_json)
+    progress = jobs.decode_progress(job.terminal_progress_json)
     outcome = jobs.outcome(job)
     if (
         job.attempt_id != binding.attempt_id

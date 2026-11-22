@@ -95,12 +95,18 @@ def build_cases(root, *, large=True, journal_constructions):
                 for _ in range(10000):
                     step = current.advance(work, catalog=catalog)
                     record = selected(factory)
-                    if record["progress_json"] is not None:
-                        progress = owner.decode_progress(record["progress_json"])
-                        if not progresses or progress != progresses[-1]:
-                            progresses.append(progress)
-                        if active is None and record["state"] == "active":
+                    if record["state"] == "active":
+                        if active is None:
                             active = record
+                        else:
+                            assert record == active
+                        key = work.collection_id, work.journal_id, work.attempt_id
+                        progress = current._slots[key].processed
+                        assert progress is not None and record["terminal_progress_json"] is None
+                    else:
+                        progress = owner.decode_progress(record["terminal_progress_json"])
+                    if not progresses or progress != progresses[-1]:
+                        progresses.append(progress)
                     if step.outcome is not None:
                         complete, outcome = record, step.outcome
                         break
@@ -324,7 +330,7 @@ def sql_samples(mode, cases, samples):
                     )
                     assert (
                         retired.source_binding_json == old.source_binding_json
-                        and retired.progress_json == old.progress_json
+                        and retired.terminal_progress_json == old.terminal_progress_json
                     )
                 samples.append(sample)
                 reset(case, case.opening)
@@ -367,6 +373,32 @@ def sql_samples(mode, cases, samples):
                             replace(
                                 result, worker_epoch=argument.worker_epoch, version=argument.version
                             )
+                            == argument
+                        )
+                    else:
+                        assert result is None
+                    samples.append(sample)
+            elif mode == "activate_worker":
+                for fields, argument, source_work, changes in (
+                    (case.opening, opening, case.work, 1),
+                    (case.opening, replace(opening, version=stale_job.version), case.work, 0),
+                    (case.opening, opening, stale_source, 0),
+                    (case.active, active, case.work, 0),
+                    (case.complete, complete, case.work, 0),
+                ):
+                    reset(case, fields)
+                    result, sample = measure(
+                        case,
+                        mode,
+                        partial(owner.activate_worker, case.factory, source_work, argument),
+                        job=argument,
+                        cold=cold,
+                        changed=changes,
+                    )
+                    if changes:
+                        assert result.state == "active" and result.terminal_progress_json is None
+                        assert (
+                            replace(result, state=argument.state, version=argument.version)
                             == argument
                         )
                     else:
@@ -440,17 +472,17 @@ def sql_samples(mode, cases, samples):
                                 and row.version != fields["version"]
                             )
                             assert (
-                                row.progress_json == fields["progress_json"]
+                                row.terminal_progress_json == fields["terminal_progress_json"]
                                 and row.outcome_json == fields["outcome_json"]
                             )
                     samples.append(sample)
-            elif mode == "publish_progress":
+            elif mode == "publish_outcome":
                 first, last = case.progresses[0], case.progresses[-1]
                 arguments = [
-                    (case.active, active, case.work, first, {}, 1, None),
+                    (case.active, active, case.work, first, {}, 0, RuntimeError),
                     (case.active, active, case.work, last, {"outcome": case.outcome}, 1, None),
-                    (case.active, stale_job, case.work, first, {}, 0, None),
-                    (case.active, active, stale_source, first, {}, 0, None),
+                    (case.active, stale_job, case.work, last, {"outcome": case.outcome}, 0, None),
+                    (case.active, active, stale_source, last, {"outcome": case.outcome}, 0, None),
                     (
                         case.active,
                         active,
@@ -470,8 +502,8 @@ def sql_samples(mode, cases, samples):
                         RuntimeError,
                     ),
                     (
-                        {**case.active, "progress_json": owner.encode_progress(last)},
-                        replace(active, progress_json=owner.encode_progress(last)),
+                        {**case.active, "terminal_progress_json": owner.encode_progress(last)},
+                        replace(active, terminal_progress_json=owner.encode_progress(last)),
                         case.work,
                         first,
                         {},
@@ -487,7 +519,7 @@ def sql_samples(mode, cases, samples):
                         case,
                         mode,
                         partial(
-                            owner.publish_progress,
+                            owner.publish_outcome,
                             case.factory,
                             source_work,
                             argument,
@@ -495,7 +527,7 @@ def sql_samples(mode, cases, samples):
                             **extra,
                         ),
                         controls=(
-                            argument.progress_json,
+                            argument.terminal_progress_json,
                             encoded_progress,
                             encoded_outcome,
                             extra.get("lost"),
@@ -514,8 +546,10 @@ def sql_samples(mode, cases, samples):
                             result.source_binding_json == argument.source_binding_json
                             and result.certificate_binding_json == argument.certificate_binding_json
                         )
-                        assert result.progress_json == (
-                            argument.progress_json if progress is None else encoded_progress
+                        assert result.terminal_progress_json == (
+                            argument.terminal_progress_json
+                            if progress is None
+                            else encoded_progress
                         )
                         assert result.outcome_json == (encoded_outcome or None)
                         assert result.state == (
@@ -614,6 +648,17 @@ def test_actual_job_claim_worker_includes_owned_metadata_work(job_cases, record_
 
 
 @pytest.mark.growth_witness(
+    "riverhog-validation-job-activate-worker-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.services.upload_journal_validation_jobs.activate_worker",
+)
+def test_actual_job_activate_worker_includes_owned_metadata_work(job_cases, record_property):
+    samples = []
+    record_property("growth_samples", samples)
+    sql_samples("activate_worker", job_cases, samples)
+
+
+@pytest.mark.growth_witness(
     "riverhog-validation-job-worker-current-work/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
     operation="riverhog_core.services.upload_journal_validation_jobs.worker_current",
@@ -625,14 +670,14 @@ def test_actual_job_worker_current_includes_owned_metadata_work(job_cases, recor
 
 
 @pytest.mark.growth_witness(
-    "riverhog-validation-job-publish-progress-work/v1",
+    "riverhog-validation-job-publish-outcome-work/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.services.upload_journal_validation_jobs.publish_progress",
+    operation="riverhog_core.services.upload_journal_validation_jobs.publish_outcome",
 )
-def test_actual_job_publish_progress_includes_owned_metadata_work(job_cases, record_property):
+def test_actual_job_publish_outcome_includes_owned_metadata_work(job_cases, record_property):
     samples = []
     record_property("growth_samples", samples)
-    sql_samples("publish_progress", job_cases, samples)
+    sql_samples("publish_outcome", job_cases, samples)
 
 
 @pytest.mark.growth_witness(

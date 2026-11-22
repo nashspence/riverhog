@@ -98,7 +98,7 @@ def build_cases(root, *, large=True, journal_constructions):
                     try:
                         progress = native.progress()
                         assert progress.accepted_frames == 0
-                        assert jobs.publish_progress(factory, work, claimed, progress) is not None
+                        assert jobs.activate_worker(factory, work, claimed) is not None
                     finally:
                         native.close()
                 active = selected(factory)

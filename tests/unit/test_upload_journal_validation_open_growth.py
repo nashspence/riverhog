@@ -60,7 +60,8 @@ LOCATIONS = {
             "outcome",
             "creation_current",
             "claim_worker",
-            "publish_progress",
+            "activate_worker",
+            "publish_outcome",
         )
     },
 }
@@ -205,13 +206,13 @@ class Recorder(fences.Recorder):
                     (
                         job.source_binding_json,
                         job.certificate_binding_json,
-                        job.progress_json,
+                        job.terminal_progress_json,
                         job.outcome_json,
                         job.failure,
                     )
                 )
                 width = max(width, octets(tuple(asdict(job).values())))
-            if function is jobs.publish_progress and args[3] is not None:
+            if function is jobs.publish_outcome and args[3] is not None:
                 controls.append(job_tests.canonical(args[3]))
             controls.extend(value for value in kwargs.values() if isinstance(value, str))
             return {
@@ -972,7 +973,8 @@ def test_actual_opening_preserves_provider_costs_and_transferred_custody(
                 and after.accepted_sha256 == progress.accepted_sha256
             )
             if case.recover:
-                catalog_progress = jobs.decode_progress(slot.job.progress_json)
+                catalog_progress = slot.processed
+                assert slot.job.terminal_progress_json is None
                 for _ in range(10000):
                     accepted = slot.session.advance()
                     if accepted.accepted_frames:
@@ -992,7 +994,8 @@ def test_actual_opening_preserves_provider_costs_and_transferred_custody(
                     raise error
                 assert result is None
                 adopted = slot.session.progress()
-                published = jobs.decode_progress(slot.job.progress_json)
+                published = slot.processed
+                assert slot.job.terminal_progress_json is None
                 assert (
                     adopted.accepted_frames == published.accepted_frames == accepted.accepted_frames
                 )

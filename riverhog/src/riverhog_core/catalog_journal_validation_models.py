@@ -29,7 +29,7 @@ class JournalValidationJobRecord(Base):
     worker_epoch: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
     version: Mapped[str] = mapped_column(String(64), nullable=False)
     state: Mapped[str] = mapped_column(String, nullable=False, default="opening")
-    progress_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    terminal_progress_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     outcome_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
 

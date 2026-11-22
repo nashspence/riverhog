@@ -99,7 +99,7 @@ def input_dimensions(case, current, certificates, worker_good, source_good):
                 (
                     current.job.source_binding_json,
                     current.job.certificate_binding_json,
-                    current.job.progress_json,
+                    current.job.terminal_progress_json,
                     current.job.outcome_json,
                     current.job.failure,
                 )

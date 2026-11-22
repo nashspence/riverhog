@@ -198,6 +198,7 @@ class Recorder(opening.Recorder):
         self.rejected_snapshot_preserved = False
         self.functions = (
             *opening.FUNCTIONS,
+            owner.jobs.publish_outcome,
             *reads.READ_FUNCTIONS,
             ROOT,
             SWEEP,
@@ -941,11 +942,8 @@ def finite_cases(witness, root, *, large, journal_constructions):
                     assert result.progressed and result.outcome is None
                     slot = current._slots[key]
                     session = slot.session
-                    assert (
-                        session.progress().source_octets
-                        == owner.jobs.decode_progress(slot.job.progress_json).source_octets
-                        == 7
-                    )
+                    assert session.progress().source_octets == slot.processed.source_octets == 7
+                    assert slot.job.terminal_progress_json is None
                     assert slot.source.source._page is not None
                     # Drive actual fixture work outside the chosen measured units.
                     for _ in range(10000):
@@ -1382,7 +1380,7 @@ def recording_cases(witness, root, *, large, journal_constructions):
                         assert not current._slots and session._closed
                         job = witness.opening.job_tests.selected(factory)
                         assert job["state"] == "failed" and job["failure"] == message
-                        assert owner.jobs.decode_progress(job["progress_json"]) == before
+                        assert owner.jobs.decode_progress(job["terminal_progress_json"]) == before
                         result2, cached = recorder.measure(
                             current, cold=False, budget=unit_budget()
                         )

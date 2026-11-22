@@ -28,6 +28,7 @@ from riverhog_provenance import (
     JournalReplayBinding,
     JournalValidationBudget,
     JournalValidationCapacity,
+    JournalValidationProgress,
     JournalValidationSession,
     ProvenanceValidationError,
 )
@@ -450,6 +451,7 @@ class _Slot:
     closing: bool = False
     receiving_failed: bool = False
     job: jobs.ValidationJob | None = None
+    processed: JournalValidationProgress | None = None
     source: _OwnedSource | None = None
     work: source_owner._UploadJournalValidationWork | None = None
     catalog_sha256: str | None = None
@@ -1143,7 +1145,7 @@ def _open_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
         ("native", cast(Any, JournalValidationSession.open_retained).__func__),
         ("current", _OwnedSource.verify_current),
         ("progress", JournalValidationSession.progress),
-        ("publish", jobs.publish_progress),
+        ("activate", jobs.activate_worker),
     )
 
 
@@ -1400,7 +1402,7 @@ def _open_declaration() -> Declaration:
             ),
             (
                 "Native construction transfers the exact kernel lease to shared "
-                "storage before catalog progress publication; borrowed readers "
+                "storage before opening acknowledgement; borrowed readers "
                 "retain that custody."
             ),
             (
@@ -1433,7 +1435,7 @@ def _advance_children() -> tuple[tuple[str, Callable[..., Any]], ...]:
         ("progress", JournalValidationSession.progress),
         ("native", JournalValidationSession.advance),
         ("result", JournalValidationSession.result),
-        ("publish", jobs.publish_progress),
+        ("publish", jobs.publish_outcome),
         ("drop", UploadJournalValidationOwner._drop),
         ("current", _OwnedSource.verify_current),
         ("window", _OwnedSource.read_window),
@@ -2033,10 +2035,12 @@ class UploadJournalValidationOwner:
         # release, including independently borrowed frozen readers.
         slot.source, slot.work = owned_source, source
         slot.catalog_sha256 = catalog.checkpoint_sha256()
-        adopted = jobs.publish_progress(self.factory, source, job, current.progress())
-        if adopted is None:
-            raise source_owner._StaleUploadJournalValidation
-        slot.job = adopted
+        slot.processed = current.progress()
+        if job.state == "opening":
+            adopted = jobs.activate_worker(self.factory, source, job)
+            if adopted is None:
+                raise source_owner._StaleUploadJournalValidation
+            slot.job = adopted
         return None
 
     def advance(
@@ -2069,7 +2073,9 @@ class UploadJournalValidationOwner:
                 raise RuntimeError("validation reservation has no native owner")
             if slot.work != source or slot.catalog_sha256 != catalog.checkpoint_sha256():
                 raise source_owner._StaleUploadJournalValidation
-            before = current.progress()
+            before = slot.processed
+            if before is None:
+                raise RuntimeError("validation reservation has no live Native observation")
             outcome = None
             try:
                 after = current.advance(budget, check=slot.check_execution)
@@ -2093,11 +2099,12 @@ class UploadJournalValidationOwner:
                             int(tail["sequence"]),
                             tail["json_sha256"],
                         )
-            published = jobs.publish_progress(self.factory, source, job, after, outcome=outcome)
-            if published is None:
-                raise source_owner._StaleUploadJournalValidation
-            slot.job = published
+            slot.processed = after
             if outcome is not None:
+                published = jobs.publish_outcome(self.factory, source, job, after, outcome=outcome)
+                if published is None:
+                    raise source_owner._StaleUploadJournalValidation
+                slot.job = published
                 self._drop(key, slot)
             return ValidationAdvance(after != before or outcome is not None, outcome)
         except (JournalValidationCapacity, SqliteCapacity):
@@ -2118,7 +2125,7 @@ class UploadJournalValidationOwner:
         ) as error:
             try:
                 if slot.job is not None:
-                    jobs.publish_progress(
+                    jobs.publish_outcome(
                         self.factory, source, slot.job, None, lost=str(error)[:1000]
                     )
             finally:
