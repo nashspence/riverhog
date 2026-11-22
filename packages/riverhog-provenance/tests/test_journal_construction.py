@@ -180,7 +180,7 @@ def test_storage_wrapper_failure_retains_original_actual_sqlite(directory, monke
     def fail(*_args, **_options):
         raise MemoryError("Native wrapper allocation failed")
 
-    monkeypatch.setattr(journal_store, "_SnapshotStorage", fail)
+    monkeypatch.setattr(journal_store, "NativeStorage", fail)
     with pytest.raises(MemoryError):
         JournalStore.open_retained(directory, construction=original, create=True)
     assert original.storage is None and admission.status.connections == 1

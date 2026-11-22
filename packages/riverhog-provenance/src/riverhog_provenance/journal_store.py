@@ -20,7 +20,6 @@ from contextlib import closing
 from functools import partial
 from pathlib import Path
 from tempfile import mkdtemp
-from threading import Lock
 from typing import Any, Self, cast, overload
 from uuid import uuid4
 
@@ -50,6 +49,7 @@ from ._generic_semantics import install as install_generic_semantics
 from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
 from ._journal_prefix import install as install_journal_prefix
+from ._native_storage import NativeStorage, NativeStorageLease
 from ._online_dag import OnlineDag
 from ._online_dag import install as install_online_dag
 from ._semantic_edge import install as install_semantic_edges
@@ -465,76 +465,6 @@ class InvalidJournalWorkspace(RuntimeError):
     """Owned retained state is missing, corrupt, incomplete or incompatible."""
 
 
-class _SnapshotStorage:
-    """One frozen projection shared by independently owned reader leases."""
-
-    def __init__(
-        self, connection: sqlite3.Connection, directory: Path, *, remove_on_release: bool = True
-    ) -> None:
-        self.connection = connection
-        self.directory = directory
-        self.remove_on_release = remove_on_release
-        self.on_close: Callable[[], None] | None = None
-        self._lock = Lock()
-        self._readers = 0
-        self._closing = False
-        self._closed = False
-        self._database_closed = False
-        self._directory_removed = not remove_on_release
-
-    def retain(self, owner: JournalStore | None = None) -> None:
-        with self._lock:
-            if (
-                self._closing
-                or self._closed
-                or (owner is not None and (owner._closing or not owner._cleanup.alive))
-            ):
-                raise RuntimeError("journal summary is closed")
-            self._readers += 1
-
-    def release(self) -> None:
-        with self._lock:
-            if self._readers > 1:
-                self._readers -= 1
-                return
-            if self._readers != 1:
-                raise RuntimeError("journal storage has no remaining reader lease")
-            self._closing = True
-        # The final lease stays retained until every phase confirms closure.
-        # New readers cannot enter while a close or owner release is uncertain.
-        if not self._database_closed:
-            self.connection.close()
-            self._database_closed = True
-        if not self._directory_removed:
-            try:
-                shutil.rmtree(self.directory)
-            except FileNotFoundError:
-                if self.directory.exists():
-                    raise
-            self._directory_removed = True
-        if self.on_close is not None:
-            self.on_close()
-            self.on_close = None
-        with self._lock:
-            self._readers = 0
-            self._closed = True
-
-
-class _SnapshotLease:
-    """Serialize one reader's explicit and finalizer release, retaining failed closes."""
-
-    def __init__(self, storage: _SnapshotStorage) -> None:
-        self.storage = storage
-        self._lock = Lock()
-        self.closed = False
-
-    def close(self) -> None:
-        with self._lock:
-            if not self.closed:
-                self.storage.release()
-                self.closed = True
-
-
 class JournalStore:
     def __init__(
         self,
@@ -683,9 +613,9 @@ class JournalStore:
             if not retained and connection_factory is None:
                 shutil.rmtree(directory)
             raise
-        self._storage = _SnapshotStorage(connection, directory, remove_on_release=not retained)
+        self._storage = NativeStorage(connection, directory, remove_on_release=not retained)
         self._storage.retain()
-        self._lease = _SnapshotLease(self._storage)
+        self._lease = NativeStorageLease(self._storage)
         self._closing = False
         self._cleanup = weakref.finalize(self, self._lease.close)
         self._frozen = False
@@ -1114,7 +1044,7 @@ class JournalStore:
         reader = object.__new__(JournalStore)
         reader._storage = self._storage
         reader._storage.retain(self)
-        reader._lease = _SnapshotLease(reader._storage)
+        reader._lease = NativeStorageLease(reader._storage)
         reader._closing = False
         reader._cleanup = weakref.finalize(reader, reader._lease.close)
         reader._frozen = True
