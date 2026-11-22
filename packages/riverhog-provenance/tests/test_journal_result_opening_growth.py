@@ -154,7 +154,10 @@ def test_actual_failed_opening_close_ports_remain_independent_of_retained_histor
             indexed = connection.execute("SELECT count(*) FROM assertions").fetchone()[0]
         finally:
             connection.close()
-        dimensions = {"frozen_frames": confirmed.accepted_frames, "indexed_assertions": indexed}
+        dimensions = {
+            "frozen_frames": int(confirmed.source.frame_count),
+            "indexed_assertions": indexed,
+        }
         for kind in ("success", "before", "after", "already-closed", "transferred"):
             results, openings = [], []
             try:

@@ -42,7 +42,9 @@ def test_metadata_admission_detaches_original_binding_before_native_opening(
         assert admitted.binding.to_json() == job.source_binding_json
         assert admitted.certificates.to_json() == job.certificate_binding_json
         assert admitted.confirmed.worker_epoch == job.worker_epoch
-        assert admitted.confirmed.complete and admitted.binding.journal_id == JOURNAL
+        assert admitted.confirmed.source == admitted.binding
+        assert admitted.confirmed.through == admitted.anchor["through"]
+        assert admitted.binding.journal_id == JOURNAL
         with pytest.raises(FrozenInstanceError):
             admitted.job = None
         with pytest.raises(FrozenInstanceError):

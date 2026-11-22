@@ -378,10 +378,15 @@ def test_whole_session_constructor_keeps_original_gate_until_actual_return(
     assert original.close_step() and admission.status.connections == 0
 
 
+@pytest.mark.parametrize("phase", ["checkpoint", "prefix"])
 def test_result_constructor_gate_covers_validation_after_original_store_open(
-    directory, journal, catalog, monkeypatch
+    directory, journal, catalog, monkeypatch, phase
 ):
-    from riverhog_provenance import journal_result, open_retained_journal_result
+    from riverhog_provenance import (
+        JournalResultConfirmation,
+        journal_result,
+        open_retained_journal_result,
+    )
     from test_retained_journal_session import OwnedSource, finish
 
     admission = pool()
@@ -396,21 +401,36 @@ def test_result_constructor_gate_covers_validation_after_original_store_open(
         create=True,
         catalog=catalog,
     )
-    confirmed = finish(session)
+    finish(session)
+    with session.result() as result:
+        tail = result.anchor["through"]
+        confirmed = JournalResultConfirmation(
+            "d" * 32,
+            0,
+            source.binding,
+            tail["entry_id"],
+            int(tail["sequence"]),
+            tail["json_sha256"],
+        )
     session.close()
     assert writer.close_step()
     original = frame(admission)
     entered, release = Event(), Event()
-    progress = journal_result._checkpoint_progress
+    owner, method = (
+        (journal_result.ValidationLedger, "load")
+        if phase == "checkpoint"
+        else (journal_result.JournalPrefix, "finish")
+    )
+    validate = getattr(owner, method)
     returned, errors = [], []
 
     def checking(*args, **kwargs):
         assert original.storage is not None
         entered.set()
         assert release.wait(10)
-        return progress(*args, **kwargs)
+        return validate(*args, **kwargs)
 
-    monkeypatch.setattr(journal_result, "_checkpoint_progress", checking)
+    monkeypatch.setattr(owner, method, checking)
 
     def run():
         try:
