@@ -12,6 +12,7 @@ from tempfile import mkdtemp
 import pytest
 import retained_resource
 import sqlite_admission
+from native_units import unit_budget
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalConstruction
 from riverhog_provenance import journal_store as store_owner
@@ -823,7 +824,7 @@ def reader_lifetime_samples(tmp_path, catalog, build, *, samples, journal_constr
                 borrowed = []
                 try:
                     for _ in range(100000):
-                        if session.advance().complete:
+                        if session.advance(unit_budget()).complete:
                             break
                     else:
                         pytest.fail("finite native reader-lifetime fixture did not finish")

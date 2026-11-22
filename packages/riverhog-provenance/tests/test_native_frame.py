@@ -6,12 +6,13 @@ from contextlib import closing
 from dataclasses import FrozenInstanceError
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance._native_epoch import EpochContext
 from riverhog_provenance._native_frame import NativeFrame, own_frame
 from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum
 from riverhog_provenance.errors import IncompleteSourceError
 from riverhog_provenance.journal import JournalFrame
-from riverhog_provenance.journal_session import JournalValidationBudget, JournalValidationSession
+from riverhog_provenance.journal_session import JournalValidationSession
 from sqlite_admission import SqliteProgressConnection
 from test_native_epoch_integration import _reach
 from test_retained_journal_session import OwnedSource, directory, open_session
@@ -64,7 +65,7 @@ def test_actual_children_borrow_one_owned_parse_and_hash_until_original_publicat
         phases = set()
         for _ in range(4096):
             phases.add(session.progress().phase)
-            progress = session.advance(JournalValidationBudget(rows=rows))
+            progress = session.advance(unit_budget(rows=rows))
             if progress.accepted_frames:
                 break
         else:
@@ -86,7 +87,7 @@ def test_cold_current_atom_is_hashed_before_parsing_and_reuses_that_hash(
         before = session._replay._current.frame
         decoded, hashed = observe_frames(monkeypatch)
         session._replay._current = None
-        session.advance()
+        session.advance(unit_budget())
         after = session._replay._current.frame
         assert after is not before and after.json_bytes == before.json_bytes
         assert decoded == hashed == [after]
@@ -110,7 +111,7 @@ def test_changed_quarantined_atom_is_rejected_before_any_cached_parse(
         session._store.db.commit()
         decoded, hashed = observe_frames(monkeypatch)
         with pytest.raises(RuntimeError, match="retained entry atom is missing or changed"):
-            session.advance()
+            session.advance(unit_budget())
         assert decoded == [] and len(hashed) == 1
         assert session._replay._current is None
     assert session.storage_received
@@ -132,7 +133,7 @@ def test_warm_parsed_data_does_not_replace_fresh_source_currentness(
         source.calls.clear()
         source.current = False
         with pytest.raises(IncompleteSourceError, match="no longer current"):
-            session.advance()
+            session.advance(unit_budget())
         assert source.calls == [] and not session._store.db.in_transaction
     assert session.storage_received
 

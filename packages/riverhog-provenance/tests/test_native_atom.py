@@ -4,6 +4,7 @@ import hashlib
 import json
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance import _entry_replay, _generic_semantics
 from riverhog_provenance._changed_assertions import read_changed_assertion
 from riverhog_provenance._generic_semantics import (
@@ -102,7 +103,7 @@ def test_original_native_atom_uses_one_hash_one_decode_and_no_canonical_reencode
 
 
 def test_owned_atom_rejects_foreign_and_failed_original_executors(session):
-    session.advance()
+    session.advance(unit_budget())
     current, epoch, db = session._replay._current, session._ledger.epoch, session._store.db
     atom, statements = current.atom, []
     assert atom is not None and atom._epoch is epoch

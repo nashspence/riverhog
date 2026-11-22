@@ -480,6 +480,7 @@ def small_samples(root):
     for case, current in units.real_case(root):
         initialized(case, current)
         recorder = Recorder(case, current)
+        recorder.caller.units.native_budget = units.native.unit_budget()
         for limit in (-1, 0, 1):
             result, observed = recorder.measure(limit=limit)
             assert result == int(limit > 0)
@@ -568,6 +569,7 @@ def rejection_samples(root):
     for case, current in units.real_case(root):
         initialized(case, current)
         recorder = Recorder(case, current)
+        recorder.caller.units.native_budget = units.native.unit_budget()
         before = checkpoint(case.factory)
         result, observed = recorder.measure(
             limit=3, interrupt=True, expected_error=OperationalError

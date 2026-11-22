@@ -4,6 +4,7 @@ import sqlite3
 from contextlib import closing
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance._entry_preparation import EntryPreparation
 from riverhog_provenance._native_control import ChildControl
 from riverhog_provenance._native_epoch import EpochContext
@@ -11,7 +12,6 @@ from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount, Wor
 from riverhog_provenance._session_input import RetainedInput
 from riverhog_provenance.errors import ProvenanceValidationError
 from riverhog_provenance.journal_session import (
-    JournalValidationBudget,
     JournalValidationSession,
     JournalValidationWorkBudget,
 )
@@ -137,7 +137,7 @@ def test_actual_session_children_share_one_original_quantum_through_receiving(
         monkeypatch.setattr(EntryPreparation, "prepare", prepared)
         monkeypatch.setattr(EntryPreparation, "_apply", applied)
         monkeypatch.setattr(ChildControl, "receive", received)
-        session.advance(JournalValidationBudget(work=JournalValidationWorkBudget(transitions=1)))
+        session.advance(unit_budget(work=JournalValidationWorkBudget(transitions=1)))
         assert len(seen) == 3 and all(item is seen[0] for item in seen)
         seen[0].require_received()
         assert seen[0].consumed.transitions == 1 and session._ledger.epoch.work is None
@@ -160,7 +160,7 @@ def test_empty_source_pull_still_consumes_one_control_transition(journal, catalo
         for _ in range(2):
             assert (
                 session.advance(
-                    JournalValidationBudget(work=JournalValidationWorkBudget(transitions=1))
+                    unit_budget(work=JournalValidationWorkBudget(transitions=1))
                 ).source_octets
                 == 0
             )
@@ -184,7 +184,7 @@ def test_unreceived_unit_cannot_return_successful_session_progress(journal, cata
         monkeypatch.setattr(EntryPreparation, "prepare", prepare)
         try:
             with pytest.raises(RuntimeError, match="unreceived original work"):
-                session.advance()
+                session.advance(unit_budget())
             assert session._ledger.epoch.work is None
             with pytest.raises(RuntimeError, match="requires reconstruction"):
                 session.progress()
@@ -197,7 +197,7 @@ def test_unreceived_unit_cannot_return_successful_session_progress(journal, cata
 @pytest.mark.parametrize("transitions", [True, 0, -1, 1.0, None])
 def test_session_control_transition_limit_requires_a_positive_integer(transitions):
     with pytest.raises(ValueError):
-        JournalValidationBudget(work=JournalValidationWorkBudget(transitions=transitions))
+        unit_budget(work=JournalValidationWorkBudget(transitions=transitions))
 
 
 def test_successful_private_commits_do_not_replenish_the_shared_quantum():
@@ -286,9 +286,7 @@ def test_actual_scan_accounts_the_returned_window_before_framing_or_cursor_publi
         monkeypatch.setattr(_ChunkInput, "scan", scan)
     with context as session:
         before = session._input.cursor.byte_offset
-        budget = JournalValidationBudget(
-            source_octets=7, work=JournalValidationWorkBudget(transitions=1)
-        )
+        budget = unit_budget(source_octets=7, work=JournalValidationWorkBudget(transitions=1))
         if malformed:
             with pytest.raises(ProvenanceValidationError):
                 session.advance(budget)
@@ -308,13 +306,14 @@ def test_actual_scan_accounts_the_returned_window_before_framing_or_cursor_publi
 
 
 def test_page_admission_and_aggregate_actual_work_are_independent(journal, catalog, monkeypatch):
+    from riverhog_provenance import JournalValidationBudget as PublicBudget
     from riverhog_provenance import JournalValidationWorkBudget as PublicWorkBudget
     from riverhog_provenance.journal_session import _ChunkInput
 
     assert PublicWorkBudget is JournalValidationWorkBudget
     original, seen = _ChunkInput.scan, []
     aggregate = PublicWorkBudget(rows=37, octets=1000, source_octets=131072, transitions=2)
-    budget = JournalValidationBudget(rows=1, source_octets=7, work=aggregate)
+    budget = PublicBudget(rows=1, source_octets=7, work=aggregate)
     with JournalValidationSession((journal,), attempt_id="a" * 32, catalog=catalog) as session:
 
         def scan(current, *args):
@@ -322,11 +321,12 @@ def test_page_admission_and_aggregate_actual_work_are_independent(journal, catal
             return original(current, *args)
 
         monkeypatch.setattr(_ChunkInput, "scan", scan)
-        assert session.advance(budget).source_octets == 7
+        assert session.advance(budget).source_octets == 14
+        assert len(seen) == 2 and seen[0] is seen[1]
         assert seen[0].limits == WorkAmount(
             rows=37, octets=1000, source_octets=131072, transitions=2
         )
-        assert seen[0].consumed == WorkAmount(rows=2, octets=7, source_octets=7, transitions=1)
+        assert seen[0].consumed == WorkAmount(rows=4, octets=14, source_octets=14, transitions=2)
         seen[0].require_received()
     assert session.storage_received
 
@@ -357,15 +357,13 @@ def test_an_unadmitted_source_window_is_refused_before_pulling_retained_bytes(
             return original(current, *args)
 
         monkeypatch.setattr(RetainedInput, "scan", scan)
-        tiny = JournalValidationBudget(
-            source_octets=7, work=JournalValidationWorkBudget(source_octets=6)
-        )
+        tiny = unit_budget(source_octets=7, work=JournalValidationWorkBudget(source_octets=6))
         with pytest.raises(NativeWorkCapacity):
             session.advance(tiny)
         assert source.calls == [] and session._input.state is before
         assert session._failure is None and seen[0].consumed == WorkAmount(rows=2, transitions=1)
         seen[0].require_received()
-        assert session.advance(JournalValidationBudget(source_octets=7)).source_octets == 7
+        assert session.advance(unit_budget(source_octets=7)).source_octets == 7
     assert session.storage_received
 
 
@@ -392,7 +390,7 @@ def test_complete_frame_transfer_uses_aggregate_budget_not_the_scan_window(
         for _ in range(64):
             if session._input.pending:
                 break
-            session.advance()
+            session.advance(unit_budget())
         else:
             pytest.fail("small exact source did not expose its complete frame")
         size = session._input.state.pending.json_bytes if retained else len(session._input.buffer)
@@ -406,7 +404,7 @@ def test_complete_frame_transfer_uses_aggregate_budget_not_the_scan_window(
             return original(current, *args)
 
         monkeypatch.setattr(owner, "frame", frame)
-        assert session.advance(JournalValidationBudget(source_octets=7)).phase == "entry-admission"
+        assert session.advance(unit_budget(source_octets=7)).phase == "entry-admission"
         assert len(seen) == 1
         assert seen[0].consumed == WorkAmount(
             rows=10, octets=6 * size + 4, source_octets=size if retained else 0, transitions=1
@@ -436,7 +434,7 @@ def test_unadmitted_frame_transfer_keeps_the_original_pending_atom_without_readi
         for _ in range(64):
             if session._input.pending:
                 break
-            session.advance()
+            session.advance(unit_budget())
         else:
             pytest.fail("small exact source did not expose its complete frame")
         before = session._input.state if retained else session._input.cursor
@@ -447,10 +445,10 @@ def test_unadmitted_frame_transfer_keeps_the_original_pending_atom_without_readi
         else:
             limits = JournalValidationWorkBudget(octets=size - 1)
         with pytest.raises(NativeWorkCapacity):
-            session.advance(JournalValidationBudget(work=limits))
+            session.advance(unit_budget(work=limits))
         assert (session._input.state if retained else session._input.cursor) is before
         assert session._input.pending and session._failure is None
         if retained:
             assert source.calls == []
-        assert session.advance().phase == "entry-admission"
+        assert session.advance(unit_budget()).phase == "entry-admission"
     assert session.storage_received

@@ -39,6 +39,8 @@ class WorkAmount:
 class NativeWorkCapacity(JournalValidationCapacity):
     """The original quantum cannot admit another existing work unit."""
 
+    _admission_identity: object | None = None
+
 
 class WorkQuantum:
     """Reserve before work, consume actual work, receive the unused reservation.
@@ -55,6 +57,7 @@ class WorkQuantum:
         if not isinstance(limits, WorkAmount) or not all(limits.coordinates):
             raise ValueError("Native quantum limits must all be positive")
         self._limits = limits
+        self._admission_identity = object()
         self._consumed = WorkAmount()
         self._held = WorkAmount()
         self._execution: object | None = None
@@ -84,10 +87,19 @@ class WorkQuantum:
         if not isinstance(amount, WorkAmount) or not any(amount.coordinates):
             raise ValueError("a Native work reservation must admit positive work")
         if not amount.fits(self.remaining):
-            raise NativeWorkCapacity("original Native quantum cannot admit the next work unit")
+            error = NativeWorkCapacity("original Native quantum cannot admit the next work unit")
+            error._admission_identity = self._admission_identity
+            raise error
         reservation = WorkReservation(self, amount)
         self._held = self._held + amount
         return reservation
+
+    def owns_admission_refusal(self, error: BaseException) -> bool:
+        """Recognize only this original quantum's pre-work reservation refusal."""
+        return (
+            type(error) is NativeWorkCapacity
+            and getattr(error, "_admission_identity", None) is self._admission_identity
+        )
 
     def consume(self, amount: WorkAmount) -> None:
         """Debit a known exact quantity without retaining a prospective unit."""

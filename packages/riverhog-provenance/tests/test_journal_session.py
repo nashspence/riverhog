@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance import ProvenanceValidationError, validate_journal
 from riverhog_provenance.errors import JournalValidationCapacity
 from riverhog_provenance.journal_session import (
@@ -51,7 +52,7 @@ def test_each_empty_chunk_is_one_bounded_source_pull(journal, catalog):
     with JournalValidationSession(chunks(), attempt_id=ATTEMPT, catalog=catalog) as session:
         assert not pulls
         for count in range(1, 4):
-            progress = session.advance()
+            progress = session.advance(unit_budget())
             assert len(pulls) == count
             assert progress.source_octets == 0 and not progress.complete
         finish(session)
@@ -66,7 +67,7 @@ def test_single_octet_framing_preserves_one_pending_atom_on_capacity(journal, ca
         pulls.append(2)
 
     with JournalValidationSession(chunks(), attempt_id=ATTEMPT, catalog=catalog) as session:
-        tiny = JournalValidationBudget(rows=1, source_octets=1)
+        tiny = unit_budget(rows=1, source_octets=1)
         previous = 0
         for _ in range(len(journal)):
             progress = session.advance(tiny)
@@ -152,7 +153,7 @@ def test_closing_session_preserves_caller_stream_ownership(journal, catalog):
 
     source = chunks()
     session = JournalValidationSession(source, attempt_id=ATTEMPT, catalog=catalog)
-    session.advance()
+    session.advance(unit_budget())
     session.close()
     session.close()
     assert not events

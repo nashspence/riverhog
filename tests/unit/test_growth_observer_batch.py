@@ -623,6 +623,7 @@ def _actual_caller_and_unit_turns_share_batch(tmp_path, monkeypatch, *, include_
             numeric_policy=numeric_policy_from_environment(os.environ),
         ) as batch:
             recorder = callers.Recorder(case, current, batch=batch)
+            recorder.units.native_budget = units.native.unit_budget()
             for _ in range(3):
                 result, sample = recorder.measure()
                 assert type(result) is bool

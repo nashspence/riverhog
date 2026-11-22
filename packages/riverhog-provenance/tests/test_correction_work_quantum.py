@@ -5,11 +5,11 @@ import sqlite3
 from contextlib import closing
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance import append_correction, assertion_reference, new_id, validate_journal
 from riverhog_provenance._native_epoch import EpochContext
 from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount
 from riverhog_provenance.journal_session import (
-    JournalValidationBudget,
     JournalValidationSession,
     JournalValidationWorkBudget,
 )
@@ -243,9 +243,7 @@ def test_actual_native_correction_keeps_original_child_on_refusal_then_retries(
         try:
             with pytest.raises(NativeWorkCapacity):
                 session.advance(
-                    JournalValidationBudget(
-                        rows=1, work=JournalValidationWorkBudget(rows=parent_probes + 1)
-                    )
+                    unit_budget(rows=1, work=JournalValidationWorkBudget(rows=parent_probes + 1))
                 )
         finally:
             db.set_trace_callback(None)
@@ -254,7 +252,7 @@ def test_actual_native_correction_keeps_original_child_on_refusal_then_retries(
         refused = active[0]
         assert refused.consumed.rows == parent_probes + 1 and refused.held == WorkAmount()
         active.clear()
-        after = session.advance(JournalValidationBudget(rows=1))
+        after = session.advance(unit_budget(rows=1))
         assert after != before and session._replay._current.child is child
         assert active[0] is not refused and active[0].consumed.rows > 1
         assert active[0].held == WorkAmount() and child.epoch.quiescent

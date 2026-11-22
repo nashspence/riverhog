@@ -4,6 +4,7 @@ import os
 from copy import deepcopy
 
 import pytest
+from native_units import unit_budget
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import (
     BoundedSourceObserver,
@@ -23,7 +24,6 @@ from riverhog_provenance.journal_store import JournalStore
 from test_journal_session_growth import (
     ATTEMPT,
     FiniteSource,
-    JournalValidationBudget,
     SessionConnection,
     SourcePorts,
     observed_work,
@@ -104,14 +104,12 @@ def recording_samples(root, catalog, *, samples, large=True, journal_constructio
                             and before.checkpoint.frame_ordinal == 1
                         ):
                             break
-                        assert not session.advance(JournalValidationBudget(rows=1)).complete
+                        assert not session.advance(unit_budget(rows=1)).complete
                     else:
                         pytest.fail("finite source did not reach the selected recording predicate")
                     original = snapshot(db)
                     input_state = session._input.state
-                    dimensions, _ = rejected_recording_dimensions(
-                        session, JournalValidationBudget()
-                    )
+                    dimensions, _ = rejected_recording_dimensions(session, unit_budget())
                     source.calls.clear()
                     with db.observe():
                         prior, changes, start = (
@@ -131,7 +129,7 @@ def recording_samples(root, catalog, *, samples, large=True, journal_constructio
                             with pytest.raises(
                                 ProvenanceValidationError, match=message
                             ) as rejected:
-                                session.advance()
+                                session.advance(unit_budget())
                         work = observed_work(db, prior, changes, start)
                         work.update(
                             indexed_containers=db.all_node_containers,
@@ -167,7 +165,7 @@ def recording_samples(root, catalog, *, samples, large=True, journal_constructio
                     )
                     source.calls.clear()
                     with pytest.raises(RuntimeError, match="session failed"):
-                        session.advance()
+                        session.advance(unit_budget())
                     assert not source.calls and snapshot(db) == original
 
 

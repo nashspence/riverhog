@@ -3,12 +3,12 @@ from __future__ import annotations
 import os
 
 import pytest
+from native_units import unit_budget
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import JournalValidationCapacity, JournalValidationSession, parse_journal
 from test_journal_session_growth import (
     ATTEMPT,
     FiniteSource,
-    JournalValidationBudget,
     SessionConnection,
     SourcePorts,
     observed_work,
@@ -57,13 +57,13 @@ def capacity_samples(root, catalog, raw_source, *, samples, large=True, journal_
                     for _ in range(10000):
                         if session._input.pending:
                             break
-                        assert not session.advance().complete
+                        assert not session.advance(unit_budget()).complete
                     else:
                         pytest.fail("finite retained source did not expose its pending atom")
                     pending = session._input.state.pending
-                    budget = JournalValidationBudget(rows=1, octets=2 * pending.json_bytes + 65535)
+                    budget = unit_budget(rows=1, octets=2 * pending.json_bytes + 65535)
                 else:
-                    budget = JournalValidationBudget(rows=1, octets=16384, source_octets=16384)
+                    budget = unit_budget(rows=1, octets=16384, source_octets=16384)
                 original = snapshot(db)
                 input_state = session._input.state
                 for _ in range(2):
@@ -115,7 +115,7 @@ def capacity_samples(root, catalog, raw_source, *, samples, large=True, journal_
                 if kind == "atom":
                     assert session._input.state.pending is pending
                     source.calls.clear()
-                    progress = session.advance()
+                    progress = session.advance(unit_budget())
                     assert progress.version > 0 and session._failure is None
                     assert source.calls == [
                         ("verify",),

@@ -4,11 +4,11 @@ import sqlite3
 from contextlib import closing
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance._correction_targets import CorrectionTargets
 from riverhog_provenance._native_epoch import EpochContext
 from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum
 from riverhog_provenance.journal_session import (
-    JournalValidationBudget,
     JournalValidationSession,
     JournalValidationWorkBudget,
 )
@@ -274,9 +274,7 @@ def test_actual_native_session_preserves_progress_on_capacity_and_retries_same_c
         try:
             with pytest.raises(NativeWorkCapacity):
                 session.advance(
-                    JournalValidationBudget(
-                        rows=1, work=JournalValidationWorkBudget(rows=parent_probes + 1)
-                    )
+                    unit_budget(rows=1, work=JournalValidationWorkBudget(rows=parent_probes + 1))
                 )
         finally:
             db.set_trace_callback(None)
@@ -286,7 +284,7 @@ def test_actual_native_session_preserves_progress_on_capacity_and_retries_same_c
         refused = admissions[0]
         assert refused.consumed.rows == parent_probes + 1 and refused.held == WorkAmount()
         admissions.clear()
-        after = session.advance(JournalValidationBudget(rows=1))
+        after = session.advance(unit_budget(rows=1))
         assert after != before and session._replay._current.child is child
         assert admissions[0] is not refused and admissions[0].consumed.rows > 1
         assert child.epoch.quiescent and admissions[0].held == WorkAmount()

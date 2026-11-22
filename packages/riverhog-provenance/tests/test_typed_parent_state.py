@@ -4,6 +4,7 @@ import sqlite3
 from contextlib import closing
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance import IncompleteSourceError, validate_journal
 from riverhog_provenance._journal_prefix import PrefixState
 from riverhog_provenance._native_epoch import EpochContext
@@ -43,7 +44,7 @@ def test_repeated_live_progress_uses_typed_prefix_without_history_payload_reads(
 ):
     with JournalValidationSession((journal,), attempt_id=ATTEMPT, catalog=catalog) as session:
         _reach(session, "publish")
-        session.advance()
+        session.advance(unit_budget())
         received = session._ledger.load()
         assert received.accepted.frame_count == 1
         monkeypatch.setattr(ValidationCheckpoint, "from_json", _refuse_decode)
@@ -71,7 +72,7 @@ def test_cold_parent_decodes_once_but_checks_unchanged_prefix_predecessor_again(
 ):
     with JournalValidationSession((journal,), attempt_id=ATTEMPT, catalog=catalog) as session:
         _reach(session, "publish")
-        session.advance()
+        session.advance(unit_budget())
         original = session._ledger
         cold = ValidationLedger(
             session._store.db,
@@ -136,7 +137,7 @@ def test_retained_live_progress_keeps_fresh_source_authority_and_never_reads_pay
         journal_constructions=journal_constructions,
     ) as session:
         _reach(session, "publish")
-        session.advance()
+        session.advance(unit_budget())
         source.calls.clear()
         monkeypatch.setattr(ValidationCheckpoint, "from_json", _refuse_decode)
         monkeypatch.setattr(PrefixState, "from_json", _refuse_decode)
@@ -154,7 +155,7 @@ def test_failed_original_parent_receiving_discards_executor_without_exposing_pen
     original = ValidationLedger._receive
     failure = RuntimeError("original typed parent receiving failed")
     try:
-        session.advance()
+        session.advance(unit_budget())
         before = session._ledger.load()
 
         def receive(ledger, pending):
@@ -167,7 +168,7 @@ def test_failed_original_parent_receiving_discards_executor_without_exposing_pen
 
         monkeypatch.setattr(ValidationLedger, "_receive", receive)
         with pytest.raises(RuntimeError) as caught:
-            session.advance()
+            session.advance(unit_budget())
         assert caught.value is failure and session._ledger._control.state is before
         assert session._replay._current is None
         with pytest.raises(RuntimeError, match="requires reconstruction"):

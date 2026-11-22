@@ -5,6 +5,7 @@ from contextlib import closing, contextmanager
 from copy import deepcopy
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance import append_correction, assertion_reference, new_id, validate_journal
 from riverhog_provenance._entry_preparation import EntryPreparation
 from riverhog_provenance._native_epoch import EpochContext
@@ -65,7 +66,7 @@ def test_actual_native_children_share_the_original_checked_execution(
 
             monkeypatch.setattr(EpochContext, "preparing", preparing)
             for _ in range(4096):
-                progress = session.advance(check=check)
+                progress = session.advance(unit_budget(), check=check)
                 if progress.complete:
                     break
             else:
@@ -105,7 +106,7 @@ def test_actual_detached_child_query_observes_deadline_and_receives_registration
 
         monkeypatch.setattr(EntryPreparation, "_admission", prepare)
         with pytest.raises(TimeoutError) as caught:
-            session.advance(check=check)
+            session.advance(unit_budget(), check=check)
         assert caught.value is failure
         assert session._ledger.epoch.quiescent
         assert session._ledger.load() is before
@@ -115,7 +116,7 @@ def test_actual_detached_child_query_observes_deadline_and_receives_registration
         with closing(session._store.db.execute(QUERY)) as rows:
             assert rows.fetchone() == (4096 * 4097 // 2,)
         with pytest.raises(RuntimeError, match="session failed"):
-            session.advance()
+            session.advance(unit_budget())
     assert session.storage_received
 
 
@@ -123,7 +124,7 @@ def test_actual_native_cancellation_before_commit_rolls_back_without_live_public
     journal, catalog
 ):
     with JournalValidationSession((journal,), attempt_id=ATTEMPT, catalog=catalog) as session:
-        session.advance()
+        session.advance(unit_budget())
         before = session._ledger.load()
         cancelled = False
         failure = RuntimeError("original Native execution cancelled")
@@ -140,7 +141,7 @@ def test_actual_native_cancellation_before_commit_rolls_back_without_live_public
         session._store.db.set_trace_callback(trace)
         try:
             with pytest.raises(RuntimeError) as caught:
-                session.advance(check=check)
+                session.advance(unit_budget(), check=check)
         finally:
             session._store.db.set_trace_callback(None)
         assert caught.value is failure
@@ -163,7 +164,7 @@ def test_actual_expiry_after_commit_finishes_original_live_receiving(journal, ca
     with JournalValidationSession(
         (journal,), attempt_id=ATTEMPT, catalog=catalog, connection_factory=connect
     ) as session:
-        session.advance()
+        session.advance(unit_budget())
         db = session._store.db
         failure = TimeoutError("original deadline expired after commit")
 
@@ -172,12 +173,12 @@ def test_actual_expiry_after_commit_finishes_original_live_receiving(journal, ca
                 raise failure
 
         db.expire_after_commit = True
-        progress = session.advance(check=check)
+        progress = session.advance(unit_budget(), check=check)
         assert db.expired and progress.phase == "entry-admission"
         assert session._replay._current is not None and not session._input.pending
         assert session._ledger.epoch.quiescent
         with pytest.raises(TimeoutError) as caught:
-            session.advance(check=check)
+            session.advance(unit_budget(), check=check)
         assert caught.value is failure
     assert session.storage_received
 
@@ -188,7 +189,7 @@ def test_actual_execution_check_refuses_an_unowned_sqlite_progress_hook(journal,
     ) as session:
         before = session._ledger.load()
         with pytest.raises(TypeError, match="owned from connection creation"):
-            session.advance(check=lambda: None)
+            session.advance(unit_budget(), check=lambda: None)
         assert session._ledger.load() is before
     assert session.storage_received
 

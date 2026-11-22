@@ -7,11 +7,11 @@ import pytest
 import test_generic_semantics as generic
 import test_row_semantics as rows
 import test_semantic_edge as edge
+from native_units import unit_budget
 from riverhog_provenance._native_epoch import EpochContext
 from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount
 from riverhog_provenance._online_dag import OnlineDag, install
 from riverhog_provenance.journal_session import (
-    JournalValidationBudget,
     JournalValidationSession,
     JournalValidationWorkBudget,
 )
@@ -359,9 +359,7 @@ def test_actual_native_generic_refusal_preserves_child_then_retries(
         try:
             with pytest.raises(NativeWorkCapacity):
                 session.advance(
-                    JournalValidationBudget(
-                        rows=1, work=JournalValidationWorkBudget(rows=parent_probes + 1)
-                    )
+                    unit_budget(rows=1, work=JournalValidationWorkBudget(rows=parent_probes + 1))
                 )
         finally:
             db.set_trace_callback(None)
@@ -370,7 +368,7 @@ def test_actual_native_generic_refusal_preserves_child_then_retries(
         refused = active[0]
         assert refused.consumed.rows == parent_probes + 1 and refused.held == WorkAmount()
         active.clear()
-        assert session.advance(JournalValidationBudget(rows=1)) != before
+        assert session.advance(unit_budget(rows=1)) != before
         assert session._replay._current.child is current and active[0] is not refused
         assert current.epoch.quiescent and active[0].held == WorkAmount()
         refused.require_received()

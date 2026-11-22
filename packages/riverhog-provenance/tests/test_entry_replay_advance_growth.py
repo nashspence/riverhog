@@ -166,6 +166,7 @@ def advance_observer(
     operation_aliases=None,
     kernel_hook=None,
     primitive_hook=None,
+    input_dimensions_hook=None,
     failed_operations=(),
     batch=None,
 ):
@@ -231,6 +232,10 @@ def advance_observer(
         return None
 
     def inputs(parent, operation, _args, kwargs):
+        if input_dimensions_hook is not None:
+            supplied = input_dimensions_hook(parent, operation, _args, kwargs)
+            if supplied is not None:
+                return supplied
         tag = tagged(parent, operation)
         declaration = growth_binding(operation).declaration
         if tag is not None:
@@ -239,6 +244,9 @@ def advance_observer(
                 db.row_invocations += 1
             if operation.__name__ == "prepare" and "byte_budget" in result:
                 assert kwargs["byte_budget"] == result["byte_budget"]
+                for name in ("row_budget", "step_budget"):
+                    if name in kwargs and name in result:
+                        assert kwargs[name] == result[name]
         elif operation is selected:
             result = {item.name: parent[item.name] for item in declaration.dimensions}
         elif operation is node:

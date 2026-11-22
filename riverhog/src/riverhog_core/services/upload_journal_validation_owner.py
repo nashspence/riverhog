@@ -1585,12 +1585,15 @@ def _advance_declaration() -> Declaration:
             "result": 1,
             "publish": 2,
             "drop": 2,
-            "current": 4,
-            "window": 1,
-            "exact": 1,
         }.items()
     }
-    limits["certificate"] = dimension("row_budget")
+    turns = dimension("transition_budget")
+    limits.update(
+        current=add((count(2), scale(2, turns)), COUNT),
+        window=turns,
+        exact=turns,
+        certificate=times(turns, dimension("row_budget")),
+    )
     return Declaration(
         id="riverhog-server.validation-owner-advance.growth/v1",
         authority="riverhog-server",
@@ -1615,6 +1618,11 @@ def _advance_declaration() -> Declaration:
                 "row_budget",
                 COUNT,
                 ("Positive native row/semantic-step budget supplied for this call."),
+            ),
+            Dimension(
+                "transition_budget",
+                COUNT,
+                "Positive transition allowance of the original supplied native work quantum.",
             ),
             Dimension(
                 "metadata_row_octets",
@@ -1747,13 +1755,10 @@ def _advance_declaration() -> Declaration:
                 "source_read_calls_limit",
                 COUNT,
                 "upper",
-                count(1),
+                turns,
                 (
-                    "A native unit either"
-                    " scans a source "
-                    "window or loads one "
-                    "pending exact atom; "
-                    "it does not do both."
+                    "Each attempted native transition scans one source window or loads "
+                    "one pending exact atom; the original quantum bounds their total."
                 ),
             ),
             *(
@@ -1783,7 +1788,7 @@ def _advance_declaration() -> Declaration:
             (
                 "Only derivation/specialization stage two requests a graph "
                 "certificate. Each semantic program step requests at most one, "
-                "within the native row/step budget."
+                "within each unit's row/step budget and the original transition allowance."
             ),
             (
                 "The native row envelope includes the completed selected frame "
@@ -1802,7 +1807,7 @@ def _advance_declaration() -> Declaration:
                 "the pool mutex; slot admission is nonblocking."
             ),
             (
-                "Only one native unit executes. Capacity retains the same "
+                "Only one original native quantum executes. Capacity retains the same "
                 "unfinished atom, and stale worker/source custody cannot publish "
                 "accepted progress."
             ),

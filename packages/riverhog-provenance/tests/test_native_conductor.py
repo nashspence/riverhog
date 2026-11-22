@@ -6,6 +6,7 @@ from contextlib import closing
 from dataclasses import dataclass, replace
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance._native_conductor import LiveControl
 from riverhog_provenance._native_control import ChildControl
 from riverhog_provenance._native_epoch import EpochContext
@@ -74,7 +75,7 @@ def test_recreated_retained_input_reuses_typed_cursor_after_fresh_storage_check(
         create=True,
         journal_constructions=journal_constructions,
     ) as session:
-        session.advance()
+        session.advance(unit_budget())
         before = session._input.state
         monkeypatch.setattr(_InputState, "decode", refuse_decode)
         rebuilt = RetainedInput(session._ledger, source)

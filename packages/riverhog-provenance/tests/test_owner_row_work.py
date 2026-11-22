@@ -4,6 +4,7 @@ import sqlite3
 from contextlib import closing
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance import ProvenanceValidationError
 from riverhog_provenance._entry_replay import EntryReplay
 from riverhog_provenance._journal_prefix import JournalPrefix
@@ -12,7 +13,6 @@ from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount
 from riverhog_provenance._session_checkpoint import ValidationLedger
 from riverhog_provenance._session_input import RetainedInput
 from riverhog_provenance.journal_session import (
-    JournalValidationBudget,
     JournalValidationSession,
     JournalValidationWorkBudget,
 )
@@ -68,7 +68,7 @@ def test_actual_quarantine_admission_reserves_its_mutation_with_parent_before_be
         for _ in range(32):
             if session._input.pending:
                 break
-            session.advance()
+            session.advance(unit_budget())
         else:
             pytest.fail("small actual source did not expose its pending frame")
         parent, prefix, db = session._ledger, session._prefix, session._store.db
@@ -94,7 +94,7 @@ def test_actual_quarantine_admission_reserves_its_mutation_with_parent_before_be
         db.set_trace_callback(trace.append)
         try:
             with pytest.raises(NativeWorkCapacity):
-                session.advance(JournalValidationBudget(work=JournalValidationWorkBudget(rows=11)))
+                session.advance(unit_budget(work=JournalValidationWorkBudget(rows=11)))
         finally:
             db.set_trace_callback(None)
         assert not any(sql.startswith("BEGIN") for sql in trace)
@@ -104,7 +104,7 @@ def test_actual_quarantine_admission_reserves_its_mutation_with_parent_before_be
         refused = seen[0]
         assert refused.consumed.rows == 5 and refused.held == WorkAmount()
         seen.clear()
-        after = session.advance(JournalValidationBudget(work=JournalValidationWorkBudget(rows=12)))
+        after = session.advance(unit_budget(work=JournalValidationWorkBudget(rows=12)))
         assert after.phase == "entry-admission" and seen[0] is not refused
         assert seen[0].consumed.rows == 10 and seen[0].held == WorkAmount()
         assert session._replay._current is not None and parent.epoch.quiescent
@@ -132,7 +132,7 @@ def test_actual_frame_publication_adds_prefix_and_quarantine_writes_to_parent_ad
         db.set_trace_callback(trace.append)
         try:
             with pytest.raises(NativeWorkCapacity):
-                session.advance(JournalValidationBudget(work=JournalValidationWorkBudget(rows=12)))
+                session.advance(unit_budget(work=JournalValidationWorkBudget(rows=12)))
         finally:
             db.set_trace_callback(None)
         assert not any(sql.startswith("BEGIN") for sql in trace)
@@ -142,9 +142,7 @@ def test_actual_frame_publication_adds_prefix_and_quarantine_writes_to_parent_ad
         assert refused.consumed.rows == 4 and refused.held == WorkAmount()
         seen.clear()
         assert (
-            session.advance(
-                JournalValidationBudget(work=JournalValidationWorkBudget(rows=13))
-            ).accepted_frames
+            session.advance(unit_budget(work=JournalValidationWorkBudget(rows=13))).accepted_frames
             == 1
         )
         assert seen[0] is not refused and seen[0].consumed.rows == 12
@@ -173,9 +171,7 @@ def test_actual_retained_cursor_reserves_its_update_and_keeps_source_cost_on_ref
         try:
             with pytest.raises(NativeWorkCapacity):
                 session.advance(
-                    JournalValidationBudget(
-                        source_octets=7, work=JournalValidationWorkBudget(rows=8)
-                    )
+                    unit_budget(source_octets=7, work=JournalValidationWorkBudget(rows=8))
                 )
         finally:
             db.set_trace_callback(None)
@@ -186,7 +182,7 @@ def test_actual_retained_cursor_reserves_its_update_and_keeps_source_cost_on_ref
         assert seen[0].held == WorkAmount()
         assert (
             session.advance(
-                JournalValidationBudget(source_octets=7, work=JournalValidationWorkBudget(rows=9))
+                unit_budget(source_octets=7, work=JournalValidationWorkBudget(rows=9))
             ).source_octets
             == 7
         )

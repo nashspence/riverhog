@@ -274,7 +274,7 @@ def inputs(engine, raw):
 
 
 class UnitRecorder:
-    def __init__(self, case, current, *, batch=None):
+    def __init__(self, case, current, *, batch=None, native_budget=None):
         from scripts.validation_numeric import (
             numeric_policy_from_environment,
             numeric_policy_snapshot,
@@ -287,6 +287,8 @@ class UnitRecorder:
         self.current = current
         self.batch = batch
         self.inline_batch = batch if batch is not None and batch.include_descendants else None
+        # Exact-turn fixtures opt in; otherwise retain the real caller budget.
+        self.native_budget = native_budget
         self.native_recorder = None
         self.context = None
         self.core = None
@@ -418,9 +420,11 @@ class UnitRecorder:
                 self.case, batch=self.inline_batch, numeric_policy=self.numeric_policy
             )
         try:
-            result, observed = self.native_recorder.measure(
-                selected, cold=False, budget=budget or native.owner.JournalValidationBudget()
-            )
+            if budget is None:
+                budget = self.native_budget
+            if budget is None:
+                budget = native.owner.JournalValidationBudget()
+            result, observed = self.native_recorder.measure(selected, cold=False, budget=budget)
             self.children["owner"].append(observed)
             self.native_calls += 1
             return result
@@ -582,7 +586,7 @@ def test_real_validation_service_units(tmp_path, record_property):
         for case, current in real_case(
             tmp_path / str(index), text_octets=text_octets, unrelated=unrelated
         ):
-            recorder = UnitRecorder(case, current)
+            recorder = UnitRecorder(case, current, native_budget=native.unit_budget())
             first = len(samples)
             prepared = 0
             for _ in range(100):
@@ -600,7 +604,7 @@ def test_real_validation_service_units(tmp_path, record_property):
                             else session._ledger.load().checkpoint.phase == "terminal"
                         ):
                             break
-                        assert not session.advance().complete
+                        assert not session.advance(native.unit_budget()).complete
                     else:
                         raise AssertionError(
                             "actual Native fixture did not reach selected boundary"
@@ -649,7 +653,7 @@ def test_validation_service_absence_rollback_and_retry(tmp_path, record_property
 
     samples = []
     for case, current in real_case(tmp_path):
-        recorder = UnitRecorder(case, current)
+        recorder = UnitRecorder(case, current, native_budget=native.unit_budget())
         samples.append(recorder.measure(journal_id="absent"))
         before = checkpoint(case.factory)
         samples.append(recorder.measure(interrupt=True, expected_error=OperationalError))

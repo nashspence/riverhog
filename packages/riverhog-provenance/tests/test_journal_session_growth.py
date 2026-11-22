@@ -12,6 +12,7 @@ from pathlib import Path
 from tempfile import mkdtemp
 
 import pytest
+from native_units import unit_budget
 from riverhog_growth_contracts import growth_binding
 from riverhog_provenance import _session_input as input_owner
 from riverhog_provenance import framing as framing_owner
@@ -22,6 +23,7 @@ from riverhog_provenance.journal import JournalSummary
 from riverhog_provenance.journal_session import (
     JournalValidationBudget,
     JournalValidationSession,
+    JournalValidationWorkBudget,
     _checkpoint_progress,
 )
 from riverhog_provenance.replay_binding import JournalReplayBinding
@@ -147,8 +149,21 @@ class CallerChunks(Iterator):
 
 
 @contextmanager
-def session_observer(session, dimensions, operation, *, failed_operations=(), batch=None):
+def session_observer(
+    session,
+    dimensions,
+    operation,
+    *,
+    failed_operations=(),
+    batch=None,
+    input_dimensions_hook=None,
+    completed_call_hook=None,
+):
     db = session._store.db
+    is_advance = (
+        growth_binding(operation).declaration.id
+        == growth_binding(JournalValidationSession.advance).declaration.id
+    )
     framing = framing_owner.advance_journal_framing
     borrow = JournalSummary.borrow
     real_octets, real_connect = framing_owner._octets, sqlite3.connect
@@ -234,6 +249,8 @@ def session_observer(session, dimensions, operation, *, failed_operations=(), ba
             yield None
 
     def primitive(child, _args, _result, work):
+        if completed_call_hook is not None:
+            completed_call_hook(child, _args, _result, work)
         if child is framing:
             for name in (
                 "visited_octets",
@@ -246,7 +263,17 @@ def session_observer(session, dimensions, operation, *, failed_operations=(), ba
             db.metrics["returned_handles"] += work["returned_handles"]
         return work
 
+    quanta = []
+    original_quantum = session_owner.WorkQuantum
+
+    def quantum(limits):
+        original = original_quantum(limits)
+        quanta.append(original)
+        return original
+
     with pytest.MonkeyPatch.context() as patch:
+        if is_advance:
+            patch.setattr(session_owner, "WorkQuantum", quantum)
         patch.setattr(framing_owner, "_octets", scan)
         patch.setattr(sqlite3, "connect", connect)
         patch.setattr(session_owner._ChunkInput, "scan", caller_scan)
@@ -263,9 +290,39 @@ def session_observer(session, dimensions, operation, *, failed_operations=(), ba
             kernel_hook=kernel,
             failed_operations=failed_operations,
             primitive_hook=primitive,
+            input_dimensions_hook=input_dimensions_hook,
             batch=batch,
-        ) as observed:
-            yield observed
+        ) as (observed, complete):
+
+            def received(frame, work):
+                if is_advance:
+                    assert len(quanta) == 1
+                    original = quanta[0]
+                    original.require_received()
+                    assert original.consumed.fits(original.limits)
+                    work.update(
+                        {
+                            "quantum_" + name: getattr(original.consumed, name)
+                            for name in ("rows", "octets", "source_octets", "transitions")
+                        }
+                    )
+                    for name in (
+                        "returned_rows",
+                        "changed_rows",
+                        "sqlite_vm_instructions",
+                        "returned_metadata_octets",
+                        "bound_parameter_octets",
+                        "written_value_octets",
+                        "native_hashed_octets",
+                        "decoded_json_octets",
+                        "encoded_json_octets",
+                    ):
+                        work["aggregate_" + name] = work[name]
+                    for tag, children in frame["delegates"].items():
+                        work["calls_" + tag] = len(children)
+                return complete(frame, work)
+
+            yield observed, received
 
 
 def progress_dimensions(session, before):
@@ -326,6 +383,10 @@ def session_dimensions(session, budget, operation, *, cold):
     active = {"load", "progress"}
     if not progress:
         values.update(
+            transition_limit=budget.work.transitions,
+            work_rows=budget.work.rows,
+            work_octets=budget.work.octets,
+            work_source_octets=budget.work.source_octets,
             input_publications=0,
             input_atom_octets=0,
             source_windows=0,
@@ -512,7 +573,13 @@ def rejected_input_dimensions(session, budget, kind):
         item.name: values.get(item.name, 0)
         for item in growth_binding(JournalValidationSession.advance).declaration.dimensions
     }
-    dimensions["progress_calls"] = 0
+    dimensions.update(
+        progress_calls=0,
+        transition_limit=budget.work.transitions,
+        work_rows=budget.work.rows,
+        work_octets=budget.work.octets,
+        work_source_octets=budget.work.source_octets,
+    )
     assert dimensions["load_calls"] == dimensions["source_verifications"] == 1
     return dimensions, before
 
@@ -570,7 +637,15 @@ def finite_source(case, catalog, *, window):
 
 
 def session_cases(
-    root, catalog, build, graphs, *, specifications=SESSION_CASES, journal_constructions
+    root,
+    catalog,
+    build,
+    graphs,
+    *,
+    specifications=SESSION_CASES,
+    journal_constructions,
+    capture_candidate=False,
+    select=None,
 ):
     from copy import deepcopy
 
@@ -616,7 +691,7 @@ def session_cases(
             session._input.chunks = CallerChunks((b"", case["raw"], b""))
         seen = set()
         try:
-            budget = JournalValidationBudget(rows=64)
+            budget = unit_budget(rows=64)
             for units in range(1000000):
                 before = session._ledger.load()
                 state = before.checkpoint
@@ -680,7 +755,10 @@ def session_cases(
                     accepted.byte_count + (state.frame_octets if state.phase == "publish" else 0)
                 ) % 64 >= 56
                 key = state.phase, selected, padding
-                if key not in seen:
+                if capture_candidate:
+                    key += (state.frame_ordinal == int(source.binding.frame_count) - 1,)
+                label = None if select is None else select(ordinal, before, key)
+                if key not in seen and (select is None or label is not None):
                     seen.add(key)
                     path = root / f"session-{ordinal}-checkpoint-{len(seen)}.sqlite3"
                     connect = (
@@ -717,6 +795,8 @@ def session_cases(
                         {
                             **case,
                             "path": path,
+                            "origin": label,
+                            "specification_index": ordinal,
                             "mode": mode,
                             "window": window,
                             "binding": source.binding,
@@ -952,9 +1032,7 @@ def _checkpoint_samples(
             else (16,)
         )
         for rows in quanta:
-            budget = JournalValidationBudget(
-                rows=rows, source_octets=7 if ordinal % 17 == 0 else 65536
-            )
+            budget = unit_budget(rows=rows, source_octets=7 if ordinal % 17 == 0 else 65536)
             for cold, summary in variants:
                 with session_fixture(
                     case,
@@ -1190,3 +1268,83 @@ def rejected_recording_dimensions(session, budget):
     dimensions["entry_advance_publication_calls"] = 0
     assert dimensions["entry_advance_calls"] == dimensions["entry_advance_recording_calls"] == 1
     return dimensions, before
+
+
+@pytest.mark.growth_witness(
+    "riverhog-native-quantum-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance.journal_session.JournalValidationSession.advance",
+)
+def test_actual_whole_invocation_quantum_growth(
+    tmp_path,
+    catalog,
+    admission_histories,
+    graph_histories,
+    record_property,
+    numeric_policy,
+    journal_constructions,
+    monkeypatch,
+):
+    specifications = tuple(
+        (regime, mode, 65536, None)
+        for regime in (REGIMES[0], REGIMES[3], REGIMES[1])
+        for mode in ("stream", "retained")
+    )
+    cases = session_cases(
+        tmp_path,
+        catalog,
+        admission_histories,
+        graph_histories,
+        specifications=specifications,
+        journal_constructions=journal_constructions,
+    )
+    selected = {}
+    phases = {"frame", "generic", "finish", "publish"}
+    for case in cases:
+        phase = case["before"].checkpoint.phase
+        if phase not in phases:
+            continue
+        key = case["regime"], case["mode"], phase
+        previous = selected.get(key)
+        if (
+            previous is None
+            or case["before"].checkpoint.frame_ordinal > previous["before"].checkpoint.frame_ordinal
+        ):
+            selected[key] = case
+    assert len(selected) == len(specifications) * len(phases)
+    from test_session_quantum_delegation import quantum_sample
+
+    origins = [
+        (
+            case["regime"],
+            case["mode"],
+            case["before"].checkpoint.phase,
+            case["before"].checkpoint.frame_ordinal,
+        )
+        for case in selected.values()
+    ]
+    record_property("quantum_origins", origins)
+    samples = []
+    record_property("growth_samples", samples)
+    operation = JournalValidationSession.advance
+    with SampleBatch((operation,), limit=4, numeric_policy=numeric_policy) as batch:
+        for ordinal, case in enumerate(selected.values()):
+            for transitions in (1, 4, 16):
+                budget = JournalValidationBudget(
+                    rows=16, work=JournalValidationWorkBudget(transitions=transitions)
+                )
+                with monkeypatch.context() as patch:
+                    sample, _row = quantum_sample(
+                        case,
+                        budget,
+                        catalog=catalog,
+                        journal_constructions=journal_constructions,
+                        numeric_policy=numeric_policy,
+                        monkeypatch=patch,
+                        origin=f"retained-matrix-{ordinal}",
+                        batch=batch,
+                    )
+                samples.append(sample)
+                for tag, children in sample["delegates"].items():
+                    assert len(children) == sample["dimensions"][tag + "_calls"]
+    assert len(origins) == 24 and len(samples) == 72

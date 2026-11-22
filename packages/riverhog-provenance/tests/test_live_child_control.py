@@ -13,8 +13,9 @@ import test_generic_semantics as generic
 import test_row_semantics as rows
 import test_semantic_edge as edge
 import test_semantic_finish as finish
+from native_units import unit_budget
 from riverhog_provenance._native_control import ChildControl
-from riverhog_provenance.journal_session import JournalValidationBudget, JournalValidationSession
+from riverhog_provenance.journal_session import JournalValidationSession
 from test_journal_session import finish as finish_session
 from test_native_epoch_integration import _Connection, _reach
 
@@ -112,7 +113,7 @@ def test_typed_child_control_keeps_fresh_checkpoint_and_algorithm_checks(
 def test_actual_session_retains_its_child_control_across_warm_steps(
     journal, catalog, monkeypatch, kind
 ):
-    budget = JournalValidationBudget(rows=1)
+    budget = unit_budget(rows=1)
     with JournalValidationSession((journal,), attempt_id="a" * 32, catalog=catalog) as session:
         _reach(session, kind + "-admission")
         assert session.advance(budget).phase == kind
@@ -147,7 +148,7 @@ def test_failed_original_commit_cannot_publish_pending_child_control(journal, ca
         db = session._store.db
         db.failure = failure
         with pytest.raises(OSError, match="original private commit"):
-            session.advance()
+            session.advance(unit_budget())
         db.failure = None
         assert child._control.state is before and not session._ledger.epoch.quiescent
         with pytest.raises(RuntimeError, match="requires reconstruction"):
@@ -174,7 +175,7 @@ def test_failed_child_receiving_discards_the_actual_session(journal, catalog, mo
 
         monkeypatch.setattr(ChildControl, "receive", receive)
         with pytest.raises(RuntimeError) as caught:
-            session.advance()
+            session.advance(unit_budget())
         assert caught.value is failure and child._control.state is before
         with pytest.raises(RuntimeError, match="requires reconstruction"):
             session.progress()

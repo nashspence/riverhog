@@ -4,11 +4,11 @@ import sqlite3
 from contextlib import closing
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance._entry_preparation import EntryPreparation
 from riverhog_provenance._native_epoch import EpochContext
 from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum
 from riverhog_provenance.journal_session import (
-    JournalValidationBudget,
     JournalValidationSession,
     JournalValidationWorkBudget,
 )
@@ -302,7 +302,7 @@ def test_actual_session_reserves_preparation_before_any_writer_and_retries_same_
         for _ in range(16):
             if child.load().phase == "changes":
                 break
-            session.advance()
+            session.advance(unit_budget())
         else:
             pytest.fail("small actual preparation did not reach changes")
         assert session._store.db.execute("SELECT count(*) FROM changes").fetchone() == (0,)
@@ -318,9 +318,7 @@ def test_actual_session_reserves_preparation_before_any_writer_and_retries_same_
         session._store.db.set_trace_callback(trace.append)
         try:
             with pytest.raises(NativeWorkCapacity):
-                session.advance(
-                    JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=24))
-                )
+                session.advance(unit_budget(rows=1, work=JournalValidationWorkBudget(rows=24)))
         finally:
             session._store.db.set_trace_callback(None)
         assert not any(sql.startswith("BEGIN") for sql in trace)
@@ -330,9 +328,7 @@ def test_actual_session_reserves_preparation_before_any_writer_and_retries_same_
         assert refused.consumed.rows == 12 and refused.held == WorkAmount()
         assert session._failure is None and session._ledger.epoch.quiescent
         refused.require_received()
-        after = session.advance(
-            JournalValidationBudget(rows=1, work=JournalValidationWorkBudget(rows=25))
-        )
+        after = session.advance(unit_budget(rows=1, work=JournalValidationWorkBudget(rows=25)))
         assert after != before and child.load().done
         received = plans[1][0]
         assert received is not refused and received.consumed.rows == 22

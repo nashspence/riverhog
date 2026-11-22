@@ -16,6 +16,7 @@ from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_core.services import upload_journal_validation_owner as owner
 from riverhog_growth_contracts import growth_binding, validate_execution_samples
 from riverhog_provenance._entry_replay import EntryReplay
+from riverhog_provenance.journal_session import JournalValidationWorkBudget
 from riverhog_provenance.journal_store import JournalStore
 from sqlalchemy import select
 
@@ -40,6 +41,11 @@ PROGRESS, ADVANCE, RESULT, CLOSE = (
 EDGE = owner.UploadJournalGraphCertificates.edge
 EDGE_PROBE = owner.UploadJournalGraphCertificates._probe
 CHILDREN = dict(owner._advance_children())
+
+
+def unit_budget(**values):
+    """These witnesses observe one selected semantic/input transition per call."""
+    return owner.JournalValidationBudget(**values, work=JournalValidationWorkBudget(transitions=1))
 
 
 class EvidenceFailure(RuntimeError):
@@ -371,6 +377,7 @@ class Recorder(opening.Recorder):
                     width = max([1, *(octets(row) for values in rows.values() for row in values)])
                     dimensions.update(
                         row_budget=self.budget.rows,
+                        transition_budget=self.budget.work.transitions,
                         metadata_row_octets=16384 + 2 * width,
                         error_control_octets=octets(self.recording_error)
                         if self.recording_error is not None
@@ -928,7 +935,7 @@ def finite_cases(witness, root, *, large, journal_constructions):
                 try:
                     recorder = witness.Recorder(case)
                     result, sample = recorder.measure(
-                        current, cold=True, budget=owner.JournalValidationBudget(source_octets=7)
+                        current, cold=True, budget=unit_budget(source_octets=7)
                     )
                     samples.append(sample)
                     assert result.progressed and result.outcome is None
@@ -944,26 +951,22 @@ def finite_cases(witness, root, *, large, journal_constructions):
                     for _ in range(10000):
                         if session._input.pending:
                             break
-                        assert not session.advance().complete
+                        assert not session.advance(unit_budget()).complete
                     else:
                         raise AssertionError("finite source did not expose a selected atom")
-                    result, sample = recorder.measure(
-                        current, cold=False, budget=owner.JournalValidationBudget()
-                    )
+                    result, sample = recorder.measure(current, cold=False, budget=unit_budget())
                     samples.append(sample)
                     assert result.progressed and result.outcome is None
                     assert sample["metrics"]["exact_calls"] == 1
                     for _ in range(10000):
                         if session._ledger.load().checkpoint.phase == "terminal":
                             break
-                        assert not session.advance().complete
+                        assert not session.advance(unit_budget()).complete
                     else:
                         raise AssertionError("finite source did not reach terminal phase")
                     expected = session._store.frame_reference(-1)
                     database = session._store.db
-                    result, sample = recorder.measure(
-                        current, cold=False, budget=owner.JournalValidationBudget()
-                    )
+                    result, sample = recorder.measure(current, cold=False, budget=unit_budget())
                     samples.append(sample)
                     assert (
                         result.progressed
@@ -982,9 +985,7 @@ def finite_cases(witness, root, *, large, journal_constructions):
                     )
                     assert sample["metrics"]["closed_databases"] == 1
                     assert sample["metrics"]["closed_files"] == 4
-                    result, sample = recorder.measure(
-                        current, cold=False, budget=owner.JournalValidationBudget()
-                    )
+                    result, sample = recorder.measure(current, cold=False, budget=unit_budget())
                     samples.append(sample)
                     assert (
                         not result.progressed
@@ -1009,7 +1010,7 @@ def finite_cases(witness, root, *, large, journal_constructions):
                             )
                             held.append(current._reserve(selected))
                         result, sample = witness.Recorder(case).measure(
-                            current, cold=True, budget=owner.JournalValidationBudget()
+                            current, cold=True, budget=unit_budget()
                         )
                         samples.append(sample)
                         assert not result.progressed and result.outcome is None
@@ -1091,9 +1092,7 @@ def graph_case(witness, root, *, journal_constructions):
             )
             recorder = witness.Recorder(case)
             try:
-                result, sample = recorder.measure(
-                    current, cold=True, budget=owner.JournalValidationBudget()
-                )
+                result, sample = recorder.measure(current, cold=True, budget=unit_budget())
                 samples.append(sample)
                 session = next(iter(current._slots.values())).session
                 for _ in range(10000):
@@ -1117,16 +1116,14 @@ def graph_case(witness, root, *, journal_constructions):
                         )
                     if selected:
                         result, sample = recorder.measure(
-                            current, cold=False, budget=owner.JournalValidationBudget(rows=1)
+                            current, cold=False, budget=unit_budget(rows=1)
                         )
                         samples.append(sample)
                         if set(recorder.edge_kinds) == {"derivation", "specialization"}:
                             break
                     else:
                         assert not session.advance(
-                            owner.JournalValidationBudget(rows=1)
-                            if generic
-                            else owner.JournalValidationBudget()
+                            unit_budget(rows=1) if generic else unit_budget()
                         ).complete
                 else:
                     raise AssertionError(
@@ -1186,7 +1183,7 @@ def owner_capacity_cases(witness, root, *, large, journal_constructions):
                 key = case.work.collection_id, case.work.journal_id, case.work.attempt_id
                 try:
                     result, sample = recorder.measure(
-                        current, cold=True, budget=owner.JournalValidationBudget(source_octets=7)
+                        current, cold=True, budget=unit_budget(source_octets=7)
                     )
                     samples.append(sample)
                     assert result.progressed and result.outcome is None
@@ -1200,19 +1197,15 @@ def owner_capacity_cases(witness, root, *, large, journal_constructions):
                             for _ in range(10000):
                                 if session._input.pending:
                                     break
-                                assert not session.advance().complete
+                                assert not session.advance(unit_budget()).complete
                             else:
                                 raise AssertionError(
                                     "finite retained source did not frame its atom"
                                 )
                             pending = session._input.state.pending
-                            budget = owner.JournalValidationBudget(
-                                octets=2 * pending.json_bytes + 65535
-                            )
+                            budget = unit_budget(octets=2 * pending.json_bytes + 65535)
                         else:
-                            budget = owner.JournalValidationBudget(
-                                octets=16384, source_octets=16384
-                            )
+                            budget = unit_budget(octets=16384, source_octets=16384)
                         before = native.snapshot(session._store.db)
                         input_state = session._input.state
                         job = witness.opening.job_tests.selected(case.factory)
@@ -1258,7 +1251,7 @@ def owner_capacity_cases(witness, root, *, large, journal_constructions):
                         if kind == "atom":
                             assert session._input.state.pending is pending
                             result, sample = recorder.measure(
-                                current, cold=False, budget=owner.JournalValidationBudget()
+                                current, cold=False, budget=unit_budget()
                             )
                             samples.append(sample)
                             assert result.progressed and result.outcome is None
@@ -1338,7 +1331,7 @@ def recording_cases(witness, root, *, large, journal_constructions):
                         result, sample = recorder.measure(
                             current,
                             cold=True,
-                            budget=owner.JournalValidationBudget(source_octets=7),
+                            budget=unit_budget(source_octets=7),
                         )
                         samples.append(sample)
                         assert result.progressed and result.outcome is None
@@ -1348,9 +1341,7 @@ def recording_cases(witness, root, *, large, journal_constructions):
                             before = session.progress()
                             if before.phase == "recording" and before.accepted_frames == 1:
                                 break
-                            assert not session.advance(
-                                owner.JournalValidationBudget(rows=1)
-                            ).complete
+                            assert not session.advance(unit_budget(rows=1)).complete
                         else:
                             raise AssertionError(
                                 "finite source did not reach its rejected recording predicate"
@@ -1358,7 +1349,7 @@ def recording_cases(witness, root, *, large, journal_constructions):
                         result, sample = recorder.measure(
                             current,
                             cold=False,
-                            budget=owner.JournalValidationBudget(),
+                            budget=unit_budget(),
                             recording_error=message,
                         )
                         samples.append(sample)
@@ -1393,7 +1384,7 @@ def recording_cases(witness, root, *, large, journal_constructions):
                         assert job["state"] == "failed" and job["failure"] == message
                         assert owner.jobs.decode_progress(job["progress_json"]) == before
                         result2, cached = recorder.measure(
-                            current, cold=False, budget=owner.JournalValidationBudget()
+                            current, cold=False, budget=unit_budget()
                         )
                         samples.append(cached)
                         assert not result2.progressed and result2.outcome == result.outcome

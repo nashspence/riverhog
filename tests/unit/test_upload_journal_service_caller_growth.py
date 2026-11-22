@@ -200,7 +200,7 @@ def advance_fixture(current, count):
             else session._ledger.load().checkpoint.phase == ("terminal")
         ):
             return
-        assert not session.advance().complete
+        assert not session.advance(units.native.unit_budget()).complete
     raise AssertionError("real Native fixture did not reach its selected boundary")
 
 
@@ -217,6 +217,7 @@ def test_actual_stamped_service_reports_durable_progress(tmp_path, record_proper
     for index, unrelated in enumerate((0, 1025)):
         for case, current in units.real_case(tmp_path / str(index), unrelated=unrelated):
             recorder = Recorder(case, current)
+            recorder.units.native_budget = units.native.unit_budget()
             for key in ("absent", "absent-" + "é" * 65537):
                 result, observed = recorder.measure(journal_id=key)
                 assert result is False
@@ -263,6 +264,7 @@ def test_actual_stamped_service_propagates_rejection_and_retries(tmp_path, recor
     samples = []
     for case, current in units.real_case(tmp_path / "rollback"):
         recorder = Recorder(case, current)
+        recorder.units.native_budget = units.native.unit_budget()
         before = checkpoint(case.factory)
         _, observed = recorder.measure(interrupt=True, expected_error=OperationalError)
         assert checkpoint(case.factory) == before

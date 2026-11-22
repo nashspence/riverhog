@@ -7,9 +7,10 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance import IncompleteSourceError, iter_journal_frames, validate_journal
 from riverhog_provenance._session_checkpoint import StaleValidationCheckpoint
-from riverhog_provenance.journal_session import JournalValidationBudget, JournalValidationSession
+from riverhog_provenance.journal_session import JournalValidationSession
 from riverhog_provenance.replay_binding import JournalReplayBinding
 
 ATTEMPT = "c" * 32
@@ -59,7 +60,7 @@ def open_session(path, source, catalog, *, epoch=0, create=False, journal_constr
 
 def finish(session, budget=None):
     if budget is None:
-        budget = JournalValidationBudget(rows=1)
+        budget = unit_budget(rows=1)
     for _ in range(100000):
         progress = session.advance(budget)
         if progress.complete:
@@ -84,11 +85,11 @@ def test_retained_session_resumes_its_exact_bounded_unit(
     )
     try:
         if phase == "source":
-            first.advance(JournalValidationBudget(source_octets=7))
+            first.advance(unit_budget(source_octets=7))
             assert first._input.cursor.byte_offset == 7
         else:
             for _ in range(100000):
-                progress = first.advance(JournalValidationBudget(rows=1))
+                progress = first.advance(unit_budget(rows=1))
                 if progress.phase == phase:
                     break
             else:
@@ -100,7 +101,7 @@ def test_retained_session_resumes_its_exact_bounded_unit(
         ) as resumed:
             assert resumed._ledger.load().checkpoint.version == before.checkpoint.version + 1
             with pytest.raises(StaleValidationCheckpoint):
-                first.advance()
+                first.advance(unit_budget())
             finish(resumed)
             result = resumed.result()
         with result, validate_journal(journal, catalog=catalog) as expected:
@@ -129,7 +130,7 @@ def test_completed_retained_result_reopens_without_reading_source_or_history(
     with open_session(
         path, source, catalog, epoch=1, journal_constructions=journal_constructions
     ) as resumed:
-        assert resumed.advance().complete
+        assert resumed.advance(unit_budget()).complete
         result = resumed.result()
     with result:
         assert result.journal_bytes == len(journal)
@@ -147,7 +148,7 @@ def test_foreign_source_binding_cannot_adopt_retained_progress(
     with open_session(
         path, source, catalog, create=True, journal_constructions=journal_constructions
     ) as first:
-        first.advance(JournalValidationBudget(source_octets=7))
+        first.advance(unit_budget(source_octets=7))
     before = (path / "snapshot.sqlite3").read_bytes()
     changes = {
         "attempt": {"attempt_id": "another-capture"},
@@ -170,21 +171,21 @@ def test_terminal_provider_fence_is_required_before_result(
         path, source, catalog, create=True, journal_constructions=journal_constructions
     ) as first:
         for _ in range(100000):
-            progress = first.advance()
+            progress = first.advance(unit_budget())
             if progress.phase == "terminal":
                 break
         else:
             raise AssertionError("the fixture did not reach terminal")
         source.current = False
         with pytest.raises(IncompleteSourceError, match="no longer current"):
-            first.advance()
+            first.advance(unit_budget())
         with pytest.raises(RuntimeError, match="terminal result"):
             first.result()
     source.current = True
     with open_session(
         path, source, catalog, epoch=1, journal_constructions=journal_constructions
     ) as resumed:
-        assert resumed.advance().complete
+        assert resumed.advance(unit_budget()).complete
         resumed.result().close()
 
 
@@ -213,7 +214,7 @@ def test_actual_process_exit_retains_source_and_parent_cursor(
 sys.path.insert(0,sys.argv[1])
 from pathlib import Path
 from riverhog_provenance_contracts import ContractCatalog
-from riverhog_provenance.journal_session import JournalValidationBudget
+from native_units import unit_budget
 from test_retained_journal_session import OwnedSource,open_session
 catalog=ContractCatalog()
 source=OwnedSource(Path(sys.argv[3]).read_bytes(),catalog)
@@ -224,7 +225,7 @@ session=open_session(
 )
 cut=sys.argv[4]
 for _ in range(100000):
- progress=session.advance(JournalValidationBudget(rows=1,source_octets=7))
+ progress=session.advance(unit_budget(rows=1,source_octets=7))
  if cut=='source' and progress.source_octets==7:break
  if cut=='pending' and session._input.pending:break
  if cut=='publish' and progress.accepted_frames==1:break
@@ -294,7 +295,7 @@ def test_unfinished_retained_session_releases_owner_without_removing_files(
         on_storage_close=lambda: released.append("closed"),
         construction=journal_constructions.retain(),
     )
-    current.advance(JournalValidationBudget(source_octets=1))
+    current.advance(unit_budget(source_octets=1))
     current.close()
     assert released == ["closed"]
     assert (path / "snapshot.sqlite3").is_file()
@@ -357,7 +358,7 @@ def test_invalid_source_window_cannot_publish_progress(
     ) as current:
         before = current._ledger.load()
         with pytest.raises(IncompleteSourceError, match="supply its window"):
-            current.advance(JournalValidationBudget(source_octets=1))
+            current.advance(unit_budget(source_octets=1))
         assert current._ledger.load() == before
 
 
@@ -372,11 +373,11 @@ def test_each_retained_unit_checks_current_source_before_local_progress(
         create=True,
         journal_constructions=journal_constructions,
     ) as current:
-        current.advance(JournalValidationBudget(source_octets=7))
+        current.advance(unit_budget(source_octets=7))
         before = current._ledger.load()
         source.current = False
         with pytest.raises(IncompleteSourceError, match="no longer current"):
-            current.advance()
+            current.advance(unit_budget())
         assert current._ledger.load() == before
 
 
@@ -395,9 +396,9 @@ def test_progress_reads_no_payload_and_never_advances_the_checkpoint(
         journal_constructions=journal_constructions,
     ) as current:
         if phase == "source":
-            current.advance(JournalValidationBudget(source_octets=7))
+            current.advance(unit_budget(source_octets=7))
         elif phase == "entry":
-            while current.advance().phase != "entry":
+            while current.advance(unit_budget()).phase != "entry":
                 pass
         else:
             finish(current)

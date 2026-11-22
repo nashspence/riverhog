@@ -122,16 +122,20 @@ class EpochContext:
         try:
             self.check()
             yield
-            self.require_quiescent()
-            if work is not None:
-                try:
-                    work.require_received()
-                except BaseException as error:
-                    self._phase, self._failure = "unusable", error
-                    raise
+            self.require_unit_received()
         finally:
             self._execution_active, self._execution_check, self._work = False, None, None
             self._check_failure = None
+
+    def require_unit_received(self) -> None:
+        """Permit the next unit only after this original execution has received work."""
+        self.require_quiescent()
+        if self._work is not None:
+            try:
+                self._work.require_received()
+            except BaseException as error:
+                self._phase, self._failure = "unusable", error
+                raise
 
     @contextmanager
     def preparing(self) -> Iterator[None]:

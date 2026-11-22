@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import closing
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance import _entry_replay
 from riverhog_provenance._changed_assertions import (
     ChangedAssertionCapacity,
@@ -11,7 +12,6 @@ from riverhog_provenance._changed_assertions import (
 from riverhog_provenance._native_epoch import EpochContext
 from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum
 from riverhog_provenance.journal_session import (
-    JournalValidationBudget,
     JournalValidationSession,
     JournalValidationWorkBudget,
 )
@@ -150,15 +150,13 @@ def test_actual_session_row_selection_and_cold_row_restore_use_the_original_quan
         parent_probes = 2 * (2 + predecessor)
         parent_mutation = 4 + 2 * predecessor
         with pytest.raises(NativeWorkCapacity):
-            session.advance(
-                JournalValidationBudget(work=JournalValidationWorkBudget(rows=parent_probes + 2))
-            )
+            session.advance(unit_budget(work=JournalValidationWorkBudget(rows=parent_probes + 2)))
         assert session.progress() == before
         assert session._store.db.total_changes == changes
         assert session._failure is None and session._ledger.epoch.quiescent
         assert seen[0].consumed.rows == parent_probes + 2 and seen[0].consumed.source_octets == 0
         seen[0].require_received()
-        after = session.advance(JournalValidationBudget(work=JournalValidationWorkBudget(rows=128)))
+        after = session.advance(unit_budget(work=JournalValidationWorkBudget(rows=128)))
         assert after != before and len(seen) == 2 and seen[1] is not seen[0]
         assert selector_costs == [2, 3]
         assert seen[1].consumed.rows >= parent_probes + 3 + parent_mutation

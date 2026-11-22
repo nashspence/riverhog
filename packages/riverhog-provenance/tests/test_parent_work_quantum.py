@@ -5,6 +5,7 @@ from contextlib import closing
 from dataclasses import replace
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount
 from riverhog_provenance._session_checkpoint import (
     StaleValidationCheckpoint,
@@ -19,7 +20,7 @@ from test_validation_checkpoint import ATTEMPT, INPUTS, connect, install, instal
 def accepted_prefix(session, accepted):
     if accepted:
         _reach(session, "publish")
-        assert session.advance().accepted_frames == 1
+        assert session.advance(unit_budget()).accepted_frames == 1
     return session._ledger.load()
 
 
@@ -276,7 +277,7 @@ def test_actual_frame_publication_reserves_new_prefix_predecessor_and_receives_i
             receive(owner, pending)
 
         monkeypatch.setattr(ValidationLedger, "_receive", received)
-        assert session.advance().accepted_frames == 1
+        assert session.advance(unit_budget()).accepted_frames == 1
         assert len(seen) == 1 and seen[0].held == WorkAmount()
         assert parent.epoch.quiescent and parent.load().accepted.frame_count == 1
         seen[0].require_received()

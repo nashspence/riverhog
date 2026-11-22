@@ -3,9 +3,9 @@ from __future__ import annotations
 import sqlite3
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance._native_work import NativeWorkCapacity, WorkAmount
 from riverhog_provenance.journal_session import (
-    JournalValidationBudget,
     JournalValidationWorkBudget,
 )
 from test_native_epoch_integration import _reach
@@ -38,7 +38,7 @@ def test_quarantine_copy_reservation_refuses_before_writer_and_keeps_original_pe
     for _ in range(64):
         if session._input.pending:
             break
-        session.advance()
+        session.advance(unit_budget())
     else:
         pytest.fail("exact source did not expose a pending frame")
     retained = hasattr(session._input, "state")
@@ -50,9 +50,7 @@ def test_quarantine_copy_reservation_refuses_before_writer_and_keeps_original_pe
     db.set_trace_callback(statements.append)
     try:
         with pytest.raises(NativeWorkCapacity):
-            session.advance(
-                JournalValidationBudget(work=JournalValidationWorkBudget(octets=6 * size + 3))
-            )
+            session.advance(unit_budget(work=JournalValidationWorkBudget(octets=6 * size + 3)))
     finally:
         db.set_trace_callback(None)
     assert not any(sql.startswith("BEGIN") for sql in statements)
@@ -64,9 +62,7 @@ def test_quarantine_copy_reservation_refuses_before_writer_and_keeps_original_pe
     assert refused.consumed.octets == 5 * size + 4
     assert refused.consumed.source_octets == (size if retained else 0)
     assert refused.held == WorkAmount()
-    after = session.advance(
-        JournalValidationBudget(work=JournalValidationWorkBudget(octets=6 * size + 4))
-    )
+    after = session.advance(unit_budget(work=JournalValidationWorkBudget(octets=6 * size + 4)))
     assert after.phase == "entry-admission"
     assert session._replay._current is not None and seen[0] is not refused
     assert seen[0].consumed.octets == 6 * size + 4
@@ -84,9 +80,7 @@ def test_accepted_frame_copy_is_reserved_before_parent_or_prefix_writes(session,
     db.set_trace_callback(statements.append)
     try:
         with pytest.raises(NativeWorkCapacity):
-            session.advance(
-                JournalValidationBudget(work=JournalValidationWorkBudget(octets=len(raw) - 1))
-            )
+            session.advance(unit_budget(work=JournalValidationWorkBudget(octets=len(raw) - 1)))
     finally:
         db.set_trace_callback(None)
     assert not any(sql.startswith("BEGIN") for sql in statements)
@@ -95,9 +89,7 @@ def test_accepted_frame_copy_is_reserved_before_parent_or_prefix_writes(session,
     refused = seen.pop()
     assert refused.consumed.octets == refused.consumed.source_octets == 0
     assert refused.held == WorkAmount() and session._ledger.epoch.quiescent
-    after = session.advance(
-        JournalValidationBudget(work=JournalValidationWorkBudget(octets=len(raw)))
-    )
+    after = session.advance(unit_budget(work=JournalValidationWorkBudget(octets=len(raw))))
     assert after.accepted_frames == 1 and session._replay._current is None
     assert seen[0] is not refused
     assert seen[0].consumed.octets == len(raw) and seen[0].consumed.source_octets == 0
@@ -128,9 +120,7 @@ def test_failed_original_frame_insert_keeps_copy_cost_and_rolls_back_whole_publi
     db.set_authorizer(authorize)
     try:
         with pytest.raises(sqlite3.DatabaseError, match="not authorized") as caught:
-            session.advance(
-                JournalValidationBudget(work=JournalValidationWorkBudget(octets=len(raw)))
-            )
+            session.advance(unit_budget(work=JournalValidationWorkBudget(octets=len(raw))))
     finally:
         db.set_authorizer(None)
     assert session._failure is caught.value and not db.in_transaction

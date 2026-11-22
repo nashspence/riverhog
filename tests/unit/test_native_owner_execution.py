@@ -7,7 +7,7 @@ from threading import Event
 import pytest
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
-from riverhog_provenance import JournalValidationBudget
+from riverhog_provenance import JournalValidationBudget, JournalValidationWorkBudget
 from riverhog_provenance._entry_preparation import EntryPreparation
 
 from tests.unit.test_discovery_journal_owner import prepared, quantum
@@ -51,7 +51,11 @@ def test_upload_shutdown_interrupts_actual_native_query_and_receives_original_sl
         catalog = source_owner.admission_provenance_catalog()
         try:
             for _ in range(32):
-                assert owner.advance(work, catalog=catalog).progressed
+                assert owner.advance(
+                    work,
+                    catalog=catalog,
+                    budget=JournalValidationBudget(work=JournalValidationWorkBudget(transitions=1)),
+                ).progressed
                 slot = next(iter(owner._slots.values()))
                 native = slot.session
                 if native.progress().phase == "entry-admission":
@@ -87,7 +91,12 @@ def test_discovery_shutdown_interrupts_actual_native_query_and_receives_original
     with prepared(tmp_path / "source", journal_constructions=journal_constructions) as case:
         for _ in range(256):
             with quantum(case) as (work, framing):
-                progress = work.advance_journal(framing, budget=JournalValidationBudget(rows=8))
+                progress = work.advance_journal(
+                    framing,
+                    budget=JournalValidationBudget(
+                        rows=8, work=JournalValidationWorkBudget(transitions=1)
+                    ),
+                )
                 if progress is not None and progress.phase == "entry-admission":
                     slot = work._slot
                     native = slot.journal.session

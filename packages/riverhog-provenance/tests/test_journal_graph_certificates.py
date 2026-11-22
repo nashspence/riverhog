@@ -6,6 +6,7 @@ import json
 from dataclasses import replace
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance import (
     ProvenanceValidationError,
     append_assertions,
@@ -311,10 +312,8 @@ def test_reopening_after_a_committed_certificate_does_not_repeat_that_unit(
         create=True,
         journal_constructions=journal_constructions,
     ) as first:
-        from riverhog_provenance.journal_session import JournalValidationBudget
-
         for _ in range(100000):
-            first.advance(JournalValidationBudget(rows=1))
+            first.advance(unit_budget(rows=1))
             if certificates.calls:
                 break
         else:

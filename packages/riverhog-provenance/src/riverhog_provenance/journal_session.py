@@ -30,7 +30,7 @@ from ._entry_replay import install as install_replay
 from ._journal_prefix import JournalPrefix
 from ._native_epoch import EpochContext
 from ._native_frame import NativeFrame
-from ._native_work import WorkAmount, WorkQuantum
+from ._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum
 from ._session_checkpoint import ValidationLedger, ValidationSnapshot
 from ._session_checkpoint import install as install_parent
 from ._session_input import RetainedInput
@@ -380,7 +380,7 @@ def _session_declaration(mode: str) -> Declaration:
 
     def child(name: str, metric: str) -> Expression:
         return Expression(
-            "delegate",
+            "delegate_envelope" if mode == "advance" else "delegate",
             name=name,
             metric=metric,
             terms=(dimension(name + "_calls"),),
@@ -424,7 +424,14 @@ def _session_declaration(mode: str) -> Declaration:
     else:
         advance = mode == "advance"
         width = dimension("metadata_row_octets")
-        control = Expression("product", terms=(count(128 if advance else 16), width))
+        control = Expression(
+            "product",
+            terms=(
+                Expression("constant", value=128 if advance else 16),
+                dimension("transition_limit") if advance else count(1),
+                width,
+            ),
+        )
         publication = dimension("input_publications") if advance else count(0)
         atom = (
             dimension("input_atom_octets")
@@ -432,12 +439,17 @@ def _session_declaration(mode: str) -> Declaration:
             else Expression("constant", value=0, unit=OCTETS)
         )
         own_sql = 8 if advance else 0
+        turns = dimension("transition_limit") if advance else count(1)
+
+        def per_turn(value: int) -> Expression:
+            return multiple(value, turns)
+
         dimensions = (
             Dimension("retained_rows", COUNT, "All native workspace rows before this call."),
             Dimension(
                 "metadata_row_octets",
                 OCTETS_PER_COUNT,
-                "Actual parent, prefix, input cursor, source manifest, worker and result envelope.",
+                "Prestate/admission envelope for parent, prefix, cursor, source and result.",
             ),
             Dimension(
                 "source_verifications",
@@ -447,7 +459,9 @@ def _session_declaration(mode: str) -> Declaration:
             *(
                 (
                     Dimension(
-                        "input_publications", COUNT, "Zero or one native source-cursor mutation."
+                        "input_publications",
+                        COUNT,
+                        "Actual source-cursor mutations across this whole invocation.",
                     ),
                     Dimension(
                         "input_atom_octets",
@@ -457,17 +471,17 @@ def _session_declaration(mode: str) -> Declaration:
                     Dimension(
                         "source_windows",
                         COUNT,
-                        "Actual retained source-window port calls, zero or one.",
+                        "Actual retained source-window calls across this whole invocation.",
                     ),
                     Dimension(
                         "source_atoms",
                         COUNT,
-                        "Actual exact current-frame source port calls, zero or one.",
+                        "Actual current-frame source calls across this whole invocation.",
                     ),
                     Dimension(
                         "caller_pulls",
                         COUNT,
-                        "Actual caller iterator pulls including empty/eof, zero or one.",
+                        "Actual caller pulls including empty/eof across this whole invocation.",
                     ),
                     Dimension(
                         "source_window_octets",
@@ -493,6 +507,16 @@ def _session_declaration(mode: str) -> Declaration:
                 if advance
                 else ()
             ),
+            *(
+                (
+                    Dimension("transition_limit", COUNT, "Original shared transition admission."),
+                    Dimension("work_rows", COUNT, "Original shared inspected-row admission."),
+                    Dimension("work_octets", OCTETS, "Original shared representation admission."),
+                    Dimension("work_source_octets", OCTETS, "Original shared source admission."),
+                )
+                if advance
+                else ()
+            ),
             *delegate_dimensions,
         )
         bounds = (
@@ -500,14 +524,14 @@ def _session_declaration(mode: str) -> Declaration:
                 "sql_statements",
                 COUNT,
                 "upper",
-                add(count(own_sql), subtotal("sql_statements", COUNT)),
+                add(per_turn(own_sql), subtotal("sql_statements", COUNT)),
                 "Actual delegates and fixed cursor/header/quarantine/transaction/freeze work.",
             ),
             Bound(
                 "returned_rows",
                 COUNT,
                 "upper",
-                add(count(3 if advance else 0), subtotal("returned_rows", COUNT)),
+                add(per_turn(3 if advance else 0), subtotal("returned_rows", COUNT)),
                 (
                     "Only exact fixed-shape prefix/predecessor/quarantine "
                     "metadata lies outside delegates."
@@ -529,7 +553,7 @@ def _session_declaration(mode: str) -> Declaration:
                     OCTETS,
                     "upper",
                     add(
-                        Expression("product", terms=(count(8 if advance else 0), width)),
+                        Expression("product", terms=(per_turn(8 if advance else 0), width)),
                         subtotal(metric, OCTETS),
                     ),
                     (
@@ -561,14 +585,24 @@ def _session_declaration(mode: str) -> Declaration:
                 COUNT,
                 "upper",
                 add(
-                    count(2048 if advance else 0),
+                    per_turn(2048 if advance else 0),
                     subtotal("sqlite_vm_instructions", COUNT),
                     Expression(
                         "product",
                         terms=(
-                            count(1024 if advance else 0),
+                            per_turn(1024 if advance else 0),
                             Expression(
-                                "log2_ceil", terms=(add(count(2), dimension("retained_rows")),)
+                                "log2_ceil",
+                                terms=(
+                                    add(
+                                        count(2),
+                                        dimension("retained_rows"),
+                                        dimension("work_rows"),
+                                        per_turn(256),
+                                    )
+                                    if advance
+                                    else add(count(2), dimension("retained_rows")),
+                                ),
                             ),
                         ),
                     ),
@@ -676,8 +710,111 @@ def _session_declaration(mode: str) -> Declaration:
                 else ()
             ),
         )
+    if mode == "advance":
+        bounds += (
+            *(
+                Bound(
+                    "quantum_" + name,
+                    unit,
+                    "upper",
+                    dimension(limit),
+                    "Actual consumption of the single original quantum; no per-unit recredit.",
+                )
+                for name, limit, unit in (
+                    ("rows", "work_rows", COUNT),
+                    ("octets", "work_octets", OCTETS),
+                    ("source_octets", "work_source_octets", OCTETS),
+                    ("transitions", "transition_limit", COUNT),
+                )
+            ),
+            *(
+                Bound(
+                    "aggregate_" + metric,
+                    COUNT,
+                    "upper",
+                    add(dimension("work_rows"), multiple(256, dimension("transition_limit"))),
+                    "Independent inspected-work admission plus fixed controls per transition; "
+                    "retained history never multiplies this ceiling.",
+                )
+                for metric in ("returned_rows", "changed_rows")
+            ),
+            Bound(
+                "aggregate_sqlite_vm_instructions",
+                COUNT,
+                "upper",
+                Expression(
+                    "product",
+                    terms=(
+                        multiple(
+                            8192,
+                            add(
+                                dimension("work_rows"), multiple(256, dimension("transition_limit"))
+                            ),
+                        ),
+                        Expression(
+                            "log2_ceil",
+                            terms=(
+                                add(
+                                    count(2),
+                                    dimension("retained_rows"),
+                                    dimension("work_rows"),
+                                    multiple(256, dimension("transition_limit")),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+                "Shared inspected-work ceiling; retained history enters only logarithmically.",
+            ),
+            *(
+                Bound(
+                    "aggregate_" + metric,
+                    OCTETS,
+                    "upper",
+                    multiple(
+                        64,
+                        add(
+                            dimension("work_octets"),
+                            Expression(
+                                "product",
+                                terms=(
+                                    add(
+                                        dimension("work_rows"),
+                                        multiple(256, dimension("transition_limit")),
+                                    ),
+                                    dimension("metadata_row_octets"),
+                                ),
+                            ),
+                        ),
+                    ),
+                    "Independent original representation allowance plus bounded fixed controls.",
+                )
+                for metric in (
+                    "returned_metadata_octets",
+                    "bound_parameter_octets",
+                    "written_value_octets",
+                    "native_hashed_octets",
+                    "decoded_json_octets",
+                    "encoded_json_octets",
+                )
+            ),
+            *(
+                Bound(
+                    "calls_" + tag,
+                    COUNT,
+                    "upper",
+                    count(1)
+                    if tag == "progress"
+                    else multiple(4 if tag == "padding" else 1, dimension("transition_limit")),
+                    "Independent one-unit causal graph cardinality, with progress only once.",
+                )
+                for tag in declarations
+            ),
+        )
     return Declaration(
-        id="riverhog-provenance.native-journal-session-" + mode + ".growth/v1",
+        id="riverhog-provenance.native-journal-session-"
+        + mode
+        + (".growth/v2" if mode == "advance" else ".growth/v1"),
         authority="riverhog-provenance",
         subjects=("riverhog_provenance.journal_session.JournalValidationSession." + mode,),
         scope="whole-native-journal-session-" + mode,
@@ -1569,6 +1706,43 @@ class JournalValidationSession:
         self._summary = summary
         return after
 
+    def _advance_unit(self, budget: JournalValidationBudget) -> ValidationSnapshot:
+        """One original semantic/input unit inside the caller's shared quantum."""
+        if self._ledger.epoch.work is None:
+            raise RuntimeError("Native control unit requires the original invocation quantum")
+        self._ledger.epoch.require_quiescent()
+        if self._source is not None and (
+            self._source.binding != self._source_binding
+            or self._source.verify_current() is not True
+        ):
+            raise IncompleteSourceError("retained validation source is no longer current")
+        before = self._ledger.load()
+        self._replay._start(before, ReplayBudget(budget.rows, budget.octets))
+        phase = before.checkpoint.phase
+        if phase == "terminal":
+            return self._finish(before)
+        if phase == "done":
+            return self._finish(before) if self._summary is None else before
+        if phase != "frame":
+            return self._replay.advance(ReplayBudget(budget.rows, budget.octets))
+        if isinstance(self._input, RetainedInput):
+            changed = self._input.synchronize(before, budget.octets)
+            if changed is not None:
+                return changed
+        if self._input.pending:
+            frame = self._input.frame(budget.octets)
+            return self._replay.admit(
+                frame,
+                ReplayBudget(budget.rows, budget.octets),
+                on_admitted=self._input.admitted,
+            )
+        if self._input.complete:
+            return self._move(before, "terminal")
+        if isinstance(self._input, RetainedInput):
+            return self._input.scan(before, budget.octets, budget.source_octets)
+        self._input.scan(budget.source_octets)
+        return before
+
     @declare_growth(_session_declaration("advance"), delegates=_session_delegates("advance"))
     def advance(
         self,
@@ -1576,12 +1750,15 @@ class JournalValidationSession:
         *,
         check: Callable[[], None] | None = None,
     ) -> JournalValidationProgress:
-        """Advance bounded work under an optional owner's execution check.
+        """Advance bounded work under one original execution check and quantum.
 
-        The check reads bounded live cancellation/deadline state and returns None
-        or raises its original cause. It must not read sources, wait or perform
-        effects. Detached preparation and original private commits use the owned
-        SQLite dispatcher; cleanup and post-commit receiving remain independent.
+        Every attempted unit consumes a transition. Only a received, quiescent
+        unit permits another one; progress is rendered once on return. A later
+        aggregate capacity refusal yields already received progress, without
+        resetting any resource coordinate or treating a failed commit as a yield.
+        The optional check reads bounded live cancellation/deadline state. It must
+        not read sources, wait or perform effects; its original cause propagates.
+        Cleanup and post-commit receiving remain independent of that check.
         """
         self._require_open()
         if self._failure is not None:
@@ -1597,46 +1774,33 @@ class JournalValidationSession:
                     budget.work.transitions,
                 )
             )
-            with self._ledger.epoch.execution(check, work=work):
-                work.consume(WorkAmount(transitions=1))
-                if self._source is not None and (
-                    self._source.binding != self._source_binding
-                    or self._source.verify_current() is not True
-                ):
-                    raise IncompleteSourceError("retained validation source is no longer current")
-                before = self._ledger.load()
-                # The entry conductor admits the same fixed owner/prefix controls.
-                self._replay._start(before, ReplayBudget(budget.rows, budget.octets))
-                phase = before.checkpoint.phase
-                if phase == "terminal":
-                    return self._progress(self._finish(before))
-                if phase == "done":
-                    if self._summary is None:
-                        return self._progress(self._finish(before))
-                    return self._progress(before)
-                if phase != "frame":
-                    return self._progress(
-                        self._replay.advance(ReplayBudget(budget.rows, budget.octets))
-                    )
-                if isinstance(self._input, RetainedInput):
-                    changed = self._input.synchronize(before, budget.octets)
-                    if changed is not None:
-                        return self._progress(changed)
-                if self._input.pending:
-                    frame = self._input.frame(budget.octets)
-                    after = self._replay.admit(
-                        frame,
-                        ReplayBudget(budget.rows, budget.octets),
-                        on_admitted=self._input.admitted,
-                    )
-                    return self._progress(after)
-                if self._input.complete:
-                    return self._progress(self._move(before, "terminal"))
-                if isinstance(self._input, RetainedInput):
-                    after = self._input.scan(before, budget.octets, budget.source_octets)
-                else:
-                    self._input.scan(budget.source_octets)
-                    after = before
+            epoch = self._ledger.epoch
+            with epoch.execution(check, work=work):
+                after: ValidationSnapshot | None = None
+                for _ in range(budget.work.transitions):
+                    epoch.check()
+                    work.consume(WorkAmount(transitions=1))
+                    try:
+                        received = self._advance_unit(budget)
+                    except NativeWorkCapacity as error:
+                        if (
+                            not work.owns_admission_refusal(error)
+                            or epoch.raised_by_check(error)
+                            or not epoch.quiescent
+                        ):
+                            raise
+                        # The token excludes actual consumption overruns and
+                        # foreign/provider causes. A failed original epoch is
+                        # never quiescent, so it cannot become bounded progress.
+                        epoch.require_unit_received()
+                        if after is None:
+                            raise
+                        break
+                    epoch.require_unit_received()
+                    after = received
+                    if after.checkpoint.phase == "done":
+                        break
+                assert after is not None
                 return self._progress(after)
         except JournalValidationCapacity:
             raise

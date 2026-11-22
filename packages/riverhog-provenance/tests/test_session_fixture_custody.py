@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import pytest
+from native_units import unit_budget
 from riverhog_provenance._generic_semantics import GenericSemantics, StaleGenericSemantics
-from riverhog_provenance.journal_session import JournalValidationBudget, JournalValidationSession
+from riverhog_provenance.journal_session import JournalValidationSession
 from test_entry_replay_growth import admission_histories as admission_histories
 from test_journal_session_growth import (
     SESSION_CASES,
@@ -67,7 +68,7 @@ def test_session_growth_setup_reconstructs_current_atom_before_dimensions_or_nat
             before.checkpoint, current, before.checkpoint.phase, before.checkpoint.child_id
         )
         assert child.epoch is epoch and child.atom is current.atom
-        budget = JournalValidationBudget(rows=16)
+        budget = unit_budget(rows=16)
         dimensions, _ = session_dimensions(
             session, budget, JournalValidationSession.advance, cold=False
         )
