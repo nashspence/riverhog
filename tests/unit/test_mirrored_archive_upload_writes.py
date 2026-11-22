@@ -624,7 +624,18 @@ def _assert_terminal_cache_actor(tmp_path, monkeypatch, kind, mode, phase, *, da
                 else pool.submit(_unit, joint.actor, opened)
             )
             try:
-                assert entered.wait(timeout=5)
+                if not entered.wait(timeout=5):
+                    release.set()
+                    # Receive the original worker and expose an earlier failure
+                    # before reporting a missed scenario precondition.
+                    future.result(timeout=5)
+                    pytest.fail(
+                        f"cache {phase!r} was not entered before the terminal barrier; "
+                        f"archive calls={[call.operation.kind for call in joint.actor.seen]!r}, "
+                        f"cache calls={[call.operation.kind for call in calls]!r}, "
+                        f"cache begin received={joint.mirror.cache_session is not None}, "
+                        f"optional forwarding={joint.writer._cache_forward.writable}"
+                    )
                 selected = _terminal(joint)
                 before = _cache_state(joint)
                 assert before[-1] > 0 and joint.writer.has_pending
