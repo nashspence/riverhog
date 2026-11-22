@@ -7,6 +7,7 @@ import sqlite3
 from collections.abc import Sequence
 from contextlib import closing
 from dataclasses import asdict, dataclass, field, replace
+from functools import cached_property
 from typing import Any
 from uuid import uuid4
 
@@ -24,6 +25,7 @@ from riverhog_growth_contracts import (
 )
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
+from ._native_conductor import ControlSlot, LiveControl
 from ._native_epoch import EpochContext, bind_epoch
 from ._native_work import WorkAmount
 from .errors import JournalValidationCapacity, ProvenanceValidationError
@@ -376,10 +378,14 @@ class Progress:
         return self.phase == "complete"
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class _Snapshot:
     version: int
     work: _Work
+
+    @cached_property
+    def encoded_work(self) -> str:
+        return self.work.encoded()
 
 
 @dataclass(frozen=True, slots=True)
@@ -403,7 +409,7 @@ class _Retirement:
 
     @property
     def after(self) -> _Snapshot:
-        return _Snapshot(self.plan.before.version + 1, self.plan.work)
+        return self.plan.after
 
 
 @dataclass(slots=True)
@@ -412,6 +418,10 @@ class _Plan:
     work: _Work
     writes: list[tuple[str, tuple[Any, ...]]] = field(default_factory=list)
     adjacency_visits: int = 0
+
+    @property
+    def after(self) -> _Snapshot:
+        return _Snapshot(self.before.version + 1, replace(self.work))
 
     def write(self, sql: str, *parameters: Any) -> None:
         self.writes.append((sql, parameters))
@@ -484,6 +494,16 @@ class OnlineDag:
             raise ValueError("online graph requires an owned graph kind and run identity")
         self.db, self.kind, self.run_id = db, kind, run_id
         self.epoch = bind_epoch(db, epoch)
+        self._control = LiveControl(
+            self.epoch,
+            _Snapshot,
+            (ALGORITHM, kind, run_id),
+            slot=(
+                ControlSlot.DERIVATION_GRAPH
+                if kind == "derivation"
+                else ControlSlot.SPECIALIZATION_GRAPH
+            ),
+        )
         self._check_algorithm()
 
     def _check_algorithm(self) -> None:
@@ -553,32 +573,46 @@ class OnlineDag:
                 raise RuntimeError("replacement online graph identity is already retained")
 
     def bind(self) -> None:
-        """Bind a new run, or verify a retained identical run without resetting it."""
-        if self.db.in_transaction:
-            raise RuntimeError("online graph binding requires a closed transaction")
-        self.db.execute("BEGIN IMMEDIATE").close()
-        try:
-            rows = self._rows("SELECT run_id FROM dag_runs WHERE kind = ?", (self.kind,))
-            if rows and rows[0][0] != self.run_id:
-                raise StaleDagWork("online graph run changed")
-            if not rows:
-                self._require_unused_run(self.run_id)
-                self._write(
-                    "INSERT INTO dag_runs VALUES (?, ?, '0', ?)",
-                    (self.kind, self.run_id, _Work().encoded()),
-                ).close()
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
+        """Bind or verify a run through its original private epoch."""
+        self.epoch.require_quiescent()
+
+        def apply(epoch: EpochContext) -> _Snapshot:
+            epoch.require(self.db)
+            rows = self._rows(
+                "SELECT run_id,version,work FROM dag_runs WHERE kind = ?", (self.kind,)
+            )
+            if rows:
+                return self._snapshot(rows[0])
+            self._require_unused_run(self.run_id)
+            state = _Snapshot(0, _Work())
+            self._write(
+                "INSERT INTO dag_runs VALUES (?, ?, '0', ?)",
+                (self.kind, self.run_id, state.encoded_work),
+            ).close()
+            return state
+
+        self.epoch.apply(apply, receive=self._receive, admission=WorkAmount(rows=len(_RETIRE) + 3))
+
+    def _snapshot(self, row: tuple[Any, ...]) -> _Snapshot:
+        if row[0] != self.run_id:
+            raise StaleDagWork("online graph run changed")
+        version = self._version(row[1])
+        received = self._control.state
+        if received is not None and received.version == version and received.encoded_work == row[2]:
+            return received
+        return _Snapshot(version, _Work.decode(row[2]))
 
     def _load(self) -> _Snapshot:
-        if self.db.in_transaction:
-            raise RuntimeError("online graph units require closed source transactions")
-        rows = self._rows("SELECT run_id, version, work FROM dag_runs WHERE kind = ?", (self.kind,))
-        if not rows or rows[0][0] != self.run_id:
+        self.epoch.require_quiescent()
+        rows = self._rows("SELECT run_id,version,work FROM dag_runs WHERE kind = ?", (self.kind,))
+        if not rows:
             raise StaleDagWork("online graph run changed")
-        return _Snapshot(self._version(rows[0][1]), _Work.decode(rows[0][2]))
+        state = self._snapshot(rows[0])
+        self._control.observe(state)
+        return state
+
+    def _receive(self, state: _Snapshot) -> None:
+        self._control.receive(state)
 
     @staticmethod
     def _progress(snapshot: _Snapshot, *, visits: int = 0, stale: bool = False) -> Progress:
@@ -615,19 +649,23 @@ class OnlineDag:
         return bool(changed)
 
     def _commit(self, plan: _Plan) -> Progress:
-        if self.db.in_transaction:
-            raise RuntimeError("online graph commit requires a closed source transaction")
-        self.db.execute("BEGIN IMMEDIATE").close()
-        try:
-            if not self._apply(plan):
-                self.db.rollback()
-                return self._progress(self._load(), stale=True)
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return self._progress(
-            _Snapshot(plan.before.version + 1, plan.work), visits=plan.adjacency_visits
+        self.epoch.require_quiescent()
+
+        def apply(epoch: EpochContext) -> _Snapshot | None:
+            epoch.require(self.db)
+            return plan.after if self._apply(plan) else None
+
+        def receive(state: _Snapshot | None) -> None:
+            if state is not None:
+                self._receive(state)
+
+        after = self.epoch.apply(
+            apply, receive=receive, admission=self._application_admission(plan)
+        )
+        return (
+            self._progress(self._load(), stale=True)
+            if after is None
+            else self._progress(after, visits=plan.adjacency_visits)
         )
 
     @declare_growth(_phase_declaration("_prepare_start"))
@@ -1072,14 +1110,17 @@ class OnlineDag:
     def replace_run(self, run_id: str) -> OnlineDag:
         """Fence a replaced owned graph; retire its private rows separately."""
         batch = self._prepare_replacement(run_id)
-        self.db.execute("BEGIN IMMEDIATE").close()
-        try:
-            after = self._apply_replacement(batch)
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return after
+
+        def apply(epoch: EpochContext) -> OnlineDag:
+            epoch.require(self.db)
+            return self._apply_replacement(batch)
+
+        def receive(after: OnlineDag) -> None:
+            after._receive(batch.after)
+
+        return self.epoch.apply(
+            apply, receive=receive, admission=self._application_admission(batch)
+        )
 
     @declare_growth(_phase_declaration("_prepare_retirement", retirement=True))
     def _prepare_retirement(

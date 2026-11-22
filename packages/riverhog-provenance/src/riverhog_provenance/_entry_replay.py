@@ -2607,8 +2607,10 @@ class EntryReplay:
         if phase == "replace":
             with self.epoch.preparing():
                 replacement = graph._prepare_replacement(uuid4().hex)
+            new: OnlineDag | None = None
 
             def apply() -> ValidationCheckpoint:
+                nonlocal new
                 new = graph._apply_replacement(replacement)
                 return replace(
                     state,
@@ -2619,6 +2621,9 @@ class EntryReplay:
                 )
 
             def receive(_snapshot: ValidationSnapshot) -> None:
+                if new is None:
+                    raise RuntimeError("Native graph lost its original replacement receiving")
+                new._receive(replacement.after)
                 self.store._dag_runs[kind] = replacement.run_id
 
             return self._commit(
@@ -2646,7 +2651,12 @@ class EntryReplay:
                 child_sha256=self._graph_digest(graph, batch.after),
             )
 
-        return self._commit(before, retire, admission=graph._application_admission(batch))
+        return self._commit(
+            before,
+            retire,
+            receive=lambda _snapshot: graph._receive(batch.after),
+            admission=graph._application_admission(batch),
+        )
 
     @declare_growth(
         _publication_declaration(),

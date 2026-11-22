@@ -217,6 +217,9 @@ def test_generic_graph_work_receives_one_original_typed_edge_child(
                 assert child._edge is original_edge
                 assert original_edge.epoch is child.epoch
                 assert original_edge._control.state is batch.edge.after
+                if getattr(batch.edge, "graph_plan", None) is not None:
+                    assert original_edge.checker._control.state == batch.edge.graph_plan.after
+                    assert original_edge.checker.epoch is child.epoch
                 assert original_edge._control.slot is (
                     ControlSlot.DERIVATION_EDGE
                     if kind == "derivation"

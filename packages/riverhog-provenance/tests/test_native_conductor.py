@@ -12,11 +12,15 @@ from riverhog_provenance._entry_preparation import PreparationState
 from riverhog_provenance._native_conductor import ControlSlot, LiveControl
 from riverhog_provenance._native_control import ChildControl
 from riverhog_provenance._native_epoch import EpochContext
+from riverhog_provenance._online_dag import OnlineDag, _Work
+from riverhog_provenance._online_dag import install as install_graph
 from riverhog_provenance._semantic_edge import EdgeState
 from riverhog_provenance._session_checkpoint import ValidationLedger
 from riverhog_provenance._session_input import RetainedInput, _InputState
 from riverhog_provenance.journal_session import JournalValidationSession
 from test_live_child_control import FAMILIES, admit, refuse_decode, work
+from test_native_epoch_integration import _Connection
+from test_online_dag import vertex
 from test_retained_journal_session import OwnedSource, directory, open_session
 
 
@@ -250,3 +254,109 @@ def test_live_control_does_no_sql_or_recovery_codec_work_and_does_not_narrow_sca
         assert original.state is rebuilt.state is state
         assert rebuilt.state.version == value
         assert queries == [] and epoch.quiescent
+
+
+@pytest.mark.parametrize("kind", ["derivation", "specialization"])
+def test_original_graph_control_is_shared_after_fresh_run_and_work_fences(monkeypatch, kind):
+    with closing(sqlite3.connect(":memory:")) as db:
+        install_graph(db)
+        original = OnlineDag(db, kind, "original")
+        original.bind()
+        before = original._control.state
+        assert before is not None
+        rebuilt = OnlineDag(db, kind, "original", epoch=original.epoch)
+        monkeypatch.setattr(_Work, "decode", refuse_decode)
+        assert rebuilt._load() is before
+        rebuilt.start("edge", vertex(1), vertex(2))
+        after = rebuilt._control.state
+        assert after is original._control.state and after is not before
+        assert original._load() is after and before.work.phase == "idle"
+        db.execute("UPDATE dag_runs SET work=? WHERE kind=?", ('{"phase":"foreign"}', kind)).close()
+        db.commit()
+        with pytest.raises(AssertionError, match="decoded again"):
+            rebuilt._load()
+        assert original._control.state is after
+
+
+@pytest.mark.parametrize("kind", ["derivation", "specialization"])
+@pytest.mark.parametrize("operation", ["step", "replacement"])
+@pytest.mark.parametrize("failure", ["before", "after"])
+def test_graph_control_keeps_original_value_when_commit_is_unconfirmed(kind, operation, failure):
+    with closing(sqlite3.connect(":memory:", factory=_Connection)) as db:
+        install_graph(db)
+        graph = OnlineDag(db, kind, "original")
+        graph.bind()
+        before = graph._control.state
+        db.failure = failure
+        with pytest.raises(OSError, match="original private commit") as caught:
+            if operation == "step":
+                graph.start("edge", vertex(1), vertex(2))
+            else:
+                graph.replace_run("replacement")
+        assert graph._control.state is before and not graph.epoch.quiescent
+        with pytest.raises(RuntimeError, match="requires reconstruction") as refused:
+            graph.progress()
+        assert refused.value.__cause__ is caught.value
+        db.failure = None
+        run = db.execute("SELECT run_id FROM dag_runs WHERE kind=?", (kind,)).fetchone()[0]
+        rebuilt = OnlineDag(db, kind, run)
+        observed = rebuilt._load()
+        assert observed.version == before.version + (failure == "after")
+        assert observed.work.phase == (
+            "initialize" if operation == "step" and failure == "after" else "idle"
+        )
+        assert run == (
+            "replacement" if operation == "replacement" and failure == "after" else "original"
+        )
+
+
+def test_graph_receiving_failure_discards_the_committed_original_executor(monkeypatch):
+    with closing(sqlite3.connect(":memory:")) as db:
+        install_graph(db)
+        graph = OnlineDag(db, "derivation", "original")
+        graph.bind()
+        before = graph._control.state
+        failure = OSError("graph receiving failed")
+        receive = OnlineDag._receive
+
+        def refused(current, pending):
+            if current is graph:
+                assert current._control.state is before and not db.in_transaction
+                assert not current.epoch.quiescent and pending.work.phase == "initialize"
+                raise failure
+            receive(current, pending)
+
+        monkeypatch.setattr(OnlineDag, "_receive", refused)
+        with pytest.raises(OSError) as caught:
+            graph.start("edge", vertex(1), vertex(2))
+        assert caught.value is failure and graph._control.state is before
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            graph.progress()
+        rebuilt = OnlineDag(db, graph.kind, graph.run_id)
+        assert rebuilt.progress().phase == "initialize"
+
+
+def test_both_actual_graph_roles_keep_one_current_run_in_the_shared_conductor():
+    with closing(sqlite3.connect(":memory:")) as db:
+        install_graph(db)
+        epoch = EpochContext(db)
+        derivation = OnlineDag(db, "derivation", "same", epoch=epoch)
+        specialization = OnlineDag(db, "specialization", "same", epoch=epoch)
+        derivation.bind()
+        specialization.bind()
+        derivation.start("first", vertex(1), vertex(2))
+        first = derivation._control.state
+        specialization.start("second", vertex(2), vertex(1))
+        second = specialization._control.state
+        assert first is not second and first.work.operation_id == "first"
+        assert second.work.operation_id == "second"
+        replacement = derivation.replace_run("new")
+        assert derivation._control.state is None
+        assert replacement._control.state.work.phase == "idle"
+        assert specialization._control.state is second
+        assert len(epoch.conductor._received) == 2
+        plan = replacement._prepare_start("third", vertex(3), vertex(4))
+        pending = plan.after
+        plan.work.phase = "complete"
+        assert pending.work.phase == "initialize"
+        assert replacement._control.state.work.phase == "idle"

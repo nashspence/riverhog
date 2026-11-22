@@ -319,10 +319,13 @@ def test_late_write_failure_rolls_back_header_and_undo_then_resumes():
         finally:
             dag.db.set_authorizer(None)
         assert not dag.db.in_transaction
-        assert dag.progress().version == version
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            dag.progress()
         assert snapshot(dag, working=True) == before
-        assert complete(dag) == "accepted"
-        invariants(dag, expected | {(source, target)})
+        rebuilt = OnlineDag(dag.db, dag.kind, dag.run_id)
+        assert rebuilt.progress().version == version
+        assert complete(rebuilt) == "accepted"
+        invariants(rebuilt, expected | {(source, target)})
 
 
 def test_competing_workers_commit_one_bounded_unit(tmp_path):

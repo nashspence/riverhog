@@ -39,7 +39,7 @@ from ._native_conductor import ControlSlot
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._native_work import WorkAmount
-from ._online_dag import OnlineDag, _Plan, _Snapshot, _Work
+from ._online_dag import OnlineDag, _Plan, _Snapshot
 from ._semantic_source import SemanticSource
 from .errors import ProvenanceValidationError
 
@@ -548,8 +548,7 @@ class SemanticEdge:
         )
 
     def _detached(self) -> None:
-        if self.db.in_transaction:
-            raise RuntimeError("semantic graph units require a closed owner transaction")
+        self.epoch.require_quiescent()
 
     def _prefix(self) -> tuple[str, bytes, str]:
         row = self._one(
@@ -588,7 +587,10 @@ class SemanticEdge:
         row = self._one("SELECT run_id,version,work FROM dag_runs WHERE kind=?", (self.kind,))
         if row is None or row[0] != self.run_id:
             raise StaleSemanticEdge("semantic graph run changed")
-        return _Snapshot(OnlineDag._version(row[1]), _Work.decode(row[2]))
+        state = self.checker._snapshot(row)
+        if self.epoch.quiescent:
+            self.checker._control.observe(state)
+        return state
 
     def _operation(self, prefix: tuple[str, bytes, str]) -> str:
         return hashlib.sha256(
@@ -678,14 +680,16 @@ class SemanticEdge:
     def initialize(self) -> EdgeState:
         """Admit a new operation; restoration calls load/advance instead."""
         batch = self.prepare_admission()
-        self.db.execute("BEGIN IMMEDIATE").close()
-        try:
-            state = self._admit(batch)
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return state
+        return self.epoch.apply(
+            lambda _epoch: self._admit(batch),
+            receive=lambda _state: self._receive_batch(batch),
+            admission=self._application_admission(batch),
+        )
+
+    def _receive_batch(self, batch: EdgeAdmission | EdgeBatch) -> None:
+        self._control.receive(batch.after)
+        if isinstance(batch, EdgeBatch) and batch.graph_plan is not None:
+            self.checker._receive(batch.graph_plan.after)
 
     def _load(self) -> tuple[EdgeState, tuple[str, bytes, str], _Snapshot]:
         self._detached()
@@ -712,6 +716,7 @@ class SemanticEdge:
             raise StaleSemanticEdge("accepted prefix changed during semantic graph work")
         self._subject()
         state = self._control.get(row[4]) or EdgeState.from_json(row[4])
+        self._control.observe(state)
         graph = self._dag()
         operation = self._operation(prefix)
         if state.phase == "start":
@@ -802,14 +807,11 @@ class SemanticEdge:
 
     def commit(self, batch: EdgeBatch) -> EdgeState:
         self._detached()
-        self.db.execute("BEGIN IMMEDIATE").close()
-        try:
-            state = self._apply(batch)
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return state
+        return self.epoch.apply(
+            lambda _epoch: self._apply(batch),
+            receive=lambda _state: self._receive_batch(batch),
+            admission=self._application_admission(batch),
+        )
 
     @declare_growth(
         _composed_declaration(

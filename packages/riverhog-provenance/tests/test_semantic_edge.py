@@ -311,9 +311,12 @@ def test_graph_statement_failure_rolls_back_graph_and_semantic_checkpoints(tmp_p
         assert not db.in_transaction
         assert content(db) == before
         db.execute("DROP TRIGGER reject_mutation")
-        current.commit(batch)
-        finish(current)
-        current.result()
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            current.commit(batch)
+        rebuilt = work(db)
+        rebuilt.commit(rebuilt.prepare())
+        finish(rebuilt)
+        rebuilt.result()
 
 
 @pytest.mark.parametrize("completed", [False, True])

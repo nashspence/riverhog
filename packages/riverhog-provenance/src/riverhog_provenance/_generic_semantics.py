@@ -1673,7 +1673,7 @@ class GenericSemantics:
             or (child.attempt_id, child.binding) != (edge.attempt_id, edge.binding)
         ):
             raise RuntimeError("Native semantic edge lost its original child receiving")
-        child._control.receive(edge.after)
+        child._receive_batch(edge)
 
     @staticmethod
     def _charge_edge(meter: _Meter, batch: EdgeAdmission | EdgeBatch, row_budget: int) -> None:

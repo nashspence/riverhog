@@ -27,6 +27,8 @@ class ControlSlot(Enum):
     FINISH = "finish"
     DERIVATION_EDGE = "derivation-edge"
     SPECIALIZATION_EDGE = "specialization-edge"
+    DERIVATION_GRAPH = "derivation-graph"
+    SPECIALIZATION_GRAPH = "specialization-graph"
 
 
 @cache
@@ -38,6 +40,7 @@ def _control_types() -> dict[ControlSlot, type[object]]:
     from ._correction_targets import TargetState
     from ._entry_preparation import PreparationState
     from ._generic_semantics import GenericState
+    from ._online_dag import _Snapshot
     from ._semantic_edge import EdgeState
     from ._semantic_finish import FinishState
     from ._session_checkpoint import ValidationSnapshot
@@ -55,6 +58,8 @@ def _control_types() -> dict[ControlSlot, type[object]]:
         ControlSlot.FINISH: FinishState,
         ControlSlot.DERIVATION_EDGE: EdgeState,
         ControlSlot.SPECIALIZATION_EDGE: EdgeState,
+        ControlSlot.DERIVATION_GRAPH: _Snapshot,
+        ControlSlot.SPECIALIZATION_GRAPH: _Snapshot,
     }
 
 
