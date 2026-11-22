@@ -182,6 +182,12 @@ class GenerationWalInspector:
         self._salts: tuple[int, int] | None = None
         self._checksum = (0, 0)
         self._byte_order = "<"
+        self._verified_frame: GenerationWalFrame | None = None
+
+    @property
+    def verified_frame(self) -> GenerationWalFrame | None:
+        """The exact last frame received by this original bounded inspector."""
+        return self._verified_frame
 
     def _require(self, phase: str) -> None:
         if self._failure is not None:
@@ -289,6 +295,7 @@ class GenerationWalInspector:
                 self._last_commit = self._frames
                 self._commits += 1
                 self.work.commit_markers += 1
+            self._verified_frame = result
             return result
         except BaseException as error:
             self._failure, self._phase = error, "failed"
