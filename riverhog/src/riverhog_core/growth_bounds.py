@@ -59,7 +59,10 @@ def bound_envelope(
             return arguments[expression.name]
         if expression.op == "constant":
             return expression
-        if expression.op == "delegate":
+        if expression.op in {"delegate", "delegate_envelope"}:
+            # Both numeric forms evaluate the declared count and child bound.
+            # Actual cardinality/arguments remain the original execution reader's
+            # responsibility; expansion supplies no replacement child evidence.
             child = dict(binding.delegates)[expression.name]
             return Expression(
                 "product",

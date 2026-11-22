@@ -9,7 +9,17 @@ import riverhog_core
 from riverhog_core.canonical_discovery_archive_source import ArchiveJournalSource
 from riverhog_core.growth_bounds import bound_envelope, compact_expression
 from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
-from riverhog_growth_contracts import Expression, declare_growth, evaluate_bound, growth_binding
+from riverhog_growth_contracts import (
+    COUNT,
+    OCTETS,
+    Bound,
+    Declaration,
+    Dimension,
+    Expression,
+    declare_growth,
+    evaluate_bound,
+    growth_binding,
+)
 
 from scripts.growth_contract import source_bindings
 from scripts.validation_numeric import numeric_policy_from_environment
@@ -80,6 +90,96 @@ def test_compaction_preserves_typed_zero_and_unit_cancellation():
     )
     compacted = compact_expression(typed)
     assert compacted != body and set(compacted.terms) == set(typed.terms)
+
+
+@pytest.mark.parametrize("operator", ("delegate", "delegate_envelope"))
+@pytest.mark.parametrize("calls, octets", ((0, 0), (1, 17), (4, 1025)))
+def test_core_expands_heterogeneous_and_exact_numeric_bounds_through_nested_calls(
+    operator, calls, octets
+):
+    def bind(name, dimensions, expression, delegates=()):
+        def operation():
+            pass
+
+        declaration = Declaration(
+            id=f"fixture.expansion-{name}.growth/v1",
+            authority="fixture",
+            subjects=(f"fixture.expansion_{name}",),
+            scope="test numeric expansion only",
+            starts_at="receive declared dimensions",
+            ends_at="return a numeric expression",
+            dimensions=dimensions,
+            bounds=(Bound("scanned", OCTETS, "upper", expression, "Declared numeric ceiling."),),
+            conditions=("Dimensions are exact nonnegative source inputs.",),
+            invariants=("The original nested leaf binding remains owned.",),
+            limitations=("Original invocation evidence is checked separately.",),
+        )
+        declare_growth(declaration, delegates=delegates)(operation)
+        return operation
+
+    leaf = bind(
+        "leaf",
+        (Dimension("bytes", OCTETS, "Actual leaf input size."),),
+        Expression("dimension", name="bytes"),
+    )
+    child = bind(
+        "child",
+        (Dimension("chunk", OCTETS, "Exact nested leaf size."),),
+        Expression(
+            "delegate",
+            name="leaf",
+            metric="scanned",
+            terms=(Expression("constant", value=1, unit=COUNT),),
+            arguments=(("bytes", Expression("dimension", name="chunk")),),
+        ),
+        (("leaf", leaf),),
+    )
+    parent = bind(
+        "parent",
+        (
+            Dimension("calls", COUNT, "Actual required child cardinality."),
+            Dimension("ceiling", OCTETS, "Parent-derived child input ceiling."),
+        ),
+        Expression(
+            operator,
+            name="child",
+            metric="scanned",
+            terms=(Expression("dimension", name="calls"),),
+            arguments=(("chunk", Expression("dimension", name="ceiling")),),
+        ),
+        (("child", child),),
+    )
+    arguments = {
+        "calls": Expression("dimension", name="count"),
+        "ceiling": Expression("dimension", name="width"),
+    }
+    expanded = bind(
+        "expanded",
+        (
+            Dimension("count", COUNT, "Original cardinality input."),
+            Dimension("width", OCTETS, "Original parent ceiling."),
+        ),
+        bound_envelope(parent, "scanned", arguments),
+    )
+    policy = numeric_policy_from_environment(os.environ)
+    expected = evaluate_bound(
+        growth_binding(parent),
+        "scanned",
+        {"calls": calls, "ceiling": octets},
+        numeric_policy=policy,
+    )
+    assert expected == calls * octets
+    assert growth_binding(expanded).delegates == ()
+    assert (
+        evaluate_bound(
+            growth_binding(expanded),
+            "scanned",
+            {"count": calls, "width": octets},
+            numeric_policy=policy,
+        )
+        == expected
+    )
+    assert growth_binding(parent).declaration.bounds[0].expression.op == operator
 
 
 def test_archive_source_declarations_enter_repository_contract_discovery():
