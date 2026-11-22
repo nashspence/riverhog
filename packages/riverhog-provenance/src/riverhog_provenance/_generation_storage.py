@@ -10,9 +10,11 @@ from __future__ import annotations
 import re
 import sqlite3
 import weakref
-from collections.abc import Callable
-from contextlib import closing
+from _thread import LockType
+from collections.abc import Callable, Iterator
+from contextlib import closing, contextmanager
 from pathlib import Path
+from threading import Lock, get_ident
 from typing import Self
 from uuid import uuid4
 
@@ -20,11 +22,13 @@ from sqlite_admission import SqliteConnectionSettings, configure_sqlite_connecti
 
 from ._generation_objects import GenerationObjectStore
 from ._generation_page_map import InvalidGenerationMap
+from ._generation_roots import GenerationRoots
 from ._native_epoch import EpochContext
 from ._native_storage import NativeStorage, NativeStorageLease, StorageFinalizer
+from ._native_work import WorkQuantum
 from .journal_construction import JournalConstruction
 
-_FORMAT = "riverhog-native-generation-objects/v1"
+_FORMAT = "riverhog-native-generation-objects/v2"
 _NAME = "generations.sqlite3"
 
 
@@ -42,6 +46,9 @@ class NativeGenerationStorage:
     _lease: NativeStorageLease
     _cleanup: StorageFinalizer
     _closing: bool
+    _operation_thread: int | None
+    _operation_gate: LockType
+    roots: GenerationRoots
     epoch: EpochContext
     objects: GenerationObjectStore
     store_id: str
@@ -53,6 +60,8 @@ class NativeGenerationStorage:
         *,
         construction: JournalConstruction,
         page_size: int,
+        reader_limit: int,
+        metadata_octets: int,
         create: bool = False,
         on_storage_open: Callable[[Self], None] | None = None,
         on_storage_close: Callable[[], None] | None = None,
@@ -65,6 +74,10 @@ class NativeGenerationStorage:
             or page_size & (page_size - 1)
         ):
             raise ValueError("generation storage requires an exact SQLite page size")
+        if any(type(value) is not int or value < 1 for value in (reader_limit, metadata_octets)):
+            raise ValueError(
+                "generation storage requires positive original reader/metadata admission"
+            )
         if type(create) is not bool:
             raise TypeError("generation storage creation requires explicit owner selection")
         construction.begin()
@@ -91,6 +104,8 @@ class NativeGenerationStorage:
             storage._storage.retain()
             storage._lease = NativeStorageLease(storage._storage)
             storage._closing = False
+            storage._operation_gate = Lock()
+            storage._operation_thread = None
             storage._cleanup = weakref.finalize(storage, storage._lease.close)
             construction.retain_storage(storage)
             try:
@@ -102,12 +117,16 @@ class NativeGenerationStorage:
                 cls._durability(connection, create=create)
                 storage.epoch = EpochContext(connection)
                 storage.objects = GenerationObjectStore(storage.epoch, page_size=page_size)
+                storage.roots = GenerationRoots(
+                    storage, reader_limit=reader_limit, metadata_octets=metadata_octets
+                )
                 if create:
                     storage.store_id = uuid4().hex
 
                     def initialize(epoch: EpochContext) -> None:
                         epoch.require(connection)
                         storage.objects.initialize()
+                        storage.roots.initialize()
                         connection.execute(
                             "CREATE TABLE generation_metadata(singleton INTEGER PRIMARY KEY "
                             "CHECK(singleton=1),format TEXT NOT NULL,store_id TEXT NOT NULL,"
@@ -118,7 +137,8 @@ class NativeGenerationStorage:
                             (_FORMAT, storage.store_id, page_size),
                         ).close()
 
-                    storage.epoch.apply(initialize, receive=lambda result: None)
+                    with storage.execution():
+                        storage.epoch.apply(initialize, receive=lambda result: None)
                     construction.sync_directory(directory)
                 else:
                     with closing(
@@ -146,6 +166,9 @@ class NativeGenerationStorage:
                         "SELECT address,kind,body,refs FROM generation_objects LIMIT 0"
                     ).close()
                     connection.execute("SELECT address FROM generation_garbage LIMIT 0").close()
+                    connection.execute(
+                        "SELECT identity,root,status FROM generation_roots LIMIT 0"
+                    ).close()
                 construction.ready()
                 storage._storage.on_close = on_storage_close
                 return storage
@@ -184,7 +207,34 @@ class NativeGenerationStorage:
         with self._storage._lock:
             return self._storage._closed
 
+    @contextmanager
+    def _operation(self) -> Iterator[None]:
+        if not self._operation_gate.acquire(blocking=False):
+            raise RuntimeError("original generation storage operation is active")
+        self._operation_thread = get_ident()
+        try:
+            yield
+        finally:
+            self._operation_thread = None
+            self._operation_gate.release()
+
+    def _require_operation(self) -> None:
+        if self._operation_thread != get_ident():
+            raise RuntimeError("generation work requires its original operation gate")
+
+    @contextmanager
+    def execution(
+        self, check: Callable[[], None] | None = None, *, work: WorkQuantum | None = None
+    ) -> Iterator[EpochContext]:
+        """Serialize actual SQLite/epoch work, independently of resource lease counts."""
+        with self._operation():
+            if self._closing or self._lease.closed:
+                raise RuntimeError("generation storage is closed")
+            with self.epoch.execution(check, work=work):
+                yield self.epoch
+
     def close(self) -> None:
         self._closing = True
-        self._lease.close()
-        self._cleanup.detach()
+        with self._operation():
+            self._lease.close()
+            self._cleanup.detach()

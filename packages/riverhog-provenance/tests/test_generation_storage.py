@@ -55,7 +55,13 @@ def test_original_generation_storage_uses_extra_and_reopens_its_exact_metadata(d
         calls.append("received")
 
     store = NativeGenerationStorage.open(
-        directory, construction=original, page_size=width, create=True, on_storage_close=receive
+        directory,
+        reader_limit=4,
+        metadata_octets=256,
+        construction=original,
+        page_size=width,
+        create=True,
+        on_storage_close=receive,
     )
     identity = store.store_id
     assert original.storage is store and original.phase == "ready"
@@ -68,7 +74,9 @@ def test_original_generation_storage_uses_extra_and_reopens_its_exact_metadata(d
     assert store.storage_received and admission.status.connections == 0
     fresh = frame(admission)
     try:
-        reopened = NativeGenerationStorage.open(directory, construction=fresh, page_size=width)
+        reopened = NativeGenerationStorage.open(
+            directory, reader_limit=4, metadata_octets=256, construction=fresh, page_size=width
+        )
         assert reopened.store_id == identity
         assert scalar(reopened.db, "PRAGMA synchronous") == 3
         assert scalar(reopened.db, "SELECT count(*) FROM generation_objects") == 0
@@ -84,13 +92,23 @@ def test_generation_and_working_storage_require_distinct_original_construction_f
     try:
         with pytest.raises(RuntimeError, match="single-attempt"):
             NativeGenerationStorage.open(
-                directory, construction=working, page_size=512, create=True
+                directory,
+                reader_limit=4,
+                metadata_octets=256,
+                construction=working,
+                page_size=512,
+                create=True,
             )
         assert not (directory / "generations.sqlite3").exists()
         generation = frame(admission)
         try:
             actual = NativeGenerationStorage.open(
-                directory, construction=generation, page_size=512, create=True
+                directory,
+                reader_limit=4,
+                metadata_octets=256,
+                construction=generation,
+                page_size=512,
+                create=True,
             )
             assert actual.db is not retained.db
             assert admission.status.connections == 2
@@ -109,7 +127,12 @@ def test_original_connection_admission_refusal_precedes_generation_file_creation
     try:
         with pytest.raises(SqliteCapacity):
             NativeGenerationStorage.open(
-                directory, construction=original, page_size=512, create=True
+                directory,
+                reader_limit=4,
+                metadata_octets=256,
+                construction=original,
+                page_size=512,
+                create=True,
             )
         assert not list(directory.iterdir())
         assert original.creator.metrics["open_calls"] == 0
@@ -124,7 +147,14 @@ def test_invalid_original_page_admission_is_passive(directory, width):
     admission = pool(verify=lambda: calls.append("verify"))
     original = frame(admission)
     with pytest.raises(ValueError):
-        NativeGenerationStorage.open(directory, construction=original, page_size=width, create=True)
+        NativeGenerationStorage.open(
+            directory,
+            reader_limit=4,
+            metadata_octets=256,
+            construction=original,
+            page_size=width,
+            create=True,
+        )
     assert not calls and not list(directory.iterdir())
     assert original.close_step()
 
@@ -142,7 +172,14 @@ def test_original_creator_failure_keeps_the_same_frame_receivable(directory, fau
     original = frame(admission)
     original.creator._test_fault(fault)
     with pytest.raises(expected):
-        NativeGenerationStorage.open(directory, construction=original, page_size=512, create=True)
+        NativeGenerationStorage.open(
+            directory,
+            reader_limit=4,
+            metadata_octets=256,
+            construction=original,
+            page_size=512,
+            create=True,
+        )
     assert not original.received and original.storage is None
     assert original.close_step() and admission.status.connections == 0
 
@@ -171,6 +208,8 @@ def test_pre_return_original_storage_is_retained_before_failing_work(directory, 
     with pytest.raises(RuntimeError) as caught:
         NativeGenerationStorage.open(
             directory,
+            reader_limit=4,
+            metadata_octets=256,
             construction=original,
             page_size=512,
             create=True,
@@ -196,7 +235,13 @@ def test_original_final_callback_receiving_is_retryable_without_closing_twice(di
             raise InterruptedError("original final receiving reply lost")
 
     actual = NativeGenerationStorage.open(
-        directory, construction=original, page_size=512, create=True, on_storage_close=receive
+        directory,
+        reader_limit=4,
+        metadata_octets=256,
+        construction=original,
+        page_size=512,
+        create=True,
+        on_storage_close=receive,
     )
     with pytest.raises(InterruptedError):
         original.close_step()
@@ -211,7 +256,12 @@ def test_incompatible_existing_store_refuses_without_repair_or_erasure(directory
     admission = pool()
     original = frame(admission)
     actual = NativeGenerationStorage.open(
-        directory, construction=original, page_size=512, create=True
+        directory,
+        reader_limit=4,
+        metadata_octets=256,
+        construction=original,
+        page_size=512,
+        create=True,
     )
     identity = actual.store_id
     if damage == "mode":
@@ -230,7 +280,9 @@ def test_incompatible_existing_store_refuses_without_repair_or_erasure(directory
     try:
         expected = sqlite3.OperationalError if damage == "schema" else InvalidGenerationMap
         with pytest.raises(expected):
-            NativeGenerationStorage.open(directory, construction=original, page_size=512)
+            NativeGenerationStorage.open(
+                directory, reader_limit=4, metadata_octets=256, construction=original, page_size=512
+            )
         assert original.storage.storage_received
         assert (directory / "generations.sqlite3").is_file()
     finally:
@@ -244,12 +296,21 @@ def test_existing_file_is_not_truncated_and_missing_file_is_not_recreated(direct
     path.write_bytes(b"original incomplete optional bytes")
     original = frame(admission)
     with pytest.raises(FileExistsError):
-        NativeGenerationStorage.open(directory, construction=original, page_size=512, create=True)
+        NativeGenerationStorage.open(
+            directory,
+            reader_limit=4,
+            metadata_octets=256,
+            construction=original,
+            page_size=512,
+            create=True,
+        )
     assert original.close_step() and path.read_bytes() == b"original incomplete optional bytes"
     path.unlink()
     original = frame(admission)
     with pytest.raises(InvalidGenerationMap, match="missing"):
-        NativeGenerationStorage.open(directory, construction=original, page_size=512)
+        NativeGenerationStorage.open(
+            directory, reader_limit=4, metadata_octets=256, construction=original, page_size=512
+        )
     assert original.close_step() and not path.exists()
 
 
@@ -265,7 +326,14 @@ def test_original_wrapper_allocation_failure_retains_the_exact_connection_scope(
 
     monkeypatch.setattr(storage_owner, "NativeStorage", refuse)
     with pytest.raises(MemoryError) as caught:
-        NativeGenerationStorage.open(directory, construction=original, page_size=512, create=True)
+        NativeGenerationStorage.open(
+            directory,
+            reader_limit=4,
+            metadata_octets=256,
+            construction=original,
+            page_size=512,
+            create=True,
+        )
     assert caught.value is cause
     assert original.storage is None and admission.status.connections == 1
     assert original.close_step() and admission.status.connections == 0
@@ -277,7 +345,12 @@ def test_original_final_reader_blocks_construction_receiving_and_late_borrow(dir
     admission = pool()
     original = frame(admission)
     actual = NativeGenerationStorage.open(
-        directory, construction=original, page_size=512, create=True
+        directory,
+        reader_limit=4,
+        metadata_octets=256,
+        construction=original,
+        page_size=512,
+        create=True,
     )
     actual._storage.retain(actual)
     reader = NativeStorageLease(actual._storage)
@@ -301,7 +374,14 @@ def test_owner_named_generation_symlink_refuses_without_touching_target(director
     admission = pool()
     original = frame(admission)
     with pytest.raises(InvalidGenerationMap, match="owner-created"):
-        NativeGenerationStorage.open(directory, construction=original, page_size=512, create=True)
+        NativeGenerationStorage.open(
+            directory,
+            reader_limit=4,
+            metadata_octets=256,
+            construction=original,
+            page_size=512,
+            create=True,
+        )
     assert original.creator.metrics["open_calls"] == 0
     assert target.read_bytes() == original_bytes
     assert original.close_step() and admission.status.connections == 0
