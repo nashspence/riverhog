@@ -217,12 +217,14 @@ def _count_unit_work(monkeypatch):
     original = growth._literal_expression_unit
     expressions, metrics = Counter(), Counter()
 
-    def check(expression, context, relation, proven_metrics):
+    def check(expression, context, relation, proven_metrics, *, _allow_envelope=True):
         expressions[context.declaration.id, id(expression), relation] += 1
         for bound in context.declaration.bounds:
             if expression is bound.expression:
                 metrics[context.declaration.id, bound.metric] += 1
-        return original(expression, context, relation, proven_metrics)
+        return original(
+            expression, context, relation, proven_metrics, _allow_envelope=_allow_envelope
+        )
 
     monkeypatch.setattr(growth, "_literal_expression_unit", check)
     return expressions, metrics

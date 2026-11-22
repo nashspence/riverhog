@@ -20,6 +20,18 @@ FORMAT = "riverhog-growth-declarations/v1"
 COST_MODEL = "riverhog-primitive-growth-costs/v1"
 _NAME = re.compile(r"[a-z][a-z0-9_-]*\Z")
 F = TypeVar("F", bound=Callable[..., Any])
+_MONOTONE_OPERATORS = frozenset(
+    {
+        "constant",
+        "dimension",
+        "sum",
+        "product",
+        "maximum",
+        "log2_ceil",
+        "delegate",
+        "delegate_envelope",
+    }
+)
 
 
 def _unit(value: Unit) -> Unit:
@@ -60,7 +72,16 @@ def _product_units(values: tuple[Unit, ...], *, _work: _NumericWork | None = Non
 class Expression:
     """A closed arithmetic tree; expressions never execute strings or callbacks."""
 
-    op: Literal["constant", "dimension", "sum", "product", "maximum", "log2_ceil", "delegate"]
+    op: Literal[
+        "constant",
+        "dimension",
+        "sum",
+        "product",
+        "maximum",
+        "log2_ceil",
+        "delegate",
+        "delegate_envelope",
+    ]
     terms: tuple[Expression, ...] = ()
     name: str = ""
     value: int = 0
@@ -103,7 +124,7 @@ class Expression:
             valid = len(self.terms) == 1 and not (
                 self.name or self.value or self.unit or self.metric or self.arguments
             )
-        elif self.op == "delegate":
+        elif self.op in {"delegate", "delegate_envelope"}:
             valid = (
                 bool(_NAME.fullmatch(self.name))
                 and bool(_NAME.fullmatch(self.metric))
@@ -131,7 +152,7 @@ class Expression:
             if _work is not None:
                 _work.source_record(self, Expression, "source_projection_dimension", retain=True)
             return {"op": self.op, "name": self.name}
-        if self.op == "delegate":
+        if self.op in {"delegate", "delegate_envelope"}:
             return {
                 "op": self.op,
                 "name": self.name,
@@ -526,7 +547,7 @@ class _NumericWork:
         cardinality = len(values) + terms
         self.charge((cardinality + 1) * (total + cardinality + 1), operation + ".keys")
 
-    def unit_proof(self, key: tuple[str, str], *, insert: bool = False) -> None:
+    def unit_proof(self, key: tuple[str, str, bool], *, insert: bool = False) -> None:
         names = str.__len__(key[0]) + str.__len__(key[1])
         self.charge(1 + self.unit_proof_entries + self.unit_proof_names + names, "unit_proof_table")
         if insert:
@@ -733,7 +754,12 @@ def _source_context(
 
 
 def _expression_unit(
-    expression: Expression, context: _Context, stack: tuple[str, ...], relation: str
+    expression: Expression,
+    context: _Context,
+    stack: tuple[str, ...],
+    relation: str,
+    *,
+    _allow_envelope: bool = True,
 ) -> Unit:
     work = context.numeric_work
     if work is not None:
@@ -741,6 +767,14 @@ def _expression_unit(
         if context.source_owned:
             work.source_record(context.declaration, Declaration, "source_unit_context", retain=True)
         work.unit_nodes += 1
+    # These closed operators are coordinatewise nondecreasing on their
+    # nonnegative defined domain. A positive logarithm argument remains
+    # positive under an increase. Acyclic delegate substitution preserves
+    # that proof; a future operator must establish it before joining this set.
+    if expression.op not in _MONOTONE_OPERATORS:
+        raise ValueError("growth expression has an unsupported monotonic operator")
+    if expression.op == "delegate_envelope" and (not _allow_envelope or relation != "upper"):
+        raise ValueError("growth delegate envelope requires an upper bound outside exact inputs")
     dimensions = context.dimension_units
     if dimensions is None:
         dimensions = _dimension_table(context)
@@ -756,7 +790,18 @@ def _expression_unit(
         if expression.name not in dimensions:
             raise ValueError("growth expression references an unknown dimension")
         return dimensions[expression.name]
-    units = tuple(_expression_unit(term, context, stack, relation) for term in expression.terms)
+    units = tuple(
+        _expression_unit(
+            term,
+            context,
+            stack,
+            relation,
+            _allow_envelope=(
+                _allow_envelope and expression.op not in {"delegate", "delegate_envelope"}
+            ),
+        )
+        for term in expression.terms
+    )
     if work is not None and context.source_owned:
         work.source_record(expression, Expression, "source_unit_dispatch", retain=True)
     if expression.op == "product":
@@ -796,7 +841,7 @@ def _expression_unit(
     if work is not None:
         work.charge(child.numeric_environment_work, "unit_argument_validation")
     if set(arguments) != set(child_dimensions) or any(
-        _expression_unit(arguments[name], context, stack, "equal") != unit
+        _expression_unit(arguments[name], context, stack, "equal", _allow_envelope=False) != unit
         for name, unit in child_dimensions.items()
     ):
         raise ValueError("growth delegate dimension mapping is incomplete or incompatible")
@@ -817,7 +862,13 @@ def _expression_unit(
     ):
         raise ValueError("growth delegate cannot establish the stronger parent relation")
     if (
-        _expression_unit(bound.expression, child, (*stack, child.declaration.id), bound.relation)
+        _expression_unit(
+            bound.expression,
+            child,
+            (*stack, child.declaration.id),
+            bound.relation,
+            _allow_envelope=_allow_envelope,
+        )
         != bound.unit
     ):
         raise ValueError("growth delegate expression contradicts its metric unit")
@@ -828,12 +879,18 @@ def _literal_expression_unit(
     expression: Expression,
     context: _Context,
     relation: str,
-    proven_metrics: set[tuple[str, str]],
+    proven_metrics: set[tuple[str, str, bool]],
+    *,
+    _allow_envelope: bool = True,
 ) -> Unit:
     work = context.numeric_work
     if work is not None:
         work.expression_record(expression, "unit_expression")
         work.unit_nodes += 1
+    if expression.op not in _MONOTONE_OPERATORS:
+        raise ValueError("growth expression has an unsupported monotonic operator")
+    if expression.op == "delegate_envelope" and (not _allow_envelope or relation != "upper"):
+        raise ValueError("growth delegate envelope requires an upper bound outside exact inputs")
     # Only the private decoded graph uses this route. Its complete delegate
     # graph has already passed cycle/depth checks. Prove each metric body once,
     # but check every incoming use before consulting that invocation's proof.
@@ -850,7 +907,15 @@ def _literal_expression_unit(
             raise ValueError("growth expression references an unknown dimension")
         return dimensions[expression.name]
     units = tuple(
-        _literal_expression_unit(term, context, relation, proven_metrics)
+        _literal_expression_unit(
+            term,
+            context,
+            relation,
+            proven_metrics,
+            _allow_envelope=(
+                _allow_envelope and expression.op not in {"delegate", "delegate_envelope"}
+            ),
+        )
         for term in expression.terms
     )
     if expression.op == "product":
@@ -882,7 +947,10 @@ def _literal_expression_unit(
     if work is not None:
         work.charge(child.numeric_environment_work, "unit_argument_validation")
     if set(arguments) != set(child_dimensions) or any(
-        _literal_expression_unit(arguments[name], context, "equal", proven_metrics) != unit
+        _literal_expression_unit(
+            arguments[name], context, "equal", proven_metrics, _allow_envelope=False
+        )
+        != unit
         for name, unit in child_dimensions.items()
     ):
         raise ValueError("growth delegate dimension mapping is incomplete or incompatible")
@@ -898,12 +966,20 @@ def _literal_expression_unit(
         relation == "upper" and bound.relation == "big_o"
     ):
         raise ValueError("growth delegate cannot establish the stronger parent relation")
-    key = (child.declaration.id, bound.metric)
+    # A proof permitting an envelope cannot authorize using that same body
+    # inside an exact argument or cardinality expression later in this graph.
+    key = (child.declaration.id, bound.metric, _allow_envelope)
     if work is not None:
         work.unit_proof(key)
     if key not in proven_metrics:
         if (
-            _literal_expression_unit(bound.expression, child, bound.relation, proven_metrics)
+            _literal_expression_unit(
+                bound.expression,
+                child,
+                bound.relation,
+                proven_metrics,
+                _allow_envelope=_allow_envelope,
+            )
             != bound.unit
         ):
             raise ValueError("growth delegate expression contradicts its metric unit")
@@ -1049,12 +1125,12 @@ def _read_expression(
     if op == "dimension":
         row = _fields(value, {"op", "name"})
         return Expression("dimension", name=row["name"])
-    if op == "delegate":
+    if op in {"delegate", "delegate_envelope"}:
         row = _fields(value, {"op", "name", "metric", "multiplicity", "arguments"})
         if not isinstance(row["arguments"], Mapping):
             raise ValueError("growth delegate argument data must be a dimension mapping")
         return Expression(
-            "delegate",
+            op,
             name=row["name"],
             metric=row["metric"],
             terms=(_read_expression(row["multiplicity"], budget, depth=depth + 1, _work=_work),),
@@ -1224,10 +1300,10 @@ def _projection_contexts(
             raise ValueError("growth public subject has multiple declaration owners")
         subjects.update(context.declaration.subjects)
     if _literal_units:
-        proven_metrics: set[tuple[str, str]] = set()
+        proven_metrics: set[tuple[str, str, bool]] = set()
         for identity, context in contexts.items():
             for metric_bound in context.declaration.bounds:
-                key = (identity, metric_bound.metric)
+                key = (identity, metric_bound.metric, True)
                 if _work is not None:
                     _work.unit_proof(key)
                 if key not in proven_metrics:
@@ -1327,6 +1403,33 @@ def _validate_sample(
             raise ValueError("actual primitive observations violate the declared growth bound")
 
 
+def _validate_envelope_arguments(
+    child: _Context, arguments: dict[str, int], child_samples: list[Any]
+) -> None:
+    work = child.numeric_work
+    for sample in child_samples:
+        dimensions = sample["dimensions"]
+        if not isinstance(dimensions, Mapping):
+            raise ValueError("growth delegate envelope requires actual dimension mappings")
+        if work is not None:
+            # Prepay the private key table and comparisons against its known
+            # declaration. Original Mapping scans/callbacks retain their own
+            # input costs; their values are not replaced by a saved snapshot.
+            work.charge(1 + child.numeric_environment_work, "composition_envelope_keys")
+        if set(dimensions) != set(arguments):
+            raise ValueError("growth delegate envelope requires complete actual dimensions")
+        for name, ceiling in arguments.items():
+            value = dimensions[name]
+            if work is not None:
+                work.comparison(value, 0, "composition_envelope_argument")
+            if type(value) is not int or value < 0:
+                raise ValueError("growth delegate envelope requires nonnegative integer arguments")
+            if work is not None:
+                work.comparison(value, ceiling, "composition_envelope_argument")
+            if value > ceiling:
+                raise ValueError("actual delegate argument exceeds the declared envelope")
+
+
 def _execution_root_checker(
     contexts: dict[str, _Context],
     rows: Mapping[str, Any],
@@ -1368,7 +1471,7 @@ def _execution_root_checker(
             if work is not None:
                 work.charge(1 + len(expression.terms) + len(expression.arguments), "composition")
                 work.composition_nodes += 1
-            if expression.op == "delegate":
+            if expression.op in {"delegate", "delegate_envelope"}:
                 if work is not None:
                     work.charge(context.numeric_delegate_lookup_work, "composition_delegate")
                 child_samples = delegates[expression.name]
@@ -1386,10 +1489,17 @@ def _execution_root_checker(
                     # equality/callback work; this prepays the finite prefix.
                     if actual_count == count:
                         work.charge(actual_count, "original_child_comparisons")
-                if actual_count != count or any(
-                    sample["dimensions"] != arguments for sample in child_samples
-                ):
+                if actual_count != count:
                     raise ValueError("actual delegate calls contradict the declared composition")
+                if expression.op == "delegate":
+                    if any(sample["dimensions"] != arguments for sample in child_samples):
+                        raise ValueError(
+                            "actual delegate calls contradict the declared composition"
+                        )
+                else:
+                    _validate_envelope_arguments(
+                        context.delegates[expression.name], arguments, child_samples
+                    )
             for term in expression.terms:
                 recurse(recurse, term)
             for _, argument in expression.arguments:
