@@ -28,7 +28,7 @@ from riverhog_provenance import (
     JournalReplayBinding,
     JournalValidationBudget,
     JournalValidationCapacity,
-    JournalValidationProgress,
+    JournalValidationObservation,
     JournalValidationSession,
     ProvenanceValidationError,
 )
@@ -451,7 +451,7 @@ class _Slot:
     closing: bool = False
     receiving_failed: bool = False
     job: jobs.ValidationJob | None = None
-    processed: JournalValidationProgress | None = None
+    processed: JournalValidationObservation | None = None
     source: _OwnedSource | None = None
     work: source_owner._UploadJournalValidationWork | None = None
     catalog_sha256: str | None = None
@@ -481,7 +481,7 @@ class _NativeReceivingPending(BlockingIOError):
 class ValidationAdvance:
     progressed: bool
     outcome: source_owner._UploadJournalValidationOutcome | None = None
-    processed: JournalValidationProgress | None = None
+    processed: JournalValidationObservation | None = None
 
 
 def _pool_declaration(mode: str) -> Declaration:

@@ -74,6 +74,7 @@ def test_session_growth_setup_reconstructs_current_atom_before_dimensions_or_nat
         )
         assert dimensions
         progress = session.advance(budget)
-        assert progress.version > before.checkpoint.version and session._failure is None
+        assert progress.observation_sequence > 0 and session._failure is None
+        assert session._ledger.load().checkpoint.version > before.checkpoint.version
         assert session._ledger.epoch.quiescent
     assert storage._closed and storage._readers == 0 and session.storage_received

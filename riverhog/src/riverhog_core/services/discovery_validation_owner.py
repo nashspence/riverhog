@@ -18,7 +18,7 @@ from riverhog_provenance import (
     JournalGraphCertificates,
     JournalSummary,
     JournalValidationBudget,
-    JournalValidationProgress,
+    JournalValidationObservation,
     JournalValidationSession,
     RetainedCorpusValidator,
     StaleCorpusWorkspace,
@@ -186,7 +186,7 @@ class DiscoveryValidationWork:
 
     def advance_journal(
         self, work: ArchiveJournalFramingWork, *, budget: JournalValidationBudget
-    ) -> JournalValidationProgress | None:
+    ) -> JournalValidationObservation | None:
         """Execute one preparation atom or one Native replay quantum under this slot."""
         certificates = self.prepare_journal(work)
         if certificates is None:

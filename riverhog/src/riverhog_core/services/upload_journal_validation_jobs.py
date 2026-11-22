@@ -18,7 +18,7 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
-from riverhog_provenance import JournalValidationProgress
+from riverhog_provenance import JournalValidationObservation
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from state_schema import read_snapshot
@@ -468,7 +468,7 @@ def publish_outcome(
     factory: SessionFactory,
     source: source_owner._UploadJournalValidationWork,
     job: ValidationJob,
-    progress: JournalValidationProgress | None,
+    progress: JournalValidationObservation | None,
     *,
     outcome: source_owner._UploadJournalValidationOutcome | None = None,
     lost: str | None = None,

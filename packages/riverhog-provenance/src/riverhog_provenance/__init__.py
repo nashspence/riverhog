@@ -96,7 +96,7 @@ from .journal_result import JournalResultConfirmation, open_retained_journal_res
 from .journal_result_opening import JournalResultOpening
 from .journal_session import (
     JournalValidationBudget,
-    JournalValidationProgress,
+    JournalValidationObservation,
     JournalValidationSession,
     JournalValidationSource,
     JournalValidationWorkBudget,
@@ -160,7 +160,7 @@ __all__ = [
     "reclaim_retired_journal_workspace",
     "JournalValidationBudget",
     "JournalValidationWorkBudget",
-    "JournalValidationProgress",
+    "JournalValidationObservation",
     "JournalValidationSession",
     "JournalValidationSource",
     "JournalReplayBinding",

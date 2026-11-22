@@ -13,7 +13,7 @@ import re
 import sqlite3
 from collections.abc import Mapping
 from contextlib import closing
-from dataclasses import dataclass, replace
+from dataclasses import InitVar, dataclass, replace
 from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
@@ -440,10 +440,26 @@ class PrefixState:
     previous_json: str | None
     sha256_state: str
     matched_anchor: bool
+    _initial_continuation: InitVar[CheckpointSHA256 | None] = None
+
+    def __post_init__(self, _initial_continuation: CheckpointSHA256 | None) -> None:
+        # The received immutable prefix owns its own continuation. Observation
+        # finalizes a copy without decoding the private checkpoint again.
+        digest = (
+            CheckpointSHA256.from_state(self.sha256_state)
+            if _initial_continuation is None
+            else _initial_continuation
+        )
+        object.__setattr__(self, "_continuation", digest.copy())
+
+    @cached_property
+    def _continuation(self) -> CheckpointSHA256:
+        return CheckpointSHA256.from_state(self.sha256_state)
 
     @classmethod
     def empty(cls) -> PrefixState:
-        return cls(0, 0, None, None, CheckpointSHA256().export_state(), False)
+        digest = CheckpointSHA256()
+        return cls(0, 0, None, None, digest.export_state(), False, digest)
 
     @property
     def previous(self) -> dict[str, str] | None:
@@ -451,7 +467,7 @@ class PrefixState:
 
     @property
     def hexdigest(self) -> str:
-        return CheckpointSHA256.from_state(self.sha256_state).hexdigest()
+        return self._continuation.hexdigest()
 
     @cached_property
     def _encoded(self) -> str:
@@ -518,6 +534,7 @@ class PrefixState:
                 previous_json,
                 digest.export_state(),
                 value["matched_anchor"],
+                digest,
             )
             if state.to_json() != raw:
                 raise ValueError("noncanonical prefix checkpoint")
@@ -731,7 +748,7 @@ class JournalPrefix:
                 or int(body["prefix_bytes"]) != state.byte_count
             ):
                 raise ProvenanceValidationError("checkpoint prefix commitment mismatch")
-        digest = CheckpointSHA256.from_state(state.sha256_state)
+        digest = state._continuation.copy()
         framed_octets = len(frame.json_bytes) + 2
         self.epoch.account(WorkAmount(octets=framed_octets))
         encoded = b"".join((b"\x1e", frame.json_bytes, b"\n"))
@@ -778,6 +795,7 @@ class JournalPrefix:
             prepared.reference_json,
             digest.export_state(),
             matched,
+            digest,
         )
         return PrefixPublication(prepared, after)
 

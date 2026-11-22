@@ -150,9 +150,11 @@ def test_later_capacity_yields_only_received_progress_and_retains_failed_attempt
         finally:
             db.set_trace_callback(None)
         assert len(seen) == 2 and after.source_octets == 7
-        assert after.version == before.checkpoint.version + int(retained)
+        assert after.observation_sequence == 1
         assert sum(sql == "COMMIT" for sql in trace) == int(retained)
-        assert session._ledger.load().checkpoint.version == after.version
+        assert session._ledger.load().checkpoint.version == before.checkpoint.version + int(
+            retained
+        )
         assert session._ledger.epoch.quiescent and session._failure is None
         assert seen[0].consumed == WorkAmount(
             rows=9 if retained else 3,

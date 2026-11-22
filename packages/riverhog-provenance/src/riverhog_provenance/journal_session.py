@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import sqlite3
 from collections.abc import Callable, Iterable, Mapping
 from contextlib import closing, nullcontext
@@ -111,12 +110,19 @@ class JournalValidationBudget:
 
 
 @dataclass(frozen=True, slots=True)
-class JournalValidationProgress:
+class JournalValidationObservation:
+    """Volatile processed work of one original live worker, never a recovery frontier.
+
+    The sequence counts positively received execution units in this Session.
+    Reopening starts a new sequence, even when retained semantic work survives.
+    Neither the sequence nor the accepted prefix authorizes source access or
+    claims that an optional recovery generation has been selected.
+    """
+
     attempt_id: str
     worker_epoch: int
     phase: str
-    version: int
-    checkpoint_sha256: str
+    observation_sequence: int
     accepted_frames: int
     accepted_octets: int
     accepted_sha256: str
@@ -143,18 +149,13 @@ def _progress_declaration() -> Declaration:
         )
 
     return Declaration(
-        id="riverhog-provenance.native-session-checkpoint-progress.growth/v1",
+        id="riverhog-provenance.native-session-processed-progress.growth/v1",
         authority="riverhog-provenance",
-        subjects=("riverhog_provenance.journal_session._checkpoint_progress",),
-        scope="one-exact-native-session-checkpoint-progress-value",
-        starts_at="receive one loaded parent/prefix and the exact source cursor offset",
-        ends_at="return its length-delimited checkpoint digest and accepted-prefix progress",
+        subjects=("riverhog_provenance.journal_session._processed_progress",),
+        scope="one-volatile-native-session-processed-observation",
+        starts_at="receive live parent/prefix, exact source cursor and local observation sequence",
+        ends_at="return volatile processed metadata and the exact accepted-prefix digest",
         dimensions=(
-            Dimension(
-                "metadata_row_octets",
-                OCTETS_PER_COUNT,
-                "Actual binding, epoch, parent, prefix, attempt and cursor scalar envelope.",
-            ),
             Dimension(
                 "padding_blocks",
                 COUNT,
@@ -168,7 +169,7 @@ def _progress_declaration() -> Declaration:
                     COUNT,
                     "equal",
                     count(0),
-                    "Progress encodes the supplied checkpoint without native storage access.",
+                    "Observation uses its supplied live values without native storage access.",
                 )
                 for metric in ("sql_statements", "returned_rows", "changed_rows")
             ),
@@ -176,9 +177,9 @@ def _progress_declaration() -> Declaration:
                 Bound(
                     metric,
                     OCTETS,
-                    "upper",
-                    Expression("product", terms=(count(16), dimension("metadata_row_octets"))),
-                    "Only a fixed number of exact checkpoint/control encodings and hash segments.",
+                    "equal",
+                    Expression("constant", value=0, unit=OCTETS),
+                    "No recovery checkpoint encoding, JSON decoding or metadata hash is rendered.",
                 )
                 for metric in ("native_hashed_octets", "decoded_json_octets", "encoded_json_octets")
             ),
@@ -204,16 +205,16 @@ def _progress_declaration() -> Declaration:
             ),
         ),
         conditions=(
-            "The owner already loaded and fenced this exact private checkpoint.",
-            "Metadata widths and padding multiplicity are causal input facts, not measured work.",
+            "The owner already loaded and fenced this exact live state.",
+            "Padding multiplicity is a causal input fact, not measured work.",
         ),
         invariants=(
-            "Reporting progress changes no accepted prefix, source cursor or durable state.",
-            "The checkpoint digest retains exact length-delimited ownership and prefix inputs.",
+            "Reporting an observation changes no accepted prefix, source cursor or durable state.",
+            "The local sequence and processed prefix confer no selected recovery promise.",
         ),
         limitations=(
             (
-                "This pure encoding supplies neither source custody nor "
+                "This pure observation supplies neither source custody nor "
                 "successful terminal validation."
             ),
             "Physical allocation and machine timing remain separate observations.",
@@ -222,28 +223,20 @@ def _progress_declaration() -> Declaration:
 
 
 @declare_growth(_progress_declaration(), delegates=(("padding", sha256_compress),))
-def _checkpoint_progress(
+def _processed_progress(
     attempt_id: str,
     ledger: ValidationLedger,
     snapshot: ValidationSnapshot,
     source_octets: int,
-) -> JournalValidationProgress:
+    observation_sequence: int,
+) -> JournalValidationObservation:
     state = snapshot.checkpoint
     accepted = snapshot.accepted
-    checkpoint_digest = hashlib.sha256()
-    for value in (
-        ledger.binding,
-        str(ledger.worker_epoch).encode(),
-        snapshot.checkpoint.to_json().encode(),
-        *(part.encode() if isinstance(part, str) else part for part in snapshot.prefix),
-    ):
-        checkpoint_digest.update(str(len(value)).encode() + b":" + value)
-    return JournalValidationProgress(
+    return JournalValidationObservation(
         attempt_id,
         ledger.worker_epoch,
         "source" if state.phase == "frame" else state.phase,
-        state.version,
-        checkpoint_digest.hexdigest(),
+        observation_sequence,
         state.frame_ordinal,
         accepted.byte_count,
         accepted.hexdigest,
@@ -347,7 +340,7 @@ class _ChunkInput:
 def _session_delegates(mode: str) -> tuple[tuple[str, Callable[..., Any]], ...]:
     if mode == "result":
         return (("borrow", JournalSummary.borrow),)
-    common = (("load", ValidationLedger.load), ("progress", _checkpoint_progress))
+    common = (("load", ValidationLedger.load), ("progress", _processed_progress))
     if mode == "progress":
         return common
     return (
@@ -1418,6 +1411,7 @@ class JournalValidationSession:
         on_storage_open: Callable[[Self], None] | None = None,
     ) -> None:
         self.attempt_id = attempt_id
+        self._observation_sequence = 0
         self._closed = False
         self._closing = False
         self._summary: JournalSummary | None = None
@@ -1544,6 +1538,7 @@ class JournalValidationSession:
                 raise IncompleteSourceError("retained validation source is no longer current")
             result = object.__new__(cls)
             result.attempt_id = attempt_id
+            result._observation_sequence = 0
             result._closed = False
             result._closing = False
             result._summary = None
@@ -1643,9 +1638,13 @@ class JournalValidationSession:
         if self._closing or self._closed:
             raise RuntimeError("journal validation session is closed")
 
-    def _progress(self, snapshot: ValidationSnapshot) -> JournalValidationProgress:
-        return _checkpoint_progress(
-            self.attempt_id, self._ledger, snapshot, self._input.cursor.byte_offset
+    def _progress(self, snapshot: ValidationSnapshot) -> JournalValidationObservation:
+        return _processed_progress(
+            self.attempt_id,
+            self._ledger,
+            snapshot,
+            self._input.cursor.byte_offset,
+            self._observation_sequence,
         )
 
     def _move(self, before: ValidationSnapshot, phase: str) -> ValidationSnapshot:
@@ -1749,7 +1748,7 @@ class JournalValidationSession:
         budget: JournalValidationBudget = _DEFAULT_BUDGET,
         *,
         check: Callable[[], None] | None = None,
-    ) -> JournalValidationProgress:
+    ) -> JournalValidationObservation:
         """Advance bounded work under one original execution check and quantum.
 
         Every attempted unit consumes a transition. Only a received, quiescent
@@ -1780,6 +1779,7 @@ class JournalValidationSession:
                 for _ in range(budget.work.transitions):
                     epoch.check()
                     work.consume(WorkAmount(transitions=1))
+                    complete_before = self._summary is not None
                     try:
                         received = self._advance_unit(budget)
                     except NativeWorkCapacity as error:
@@ -1797,6 +1797,8 @@ class JournalValidationSession:
                             raise
                         break
                     epoch.require_unit_received()
+                    if not complete_before:
+                        self._observation_sequence += 1
                     after = received
                     if after.checkpoint.phase == "done":
                         break
@@ -1809,8 +1811,8 @@ class JournalValidationSession:
             raise
 
     @declare_growth(_session_declaration("progress"), delegates=_session_delegates("progress"))
-    def progress(self) -> JournalValidationProgress:
-        """Read the current fixed checkpoint without advancing or loading source bytes."""
+    def progress(self) -> JournalValidationObservation:
+        """Observe volatile processed work after fresh fences; read no source payload."""
         self._require_open()
         if self._source is not None and (
             self._source.binding != self._source_binding

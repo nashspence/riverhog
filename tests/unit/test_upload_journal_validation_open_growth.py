@@ -635,7 +635,7 @@ class Recorder(fences.Recorder):
                         root_operation=operation,
                         input_dimensions=inputs,
                         operation_owners={
-                            session_tests._checkpoint_progress: session_tests.session_owner
+                            session_tests._processed_progress: session_tests.session_owner
                         },
                         batch=recorder.batch,
                     ) as (frame, complete):

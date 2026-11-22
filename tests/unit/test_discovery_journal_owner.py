@@ -109,7 +109,7 @@ def test_source_is_registered_before_native_directory_creation_and_stays_warm(
             assert work.journal_source(framing).binding == source.binding
             assert work.journal(framing) is native
             after = native.advance(JournalValidationBudget(rows=1))
-            assert after.version >= before.version
+            assert after.observation_sequence > before.observation_sequence
             assert (
                 child_root / source.binding.directory_id / "snapshot.sqlite3"
             ).stat().st_ino == identity

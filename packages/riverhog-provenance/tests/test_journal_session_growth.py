@@ -24,7 +24,7 @@ from riverhog_provenance.journal_session import (
     JournalValidationBudget,
     JournalValidationSession,
     JournalValidationWorkBudget,
-    _checkpoint_progress,
+    _processed_progress,
 )
 from riverhog_provenance.replay_binding import JournalReplayBinding
 from test_child_admission_growth import octets
@@ -282,7 +282,7 @@ def session_observer(
             dimensions,
             root_operation=operation,
             extra_owners={
-                session_owner._checkpoint_progress: session_owner,
+                session_owner._processed_progress: session_owner,
                 framing: session_owner,
             },
             operation_aliases={framing: (input_owner, framing_owner)},
@@ -326,19 +326,7 @@ def session_observer(
 
 def progress_dimensions(session, before):
     accepted = before.accepted
-    return {
-        "metadata_row_octets": 1024
-        + 2
-        * octets(
-            (
-                before,
-                session._ledger.binding,
-                str(session._ledger.worker_epoch),
-                session._input.cursor.byte_offset,
-            )
-        ),
-        "padding_blocks": 1 if accepted.byte_count % 64 < 56 else 2,
-    }
+    return {"padding_blocks": 1 if accepted.byte_count % 64 < 56 else 2}
 
 
 def selected_row(session, before, budget):
@@ -811,7 +799,8 @@ def session_cases(
                 if state.phase == "done":
                     break
                 changed = session.advance(budget)
-                assert changed.version >= before.checkpoint.version
+                assert changed.observation_sequence > 0
+                assert session._ledger.load().checkpoint.version >= before.checkpoint.version
                 if units % 4096 == 0:
                     (root / "session-trajectory-progress.json").write_text(
                         json.dumps(
@@ -969,12 +958,13 @@ def session_fixture(case, catalog, *, cold, measured=False, summary=False, journ
 
 
 def invoke(session, operation, budget):
-    if operation is _checkpoint_progress:
+    if operation is _processed_progress:
         return operation(
             session.attempt_id,
             session._ledger,
             session._ledger.load(),
             session._input.cursor.byte_offset,
+            session._observation_sequence,
         )
     if operation is JournalValidationSession.advance:
         return operation(session, budget)
@@ -1005,7 +995,7 @@ def _checkpoint_samples(
         result_operation = operation is JournalValidationSession.result
         if result_operation and phase != "done":
             continue
-        if operation in {_checkpoint_progress, JournalValidationSession.progress} and phase not in {
+        if operation in {_processed_progress, JournalValidationSession.progress} and phase not in {
             "frame",
             "publish",
             "terminal",
@@ -1040,7 +1030,7 @@ def _checkpoint_samples(
                     summary=summary,
                     journal_constructions=journal_constructions,
                 ) as setup:
-                    if operation is _checkpoint_progress:
+                    if operation is _processed_progress:
                         dimensions = progress_dimensions(setup, setup._ledger.load())
                     else:
                         dimensions, _ = session_dimensions(setup, budget, operation, cold=cold)
@@ -1092,13 +1082,14 @@ def _checkpoint_samples(
                             complete,
                         ):
                             with current._store.db.observe():
-                                if operation is _checkpoint_progress:
+                                if operation is _processed_progress:
                                     # The helper receives the already loaded native parent.
                                     result = operation(
                                         current.attempt_id,
                                         current._ledger,
                                         before,
                                         current._input.cursor.byte_offset,
+                                        current._observation_sequence,
                                     )
                                 else:
                                     result = invoke(current, operation, budget)
@@ -1131,7 +1122,7 @@ def _checkpoint_samples(
                             result.accepted_sha256
                             == hashlib.sha256(case["raw"][: result.accepted_octets]).hexdigest()
                         )
-                        if operation in {_checkpoint_progress, JournalValidationSession.progress}:
+                        if operation in {_processed_progress, JournalValidationSession.progress}:
                             assert snapshot(db) == original
                     for tag, children in sample["delegates"].items():
                         expected_calls = dimensions.get(
@@ -1169,11 +1160,11 @@ def native_session_checkpoints(
 
 
 @pytest.mark.growth_witness(
-    "riverhog-native-checkpoint-progress-work/v1",
+    "riverhog-native-processed-progress-work/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_provenance.journal_session._checkpoint_progress",
+    operation="riverhog_provenance.journal_session._processed_progress",
 )
-def test_actual_checkpoint_progress_encoding(
+def test_actual_processed_progress_observation(
     catalog, native_session_checkpoints, record_property, numeric_policy, *, journal_constructions
 ):
     root, cases = native_session_checkpoints
@@ -1183,7 +1174,7 @@ def test_actual_checkpoint_progress_encoding(
         root,
         catalog,
         cases,
-        operation=_checkpoint_progress,
+        operation=_processed_progress,
         samples=samples,
         numeric_policy=numeric_policy,
         journal_constructions=journal_constructions,

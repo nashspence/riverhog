@@ -116,7 +116,7 @@ def capacity_samples(root, catalog, raw_source, *, samples, large=True, journal_
                     assert session._input.state.pending is pending
                     source.calls.clear()
                     progress = session.advance(unit_budget())
-                    assert progress.version > 0 and session._failure is None
+                    assert progress.observation_sequence > 0 and session._failure is None
                     assert source.calls == [
                         ("verify",),
                         ("atom", pending.byte_offset + 1, pending.json_bytes),
