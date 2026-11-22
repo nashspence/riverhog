@@ -347,19 +347,30 @@ def scheduler_for(factory):
     return service
 
 
-def test_service_advances_the_same_native_worker_through_bounded_units(tmp_path):
+def test_service_advances_the_same_native_worker_through_bounded_units(tmp_path, monkeypatch):
     from tests.unit.test_journal_validation_handoff import terminal
 
     raw = source(journal_id=JOURNAL)
     with retained(tmp_path, raw) as (engine, factory):
         service = scheduler_for(factory)
+        native_advance = UploadJournalValidationOwner.advance
+        budget = JournalValidationBudget(work=JournalValidationWorkBudget(transitions=1))
+
+        def bounded(current, work, **kwargs):
+            return native_advance(current, work, **kwargs, budget=budget)
+
+        monkeypatch.setattr(UploadJournalValidationOwner, "advance", bounded)
         try:
-            calls = 0
+            calls = unchanged_catalog_turns = 0
             while terminal(factory)["state"] == "validating":
+                before = source_owner._upload_journal_validation_stamp(factory, 1, JOURNAL)
                 assert service.process_due_provenance_journal_validations(limit=1) == 1
+                after = source_owner._upload_journal_validation_stamp(factory, 1, JOURNAL)
+                unchanged_catalog_turns += before == after
                 assert engine.pool.checkedout() == 0
                 calls += 1
                 assert calls < 1000
+            assert unchanged_catalog_turns > 1
             assert calls > 1 and selected(factory).worker_epoch == 1
             with validate_journal(raw) as expected:
                 assert terminal(factory)["anchor"] == expected.anchor

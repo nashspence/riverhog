@@ -2121,14 +2121,13 @@ class SqlAlchemyCollectionUploadService:
 
     def _advance_provenance_journal_validation(self, collection_id: int, journal_id: str) -> bool:
         before = _upload_journal_validation_stamp(self._session_factory, collection_id, journal_id)
-        self._advance_provenance_journal_validation_unit(collection_id, journal_id)
-        return before != _upload_journal_validation_stamp(
-            self._session_factory, collection_id, journal_id
-        )
+        progressed = self._advance_provenance_journal_validation_unit(collection_id, journal_id)
+        after = _upload_journal_validation_stamp(self._session_factory, collection_id, journal_id)
+        return before != after or progressed
 
     def _advance_provenance_journal_validation_unit(
         self, collection_id: int, journal_id: str
-    ) -> None:
+    ) -> bool:
         work = _read_upload_journal_capture(self._session_factory, collection_id, journal_id)
         if work is not None:
             # Source and catalog readers have closed before this detached scan.
@@ -2140,41 +2139,42 @@ class SqlAlchemyCollectionUploadService:
                 at_end=work.cursor.byte_offset + len(work.content) == work.source_bytes,
             )
             if not _commit_upload_journal_capture(self._session_factory, work, advance):
-                return
+                return False
             if not advance.complete and advance.failure is None:
-                return
+                return False
         validation = _read_upload_journal_validation(
             self._session_factory, collection_id, journal_id
         )
         if validation is None:
-            return
+            return False
         from .upload_journal_epochs import advance_upload_journal_epoch_scan
 
         if not advance_upload_journal_epoch_scan(self._session_factory, validation):
-            return
+            return False
         from .upload_journal_topology import advance_upload_journal_topology_capture
 
         if not advance_upload_journal_topology_capture(self._session_factory, validation):
-            return
+            return False
         from .upload_journal_union import advance_upload_journal_epoch_union
 
         if not advance_upload_journal_epoch_union(self._session_factory, validation):
-            return
+            return False
         from .upload_journal_rank import advance_upload_journal_epoch_rank
 
         if not advance_upload_journal_epoch_rank(self._session_factory, validation):
-            return
+            return False
         from .upload_journal_replay import prepare_upload_journal_replay
 
         if not prepare_upload_journal_replay(
             self._session_factory, validation, catalog=admission_provenance_catalog()
         ):
-            return
+            return False
         step = self._journal_validation_owner.advance(
             validation, catalog=admission_provenance_catalog()
         )
         if step.outcome is not None:
             _commit_upload_journal_validation(self._session_factory, validation, step.outcome)
+        return step.progressed
 
     def get_provenance_journal(
         self,
@@ -9836,7 +9836,7 @@ def _service_validation_advance_declaration() -> Declaration:
         ),
         starts_at="receive the exact collection and journal key from service coordination",
         ends_at=(
-            "return the actual durable stamp inequality, or propagate the real child rejection "
+            "return actual catalog or live Native progress, or propagate the real child rejection "
             "without a fabricated after snapshot"
         ),
         dimensions=(
@@ -10005,8 +10005,8 @@ def _service_validation_advance_declaration() -> Declaration:
         ),
         invariants=(
             (
-                "The returned boolean is the actual before/after durable stamp inequality, "
-                "including unchanged or absent work."
+                "The returned boolean combines the actual catalog stamp inequality with "
+                "the original Native owner's live progress; unchanged or absent work is false."
             ),
             (
                 "A real unit rejection propagates unchanged; no after stamp or successful "
@@ -10027,8 +10027,8 @@ def _service_validation_advance_declaration() -> Declaration:
                 "scalar-comparison instructions or machine latency."
             ),
             (
-                "This call reports durable progress; total scheduler fairness, complete member "
-                "ingest and publication require their owning qualifications."
+                "This call reports catalog or live Native progress; total scheduler fairness, "
+                "complete member ingest and publication require their owning qualifications."
             ),
         ),
     )

@@ -95,7 +95,7 @@ class Recorder:
             self.children["unit"].append(observed)
             if self.units.last_error is not None:
                 raise self.units.last_error
-            return None
+            return self.units.last_result
 
     def measure(self, collection_id=1, journal_id=JOURNAL, *, interrupt=False, expected_error=None):
         if self.batch is not None:
@@ -212,7 +212,7 @@ def advance_fixture(current, count):
         "venance_journal_validation"
     ),
 )
-def test_actual_stamped_service_reports_durable_progress(tmp_path, record_property):
+def test_actual_stamped_service_reports_catalog_and_native_progress(tmp_path, record_property):
     samples = []
     for index, unrelated in enumerate((0, 1025)):
         for case, current in units.real_case(tmp_path / str(index), unrelated=unrelated):

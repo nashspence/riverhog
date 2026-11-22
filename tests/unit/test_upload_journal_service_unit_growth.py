@@ -441,7 +441,7 @@ class UnitRecorder:
         self.parts = []
         self.children = {tag: [] for tag in CHILDREN}
         self.interrupt = interrupt
-        error = None
+        error = self.last_result = None
         try:
             with pytest.MonkeyPatch.context() as patch:
                 patch.setattr(
@@ -472,7 +472,7 @@ class UnitRecorder:
                 )
                 self.start()
                 try:
-                    ROOT(self.current, collection_id, journal_id)
+                    self.last_result = ROOT(self.current, collection_id, journal_id)
                 finally:
                     self.finish()
         except Exception as caught:
@@ -483,6 +483,7 @@ class UnitRecorder:
         if expected_error is None:
             if error is not None:
                 raise error
+            assert type(self.last_result) is bool
         else:
             assert isinstance(error, expected_error)
         metrics = defaultdict(int)
