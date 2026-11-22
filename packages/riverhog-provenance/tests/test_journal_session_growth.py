@@ -160,9 +160,8 @@ def session_observer(
     completed_call_hook=None,
 ):
     db = session._store.db
-    is_advance = (
-        growth_binding(operation).declaration.id
-        == growth_binding(JournalValidationSession.advance).declaration.id
+    is_advance = growth_binding(operation).declaration.subjects == (
+        "riverhog_provenance.journal_session.JournalValidationSession.advance",
     )
     framing = framing_owner.advance_journal_framing
     borrow = JournalSummary.borrow
