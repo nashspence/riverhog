@@ -777,6 +777,43 @@ def test_actual_cold_prefix_preparation_work_and_shared_hash_composition(
     record_property("growth_samples", samples)
 
 
+@pytest.mark.parametrize("storage", ["memory", "file"])
+@pytest.mark.parametrize("receive_writer", ["commit", "rollback"])
+def test_standalone_publication_refuses_a_foreign_writer_without_receiving_it(
+    tmp_path, journal, catalog, receive_writer, storage
+):
+    path = ":memory:" if storage == "memory" else tmp_path / "prefix.sqlite3"
+    with closing(connect(path)) as db:
+        install(db)
+        db.execute("CREATE TABLE owner_work(value TEXT)")
+        current = prefix(db, catalog)
+        before = current.initialize()
+        proposal = current.prepare(parse_journal(journal)[0], catalog)
+        original = snapshot(db)
+        db.execute("INSERT INTO owner_work VALUES ('pending')")
+        with pytest.raises(RuntimeError, match="foreign writer"):
+            current.commit(proposal)
+        assert db.in_transaction
+        assert snapshot(db) == original
+        assert current._control.state is before
+        assert db.execute("SELECT * FROM owner_work").fetchall() == [("pending",)]
+        if storage == "file":
+            with closing(connect(path)) as reader:
+                assert snapshot(reader) == original
+                assert reader.execute("SELECT * FROM owner_work").fetchall() == []
+        getattr(db, receive_writer)()
+        accepted = current.commit(proposal)
+        assert not db.in_transaction
+        assert current._control.state is accepted
+        assert accepted.frame_count == 1
+        expected_owner = [("pending",)] if receive_writer == "commit" else []
+        assert db.execute("SELECT * FROM owner_work").fetchall() == expected_owner
+        if storage == "file":
+            with closing(connect(path)) as reader:
+                assert snapshot(reader) == snapshot(db)
+                assert reader.execute("SELECT * FROM owner_work").fetchall() == expected_owner
+
+
 def test_replaced_attempt_fences_an_already_prepared_worker(tmp_path, journal, catalog):
     with closing(connect(tmp_path / "prefix.sqlite3")) as db:
         install(db)
@@ -1092,8 +1129,11 @@ def observe_publication(db, binding, dimensions):
 
 def publication_samples(tmp_path, catalog, cases, operation, *, samples):
     binding = growth_binding(getattr(JournalPrefix, operation))
+    inherited_writers = (
+        (False, True) if operation == "prepare_publication" else (operation == "_apply",)
+    )
     for index, case in enumerate(cases):
-        for inherited in (False, True) if operation != "_apply" else (True,):
+        for inherited in inherited_writers:
             path = tmp_path / f"{operation}-{index}-{inherited}.sqlite3"
             shutil.copyfile(case["path"], path)
             proposal = case["proposal"]
@@ -1155,7 +1195,7 @@ def publication_samples(tmp_path, catalog, cases, operation, *, samples):
                     db.execute("SELECT value FROM frames WHERE sequence = ?", (str(case["count"]),))
                 ) as cursor:
                     assert cursor.fetchone()[0] == case["candidate"].json_bytes
-    assert len(samples) == len(cases) * (1 if operation == "_apply" else 2)
+    assert len(samples) == len(cases) * len(inherited_writers)
 
 
 @pytest.mark.growth_witness(
