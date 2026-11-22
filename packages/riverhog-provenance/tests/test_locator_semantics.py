@@ -652,8 +652,8 @@ def growth_samples(tmp_path, catalog, *, measured_operation="advance"):
     )
 
     binding, projection, digest = binding_projection(getattr(GenericSemantics, measured_operation))
-    cases = [(mode, ("row", str(stage))) for mode in VALID_MODES for stage in range(10)]
-    cases += [(mode, ("row", str(stage))) for mode, stage in FAILURE_STAGES.items()]
+    cases = [(mode, ("row", stage)) for mode in VALID_MODES for stage in range(10)]
+    cases += [(mode, ("row", stage)) for mode, stage in FAILURE_STAGES.items()]
     cases += [("database", ("profile", 0)), ("interval-missing-capture", ("row", 8))]
     samples = []
     for ordinal, (mode, target) in enumerate(cases):

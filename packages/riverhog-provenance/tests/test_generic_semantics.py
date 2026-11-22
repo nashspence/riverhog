@@ -1071,7 +1071,7 @@ def common_semantic_samples(tmp_path, catalog, measured_operation, *, samples):
                 elif phase == "unresolved-profile":
                     position(current, phase)
                 else:
-                    position(current, (phase, "0"))
+                    position(current, (phase, 0))
                 retained = workspace_rows(db)
                 prefix = db.execute("SELECT * FROM journal_prefix").fetchone()
                 envelope = (
