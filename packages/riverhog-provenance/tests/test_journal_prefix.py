@@ -38,6 +38,7 @@ from riverhog_provenance._journal_prefix import (
     StaleJournalPrefix,
     install,
 )
+from riverhog_provenance._native_work import WorkAmount
 from riverhog_provenance_contracts import ContractCatalog, ProvenanceContractBinding
 from sha256_continuation import CheckpointSHA256
 
@@ -249,6 +250,20 @@ def test_entry_preparation_is_detached_from_write_transactions(tmp_path, journal
         db.rollback()
 
 
+def publish_owner_work(current, batch):
+    def apply(epoch):
+        epoch.require(current.db)
+        epoch.account(WorkAmount(rows=1))
+        current.db.execute("INSERT INTO owner_work VALUES ('discard')").close()
+        return current._apply(batch)
+
+    return current.epoch.apply(
+        apply,
+        receive=current._control.receive,
+        admission=current._application_admission(batch) + WorkAmount(rows=1),
+    )
+
+
 def test_stale_proposal_rolls_back_only_its_uncommitted_owner_writes(tmp_path, journal, catalog):
     path = tmp_path / "prefix.sqlite3"
     frame = parse_journal(journal)[0]
@@ -260,10 +275,13 @@ def test_stale_proposal_rolls_back_only_its_uncommitted_owner_writes(tmp_path, j
         proposal = old.prepare(frame, catalog)
         winner = prefix(second, catalog)
         accepted = winner.commit(winner.prepare(frame, catalog))
-        first.execute("INSERT INTO owner_work VALUES ('discard')")
+        batch = old.prepare_publication(proposal)
         with pytest.raises(StaleJournalPrefix, match="superseded"):
-            old.commit(proposal)
-        assert not first.in_transaction and old.load() == accepted
+            publish_owner_work(old, batch)
+        assert not first.in_transaction
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            old.load()
+        assert prefix(first, catalog).load() == accepted
         assert first.execute("SELECT * FROM owner_work").fetchall() == []
         assert first.execute("SELECT COUNT(*) FROM frames").fetchone()[0] == 1
 
@@ -304,7 +322,7 @@ def test_late_frame_insert_failure_rolls_back_header_frame_and_owner_writes(
         current.initialize()
         prepared = current.prepare(parse_journal(journal)[0], catalog)
         before = snapshot(db)
-        db.execute("INSERT INTO owner_work VALUES ('discard')")
+        batch = current.prepare_publication(prepared)
 
         def authorize(action, table, _column, _database, _trigger):
             return (
@@ -316,7 +334,7 @@ def test_late_frame_insert_failure_rolls_back_header_frame_and_owner_writes(
         db.set_authorizer(authorize)
         try:
             with pytest.raises(sqlite3.DatabaseError):
-                current.commit(prepared)
+                publish_owner_work(current, batch)
         finally:
             db.set_authorizer(None)
         assert snapshot(db) == before and not db.in_transaction
@@ -774,11 +792,12 @@ def test_replaced_attempt_fences_an_already_prepared_worker(tmp_path, journal, c
             old.commit(proposal)
         assert snapshot(db) == before and not db.in_transaction
         assert replacement.commit(replacement.prepare(frame, catalog)).frame_count == 1
-        with pytest.raises(StaleJournalPrefix):
+        with pytest.raises(RuntimeError, match="requires reconstruction") as unusable:
             old.load()
+        assert isinstance(unusable.value.__cause__, StaleJournalPrefix)
 
 
-def test_anchor_mismatch_rolls_back_the_pending_owner_transaction(tmp_path, journal, catalog):
+def test_anchor_mismatch_is_refused_before_an_original_writer_opens(tmp_path, journal, catalog):
     with validate_journal(journal, catalog=catalog) as summary:
         anchor = {**summary.anchor, "prefix_sha256": "0" * 64}
     with closing(connect(tmp_path / "prefix.sqlite3")) as db:
@@ -788,10 +807,17 @@ def test_anchor_mismatch_rolls_back_the_pending_owner_transaction(tmp_path, jour
         current.initialize()
         proposal = current.prepare(parse_journal(journal)[0], catalog)
         before = snapshot(db)
-        db.execute("INSERT INTO owner_work VALUES ('discard')")
-        with pytest.raises(ProvenanceValidationError, match="externally supplied prefix anchor"):
-            current.commit(proposal)
+        statements = []
+        db.set_trace_callback(statements.append)
+        try:
+            with pytest.raises(
+                ProvenanceValidationError, match="externally supplied prefix anchor"
+            ):
+                current.commit(proposal)
+        finally:
+            db.set_trace_callback(None)
         assert snapshot(db) == before and not db.in_transaction
+        assert not any(statement.startswith("BEGIN") for statement in statements)
         assert db.execute("SELECT * FROM owner_work").fetchall() == []
 
 

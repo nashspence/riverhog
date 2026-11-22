@@ -31,7 +31,7 @@ from riverhog_growth_contracts import (
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
-from ._journal_prefix import PrefixState
+from ._journal_prefix import PrefixState, prefix_control, prefix_value
 from ._native_conductor import ControlSlot, LiveControl
 from ._native_epoch import EpochContext, observe_preparation
 from ._native_work import WorkAmount
@@ -449,7 +449,9 @@ class ValidationLedger:
         # possible predecessor and the conditional parent row mutation.
         return WorkAmount(rows=6)
 
-    def _prefix(self) -> tuple[tuple[str, bytes, str], PrefixState]:
+    def _prefix(
+        self, candidate: PrefixState | None = None
+    ) -> tuple[tuple[str, bytes, str], PrefixState]:
         with closing(
             self._execute(
                 "SELECT substr(attempt_id,1,33),substr(binding,1,?),substr(checkpoint,1,?) "
@@ -468,9 +470,11 @@ class ValidationLedger:
         prefix = (row[0], row[1], row[2])
         received = self._control.state
         state = (
-            received.accepted
+            candidate
+            if candidate is not None and candidate.to_json() == row[2]
+            else received.accepted
             if received is not None and received.prefix == prefix
-            else PrefixState.from_json(row[2])
+            else prefix_value(self.epoch, row[2])
         )
         if state.frame_count:
             with closing(
@@ -489,10 +493,10 @@ class ValidationLedger:
         return prefix, state
 
     @declare_growth(_checkpoint_declaration("_initialize"))
-    def _initialize(self) -> ValidationSnapshot:
+    def _initialize(self, *, accepted: PrefixState | None = None) -> ValidationSnapshot:
         if not self.db.in_transaction:
             raise RuntimeError("validation initialization requires an owner transaction")
-        prefix, accepted = self._prefix()
+        prefix, accepted = self._prefix(accepted)
         if accepted.frame_count:
             raise RuntimeError("validation initialization requires an empty accepted prefix")
         state = ValidationCheckpoint()
@@ -564,6 +568,7 @@ class ValidationLedger:
 
     def _receive(self, snapshot: ValidationSnapshot) -> None:
         self.epoch.require_receiving(self.db)
+        prefix_control(self.epoch, *snapshot.prefix[:2]).receive(snapshot.accepted)
         self._control.receive(snapshot)
 
     @declare_growth(_checkpoint_declaration("_fence"))
@@ -580,6 +585,7 @@ class ValidationLedger:
         after: ValidationCheckpoint,
         *,
         prefix: tuple[str, bytes, str] | None = None,
+        accepted: PrefixState | None = None,
     ) -> ValidationSnapshot:
         if not self.db.in_transaction:
             raise RuntimeError("validation publication requires an owner transaction")
@@ -591,7 +597,7 @@ class ValidationLedger:
         except (ValueError, TypeError, KeyError, OverflowError) as exc:
             raise RuntimeError("corrupt journal validation checkpoint") from exc
         selected = before.prefix if prefix is None else prefix
-        current, accepted = self._prefix()
+        current, accepted = self._prefix(accepted)
         if selected != current or accepted.frame_count != after.frame_ordinal:
             raise StaleValidationCheckpoint("validation publication lost its exact prefix")
         with closing(

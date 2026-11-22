@@ -17,6 +17,7 @@ class ControlSlot(Enum):
     """Finite source-owned roles, independent of attempts and archive extent."""
 
     PARENT = "parent"
+    PREFIX = "prefix"
     INPUT = "input"
     PREPARATION = "preparation"
     STAGING = "staging"
@@ -40,6 +41,7 @@ def _control_types() -> dict[ControlSlot, type[object]]:
     from ._correction_targets import TargetState
     from ._entry_preparation import PreparationState
     from ._generic_semantics import GenericState
+    from ._journal_prefix import PrefixState
     from ._online_dag import _Snapshot
     from ._semantic_edge import EdgeState
     from ._semantic_finish import FinishState
@@ -48,6 +50,7 @@ def _control_types() -> dict[ControlSlot, type[object]]:
 
     return {
         ControlSlot.PARENT: ValidationSnapshot,
+        ControlSlot.PREFIX: PrefixState,
         ControlSlot.INPUT: _InputState,
         ControlSlot.PREPARATION: PreparationState,
         ControlSlot.STAGING: StageState,

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from contextlib import closing, nullcontext
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -33,7 +34,8 @@ class _InputState:
     pending: JournalFramePosition | None = None
     complete: bool = False
 
-    def encode(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {
                 "algorithm": ALGORITHM,
@@ -52,6 +54,9 @@ class _InputState:
                 "complete": self.complete,
             }
         ).decode()
+
+    def encode(self) -> str:
+        return self._encoded
 
     @classmethod
     def decode(cls, raw: str) -> _InputState:

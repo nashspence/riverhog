@@ -2685,6 +2685,7 @@ class EntryReplay:
                 before,
                 after,
                 prefix=(self.prefix.attempt_id, self.prefix.binding, accepted.to_json()),
+                accepted=accepted,
             )
 
         def receive(snapshot: ValidationSnapshot) -> None:

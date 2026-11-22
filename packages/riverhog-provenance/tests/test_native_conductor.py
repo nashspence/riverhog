@@ -7,8 +7,10 @@ from dataclasses import replace
 
 import pytest
 from native_units import unit_budget
+from riverhog_provenance import _session_input as input_owner
 from riverhog_provenance._correction_projection import CorrectionState, CorrectionWork
 from riverhog_provenance._entry_preparation import PreparationState
+from riverhog_provenance._journal_prefix import PrefixState
 from riverhog_provenance._native_conductor import ControlSlot, LiveControl
 from riverhog_provenance._native_control import ChildControl
 from riverhog_provenance._native_epoch import EpochContext
@@ -18,8 +20,10 @@ from riverhog_provenance._semantic_edge import EdgeState
 from riverhog_provenance._session_checkpoint import ValidationLedger
 from riverhog_provenance._session_input import RetainedInput, _InputState
 from riverhog_provenance.journal_session import JournalValidationSession
+from test_journal_prefix import history as history
+from test_journal_session import finish as finish_session
 from test_live_child_control import FAMILIES, admit, refuse_decode, work
-from test_native_epoch_integration import _Connection
+from test_native_epoch_integration import _Connection, _reach
 from test_online_dag import vertex
 from test_retained_journal_session import OwnedSource, directory, open_session
 
@@ -88,7 +92,9 @@ def test_recreated_retained_input_reuses_typed_cursor_after_fresh_storage_check(
     ) as session:
         session.advance(unit_budget())
         before = session._input.state
+        before.encode()
         monkeypatch.setattr(_InputState, "decode", refuse_decode)
+        monkeypatch.setattr(input_owner, "canonical_json_bytes", refuse_decode)
         rebuilt = RetainedInput(session._ledger, source)
         assert rebuilt is not session._input and rebuilt.state is before
         session._store.db.execute("UPDATE journal_validation_input SET checkpoint='{}'").close()
@@ -360,3 +366,81 @@ def test_both_actual_graph_roles_keep_one_current_run_in_the_shared_conductor():
         plan.work.phase = "complete"
         assert pending.work.phase == "initialize"
         assert replacement._control.state.work.phase == "idle"
+
+
+@pytest.mark.parametrize("mode", ["stream", "retained"])
+def test_actual_native_epochs_share_the_accepted_prefix_without_redecoding(
+    tmp_path, history, catalog, journal_constructions, monkeypatch, mode
+):
+    if mode == "stream":
+        current = JournalValidationSession((history,), attempt_id="a" * 32, catalog=catalog)
+    else:
+        current = open_session(
+            directory(tmp_path),
+            OwnedSource(history, catalog),
+            catalog,
+            create=True,
+            journal_constructions=journal_constructions,
+        )
+    with current:
+        original = current._prefix._control.state
+        assert original is current._ledger.load().accepted
+        with monkeypatch.context() as patch:
+            patch.setattr(PrefixState, "from_json", refuse_decode)
+            assert current._prefix.load() is original
+            assert finish_session(current).complete
+            accepted = current._prefix.load()
+            assert accepted is current._ledger.load().accepted
+            assert accepted.frame_count == 3 and accepted.byte_count == len(history)
+        with current.result() as summary:
+            assert summary.journal_bytes == len(history)
+    assert current.storage_received
+
+
+@pytest.mark.parametrize("failure", ["before", "after"])
+def test_actual_prefix_publication_keeps_received_control_on_unconfirmed_commit(
+    journal, catalog, failure
+):
+    def connect(*args, **options):
+        return sqlite3.connect(*args, factory=_Connection, **options)
+
+    with JournalValidationSession(
+        (journal,), attempt_id="a" * 32, catalog=catalog, connection_factory=connect
+    ) as current:
+        _reach(current, "publish")
+        before = current._prefix._control.state
+        db = current._store.db
+        db.failure = failure
+        with pytest.raises(OSError, match="original private commit") as caught:
+            current.advance(unit_budget())
+        assert current._prefix._control.state is before
+        db.failure = None
+        with pytest.raises(RuntimeError, match="requires reconstruction") as refused:
+            current._prefix.load()
+        assert refused.value.__cause__ is caught.value
+    assert current.storage_received
+
+
+def test_actual_prefix_receiving_failure_discards_the_joint_native_epoch(
+    journal, catalog, monkeypatch
+):
+    with JournalValidationSession((journal,), attempt_id="a" * 32, catalog=catalog) as current:
+        _reach(current, "publish")
+        before = current._prefix._control.state
+        cause = OSError("prefix receiving failed")
+        receive = LiveControl.receive
+
+        def refused(control, pending):
+            if control.slot is ControlSlot.PREFIX and pending.frame_count > before.frame_count:
+                assert not current._store.db.in_transaction
+                assert not current._ledger.epoch.quiescent
+                raise cause
+            return receive(control, pending)
+
+        monkeypatch.setattr(LiveControl, "receive", refused)
+        with pytest.raises(OSError) as caught:
+            current.advance(unit_budget())
+        assert caught.value is cause and current._prefix._control.state is before
+        with pytest.raises(RuntimeError, match="requires reconstruction"):
+            current.progress()
+    assert current.storage_received

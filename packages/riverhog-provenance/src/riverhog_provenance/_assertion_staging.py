@@ -31,7 +31,7 @@ from riverhog_provenance_contracts import canonical_document
 
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
-from ._journal_prefix import PrefixState
+from ._journal_prefix import prefix_value
 from ._native_conductor import ControlSlot
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
@@ -546,7 +546,7 @@ class AssertionStaging:
             or len(row[1]) > PREFIX_BINDING_OCTETS_MAX
         ):
             raise RuntimeError("missing or invalid staging accepted-prefix manifest")
-        state = PrefixState.from_json(row[2])
+        state = prefix_value(self.epoch, row[2])
         if str(state.frame_count) != self.sequence or state.journal_id not in (
             None,
             self.journal_id,

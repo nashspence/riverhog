@@ -45,7 +45,7 @@ from ._delivery_projection import read_delivery_metadata, read_locator_observati
 from ._description_projection import read_description_metadata
 from ._fixity_projection import read_fixity_metadata
 from ._index_key import encode_index_key
-from ._journal_prefix import PrefixState
+from ._journal_prefix import prefix_value
 from ._native_conductor import ControlSlot
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
@@ -1485,7 +1485,7 @@ class GenericSemantics:
             or len(row[1]) > PREFIX_BINDING_OCTETS_MAX
         ):
             raise RuntimeError("missing or invalid semantic accepted-prefix manifest")
-        prefix = PrefixState.from_json(row[2])
+        prefix = prefix_value(self.epoch, row[2])
         if str(prefix.frame_count) != self.source.sequence or prefix.journal_id not in (
             None,
             self.source.journal_id,

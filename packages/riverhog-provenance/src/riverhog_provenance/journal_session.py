@@ -1470,8 +1470,8 @@ class JournalValidationSession:
             install_replay(db)
             if retained:
                 install_input(self._ledger)
-            self._prefix._initialize()
-            return self._ledger._initialize()
+            accepted = self._prefix._initialize()
+            return self._ledger._initialize(accepted=accepted)
 
         self._ledger.epoch.apply(
             apply, receive=self._ledger._receive, admission=WorkAmount(rows=4 + int(retained))

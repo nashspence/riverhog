@@ -14,6 +14,7 @@ import sqlite3
 from collections.abc import Mapping
 from contextlib import closing
 from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -33,6 +34,7 @@ from riverhog_provenance_contracts import (
 )
 from sha256_continuation import CheckpointSHA256, sha256_compress
 
+from ._native_conductor import ControlSlot, LiveControl
 from ._native_epoch import EpochContext, bind_epoch
 from ._native_work import WorkAmount
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
@@ -430,7 +432,7 @@ def _reference(value: Any) -> dict[str, str]:
     return value
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class PrefixState:
     frame_count: int
     byte_count: int
@@ -451,7 +453,8 @@ class PrefixState:
     def hexdigest(self) -> str:
         return CheckpointSHA256.from_state(self.sha256_state).hexdigest()
 
-    def to_json(self) -> str:
+    @cached_property
+    def _encoded(self) -> str:
         return canonical_json_bytes(
             {
                 "algorithm": ALGORITHM,
@@ -463,6 +466,9 @@ class PrefixState:
                 "matched_anchor": self.matched_anchor,
             }
         ).decode()
+
+    def to_json(self) -> str:
+        return self._encoded
 
     @classmethod
     def from_json(cls, raw: str) -> PrefixState:
@@ -518,6 +524,27 @@ class PrefixState:
             return state
         except (ValueError, TypeError, KeyError, AttributeError) as exc:
             raise RuntimeError("invalid retained journal prefix checkpoint") from exc
+
+
+def prefix_control(
+    epoch: EpochContext, attempt_id: str, binding: bytes
+) -> LiveControl[PrefixState]:
+    return LiveControl(
+        epoch, PrefixState, (ALGORITHM, attempt_id, binding), slot=ControlSlot.PREFIX
+    )
+
+
+def prefix_value(epoch: EpochContext, encoded: str) -> PrefixState:
+    """Reuse an exact immutable value after the caller's fresh source fences."""
+    epoch.require_usable()
+    received = epoch.conductor._received.get(ControlSlot.PREFIX)
+    if received is not None:
+        state = received.state
+        if type(state) is not PrefixState:
+            raise RuntimeError("Native conductor lost its typed accepted prefix")
+        if state.to_json() == encoded:
+            return state
+    return PrefixState.from_json(encoded)
 
 
 @dataclass(frozen=True, slots=True)
@@ -585,6 +612,7 @@ class JournalPrefix:
                 "require_exact_tail": require_exact_tail,
             }
         )
+        self._control = prefix_control(self.epoch, attempt_id, self.binding)
 
     @property
     def expected_anchor(self) -> dict[str, Any] | None:
@@ -614,16 +642,11 @@ class JournalPrefix:
         return state
 
     def initialize(self) -> PrefixState:
-        if self.db.in_transaction:
-            raise RuntimeError("prefix binding requires a closed owner transaction")
-        try:
-            self.db.execute("BEGIN IMMEDIATE").close()
-            self._initialize()
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return self.load()
+        return self.epoch.apply(
+            lambda _epoch: self._initialize(),
+            receive=self._control.receive,
+            admission=WorkAmount(rows=2),
+        )
 
     def load(self) -> PrefixState:
         with closing(
@@ -636,7 +659,7 @@ class JournalPrefix:
             row = rows.fetchone()
         if row is None:
             raise StaleJournalPrefix("journal prefix differs from its owned replay inputs")
-        state = PrefixState.from_json(row[0])
+        state = prefix_value(self.epoch, row[0])
         if state.frame_count:
             with closing(
                 self._execute(
@@ -651,6 +674,8 @@ class JournalPrefix:
                 or previous[0] != state.previous_json.encode()
             ):
                 raise RuntimeError("journal prefix has a missing or changed predecessor link")
+        if self.epoch.quiescent:
+            self._control.observe(state)
         return state
 
     @declare_growth(
@@ -790,19 +815,16 @@ class JournalPrefix:
         delegates=(("plan", prepare_publication), ("application", _apply)),
     )
     def commit(self, prepared: PreparedEntry) -> PrefixState:
-        """Publish the exact accepted frame and hash watermark after native checks."""
+        """Publish the exact accepted frame and receive its original live prefix."""
         if (prepared.attempt_id, prepared.binding) != (self.attempt_id, self.binding):
             raise StaleJournalPrefix("journal prefix proposal belongs to another replay")
-        try:
-            batch = self.prepare_publication(prepared)
-            if not self.db.in_transaction:
-                self.db.execute("BEGIN IMMEDIATE").close()
-            after = self._apply(batch)
-            self.db.commit()
-        except BaseException:
-            self.db.rollback()
-            raise
-        return after
+        self.epoch.require_quiescent()
+        batch = self.prepare_publication(prepared)
+        return self.epoch.apply(
+            lambda _epoch: self._apply(batch),
+            receive=self._control.receive,
+            admission=self._application_admission(batch),
+        )
 
     def finish(self) -> PrefixState:
         state = self.load()

@@ -29,7 +29,7 @@ from riverhog_growth_contracts import (
 )
 
 from ._admission_growth import admission_declaration
-from ._journal_prefix import PrefixState, _reference
+from ._journal_prefix import _reference, prefix_value
 from ._native_conductor import ControlSlot
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
@@ -408,7 +408,7 @@ class CorrectionTargets:
         checkpoint = row[0]
         if not isinstance(checkpoint, str):
             raise RuntimeError("invalid accepted prefix for correction targets")
-        state = PrefixState.from_json(checkpoint)
+        state = prefix_value(self.epoch, checkpoint)
         if str(state.frame_count) != self.sequence or state.journal_id != self.journal_id:
             raise StaleCorrectionTargets("correction differs from the current accepted prefix")
         return checkpoint
