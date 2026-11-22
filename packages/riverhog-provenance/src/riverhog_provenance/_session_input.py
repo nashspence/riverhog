@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from riverhog_canonical_json import canonical_json_bytes
 
 from ._entry_replay import EntryReplayCapacity
-from ._native_conductor import LiveControl
+from ._native_conductor import ControlSlot, LiveControl
 from ._native_epoch import EpochContext
 from ._native_frame import NativeFrame
 from ._native_work import WorkAmount
@@ -112,6 +112,7 @@ class RetainedInput:
             ledger.epoch,
             _InputState,
             (ALGORITHM, ledger.attempt_id, ledger.binding, ledger.worker_epoch),
+            slot=ControlSlot.INPUT,
         )
         self._control.observe(self._load())
         self._check(ledger.load())

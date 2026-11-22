@@ -14,6 +14,7 @@ import test_row_semantics as rows
 import test_semantic_edge as edge
 import test_semantic_finish as finish
 from native_units import unit_budget
+from riverhog_provenance._native_conductor import ControlSlot
 from riverhog_provenance._native_control import ChildControl
 from riverhog_provenance.journal_session import JournalValidationSession
 from test_journal_session import finish as finish_session
@@ -216,6 +217,11 @@ def test_generic_graph_work_receives_one_original_typed_edge_child(
                 assert child._edge is original_edge
                 assert original_edge.epoch is child.epoch
                 assert original_edge._control.state is batch.edge.after
+                assert original_edge._control.slot is (
+                    ControlSlot.DERIVATION_EDGE
+                    if kind == "derivation"
+                    else ControlSlot.SPECIALIZATION_EDGE
+                )
         else:
             pytest.fail("small actual semantic graph child did not complete")
         assert original_edge is not None

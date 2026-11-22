@@ -32,6 +32,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 from ._admission_growth import admission_declaration
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
+from ._native_conductor import ControlSlot
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._native_work import WorkAmount
@@ -486,7 +487,10 @@ class EntryPreparation:
         )
         self.epoch = bind_epoch(self.db, epoch)
         self._control = ChildControl[PreparationState](
-            self.epoch, PreparationState, (ALGORITHM, self.attempt_id, self.binding)
+            self.epoch,
+            PreparationState,
+            (ALGORITHM, self.attempt_id, self.binding),
+            slot=ControlSlot.PREPARATION,
         )
 
     def _inspect_row(self) -> None:

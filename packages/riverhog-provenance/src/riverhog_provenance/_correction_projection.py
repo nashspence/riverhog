@@ -29,6 +29,7 @@ from riverhog_growth_contracts import (
 from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from ._admission_growth import admission_declaration
+from ._native_conductor import ControlSlot
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._native_work import WorkAmount
@@ -347,6 +348,7 @@ class CorrectionWork:
             self.epoch,
             CorrectionState,
             (ALGORITHM, self.operation, self.attempt_id, self.source_binding),
+            slot=ControlSlot.RETIREMENT if operation == "retire" else ControlSlot.SEED,
         )
 
     def _inspect_row(self) -> None:

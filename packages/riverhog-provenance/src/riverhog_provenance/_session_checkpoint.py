@@ -32,7 +32,7 @@ from riverhog_provenance_contracts import require_canonical_uuid_urn
 
 from ._checkpoint_manifest import PREFIX_BINDING_OCTETS_MAX
 from ._journal_prefix import PrefixState
-from ._native_conductor import LiveControl
+from ._native_conductor import ControlSlot, LiveControl
 from ._native_epoch import EpochContext, observe_preparation
 from ._native_work import WorkAmount
 
@@ -424,7 +424,10 @@ class ValidationLedger:
             raise ValueError("validation ledger requires its original epoch connection")
         self.epoch = EpochContext(db) if epoch is None else epoch
         self._control = LiveControl[ValidationSnapshot](
-            self.epoch, ValidationSnapshot, (ALGORITHM, attempt_id, binding, worker_epoch)
+            self.epoch,
+            ValidationSnapshot,
+            (ALGORITHM, attempt_id, binding, worker_epoch),
+            slot=ControlSlot.PARENT,
         )
         self.db, self.attempt_id, self.binding, self.worker_epoch = (
             db,

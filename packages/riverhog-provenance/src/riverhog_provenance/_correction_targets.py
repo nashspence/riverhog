@@ -30,6 +30,7 @@ from riverhog_growth_contracts import (
 
 from ._admission_growth import admission_declaration
 from ._journal_prefix import PrefixState, _reference
+from ._native_conductor import ControlSlot
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._native_work import WorkAmount
@@ -366,7 +367,10 @@ class CorrectionTargets:
         self.count = len(self.targets)
         self.epoch = bind_epoch(self.db, epoch)
         self._control = ChildControl[TargetState](
-            self.epoch, TargetState, (ALGORITHM, self.attempt_id, self.source_binding)
+            self.epoch,
+            TargetState,
+            (ALGORITHM, self.attempt_id, self.source_binding),
+            slot=ControlSlot.TARGETS,
         )
 
     def _inspect_row(self) -> None:

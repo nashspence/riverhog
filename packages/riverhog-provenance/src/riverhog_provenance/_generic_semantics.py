@@ -46,6 +46,7 @@ from ._description_projection import read_description_metadata
 from ._fixity_projection import read_fixity_metadata
 from ._index_key import encode_index_key
 from ._journal_prefix import PrefixState
+from ._native_conductor import ControlSlot
 from ._native_control import ChildControl
 from ._native_epoch import EpochContext, bind_epoch, observe_preparation
 from ._native_work import WorkAmount
@@ -1414,7 +1415,10 @@ class GenericSemantics:
         )
         self.epoch = original_epoch
         self._control = ChildControl[GenericState](
-            self.epoch, GenericState, (ALGORITHM, self.attempt_id, self.binding)
+            self.epoch,
+            GenericState,
+            (ALGORITHM, self.attempt_id, self.binding),
+            slot=ControlSlot.GENERIC,
         )
         self._edge: SemanticEdge | None = None
         self._edge_key: tuple[str, str, tuple[str, bytes, str]] | None = None
