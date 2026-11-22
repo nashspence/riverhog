@@ -154,3 +154,45 @@ def test_prepare_requires_the_callers_current_catalog_transaction(
         with factory() as session:
             with pytest.raises(RuntimeError, match="transaction"):
                 prepare(session)
+
+
+@pytest.mark.parametrize("coordinate", ["workspace_id", "worker_epoch", "certificate"])
+def test_completed_outcome_cannot_be_relabelled_to_another_native_producer(
+    tmp_path, monkeypatch, coordinate, *, journal_constructions
+):
+    from dataclasses import replace
+
+    from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
+    from riverhog_provenance.graph_certificates import JournalGraphCertificateBinding
+
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        _engine,
+        factory,
+        _root,
+        job,
+        _raw,
+    ):
+        with factory() as session, session.begin():
+            values = (
+                {
+                    "certificate_binding_json": replace(
+                        JournalGraphCertificateBinding.from_json(job.certificate_binding_json),
+                        manifest_sha256="e" * 64,
+                    ).to_json()
+                }
+                if coordinate == "certificate"
+                else {
+                    coordinate: "f" * 32 if coordinate == "workspace_id" else job.worker_epoch + 1
+                }
+            )
+            session.execute(
+                update(Job).where(Job.workspace_id == job.workspace_id).values(**values)
+            )
+
+        def forbidden(*_args, **_options):
+            pytest.fail("producer metadata rejection opened derived Native storage")
+
+        monkeypatch.setattr(owner, "open_retained_journal_result", forbidden)
+        with factory() as session, session.begin():
+            with pytest.raises(LostJournalValidationWorkspace):
+                prepare(session)

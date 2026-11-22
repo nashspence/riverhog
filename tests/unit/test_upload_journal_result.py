@@ -258,7 +258,10 @@ def test_sealed_result_never_repairs_or_revalidates_changed_authority(
                             "outcome_json": json.dumps(
                                 {
                                     **json.loads(job.outcome_json),
-                                    "terminal_json_sha256": "0" * 64,
+                                    "result": {
+                                        **json.loads(job.outcome_json)["result"],
+                                        "terminal_json_sha256": "0" * 64,
+                                    },
                                 },
                                 sort_keys=True,
                                 separators=(",", ":"),

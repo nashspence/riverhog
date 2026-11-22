@@ -184,6 +184,21 @@ def canonical(value):
     ).decode()
 
 
+def terminal_receipt(job, result):
+    return canonical_json_bytes(
+        {
+            "workspace_id": job.workspace_id,
+            "worker_epoch": str(job.worker_epoch),
+            "source_binding_json": job.source_binding_json,
+            "certificate_binding_json": job.certificate_binding_json,
+            "result": {
+                key: str(value) if type(value) is int else value
+                for key, value in asdict(result).items()
+            },
+        }
+    ).decode()
+
+
 class Recorder(CatalogRecorder):
     def __init__(self):
         super().__init__(owner)
@@ -501,7 +516,7 @@ def sql_samples(mode, cases, samples):
                     ),
                     (
                         case.active,
-                        replace(active, outcome_json=canonical(case.outcome)),
+                        replace(active, outcome_json=terminal_receipt(active, case.outcome)),
                         case.work,
                         last,
                         {"outcome": case.outcome},
@@ -512,7 +527,11 @@ def sql_samples(mode, cases, samples):
                 for fields, argument, source_work, progress, extra, changes, error in arguments:
                     reset(case, fields)
                     encoded_progress = "" if progress is None else canonical(progress)
-                    encoded_outcome = "" if "outcome" not in extra else canonical(extra["outcome"])
+                    encoded_outcome = (
+                        ""
+                        if "outcome" not in extra
+                        else terminal_receipt(argument, extra["outcome"])
+                    )
                     result, sample = measure(
                         case,
                         mode,
@@ -575,6 +594,12 @@ def outcome_samples(cases, samples):
         samples.append(sample)
         for argument in (
             read_job(case.active),
+            replace(terminal_job, workspace_id="f" * 32),
+            replace(terminal_job, worker_epoch=terminal_job.worker_epoch + 1),
+            replace(terminal_job, source_binding_json=terminal_job.source_binding_json + " "),
+            replace(
+                terminal_job, certificate_binding_json=terminal_job.certificate_binding_json + " "
+            ),
             replace(terminal_job, outcome_json="{"),
             replace(terminal_job, outcome_json=terminal_job.outcome_json + " "),
         ):

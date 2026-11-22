@@ -464,6 +464,21 @@ def worker_current(factory: SessionFactory, job: ValidationJob) -> bool:
             return result.one_or_none() is not None
 
 
+def _outcome_document(
+    job: ValidationJob, result: source_owner._UploadJournalValidationOutcome
+) -> dict[str, Any]:
+    return {
+        "workspace_id": job.workspace_id,
+        "worker_epoch": str(job.worker_epoch),
+        "source_binding_json": job.source_binding_json,
+        "certificate_binding_json": job.certificate_binding_json,
+        "result": {
+            key: str(value) if type(value) is int else value
+            for key, value in asdict(result).items()
+        },
+    }
+
+
 def publish_outcome(
     factory: SessionFactory,
     source: source_owner._UploadJournalValidationWork,
@@ -494,12 +509,7 @@ def publish_outcome(
         state = "failed" if outcome.failure is not None else "complete"
     encoded_outcome = None
     if outcome is not None:
-        encoded_outcome = canonical_json_bytes(
-            {
-                key: str(value) if type(value) is int else value
-                for key, value in asdict(outcome).items()
-            }
-        ).decode()
+        encoded_outcome = canonical_json_bytes(_outcome_document(job, outcome)).decode()
     with factory() as session, session.begin():
         if (
             session.scalar(
@@ -532,20 +542,33 @@ def publish_outcome(
 
 
 def outcome(job: ValidationJob) -> source_owner._UploadJournalValidationOutcome:
+    """Read the canonical mandatory outcome from this exact original producer."""
     if job.state not in {"complete", "failed"} or job.outcome_json is None:
         raise RuntimeError("retained validation has no terminal outcome")
     try:
-        value = json.loads(job.outcome_json)
+        receipt = json.loads(job.outcome_json)
+        if (
+            type(receipt) is not dict
+            or set(receipt)
+            != {
+                "workspace_id",
+                "worker_epoch",
+                "source_binding_json",
+                "certificate_binding_json",
+                "result",
+            }
+            or receipt["workspace_id"] != job.workspace_id
+            or receipt["worker_epoch"] != str(job.worker_epoch)
+            or receipt["source_binding_json"] != job.source_binding_json
+            or receipt["certificate_binding_json"] != job.certificate_binding_json
+        ):
+            raise ValueError("terminal outcome differs from its original Native producer")
+        value = receipt["result"]
         for field in ("frame_count", "terminal_sequence"):
             if value[field] is not None:
                 value[field] = int(value[field])
         result = source_owner._UploadJournalValidationOutcome(**value)
-        encoded = canonical_json_bytes(
-            {
-                key: str(value) if type(value) is int else value
-                for key, value in asdict(result).items()
-            }
-        ).decode()
+        encoded = canonical_json_bytes(_outcome_document(job, result)).decode()
         if encoded != job.outcome_json:
             raise ValueError("noncanonical outcome")
         return result
