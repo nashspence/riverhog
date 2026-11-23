@@ -25,6 +25,7 @@ from sqlalchemy import delete, update
 from scripts.validation_numeric import numeric_policy_from_environment
 from tests.support.catalog_work import CatalogRecorder, octets
 from tests.support.journal_retirement import cleanups as cleanups
+from tests.support.validation_workspace import leased_workspace
 from tests.unit.test_archive_upload_execution import owned as owned
 from tests.unit.test_archive_write_admission import _guard
 from tests.unit.test_collection_recovery_accounting import _candidate
@@ -96,6 +97,7 @@ def test_slot_requires_its_acknowledged_original_before_optional_effects(
     case.slot.generation = None
     try:
         for job, context in (
+            (replace(current, state="complete"), case.context),
             (replace(current, recovery_received=True), case.context),
             (replace(current, recovery_original_json=None), case.context),
             (current, replace(case.context, worker_epoch=case.context.worker_epoch + 1)),
@@ -108,6 +110,98 @@ def test_slot_requires_its_acknowledged_original_before_optional_effects(
             assert not (case.directory / "generations.sqlite3").exists()
     finally:
         case.slot.generation, case.slot.job = original, current
+
+
+def test_later_grant_reopens_storage_after_exact_original_receiving(origin, journal_constructions):
+    from riverhog_provenance import NativeGenerationStorage
+
+    case = origin
+    selected, _ = adopt(case)
+    first = case.generation
+    final = received(case)
+    assert settle(case, final)[0] == "received"
+    assert first.received and not case.slot.construction.received
+    current = snapshot(case)[1]
+    decision, grant, reserved = reserve_again(case, current)
+    assert decision.admitted and grant is not None and grant.identity != case.grant.identity
+    active = snapshot(case)[1]
+    context = JournalRecoveryContext.original(case.binding, active, grant)
+    case.slot.job = active
+    construction = journal_constructions.retain()
+    second = case.slot.retain_generation(construction, context)
+    assert second is case.slot.generation and second is not first
+    assert second.context == context and first.context == case.context
+    assert first.received and first.storage.storage_received
+    assert not second.received and second.storage is None
+    storage = NativeGenerationStorage.open(
+        case.directory,
+        construction=construction,
+        page_size=4096,
+        reader_limit=2,
+        metadata_octets=131072,
+        create=False,
+        on_storage_open=second.retain_storage,
+        on_storage_close=case.slot.receive_generation,
+    )
+    image = case.frontier.image
+    reader = storage.roots.borrow(image.identity, expected_root=image.root)
+    try:
+        assert reader.read(after=0, page_limit=1).pages
+        assert not second.close_step()
+        assert not second.received and first.received
+        with leased_workspace(case.owner.root, active.workspace_id) as busy:
+            assert busy is None
+    finally:
+        reader.close()
+    assert second.close_step() and second.received
+    assert not case.slot.construction.received
+    # Reopening the optional store neither recaptures nor selects another image.
+    root, job = snapshot(case)
+    assert root == reserved and root.accounting.successful_checkpoints == 1
+    assert job.resume_frontier_json == current.resume_frontier_json
+    assert selected.accounting.successful_checkpoints == 1
+    for _ in range(10000):
+        if case.slot.session.advance().complete:
+            break
+    else:
+        pytest.fail("finite live executor did not continue after optional receiving")
+    with leased_workspace(case.owner.root, active.workspace_id) as busy:
+        assert busy is None
+    case.owner.close()
+    assert first.received and second.received and case.slot.construction.received
+    with leased_workspace(case.owner.root, active.workspace_id) as free:
+        assert free == case.directory
+
+
+def test_received_original_cannot_be_relabelled_as_another_grant(origin, journal_constructions):
+    case = origin
+    adopt(case)
+    final = received(case)
+    settle(case, final)
+    first = case.generation
+    construction = journal_constructions.retain()
+    # Closure never makes the same grant identity available for reuse.
+    with pytest.raises(RuntimeError, match="cannot replace"):
+        case.slot.retain_generation(construction, case.context)
+    assert first is case.slot.generation and first.received
+    assert construction.phase == "new"
+    current = snapshot(case)[1]
+    decision, grant, _ = reserve_again(case, current)
+    assert decision.admitted and grant is not None
+    active = snapshot(case)[1]
+    context = JournalRecoveryContext.original(case.binding, active, grant)
+    before = snapshot(case)
+    for job, claimed in (
+        (current, context),
+        (active, replace(context, worker_epoch=context.worker_epoch + 1)),
+        (replace(active, recovery_received=True), context),
+    ):
+        case.slot.job = job
+        with pytest.raises(RuntimeError, match="original live slot"):
+            case.slot.retain_generation(construction, claimed)
+        assert case.slot.generation is first and construction.phase == "new"
+        assert snapshot(case) == before
+    case.slot.job = active
 
 
 @pytest.mark.parametrize("after_root_write", [False, True])

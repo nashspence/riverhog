@@ -486,11 +486,18 @@ class _Slot:
     def retain_generation(
         self, construction: JournalConstruction, context: JournalRecoveryContext
     ) -> JournalGenerationResources:
-        if self.closing or self.generation is not None or self.session is None:
+        previous = self.generation
+        if (
+            self.closing
+            or self.session is None
+            or previous is not None
+            and (not previous.received or previous.context.grant_identity == context.grant_identity)
+        ):
             raise RuntimeError("validation slot cannot replace its original Native generation")
         job = self.job
         if (
             job is None
+            or job.state != "active"
             or job.recovery_received
             or job.recovery_original_json != context.encoded.decode("utf-8")
             or (
