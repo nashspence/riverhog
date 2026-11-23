@@ -77,7 +77,19 @@ def test_missing_retained_directory_is_not_recreated(tmp_path):
     assert not root.exists()
 
 
-@pytest.mark.parametrize("state_name", ["snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3"])
+@pytest.mark.parametrize(
+    "state_name",
+    [
+        database + suffix
+        for database in (
+            "snapshot.sqlite3",
+            "corpus.sqlite3",
+            "discovery.sqlite3",
+            "generations.sqlite3",
+        )
+        for suffix in ("-journal", "-wal", "-shm", "")
+    ],
+)
 def test_interrupted_empty_creation_can_finish_but_a_lost_database_lease_cannot(
     tmp_path, state_name
 ):

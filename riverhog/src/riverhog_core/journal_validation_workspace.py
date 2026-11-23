@@ -79,9 +79,9 @@ def _lease_declaration() -> Declaration:
                 "stat_calls",
                 COUNT,
                 "upper",
-                count(21),
+                count(25),
                 (
-                    "Four private descriptor checks, twelve known sidecar probes "
+                    "Four private descriptor checks, sixteen known sidecar probes "
                     "and at most five actual native kind checks."
                 ),
             ),
@@ -131,7 +131,7 @@ def _lease_declaration() -> Declaration:
                     terms=(
                         scale(3, dimension("root_path_octets")),
                         scale(2, dimension("workspace_identity_octets")),
-                        Expression("constant", value=272, unit=OCTETS),
+                        Expression("constant", value=360, unit=OCTETS),
                     ),
                 ),
                 (
@@ -245,7 +245,12 @@ def _lease_declaration() -> Declaration:
 
 _RETAINED_STATE_NAMES = tuple(
     database + suffix
-    for database in ("snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3")
+    for database in (
+        "snapshot.sqlite3",
+        "corpus.sqlite3",
+        "discovery.sqlite3",
+        "generations.sqlite3",
+    )
     for suffix in ("-journal", "-wal", "-shm", "")
 )
 

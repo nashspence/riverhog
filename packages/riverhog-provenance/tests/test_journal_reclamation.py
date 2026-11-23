@@ -42,13 +42,14 @@ def file(path, name, octets):
 @pytest.mark.parametrize(
     "budget,extents", [(1, (17, 3, 29)), (4096, (65537, 17, 131073)), (65536, (0, 17, 131073))]
 )
+@pytest.mark.parametrize("database", ["snapshot.sqlite3", "generations.sqlite3"])
 def test_each_unit_reclaims_at_most_its_actual_byte_admission(
-    tmp_path, budget, extents, retained_file_receivers
+    tmp_path, budget, extents, database, retained_file_receivers
 ):
     path = directory(tmp_path)
     sizes = dict(
         zip(
-            ("snapshot.sqlite3-journal", "snapshot.sqlite3-wal", "snapshot.sqlite3"),
+            (database + "-journal", database + "-wal", database),
             extents,
             strict=True,
         )
@@ -69,11 +70,12 @@ def test_each_unit_reclaims_at_most_its_actual_byte_admission(
     assert path.is_dir() and reclaim(path, receiver=retained_file_receivers()).files_reclaimed
 
 
+@pytest.mark.parametrize("database", ["snapshot.sqlite3", "generations.sqlite3"])
 def test_truncation_preserves_the_remaining_prefix_and_owned_non_sqlite_files(
-    tmp_path, retained_file_receivers
+    tmp_path, database, retained_file_receivers
 ):
     path = directory(tmp_path)
-    database = file(path, "snapshot.sqlite3", 65537)
+    database = file(path, database, 65537)
     before = database.read_bytes()
     lease = file(path, ".lease", 19)
     other = file(path, "unclassified", 29)
@@ -84,11 +86,12 @@ def test_truncation_preserves_the_remaining_prefix_and_owned_non_sqlite_files(
 
 
 @pytest.mark.parametrize("fault", ["symlink", "hardlink", "directory", "mode"])
+@pytest.mark.parametrize("database", ["snapshot.sqlite3", "generations.sqlite3"])
 def test_foreign_or_replaced_file_custody_is_refused_without_mutation(
-    tmp_path, fault, retained_file_receivers
+    tmp_path, fault, database, retained_file_receivers
 ):
     path = directory(tmp_path)
-    target = path / "snapshot.sqlite3"
+    target = path / database
     foreign = tmp_path / "foreign"
     foreign.write_bytes(b"unrelated")
     foreign.chmod(0o600)
@@ -106,11 +109,12 @@ def test_foreign_or_replaced_file_custody_is_refused_without_mutation(
     assert foreign.read_bytes() == b"unrelated" and target.exists()
 
 
+@pytest.mark.parametrize("database", ["snapshot.sqlite3", "generations.sqlite3"])
 def test_real_worker_exit_resumes_from_the_already_reclaimed_extent(
-    tmp_path, retained_file_receivers
+    tmp_path, database, retained_file_receivers
 ):
     path = directory(tmp_path)
-    database = file(path, "snapshot.sqlite3", 65537)
+    database = file(path, database, 65537)
     program = """import os,sys
 from pathlib import Path
 from riverhog_provenance import reclaim_retired_journal_workspace
@@ -137,11 +141,12 @@ os._exit(81)
 
 
 @pytest.mark.parametrize("code", [errno.ENOSPC, errno.EDQUOT])
+@pytest.mark.parametrize("database", ["snapshot.sqlite3", "generations.sqlite3"])
 def test_capacity_failure_after_tail_removal_is_reconciled_without_reconstruction(
-    tmp_path, monkeypatch, code, retained_file_receivers
+    tmp_path, monkeypatch, code, database, retained_file_receivers
 ):
     path = directory(tmp_path)
-    database = file(path, "snapshot.sqlite3", 65537)
+    database = file(path, database, 65537)
 
     def failed(_descriptor):
         raise OSError(code, "injected sync capacity")
@@ -172,14 +177,13 @@ def test_native_reclamation_records_actual_file_work(
     projection = project_bindings(
         (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
     )
-    names = (
-        "snapshot.sqlite3-journal",
-        "snapshot.sqlite3-wal",
-        "snapshot.sqlite3-shm",
-        "snapshot.sqlite3",
+    names = tuple(
+        database + suffix
+        for database in ("snapshot.sqlite3", "generations.sqlite3")
+        for suffix in ("-journal", "-wal", "-shm", "")
     )
     samples = []
-    for files in (0, 1, 4):
+    for files in (0, 1, 4, 5, 8):
         for extent in (0, 17, 65537, 1048577):
             for budget in (1, 65536):
                 path = tmp_path / f"{files}-{extent}-{budget}"

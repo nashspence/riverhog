@@ -37,7 +37,11 @@ from tests.unit.test_upload_journal_validation_jobs_growth import snapshot
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX retirement composition backend")
 ROOT = owner.UploadJournalValidationRetirement._advance
 CHILDREN = dict(owner._retirement_unit_children())
-DATA = tuple("snapshot.sqlite3" + suffix for suffix in ("-journal", "-wal", "-shm", ""))
+DATA = tuple(
+    database + suffix
+    for database in ("snapshot.sqlite3", "generations.sqlite3")
+    for suffix in ("-journal", "-wal", "-shm", "")
+)
 ALIASES = {
     "metadata_calls": "stat_calls",
     "owner_identity_calls": "uid_calls",
@@ -560,7 +564,7 @@ def unit_samples(root, samples, cleanups, *, large=True):
                     "empty",
                     "truncate",
                     "zero",
-                    "four-files",
+                    "known-files",
                     "busy-writer",
                     "busy-reader",
                     "directory",
@@ -605,7 +609,7 @@ def unit_samples(root, samples, cleanups, *, large=True):
                         workspaces.private_file(directory / DATA[-1], b"p" * extent)
                     if kind == "zero":
                         workspaces.private_file(directory / DATA[-1])
-                    if kind == "four-files":
+                    if kind == "known-files":
                         for name in DATA:
                             workspaces.private_file(directory / name, b"p" * 17)
                     if kind == "unclassified":
@@ -677,8 +681,8 @@ def history_samples(root, samples, cleanups, *, large=True):
     with catalog.build_cases(root / "catalogs", large=large) as cases:
         for index, case in enumerate(cases):
             for cold, budget, extents in (
-                (False, 7, (17, 0, 29)),
-                (True, 65536, (0, 17, 65537, 131073)),
+                (False, 7, (17, 0, 29, 0, 3, 0, 11, 13)),
+                (True, 65536, (0, 17, 65537, 131073, 0, 3, 65537, 131073)),
             ):
                 catalog.reset(case, {**case.selected, "state": "active"})
                 layout = workspaces.setup(root / "files" / f"{index}-{cold}")

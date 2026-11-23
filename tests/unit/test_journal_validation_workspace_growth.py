@@ -239,7 +239,8 @@ def snapshot(case):
             continue
         digest = (
             hashlib.sha256(path.read_bytes()).hexdigest()
-            if path.name in {"snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3"}
+            if path.name
+            in {"snapshot.sqlite3", "corpus.sqlite3", "discovery.sqlite3", "generations.sqlite3"}
             and stat.S_ISREG(value.st_mode)
             else None
         )
@@ -402,6 +403,13 @@ def lease_samples(root, *, samples, large=True):
         ("lost", {"lease": False, "payload": 65537}),
         ("lost-corpus", {"lease": False, "payload": 65537, "state_name": "corpus.sqlite3"}),
         ("lost-core", {"lease": False, "payload": 65537, "state_name": "discovery.sqlite3"}),
+        *(
+            (
+                "lost-generation" + suffix,
+                {"lease": False, "payload": 65537, "state_name": "generations.sqlite3" + suffix},
+            )
+            for suffix in ("-journal", "-wal", "-shm", "")
+        ),
         ("coordinator", {"coordinator": False}),
         ("absent", {"selected": False}),
     ):
@@ -429,7 +437,7 @@ def lease_samples(root, *, samples, large=True):
             )
             assert (case.root / ONE / ".lease").is_file()
             continue
-        elif name in {"lost", "lost-corpus", "lost-core"}:
+        elif name in {"lost", "lost-corpus", "lost-core"} or name.startswith("lost-generation"):
             samples.append(
                 measure(
                     case.root,

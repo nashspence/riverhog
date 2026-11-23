@@ -76,9 +76,9 @@ def _retirement_custody_declaration(mode: str) -> Declaration:
                     ("dup_calls", 0, "Namespace borrows do not duplicate original descriptors."),
                     (
                         "stat_calls",
-                        8 if lease else 16,
+                        8 if lease else 20,
                         (
-                            "Exact descriptor custody, four "
+                            "Exact descriptor custody, eight "
                             "data-name probes and original "
                             "lease/directory identity checks."
                         ),
@@ -157,7 +157,7 @@ def _retirement_custody_declaration(mode: str) -> Declaration:
                             1 if lease else 3,
                             Expression("dimension", name="workspace_identity_octets"),
                         ),
-                        Expression("constant", value=32 if lease else 128, unit=OCTETS),
+                        Expression("constant", value=32 if lease else 216, unit=OCTETS),
                     ),
                 ),
                 (
@@ -188,7 +188,7 @@ def _retirement_custody_declaration(mode: str) -> Declaration:
             ),
             (
                 "Directory removal requires the durable directory phase after all "
-                "four owned data files have been reclaimed."
+                "owned working and generation files have been reclaimed."
             ),
         ),
         invariants=(
@@ -225,7 +225,11 @@ def _retirement_custody_declaration(mode: str) -> Declaration:
     )
 
 
-_DATA_FILES = tuple("snapshot.sqlite3" + suffix for suffix in ("-journal", "-wal", "-shm", ""))
+_DATA_FILES = tuple(
+    database + suffix
+    for database in ("snapshot.sqlite3", "generations.sqlite3")
+    for suffix in ("-journal", "-wal", "-shm", "")
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -341,7 +345,7 @@ def remove_retired_journal_workspace_directory(
 ) -> bool:
     """Finish only a catalog-confirmed directory phase, retaining its root marker.
 
-    The application has already confirmed that all four data files were reclaimed
+    The application has already confirmed that all owned data files were reclaimed
     under the exclusive original lease. Its durable directory phase forbids any
     future native open or directory creation. Root coordination serializes lease
     unlink and rmdir, including a retry after process exit between those calls.

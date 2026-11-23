@@ -22,7 +22,11 @@ from tests.unit import test_journal_validation_workspace_growth as basis
 
 pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX retirement custody backend")
 ONE = basis.ONE
-DATA = tuple("snapshot.sqlite3" + suffix for suffix in ("-journal", "-wal", "-shm", ""))
+DATA = tuple(
+    database + suffix
+    for database in ("snapshot.sqlite3", "generations.sqlite3")
+    for suffix in ("-journal", "-wal", "-shm", "")
+)
 
 
 class EvidenceFailure(RuntimeError):

@@ -50,7 +50,11 @@ def reclamation_growth(
             Dimension(
                 "retained_octets", OCTETS, "Logical extents of the remaining owned data files."
             ),
-            Dimension("retained_files", COUNT, "Existing files among the four SQLite data names."),
+            Dimension(
+                "retained_files",
+                COUNT,
+                "Existing files among the selected known SQLite data names.",
+            ),
             Dimension("octet_budget", OCTETS, "Explicit maximum logical extent removed this unit."),
         ),
         bounds=tuple(
@@ -71,7 +75,10 @@ def reclamation_growth(
         ),
         conditions=(
             "The caller durably retired this exact job and excludes its writer and every reader.",
-            "Private POSIX directory/file custody and the four current SQLite names are preserved.",
+            (
+                "Private POSIX directory/file custody and the selected current "
+                "SQLite names are preserved."
+            ),
         ),
         invariants=(
             "Archive and retained source authority remain outside this disposable projection.",

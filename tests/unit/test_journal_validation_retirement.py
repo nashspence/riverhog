@@ -19,6 +19,7 @@ from riverhog_core.services.upload_journal_validation_owner import UploadJournal
 from riverhog_core.services.upload_journal_validation_retirement import (
     UploadJournalValidationRetirement,
 )
+from riverhog_provenance._generation_storage import NativeGenerationStorage
 from riverhog_provenance.journal_store import JournalStore
 from sqlalchemy import delete, event, select
 
@@ -91,8 +92,9 @@ def finish(current, factory, identity):
     pytest.fail("small retired workspace did not finish")
 
 
+@pytest.mark.parametrize("generation", [False, True])
 def test_source_deletion_queues_bounded_files_then_directory_then_catalog_removal(
-    tmp_path, retirement_owners, *, journal_constructions
+    tmp_path, retirement_owners, generation, *, journal_constructions
 ):
     root = tmp_path / "native"
     with retained(tmp_path, source(journal_id=JOURNAL)) as (engine, factory):
@@ -104,6 +106,18 @@ def test_source_deletion_queues_bounded_files_then_directory_then_catalog_remova
         job = selected(factory)
         identity = job.workspace_id
         database = root / job.workspace_id / "snapshot.sqlite3"
+        if generation:
+            original = journal_constructions.retain()
+            NativeGenerationStorage.open(
+                database.parent,
+                construction=original,
+                page_size=4096,
+                reader_limit=1,
+                metadata_octets=8192,
+                create=True,
+            )
+            assert original.close_step()
+            assert (database.parent / "generations.sqlite3").is_file()
         current.close()
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         with factory() as session, session.begin():
@@ -129,6 +143,7 @@ def test_source_deletion_queues_bounded_files_then_directory_then_catalog_remova
             if job.state == "directory":
                 observed_directory_phase = True
                 assert not database.exists() and (root / job.workspace_id / ".lease").exists()
+                assert not (database.parent / "generations.sqlite3").exists()
             assert retirement_step(cleanup, octet_budget=65536) == 1
             remaining = database.stat().st_size if database.exists() else 0
             assert 0 <= old - remaining <= 65536
@@ -402,15 +417,29 @@ def test_missing_storage_custody_preserves_the_pending_job(tmp_path, fault, reti
         )
 
 
-def test_directory_phase_refuses_a_remaining_owned_database(tmp_path, *, journal_constructions):
+@pytest.mark.parametrize("generation", [False, True])
+def test_directory_phase_refuses_a_remaining_owned_database(
+    tmp_path, generation, *, journal_constructions
+):
     root = tmp_path / "native"
     with leased_workspace(root, ONE, create=True) as directory:
-        JournalStore.open_retained(
-            directory, create=True, construction=journal_constructions.retain()
-        ).close()
+        original = journal_constructions.retain()
+        if generation:
+            NativeGenerationStorage.open(
+                directory,
+                construction=original,
+                page_size=4096,
+                reader_limit=1,
+                metadata_octets=8192,
+                create=True,
+            )
+        else:
+            JournalStore.open_retained(directory, create=True, construction=original)
+        assert original.close_step()
     with pytest.raises(LostJournalValidationWorkspace, match="still has data"):
         remove_retired_journal_workspace_directory(root, ONE)
-    assert (root / ONE / "snapshot.sqlite3").is_file() and (root / ONE / ".lease").is_file()
+    database = "generations.sqlite3" if generation else "snapshot.sqlite3"
+    assert (root / ONE / database).is_file() and (root / ONE / ".lease").is_file()
 
 
 @pytest.mark.parametrize("count", [1, 17, 129, 1025])

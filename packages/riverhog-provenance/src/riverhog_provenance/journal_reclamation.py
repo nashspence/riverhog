@@ -1,4 +1,4 @@
-"""Byte-admitted disposal of a retired owner's retained journal projection."""
+"""Byte-admitted disposal of a retired owner's retained journal and generation files."""
 
 from __future__ import annotations
 
@@ -18,7 +18,11 @@ from ._reclamation_growth import reclamation_growth
 from .errors import JournalValidationCapacity
 from .journal_store import InvalidJournalWorkspace
 
-_FILES = tuple("snapshot.sqlite3" + suffix for suffix in ("-journal", "-wal", "-shm", ""))
+_FILES = tuple(
+    database + suffix
+    for database in ("snapshot.sqlite3", "generations.sqlite3")
+    for suffix in ("-journal", "-wal", "-shm", "")
+)
 
 
 @dataclass(frozen=True, slots=True)
