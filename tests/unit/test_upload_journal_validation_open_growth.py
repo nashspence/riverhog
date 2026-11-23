@@ -36,6 +36,7 @@ from tests.unit.test_upload_journal_source_growth import octets, source_metadata
 jobs, source_owner = owner.jobs, owner.source_owner
 certificates_owner, replay = fences.certificates_owner, fences.replay
 OPEN = owner.UploadJournalValidationOwner._open
+OUTCOME, PUBLISH_OUTCOME = jobs.outcome, jobs.publish_outcome
 CHILDREN = dict(owner._open_children())
 NATIVE, PROGRESS = CHILDREN["native"], CHILDREN["progress"]
 FUNCTIONS = tuple(
@@ -193,7 +194,7 @@ class Recorder(fences.Recorder):
                 return values
             job = (
                 args[0]
-                if function is jobs.outcome
+                if function is OUTCOME
                 else args[1]
                 if function is fences.WORKER
                 else args[2]
@@ -211,8 +212,8 @@ class Recorder(fences.Recorder):
                     )
                 )
                 width = max(width, octets(tuple(asdict(job).values())))
-            if function is jobs.publish_outcome and args[3] is not None:
-                controls.append(job_tests.canonical(args[3]))
+            if function is PUBLISH_OUTCOME and kwargs.get("outcome") is not None:
+                controls.append(job_tests.terminal_receipt(job, kwargs["outcome"]))
             controls.extend(value for value in kwargs.values() if isinstance(value, str))
             return {
                 "retained_rows": len(rows[jobs.Job.__tablename__])
@@ -752,8 +753,7 @@ class Recorder(fences.Recorder):
                     ),
                     "load_metadata_row_octets": width,
                     "progress_calls": 1,
-                    "progress_metadata_row_octets": leaf["metadata_row_octets"],
-                    "progress_padding_blocks": leaf["padding_blocks"],
+                    **{"progress_" + name: value for name, value in leaf.items()},
                 }
 
                 def action():

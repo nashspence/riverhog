@@ -79,6 +79,8 @@ def build_cases(root, *, large=True):
                 engine=engine,
                 factory=factory,
                 root=path / "native",
+                width=width,
+                epoch=epoch,
                 base=base,
                 selected=fields(ONE, width=width, epoch=epoch),
             )
@@ -190,7 +192,11 @@ def selection_samples(cases, samples, cleanups):
                 for excluded in ((), (ONE,), (ONE, TWO))
             )
             for state, phase, wrap, excluded in scenarios:
-                selected = [] if state is None else [{**case.selected, "state": state}]
+                selected = (
+                    []
+                    if state is None
+                    else [fields(ONE, state=state, width=case.width, epoch=case.epoch)]
+                )
                 reset(case, *selected)
                 if excluded:
                     eligible = sorted(

@@ -26,7 +26,7 @@ from tests.unit import test_upload_journal_owned_source_read_growth as reads
 from tests.unit import test_upload_journal_validation_open_growth as opening
 from tests.unit import test_upload_journal_validation_pool_growth as pool
 from tests.unit import test_upload_journal_validation_release_growth as release
-from tests.unit.test_staged_journal_range import Chunk
+from tests.unit.test_staged_journal_range import JOURNAL, Chunk
 from tests.unit.test_upload_journal_source_growth import octets
 
 ROOT = owner.UploadJournalValidationOwner.advance
@@ -1412,3 +1412,47 @@ def test_actual_owner_publishes_failed_recording_at_last_accepted_prefix(
         journal_constructions=journal_constructions,
     )
     record_property("growth_samples", samples)
+
+
+@pytest.mark.parametrize("recorder_type", [opening.Recorder, Recorder], ids=["opening", "advance"])
+@pytest.mark.parametrize(
+    "failure",
+    [None, 'recording failure with "quoted" text ' + "é" * 31],
+    ids=["success", "recording-failure"],
+)
+def test_observed_terminal_outcome_accounts_for_its_complete_original_receipt(
+    tmp_path, recorder_type, failure
+):
+    from dataclasses import replace
+    from threading import Lock as ThreadLock
+
+    with opening.build_cases(tmp_path / "outcome-controls", large=False) as cases:
+        case = cases[0]
+        job = owner.jobs.select_job(
+            case.factory,
+            case.work,
+            source_binding=case.source_binding,
+            certificate_binding=case.certificate_binding,
+        )
+        assert job is not None
+        expected = owner.source_owner._UploadJournalValidationOutcome(
+            failure, 4, JOURNAL, 3, "e" * 64
+        )
+        job = replace(job, state="complete" if failure is None else "failed", failure=failure)
+        job = replace(job, outcome_json=opening.job_tests.terminal_receipt(job, expected))
+        before = opening.fences.snapshot(case.engine)
+        recorder = recorder_type(case)
+        recorder.owner = SimpleNamespace(_lock=ThreadLock())
+        function = opening.OUTCOME
+        with recorder.observe(case.engine, cold=False):
+            actual = recorder.invoke(function, lambda: function(job), (job,), {})
+        sample = recorder.records[function][-1]
+        assert actual == expected
+        assert opening.fences.snapshot(case.engine) == before
+        width = len(job.outcome_json.encode())
+        assert sample["dimensions"]["control_octets"] >= width
+        assert sample["metrics"]["json_decoded_octets"] == width
+        assert sample["metrics"]["json_encoded_octets"] == width
+        assert sample["metrics"]["json_decodes"] == sample["metrics"]["json_encodes"] == 1
+        assert sample["metrics"]["sql_statements"] == sample["metrics"]["changed_rows"] == 0
+        assert sample["metrics"]["source_payload_octets"] == 0
