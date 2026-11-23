@@ -568,6 +568,8 @@ def select_resume_frontier(
     Native persistence and resource receiving occur outside this transaction.
     The returned job replaces the caller's CAS snapshot before terminal writes.
     """
+    if grant.nonpublication_proven:
+        raise Conflict("journal generation was rejected before publication")
     if generation != frontier.generation:
         raise Conflict("journal accounting generation differs from its Native envelope")
     if type(control_bytes) is not int or control_bytes < 1:

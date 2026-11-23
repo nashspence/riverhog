@@ -68,6 +68,18 @@ def test_actual_candidate_rejection_fences_selection_without_receiving_resources
     with pytest.raises(Conflict, match="rejected"):
         adopt(case, revision=rejected.revision, callback=unexpected_selection)
     assert snapshot(case) == (rejected, job)
+    with case.factory() as session, session.begin():
+        with pytest.raises(Conflict, match="rejected"):
+            jobs.select_resume_frontier(
+                session,
+                case.work,
+                case.job,
+                rejected.grants[0],
+                case.frontier,
+                generation=case.frontier.generation,
+                control_bytes=32768,
+            )
+    assert snapshot(case) == (rejected, job)
 
 
 def test_rejection_reply_retry_preserves_held_tail_after_gate_and_worker_change(origin):
