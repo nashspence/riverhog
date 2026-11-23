@@ -20,20 +20,33 @@ from riverhog_provenance import (
     JournalValidationSession,
     NativeGenerationStorage,
 )
+from workspace_reclamation import FileReclamationOwner
 
 from riverhog_core.journal_recovery_frontier import JournalRecoveryContext
 
 
 def _receiving_growth() -> Declaration:
     native = growth_binding(JournalValidationSession.close).declaration
-    limits = {"closed_databases": 2, "closed_files": 10, "release_callbacks": 2}
+    files = growth_binding(FileReclamationOwner.close).declaration
+    file_closes = next(bound.expression for bound in files.bounds if bound.metric == "close_calls")
+    if (
+        file_closes.op != "constant"
+        or file_closes.unit != COUNT
+        or type(file_closes.value) is not int
+    ):
+        raise ValueError("generation file receiving requires its fixed original descriptor bound")
+    limits = {
+        "closed_databases": 2,
+        "closed_files": 10 + file_closes.value,
+        "release_callbacks": 2,
+    }
     return Declaration(
         id="riverhog-server.journal-generation-resource-receiving.growth/v1",
         authority="riverhog-server",
         subjects=(
             "riverhog_core.journal_generation_resources.JournalGenerationResources.close_step",
         ),
-        scope="one original separately admitted Native generation and its capture/restore children",
+        scope="one original Native generation with capture, restore and retained file receiving",
         starts_at="receive the original generation children outside the owner pool mutex",
         ends_at="confirm closure or retain the identical pending/uncertain original children",
         dimensions=(Dimension("units", COUNT, "One original bounded receiving invocation."),),
@@ -61,7 +74,8 @@ def _receiving_growth() -> Declaration:
                     (
                         "At most the generation and capture-retained working connections; "
                         "five child file records plus five original workspace descriptors; "
-                        "two final-storage callbacks. No source, SQL, payload or path work."
+                        "two exact reclamation resources and two final-storage callbacks. "
+                        "No source, SQL, payload or path work."
                     ),
                 )
                 for bound in native.bounds
@@ -72,12 +86,13 @@ def _receiving_growth() -> Declaration:
                     COUNT,
                     "upper",
                     Expression("constant", value=1, unit=COUNT),
-                    "Visit each of the three fixed original children at most once per step.",
+                    "Visit each fixed original child at most once per step.",
                 )
                 for name in (
                     "capture_close_calls",
                     "restore_close_calls",
                     "construction_close_calls",
+                    "reclamation_close_calls",
                 )
             ),
         ),
@@ -123,6 +138,7 @@ class JournalGenerationResources:
         self.storage: NativeGenerationStorage | None = None
         self.capture: JournalImageCapture | None = None
         self.restore: JournalImageRestore | None = None
+        self.reclamation: FileReclamationOwner | None = None
         self._closing = False
         self._gate = Lock()
 
@@ -159,12 +175,40 @@ class JournalGenerationResources:
             raise RuntimeError("generation requires its original passive storage restore")
         self.restore = restore
 
+    def retain_reclamation(self) -> FileReclamationOwner:
+        """Retain a passive file attempt after every Native dependency receives.
+
+        The caller separately proves exact store nonpublication and retains
+        workspace/byte admission before dispatching any physical mutation.
+        This allocation confers no disposal or cost-receiving authority.
+        A failed attempt must receive before another file quantum is retained.
+        """
+        if not self._gate.acquire(blocking=False):
+            raise BlockingIOError("original Native generation receiving is executing")
+        try:
+            if (
+                not self.construction.received
+                or self.capture is not None
+                and not self.capture.received
+                or self.restore is not None
+                and not self.restore.received
+            ):
+                raise BlockingIOError("original Native dependencies precede file reclamation")
+            if self.reclamation is not None and not self.reclamation.received:
+                raise BlockingIOError("original file reclamation attempt has not received")
+            original = FileReclamationOwner()
+            self.reclamation = original
+            return original
+        finally:
+            self._gate.release()
+
     @property
     def dependents_received(self) -> bool:
         return (
             self.construction.dependents_received
             and (self.capture is None or self.capture.received)
             and (self.restore is None or self.restore.received)
+            and (self.reclamation is None or self.reclamation.received)
         )
 
     @property
@@ -177,6 +221,8 @@ class JournalGenerationResources:
             raise BlockingIOError("original Native generation receiving is executing")
         try:
             self._closing = True
+            if self.reclamation is not None:
+                self.reclamation.close()
             if self.capture is not None:
                 self.capture.close()
             if self.restore is not None:

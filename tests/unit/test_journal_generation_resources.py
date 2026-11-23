@@ -229,7 +229,16 @@ def test_actual_slot_receiving_composes_generation_and_working_resources(
     record_property("growth_samples", samples)
     record_property("generation_row_conditions", [0, 128])
     for unrelated in (0, 128):
-        for state in ("passive", "capturing", "captured", "pinned", "restoring", "working-pinned"):
+        for state in (
+            "passive",
+            "capturing",
+            "captured",
+            "pinned",
+            "restoring",
+            "working-pinned",
+            "reclaiming",
+            "reclaiming-failed",
+        ):
             base = tmp_path / f"{unrelated}-{state}"
             base.mkdir()
             recorder = Recorder()
@@ -254,7 +263,14 @@ def test_actual_slot_receiving_composes_generation_and_working_resources(
                     ).close()
                     storage.db.commit()
                     capture = begin_capture(case)
-                    if state in {"captured", "pinned", "restoring", "working-pinned"}:
+                    if state in {
+                        "captured",
+                        "pinned",
+                        "restoring",
+                        "working-pinned",
+                        "reclaiming",
+                        "reclaiming-failed",
+                    }:
                         while capture.image is None:
                             capture.advance(page_limit=4)
                         if state == "pinned":
@@ -276,6 +292,38 @@ def test_actual_slot_receiving_composes_generation_and_working_resources(
                             else:
                                 pytest.fail("finite original validation did not complete")
                             reader = case.slot.session.result()
+                if state in {"reclaiming", "reclaiming-failed"}:
+                    from riverhog_provenance import (
+                        JournalValidationCapacity,
+                        reclaim_retired_generation_storage,
+                    )
+
+                    from tests.unit.test_journal_generation_rejection import reject
+
+                    reject(case)
+                    assert case.generation.close_step()
+                    file_original = case.generation.retain_reclamation()
+                    pinned = case.directory.stat()
+                    with pytest.MonkeyPatch.context() as patch:
+                        if state == "reclaiming-failed":
+                            import errno
+                            import os
+
+                            def refused_sync(_descriptor):
+                                raise OSError(errno.ENOSPC, "injected original extent sync")
+
+                            patch.setattr(os, "fsync", refused_sync)
+                        try:
+                            reclaim_retired_generation_storage(
+                                case.directory,
+                                receiver=file_original,
+                                expected_directory_identity=(pinned.st_dev, pinned.st_ino),
+                                octet_budget=4096,
+                            )
+                        except JournalValidationCapacity:
+                            assert state == "reclaiming-failed" and not file_original.received
+                        else:
+                            assert state == "reclaiming" and file_original.received
                 try:
                     samples.append(measure_slot(recorder, case, pending=reader is not None))
                     if reader is not None:

@@ -30,6 +30,7 @@ from riverhog_provenance import (
     JournalValidationSession,
 )
 from sqlalchemy import event, select
+from workspace_reclamation import FileReclamationOwner
 
 from scripts.validation_numeric import numeric_policy_from_environment, numeric_policy_snapshot
 from tests.support.sqlite_observation import connect_observed, observed_connection_type
@@ -221,6 +222,8 @@ class Recorder:
             records.append(resources.capture.file)
         if resources.restore is not None:
             records.extend((resources.restore.file, resources.restore.directory))
+        if resources.reclamation is not None:
+            records.extend((resources.reclamation._directory, resources.reclamation._file))
         records = {id(value): value for value in records if value is not None}.values()
         before = [(value, value.metrics.copy()) for value in records]
         self.native_values = {
@@ -309,11 +312,15 @@ class Recorder:
         capture_close = JournalImageCapture.close
         restore_close = JournalImageRestore.close
         construction_close = JournalConstruction.close_step
+        reclamation_close = FileReclamationOwner.close
 
         def child_close(original, actual, metric):
             if self.recording() and getattr(self, "generation_active", False):
                 self.native_values[metric] += 1
             return actual(original)
+
+        def receive_files(original):
+            return child_close(original, reclamation_close, "reclamation_close_calls")
 
         driver = sqlite_admission._connect
         resource_close = RetainedWorkspaceResource.close
@@ -443,6 +450,7 @@ class Recorder:
                 patch.setattr(
                     JournalValidationSession, "close", lambda session: self.close(session)
                 )
+                patch.setattr(FileReclamationOwner, "close", receive_files)
                 patch.setattr(
                     JournalGenerationResources,
                     "close_step",
