@@ -42,8 +42,8 @@ def reclamation_growth(
         id=identity,
         authority="riverhog-provenance",
         subjects=(subject,),
-        scope="native-posix-retired-sqlite-workspace-file-extent-disposal",
-        starts_at="receive one durably retired owned workspace under its exclusive kernel lease",
+        scope="native-posix-retired-sqlite-file-set-extent-disposal",
+        starts_at="receive one durably retired owned file set under its exclusive kernel lease",
         ends_at="synchronize one admitted extent removal and report remaining owned files",
         dimensions=(
             Dimension("directory_octets", OCTETS, "Complete encoded original directory path."),
@@ -74,7 +74,10 @@ def reclamation_growth(
             for bound in child.bounds
         ),
         conditions=(
-            "The caller durably retired this exact job and excludes its writer and every reader.",
+            (
+                "The caller durably retired this exact file set and excludes "
+                "its writers and every reader."
+            ),
             (
                 "Private POSIX directory/file custody and the selected current "
                 "SQLite names are preserved."
