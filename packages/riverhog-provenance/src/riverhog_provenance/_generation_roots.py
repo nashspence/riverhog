@@ -201,7 +201,8 @@ class GenerationRoots:
         self._require()
         self._execute(
             "CREATE TABLE generation_roots(identity TEXT PRIMARY KEY,root TEXT,"
-            "status TEXT NOT NULL CHECK(status IN ('building','immutable')))"
+            "status TEXT NOT NULL CHECK(status IN ('building','immutable')),"
+            "envelope BLOB,envelope_sha256 TEXT)"
         ).close()
 
     @declare_growth(_growth("begin"))
@@ -218,7 +219,8 @@ class GenerationRoots:
         if root is not None:
             self.storage.objects.retain(root)
         self._execute(
-            "INSERT INTO generation_roots VALUES(?,?,'building')", (identity, root)
+            "INSERT INTO generation_roots(identity,root,status) VALUES(?,?,'building')",
+            (identity, root),
         ).close()
 
     @declare_growth(_growth("replace"))

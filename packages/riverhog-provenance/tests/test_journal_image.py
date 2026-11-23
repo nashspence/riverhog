@@ -11,7 +11,7 @@ from native_units import unit_budget
 from riverhog_provenance import IncompleteSourceError, JournalValidationCapacity, validate_journal
 from riverhog_provenance import _journal_image as image_owner
 from riverhog_provenance._generation_storage import NativeGenerationStorage
-from riverhog_provenance._journal_image import JournalImageRestore
+from riverhog_provenance._journal_image import JournalImage, JournalImageRestore
 from riverhog_provenance._native_conductor import ControlSlot
 from test_retained_journal_session import OwnedSource, finish, open_session
 
@@ -38,7 +38,7 @@ def origin(tmp_path, journal, catalog, journal_constructions):
         construction=journal_constructions.retain(),
         page_size=scalar(session._store.db, "PRAGMA page_size"),
         reader_limit=2,
-        metadata_octets=1024,
+        metadata_octets=32768,
         create=True,
     )
     try:
@@ -61,7 +61,12 @@ def unfinished(session):
 def capture(session, storage, *, page_limit=2):
     original = session.image_capture()
     try:
-        original.begin(storage, "original-grant:1", image_octets=16 * 1024**2)
+        original.begin(
+            storage,
+            "original-grant:1",
+            image_octets=16 * 1024**2,
+            owner_context=b'{"cursor":"original"}',
+        )
         while True:
             before_pages, before_octets = original.pages_captured, original.octets_read
             image = original.advance(page_limit=page_limit)
@@ -86,6 +91,14 @@ def test_actual_unfinished_image_restores_exact_input_child_and_semantic_result(
     input_before = session._input.state
     image = capture(session, storage)
     assert image.binding == session._prefix.binding
+    assert JournalImage.from_bytes(image.encoded) == image
+    assert (
+        storage.envelopes.read(
+            image.identity, root=image.root, expected_digest=image.envelope_sha256
+        )
+        == image.encoded
+    )
+    assert image.owner_context == b'{"cursor":"original"}'
     assert image.worker_epoch == 7 and image.checkpoint_version == before.checkpoint.version
     session.advance(unit_budget(rows=1))
     assert session._ledger.load().checkpoint.version > before.checkpoint.version
@@ -131,12 +144,22 @@ def test_original_capture_excludes_execution_until_its_files_and_storage_receive
     first, second = session.image_capture(), session.image_capture()
     try:
         assert first.phase == "new" and first.file.metrics["open_calls"] == 0
-        first.begin(storage, "original-grant:1", image_octets=16 * 1024**2)
+        first.begin(
+            storage,
+            "original-grant:1",
+            image_octets=16 * 1024**2,
+            owner_context=b'{"cursor":"original"}',
+        )
         with pytest.raises(BlockingIOError, match="capture has not received"):
             session.advance(unit_budget())
         assert session._failure is None and session._ledger.load() == before
         with pytest.raises(BlockingIOError, match="has not received"):
-            second.begin(storage, "original-grant:2", image_octets=16 * 1024**2)
+            second.begin(
+                storage,
+                "original-grant:2",
+                image_octets=16 * 1024**2,
+                owner_context=b'{"cursor":"original"}',
+            )
         assert second.file.metrics["open_calls"] == 0
         second.close()
         assert first.advance(page_limit=1) is None
@@ -153,7 +176,9 @@ def test_capture_capacity_refusal_opens_no_file_or_generation_root(origin):
     original = session.image_capture()
     try:
         with pytest.raises(JournalValidationCapacity, match="baseline admission"):
-            original.begin(storage, "original-grant:1", image_octets=1)
+            original.begin(
+                storage, "original-grant:1", image_octets=1, owner_context=b'{"cursor":"original"}'
+            )
         assert original.file.metrics["open_calls"] == 0
         assert scalar(storage.db, "SELECT count(*) FROM generation_roots") == 0
         with pytest.raises(BlockingIOError):
@@ -167,7 +192,12 @@ def test_capture_capacity_refusal_opens_no_file_or_generation_root(origin):
 def test_capture_failure_preserves_its_original_cause_and_hold(origin, monkeypatch, fault):
     session, source, storage = origin
     original = session.image_capture()
-    original.begin(storage, "original-grant:1", image_octets=16 * 1024**2)
+    original.begin(
+        storage,
+        "original-grant:1",
+        image_octets=16 * 1024**2,
+        owner_context=b'{"cursor":"original"}',
+    )
     error = RuntimeError("original capture cause")
 
     def fail(*args, **kwargs):
@@ -195,7 +225,12 @@ def test_stale_source_is_fatal_before_any_baseline_file_or_root(origin):
     original = session.image_capture()
     try:
         with pytest.raises(IncompleteSourceError):
-            original.begin(storage, "original-grant:1", image_octets=16 * 1024**2)
+            original.begin(
+                storage,
+                "original-grant:1",
+                image_octets=16 * 1024**2,
+                owner_context=b'{"cursor":"original"}',
+            )
         assert original.file.metrics["open_calls"] == 0
         assert scalar(storage.db, "SELECT count(*) FROM generation_roots") == 0
     finally:
@@ -211,7 +246,7 @@ def test_restore_rejects_wrong_identity_incomplete_extent_and_existing_file(
     if damage == "store":
         image = replace(image, store_id="0" * 32)
     elif damage == "root":
-        image = replace(image, root="0" * 64)
+        image = replace(image, root="f" * 64)
     elif damage == "count":
         image = replace(image, page_count=image.page_count + 1)
     restored = tmp_path / "restore"
@@ -239,7 +274,12 @@ def test_session_close_keeps_original_working_storage_until_capture_receives(ori
     session, _source, storage = origin
     original = session.image_capture()
     try:
-        original.begin(storage, "original-grant:1", image_octets=16 * 1024**2)
+        original.begin(
+            storage,
+            "original-grant:1",
+            image_octets=16 * 1024**2,
+            owner_context=b'{"cursor":"original"}',
+        )
         assert original.advance(page_limit=1) is None
         session.close()
         assert not session.storage_received
@@ -259,7 +299,12 @@ def test_failed_original_file_receiving_keeps_execution_held_until_retry(
     monkeypatch.setattr(image_owner, "Borrow", module.Borrow)
     original = session.image_capture()
     try:
-        original.begin(storage, "original-grant:1", image_octets=16 * 1024**2)
+        original.begin(
+            storage,
+            "original-grant:1",
+            image_octets=16 * 1024**2,
+            owner_context=b'{"cursor":"original"}',
+        )
         original.file._test_fault(fault)
         with pytest.raises(RuntimeError):
             original.close()
@@ -293,14 +338,158 @@ def test_ordinary_stream_capture_is_passive_and_does_not_consume_or_spool(
             construction=journal_constructions.retain(),
             page_size=scalar(session._store.db, "PRAGMA page_size"),
             reader_limit=1,
-            metadata_octets=1024,
+            metadata_octets=32768,
             create=True,
         )
         original = session.image_capture()
         try:
             with pytest.raises(ValueError, match="no implicit spool"):
-                original.begin(storage, "original-grant:1", image_octets=16 * 1024**2)
+                original.begin(
+                    storage,
+                    "original-grant:1",
+                    image_octets=16 * 1024**2,
+                    owner_context=b'{"cursor":"original"}',
+                )
             assert not reads and original.file.metrics["open_calls"] == 0
             assert scalar(storage.db, "SELECT count(*) FROM generation_roots") == 0
         finally:
             original.close()
+
+
+def test_original_capture_files_receive_before_the_complete_envelope_seals(origin, monkeypatch):
+    session, _source, storage = origin
+    original = session.image_capture()
+    seal = storage.envelopes.seal
+    observed = []
+
+    def checked(*args):
+        assert original.files.received and not original.borrow.active
+        assert not original.lease.closed
+        original.epoch.require_capture(original)
+        observed.append(True)
+        return seal(*args)
+
+    monkeypatch.setattr(storage.envelopes, "seal", checked)
+    try:
+        original.begin(
+            storage,
+            "original-grant:1",
+            image_octets=16 * 1024**2,
+            owner_context=b'{"cursor":"exact-original-cursor"}',
+        )
+        while original.advance(page_limit=2) is None:
+            pass
+        assert observed == [True]
+    finally:
+        original.close()
+
+
+@pytest.mark.parametrize("fault", ["before_close", "after_close"])
+def test_unreceived_capture_never_seals_and_cannot_rebaseline(
+    origin, monkeypatch, fault_native, fault
+):
+    session, _source, storage = origin
+    module, _path = fault_native
+    monkeypatch.setattr(retained_resource, "Resource", module.Resource)
+    monkeypatch.setattr(image_owner, "Borrow", module.Borrow)
+    original = session.image_capture()
+    try:
+        original.begin(
+            storage,
+            "original-grant:1",
+            image_octets=16 * 1024**2,
+            owner_context=b'{"cursor":"original"}',
+        )
+        original.file._test_fault(fault)
+        with pytest.raises(RuntimeError):
+            original.advance(page_limit=1000)
+        assert original.image is None and not original.received
+        assert scalar(storage.db, "SELECT status FROM generation_roots") == "building"
+        assert scalar(storage.db, "SELECT envelope FROM generation_roots") is None
+        with pytest.raises(BlockingIOError):
+            session.advance(unit_budget())
+    finally:
+        original.close()
+    replacement = session.image_capture()
+    try:
+        with pytest.raises(JournalValidationCapacity, match="already attempted"):
+            replacement.begin(
+                storage,
+                "replacement-grant:2",
+                image_octets=16 * 1024**2,
+                owner_context=b'{"cursor":"replacement"}',
+            )
+        assert replacement.file.metrics["open_calls"] == 0
+        assert scalar(storage.db, "SELECT count(*) FROM generation_roots") == 1
+    finally:
+        replacement.close()
+    session.advance(unit_budget())
+
+
+@pytest.mark.parametrize("damage", ["body", "digest", "missing", "oversized"])
+def test_damaged_complete_envelope_fails_before_restore_effects(origin, tmp_path, damage):
+    session, _source, storage = origin
+    image = capture(session, storage)
+    if damage == "body":
+        sql = "UPDATE generation_roots SET envelope=x'00'"
+    elif damage == "digest":
+        sql = "UPDATE generation_roots SET envelope_sha256='different'"
+    elif damage == "missing":
+        sql = "UPDATE generation_roots SET envelope=NULL"
+    else:
+        sql = "UPDATE generation_roots SET envelope=zeroblob(1000000)"
+    storage.db.execute(sql).close()
+    storage.db.commit()
+    before = storage.envelopes.work.loaded_octets
+    directory = tmp_path / "restored"
+    directory.mkdir(mode=0o700)
+    original = JournalImageRestore(storage, image)
+    try:
+        with pytest.raises(ValueError, match="envelope"):
+            original.begin(directory, image_octets=16 * 1024**2)
+        assert not tuple(directory.iterdir())
+        assert not storage.roots.readers and original.file.metrics["open_calls"] == 0
+        assert (
+            storage.envelopes.work.loaded_octets - before <= storage.envelopes.metadata_octets + 66
+        )
+    finally:
+        original.close()
+
+
+@pytest.mark.parametrize("failure", ["before", "after"])
+def test_root_freezing_and_complete_envelope_sealing_share_the_original_commit(
+    origin, monkeypatch, failure
+):
+    session, _source, storage = origin
+    original = session.image_capture()
+    cause = RuntimeError("original generation sealing failed")
+    seal = storage.envelopes.seal
+
+    def fail(*args):
+        assert original.files.received
+        if failure == "after":
+            seal(*args)
+            assert scalar(storage.db, "SELECT envelope FROM generation_roots") is not None
+            assert scalar(storage.db, "SELECT status FROM generation_roots") == "immutable"
+        raise cause
+
+    monkeypatch.setattr(storage.envelopes, "seal", fail)
+    try:
+        original.begin(
+            storage,
+            "original-grant:1",
+            image_octets=16 * 1024**2,
+            owner_context=b'{"cursor":"original"}',
+        )
+        with pytest.raises(RuntimeError) as caught:
+            while original.advance(page_limit=2) is None:
+                pass
+        assert caught.value is cause and original.image is None
+        assert original._prepared_image.owner_context == b'{"cursor":"original"}'
+        assert scalar(storage.db, "SELECT status FROM generation_roots") == "building"
+        assert scalar(storage.db, "SELECT envelope FROM generation_roots") is None
+        with pytest.raises(BlockingIOError):
+            session.advance(unit_budget())
+    finally:
+        original.close()
+    session.advance(unit_budget())

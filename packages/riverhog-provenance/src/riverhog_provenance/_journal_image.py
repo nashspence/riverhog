@@ -7,16 +7,21 @@ still owns its full generation envelope, grant, cursor and selection outcome.
 
 from __future__ import annotations
 
+import json
 import os
+import re
 from collections.abc import Callable
 from contextlib import closing, contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from threading import Lock
 from typing import TYPE_CHECKING
 
 from retained_resource import Borrow, Group
+from riverhog_canonical_json import canonical_json_bytes
 
+from ._generation_envelope import envelope_digest
+from ._generation_page_map import GenerationPageMap
 from ._generation_storage import NativeGenerationStorage
 from ._native_storage import NativeStorageLease
 from .errors import IncompleteSourceError, JournalValidationCapacity
@@ -43,6 +48,73 @@ class JournalImage:
     checkpoint_version: int
     page_size: int
     page_count: int
+    owner_context: bytes
+    encoded: bytes = field(init=False, repr=False)
+    envelope_sha256: str = field(init=False)
+
+    def __post_init__(self) -> None:
+        for value in (self.identity, self.attempt_id):
+            if type(value) is not str or not value:
+                raise ValueError("Native image requires its exact original identity")
+        if type(self.store_id) is not str or re.fullmatch(r"[0-9a-f]{32}", self.store_id) is None:
+            raise ValueError("Native image requires its exact store identity")
+        if type(self.root) is not str:
+            raise ValueError("Native image requires its exact immutable root")
+        GenerationPageMap._address(self.root)
+        for number in (self.worker_epoch, self.checkpoint_version, self.page_count):
+            if type(number) is not int or number < 0:
+                raise ValueError("Native image requires exact natural counts")
+        if (
+            self.page_count < 1
+            or type(self.page_size) is not int
+            or not 512 <= self.page_size <= 65536
+            or self.page_size & (self.page_size - 1)
+        ):
+            raise ValueError("Native image requires its exact positive SQLite extent")
+        for body in (self.binding, self.owner_context):
+            if (
+                type(body) is not bytes
+                or not body
+                or canonical_json_bytes(json.loads(body)) != body
+            ):
+                raise ValueError("Native image requires exact canonical owner/control bytes")
+        encoded = canonical_json_bytes(
+            {
+                "format": "riverhog-native-journal-image/v1",
+                "identity": self.identity,
+                "store_id": self.store_id,
+                "root": self.root,
+                "binding": self.binding.decode("utf-8"),
+                "attempt_id": self.attempt_id,
+                "worker_epoch": str(self.worker_epoch),
+                "checkpoint_version": str(self.checkpoint_version),
+                "page_size": str(self.page_size),
+                "page_count": str(self.page_count),
+                "owner_context": self.owner_context.decode("utf-8"),
+            }
+        )
+        object.__setattr__(self, "encoded", encoded)
+        object.__setattr__(self, "envelope_sha256", envelope_digest(encoded))
+
+    @classmethod
+    def from_bytes(cls, raw: bytes) -> JournalImage:
+        try:
+            value = json.loads(raw)
+            if type(value) is not dict or value.pop("format") != "riverhog-native-journal-image/v1":
+                raise ValueError("Native image format differs")
+            for name in ("worker_epoch", "checkpoint_version", "page_size", "page_count"):
+                text = value[name]
+                if type(text) is not str or re.fullmatch(r"0|[1-9][0-9]*", text) is None:
+                    raise ValueError("Native image count representation differs")
+                value[name] = int(text)
+            for name in ("binding", "owner_context"):
+                value[name] = value[name].encode("utf-8")
+            image = cls(**value)
+            if image.encoded != raw:
+                raise ValueError("Native image envelope is not canonical")
+            return image
+        except (TypeError, ValueError, KeyError, AttributeError) as error:
+            raise InvalidJournalWorkspace("Native image envelope is invalid") from error
 
 
 class JournalImageCapture:
@@ -92,7 +164,14 @@ class JournalImageCapture:
         ):
             raise IncompleteSourceError("retained validation source is no longer current")
 
-    def begin(self, storage: NativeGenerationStorage, identity: str, *, image_octets: int) -> None:
+    def begin(
+        self,
+        storage: NativeGenerationStorage,
+        identity: str,
+        *,
+        image_octets: int,
+        owner_context: bytes,
+    ) -> None:
         """Start only after the composing owner's full original grant.
 
         image_octets is optional capture admission, never a source-size limit.
@@ -106,6 +185,11 @@ class JournalImageCapture:
                 raise TypeError("capture requires its separate original generation storage")
             if type(image_octets) is not int or image_octets < 1:
                 raise ValueError("capture requires positive original image admission")
+            if type(owner_context) is not bytes or not owner_context:
+                raise TypeError("capture requires its original encoded owner context")
+            if len(owner_context) > storage.envelopes.metadata_octets:
+                raise JournalValidationCapacity("optional generation envelope admission exhausted")
+            self._owner_context = owner_context
             self.phase = "opening"
             try:
                 self.session._require_open()
@@ -117,6 +201,10 @@ class JournalImageCapture:
                 self._retained = True
                 self._source = self.session._source
                 self._require_current()
+                if self.session._image_baseline_started:
+                    raise JournalValidationCapacity(
+                        "original Native baseline was already attempted"
+                    )
                 before = self.session._ledger.load()
                 if before.checkpoint.phase == "done":
                     raise ValueError("completed validation does not require baseline capture")
@@ -135,7 +223,32 @@ class JournalImageCapture:
                     raise ValueError("generation and working image page widths differ")
                 if self._page_count * self._page_size > image_octets:
                     raise JournalValidationCapacity("optional Native baseline admission exhausted")
-                path = self.session._store._storage.directory / "snapshot.sqlite3"
+                # Admit a conservative encoding envelope before reading any
+                # image bytes. JSON string escaping costs at most six bytes per
+                # input octet; scalar/header space is independently bounded.
+                control = (
+                    len(self._binding)
+                    + len(owner_context)
+                    + len(identity.encode("utf-8"))
+                    + len(self.session.attempt_id.encode("utf-8"))
+                    + 32
+                    + 64
+                    + sum(
+                        len(str(value))
+                        for value in (
+                            self._page_size,
+                            self._page_count,
+                            self.session._ledger.worker_epoch,
+                            self._checkpoint.version,
+                        )
+                    )
+                )
+                if 6 * control + 512 > storage.envelopes.metadata_octets:
+                    raise JournalValidationCapacity(
+                        "optional generation envelope admission exhausted"
+                    )
+                self.session._image_baseline_started = True
+                path = (self.session._store._storage.directory / "snapshot.sqlite3").absolute()
                 self.file.acquire(
                     os.fsencode(path) if os.name == "posix" else str(path),
                     private_owned=os.name == "posix",
@@ -195,12 +308,18 @@ class JournalImageCapture:
                     self.octets_read += 1
                     raise InvalidJournalWorkspace("working image grew during original capture")
                 self._require_current()
+                # Exhaustion and original file receiving precede envelope
+                # sealing. The executor/storage hold remains until its owner
+                # receives this candidate's known or ambiguous outcome.
+                self.borrow.close()
+                if not self.files.close_step(self.files.capacity):
+                    raise BlockingIOError("original capture files have not received")
+                self._require_current()
                 with storage.execution(check):
-                    root = storage.epoch.apply(
-                        lambda epoch: storage.roots.freeze(self._identity),
-                        receive=lambda result: None,
-                    )
-                self.image = JournalImage(
+                    root, status = storage.roots._get(self._identity)
+                if root is None or status != "building":
+                    raise InvalidJournalWorkspace("original Native candidate root differs")
+                proposed = JournalImage(
                     self._identity,
                     storage.store_id,
                     root,
@@ -210,7 +329,22 @@ class JournalImageCapture:
                     self._checkpoint.version,
                     self._page_size,
                     self._page_count,
+                    self._owner_context,
                 )
+                self._prepared_image = proposed
+
+                def seal(epoch: EpochContext) -> None:
+                    if storage.roots.freeze(self._identity) != proposed.root:
+                        raise InvalidJournalWorkspace("Native candidate root changed before seal")
+                    if (
+                        storage.envelopes.seal(self._identity, proposed.root, proposed.encoded)
+                        != proposed.envelope_sha256
+                    ):
+                        raise InvalidJournalWorkspace("Native candidate envelope digest differs")
+
+                with storage.execution(check):
+                    storage.epoch.apply(seal, receive=lambda result: None)
+                self.image = proposed
                 self.phase = "captured"
                 return self.image
             except BaseException:
@@ -286,6 +420,11 @@ class JournalImageRestore:
                     raise JournalValidationCapacity("optional Native restore admission exhausted")
                 if directory.is_symlink() or not directory.is_dir():
                     raise InvalidJournalWorkspace("fresh private restore directory is unavailable")
+                encoded = self.storage.envelopes.read(
+                    image.identity, root=image.root, expected_digest=image.envelope_sha256
+                )
+                if encoded != image.encoded or JournalImage.from_bytes(encoded) != image:
+                    raise InvalidJournalWorkspace("Native image envelope binding differs")
                 self.reader = self.storage.roots.borrow(image.identity, expected_root=image.root)
                 if self.directory is not None:
                     self.directory.acquire(os.fsencode(directory), private_owned=True)

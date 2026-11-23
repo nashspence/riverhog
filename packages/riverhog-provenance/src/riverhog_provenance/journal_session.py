@@ -1416,6 +1416,7 @@ class JournalValidationSession:
     ) -> None:
         self.attempt_id = attempt_id
         self._observation_sequence = 0
+        self._image_baseline_started = False
         self._closed = False
         self._closing = False
         self._summary: JournalSummary | None = None
@@ -1543,6 +1544,7 @@ class JournalValidationSession:
             result = object.__new__(cls)
             result.attempt_id = attempt_id
             result._observation_sequence = 0
+            result._image_baseline_started = False
             result._closed = False
             result._closing = False
             result._summary = None

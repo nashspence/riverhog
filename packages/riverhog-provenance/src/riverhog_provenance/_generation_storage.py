@@ -20,6 +20,7 @@ from uuid import uuid4
 
 from sqlite_admission import SqliteConnectionSettings, configure_sqlite_connection
 
+from ._generation_envelope import GenerationEnvelopes
 from ._generation_objects import GenerationObjectStore
 from ._generation_page_map import InvalidGenerationMap
 from ._generation_roots import GenerationRoots
@@ -28,7 +29,7 @@ from ._native_storage import NativeStorage, NativeStorageLease, StorageFinalizer
 from ._native_work import WorkQuantum
 from .journal_construction import JournalConstruction
 
-_FORMAT = "riverhog-native-generation-objects/v2"
+_FORMAT = "riverhog-native-generation-objects/v3"
 _NAME = "generations.sqlite3"
 
 
@@ -51,6 +52,7 @@ class NativeGenerationStorage:
     roots: GenerationRoots
     epoch: EpochContext
     objects: GenerationObjectStore
+    envelopes: GenerationEnvelopes
     store_id: str
 
     @classmethod
@@ -120,6 +122,7 @@ class NativeGenerationStorage:
                 storage.roots = GenerationRoots(
                     storage, reader_limit=reader_limit, metadata_octets=metadata_octets
                 )
+                storage.envelopes = GenerationEnvelopes(storage, metadata_octets=metadata_octets)
                 if create:
                     storage.store_id = uuid4().hex
 
@@ -167,7 +170,8 @@ class NativeGenerationStorage:
                     ).close()
                     connection.execute("SELECT address FROM generation_garbage LIMIT 0").close()
                     connection.execute(
-                        "SELECT identity,root,status FROM generation_roots LIMIT 0"
+                        "SELECT identity,root,status,envelope,envelope_sha256 "
+                        "FROM generation_roots LIMIT 0"
                     ).close()
                 construction.ready()
                 storage._storage.on_close = on_storage_close
