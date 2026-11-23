@@ -196,7 +196,29 @@ def test_uncertain_unlink_sync_reconciles_actual_absence_without_reconstruction(
     assert not target.exists()
     original_receiver.close()
     assert original_receiver.received
-    progress = reclaim(path, names=("data",), octet_budget=7, receiver=retained_file_receivers())
+    # Absence after a lost unlink-sync reply is still volatile. A fresh
+    # reconciliation must synchronize that same directory before confirmation.
+    reconciler = retained_file_receivers()
+    with monkeypatch.context() as patch:
+        patch.setattr(os, "fsync", failed)
+        with pytest.raises(WorkspaceReclamationCapacity):
+            reclaim(path, names=("data",), octet_budget=7, receiver=reconciler)
+    assert not reconciler.received and reconciler._directory_borrow.active
+    reconciler.close()
+    assert reconciler.received
+    sync = os.fsync
+    synchronized = []
+
+    def received_sync(descriptor):
+        synchronized.append(os.fstat(descriptor).st_ino)
+        return sync(descriptor)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(os, "fsync", received_sync)
+        progress = reclaim(
+            path, names=("data",), octet_budget=7, receiver=retained_file_receivers()
+        )
+    assert synchronized == [path.stat().st_ino]
     assert progress.files_reclaimed and progress.removed_octets == 0
 
 

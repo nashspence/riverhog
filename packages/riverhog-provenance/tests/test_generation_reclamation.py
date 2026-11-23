@@ -221,6 +221,7 @@ def test_generation_file_work_is_bounded_independently_of_other_workspace_files(
                             octet_budget=4096,
                         )
                 assert original.received
+                assert metrics["sync_calls"] == 1
                 assert progress.removed_octets == metrics["reclaimed_extent_octets"]
                 assert progress.remaining_octets == files * extent - progress.removed_octets
                 assert semantic.read_bytes() == b"x" * 29

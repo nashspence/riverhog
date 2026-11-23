@@ -179,6 +179,10 @@ class FileReclamationOwner:
                 os.unlink(name, dir_fd=descriptor)
                 removed_files = 1
                 os.fsync(descriptor)
+        else:
+            # A prior unlink may have lost its synchronization reply. Volatile
+            # absence alone cannot receive that namespace mutation.
+            os.fsync(descriptor)
         after = _files(descriptor, self._names)
         return FileReclamationProgress(
             removed_octets,
@@ -352,7 +356,11 @@ def _declaration() -> Declaration:
                     ("close_calls", 2, "Every opened directory/data handle closes."),
                     ("truncate_calls", 1, "At most one admitted tail truncation."),
                     ("unlink_calls", 1, "At most one admitted small file unlink."),
-                    ("sync_calls", 1, "The affected file or directory is synchronized."),
+                    (
+                        "sync_calls",
+                        1,
+                        "Synchronize one file or directory, including absent-file confirmation.",
+                    ),
                 )
             ),
             Bound(
@@ -379,6 +387,7 @@ def _declaration() -> Declaration:
             "No archive authority, receiving receipt, lease or unclassified file is selected.",
             "Caller order is retained; uniqueness validation uses a separate comparison sort.",
             "A crashed or uncertain mutation reconciles from its actual remaining file extent.",
+            "Absent files require original directory synchronization before confirmation.",
         ),
         limitations=(
             "Syscall counts exclude kernel path/index work, physical IO, wait time and CPU.",
