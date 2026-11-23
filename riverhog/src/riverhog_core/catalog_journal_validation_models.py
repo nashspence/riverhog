@@ -68,7 +68,7 @@ class JournalValidationJobRecord(Base):
             name="ck_journal_validation_received_receipt",
         ),
         CheckConstraint(
-            "NOT directory_received OR (state = 'directory' AND collection_id IS NULL)",
+            "NOT directory_received OR state = 'directory' AND collection_id IS NULL",
             name="ck_journal_validation_directory_received",
         ),
         CheckConstraint(
