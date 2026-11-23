@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from contextlib import contextmanager
 from dataclasses import replace
 
@@ -13,6 +14,8 @@ from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_result as result_owner
 from riverhog_core.services.upload_journal_validation_owner import UploadJournalValidationOwner
 from riverhog_provenance import (
+    DerivedNativeCacheUnavailable,
+    IncompleteSourceError,
     JournalValidationCapacity,
     JournalValidationSession,
     validate_journal,
@@ -294,8 +297,13 @@ def test_sealed_result_never_repairs_or_revalidates_changed_authority(
                     session.execute(
                         update(Journal).where(Journal.collection_id == 1).values(**values)
                     )
+        failure = (
+            DerivedNativeCacheUnavailable
+            if fault == "missing-database"
+            else LostJournalValidationWorkspace
+        )
         with factory() as session, session.begin():
-            with pytest.raises(LostJournalValidationWorkspace):
+            with pytest.raises(failure):
                 open_result(session, root, upload_result_openings=upload_result_openings)
         assert database.exists() is (fault != "missing-database")
         if fault == "missing-coordinator":
@@ -325,8 +333,47 @@ def test_changed_source_during_readonly_admission_releases_the_untransferred_lea
 
         monkeypatch.setattr(result_owner._SealedSource, "verify_current", replaced)
         with factory() as session, session.begin():
-            with pytest.raises(LostJournalValidationWorkspace):
+            with pytest.raises(IncompleteSourceError):
                 open_result(session, root, upload_result_openings=upload_result_openings)
         assert len(calls) == 2
+        with leased_workspace(root, job.workspace_id) as free:
+            assert free is not None
+
+
+@pytest.mark.parametrize("boundary", (1, 2))
+@pytest.mark.parametrize("failure_type", (RuntimeError, ValueError, sqlite3.DatabaseError))
+def test_mandatory_source_probe_failure_is_not_reclassified_as_lost_derived_state(
+    tmp_path,
+    monkeypatch,
+    boundary,
+    failure_type,
+    *,
+    journal_constructions,
+    upload_result_openings,
+):
+    with sealed(tmp_path, journal_constructions=journal_constructions) as (
+        _,
+        factory,
+        root,
+        job,
+        _,
+    ):
+        original = result_owner._SealedSource.verify_current
+        calls = []
+        failure = failure_type("original current-source probe failed")
+
+        def failed(self):
+            calls.append(None)
+            if len(calls) == boundary:
+                raise failure
+            return original(self)
+
+        monkeypatch.setattr(result_owner._SealedSource, "verify_current", failed)
+        with factory() as session, session.begin():
+            with pytest.raises(failure_type) as caught:
+                open_result(session, root, upload_result_openings=upload_result_openings)
+        assert caught.value is failure
+        assert len(calls) == boundary
+        assert selected(factory) == job
         with leased_workspace(root, job.workspace_id) as free:
             assert free is not None

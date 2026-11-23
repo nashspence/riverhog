@@ -56,7 +56,7 @@ from ._semantic_edge import install as install_semantic_edges
 from ._semantic_finish import install as install_semantic_finish
 from ._semantic_source import install as install_semantic_source
 from .constants import PROVENANCE_JOURNAL_ENTRY_BYTES_MAX
-from .errors import ProvenanceValidationError
+from .errors import DerivedNativeCacheUnavailable, ProvenanceValidationError
 from .graph import GraphValidation, time_ns
 from .journal_construction import JournalConstruction
 
@@ -553,6 +553,8 @@ class JournalStore:
             construction.create_exclusive(path)
             construction.sync_directory(directory)
         elif not path.is_file():
+            if read_only and not path.exists():
+                raise DerivedNativeCacheUnavailable("frozen journal database is missing")
             raise InvalidJournalWorkspace("retained journal database is missing")
 
         def retain(actual: Self) -> None:

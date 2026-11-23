@@ -11,6 +11,7 @@ import sqlite_admission as sqlite_owner
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import (
+    DerivedNativeCacheUnavailable,
     IncompleteSourceError,
     JournalFrame,
     JournalResultConfirmation,
@@ -542,15 +543,17 @@ def test_frozen_result_releases_owner_only_after_last_borrow(
     assert released == ["closed"]
 
 
-@pytest.mark.parametrize("fault", ["missing", "input", "unfinished"])
+@pytest.mark.parametrize("fault", ["missing", "not-regular", "input", "unfinished"])
 def test_frozen_result_never_recreates_or_repairs_lost_native_state(
     tmp_path, journal, catalog, fault, *, journal_constructions
 ):
     path, source, confirmed, _, _ = completed(
         tmp_path, journal, catalog, journal_constructions=journal_constructions
     )
-    if fault == "missing":
+    if fault in {"missing", "not-regular"}:
         (path / "snapshot.sqlite3").unlink()
+        if fault == "not-regular":
+            (path / "snapshot.sqlite3").mkdir()
     else:
         with closing(sqlite3.connect(path / "snapshot.sqlite3")) as db:
             if fault == "input":
@@ -562,7 +565,12 @@ def test_frozen_result_never_recreates_or_repairs_lost_native_state(
                 )
             db.commit()
     released = []
-    with pytest.raises((InvalidJournalWorkspace, RuntimeError, sqlite3.DatabaseError)):
+    expected_failure = (
+        DerivedNativeCacheUnavailable
+        if fault == "missing"
+        else (InvalidJournalWorkspace, RuntimeError, sqlite3.DatabaseError)
+    )
+    with pytest.raises(expected_failure) as caught:
         open_retained_journal_result(
             path,
             source,
@@ -571,6 +579,8 @@ def test_frozen_result_never_recreates_or_repairs_lost_native_state(
             on_storage_close=lambda: released.append("closed"),
             construction=journal_constructions.retain(),
         )
+    if fault != "missing":
+        assert not isinstance(caught.value, DerivedNativeCacheUnavailable)
     assert not released
     assert (path / "snapshot.sqlite3").exists() is (fault != "missing")
 
@@ -618,3 +628,29 @@ def test_parallel_borrowed_readers_preserve_exact_retained_snapshot(
     ) as summary:
         parallel_snapshot_reads(summary)
         assert summary.materialize() == expected
+
+
+@pytest.mark.parametrize("fault", ("confirmation", "current-source"))
+def test_missing_frozen_cache_does_not_hide_mandatory_source_or_outcome_failure(
+    tmp_path, journal, catalog, fault, *, journal_constructions
+):
+    path, source, confirmed, _, _ = completed(
+        tmp_path, journal, catalog, journal_constructions=journal_constructions
+    )
+    (path / "snapshot.sqlite3").unlink()
+    if fault == "confirmation":
+        confirmed = replace(confirmed, terminal_json_sha256="invalid")
+        expected = InvalidJournalWorkspace
+    else:
+        source.current = False
+        expected = IncompleteSourceError
+    with pytest.raises(expected):
+        open_retained_journal_result(
+            path,
+            source,
+            confirmed=confirmed,
+            catalog=catalog,
+            construction=journal_constructions.retain(),
+        )
+    assert source.calls == []
+    assert not (path / "snapshot.sqlite3").exists()

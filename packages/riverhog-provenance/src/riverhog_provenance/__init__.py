@@ -36,6 +36,7 @@ from .corpus_workspace import (
 from .delivery import selected_delivery_occurrence, verify_delivery
 from .errors import (
     ConcurrentJournalChangeError,
+    DerivedNativeCacheUnavailable,
     IncompleteSourceError,
     JournalValidationCapacity,
     ObservationError,
@@ -151,6 +152,7 @@ __all__ = [
     "verify_delivery",
     "selected_delivery_occurrence",
     "ConcurrentJournalChangeError",
+    "DerivedNativeCacheUnavailable",
     "IncompleteSourceError",
     "InvalidJournalWorkspace",
     "JournalValidationCapacity",

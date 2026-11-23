@@ -480,6 +480,8 @@ def open_upload_journal_result(
     locks for work requiring current authority. Returned independent readers keep
     the exact frozen projection and shared kernel lease until their last close.
     Missing retained state is explicit; this never recreates or revalidates it.
+    Mandatory source/outcome failures keep their original classification; only
+    identified derived cache absence can signal cache unavailability.
     """
     if not isinstance(receiver, UploadJournalResultOpening) or receiver.started:
         raise ValueError("sealed result requires its retained original single-attempt opening")
@@ -525,7 +527,7 @@ def open_upload_journal_result(
     except SqliteCapacity as error:
         raise JournalValidationCapacity("sealed result storage admission is full") from error
     except sqlite3.OperationalError as error:
-        if error.sqlite_errorcode in {
+        if getattr(error, "sqlite_errorcode", None) in {
             sqlite3.SQLITE_BUSY,
             sqlite3.SQLITE_LOCKED,
             sqlite3.SQLITE_FULL,
@@ -534,9 +536,7 @@ def open_upload_journal_result(
             raise JournalValidationCapacity(
                 "sealed native result resources are unavailable"
             ) from error
-        raise LostJournalValidationWorkspace("sealed native result is unavailable") from error
-    except (RuntimeError, ValueError, sqlite3.DatabaseError) as error:
-        raise LostJournalValidationWorkspace("sealed native result is unavailable") from error
+        raise
     finally:
         if not receiver.transferred:
             receiver.close()

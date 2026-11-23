@@ -20,3 +20,7 @@ class UnresolvedContractError(ProvenanceValidationError):
 
 class JournalValidationCapacity(RuntimeError):
     """The current existing validation atom needs more explicit resource admission."""
+
+
+class DerivedNativeCacheUnavailable(RuntimeError):
+    """An identified derived Native cache is absent; this grants no replay authority."""
