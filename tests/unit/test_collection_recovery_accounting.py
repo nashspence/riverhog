@@ -76,6 +76,7 @@ def _reserve(case, *, domain="native", revision=None, useful=100 * NS, cost=10 *
         candidate=_candidate(cost=cost),
         guard=_guard,
         retain_domain=_guard,
+        retain_grant=lambda session, grant: _retain_original(session, grant),
     )
 
 
@@ -576,6 +577,7 @@ def test_grant_admission_retains_domain_fence_after_control_before_spending(tmp_
                 candidate=_candidate(),
                 guard=_guard,
                 retain_domain=stale,
+                retain_grant=lambda session, grant: _retain_original(session, grant),
             )
         assert _read(case) == before
 

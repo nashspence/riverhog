@@ -744,7 +744,9 @@ class UploadJournalValidationRetirement:
                 return selected
         return None
 
-    def _transition(self, job: jobs.ValidationJob, state: str) -> jobs.ValidationJob | None:
+    def _transition(
+        self, job: jobs.ValidationJob, state: str, *, directory_received: bool = False
+    ) -> jobs.ValidationJob | None:
         with self.factory() as session, session.begin():
             changed = session.execute(
                 update(Job)
@@ -755,7 +757,12 @@ class UploadJournalValidationRetirement:
                     Job.collection_id.is_(None),
                     Job.journal_id.is_(None),
                 )
-                .values(state=state, version=jobs._version(), failure=None)
+                .values(
+                    state=state,
+                    version=jobs._version(),
+                    failure=None,
+                    directory_received=directory_received,
+                )
                 .returning(Job)
             ).scalar_one_or_none()
             return None if changed is None else jobs.ValidationJob.read(changed)
@@ -788,9 +795,14 @@ class UploadJournalValidationRetirement:
             # Retirement is durable before any data extent can be removed.
             return True
         if job.state == "directory":
-            if not remove_retired_journal_workspace_directory(
-                self.root, job.workspace_id, handles=turn._handles
-            ):
+            if not job.directory_received:
+                if not remove_retired_journal_workspace_directory(
+                    self.root, job.workspace_id, handles=turn._handles
+                ):
+                    return False
+                if not job.recovery_received:
+                    return self._transition(job, "directory", directory_received=True) is not None
+            if not job.recovery_received:
                 return False
             with self.factory() as session, session.begin():
                 removed = session.execute(
@@ -800,6 +812,9 @@ class UploadJournalValidationRetirement:
                         Job.version == job.version,
                         Job.state == "directory",
                         Job.collection_id.is_(None),
+                        Job.recovery_received.is_(True),
+                        Job.recovery_original_json == job.recovery_original_json,
+                        Job.recovery_receipt_json == job.recovery_receipt_json,
                     )
                     .returning(Job.workspace_id)
                 ).scalar_one_or_none()

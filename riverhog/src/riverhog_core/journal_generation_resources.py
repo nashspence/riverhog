@@ -21,6 +21,8 @@ from riverhog_provenance import (
     NativeGenerationStorage,
 )
 
+from riverhog_core.journal_recovery_frontier import JournalRecoveryContext
+
 
 def _receiving_growth() -> Declaration:
     native = growth_binding(JournalValidationSession.close).declaration
@@ -106,10 +108,16 @@ class JournalGenerationResources:
     """
 
     def __init__(
-        self, construction: JournalConstruction, working: JournalValidationSession
+        self,
+        construction: JournalConstruction,
+        working: JournalValidationSession,
+        context: JournalRecoveryContext,
     ) -> None:
         if not isinstance(construction, JournalConstruction) or construction.phase != "new":
             raise TypeError("generation requires its own new original Native construction")
+        if not isinstance(context, JournalRecoveryContext):
+            raise TypeError("generation requires its exact original Core context")
+        self.context = context
         self.construction = construction
         self.working = working
         self.storage: NativeGenerationStorage | None = None

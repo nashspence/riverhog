@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
     CheckConstraint,
     ForeignKeyConstraint,
     Index,
@@ -33,6 +34,11 @@ class JournalValidationJobRecord(Base):
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
     resume_frontier_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     recovery_receipt_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    recovery_original_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # A known root receiving reply was acknowledged; a committed receipt alone
+    # cannot let cleanup erase routing while the reply is still unknown.
+    recovery_received: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    directory_received: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -52,6 +58,19 @@ class JournalValidationJobRecord(Base):
             name="ck_journal_validation_retired_source",
         ),
         CheckConstraint("worker_epoch >= 0", name="ck_journal_validation_worker_epoch"),
+        CheckConstraint(
+            "recovery_original_json IS NOT NULL OR recovery_received",
+            name="ck_journal_validation_original_receiving",
+        ),
+        CheckConstraint(
+            "recovery_original_json IS NULL OR NOT recovery_received "
+            "OR recovery_receipt_json IS NOT NULL",
+            name="ck_journal_validation_received_receipt",
+        ),
+        CheckConstraint(
+            "NOT directory_received OR (state = 'directory' AND collection_id IS NULL)",
+            name="ck_journal_validation_directory_received",
+        ),
         CheckConstraint(
             "state IN ('opening','active','complete','failed','lost','retiring','directory')",
             name="ck_journal_validation_state",

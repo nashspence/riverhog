@@ -86,11 +86,20 @@ def admitted_origin(tmp_path, journal_constructions, *, observe=lambda engine: n
                     candidate=_candidate(),
                     guard=_guard,
                     retain_domain=lambda session: jobs.retain_recovery_owner(session, work, job),
+                    retain_grant=lambda session, issued: jobs.retain_recovery_grant(
+                        session, binding, job, issued, control_bytes=32768
+                    ),
                 )
                 assert decision.admitted and grant is not None
                 context = JournalRecoveryContext.original(binding, job, grant)
+                # Receive only the acknowledged same-transaction grant fields;
+                # semantic version/source/worker identity remains unchanged.
+                job = replace(
+                    job, recovery_original_json=context.encoded.decode(), recovery_received=False
+                )
+                slot.job = job
                 generation_construction = journal_constructions.retain()
-                generation = slot.retain_generation(generation_construction)
+                generation = slot.retain_generation(generation_construction, context)
                 yield SimpleNamespace(
                     engine=engine,
                     factory=factory,

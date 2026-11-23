@@ -211,19 +211,20 @@ class JournalResumeFrontier:
 
 @dataclass(frozen=True, slots=True)
 class JournalGenerationReceipt:
-    """Immutable selected-original cost, after its actual Native receiving.
+    """Immutable original cost, after actual resource/lifecycle receiving.
 
-    This value proves no catalog publication. The surviving root and job must
-    independently reconcile the same selected generation before accepting it.
+    A null generation claims authoritative nonpublication, never a selected
+    image. This value proves neither disposition by itself: the surviving root
+    and job independently reconcile the same original before accepting it.
     """
 
     context: JournalRecoveryContext
-    generation: str
+    generation: str | None
     total_actual_ns: int
     encoded: str = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
-        if (
+        if self.generation is not None and (
             type(self.generation) is not str
             or re.fullmatch(r"[0-9a-f]{64}", self.generation) is None
         ):
@@ -233,7 +234,7 @@ class JournalGenerationReceipt:
             "encoded",
             canonical_json_bytes(
                 {
-                    "format": "riverhog-upload-journal-generation-receipt/v1",
+                    "format": "riverhog-upload-journal-generation-receipt/v2",
                     "context": self.context.encoded.decode("utf-8"),
                     "generation": self.generation,
                     "total_actual_ns": format_scalar("nonnegative", self.total_actual_ns),
@@ -263,7 +264,7 @@ class JournalGenerationReceipt:
             if (
                 type(value) is not dict
                 or set(value) != {"format", "context", "generation", "total_actual_ns"}
-                or value["format"] != "riverhog-upload-journal-generation-receipt/v1"
+                or value["format"] != "riverhog-upload-journal-generation-receipt/v2"
             ):
                 raise ValueError("journal generation receipt format differs")
             receipt = cls(

@@ -38,6 +38,7 @@ from sqlite_admission import SqliteCapacity
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.growth_bounds import bound_envelope
 from riverhog_core.journal_generation_resources import JournalGenerationResources
+from riverhog_core.journal_recovery_frontier import JournalRecoveryContext
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     lease_journal_validation_workspace,
@@ -482,10 +483,37 @@ class _Slot:
             raise BlockingIOError("original Native generation constructor has not received")
         self._receive_ready_workspace()
 
-    def retain_generation(self, construction: JournalConstruction) -> JournalGenerationResources:
+    def retain_generation(
+        self, construction: JournalConstruction, context: JournalRecoveryContext
+    ) -> JournalGenerationResources:
         if self.closing or self.generation is not None or self.session is None:
             raise RuntimeError("validation slot cannot replace its original Native generation")
-        original = JournalGenerationResources(construction, self.session)
+        job = self.job
+        if (
+            job is None
+            or job.recovery_received
+            or job.recovery_original_json != context.encoded.decode("utf-8")
+            or (
+                context.binding.collection_id,
+                context.workspace_id,
+                context.journal_id,
+                context.attempt_id,
+                context.worker_epoch,
+                context.source_binding_json,
+                context.certificate_binding_json,
+            )
+            != (
+                job.collection_id,
+                job.workspace_id,
+                job.journal_id,
+                job.attempt_id,
+                job.worker_epoch,
+                job.source_binding_json,
+                job.certificate_binding_json,
+            )
+        ):
+            raise RuntimeError("generation differs from its original live slot")
+        original = JournalGenerationResources(construction, self.session, context)
         self.generation = original
         return original
 

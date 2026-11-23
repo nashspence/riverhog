@@ -39,14 +39,13 @@ def received(case, *, total=11 * NS):
     )
 
 
-def settle(case, receipt, *, revision=None, receiver=None):
+def settle(case, receipt, *, revision=None, receiver=None, acknowledge=True):
     receiver = receiver or jobs.JournalGenerationReceiving(
         receipt,
         control_bytes=32768,
-        capture=case.capture,
-        construction=case.generation_construction,
+        original=case.generation,
     )
-    return case.recovery.receive_cost(
+    result = case.recovery.receive_cost(
         case.binding,
         revision=snapshot(case)[0].revision if revision is None else revision,
         identity=receipt.context.grant_identity,
@@ -56,6 +55,9 @@ def settle(case, receipt, *, revision=None, receiver=None):
         retain_original=receiver.retain,
         receive_original=receiver.receive,
     )
+    if acknowledge:
+        receiver.acknowledge(case.factory)
+    return result
 
 
 def test_actual_selected_original_receives_once_without_invalidating_semantic_job(origin):
@@ -215,8 +217,7 @@ def test_receiving_pair_requires_same_transaction_and_exact_original_arguments(o
     receiver = jobs.JournalGenerationReceiving(
         receipt,
         control_bytes=32768,
-        capture=case.capture,
-        construction=case.generation_construction,
+        original=case.generation,
     )
     with case.factory() as session, session.begin():
         with pytest.raises(Conflict, match="same-transaction"):
@@ -237,6 +238,7 @@ def test_original_receipt_format_is_exact_and_bounded(origin):
     receipt = received(origin)
     value = json.loads(receipt.encoded)
     for mutation in (
+        {"format": "unowned-original-receipt"},
         {"total_actual_ns": receipt.total_actual_ns},
         {"total_actual_ns": "01"},
         {"generation": "f" * 63},

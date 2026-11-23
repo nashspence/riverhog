@@ -259,6 +259,7 @@ class CollectionRecoveryAccounting:
         candidate: CheckpointCandidate,
         guard: Guard,
         retain_domain: Guard,
+        retain_grant: Callable[[Session, RecoveryGrant], None],
     ) -> tuple[CheckpointDecision, RecoveryGrant | None, RecoveryRoot]:
         for value in (domain, owner_id, owner_fence):
             _name(value)
@@ -302,6 +303,9 @@ class CollectionRecoveryAccounting:
             )
             if len(_json(updated.document()).encode("utf-8")) > self._control_bytes:
                 return CheckpointDecision("storage-not-admitted"), None, root
+            # Persist the domain's exact original in this same transaction,
+            # before any optional construction can be handed to the caller.
+            retain_grant(session, grant)
             return decision, grant, self._save(session, root, updated)
 
     def select_generation(

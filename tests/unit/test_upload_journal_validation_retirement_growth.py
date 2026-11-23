@@ -326,7 +326,7 @@ def measure(
             sample(CHILDREN[tag], inputs, metrics, delegates, numeric_policy=numeric_policy)
         )
 
-    def transition(selected, target, state):
+    def transition(selected, target, state, *, directory_received=False):
         arguments = tuple(asdict(target).values())
         inputs = {
             "retained_rows": dimensions["retained_rows"],
@@ -336,7 +336,9 @@ def measure(
         }
         beginning = totals(sql)
         try:
-            return CHILDREN["transition"](selected, target, state)
+            return CHILDREN["transition"](
+                selected, target, state, directory_received=directory_received
+            )
         finally:
             record("transition", inputs, differences(totals(sql), beginning))
 
@@ -569,6 +571,9 @@ def unit_samples(root, samples, cleanups, *, large=True):
                     "busy-reader",
                     "directory",
                     "directory-missing",
+                    "directory-pending-receiving",
+                    "directory-received-pending",
+                    "directory-received-final",
                     "unclassified",
                     "directory-data",
                     "stale-delete",
@@ -585,6 +590,12 @@ def unit_samples(root, samples, cleanups, *, large=True):
                         else "retiring"
                     )
                     fields = {**case.selected, "state": state}
+                    if kind in {"directory-pending-receiving", "directory-received-pending"}:
+                        fields.update(
+                            recovery_original_json="owned-original", recovery_received=False
+                        )
+                    if kind in {"directory-received-pending", "directory-received-final"}:
+                        fields.update(directory_received=True)
                     if kind == "linked":
                         fields.update(collection_id=1, journal_id=catalog.JOURNAL)
                     base, case.base = (
@@ -601,7 +612,13 @@ def unit_samples(root, samples, cleanups, *, large=True):
                         root / "files" / f"{index}-{cold}-{kind}",
                         depth=16 if index == 2 else 1,
                         siblings=1025 if index == 2 and kind == "truncate" else 0,
-                        selected=kind not in {"missing-directory", "directory-missing"},
+                        selected=kind
+                        not in {
+                            "missing-directory",
+                            "directory-missing",
+                            "directory-received-pending",
+                            "directory-received-final",
+                        },
                     )
                     directory = layout.root / catalog.ONE
                     extent = 1048577 if index == 3 else 65537
@@ -651,11 +668,15 @@ def unit_samples(root, samples, cleanups, *, large=True):
                                 "busy-reader",
                                 "stale-delete",
                                 "stale-transition",
+                                "directory-received-pending",
                             }
                         )
                     selected = catalog.read(case)
-                    if kind in {"directory", "directory-missing"}:
+                    if kind in {"directory", "directory-missing", "directory-received-final"}:
                         assert selected is None and not directory.exists()
+                    elif kind in {"directory-pending-receiving", "directory-received-pending"}:
+                        assert selected.state == "directory" and selected.directory_received
+                        assert not selected.recovery_received and not directory.exists()
                     elif kind in {"missing-directory", "empty", "zero"}:
                         assert selected.state == "directory"
                     elif kind == "opening":

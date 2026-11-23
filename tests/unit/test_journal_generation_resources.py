@@ -202,7 +202,7 @@ def test_storage_callback_failure_preserves_the_identical_receiving_frame(origin
 def test_generation_admission_never_replaces_or_relabels_an_original(origin, journal_constructions):
     case = origin
     with pytest.raises(RuntimeError, match="cannot replace"):
-        case.slot.retain_generation(journal_constructions.retain())
+        case.slot.retain_generation(journal_constructions.retain(), case.context)
     with pytest.raises(RuntimeError, match="passive working capture"):
         case.generation.retain_capture(case.capture)
     unrelated = case.slot.session.image_capture()
