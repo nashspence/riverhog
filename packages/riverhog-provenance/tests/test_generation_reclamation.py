@@ -9,6 +9,7 @@ import pytest
 import workspace_reclamation as files_owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 from riverhog_provenance import journal_reclamation as owner
+from riverhog_provenance import received_generation_reclamation as receive
 from riverhog_provenance import reclaim_retired_generation_storage as reclaim
 from riverhog_provenance.errors import JournalValidationCapacity
 from riverhog_provenance.journal_store import InvalidJournalWorkspace
@@ -172,6 +173,7 @@ def test_native_close_refusal_or_lost_reply_keeps_the_original_attempt(
                 directory, receiver=original, expected_directory_identity=identity, octet_budget=3
             )
         assert not original.received and original.receipt is None
+        assert receive(original, expected_directory_identity=identity) is None
         assert data.read_bytes() == b"x" * 14
         original.close()
         original.close()
@@ -181,6 +183,9 @@ def test_native_close_refusal_or_lost_reply_keeps_the_original_attempt(
         assert original.receipt.names == tuple(name.encode() for name in NAMES)
         assert original.receipt.progress.removed_octets == 3
         assert not original.receipt.progress.files_reclaimed
+        progress = receive(original, expected_directory_identity=identity)
+        assert progress is not None and not progress.files_reclaimed
+        assert progress.removed_octets == 3 and progress.remaining_octets == 14
         assert original._file.metrics["close_calls"] == 1
         assert original._directory.metrics["close_calls"] == 1
     finally:
@@ -234,6 +239,186 @@ def test_generation_file_work_is_bounded_independently_of_other_workspace_files(
                 sample = execution_sample(
                     binding, projection, dimensions, metrics, {"files": children}
                 )
+                validate_execution_samples(
+                    projection, binding.declaration.id, [sample], numeric_policy=policy
+                )
+                samples.append(sample)
+    record_property("growth_samples", samples)
+
+
+@pytest.mark.parametrize("identity", [None, (1,), (True, 1), (-1, 1)])
+def test_receiving_requires_an_exact_directory_pin_before_reading_its_receipt(
+    monkeypatch, retained_file_receivers, identity
+):
+    def forbidden(_owner):
+        pytest.fail("invalid identity reached an original work receipt")
+
+    original = retained_file_receivers()
+    monkeypatch.setattr(files_owner.FileReclamationOwner, "receipt", property(forbidden))
+    with pytest.raises(ValueError, match="identity"):
+        receive(original, expected_directory_identity=identity)
+
+
+def measured_receiving(monkeypatch, original, identity, *, failure=None):
+    metrics = dict.fromkeys(
+        (
+            "receipt_reads",
+            "directory_checks",
+            "namespace_checks",
+            "storage_calls",
+            "payload_octets",
+        ),
+        0,
+    )
+    receipt = files_owner.FileReclamationOwner.receipt.fget
+    same = owner._same_reclamation_directory
+    names = owner._generation_reclamation_namespace
+    native_before = [record.metrics for record in (original._directory, original._file)]
+
+    def read(selected):
+        assert selected is original
+        metrics["receipt_reads"] += 1
+        return receipt(selected)
+
+    def directory_check(actual, expected):
+        metrics["directory_checks"] += 1
+        return same(actual, expected)
+
+    def namespace_check(actual):
+        metrics["namespace_checks"] += 1
+        return names(actual)
+
+    def payload(*args, **kwargs):
+        pytest.fail("generation receiving read or enumerated storage")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(files_owner.FileReclamationOwner, "receipt", property(read))
+        patch.setattr(owner, "_same_reclamation_directory", directory_check)
+        patch.setattr(owner, "_generation_reclamation_namespace", namespace_check)
+        for name in ("open", "stat", "fstat", "close", "fsync", "ftruncate", "unlink"):
+            actual = getattr(os, name)
+
+            def counted(*args, _actual=actual, **kwargs):
+                metrics["storage_calls"] += 1
+                return _actual(*args, **kwargs)
+
+            patch.setattr(os, name, counted)
+        for name in ("read", "pread", "readv", "listdir", "scandir"):
+            patch.setattr(os, name, payload)
+        if failure is None:
+            result = receive(original, expected_directory_identity=identity)
+        else:
+            with pytest.raises(InvalidJournalWorkspace, match=failure):
+                receive(original, expected_directory_identity=identity)
+            result = None
+    for record, before in zip((original._directory, original._file), native_before, strict=True):
+        metrics["storage_calls"] += sum(
+            record.metrics[key] - before[key]
+            for key in ("open_calls", "close_calls", "fstat_calls", "dup_calls")
+        )
+    assert metrics["storage_calls"] == metrics["payload_octets"] == 0
+    return result, metrics
+
+
+@pytest.mark.growth_witness(
+    "riverhog-generation-reclamation-receiving-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance.journal_reclamation.received_generation_reclamation",
+)
+def test_received_generation_work_is_bounded_and_never_borrows_another_namespace(
+    tmp_path, monkeypatch, record_property, retained_file_receivers
+):
+    import hashlib
+
+    from riverhog_canonical_json import canonical_json_bytes
+
+    binding = growth_binding(receive)
+    policy = numeric_policy_from_environment(os.environ)
+    projection = project_bindings((binding,), numeric_policy=policy)
+    samples = []
+    for unrelated in (0, 128):
+        for extent in (0, 65537):
+            for state in (
+                "passive",
+                "closed",
+                "complete",
+                "partial",
+                "workspace",
+                "subset",
+                "foreign",
+                "wrong-pin",
+                "failed-sync",
+            ):
+                directory = tmp_path / f"{unrelated}-{extent}-{state}"
+                identity = private_directory(directory)
+                private_file(directory, "semantic-state", extent)
+                for index in range(unrelated):
+                    private_file(directory, f"unrelated-{index}", 0)
+                original = retained_file_receivers()
+                failure = None
+                if state == "closed":
+                    original.close()
+                elif state in {"complete", "partial", "wrong-pin", "failed-sync"}:
+                    if state in {"partial", "failed-sync"}:
+                        private_file(directory, NAMES[-1], 17)
+                    if state == "failed-sync":
+
+                        def refused(_descriptor):
+                            raise OSError(errno.ENOSPC, "original synchronization failed")
+
+                        with monkeypatch.context() as patch:
+                            patch.setattr(os, "fsync", refused)
+                            with pytest.raises(JournalValidationCapacity):
+                                reclaim(
+                                    directory,
+                                    receiver=original,
+                                    expected_directory_identity=identity,
+                                    octet_budget=4096,
+                                )
+                        original.close()
+                    else:
+                        reclaim(
+                            directory,
+                            receiver=original,
+                            expected_directory_identity=identity,
+                            octet_budget=3,
+                        )
+                        if state == "wrong-pin":
+                            identity = identity[0], identity[1] + 1
+                            failure = "directory"
+                elif state in {"workspace", "subset", "foreign"}:
+                    if state == "workspace":
+                        owner.reclaim_retired_journal_workspace(
+                            directory, receiver=original, octet_budget=3
+                        )
+                    else:
+                        files_owner.reclaim_retired_files(
+                            directory,
+                            receiver=original,
+                            names=(NAMES[-1],)
+                            if state == "subset"
+                            else ("foreign", "names", "are", "different"),
+                            octet_budget=3,
+                            expected_directory_identity=identity,
+                        )
+                    failure = "file set"
+                progress, metrics = measured_receiving(
+                    monkeypatch, original, identity, failure=failure
+                )
+                if state in {"complete", "partial"}:
+                    assert progress is not None
+                    assert progress.files_reclaimed is (state == "complete")
+                else:
+                    assert progress is None
+                sample = {
+                    "declaration": binding.declaration.id,
+                    "declaration_sha256": hashlib.sha256(
+                        canonical_json_bytes(projection["declarations"][binding.declaration.id])
+                    ).hexdigest(),
+                    "dimensions": {"unrelated_files": unrelated, "retained_octets": extent},
+                    "metrics": metrics,
+                    "delegates": {},
+                }
                 validate_execution_samples(
                     projection, binding.declaration.id, [sample], numeric_policy=policy
                 )

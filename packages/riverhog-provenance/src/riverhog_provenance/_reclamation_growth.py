@@ -94,3 +94,60 @@ def reclamation_growth(
             "Retirement, kernel leases and final directory/catalog removal are separate.",
         ),
     )
+
+
+def reclamation_receiving_growth() -> Declaration:
+    return Declaration(
+        id="riverhog-provenance.generation-reclamation-receiving.growth/v1",
+        authority="riverhog-provenance",
+        subjects=("riverhog_provenance.journal_reclamation.received_generation_reclamation",),
+        scope="interpret one original synchronized file receipt in the Native generation namespace",
+        starts_at="inspect the caller-retained neutral original and exact expected directory pin",
+        ends_at="return its received progress, pending absence, or an exact identity rejection",
+        dimensions=(
+            Dimension("unrelated_files", COUNT, "Independent namespace entries, never probed."),
+            Dimension("retained_octets", OCTETS, "Independent retained file extents, never read."),
+        ),
+        bounds=(
+            *(
+                Bound(
+                    metric,
+                    COUNT,
+                    "upper",
+                    Expression("constant", value=1, unit=COUNT),
+                    "At most one original receipt read and each fixed identity/namespace check.",
+                )
+                for metric in ("receipt_reads", "directory_checks", "namespace_checks")
+            ),
+            Bound(
+                "storage_calls",
+                COUNT,
+                "equal",
+                Expression("constant", value=0, unit=COUNT),
+                "Receiving interpretation opens, probes, mutates and synchronizes no storage.",
+            ),
+            Bound(
+                "payload_octets",
+                OCTETS,
+                "equal",
+                Expression("constant", value=0, unit=OCTETS),
+                "No file or database payload is read or reconstructed.",
+            ),
+        ),
+        conditions=(
+            "The receiver is the same neutral original retained before physical effects.",
+            "Its immutable receipt contains that original's validated builtin encoded names.",
+            "The expected device/inode pair comes from the caller's retained original custody.",
+        ),
+        invariants=(
+            "An unused, active or failed-sync original cannot manufacture synchronized work.",
+            "Only the fixed four generation filenames can supply generation-only receiving.",
+            "A fixed pair and four fixed names bound control comparisons independently of files.",
+            "Progress still distinguishes a partial extent from complete file-set reclamation.",
+            "This observation grants no nonpublication, worker join or accounting settlement.",
+        ),
+        limitations=(
+            "Actual physical work, original worker join and durable domain receiving are separate.",
+            "Logical checks are not an instruction-count or machine elapsed-time guarantee.",
+        ),
+    )

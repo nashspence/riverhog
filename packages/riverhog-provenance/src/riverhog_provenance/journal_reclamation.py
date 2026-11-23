@@ -14,13 +14,14 @@ from workspace_reclamation import (
     reclaim_retired_files,
 )
 
-from ._reclamation_growth import reclamation_growth
+from ._reclamation_growth import reclamation_growth, reclamation_receiving_growth
 from .errors import JournalValidationCapacity
 from .journal_store import InvalidJournalWorkspace
 
 _GENERATION_FILES = tuple(
     "generations.sqlite3" + suffix for suffix in ("-journal", "-wal", "-shm", "")
 )
+_GENERATION_ENCODED_FILES = tuple(os.fsencode(name) for name in _GENERATION_FILES)
 
 _FILES = tuple(
     database + suffix
@@ -145,6 +146,52 @@ def _reclaim(
         ) from None
     except WorkspaceReclamationCapacity:
         raise JournalValidationCapacity("retired journal reclamation lacks capacity") from None
+    return JournalReclamationProgress(
+        progress.removed_octets,
+        progress.removed_files,
+        progress.remaining_octets,
+        progress.remaining_files,
+    )
+
+
+def _same_reclamation_directory(actual: tuple[int, int], expected: tuple[int, int]) -> bool:
+    return actual == expected
+
+
+def _generation_reclamation_namespace(names: tuple[bytes, ...]) -> bool:
+    return names == _GENERATION_ENCODED_FILES
+
+
+@declare_growth(reclamation_receiving_growth())
+def received_generation_reclamation(
+    receiver: FileReclamationOwner,
+    *,
+    expected_directory_identity: tuple[int, int],
+) -> JournalReclamationProgress | None:
+    """Interpret this same original's synchronized work in the Native namespace.
+
+    Pending or failed physical work returns no observation, including after a
+    passive close. A lost close reply may expose its completed work only after
+    that same receiver positively receives. The caller independently receives
+    its actual worker, retains store nonpublication and persists domain proof
+    before final accounting settlement. No path is probed or reinterpreted.
+    """
+    if not isinstance(receiver, FileReclamationOwner):
+        raise TypeError("generation receiving requires its original file receiver")
+    if (
+        not isinstance(expected_directory_identity, tuple)
+        or len(expected_directory_identity) != 2
+        or any(type(value) is not int or value < 0 for value in expected_directory_identity)
+    ):
+        raise ValueError("generation receiving requires its exact directory identity")
+    receipt = receiver.receipt
+    if receipt is None:
+        return None
+    if not _same_reclamation_directory(receipt.directory_identity, expected_directory_identity):
+        raise InvalidJournalWorkspace("generation receiving differs from its original directory")
+    if not _generation_reclamation_namespace(receipt.names):
+        raise InvalidJournalWorkspace("generation receiving differs from its Native file set")
+    progress = receipt.progress
     return JournalReclamationProgress(
         progress.removed_octets,
         progress.removed_files,

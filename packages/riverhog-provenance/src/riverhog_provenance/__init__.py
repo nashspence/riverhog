@@ -93,6 +93,7 @@ from .journal import (
 from .journal_construction import JournalConstruction
 from .journal_reclamation import (
     JournalReclamationProgress,
+    received_generation_reclamation,
     reclaim_retired_generation_storage,
     reclaim_retired_journal_workspace,
 )
@@ -167,6 +168,7 @@ __all__ = [
     "reclaim_retired_corpus_workspace",
     "JournalReclamationProgress",
     "reclaim_retired_generation_storage",
+    "received_generation_reclamation",
     "reclaim_retired_journal_workspace",
     "JournalValidationBudget",
     "JournalValidationWorkBudget",
