@@ -18,6 +18,7 @@ from riverhog_growth_contracts import (
     Expression,
     declare_growth,
 )
+from riverhog_protocol.errors import Conflict
 from riverhog_provenance import JournalValidationObservation
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
@@ -26,6 +27,8 @@ from state_schema import read_snapshot
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalRecord as Journal
+from riverhog_core.collection_recovery_state import RecoveryGrant
+from riverhog_core.journal_recovery_frontier import JournalRecoveryContext, JournalResumeFrontier
 
 from . import collection_uploads as source_owner
 
@@ -33,6 +36,8 @@ from . import collection_uploads as source_owner
 def _job_declaration(mode: str) -> Declaration:
     sql = {
         "select_job": 4,
+        "select_resume_frontier": 3,
+        "retain_recovery_owner": 2,
         "claim_worker": 2,
         "activate_worker": 2,
         "worker_current": 2,
@@ -43,6 +48,7 @@ def _job_declaration(mode: str) -> Declaration:
     }[mode]
     mutations = {
         "select_job": 2,
+        "select_resume_frontier": 1,
         "claim_worker": 1,
         "activate_worker": 1,
         "publish_outcome": 1,
@@ -51,10 +57,21 @@ def _job_declaration(mode: str) -> Declaration:
     versions = (
         2
         if mode == "select_job"
-        else int(mode in {"claim_worker", "activate_worker", "publish_outcome", "retire_source"})
+        else int(
+            mode
+            in {
+                "claim_worker",
+                "activate_worker",
+                "publish_outcome",
+                "retire_source",
+                "select_resume_frontier",
+            }
+        )
     )
-    decodes = int(mode == "outcome")
-    encodes = int(mode in {"publish_outcome", "outcome"})
+    decodes = 6 if mode == "select_resume_frontier" else int(mode == "outcome")
+    encodes = (
+        12 if mode == "select_resume_frontier" else int(mode in {"publish_outcome", "outcome"})
+    )
 
     def dimension(name: str) -> Expression:
         return Expression("dimension", name=name)
@@ -189,7 +206,7 @@ def _job_declaration(mode: str) -> Declaration:
                 COUNT,
                 "upper",
                 count(decodes),
-                ("Only the requested exact mandatory outcome document is decoded."),
+                ("Only exact mandatory outcome or selected Native control metadata is decoded."),
             ),
             Bound(
                 "json_encodes",
@@ -198,7 +215,8 @@ def _job_declaration(mode: str) -> Declaration:
                 count(encodes),
                 (
                     "Publishing or validating a mandatory outcome executes its "
-                    "actual canonical encoder; live progress is never encoded."
+                    "actual canonical encoder; selected Native envelope metadata retains its own "
+                    "codec work. Live progress is never encoded."
                 ),
             ),
             Bound(
@@ -219,8 +237,14 @@ def _job_declaration(mode: str) -> Declaration:
                 "hashed_octets",
                 OCTETS,
                 "upper",
-                octets(16 * versions),
+                add(
+                    octets(16 * versions),
+                    scale(
+                        4 if mode == "select_resume_frontier" else 0, dimension("control_octets")
+                    ),
+                ),
                 (
+                    "Native envelope and owner hashes use complete admitted controls. "
                     "Each new CAS version hashes one actual UUID value; replacing"
                     " an old attempt creates at most two versions."
                 ),
@@ -284,8 +308,9 @@ def _job_declaration(mode: str) -> Declaration:
                 "stay exact; stale ownership cannot overwrite a confirmed outcome."
             ),
             (
-                "Worker identity and successful-completion checks precede publication. "
-                "Active rows contain no terminal outcome or processed cursor."
+                "Worker identity precedes selection; successful-completion checks precede "
+                "terminal publication. "
+                "Active rows contain no terminal outcome or volatile processed cursor."
             ),
             (
                 "A new attempt or source deletion retains the old "
@@ -325,6 +350,7 @@ class ValidationJob:
     state: str
     outcome_json: str | None
     failure: str | None
+    resume_frontier_json: str | None = None
 
     @classmethod
     def read(cls, row: Job) -> ValidationJob:
@@ -462,6 +488,104 @@ def worker_current(factory: SessionFactory, job: ValidationJob) -> bool:
             )
         ) as result:
             return result.one_or_none() is not None
+
+
+def retain_recovery_owner(
+    session: Session,
+    source: source_owner._UploadJournalValidationWork,
+    job: ValidationJob,
+) -> ValidationJob:
+    """Retain the exact source and worker after the surviving root lock."""
+    if (source.collection_id, source.journal_id, source.attempt_id) != (
+        job.collection_id,
+        job.journal_id,
+        job.attempt_id,
+    ):
+        raise Conflict("journal source differs from its original job")
+    if (
+        session.scalar(
+            select(Journal.collection_id)
+            .where(*source_owner._upload_journal_validation_fence(source))
+            .with_for_update(skip_locked=True)
+        )
+        is None
+    ):
+        raise Conflict("journal source is no longer current")
+    row = session.scalar(select(Job).where(*_identity(job)).with_for_update())
+    if row is None or row.state != "active" or row.outcome_json is not None:
+        raise Conflict("journal worker is no longer current")
+    return ValidationJob.read(row)
+
+
+def select_resume_frontier(
+    session: Session,
+    source: source_owner._UploadJournalValidationWork,
+    job: ValidationJob,
+    grant: RecoveryGrant,
+    frontier: JournalResumeFrontier,
+    *,
+    generation: str,
+    control_bytes: int,
+) -> ValidationJob:
+    """Select only inside the surviving recovery root's control-first transaction.
+
+    Native persistence and resource receiving occur outside this transaction.
+    The returned job replaces the caller's CAS snapshot before terminal writes.
+    """
+    if generation != frontier.generation:
+        raise Conflict("journal accounting generation differs from its Native envelope")
+    if type(control_bytes) is not int or control_bytes < 1:
+        raise ValueError("journal frontier requires positive metadata admission")
+    if len(frontier.encoded.encode("utf-8")) > control_bytes:
+        raise ValueError("journal resume frontier exceeds metadata admission")
+    expected = JournalRecoveryContext.original(frontier.context.binding, job, grant)
+    if frontier.context != expected:
+        raise Conflict("journal generation differs from its original source/worker")
+    if grant.generation is not None and grant.generation != frontier.generation:
+        raise Conflict("journal grant selected a different Native envelope")
+    current = retain_recovery_owner(session, source, job)
+    if grant.generation is not None:
+        if current.resume_frontier_json != frontier.encoded:
+            if current.resume_frontier_json is None:
+                raise Conflict("original selected journal frontier is missing")
+            newer = JournalResumeFrontier.from_json(
+                current.resume_frontier_json, control_bytes=control_bytes
+            )
+            before = frontier.context
+            after = newer.context
+            # Only a positively recorded, newer selection of this exact owner
+            # can supersede the original. A lost reply never writes old bytes.
+            prefix = before.binding.grant_prefix
+            if (
+                newer.image.binding != frontier.image.binding
+                or after.binding != before.binding
+                or after.workspace_id != before.workspace_id
+                or after.journal_id != before.journal_id
+                or after.attempt_id != before.attempt_id
+                or after.source_binding_json != before.source_binding_json
+                or after.certificate_binding_json != before.certificate_binding_json
+                or after.worker_epoch != before.worker_epoch
+                or int(after.grant_identity[len(prefix) :])
+                <= int(before.grant_identity[len(prefix) :])
+            ):
+                raise Conflict("journal selected frontier contradicts the original receipt")
+        return current
+    changed = session.execute(
+        update(Job)
+        .where(
+            *_identity(job),
+            Job.version == job.version,
+            Job.resume_frontier_json == job.resume_frontier_json,
+            Job.state == "active",
+            Job.outcome_json.is_(None),
+        )
+        .values(version=_version(), resume_frontier_json=frontier.encoded)
+        .returning(Job)
+        .execution_options(populate_existing=True)
+    ).scalar_one_or_none()
+    if changed is None:
+        raise Conflict("journal frontier changed before selection")
+    return ValidationJob.read(changed)
 
 
 def _outcome_document(
@@ -633,3 +757,7 @@ declare_growth(_job_declaration("retire_source"))(retire_source)
 
 
 declare_growth(_job_declaration("outcome"))(outcome)
+
+declare_growth(_job_declaration("select_resume_frontier"))(select_resume_frontier)
+
+declare_growth(_job_declaration("retain_recovery_owner"))(retain_recovery_owner)

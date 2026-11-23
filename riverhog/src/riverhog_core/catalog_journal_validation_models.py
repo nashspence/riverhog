@@ -31,6 +31,7 @@ class JournalValidationJobRecord(Base):
     state: Mapped[str] = mapped_column(String, nullable=False, default="opening")
     outcome_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resume_frontier_json: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
