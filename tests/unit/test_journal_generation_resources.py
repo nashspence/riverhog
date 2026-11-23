@@ -220,7 +220,7 @@ def test_generation_admission_never_replaces_or_relabels_an_original(origin, jou
 @pytest.mark.growth_witness(
     "riverhog-generation-resource-receiving-work/v1",
     gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.journal_generation_resources.JournalGenerationResources.close_step",
+    operation="riverhog_core.services.upload_journal_validation_owner.UploadJournalValidationOwner._drop",
 )
 def test_actual_slot_receiving_composes_generation_and_working_resources(
     tmp_path, record_property, journal_constructions
@@ -283,7 +283,6 @@ def test_actual_slot_receiving_composes_generation_and_working_resources(
                         reader.close()
                         samples.append(measure_slot(recorder, case))
                     assert case.generation.received and not case.owner._slots
-                    samples.extend(recorder.delegates["generation"])
                 finally:
                     if reader is not None:
                         reader.close()
