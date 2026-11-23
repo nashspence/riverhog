@@ -10,6 +10,7 @@ import pytest
 from riverhog_core.catalog_db import session_scope
 from riverhog_core.catalog_models import CollectionRecord
 from riverhog_core.catalog_models import CollectionUploadRecord as Upload
+from riverhog_core.services import archive_finalizer_registry as registry_module
 from riverhog_core.services.archive_write_admission import _writer
 from riverhog_core.services.physical_execution import PhysicalExecutionKey
 from riverhog_protocol import CollectionUploadRawDigestBatchDocument
@@ -99,11 +100,29 @@ def test_maintained_failure_keeps_original_claim_and_receives_exact_report(
         assert before[3] is None and before[6] not in (None, prior.claim_id)
         assert before[5].startswith("OSError:")
         calls = list(case.calls)
+        clock = [monotonic()]
+        monkeypatch.setattr(registry_module, "monotonic", lambda: clock[0])
+        context.resume_after = clock[0] + 60
         assert service.has_unreceived_archive_work()
         assert service.process_due_finalizations() >= 1
         _join(case)
         assert context.owner is original and pipeline._original is child
-        assert not original.has_pending and case.calls == calls
+        assert original.has_pending and pipeline.has_pending and child.has_pending
+        assert case.calls == calls and _claim_snapshot(case) == before
+
+        # Receiving the failed Future does not make the original retry due.
+        # Advance only this test-owned scheduling clock; join actual workers
+        # and require their original semantic receiver to finish.
+        deadline = monotonic() + 120
+        while original.has_pending:
+            clock[0] = max(clock[0], context.resume_after)
+            assert service.process_due_finalizations() >= 0
+            _join(case)
+            assert context.owner is original and pipeline._original is child
+            assert case.calls == calls
+            assert monotonic() < deadline, "the original report was not received: " + repr(
+                _routing_snapshot(case)
+            )
         with session_scope(case.factory) as session:
             upload = session.get(Upload, case.collection_id)
             assert upload.archive_phase == "finalization_queued"
