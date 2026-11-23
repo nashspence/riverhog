@@ -109,7 +109,9 @@ def loop_samples(root, samples, cleanups, *, large=True):
                         private_file(directory / ".lease")
                     directory = layout.root / catalog.ONE
                     if kind == "files":
-                        for name, size in zip(units.DATA, (0, 17, 65537, 131073), strict=True):
+                        for name, size in zip(
+                            units.DATA, (0, 17, 65537, 131073, 0, 3, 65537, 131073), strict=True
+                        ):
                             private_file(directory / name, b"p" * size)
                     if kind in {"capacity", "repeated-blocker"}:
                         private_file(directory / units.DATA[-1], b"p" * (2 * budget + 3))
