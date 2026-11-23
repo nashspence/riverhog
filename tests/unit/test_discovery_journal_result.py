@@ -11,7 +11,11 @@ from riverhog_core.canonical_discovery_index import begin_index_build
 from riverhog_core.catalog_models import CollectionRecord
 from riverhog_core.services import discovery_journal_result as result_owner
 from riverhog_core.services.discovery_validation_owner import DiscoveryValidationOwner
-from riverhog_provenance import InvalidJournalWorkspace, JournalValidationSession
+from riverhog_provenance import (
+    DerivedNativeCacheUnavailable,
+    InvalidJournalWorkspace,
+    JournalValidationSession,
+)
 from riverhog_provenance.journal_store import JournalStore
 from sqlalchemy import update
 
@@ -334,22 +338,60 @@ def test_unsealed_source_has_no_frozen_fast_path(tmp_path, *, journal_constructi
             assert work._slot.sealed is None
 
 
-@pytest.mark.parametrize("damage", ["missing", "corrupt"])
-def test_confirmed_missing_or_corrupt_storage_is_never_recreated(
+@pytest.mark.parametrize("damage", ["missing", "not-regular", "corrupt"])
+def test_confirmed_native_storage_failure_is_never_recreated(
     tmp_path, damage, *, journal_constructions
 ):
     with prepared(tmp_path, journal_constructions=journal_constructions) as case:
         path = case.native_root / case.job.workspace_id / "snapshot.sqlite3"
         before = b"unrecognized owned Native storage"
-        if damage == "missing":
+        if damage in {"missing", "not-regular"}:
             path.unlink()
+            if damage == "not-regular":
+                path.mkdir()
         else:
             path.write_bytes(before)
-        with pytest.raises((FileNotFoundError, InvalidJournalWorkspace, sqlite3.DatabaseError)):
+        expected = (
+            DerivedNativeCacheUnavailable
+            if damage == "missing"
+            else (InvalidJournalWorkspace, sqlite3.DatabaseError)
+        )
+        with pytest.raises(expected) as caught:
             with quantum(case) as (work, source):
                 open_result(work, source)
+        if damage != "missing":
+            assert not isinstance(caught.value, DerivedNativeCacheUnavailable)
         assert case.pool.active_build_ids() == ()
+        assert case.engine.pool.checkedout() == 0
+        both(case, busy=False)
         if damage == "missing":
             assert not path.exists()
+        elif damage == "not-regular":
+            assert path.is_dir() and not any(path.iterdir())
         else:
             assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("error_type", [RuntimeError, ValueError, sqlite3.DatabaseError])
+def test_missing_cache_preserves_original_discovery_source_failure(
+    tmp_path, monkeypatch, error_type, *, journal_constructions
+):
+    with prepared(tmp_path, journal_constructions=journal_constructions) as case:
+        path = case.native_root / case.job.workspace_id / "snapshot.sqlite3"
+        path.unlink()
+        original = error_type("original mandatory discovery source failure")
+
+        def fail_source(_source):
+            raise original
+
+        monkeypatch.setattr(
+            result_owner.DiscoverySealedJournalSource, "verify_current", fail_source
+        )
+        with pytest.raises(error_type) as caught:
+            with quantum(case) as (work, source):
+                open_result(work, source)
+        assert caught.value is original
+        assert case.pool.active_build_ids() == ()
+        assert case.engine.pool.checkedout() == 0
+        assert not path.exists()
+        both(case, busy=False)
