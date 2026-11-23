@@ -13,7 +13,7 @@ pytestmark = pytest.mark.integration
 @pytest.mark.parametrize("kind", ("segment", "pack"))
 def test_postgres_maintained_workers_publish(tmp_path, monkeypatch, database_url, kind):
     checks.test_maintained_coordinator_publishes_through_joined_original_workers(
-        tmp_path, monkeypatch, kind, database_url=database_url
+        tmp_path, monkeypatch, kind, delayed_receiving=False, database_url=database_url
     )
 
 

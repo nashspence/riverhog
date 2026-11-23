@@ -36,9 +36,10 @@ def _published(case, collection_id=None):
         return collection is not None and collection.is_published
 
 
+@pytest.mark.parametrize("delayed_receiving", (False, True))
 @pytest.mark.parametrize("kind", ("segment", "pack"))
 def test_maintained_coordinator_publishes_through_joined_original_workers(
-    tmp_path, monkeypatch, kind, database_url=None
+    tmp_path, monkeypatch, kind, delayed_receiving, database_url=None
 ):
     count = 2 if kind == "pack" else 1
     with _metadata_case(
@@ -54,8 +55,41 @@ def test_maintained_coordinator_publishes_through_joined_original_workers(
             return create(claim, admission=admission)
 
         monkeypatch.setattr(service, "_finalization_owner", original)
+        clock = [monotonic()]
+        monkeypatch.setattr(registry_module, "monotonic", lambda: clock[0])
+        interrupted = []
+        if delayed_receiving:
+            import sqlite3
+
+            from riverhog_core.services.immutable_archive_admission import ImmutableArchiveAdmission
+            from sqlalchemy.exc import OperationalError
+
+            report = ImmutableArchiveAdmission.report
+
+            def delayed_report(admission, *args, **kwargs):
+                if not interrupted:
+                    context = service._archive_finalizers._contexts[case.collection_id]
+                    interrupted.append(context.owner)
+                    context.resume_after = clock[0] + 3600
+                    raise OperationalError(
+                        "controlled original report contention",
+                        {},
+                        sqlite3.OperationalError("database is locked"),
+                    )
+                return report(admission, *args, **kwargs)
+
+            monkeypatch.setattr(ImmutableArchiveAdmission, "report", delayed_report)
         for _ in range(256):
             drive_finalization_turn(service)
+            # Tail maintenance can submit an original continuation after the
+            # driver's first join. Receive that actual worker before observing
+            # metadata, then advance only this fixture's retry clock.
+            _join(case)
+            context = service._archive_finalizers._contexts.get(case.collection_id)
+            if context is not None:
+                with context.lock:
+                    if context.owner is not None and context.owner.has_pending:
+                        clock[0] = max(clock[0], context.resume_after)
             with session_scope(case.factory) as session:
                 upload = session.get(Upload, case.collection_id)
                 if upload is None:
@@ -65,11 +99,16 @@ def test_maintained_coordinator_publishes_through_joined_original_workers(
                     assert collection.description_identity and collection.tag_head_identity
                     break
         else:
-            pytest.fail("maintained worker turns did not publish the collection")
+            pytest.fail(
+                "maintained worker turns did not publish the collection: "
+                + repr(_routing_snapshot(case))
+            )
         service.process_due_finalizations()
         assert not service.has_unreceived_archive_work()
         assert service._archive_finalizers._contexts == {}
         assert len(claims) > 10 and len(set(claims)) == len(claims) and case.calls
+        assert bool(interrupted) is delayed_receiving
+        assert all(not owner.has_pending for owner in interrupted)
 
 
 @pytest.mark.parametrize("committed", (False, True))
