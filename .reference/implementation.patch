@@ -1,0 +1,2632 @@
+diff --git a/.gitignore b/.gitignore
+index 78388d5f34aabe2ac1eeb3549bdaa1fd9e35b0ce..6c5dc723389e2cf39cfe7579b059c85de99c8186 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -19,3 +19,5 @@ mise.local.toml
+ /packages/riverhog-client/src/riverhog_client/_prepared_primary_native*.pyd
+ /packages/retained-resource/src/retained_resource/_native*.so
+ /packages/retained-resource/src/retained_resource/_native*.pyd
++/packages/retained-resource/src/retained_resource/_worker_native*.so
++/packages/retained-resource/src/retained_resource/_worker_native*.pyd
+diff --git a/packages/retained-resource/hatch_build.py b/packages/retained-resource/hatch_build.py
+index e2eed9b807fbe5164d16076f7fa81d978604d5ba..eba70d0bc27e1eb003deac6195e18d823a635b2d 100644
+--- a/packages/retained-resource/hatch_build.py
++++ b/packages/retained-resource/hatch_build.py
+@@ -29,25 +29,36 @@ class CustomBuildHook(BuildHookInterface):
+                 else ["-std=c11", "-Wall", "-Wextra", "-Werror"]
+             ),
+         )
++        worker_extension = Extension(
++            "retained_resource._worker_native",
++            sources=[str(root / "native/worker.c")],
++            extra_compile_args=extension.extra_compile_args,
++            extra_link_args=[] if sys.platform == "win32" else ["-pthread"],
++        )
++        extensions = [extension, worker_extension]
+         editable = version == "editable"
+         temporary = tempfile.TemporaryDirectory(prefix="riverhog-native-build-")
+         self._build_scratch = temporary
+         try:
+-            distribution = Distribution({"ext_modules": [extension]})
++            distribution = Distribution({"ext_modules": extensions})
+             command = build_ext(distribution)
+             command.build_lib = str(root / "src" if editable else Path(temporary.name) / "lib")
+             command.build_temp = str(Path(temporary.name) / "objects")
+             command.ensure_finalized()
+             command.run()
+-            artifact = Path(command.get_ext_fullpath(extension.name))
+             build_data["pure_python"] = False
+             build_data["infer_tag"] = True
++            for built in extensions:
++                artifact = Path(command.get_ext_fullpath(built.name))
++                if editable:
++                    build_data["artifacts"].append(artifact.relative_to(root).as_posix())
++                else:
++                    build_data["force_include"][str(artifact)] = (
++                        "retained_resource/" + artifact.name
++                    )
+             if editable:
+-                build_data["artifacts"].append(artifact.relative_to(root).as_posix())
+                 temporary.cleanup()
+                 self._build_scratch = None
+-            else:
+-                build_data["force_include"][str(artifact)] = "retained_resource/" + artifact.name
+         except BaseException:
+             temporary.cleanup()
+             self._build_scratch = None
+diff --git a/packages/retained-resource/native/worker.c b/packages/retained-resource/native/worker.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..3c55d9584f0c0aaa347026518d165c7edd8554e7
+--- /dev/null
++++ b/packages/retained-resource/native/worker.c
+@@ -0,0 +1,507 @@
++#define PY_SSIZE_T_CLEAN
++#define _GNU_SOURCE
++#include <Python.h>
++#include <errno.h>
++#include <string.h>
++#ifdef _WIN32
++#if !defined(_MSC_VER) || !defined(_DLL)
++#error "Windows workers require supported CPython's dynamic UCRT profile."
++#endif
++#include <windows.h>
++#include <process.h>
++#else
++#include <unistd.h>
++#if defined(__linux__)
++#include <pthread.h>
++#include <sys/syscall.h>
++#ifdef RETAINED_RESOURCE_TESTING
++#include <stdatomic.h>
++#include <time.h>
++#endif
++#endif
++#endif
++
++#ifdef Py_GIL_DISABLED
++#error "The worker receiving backend requires GIL-enabled CPython."
++#endif
++
++/* A retained joinable OS worker, not a Python target-return sentinel.  The
++   original object owns the native handle and a self-pin until explicit receipt.
++   Neither object destruction nor callback completion performs receiving. */
++typedef enum { WORKER_NEW, WORKER_STARTED, WORKER_RECEIVED, WORKER_UNKNOWN } WorkerState;
++typedef struct {
++    PyObject_HEAD
++    PyObject *target;
++    PyObject *exception;
++    PyInterpreterState *interpreter;
++    unsigned long process_id, native_id;
++    unsigned long start_calls, poll_calls, join_calls, wait_calls, close_calls, exit_receipts;
++    WorkerState state;
++    int self_pin, fault, native_error, exit_observed;
++#ifdef _WIN32
++    HANDLE handle;
++    unsigned int thread_id;
++#elif defined(__linux__)
++    pthread_t handle;
++#ifdef RETAINED_RESOURCE_TESTING
++    int test_hold_native_tail;
++    _Atomic int test_tail_entered, test_tail_released, test_tail_timed_out, test_tail_error;
++#endif
++#endif
++} WorkerHandle;
++
++#if defined(RETAINED_RESOURCE_TESTING) && defined(__linux__)
++static pthread_key_t test_tail_key;
++static pthread_once_t test_tail_once = PTHREAD_ONCE_INIT;
++static int test_tail_key_error;
++
++static void test_native_tail_destructor(void *argument) {
++    WorkerHandle *self = (WorkerHandle *)argument;
++    struct timespec begun, now, pause = {0, 1000000};
++    if (clock_gettime(CLOCK_MONOTONIC, &begun) != 0) {
++        atomic_store(&self->test_tail_error, errno);
++        return;
++    }
++    atomic_store(&self->test_tail_entered, 1);
++    /* A test-only safety deadline keeps a failed witness from owning a process
++       forever.  The test checks that explicit release, not this limit, ended it. */
++    while (!atomic_load(&self->test_tail_released)) {
++        if (clock_gettime(CLOCK_MONOTONIC, &now) != 0) {
++            atomic_store(&self->test_tail_error, errno);
++            return;
++        }
++        if (now.tv_sec - begun.tv_sec >= 5) {
++            atomic_store(&self->test_tail_timed_out, 1);
++            return;
++        }
++        (void)nanosleep(&pause, NULL);
++    }
++}
++
++static void test_tail_initialize(void) {
++    test_tail_key_error = pthread_key_create(&test_tail_key, test_native_tail_destructor);
++}
++#endif
++
++static unsigned long worker_process_id(void) {
++#ifdef _WIN32
++    return GetCurrentProcessId();
++#else
++    return (unsigned long)getpid();
++#endif
++}
++
++static PyObject *worker_fail(const char *message) {
++    PyErr_SetString(PyExc_RuntimeError, message);
++    return NULL;
++}
++
++static int worker_origin(WorkerHandle *self) {
++    if (self->process_id != worker_process_id() ||
++        self->interpreter != PyThreadState_GetInterpreter(PyThreadState_Get())) {
++        PyErr_SetString(PyExc_RuntimeError,
++                        "worker belongs to its original process and interpreter");
++        return 0;
++    }
++    return 1;
++}
++
++static int worker_is_current_native(WorkerHandle *self) {
++    /* Quarantined handles are never probed again, even for diagnostics. */
++    if (self->state != WORKER_STARTED) return 0;
++    if (self->exit_observed) return 0;
++#ifdef _WIN32
++    if (self->thread_id != GetCurrentThreadId()) return 0;
++    /* Windows may reuse the numeric ID while our original HANDLE remains
++       open.  A signaled original object cannot identify the calling thread. */
++    self->wait_calls++;
++    DWORD outcome = WaitForSingleObject(self->handle, 0);
++    if (outcome == WAIT_TIMEOUT) return 1;
++    if (outcome == WAIT_OBJECT_0) {
++        self->exit_observed = 1;
++        self->exit_receipts++;
++        return 0;
++    }
++    self->native_error = (int)GetLastError();
++    self->state = WORKER_UNKNOWN;
++    PyErr_SetString(PyExc_RuntimeError,
++                    "native worker identity wait failed; original handle remains retained");
++    return -1;
++#elif defined(__linux__)
++    return pthread_equal(self->handle, pthread_self());
++#else
++    return 0;
++#endif
++}
++
++#if defined(__linux__) || defined(_WIN32)
++static void worker_call(WorkerHandle *self) {
++    PyGILState_STATE gil = PyGILState_Ensure();
++#ifdef _WIN32
++    self->native_id = GetCurrentThreadId();
++#else
++    self->native_id = (unsigned long)syscall(SYS_gettid);
++#endif
++    PyObject *result = PyObject_CallNoArgs(self->target);
++    if (result == NULL) {
++        /* A caller may publish its own Future.  Unexpected callback failure is
++           retained separately, never translated into successful completion. */
++        self->exception = PyErr_GetRaisedException();
++    } else {
++        Py_DECREF(result);
++    }
++    Py_CLEAR(self->target);
++#if defined(RETAINED_RESOURCE_TESTING) && defined(__linux__)
++    if (self->test_hold_native_tail) {
++        atomic_store(&self->test_tail_error, pthread_setspecific(test_tail_key, self));
++    }
++#endif
++    /* This clears the original thread state, including Python thread-local
++       finalizers.  Native TLS destructors still run after this function returns;
++       only the OS join/wait below is an exit receipt. */
++    PyGILState_Release(gil);
++}
++
++#ifdef _WIN32
++static unsigned int __stdcall worker_entry(void *argument) {
++    worker_call((WorkerHandle *)argument);
++    return 0;
++}
++#else
++static void *worker_entry(void *argument) {
++    worker_call((WorkerHandle *)argument);
++    return NULL;
++}
++#endif
++#endif
++
++static PyObject *worker_new(PyTypeObject *type, PyObject *args, PyObject *kwargs) {
++    PyObject *target;
++    static char *keys[] = {"target", NULL};
++    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", keys, &target)) return NULL;
++    if (!PyCallable_Check(target)) {
++        PyErr_SetString(PyExc_TypeError, "worker target must be callable");
++        return NULL;
++    }
++    /* PyGILState_Ensure is a main-interpreter API.  Refuse before native effects
++       instead of silently attaching a callback to a different interpreter. */
++    PyInterpreterState *interpreter = PyThreadState_GetInterpreter(PyThreadState_Get());
++    if (interpreter != PyInterpreterState_Main())
++        return worker_fail("native workers require the original main interpreter");
++#if !defined(__linux__) && !defined(_WIN32)
++    (void)type;
++    return worker_fail("bounded native worker receiving requires Linux pthread_tryjoin_np or Windows UCRT; no Darwin backend is qualified");
++#else
++    WorkerHandle *self = (WorkerHandle *)type->tp_alloc(type, 0);
++    if (self == NULL) return NULL;
++    self->target = Py_NewRef(target);
++    self->interpreter = interpreter;
++    self->process_id = worker_process_id();
++    self->state = WORKER_NEW;
++#if defined(RETAINED_RESOURCE_TESTING) && defined(__linux__)
++    atomic_init(&self->test_tail_entered, 0);
++    atomic_init(&self->test_tail_released, 0);
++    atomic_init(&self->test_tail_timed_out, 0);
++    atomic_init(&self->test_tail_error, 0);
++#endif
++    return (PyObject *)self;
++#endif
++}
++
++static int worker_traverse(WorkerHandle *self, visitproc visit, void *arg) {
++    Py_VISIT(self->target);
++    Py_VISIT(self->exception);
++    return 0;
++}
++
++static int worker_clear(WorkerHandle *self) {
++    /* The native self-pin is an external reference in the GC graph.  In-flight
++       callbacks and quarantined owners therefore cannot be cycle-collected.
++       Unstarted/received callback and traceback cycles may be released safely. */
++    if (!self->self_pin) {
++        Py_CLEAR(self->target);
++        Py_CLEAR(self->exception);
++    }
++    return 0;
++}
++
++static void worker_dealloc(WorkerHandle *self) {
++    /* An unreceived started worker has a native self-pin.  Caller abandonment
++       leaks that charged owner rather than freeing a live handle or callback. */
++    PyObject_GC_UnTrack(self);
++    worker_clear(self);
++    Py_TYPE(self)->tp_free((PyObject *)self);
++}
++
++static int worker_take_fault(WorkerHandle *self, int starting) {
++    int fault = self->fault;
++    int start_fault = fault >= 1 && fault <= 3;
++    if (fault != 0 && start_fault == starting) {
++        self->fault = 0;
++        return fault;
++    }
++    return 0;
++}
++
++static int worker_reply(WorkerHandle *self, int fault, int starting) {
++    (void)self;
++    if (fault == (starting ? 2 : 5)) {
++        PyErr_SetString(PyExc_RuntimeError,
++                        starting ? "injected lost start reply; inspect original owner" :
++                                   "injected lost join reply; inspect original owner");
++        return 0;
++    }
++    if (fault == (starting ? 3 : 6)) PyErr_SetInterrupt();
++    return PyErr_CheckSignals() == 0;
++}
++
++static PyObject *worker_start(WorkerHandle *self, PyObject *unused) {
++    (void)unused;
++    if (!worker_origin(self)) return NULL;
++    if (self->state != WORKER_NEW)
++        return worker_fail("worker start is single-attempt; retain the original owner");
++    if (self->target == NULL)
++        return worker_fail("worker target was released before native creation");
++    int fault = worker_take_fault(self, 1);
++    if (fault == 1) return worker_fail("injected before-start refusal; no native worker created");
++#if defined(__linux__) || defined(_WIN32)
++    /* Hold the GIL across the bounded constructor and outcome recording.  The
++       child cannot run Python until its exact handle and self-pin are retained. */
++    Py_INCREF(self);
++    self->self_pin = 1;
++    self->start_calls++;
++#ifdef _WIN32
++    uintptr_t handle = _beginthreadex(NULL, 0, worker_entry, self, 0, &self->thread_id);
++    int error = handle == 0 ? errno : 0;
++    self->handle = (HANDLE)handle;
++#else
++    int error = pthread_create(&self->handle, NULL, worker_entry, self);
++#endif
++    self->native_error = error;
++    if (error != 0) {
++        self->self_pin = 0;
++        Py_DECREF(self);
++        /* A failed constructor has a definite no-worker result and permits the
++           owner to remove its reservation.  Never retry work on this object. */
++        self->state = WORKER_RECEIVED;
++        errno = error;
++        return PyErr_SetFromErrno(PyExc_OSError);
++    }
++    self->state = WORKER_STARTED;
++    if (!worker_reply(self, fault, 1)) return NULL;
++    Py_RETURN_NONE;
++#else
++    return worker_fail("no supported bounded native worker receiving backend");
++#endif
++}
++
++static PyObject *worker_poll(WorkerHandle *self, PyObject *unused) {
++    (void)unused;
++    if (!worker_origin(self)) return NULL;
++    self->poll_calls++;
++    if (self->state == WORKER_RECEIVED) Py_RETURN_TRUE;
++    if (self->state == WORKER_NEW) Py_RETURN_FALSE;
++    if (self->state == WORKER_UNKNOWN)
++        return worker_fail("native worker outcome is unknown; original handle remains retained");
++    int current = worker_is_current_native(self);
++    if (current < 0) return NULL;
++    if (current)
++        return worker_fail("cannot receive the current native worker");
++    int fault = worker_take_fault(self, 0);
++    if (fault == 4) return worker_fail("injected before-join refusal; original remains retained");
++    if (fault == 7) {
++        /* Qualify the fail-closed diagnosis branch, without pretending this
++           injection is evidence about an actual OS join failure. */
++        self->native_error = EIO;
++        self->state = WORKER_UNKNOWN;
++        return worker_fail("injected unknown native outcome; original remains retained");
++    }
++#ifdef _WIN32
++    if (!self->exit_observed) {
++        self->wait_calls++;
++        DWORD outcome = WaitForSingleObject(self->handle, 0);
++        if (outcome == WAIT_TIMEOUT) { self->fault = fault; Py_RETURN_FALSE; }
++        if (outcome != WAIT_OBJECT_0) {
++            self->native_error = (int)GetLastError();
++            self->state = WORKER_UNKNOWN;
++            return worker_fail("native worker wait failed; original handle remains retained");
++        }
++        self->exit_observed = 1;
++        self->exit_receipts++;
++    }
++    self->close_calls++;
++    if (!CloseHandle(self->handle)) {
++        self->native_error = (int)GetLastError();
++        self->state = WORKER_UNKNOWN;
++        return worker_fail("native worker handle close is unknown; original remains retained");
++    }
++    self->handle = NULL;
++#elif defined(__linux__)
++    self->join_calls++;
++    int outcome = pthread_tryjoin_np(self->handle, NULL);
++    if (outcome == EBUSY) { self->fault = fault; Py_RETURN_FALSE; }
++    if (outcome != 0) {
++        self->native_error = outcome;
++        self->state = WORKER_UNKNOWN;
++        return worker_fail("native worker join failed; original handle remains retained");
++    }
++    self->exit_observed = 1;
++    self->exit_receipts++;
++#else
++    return worker_fail("no supported bounded native worker receiving backend");
++#endif
++    /* Store a positive native result before signal delivery or Python reply
++       allocation.  A retry never joins a consumed pthread or reused handle. */
++    self->state = WORKER_RECEIVED;
++    if (self->self_pin) {
++        self->self_pin = 0;
++        Py_DECREF(self);
++    }
++    if (!worker_reply(self, fault, 0)) return NULL;
++    Py_RETURN_TRUE;
++}
++
++static PyObject *worker_started(WorkerHandle *self, void *closure) {
++    (void)closure;
++    if (!worker_origin(self)) return NULL;
++    return PyBool_FromLong(self->state != WORKER_NEW &&
++                           !(self->state == WORKER_RECEIVED && self->native_error != 0));
++}
++
++static PyObject *worker_received(WorkerHandle *self, void *closure) {
++    (void)closure;
++    if (!worker_origin(self)) return NULL;
++    return PyBool_FromLong(self->state == WORKER_RECEIVED);
++}
++
++static PyObject *worker_native_id(WorkerHandle *self, void *closure) {
++    (void)closure;
++    if (!worker_origin(self)) return NULL;
++    if (self->native_id == 0) Py_RETURN_NONE;
++    return PyLong_FromUnsignedLong(self->native_id);
++}
++
++static PyObject *worker_is_current(WorkerHandle *self, void *closure) {
++    (void)closure;
++    if (!worker_origin(self)) return NULL;
++    int current = worker_is_current_native(self);
++    if (current < 0) return NULL;
++    return PyBool_FromLong(current);
++}
++
++static PyObject *worker_exception(WorkerHandle *self, void *closure) {
++    (void)closure;
++    if (!worker_origin(self)) return NULL;
++    return Py_NewRef(self->exception == NULL ? Py_None : self->exception);
++}
++
++static PyObject *worker_metrics(WorkerHandle *self, void *closure) {
++    (void)closure;
++    if (!worker_origin(self)) return NULL;
++    return Py_BuildValue("{s:k,s:k,s:k,s:k,s:k,s:k,s:n,s:i}",
++                        "start_calls", self->start_calls,
++                        "poll_calls", self->poll_calls,
++                        "join_calls", self->join_calls,
++                        "wait_calls", self->wait_calls,
++                        "close_calls", self->close_calls,
++                        "exit_receipts", self->exit_receipts,
++                        "owner_storage_bytes", (Py_ssize_t)sizeof(WorkerHandle),
++                        "retained_native_owners", self->self_pin);
++}
++
++#ifdef RETAINED_RESOURCE_TESTING
++static PyObject *worker_test_fault(WorkerHandle *self, PyObject *argument) {
++    const char *name = PyUnicode_AsUTF8(argument);
++    if (name == NULL || !worker_origin(self)) return NULL;
++    const char *faults[] = {"none", "before_start", "after_start", "signal_after_start",
++                            "before_join", "after_join", "signal_after_join", "unknown_join"};
++    for (int index = 0; index < 8; index++) {
++        if (strcmp(name, faults[index]) == 0) {
++            self->fault = index;
++            Py_RETURN_NONE;
++        }
++    }
++    return worker_fail("unknown worker test seam");
++}
++#ifdef __linux__
++static PyObject *worker_test_native_tail(WorkerHandle *self, PyObject *argument) {
++    const char *action = PyUnicode_AsUTF8(argument);
++    if (action == NULL || !worker_origin(self)) return NULL;
++    if (strcmp(action, "hold") == 0) {
++        if (self->state != WORKER_NEW)
++            return worker_fail("native tail must be held before original worker start");
++        int error = pthread_once(&test_tail_once, test_tail_initialize);
++        if (error == 0) error = test_tail_key_error;
++        if (error != 0) {
++            errno = error;
++            return PyErr_SetFromErrno(PyExc_OSError);
++        }
++        self->test_hold_native_tail = 1;
++    } else if (strcmp(action, "release") == 0) {
++        atomic_store(&self->test_tail_released, 1);
++    } else {
++        return worker_fail("native tail action must be hold or release");
++    }
++    Py_RETURN_NONE;
++}
++
++static PyObject *worker_test_tail_state(WorkerHandle *self, void *closure) {
++    (void)closure;
++    if (!worker_origin(self)) return NULL;
++    return Py_BuildValue("{s:i,s:i,s:i,s:i}",
++                        "entered", atomic_load(&self->test_tail_entered),
++                        "released", atomic_load(&self->test_tail_released),
++                        "timed_out", atomic_load(&self->test_tail_timed_out),
++                        "error", atomic_load(&self->test_tail_error));
++}
++#endif
++#endif
++
++static PyMethodDef worker_methods[] = {
++    {"start", (PyCFunction)worker_start, METH_NOARGS, "Create exactly one retained joinable native worker."},
++    {"poll", (PyCFunction)worker_poll, METH_NOARGS, "Try receiving the original OS worker without waiting."},
++#ifdef RETAINED_RESOURCE_TESTING
++    {"_test_fault", (PyCFunction)worker_test_fault, METH_O, "Only present in the fault-witness build."},
++#ifdef __linux__
++    {"_test_native_tail", (PyCFunction)worker_test_native_tail, METH_O, "Hold actual native TLS destruction in the fault-witness build."},
++#endif
++#endif
++    {NULL, NULL, 0, NULL}
++};
++
++static PyGetSetDef worker_getset[] = {
++    {"started", (getter)worker_started, NULL, NULL, NULL},
++    {"received", (getter)worker_received, NULL, NULL, NULL},
++    {"native_id", (getter)worker_native_id, NULL, NULL, NULL},
++    {"is_current", (getter)worker_is_current, NULL, NULL, NULL},
++    {"exception", (getter)worker_exception, NULL, NULL, NULL},
++    {"metrics", (getter)worker_metrics, NULL, NULL, NULL},
++#if defined(RETAINED_RESOURCE_TESTING) && defined(__linux__)
++    {"_test_native_tail_state", (getter)worker_test_tail_state, NULL, NULL, NULL},
++#endif
++    {NULL, NULL, NULL, NULL, NULL}
++};
++
++static PyTypeObject WorkerHandleType = {PyVarObject_HEAD_INIT(NULL, 0)
++    .tp_name = "retained_resource.WorkerHandle", .tp_basicsize = sizeof(WorkerHandle),
++    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC, .tp_new = worker_new,
++    .tp_dealloc = (destructor)worker_dealloc, .tp_methods = worker_methods,
++    .tp_getset = worker_getset, .tp_traverse = (traverseproc)worker_traverse,
++    .tp_clear = (inquiry)worker_clear
++};
++
++static PyModuleDef worker_module = {PyModuleDef_HEAD_INIT,
++    .m_name = "_worker_native", .m_doc = "Original joinable native worker exit receiving.",
++    .m_size = -1
++};
++
++PyMODINIT_FUNC PyInit__worker_native(void) {
++    if (PyType_Ready(&WorkerHandleType) < 0) return NULL;
++    PyObject *module = PyModule_Create(&worker_module);
++    if (module == NULL) return NULL;
++    if (PyModule_AddObjectRef(module, "WorkerHandle", (PyObject *)&WorkerHandleType) < 0) {
++        Py_DECREF(module);
++        return NULL;
++    }
++    return module;
++}
+diff --git a/packages/retained-resource/pyproject.toml b/packages/retained-resource/pyproject.toml
+index a55e9e11e3235475d9c7ec0562d9a075173d2146..4332a1013b4d7388a52dc49e28d35ea183d66ec3 100644
+--- a/packages/retained-resource/pyproject.toml
++++ b/packages/retained-resource/pyproject.toml
+@@ -5,11 +5,11 @@ build-backend = "hatchling.build"
+ [project]
+ name = "retained-resource"
+ version = "0.1.0"
+-description = "Retained native file and POSIX directory receiving."
++description = "Retained native resource and worker exit receiving."
+ requires-python = ">=3.12"
+ license = "Apache-2.0"
+ license-files = ["LICENSE"]
+-readme = { text = "Retained native file and POSIX directory receiving.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
++readme = { text = "Retained native resource and worker exit receiving.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+ authors = [{ name = "Nash Spence" }]
+ maintainers = [{ name = "Nash Spence" }]
+ classifiers = [
+diff --git a/packages/retained-resource/src/retained_resource/__init__.py b/packages/retained-resource/src/retained_resource/__init__.py
+index 84c5e517ab8a6ab2b18c9d85c934d09359f6e649..85f5d192b67592b1c9dd9965466b868d25da55ea 100644
+--- a/packages/retained-resource/src/retained_resource/__init__.py
++++ b/packages/retained-resource/src/retained_resource/__init__.py
+@@ -2,7 +2,8 @@
+ 
+ A caller reserves capacity and retains a Group before acquisition. Borrowed
+ integers are non-owning: never close, dup, detach, transfer, or retain them past
+-the original borrow. Worker completion is established outside this module.
++the original borrow. Worker supplies a separate original native exit receipt;
++resource receiving and semantic completion remain distinct obligations.
+ 
+ File acquisition may explicitly create with private 0600 mode, optionally
+ exclusive. Existing files are never truncated, repaired or replaced. Directory
+@@ -15,6 +16,7 @@ from typing import TYPE_CHECKING, Any, Literal
+ 
+ if TYPE_CHECKING or sys.platform in {"linux", "darwin", "win32"}:
+     from ._native import Borrow, Resource
++    from .worker import Worker
+ else:
+ 
+     class Resource:
+@@ -27,6 +29,10 @@ else:
+                 "retained POSIX borrowing requires native Linux, Darwin or Windows UCRT"
+             )
+ 
++    class Worker:
++        def __new__(cls, *_args: Any, **_kwargs: Any) -> Any:
++            raise RuntimeError("retained worker exit requires a qualified native backend")
++
+ 
+ class Group:
+     """A bounded reverse-dependency receiving list, never a destructor stack.
+@@ -91,4 +97,4 @@ class Group:
+         return self.received
+ 
+ 
+-__all__ = ["Resource", "Borrow", "Group"]
++__all__ = ["Resource", "Borrow", "Group", "Worker"]
+diff --git a/packages/retained-resource/src/retained_resource/_worker_native.pyi b/packages/retained-resource/src/retained_resource/_worker_native.pyi
+new file mode 100644
+index 0000000000000000000000000000000000000000..02e02924d10581e7ac345a7f99ba424b19560eaf
+--- /dev/null
++++ b/packages/retained-resource/src/retained_resource/_worker_native.pyi
+@@ -0,0 +1,18 @@
++from collections.abc import Callable
++
++class WorkerHandle:
++    def __init__(self, target: Callable[[], object]) -> None: ...
++    def start(self) -> None: ...
++    def poll(self) -> bool: ...
++    @property
++    def started(self) -> bool: ...
++    @property
++    def received(self) -> bool: ...
++    @property
++    def native_id(self) -> int | None: ...
++    @property
++    def is_current(self) -> bool: ...
++    @property
++    def exception(self) -> BaseException | None: ...
++    @property
++    def metrics(self) -> dict[str, int]: ...
+diff --git a/packages/retained-resource/src/retained_resource/worker.py b/packages/retained-resource/src/retained_resource/worker.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..146d633604b1fa4dcd7ee8492abf1ea49fa8204e
+--- /dev/null
++++ b/packages/retained-resource/src/retained_resource/worker.py
+@@ -0,0 +1,119 @@
++"""Retain a native worker exit receipt independently of Python join sentinels.
++
++This bootstrap adapter is deliberately specific to GIL-enabled CPython 3.12.
++It reuses that runtime's ordinary registration, tracing and non-daemon shutdown
++bookkeeping. Only the retained native owner establishes physical receiving.
++Service owners must explicitly join workers before interpreter finalization;
++the interpreter's shutdown sentinel does not supply a native exit receipt.
++"""
++
++from __future__ import annotations
++
++import math
++import sys
++import threading
++from collections.abc import Callable
++from time import monotonic
++from typing import Any
++
++from ._worker_native import WorkerHandle
++
++
++class Worker(threading.Thread):
++    """A single native worker whose known exit survives lost Python replies.
++
++    Retain this object before start and through receiving. A pending poll keeps
++    the original work, reservations and outcome owned by the caller. Polling
++    never waits for worker execution; join is an explicitly blocking shutdown
++    convenience and propagates interruption without modifying the native receipt.
++
++    The Thread base supplies bootstrap bookkeeping, never liveness evidence.
++    This is not a general replacement for threading.Thread on other runtimes.
++    """
++
++    def __init__(
++        self,
++        *,
++        target: Callable[..., object],
++        args: tuple[Any, ...] = (),
++        name: str = "retained-worker",
++        daemon: bool = False,
++    ) -> None:
++        if sys.implementation.name != "cpython" or sys.version_info[:2] != (3, 12):
++            raise RuntimeError("retained worker bootstrap requires qualified CPython 3.12")
++        if daemon is not False:
++            raise ValueError("retained workers require explicit non-daemon receiving")
++        super().__init__(target=target, args=args, name=name, daemon=False)
++        # The native constructor has no worker effect. Retention precedes start.
++        self._exit_owner = WorkerHandle(self._bootstrap)  # type: ignore[attr-defined]
++
++    @property
++    def started(self) -> bool:
++        return self._exit_owner.started
++
++    @property
++    def received(self) -> bool:
++        return self._exit_owner.received
++
++    @property
++    def is_current(self) -> bool:
++        return self._exit_owner.is_current
++
++    @property
++    def metrics(self) -> dict[str, int]:
++        return self._exit_owner.metrics
++
++    @property
++    def bootstrap_exception(self) -> BaseException | None:
++        """Keep unexpected bootstrap evidence separate from the work outcome."""
++        return self._exit_owner.exception
++
++    def start(self) -> None:
++        if self.started:
++            raise RuntimeError("retained workers can only be started once")
++        # These are the pinned runtime's existing bootstrap registries. Retaining
++        # the normal Thread identity prevents one immortal alien-thread entry per
++        # callback that asks threading.current_thread().
++        try:
++            with threading._active_limbo_lock:  # type: ignore[attr-defined]
++                threading._limbo[self] = self  # type: ignore[attr-defined]
++            self._exit_owner.start()
++        except BaseException:
++            if not self.started:
++                with threading._active_limbo_lock:  # type: ignore[attr-defined]
++                    threading._limbo.pop(self, None)  # type: ignore[attr-defined]
++            raise
++        # Startup acknowledgement is not creation evidence: interruption here
++        # leaves started true and the original native owner retained.
++        while not self._started.wait(0.01):  # type: ignore[attr-defined]
++            # A timed-out observation may race with acknowledgement and exit.
++            # After positive native receiving, the bootstrap event is stable.
++            if self.poll() and not self._started.is_set():  # type: ignore[attr-defined]
++                raise RuntimeError("original worker bootstrap exited before acknowledgement") from (
++                    self.bootstrap_exception
++                )
++
++    def poll(self) -> bool:
++        """Receive the original native exit with at most one zero-wait probe."""
++        return self._exit_owner.poll()
++
++    def is_alive(self) -> bool:
++        # Do not call Thread.is_alive/_wait_for_tstate_lock on this object.
++        return self.started and (self.is_current or not self.poll())
++
++    def join(self, timeout: float | None = None) -> None:
++        if not self.started:
++            raise RuntimeError("cannot join a retained worker before native start")
++        if self.is_current:
++            raise RuntimeError("cannot join the current retained worker")
++        if timeout is not None and not math.isfinite(timeout):
++            raise ValueError("retained worker timeout must be finite")
++        deadline = None if timeout is None else monotonic() + max(0.0, timeout)
++        wake = threading.Event()
++        while not self.poll():
++            remaining = None if deadline is None else deadline - monotonic()
++            if remaining is not None and remaining <= 0:
++                return
++            # This wait carries no exit authority. Signals can interrupt it while
++            # the native handle and its recorded receiving outcome stay intact.
++            wake.wait(0.01 if remaining is None else min(0.01, remaining))
+diff --git a/packages/retained-resource/src/retained_resource/worker_growth.py b/packages/retained-resource/src/retained_resource/worker_growth.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..a2541044d417d77160801fb80ecf12dfe0533949
+--- /dev/null
++++ b/packages/retained-resource/src/retained_resource/worker_growth.py
+@@ -0,0 +1,72 @@
++"""Actual native entries for one original worker acquisition or receive probe."""
++
++from riverhog_growth_contracts import (
++    COUNT,
++    Bound,
++    Declaration,
++    Dimension,
++    Expression,
++    declare_growth,
++)
++
++from ._worker_native import WorkerHandle
++
++
++def declaration(operation: str) -> Declaration:
++    starting = operation == "start"
++    limits = {
++        "start_calls": 1 if starting else 0,
++        "poll_calls": 0 if starting else 1,
++        "join_calls": 0 if starting else 1,
++        "wait_calls": 0 if starting else 1,
++        "close_calls": 0 if starting else 1,
++        "exit_receipts": 0 if starting else 1,
++    }
++    return Declaration(
++        id=f"retained-resource.worker-{operation}.growth/v1",
++        authority="retained-resource",
++        subjects=(f"retained_resource.worker_growth.{operation}",),
++        scope="one operation on the exact retained native worker owner",
++        starts_at="caller has retained original worker ownership and capacity",
++        ends_at="recorded native outcome or conservative pending/unknown observation",
++        dimensions=(
++            Dimension("unrelated_workers", COUNT, "Unrelated retained originals, never scanned."),
++        ),
++        bounds=tuple(
++            Bound(
++                name,
++                COUNT,
++                "upper",
++                Expression("constant", value=limit, unit=COUNT),
++                "Actual native API entries or recorded positive OS exit outcomes.",
++            )
++            for name, limit in limits.items()
++        ),
++        conditions=(
++            "GIL-enabled main-interpreter CPython with the admitted native backend.",
++            "Linux joinable pthreads or Windows dynamic-UCRT thread HANDLEs.",
++            "The owner stays in its original process through explicit receiving.",
++        ),
++        invariants=(
++            "Each original admits at most one native worker creation.",
++            "Each original records at most one positive OS exit receipt.",
++            "A received original performs no more joins, waits or handle closes.",
++            "A Future, target return, Python sentinel or thread ID is not an exit receipt.",
++            "Pending probes remain nonblocking and never enumerate unrelated originals.",
++        ),
++        limitations=(
++            "Native API entries do not bound internal scheduler or allocator latency.",
++            "Callback work, Python bootstrap and thread-local finalization are separate scopes.",
++            "No aggregate process memory or wall-clock performance claim.",
++        ),
++    )
++
++
++@declare_growth(declaration("start"))
++def start(owner: WorkerHandle) -> None:
++    owner.start()
++
++
++@declare_growth(declaration("poll"))
++def poll(owner: WorkerHandle) -> bool:
++    return owner.poll()
+diff --git a/packages/retained-resource/tests/test_wheel_build.py b/packages/retained-resource/tests/test_wheel_build.py
+index a09ff0ee46d4972732d2b17c2dae3a4e2e9e4a51..f75990fb8df3cffc27d266562fdbf9610ed1e208 100644
+--- a/packages/retained-resource/tests/test_wheel_build.py
++++ b/packages/retained-resource/tests/test_wheel_build.py
+@@ -83,6 +83,20 @@ else:
+  rejected.close();root.close()
+  assert root.received and created.read_bytes()==b'original'
+  created.unlink()
++if sys.platform in {'linux','win32'}:
++ from retained_resource import Worker
++ from retained_resource._worker_native import WorkerHandle
++ import threading
++ outcomes=[]
++ worker=Worker(target=lambda:outcomes.append(threading.current_thread()),name='installed-worker')
++ worker.start();worker.join(timeout=5)
++ assert worker.received and worker.poll() and outcomes==[worker]
++ assert not hasattr(WorkerHandle(lambda:None),'_test_fault')
++elif sys.platform=='darwin':
++ from retained_resource._worker_native import WorkerHandle
++ try:WorkerHandle(lambda:None)
++ except RuntimeError:pass
++ else:raise AssertionError('unqualified Darwin worker profile accepted')
+ """
+     _run([str(python), "-I", "-c", program, str(cwd)], cwd=cwd)
+ 
+@@ -90,11 +104,13 @@ else:
+ def test_normal_wheel_preserves_source_and_does_not_reuse_an_editable_binary(tmp_path):
+     source = _source(tmp_path)
+     for existing in (False, True) if NATIVE else (False,):
+-        artifact = (
+-            source / "src/retained_resource" / ("_native" + sysconfig.get_config_var("EXT_SUFFIX"))
+-        )
++        artifacts = [
++            source / "src/retained_resource" / (name + sysconfig.get_config_var("EXT_SUFFIX"))
++            for name in ("_native", "_worker_native")
++        ]
+         if existing:
+-            artifact.write_bytes(b"independent existing editable artifact")
++            for artifact in artifacts:
++                artifact.write_bytes(b"independent existing editable artifact")
+         before = _snapshot(source)
+         wheels = tmp_path / f"wheels-{existing}"
+         _run(
+@@ -109,8 +125,11 @@ def test_normal_wheel_preserves_source_and_does_not_reuse_an_editable_binary(tmp
+             native = [name for name in names if name.endswith((".so", ".pyd"))]
+             assert bool(native) == NATIVE
+             if NATIVE:
+-                assert len(native) == 1
+-                assert archive.read(native[0]) != b"independent existing editable artifact"
++                assert len(native) == 2
++                assert all(
++                    archive.read(name) != b"independent existing editable artifact"
++                    for name in native
++                )
+         environment = tmp_path / f"installed-{existing}"
+         _run(["uv", "venv", "--python", sys.executable, str(environment)], cwd=tmp_path)
+         python = environment / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+diff --git a/packages/retained-resource/tests/test_worker_growth.py b/packages/retained-resource/tests/test_worker_growth.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..caabbbc2c2728ec403d32d8c7e0b0afc1616a8da
+--- /dev/null
++++ b/packages/retained-resource/tests/test_worker_growth.py
+@@ -0,0 +1,120 @@
++"""Count actual native start/receive primitives without timing-based assertions."""
++
++from __future__ import annotations
++
++import os
++import sys
++import threading
++import time
++
++import pytest
++from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
++
++from scripts.validation_numeric import numeric_policy_from_environment
++from tests.support.workspace_reclamation import execution_sample
++
++pytestmark = pytest.mark.skipif(
++    sys.platform not in {"linux", "win32"}, reason="bounded native worker receiving backend"
++)
++
++
++@pytest.mark.growth_witness(
++    "retained-resource.native-worker-work",
++    gates=("unit", "linux-qualification", "native-ubuntu-24.04", "native-windows-2025"),
++)
++def test_original_worker_receiving_counts_actual_lifetime_primitives(record_property):
++    from retained_resource._worker_native import WorkerHandle
++    from retained_resource.worker_growth import poll, start
++
++    bindings = tuple(growth_binding(operation) for operation in (start, poll))
++    policy = numeric_policy_from_environment(os.environ)
++    projection = project_bindings(bindings, numeric_policy=policy)
++    samples = []
++    owner_widths = set()
++
++    def observe(operation, worker, population):
++        before = worker.metrics
++        result = operation(worker)
++        after = worker.metrics
++        binding = growth_binding(operation)
++        metrics = {
++            bound.metric: after[bound.metric] - before[bound.metric]
++            for bound in binding.declaration.bounds
++        }
++        sample = execution_sample(
++            binding, projection, {"unrelated_workers": population}, metrics, {}
++        )
++        validate_execution_samples(
++            projection, binding.declaration.id, [sample], numeric_policy=policy
++        )
++        samples.append(sample)
++        owner_widths.add(after["owner_storage_bytes"])
++        return result
++
++    for population in (1, 17, 257):
++        unrelated = [WorkerHandle(lambda: None) for _ in range(population)]
++        entered, release = threading.Event(), threading.Event()
++
++        def original(entered=entered, release=release):
++            entered.set()
++            assert release.wait(10)
++
++        worker = WorkerHandle(original)
++        try:
++            observe(start, worker, population)
++            assert entered.wait(5)
++            for _ in range(17):
++                assert not observe(poll, worker, population)
++            pending = worker.metrics
++            assert pending["start_calls"] == 1 and pending["exit_receipts"] == 0
++            assert pending["retained_native_owners"] == 1
++            release.set()
++            deadline = time.monotonic() + 10
++            while not observe(poll, worker, population):
++                assert time.monotonic() < deadline
++                threading.Event().wait(0.001)
++            received = worker.metrics
++            for _ in range(17):
++                assert observe(poll, worker, population)
++            final = worker.metrics
++            assert worker.exception is None
++            assert final["start_calls"] == final["exit_receipts"] == 1
++            assert final["retained_native_owners"] == 0
++            assert all(
++                received[name] == final[name]
++                for name in ("join_calls", "wait_calls", "close_calls")
++            )
++            if sys.platform == "linux":
++                assert final["join_calls"] >= 18
++                assert final["wait_calls"] == final["close_calls"] == 0
++            else:
++                assert final["wait_calls"] >= 18
++                assert final["join_calls"] == 0 and final["close_calls"] == 1
++            assert all(owner.metrics["start_calls"] == 0 for owner in unrelated)
++            owner_widths.update(owner.metrics["owner_storage_bytes"] for owner in unrelated)
++        finally:
++            release.set()
++            deadline = time.monotonic() + 10
++            while not worker.poll():
++                assert time.monotonic() < deadline
++                threading.Event().wait(0.001)
++    assert len(owner_widths) == 1
++    record_property("growth_samples", samples)
++    record_property(
++        "growth_observations",
++        {
++            "operations": len(samples),
++            "owner_storage_bytes": owner_widths.pop(),
++            **{
++                name: sum(sample["metrics"][name] for sample in samples)
++                for name in (
++                    "start_calls",
++                    "poll_calls",
++                    "join_calls",
++                    "wait_calls",
++                    "close_calls",
++                    "exit_receipts",
++                )
++            },
++        },
++    )
+diff --git a/packages/retained-resource/tests/test_worker_receiving.py b/packages/retained-resource/tests/test_worker_receiving.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..6cef480db3dce61cd6dc4c3c5d95571cfd173d41
+--- /dev/null
++++ b/packages/retained-resource/tests/test_worker_receiving.py
+@@ -0,0 +1,443 @@
++"""Original native worker outcomes survive interruption and receiving retries."""
++
++from __future__ import annotations
++
++import gc
++import importlib.util
++import subprocess
++import sys
++import threading
++import time
++import weakref
++from pathlib import Path
++
++import pytest
++
++SUPPORTED = sys.platform in {"linux", "win32"}
++
++
++@pytest.fixture(scope="session")
++def worker_native():
++    if not SUPPORTED:
++        pytest.skip("bounded worker receiving backend is Linux or Windows")
++    from retained_resource import _worker_native
++
++    return _worker_native
++
++
++@pytest.fixture(scope="session")
++def fault_worker_native(tmp_path_factory):
++    if not SUPPORTED:
++        pytest.skip("bounded worker receiving backend is Linux or Windows")
++    from setuptools import Distribution, Extension
++    from setuptools.command.build_ext import build_ext
++
++    package = Path(__file__).resolve().parents[1]
++    output = tmp_path_factory.mktemp("retained-worker-fault-native")
++    extension = Extension(
++        "_retained_worker_test._worker_native",
++        sources=[str(package / "native/worker.c")],
++        define_macros=[("RETAINED_RESOURCE_TESTING", "1")],
++        extra_compile_args=(
++            ["/std:c11", "/W4"]
++            if sys.platform == "win32"
++            else ["-std=c11", "-Wall", "-Wextra", "-Werror", "-pthread"]
++        ),
++        extra_link_args=[] if sys.platform == "win32" else ["-pthread"],
++    )
++    command = build_ext(Distribution({"ext_modules": [extension]}))
++    command.build_lib = str(output)
++    command.build_temp = str(output / "build")
++    command.ensure_finalized()
++    command.run()
++    path = Path(command.get_ext_fullpath(extension.name))
++    spec = importlib.util.spec_from_file_location(extension.name, path)
++    assert spec is not None and spec.loader is not None
++    native = importlib.util.module_from_spec(spec)
++    spec.loader.exec_module(native)
++    return native
++
++
++def receive(worker):
++    deadline = time.monotonic() + 10
++    while not worker.poll():
++        assert time.monotonic() < deadline, "original native worker did not exit"
++        threading.Event().wait(0.001)
++    assert worker.received
++    assert worker.metrics["retained_native_owners"] == 0
++
++
++def test_normal_build_has_no_worker_fault_seam(worker_native):
++    worker = worker_native.WorkerHandle(lambda: None)
++    assert not hasattr(worker, "_test_fault")
++    assert not hasattr(worker, "_test_native_tail")
++    assert not hasattr(worker, "_test_native_tail_state")
++    assert not worker.started and not worker.received and not worker.poll()
++    assert worker.native_id is None and not worker.is_current
++    assert all(
++        worker.metrics[name] == 0
++        for name in ("start_calls", "join_calls", "wait_calls", "close_calls")
++    )
++    with pytest.raises(TypeError, match="callable"):
++        worker_native.WorkerHandle(None)
++
++
++def test_one_original_start_and_one_sticky_exit_receipt(worker_native):
++    calls = []
++    worker = worker_native.WorkerHandle(lambda: calls.append("original"))
++    worker.start()
++    with pytest.raises(RuntimeError, match="single-attempt"):
++        worker.start()
++    receive(worker)
++    assert calls == ["original"] and worker.started and worker.exception is None
++    before = worker.metrics
++    for _ in range(17):
++        assert worker.poll()
++    after = worker.metrics
++    assert after["start_calls"] == 1
++    assert after["poll_calls"] - before["poll_calls"] == 17
++    assert all(after[name] == before[name] for name in ("join_calls", "wait_calls", "close_calls"))
++
++
++def test_original_callback_exception_remains_owned(worker_native):
++    failure = SystemExit("original callback exception")
++
++    def failed():
++        raise failure
++
++    worker = worker_native.WorkerHandle(failed)
++    worker.start()
++    receive(worker)
++    assert worker.exception is failure
++    assert worker.poll() and worker.exception is failure
++
++
++def test_current_worker_cannot_receive_itself(worker_native):
++    observed = []
++
++    def running():
++        observed.append(worker.is_current)
++        with pytest.raises(RuntimeError, match="current native worker"):
++            worker.poll()
++
++    worker = worker_native.WorkerHandle(running)
++    worker.start()
++    receive(worker)
++    assert worker.exception is None and observed == [True] and not worker.is_current
++
++
++def test_receiving_waits_for_original_thread_local_finalization(worker_native):
++    local = threading.local()
++    finalized, release = threading.Event(), threading.Event()
++    finished = []
++
++    class Tail:
++        def __del__(self):
++            finalized.set()
++            if release.wait(10):
++                finished.append("original TLS")
++
++    def work():
++        local.original = Tail()
++
++    worker = worker_native.WorkerHandle(work)
++    worker.start()
++    try:
++        assert finalized.wait(5)
++        assert worker.started and worker.native_id is not None
++        if sys.platform == "linux":
++            assert Path(f"/proc/self/task/{worker.native_id}").exists()
++        for _ in range(17):
++            assert not worker.poll() and not worker.received
++        assert worker.metrics["retained_native_owners"] == 1
++    finally:
++        release.set()
++        receive(worker)
++    assert finished == ["original TLS"] and worker.exception is None
++
++
++@pytest.mark.skipif(sys.platform != "linux", reason="Linux native TLS destructor seam")
++def test_receiving_waits_past_python_cleanup_for_native_tls(fault_worker_native):
++    worker = fault_worker_native.WorkerHandle(lambda: None)
++    worker._test_native_tail("hold")
++    worker.start()
++    try:
++        deadline = time.monotonic() + 3
++        while not worker._test_native_tail_state["entered"]:
++            assert time.monotonic() < deadline, "native TLS destructor was not entered"
++            threading.Event().wait(0.001)
++        assert Path(f"/proc/self/task/{worker.native_id}").exists()
++        assert worker.exception is None
++        for _ in range(17):
++            assert not worker.poll() and not worker.received
++        assert worker.metrics["exit_receipts"] == 0
++    finally:
++        worker._test_native_tail("release")
++        receive(worker)
++    assert not worker._test_native_tail_state["timed_out"]
++    assert worker._test_native_tail_state["error"] == 0
++    assert worker.metrics["exit_receipts"] == 1
++
++
++@pytest.mark.parametrize("fault", ("after_start", "signal_after_start"))
++def test_lost_start_reply_retains_the_one_created_worker(fault_worker_native, fault):
++    entered, release = threading.Event(), threading.Event()
++    calls = []
++
++    def original():
++        calls.append("original")
++        entered.set()
++        assert release.wait(10)
++
++    worker = fault_worker_native.WorkerHandle(original)
++    worker._test_fault(fault)
++    expected = KeyboardInterrupt if fault.startswith("signal") else RuntimeError
++    try:
++        with pytest.raises(expected):
++            worker.start()
++        assert worker.started and not worker.received
++        assert entered.wait(5) and not worker.poll()
++        assert worker.metrics["start_calls"] == 1
++        assert worker.metrics["retained_native_owners"] == 1
++        with pytest.raises(RuntimeError, match="single-attempt"):
++            worker.start()
++    finally:
++        release.set()
++        receive(worker)
++    assert calls == ["original"] and worker.exception is None
++
++
++def test_before_start_refusal_has_no_native_effect(fault_worker_native):
++    calls = []
++    worker = fault_worker_native.WorkerHandle(lambda: calls.append("unexpected"))
++    worker._test_fault("before_start")
++    with pytest.raises(RuntimeError, match="before-start"):
++        worker.start()
++    assert not worker.started and calls == []
++    assert worker.metrics["start_calls"] == 0
++    assert worker.metrics["retained_native_owners"] == 0
++
++
++@pytest.mark.parametrize("fault", ("after_join", "signal_after_join"))
++def test_lost_join_reply_keeps_native_receipt_without_rejoining(fault_worker_native, fault):
++    release, entered = threading.Event(), threading.Event()
++
++    def original():
++        entered.set()
++        assert release.wait(10)
++
++    worker = fault_worker_native.WorkerHandle(original)
++    worker.start()
++    try:
++        assert entered.wait(5)
++        worker._test_fault(fault)
++        assert not worker.poll()
++        release.set()
++        deadline = time.monotonic() + 10
++        expected = KeyboardInterrupt if fault.startswith("signal") else RuntimeError
++        with pytest.raises(expected):
++            while not worker.poll():
++                assert time.monotonic() < deadline
++                threading.Event().wait(0.001)
++        assert worker.received
++        before = worker.metrics
++        for _ in range(17):
++            assert worker.poll()
++        after = worker.metrics
++        assert after["retained_native_owners"] == 0
++        assert all(
++            after[name] == before[name]
++            for name in ("start_calls", "join_calls", "wait_calls", "close_calls")
++        )
++    finally:
++        release.set()
++        receive(worker)
++
++
++def test_before_join_refusal_preserves_the_exact_worker(fault_worker_native):
++    release, entered = threading.Event(), threading.Event()
++
++    def original():
++        entered.set()
++        assert release.wait(10)
++
++    worker = fault_worker_native.WorkerHandle(original)
++    worker.start()
++    try:
++        assert entered.wait(5)
++        before = worker.metrics
++        worker._test_fault("before_join")
++        with pytest.raises(RuntimeError, match="before-join"):
++            worker.poll()
++        after = worker.metrics
++        assert not worker.received and after["retained_native_owners"] == 1
++        assert after["join_calls"] == before["join_calls"]
++        assert after["wait_calls"] == before["wait_calls"]
++    finally:
++        release.set()
++        receive(worker)
++
++
++def test_unknown_native_receiving_keeps_original_charged_without_retry(fault_worker_native):
++    program = r"""
++import importlib.util, os, sys, threading
++path = sys.argv[1]
++spec = importlib.util.spec_from_file_location('_isolated_worker._worker_native', path)
++module = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(module)
++entered, release = threading.Event(), threading.Event()
++def original():
++    entered.set()
++    release.wait(10)
++worker = module.WorkerHandle(original)
++worker.start()
++assert entered.wait(5)
++before = worker.metrics
++worker._test_fault('unknown_join')
++for _ in range(17):
++    try: worker.poll()
++    except RuntimeError: pass
++    else: raise AssertionError('unknown native result became a receipt')
++after = worker.metrics
++assert worker.started and not worker.received
++assert after['retained_native_owners'] == 1
++assert all(after[k] == before[k] for k in ('join_calls', 'wait_calls', 'close_calls'))
++release.set()
++# The synthetic unknown owner cannot be positively received. Its entire
++# isolated process ends; no cleanup or OS exit receipt is claimed for it.
++os._exit(0)
++"""
++    result = subprocess.run(
++        [sys.executable, "-c", program, fault_worker_native.__file__],
++        text=True,
++        capture_output=True,
++        timeout=20,
++    )
++    assert result.returncode == 0, result.stdout + result.stderr
++
++
++@pytest.mark.skipif(sys.platform != "linux", reason="fork isolation requires Linux")
++def test_fork_cannot_receive_or_query_an_original_native_owner():
++    program = r"""
++import os, threading, time
++from retained_resource._worker_native import WorkerHandle
++release = threading.Event()
++worker = WorkerHandle(lambda: release.wait(10))
++worker.start()
++child = os.fork()
++if child == 0:
++    for action in (worker.poll, worker.start, lambda: worker.received,
++                   lambda: worker.started, lambda: worker.metrics,
++                   lambda: worker.native_id, lambda: worker.is_current):
++        try: action()
++        except RuntimeError: pass
++        else: os._exit(3)
++    os._exit(0)
++try:
++    _, status = os.waitpid(child, 0)
++    assert os.waitstatus_to_exitcode(status) == 0
++    assert not worker.received
++finally:
++    release.set()
++    deadline = time.monotonic() + 10
++    while not worker.poll():
++        assert time.monotonic() < deadline
++        threading.Event().wait(0.001)
++"""
++    result = subprocess.run(
++        [sys.executable, "-c", program], text=True, capture_output=True, timeout=20
++    )
++    assert result.returncode == 0, result.stdout + result.stderr
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++def test_subinterpreter_refuses_native_worker_before_callback_execution():
++    program = r"""
++import _xxsubinterpreters as interpreters
++child = interpreters.create()
++try:
++    interpreters.run_string(child, '''
++try:
++    from retained_resource._worker_native import WorkerHandle
++except ImportError as error:
++    assert "does not support loading in subinterpreters" in str(error)
++else:
++    try:
++        WorkerHandle(lambda: (_ for _ in ()).throw(AssertionError("callback dispatched")))
++    except RuntimeError as error:
++        assert "original main interpreter" in str(error)
++    else:
++        raise AssertionError("unqualified subinterpreter worker admitted")
++''')
++finally:
++    interpreters.destroy(child)
++"""
++    result = subprocess.run(
++        [sys.executable, "-c", program], text=True, capture_output=True, timeout=20
++    )
++    assert result.returncode == 0, result.stdout + result.stderr
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++def test_unstarted_worker_cycle_is_collectible():
++    from retained_resource import Worker
++
++    worker = Worker(target=lambda: None)
++    reference = weakref.ref(worker)
++    del worker
++    gc.collect()
++    assert reference() is None
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++def test_live_worker_stays_pinned_until_actual_receiving():
++    from retained_resource import Worker
++
++    entered, release = threading.Event(), threading.Event()
++
++    def work():
++        entered.set()
++        assert release.wait(10)
++
++    worker = Worker(target=work)
++    worker.start()
++    assert entered.wait(5)
++    reference = weakref.ref(worker)
++    del worker
++    try:
++        gc.collect()
++        assert reference() is not None
++        release.set()
++        original = reference()
++        original.join(timeout=10)
++        assert original.received
++        del original
++    finally:
++        release.set()
++    gc.collect()
++    assert reference() is None
++
++
++def test_received_exception_cycle_can_release_after_original_receiving(worker_native):
++    class Callback:
++        def __call__(self):
++            raise RuntimeError("original exception retaining callback frame")
++
++    callback = Callback()
++    worker = worker_native.WorkerHandle(callback)
++    callback.owner = worker
++    reference = weakref.ref(callback)
++    worker.start()
++    receive(worker)
++    assert isinstance(worker.exception, RuntimeError)
++    del callback, worker
++    gc.collect()
++    assert reference() is None
++
++
++@pytest.mark.skipif(sys.platform != "darwin", reason="Darwin profile only")
++def test_darwin_refuses_worker_creation_before_running_callback():
++    from retained_resource._worker_native import WorkerHandle
++
++    with pytest.raises(RuntimeError, match="no Darwin backend"):
++        WorkerHandle(lambda: pytest.fail("unsupported worker dispatched"))
+diff --git a/riverhog/src/riverhog_core/services/physical_execution.py b/riverhog/src/riverhog_core/services/physical_execution.py
+index ef161cde4353ef80401796a526702f1b2c8d7b73..6a67a99fc8c057d779ba9a42118e57734018f8a4 100644
+--- a/riverhog/src/riverhog_core/services/physical_execution.py
++++ b/riverhog/src/riverhog_core/services/physical_execution.py
+@@ -8,9 +8,10 @@ from collections import OrderedDict
+ from collections.abc import Callable
+ from concurrent.futures import Future
+ from dataclasses import dataclass, field
+-from threading import Lock, Thread, current_thread
++from threading import Lock
+ from typing import Literal, overload
+ 
++from retained_resource import Worker
+ from riverhog_protocol.errors import Conflict
+ 
+ from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
+@@ -125,7 +126,7 @@ class _Slot:
+     owner: object | None
+     identity: object | None
+     future: Future[object]
+-    worker: Thread
++    worker: Worker
+ 
+ 
+ def _run(work: Callable[[], object], future: Future[object]) -> None:
+@@ -257,7 +258,7 @@ class PhysicalExecutionOwner:
+             if self._targets.get(target, 0) >= per_target:
+                 return "target-capacity"
+             future: Future[object] = Future()
+-            worker = Thread(
++            worker = Worker(
+                 target=_run, args=(work, future), name="physical-execution", daemon=False
+             )
+             slot = _Slot(key, target_incarnation, terminal, owner, identity, future, worker)
+@@ -268,9 +269,9 @@ class PhysicalExecutionOwner:
+             try:
+                 worker.start()
+             except BaseException:
+-                # A started worker remains charged even if startup acknowledgement
+-                # failed. Only an original thread that never started is withdrawn.
+-                if worker.ident is None:
++                # Native creation is recorded before the Python reply. An unknown
++                # startup acknowledgement keeps the exact original slot charged.
++                if not worker.started:
+                     self._remove(slot)
+                 raise
+             return "submitted"
+@@ -289,7 +290,7 @@ class PhysicalExecutionOwner:
+                 return "untracked"
+             if slot.key != key:
+                 raise Conflict("physical execution retains another original scope")
+-            if slot.worker.is_alive():
++            if not slot.worker.poll():
+                 return "running"
+             return "awaiting-join" if slot.future.done() else "outcome-missing"
+         finally:
+@@ -345,11 +346,12 @@ class PhysicalExecutionOwner:
+                 assert slot.owner is owner
+                 if isinstance(slot.key, PhysicalWorkspaceExecutionKey) != workspace:
+                     raise PhysicalExecutionOccupied("physical receiver has another execution kind")
+-                if slot.worker.is_alive():
+-                    continue
+                 # Future.done alone is insufficient: callbacks, thread-local
+                 # destructors and original frames may outlive result publication.
+-                slot.worker.join(timeout=0)
++                # The native owner retains positive receiving even when its
++                # Python reply is interrupted; retry never joins a recycled ID.
++                if not slot.worker.poll():
++                    continue
+                 if not slot.future.done():
+                     # Missing original evidence stays charged. A dead local
+                     # thread cannot supply an invented successful outcome.
+@@ -401,7 +403,7 @@ class PhysicalExecutionOwner:
+         """Stop submission and join physical workers without dropping outcomes."""
+         with self._lock:
+             workers = tuple(slot.worker for slot in self._slots.values())
+-            if any(worker is current_thread() for worker in workers):
++            if any(worker.is_current for worker in workers):
+                 raise RuntimeError("upload worker cannot join its own execution owner")
+             self._closed = True
+         for worker in workers:
+diff --git a/riverhog/src/riverhog_core/services/physical_workspace_growth.py b/riverhog/src/riverhog_core/services/physical_workspace_growth.py
+index 52adcbcdcb9cc8dc96328ee2a82cb20b2d3bd727..9e630557201a57295241e6d0ec7c4279605b2267 100644
+--- a/riverhog/src/riverhog_core/services/physical_workspace_growth.py
++++ b/riverhog/src/riverhog_core/services/physical_workspace_growth.py
+@@ -29,8 +29,7 @@ def declare_workspace_execution_growth(operation: Callable[..., Any], *, collect
+         "mapping_enumerations": count(0),
+         "workers_constructed": count(0) if collect else count(1),
+         "workers_started": count(0) if collect else count(1),
+-        "worker_liveness_calls": scale(2, quantum) if collect else count(0),
+-        "worker_join_calls": quantum if collect else count(0),
++        "worker_receive_calls": quantum if collect else count(0),
+         "results_received": quantum if collect else count(0),
+     }
+     name = "collect_workspace" if collect else "try_submit_workspace"
+@@ -59,7 +58,7 @@ def declare_workspace_execution_growth(operation: Callable[..., Any], *, collect
+                     COUNT,
+                     "equal" if metric == "mapping_enumerations" else "upper",
+                     expression,
+-                    "Actual mapping, thread and receiving primitives.",
++                    "Actual mapping, worker creation and native receiving probes.",
+                 )
+                 for metric, expression in limits.items()
+             ),
+@@ -92,7 +91,7 @@ def declare_workspace_execution_growth(operation: Callable[..., Any], *, collect
+         invariants=(
+             "Workspace work shares global and per-target terminal allowances.",
+             "Only the selected receiver's rotating bucket is inspected.",
+-            "Published Future results stay charged until the actual worker joins.",
++            "Published Future results stay charged until original native exit receiving.",
+             "Retries preserve the original receiver, target and identity.",
+             "Execution join grants no resource or terminal disposal authority.",
+         ),
+diff --git a/scripts/ci_qualification.py b/scripts/ci_qualification.py
+index 67a4bd5cd6d0679aabcdbbfd88aa49c35bb2bcfc..ef7ce5daff7c272cc15201e9047bce50cf258254 100644
+--- a/scripts/ci_qualification.py
++++ b/scripts/ci_qualification.py
+@@ -58,6 +58,8 @@ NATIVE_TESTS = (
+     "packages/retained-resource/tests/test_receiving.py",
+     "packages/retained-resource/tests/test_receiving_growth.py",
+     "packages/retained-resource/tests/test_native_growth.py",
++    "packages/retained-resource/tests/test_worker_receiving.py",
++    "packages/retained-resource/tests/test_worker_growth.py",
+     "packages/retained-resource/tests/test_wheel_build.py",
+     "tests/platform/test_native_provenance.py",
+     "tests/unit/test_cli_upload_source_hashing.py",
+diff --git a/tests/support/physical_exit_probe.py b/tests/support/physical_exit_probe.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..fe026de1546651aa2ee2923f8c2f7e15453f1849
+--- /dev/null
++++ b/tests/support/physical_exit_probe.py
+@@ -0,0 +1,301 @@
++"""Isolated real-signal observations of the original physical worker's exit."""
++
++from __future__ import annotations
++
++import argparse
++import importlib.util
++import json
++import os
++import signal
++import sys
++import threading
++from pathlib import Path
++from time import monotonic, sleep
++
++
++def interrupt_close(pool, worker):
++    """Deliver SIGINT only after the coordinator entered its actual join frame."""
++    coordinator = threading.get_ident()
++    actual_join = worker.join
++    # On the old implementation, observe the actual blocking sentinel acquire.
++    # The retained implementation owns its wait in the public Worker.join frame.
++    if isinstance(worker, threading.Thread) and not hasattr(worker, "poll"):
++        waiting_code = threading.Thread._wait_for_tstate_lock.__code__
++    else:
++        waiting_code = actual_join.__func__.__code__
++    delivered = threading.Event()
++    stopped = threading.Event()
++    errors = []
++
++    def send():
++        deadline = monotonic() + 5
++        while not stopped.is_set() and monotonic() < deadline:
++            frame = sys._current_frames().get(coordinator)
++            while frame is not None:
++                if frame.f_code is waiting_code:
++                    delivered.set()
++                    os.kill(os.getpid(), signal.SIGINT)
++                    return
++                frame = frame.f_back
++            sleep(0.001)
++        if not stopped.is_set():
++            errors.append("coordinator never entered the original worker join")
++            os.kill(os.getpid(), signal.SIGINT)
++
++    sender = threading.Thread(target=send, name="physical-exit-signal", daemon=False)
++    sender.start()
++    interrupted = False
++    try:
++        try:
++            pool.close()
++        except KeyboardInterrupt:
++            interrupted = True
++    finally:
++        stopped.set()
++        sender.join(timeout=6)
++    assert not sender.is_alive(), "original signal sender was not received"
++    assert not errors, errors
++    assert delivered.is_set() and interrupted, "actual coordinator join was not interrupted"
++    return interrupted
++
++
++def await_native_exit(native_id):
++    """Independent Linux test evidence, never a product receiving primitive."""
++    path = Path(f"/proc/self/task/{native_id}")
++    deadline = monotonic() + 10
++    while path.exists() and monotonic() < deadline:
++        sleep(0.001)
++    assert not path.exists(), "original native worker failed to exit after explicit release"
++
++
++def load_source(path):
++    if path is None:
++        from riverhog_core.services import physical_execution
++
++        return physical_execution
++    spec = importlib.util.spec_from_file_location("_physical_exit_probe_owner", path)
++    assert spec is not None and spec.loader is not None
++    module = importlib.util.module_from_spec(spec)
++    sys.modules[spec.name] = module
++    spec.loader.exec_module(module)
++    return module
++
++
++def exercise(*, kind, tail, outcome, implementation=None, lease_root=None):
++    from contextlib import nullcontext
++
++    from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
++
++    from tests.support.validation_workspace import leased_workspace
++
++    source = load_source(implementation)
++    terminal = kind == "workspace"
++    tuning = ArchiveExecutionTuning(
++        forward_workers=2,
++        forward_workers_per_target=1,
++        terminal_workers=2,
++        terminal_workers_per_target=1,
++    )
++    pool = source.PhysicalExecutionOwner(tuning)
++    receiver, identity, value = object(), object(), object()
++    failure = RuntimeError("original physical execution diagnostic")
++    entered, release = threading.Event(), threading.Event()
++    local = threading.local()
++    native_ids, finalizer_failures = [], []
++    calls = []
++
++    def original_lease():
++        if lease_root is None:
++            return nullcontext()
++        return leased_workspace(lease_root, "d" * 32, create=True)
++
++    def lease_available():
++        if lease_root is None:
++            return None
++        with leased_workspace(lease_root, "d" * 32, shared=True) as directory:
++            return directory is not None
++
++    class Finalizer:
++        def __init__(self, lease):
++            self.lease = lease
++
++        def __del__(self):
++            try:
++                entered.set()
++                if not release.wait(15):
++                    finalizer_failures.append("original thread-local finalization timed out")
++            finally:
++                try:
++                    self.lease.__exit__(None, None, None)
++                except BaseException as error:
++                    finalizer_failures.append(type(error).__name__)
++
++    def work():
++        calls.append(identity)
++        native_ids.append(threading.get_native_id())
++        if tail == "thread-local":
++            lease = original_lease()
++            lease.__enter__()
++            local.original = Finalizer(lease)
++        if outcome == "failure":
++            raise failure
++        return value
++
++    actual_run = source._run
++
++    def held_run(callback, future):
++        if callback is work and tail == "target":
++            with original_lease():
++                actual_run(callback, future)
++                entered.set()
++                assert release.wait(15), "original worker tail was not released"
++        else:
++            actual_run(callback, future)
++
++    source._run = held_run
++
++    def key(number):
++        if terminal:
++            return source.PhysicalWorkspaceExecutionKey(f"{number:032x}", "a" * 64)
++        return source.PhysicalExecutionKey(number, "a" * 64)
++
++    def submit(number, callback, *, target="original", original=identity):
++        arguments = dict(
++            target_incarnation=target, work=callback, owner=receiver, identity=original
++        )
++        if terminal:
++            return pool.try_submit_workspace(key(number), **arguments)
++        return pool.try_submit(key(number), terminal=False, **arguments)
++
++    def collect(owner=receiver):
++        if terminal:
++            return pool.collect_workspace(limit=1, owner=owner)
++        return pool.collect(limit=1, owner=owner)
++
++    report = {"kind": kind, "tail": tail, "outcome": outcome}
++    early = ()
++    try:
++        assert submit(1, work) == "submitted"
++        assert entered.wait(5), "original post-publication tail was not entered"
++        slot = pool._slots[key(1)]
++        native_id = native_ids[0]
++        assert Path(f"/proc/self/task/{native_id}").exists()
++        assert slot.future.done()
++        if lease_root is not None:
++            assert not lease_available(), "original native worker released its active lease"
++        assert submit(1, lambda: None) == "retained"
++        assert submit(2, lambda: None) == "target-capacity"
++        try:
++            submit(1, lambda: None, original=object())
++        except source.PhysicalExecutionOccupied:
++            pass
++        else:
++            raise AssertionError("another invocation adopted the original physical worker")
++        assert collect(object()) == ()
++        assert submit(2, lambda: "independent", target="independent") == "submitted"
++        assert submit(3, lambda: None, target="third") == "capacity"
++        independent = pool._slots[key(2)]
++        independent.worker.join(timeout=5)
++        assert not independent.worker.is_alive()
++        assert collect() == ()
++        (completed,) = collect()
++        assert completed.result() == "independent" and completed.key == key(2)
++        assert pool._counts[terminal] == 1
++        report["independent_received_while_original_held"] = True
++
++        interrupt_close(pool, slot.worker)
++        report["coordinator_interruptions"] = 1
++        report["future_done"] = slot.future.done()
++        report["native_alive_after_interrupt"] = Path(f"/proc/self/task/{native_id}").exists()
++        report["worker_reports_alive_after_interrupt"] = slot.worker.is_alive()
++        report["tail_held_after_interrupt"] = not release.is_set()
++        report["status_after_interrupt"] = pool.status(key(1))
++        early = collect()
++        report["outcomes_before_exit"] = len(early)
++        report["capacity_before_exit"] = pool._counts[terminal]
++        report["target_capacity_before_exit"] = pool._targets.get((terminal, "original"), 0)
++        report["original_slot_retained"] = pool._slots.get(key(1)) is slot
++        report["foreign_receiver_empty"] = collect(object()) == ()
++        report["shared_lease_available_before_exit"] = lease_available()
++        if lease_root is not None:
++            assert report["shared_lease_available_before_exit"] is False
++        if not early:
++            interrupt_close(pool, slot.worker)
++            report["coordinator_interruptions"] += 1
++            assert collect() == ()
++            assert pool._slots[key(1)] is slot and pool._counts[terminal] == 1
++
++        release.set()
++        pool.close()
++        await_native_exit(native_id)
++        report["shared_lease_available_after_exit"] = lease_available()
++        if lease_root is not None:
++            assert report["shared_lease_available_after_exit"] is True
++        late = collect()
++        report["outcomes_after_exit"] = len(late)
++        (original,) = early + late
++        assert original.key == key(1)
++        assert original.owner is receiver and original.identity is identity
++        assert original.target_incarnation == "original" and original.terminal is terminal
++        if outcome == "failure":
++            try:
++                original.result()
++            except RuntimeError as observed:
++                assert observed is failure
++            else:
++                raise AssertionError("original worker failure was replaced with success")
++            original.release_exception_frames()
++        else:
++            assert original.result() is value
++        assert calls == [identity]
++        assert collect() == ()
++        pool.close()
++        assert pool._counts[terminal] == 0 and not pool._targets
++        assert not finalizer_failures, finalizer_failures
++        report["exact_original_outcome_received"] = True
++        report["original_native_exit_received"] = True
++        report["safe"] = (
++            report["native_alive_after_interrupt"]
++            and report["tail_held_after_interrupt"]
++            and report["outcomes_before_exit"] == 0
++            and report["capacity_before_exit"] == 1
++            and report["target_capacity_before_exit"] == 1
++            and report["original_slot_retained"]
++            and report["outcomes_after_exit"] == 1
++            and report["coordinator_interruptions"] == 2
++        )
++        return report
++    finally:
++        release.set()
++        source._run = actual_run
++        pool.close()
++        if native_ids:
++            await_native_exit(native_ids[0])
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--kind", choices=("workspace", "collection"), required=True)
++    parser.add_argument("--tail", choices=("target", "thread-local"), required=True)
++    parser.add_argument("--outcome", choices=("success", "failure"), required=True)
++    parser.add_argument("--implementation", type=Path)
++    parser.add_argument("--lease-root", type=Path)
++    parser.add_argument("--expect", choices=("safe", "unsafe", "observe"), default="safe")
++    args = parser.parse_args()
++    if sys.platform != "linux":
++        raise RuntimeError("this native-thread identity witness requires Linux /proc")
++    signal.signal(signal.SIGINT, signal.default_int_handler)
++    report = exercise(
++        kind=args.kind,
++        tail=args.tail,
++        outcome=args.outcome,
++        implementation=args.implementation,
++        lease_root=args.lease_root,
++    )
++    print(json.dumps(report, sort_keys=True), flush=True)
++    if args.expect != "observe":
++        assert report["safe"] is (args.expect == "safe"), report
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tests/support/physical_retirement_exit_probe.py b/tests/support/physical_retirement_exit_probe.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..4658fe02426e6212ebdf92e35981277f06d70fc9
+--- /dev/null
++++ b/tests/support/physical_retirement_exit_probe.py
+@@ -0,0 +1,103 @@
++"""Real coordinator interruption at the maintained workspace retirement boundary."""
++
++from __future__ import annotations
++
++import json
++import signal
++import sys
++import threading
++from datetime import timedelta
++from pathlib import Path
++
++from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
++from riverhog_core.services import physical_execution as physical
++from riverhog_core.services.archive_construction_retention import ArchiveConstructionRetention
++from riverhog_core.services.upload_journal_validation_retirement import (
++    UploadJournalValidationRetirement,
++)
++
++from tests.support.physical_exit_probe import await_native_exit, interrupt_close
++from tests.unit.test_journal_retirement_registry import native_case
++from tests.unit.test_journal_validation_retirement import ONE, selected
++
++
++def exercise(root):
++    with native_case(root) as case:
++        pool = physical.PhysicalExecutionOwner(ArchiveExecutionTuning(terminal_workers=1))
++        ledger = ArchiveConstructionRetention(pool._tuning)
++        cleanup = UploadJournalValidationRetirement(
++            case.factory,
++            case.root,
++            execution=pool,
++            retention=ledger,
++            metadata_budget=1024 * 1024,
++            receive_limit=16,
++            retry_after=timedelta(microseconds=1),
++        )
++        registry = cleanup._registry
++        entered, release = threading.Event(), threading.Event()
++        actual_run = physical._run
++        native_ids = []
++
++        def held_run(work, future):
++            native_ids.append(threading.get_native_id())
++            actual_run(work, future)
++            entered.set()
++            assert release.wait(15), "original retirement worker was not released"
++
++        physical._run = held_run
++        try:
++            assert cleanup.advance(octet_budget=17) == 1 and entered.wait(5)
++            context = registry._contexts[ONE]
++            slot = pool._slots[context.reservation.key]
++            assert context.actor.received and slot.future.done()
++            assert selected(case.factory, ONE).state == "directory"
++            assert not case.files[ONE].exists() and (case.root / ONE / ".lease").exists()
++            assert cleanup.advance(octet_budget=17) == 0
++            assert ledger._counts[False] == 1 and registry.collect(limit=1) == 0
++            for _ in range(2):
++                interrupt_close(pool, slot.worker)
++                assert Path(f"/proc/self/task/{native_ids[0]}").exists()
++                assert registry.collect(limit=1) == 0
++                assert pool._slots[context.reservation.key] is slot
++                assert pool._counts[True] == 1 and ledger._counts[False] == 1
++                assert registry._contexts[ONE] is context and not context.received
++                assert selected(case.factory, ONE).state == "directory"
++                assert (case.root / ONE / ".lease").exists()
++            cleanup.close()
++            assert not cleanup.receive_stopped()
++            assert context.original is context.actor and registry.retained(ONE)
++            release.set()
++            pool.close()
++            await_native_exit(native_ids[0])
++            assert registry.collect(limit=1) == 2
++            assert context.received and context.closed and context.progress is True
++            assert not registry.retained(ONE) and ledger._counts == {False: 0, True: 0}
++            assert cleanup.receive_stopped()
++            assert selected(case.factory, ONE).state == "directory"
++            assert (case.root / ONE / ".lease").exists()
++            return {
++                "coordinator_interruptions": 2,
++                "native_alive_while_held": True,
++                "original_context_retained_until_exit": True,
++                "physical_and_construction_capacity_retained": True,
++                "lease_namespace_retained": True,
++                "directory_phase_not_dispatched": True,
++                "original_progress_received_once": True,
++                "stopped_receiving_after_exit": True,
++            }
++        finally:
++            release.set()
++            physical._run = actual_run
++            pool.close()
++            if native_ids:
++                await_native_exit(native_ids[0])
++            cleanup.close()
++            assert cleanup.receive_stopped()
++
++
++if __name__ == "__main__":
++    if sys.platform != "linux":
++        raise RuntimeError("this native-thread identity witness requires Linux /proc")
++    signal.signal(signal.SIGINT, signal.default_int_handler)
++    print(json.dumps(exercise(Path(sys.argv[1])), sort_keys=True), flush=True)
+diff --git a/tests/unit/test_archive_payload_input.py b/tests/unit/test_archive_payload_input.py
+index 9956524c67518e7acb49271d715f83487f674529..3ad0a2aaf6758c6a16b4628aaef6ac280c1e849d 100644
+--- a/tests/unit/test_archive_payload_input.py
++++ b/tests/unit/test_archive_payload_input.py
+@@ -189,13 +189,13 @@ def test_input_release_requires_actual_original_worker_join(owned, monkeypatch):
+     registry, execution, retention = owned.make()
+     entered, release = threading.Event(), owned.event()
+ 
+-    class HeldExit(threading.Thread):
++    class HeldExit(source.Worker):
+         def run(self):
+             super().run()
+             entered.set()
+             assert release.wait(timeout=10)
+ 
+-    monkeypatch.setattr(source, "Thread", HeldExit)
++    monkeypatch.setattr(source, "Worker", HeldExit)
+     payload = _body()
+     assert (
+         _submit(
+@@ -257,7 +257,7 @@ def test_worker_start_acknowledgement_preserves_exact_input_or_positive_nonstart
+ 
+     registry, execution, retention = owned.make()
+     payload = _body()
+-    actual = threading.Thread
++    actual = source.Worker
+ 
+     class StartAcknowledgement(actual):
+         def start(self):
+@@ -265,7 +265,7 @@ def test_worker_start_acknowledgement_preserves_exact_input_or_positive_nonstart
+                 super().start()
+             raise OSError("worker startup acknowledgement")
+ 
+-    monkeypatch.setattr(source, "Thread", StartAcknowledgement)
++    monkeypatch.setattr(source, "Worker", StartAcknowledgement)
+     with pytest.raises(OSError, match="startup acknowledgement"):
+         _submit(
+             registry, payload, create=lambda: _Actor(payload), advance=lambda owner: owner.advance()
+diff --git a/tests/unit/test_archive_upload_execution.py b/tests/unit/test_archive_upload_execution.py
+index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5b0ac0a16 100644
+--- a/tests/unit/test_archive_upload_execution.py
++++ b/tests/unit/test_archive_upload_execution.py
+@@ -1,8 +1,12 @@
+ from __future__ import annotations
+ 
++import json
++import subprocess
++import sys
+ import threading
+ from concurrent.futures import ThreadPoolExecutor
+ from dataclasses import replace
++from time import monotonic, sleep
+ from types import SimpleNamespace
+ 
+ import pytest
+@@ -61,6 +65,145 @@ def _joined(owner):
+         assert not slot.worker.is_alive()
+ 
+ 
++@pytest.mark.skipif(sys.platform != "linux", reason="native thread identity witness uses /proc")
++@pytest.mark.parametrize("kind", ("collection", "workspace"))
++@pytest.mark.parametrize("tail", ("target", "thread-local"))
++@pytest.mark.parametrize("outcome", ("success", "failure"))
++def test_actual_coordinator_interrupt_preserves_original_native_exit(
++    tmp_path, kind, tail, outcome, record_property
++):
++    process = subprocess.run(
++        [
++            sys.executable,
++            "-m",
++            "tests.support.physical_exit_probe",
++            "--kind",
++            kind,
++            "--tail",
++            tail,
++            "--outcome",
++            outcome,
++            "--expect",
++            "safe",
++            "--lease-root",
++            str(tmp_path / "leased"),
++        ],
++        capture_output=True,
++        text=True,
++        timeout=30,
++    )
++    assert process.returncode == 0, (process.stdout + process.stderr)[-6000:]
++    receipt = json.loads(process.stdout.strip().splitlines()[-1])
++    assert receipt["safe"]
++    assert receipt["native_alive_after_interrupt"] and receipt["tail_held_after_interrupt"]
++    assert receipt["coordinator_interruptions"] == 2
++    assert receipt["outcomes_before_exit"] == 0 and receipt["outcomes_after_exit"] == 1
++    assert receipt["status_after_interrupt"] == "running"
++    assert receipt["shared_lease_available_before_exit"] is False
++    assert receipt["shared_lease_available_after_exit"] is True
++    assert receipt["independent_received_while_original_held"]
++    assert receipt["exact_original_outcome_received"] and receipt["original_native_exit_received"]
++    record_property("physical_exit_receipt", receipt)
++
++
++@pytest.mark.parametrize("after_receiving", (False, True))
++def test_lost_receive_reply_retains_original_slot_and_final_outcome(
++    owned, monkeypatch, after_receiving
++):
++    pool = owned.make(forward_workers=1)
++    receiver, identity, value = object(), object(), object()
++    assert (
++        pool.try_submit(
++            _key(),
++            target_incarnation="original",
++            terminal=False,
++            work=lambda: value,
++            owner=receiver,
++            identity=identity,
++        )
++        == "submitted"
++    )
++    slot = pool._slots[_key()]
++    slot.worker.join(timeout=5)
++    actual_poll = slot.worker.poll
++
++    def lost_reply():
++        if after_receiving:
++            assert actual_poll()
++        raise KeyboardInterrupt("original receive reply interrupted")
++
++    with monkeypatch.context() as patch:
++        patch.setattr(slot.worker, "poll", lost_reply)
++        with pytest.raises(KeyboardInterrupt, match="receive reply"):
++            pool.collect(limit=1, owner=receiver)
++        assert pool._slots[_key()] is slot
++        assert pool._counts[False] == pool._targets[(False, "original")] == 1
++        assert pool.collect(limit=1, owner=object()) == ()
++    (completion,) = pool.collect(limit=1, owner=receiver)
++    assert completion.identity is identity and completion.owner is receiver
++    assert completion.result() is value
++    assert pool.collect(limit=1, owner=receiver) == ()
++
++
++def test_bootstrap_acknowledgement_between_wait_timeout_and_exit_is_not_failure(owned, monkeypatch):
++    class AcknowledgedAfterTimeout(source.Worker):
++        def start(self):
++            original_wait = self._started.wait
++
++            def expired_wait(timeout=None):
++                # A wait may expire immediately before its event is set. Make
++                # that ordering deterministic while using the actual native
++                # worker and its original bootstrap acknowledgement/exit.
++                assert original_wait(5)
++                deadline = monotonic() + 5
++                while not self.poll():
++                    assert monotonic() < deadline
++                    sleep(0.001)
++                self._started.wait = original_wait
++                return False
++
++            self._started.wait = expired_wait
++            try:
++                return super().start()
++            finally:
++                self._started.wait = original_wait
++
++    monkeypatch.setattr(source, "Worker", AcknowledgedAfterTimeout)
++    pool = owned.make()
++    value = object()
++    assert _submit(pool, 1, lambda: value) == "submitted"
++    slot = pool._slots[_key()]
++    assert slot.worker.metrics["start_calls"] == 1
++    (completion,) = pool.collect(limit=1, owner=None)
++    assert completion.result() is value
++
++
++def test_interrupted_bootstrap_registration_withdraws_only_positive_nonstart(owned, monkeypatch):
++    created = []
++
++    class OriginalWorker(source.Worker):
++        def __init__(self, **arguments):
++            super().__init__(**arguments)
++            created.append(self)
++
++    class LostRegistrationReply(dict):
++        def __setitem__(self, key, value):
++            super().__setitem__(key, value)
++            raise KeyboardInterrupt("bootstrap registration reply interrupted")
++
++    pool = owned.make()
++    registry = LostRegistrationReply(threading._limbo)
++    with monkeypatch.context() as patch:
++        patch.setattr(source, "Worker", OriginalWorker)
++        patch.setattr(threading, "_limbo", registry)
++        with pytest.raises(KeyboardInterrupt, match="registration reply"):
++            _submit(pool, 1, lambda: pytest.fail("unstarted work was dispatched"))
++        assert len(created) == 1 and created[0] not in registry
++        assert not created[0].started and created[0].metrics["start_calls"] == 0
++        assert pool.status(_key()) == "untracked"
++        assert pool._counts == {False: 0, True: 0} and not pool._targets
++
++
+ def test_forward_exhaustion_preserves_target_isolation_and_terminal_headroom(owned):
+     owner = owned.make(
+         forward_workers=2,
+@@ -156,7 +299,7 @@ def test_retained_turn_cannot_be_reinterpreted_as_another_construction_or_lane(o
+ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, monkeypatch):
+     returned = threading.Event()
+     release = owned.event()
+-    actual_thread = threading.Thread
++    actual_thread = source.Worker
+ 
+     class RetainedThread(actual_thread):
+         def run(self):
+@@ -164,7 +307,7 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
+             returned.set()
+             assert release.wait(10), "fixture failed to release worker exit"
+ 
+-    monkeypatch.setattr(source, "Thread", RetainedThread)
++    monkeypatch.setattr(source, "Worker", RetainedThread)
+     owner = owned.make(forward_workers=1)
+     assert not owner.has_unreceived_work()
+     with owner._lock:
+@@ -181,16 +324,16 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
+     release.set()
+     _joined(owner)
+     assert owner.has_unreceived_work()
+-    joins = []
+-    actual_join = slot.worker.join
++    receives = []
++    actual_receive = slot.worker.poll
+ 
+-    def observe_join(timeout=None):
+-        joins.append(timeout)
+-        actual_join(timeout)
++    def observe_receive():
++        receives.append(True)
++        return actual_receive()
+ 
+-    monkeypatch.setattr(slot.worker, "join", observe_join)
++    monkeypatch.setattr(slot.worker, "poll", observe_receive)
+     (result,) = owner.collect(owner=None, limit=1)
+-    assert joins == [0]
++    assert receives == [True]
+     assert result.result() is original and not owner.has_unreceived_work()
+     assert _submit(owner, 2, lambda: None) == "submitted"
+ 
+@@ -237,7 +380,7 @@ def test_poll_and_submission_defer_under_registry_contention_without_waiting(own
+ 
+ @pytest.mark.parametrize("after_start", [False, True])
+ def test_startup_failure_releases_only_a_worker_that_never_started(owned, monkeypatch, after_start):
+-    actual_thread = threading.Thread
++    actual_thread = source.Worker
+     release = owned.event()
+     entered = threading.Event()
+ 
+@@ -247,11 +390,11 @@ def test_startup_failure_releases_only_a_worker_that_never_started(owned, monkey
+                 super().start()
+             raise RuntimeError("synthetic startup acknowledgement failure")
+ 
+-    monkeypatch.setattr(source, "Thread", FailedStart)
++    monkeypatch.setattr(source, "Worker", FailedStart)
+     owner = owned.make(forward_workers=1)
+     with pytest.raises(RuntimeError, match="startup acknowledgement"):
+         _submit(owner, 1, lambda: _blocked(entered, release, "original"))
+-    monkeypatch.setattr(source, "Thread", actual_thread)
++    monkeypatch.setattr(source, "Worker", actual_thread)
+     if after_start:
+         assert entered.wait(5)
+         assert (
+@@ -450,17 +593,17 @@ def test_receiver_identity_keeps_foreign_results_and_capacity_charged(owned, mon
+     _joined(pool)
+     foreign = pool._slots[_key(1)]
+ 
+-    def forbidden_join(timeout=None):
++    def forbidden_receive():
+         pytest.fail("another receiver cannot join or retire this original")
+ 
+     with monkeypatch.context() as patch:
+-        patch.setattr(foreign.worker, "join", forbidden_join)
+-        assert pool._counts[False] == 2 and pool.status(_key(1)) == "awaiting-join"
++        patch.setattr(foreign.worker, "poll", forbidden_receive)
++        assert pool._counts[False] == 2 and foreign.worker.received
+         (received,) = pool.collect(limit=1, owner=first)
+         assert received.key == _key(2) and received.owner is first
+         assert received.result() is own_result
+         assert pool.collect(limit=2, owner=None) == ()
+-        assert pool.status(_key(1)) == "awaiting-join"
++        assert foreign.worker.received
+     assert pool._counts[False] == 1
+     assert (
+         pool.try_submit(
+diff --git a/tests/unit/test_archive_upload_terminal_registry.py b/tests/unit/test_archive_upload_terminal_registry.py
+index f43d4fe7f5eebd10f2a57d5496614ce6a5d7f2c5..46cb203f105ee3ad4f543e6494588bea2e159f50 100644
+--- a/tests/unit/test_archive_upload_terminal_registry.py
++++ b/tests/unit/test_archive_upload_terminal_registry.py
+@@ -229,7 +229,7 @@ def test_positive_thread_nonentry_releases_unused_terminal_reservation(tmp_path,
+             raise OSError("thread never started")
+ 
+         with monkeypatch.context() as patch:
+-            patch.setattr(physical.Thread, "start", fail)
++            patch.setattr(physical.Worker, "start", fail)
+             with pytest.raises(OSError, match="never started"):
+                 _submit(registry, key, case.incarnation)
+         assert not calls and not actors and not registry._execution._slots
+@@ -302,7 +302,7 @@ def _resume_start_failure(case, monkeypatch):
+         raise OSError("resumed thread never started")
+ 
+     with monkeypatch.context() as patch:
+-        patch.setattr(physical.Thread, "start", fail)
++        patch.setattr(physical.Worker, "start", fail)
+         with pytest.raises(OSError, match="resumed thread"):
+             _submit(registry, key, case.incarnation)
+     assert context.received and context.actor is original
+diff --git a/tests/unit/test_ci_qualification.py b/tests/unit/test_ci_qualification.py
+index c81f1eaf2fe0f79b04e31c7363cf113e96b366a3..5ebaa02e25821df3ad5eb8292e45f0ddab86ad1b 100644
+--- a/tests/unit/test_ci_qualification.py
++++ b/tests/unit/test_ci_qualification.py
+@@ -984,12 +984,15 @@ def test_native_qualification_retains_structured_results_without_repeating_work(
+ 
+ 
+ @pytest.mark.parametrize("runner", ["ubuntu-24.04", "macos-15", "windows-2025"])
+-def test_actions_native_work_requires_the_same_growth_evidence_as_the_make_target(runner):
++def test_actions_native_work_preserves_file_and_supported_worker_growth_evidence(runner):
+     make = qualification.validation_work("client-platform-qualification")
+     native = qualification.validation_work("native-" + runner)
+     assert set(make.growth_witnesses) == {
+         "retained-resource.native-creation-work",
+         "retained-resource.native-resource-work",
+     }
+-    assert native.growth_witnesses == make.growth_witnesses
++    expected = set(make.growth_witnesses)
++    if runner in {"ubuntu-24.04", "windows-2025"}:
++        expected.add("retained-resource.native-worker-work")
++    assert set(native.growth_witnesses) == expected
+     assert native.growth_declarations == make.growth_declarations
+diff --git a/tests/unit/test_discovery_retirement_registry.py b/tests/unit/test_discovery_retirement_registry.py
+index 4148926f76f9d539db81d16679e48b96a52646a0..f655651a38e6de2ea4ebebf815b0fd2c668934cc 100644
+--- a/tests/unit/test_discovery_retirement_registry.py
++++ b/tests/unit/test_discovery_retirement_registry.py
+@@ -103,7 +103,7 @@ def test_published_result_and_closed_actor_wait_for_actual_worker_exit(
+ ):
+     job, _, _ = prepare_child(case, count=1)
+     release, returned = owned.event(), threading.Event()
+-    actual_thread = physical.Thread
++    actual_thread = physical.Worker
+ 
+     class LateExit(actual_thread):
+         def run(self):
+@@ -111,7 +111,7 @@ def test_published_result_and_closed_actor_wait_for_actual_worker_exit(
+             returned.set()
+             assert release.wait(10)
+ 
+-    monkeypatch.setattr(physical, "Thread", LateExit)
++    monkeypatch.setattr(physical, "Worker", LateExit)
+     assert submit(registry, job) == 1 and returned.wait(5)
+     context = registry.registry._contexts[job.workspace_id]
+     assert context.actor._closed and registry.pool._slots[context.reservation.key].future.done()
+@@ -293,7 +293,7 @@ def test_actual_native_receiving_and_worker_join_preserve_shared_grants(
+     job, _, _ = prepare_child(case, count=1)
+     actual_acquire = handles.RetainedWorkspaceResource.acquire
+     selected = []
+-    actual_thread = physical.Thread
++    actual_thread = physical.Worker
+     release, returned = owned.event(), threading.Event()
+ 
+     class LateExit(actual_thread):
+@@ -316,7 +316,7 @@ def test_actual_native_receiving_and_worker_join_preserve_shared_grants(
+             patch.setattr(handles, "Resource", native.Resource)
+             patch.setattr(handles, "Borrow", native.Borrow)
+             patch.setattr(handles.RetainedWorkspaceResource, "acquire", acquire)
+-            patch.setattr(physical, "Thread", LateExit)
++            patch.setattr(physical, "Worker", LateExit)
+             assert submit(f, job) == 1 and returned.wait(5)
+             context = value._contexts[job.workspace_id]
+             actor, reservation = context.actor, context.reservation
+@@ -353,7 +353,7 @@ def test_actual_native_receiving_and_worker_join_preserve_shared_grants(
+             assert context.reservation is reservation and not actor.received
+             assert ledger._counts == {False: 1, True: 1}
+ 
+-            patch.setattr(physical, "Thread", actual_thread)
++            patch.setattr(physical, "Worker", actual_thread)
+             assert (
+                 pool.try_submit(
+                     archive_key,
+@@ -378,7 +378,7 @@ def test_actual_native_receiving_and_worker_join_preserve_shared_grants(
+             patch.setattr(actor, "_advance", forbidden)
+             release.clear()
+             returned.clear()
+-            patch.setattr(physical, "Thread", LateExit)
++            patch.setattr(physical, "Worker", LateExit)
+             assert value.resume_ready(limit=1, retry_after=RETRY) == 1
+             assert returned.wait(5)
+             assert actor.received and original.owner.received
+diff --git a/tests/unit/test_journal_retirement_registry.py b/tests/unit/test_journal_retirement_registry.py
+index d057fd1ec2c9b05480828ec93a0df49261b06135..1d79cfebdcad477ff3b216660de37e45e2156a59 100644
+--- a/tests/unit/test_journal_retirement_registry.py
++++ b/tests/unit/test_journal_retirement_registry.py
+@@ -1,6 +1,9 @@
+ from __future__ import annotations
+ 
++import json
+ import os
++import subprocess
++import sys
+ import threading
+ from contextlib import contextmanager
+ from dataclasses import replace
+@@ -210,7 +213,7 @@ def test_native_directory_phase_waits_for_actual_original_worker_exit(
+     with native_case(tmp_path) as case:
+         f = cleanups(case)
+         release, returned = owned.event(), threading.Event()
+-        actual_thread = physical.Thread
++        actual_thread = physical.Worker
+ 
+         class LateExit(actual_thread):
+             def run(self):
+@@ -219,7 +222,7 @@ def test_native_directory_phase_waits_for_actual_original_worker_exit(
+                 assert release.wait(10), "original Native worker exit was not released"
+ 
+         with monkeypatch.context() as patch:
+-            patch.setattr(physical, "Thread", LateExit)
++            patch.setattr(physical, "Worker", LateExit)
+             try:
+                 assert f.cleanup.advance(octet_budget=17) == 1 and returned.wait(5)
+                 context = f.registry._contexts[ONE]
+@@ -240,6 +243,31 @@ def test_native_directory_phase_waits_for_actual_original_worker_exit(
+         assert selected(case.factory, ONE) is None and not (case.root / ONE).exists()
+ 
+ 
++@pytest.mark.skipif(sys.platform != "linux", reason="native thread identity witness uses /proc")
++def test_native_retirement_preserves_lease_namespace_through_real_join_interrupt(
++    tmp_path, record_property
++):
++    process = subprocess.run(
++        [
++            sys.executable,
++            "-m",
++            "tests.support.physical_retirement_exit_probe",
++            str(tmp_path),
++        ],
++        capture_output=True,
++        text=True,
++        timeout=40,
++    )
++    assert process.returncode == 0, (process.stdout + process.stderr)[-6000:]
++    receipt = json.loads(process.stdout.strip().splitlines()[-1])
++    assert receipt["coordinator_interruptions"] == 2
++    assert receipt["original_context_retained_until_exit"]
++    assert receipt["physical_and_construction_capacity_retained"]
++    assert receipt["lease_namespace_retained"] and receipt["directory_phase_not_dispatched"]
++    assert receipt["original_progress_received_once"] and receipt["stopped_receiving_after_exit"]
++    record_property("physical_retirement_exit_receipt", receipt)
++
++
+ def test_native_wrong_progress_retains_original_until_explicit_receiving(
+     tmp_path, cleanups, monkeypatch
+ ):
+diff --git a/tests/unit/test_physical_workspace_execution.py b/tests/unit/test_physical_workspace_execution.py
+index 7418df88f74fbf3cae02e3a73ede9ebd98c78610..977694fdf1571d57bec55237f9f155d3754bdc74 100644
+--- a/tests/unit/test_physical_workspace_execution.py
++++ b/tests/unit/test_physical_workspace_execution.py
+@@ -115,7 +115,7 @@ def test_workspace_original_cannot_be_adopted_or_replaced(owned, change):
+ 
+ 
+ def test_workspace_future_completion_waits_for_actual_worker_join(owned, monkeypatch):
+-    actual_thread = threading.Thread
++    actual_thread = source.Worker
+     release, returned = owned.event(), threading.Event()
+ 
+     class LateExit(actual_thread):
+@@ -124,7 +124,7 @@ def test_workspace_future_completion_waits_for_actual_worker_join(owned, monkeyp
+             returned.set()
+             assert release.wait(10)
+ 
+-    monkeypatch.setattr(source, "Thread", LateExit)
++    monkeypatch.setattr(source, "Worker", LateExit)
+     pool = owned.make(terminal_workers=1)
+     receiver, original, value = object(), object(), object()
+     assert submit(pool, receiver, original, work=lambda: value) == "submitted"
+@@ -134,16 +134,16 @@ def test_workspace_future_completion_waits_for_actual_worker_join(owned, monkeyp
+     release.set()
+     _joined(pool)
+     slot = pool._slots[key()]
+-    actual_join = slot.worker.join
+-    joins = []
++    actual_receive = slot.worker.poll
++    receives = []
+ 
+-    def joined(timeout=None):
+-        joins.append(timeout)
+-        return actual_join(timeout)
++    def received():
++        receives.append(True)
++        return actual_receive()
+ 
+-    monkeypatch.setattr(slot.worker, "join", joined)
++    monkeypatch.setattr(slot.worker, "poll", received)
+     (result,) = pool.collect_workspace(limit=1, owner=receiver)
+-    assert joins == [0] and result.result() is value
++    assert receives == [True] and result.result() is value
+     assert submit(pool, receiver, object(), 2) == "submitted"
+ 
+ 
+@@ -176,7 +176,7 @@ def test_wrong_receiving_kind_cannot_remove_the_original_workspace(owned):
+ 
+ @pytest.mark.parametrize("after_start", (False, True))
+ def test_workspace_startup_uncertainty_preserves_started_execution(owned, monkeypatch, after_start):
+-    actual_thread = threading.Thread
++    actual_thread = source.Worker
+     release, entered = owned.event(), threading.Event()
+ 
+     class FailedStart(actual_thread):
+@@ -185,12 +185,12 @@ def test_workspace_startup_uncertainty_preserves_started_execution(owned, monkey
+                 super().start()
+             raise OSError("actual startup reply uncertain")
+ 
+-    monkeypatch.setattr(source, "Thread", FailedStart)
++    monkeypatch.setattr(source, "Worker", FailedStart)
+     pool = owned.make(terminal_workers=1)
+     receiver, original = object(), object()
+     with pytest.raises(OSError, match="startup reply"):
+         submit(pool, receiver, original, work=lambda: _blocked(entered, release, "original"))
+-    monkeypatch.setattr(source, "Thread", actual_thread)
++    monkeypatch.setattr(source, "Worker", actual_thread)
+     if after_start:
+         assert entered.wait(5)
+         assert submit(pool, receiver, original) == "retained"
+diff --git a/tests/unit/test_physical_workspace_execution_growth.py b/tests/unit/test_physical_workspace_execution_growth.py
+index 7f03a80f930abaa31bd79aad6f6c02f41f706495..22a2d0c07e6923d57e606c84242617920efcd94b 100644
+--- a/tests/unit/test_physical_workspace_execution_growth.py
++++ b/tests/unit/test_physical_workspace_execution_growth.py
+@@ -31,8 +31,7 @@ def observed(pool, monkeypatch):
+             "mapping_enumerations",
+             "workers_constructed",
+             "workers_started",
+-            "worker_liveness_calls",
+-            "worker_join_calls",
++            "worker_receive_calls",
+             "results_received",
+             "payload_octets",
+         ),
+@@ -107,7 +106,7 @@ def observed(pool, monkeypatch):
+     class CountedOrder(Counted, OrderedDict):
+         pass
+ 
+-    actual_thread = owner.Thread
++    actual_thread = owner.Worker
+ 
+     class CountedThread(actual_thread):
+         def __init__(self, *args, **kwargs):
+@@ -115,8 +114,11 @@ def observed(pool, monkeypatch):
+             super().__init__(*args, **kwargs)
+ 
+         def start(self):
+-            metrics["workers_started"] += 1
+-            return super().start()
++            before = self.metrics["start_calls"]
++            try:
++                return super().start()
++            finally:
++                metrics["workers_started"] += self.metrics["start_calls"] - before
+ 
+     originals = {name: getattr(pool, name) for name in ("_slots", "_poll", "_counts", "_targets")}
+     try:
+@@ -126,23 +128,22 @@ def observed(pool, monkeypatch):
+             setattr(pool, name, CountedDict(value))
+         with monkeypatch.context() as patch:
+             patch.setattr(owner, "OrderedDict", CountedOrder)
+-            patch.setattr(owner, "Thread", CountedThread)
+-            # Existing actual workers are joined. Count only the observed
+-            # pool's zero-wait liveness/join primitives, never fixture waits.
++            patch.setattr(owner, "Worker", CountedThread)
++            # Existing actual native workers are received. Count only the
++            # pool's zero-wait receive primitives, never fixture waits.
+             for slot in originals["_slots"].values():
+-                actual_alive, actual_join = slot.worker.is_alive, slot.worker.join
++                actual_receive = slot.worker.poll
+ 
+-                def alive(_actual=actual_alive):
+-                    metrics["worker_liveness_calls"] += 1
+-                    return _actual()
+-
+-                def joined(timeout=None, _actual=actual_join):
+-                    metrics["worker_join_calls"] += 1
+-                    assert timeout == 0
+-                    return _actual(timeout=timeout)
++                def receive(_actual=actual_receive, _worker=slot.worker):
++                    before = _worker.metrics["poll_calls"]
++                    try:
++                        return _actual()
++                    finally:
++                        calls = _worker.metrics["poll_calls"] - before
++                        assert calls == 1
++                        metrics["worker_receive_calls"] += calls
+ 
+-                patch.setattr(slot.worker, "is_alive", alive)
+-                patch.setattr(slot.worker, "join", joined)
++                patch.setattr(slot.worker, "poll", receive)
+             active = True
+             yield metrics
+     finally:
+@@ -314,5 +315,5 @@ def test_measured_workspace_receiving(monkeypatch, record_property):
+         "one/three-result receiving quanta. Real serially started/joined threads remain "
+         "charged until receiving. All actual mapping primitives and full keys are counted, "
+         "whole-pool enumeration is forbidden, foreign originals remain charged and every "
+-        "observed join is zero-wait. Worker bodies remain outside coordination.",
++        "observed receive is zero-wait. Worker bodies remain outside coordination.",
+     )

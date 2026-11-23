@@ -1,0 +1,102 @@
+{
+  "source_sha": "3d039b382ee33d66c6049dd69e498169aa75bf6d",
+  "patch_sha256": "6d8e1caa441e2433972405755b0db3d8d4a0cc6a16585d09b8e267fa8363e46d",
+  "files": {
+    ".gitignore": {
+      "sha256": "2b714f1a6e0bdd9dabdb558e1cb8552024753cab1872c960026254383454bbbb",
+      "bytes": 626
+    },
+    "packages/retained-resource/hatch_build.py": {
+      "sha256": "c553ada57048a8082f27b0741591b7611e6f5a8adfea7339e874dd56d3b2a6df",
+      "bytes": 2831
+    },
+    "packages/retained-resource/native/worker.c": {
+      "sha256": "af6dc802e586c618bc05f58a9317cae49f246d9aa66f0757cd1159b9d6bb5a1f",
+      "bytes": 19261
+    },
+    "packages/retained-resource/pyproject.toml": {
+      "sha256": "1aaec2b62807a90880e81413de1a75db5ce0eb950f06d75f0f4e799ab95a766e",
+      "bytes": 1563
+    },
+    "packages/retained-resource/src/retained_resource/__init__.py": {
+      "sha256": "fd01f6497155fce86b1a4b4c35019d08db6ab315aedb6dab34697c2835448bcb",
+      "bytes": 3918
+    },
+    "packages/retained-resource/src/retained_resource/_worker_native.pyi": {
+      "sha256": "13368294863f55a45288655cecafec0a00872899229f809fbfc62a743294e03c",
+      "bytes": 523
+    },
+    "packages/retained-resource/src/retained_resource/worker.py": {
+      "sha256": "706cd6c7530609828659c7a5493b7eff3713f2f5e3465e9441de125543385b4d",
+      "bytes": 5273
+    },
+    "packages/retained-resource/src/retained_resource/worker_growth.py": {
+      "sha256": "a1a6e4fa5bc031ea42e68eaf75c32af8cdc6df6482fa41c94d11814ad7509efb",
+      "bytes": 2754
+    },
+    "packages/retained-resource/tests/test_wheel_build.py": {
+      "sha256": "046f5df65e7ffb916821e97b930fe1d8463bbb5fc2b4d23bc859ebbcc8581acd",
+      "bytes": 6301
+    },
+    "packages/retained-resource/tests/test_worker_growth.py": {
+      "sha256": "3e68dd360fbd3005422a9d3cffa564c6dec3bf0db8aca7292a4bb382fe6c4dcb",
+      "bytes": 4606
+    },
+    "packages/retained-resource/tests/test_worker_receiving.py": {
+      "sha256": "f9bead2a74e21af3e4c37922ac1dd93f6b967761e533c5b05874bf0544193ba8",
+      "bytes": 15113
+    },
+    "riverhog/src/riverhog_core/services/physical_execution.py": {
+      "sha256": "95121688a3e63d8b01be5ebcceacdad743fa0a9ecf4a54659cbade01f7a24467",
+      "bytes": 16002
+    },
+    "riverhog/src/riverhog_core/services/physical_workspace_growth.py": {
+      "sha256": "57abdaae92aacb45319c00ca26b934125b0c43e9bd0c377e102f1c5683d2af55",
+      "bytes": 4230
+    },
+    "scripts/ci_qualification.py": {
+      "sha256": "fbed656c5276bd8a219d104b2f246272bb026b4b2b057cec9ac4f5383b119928",
+      "bytes": 32236
+    },
+    "tests/support/physical_exit_probe.py": {
+      "sha256": "8b1d3e8293cf8cf9bf2a550d5efa4f1f0190a90879c113b18376c803a6a58d94",
+      "bytes": 11704
+    },
+    "tests/support/physical_retirement_exit_probe.py": {
+      "sha256": "2f20a4fd10afd0cca0df44ad0c7fdeab4f6787f366c8c176d2b048c443d8dac0",
+      "bytes": 4533
+    },
+    "tests/unit/test_archive_payload_input.py": {
+      "sha256": "8c2de5da8601bdfc5c3979c0a84791a9261e58448226866b6d31699d978be808",
+      "bytes": 14334
+    },
+    "tests/unit/test_archive_upload_execution.py": {
+      "sha256": "b0ffcc0dc36dc144d89cbe7df3827f6ae1c92b100b0b9bfcf0e142ab1946a963",
+      "bytes": 32764
+    },
+    "tests/unit/test_archive_upload_terminal_registry.py": {
+      "sha256": "79606eed4a2abc1c528aa2d608c802a0fce26c269b06e72864869ffe16dfaf33",
+      "bytes": 16507
+    },
+    "tests/unit/test_ci_qualification.py": {
+      "sha256": "dfbef0b9af4c688c11b340beb2f3f1e92f919af3adb218c5669e4919d37260ed",
+      "bytes": 38789
+    },
+    "tests/unit/test_discovery_retirement_registry.py": {
+      "sha256": "00b10ca15aa87f31570264b4c5b4f0f0355685c323e30fddd60c1f46e6ebb2e9",
+      "bytes": 16754
+    },
+    "tests/unit/test_journal_retirement_registry.py": {
+      "sha256": "7ed06e7d2a83846a353dc016afa9c7ab54258d4d4a46e67e5175fdaef85fbcfe",
+      "bytes": 14058
+    },
+    "tests/unit/test_physical_workspace_execution.py": {
+      "sha256": "f7e583fcfb4d158a80efb1aff59d4c11f0240b5f3731d71dc28bd79a681dd065",
+      "bytes": 9531
+    },
+    "tests/unit/test_physical_workspace_execution_growth.py": {
+      "sha256": "467857c043e6d6ceebc2755f24f17af0564a53f56cb8c59fb620b578feeca2c2",
+      "bytes": 12241
+    }
+  }
+}
