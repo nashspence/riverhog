@@ -13,6 +13,7 @@ import pytest
 import sqlite_admission
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_core.catalog_models import CollectionUploadRecord
+from riverhog_core.journal_generation_resources import JournalGenerationResources
 from riverhog_core.retained_workspace_handles import RetainedWorkspaceResource
 from riverhog_core.services import collection_uploads as source_owner
 from riverhog_core.services import upload_journal_epochs as epochs
@@ -22,7 +23,12 @@ from riverhog_core.services import upload_journal_topology as topology
 from riverhog_core.services import upload_journal_union as union
 from riverhog_core.services import upload_journal_validation_owner as owner
 from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
-from riverhog_provenance import JournalValidationSession
+from riverhog_provenance import (
+    JournalConstruction,
+    JournalImageCapture,
+    JournalImageRestore,
+    JournalValidationSession,
+)
 from sqlalchemy import event, select
 
 from scripts.validation_numeric import numeric_policy_from_environment, numeric_policy_snapshot
@@ -35,6 +41,12 @@ from tests.unit.test_upload_journal_owned_source_growth import snapshot
 
 DROP, CLOSE = owner.UploadJournalValidationOwner._drop, owner.UploadJournalValidationOwner.close
 NATIVE_CLOSE = JournalValidationSession.close
+GENERATION_CLOSE = JournalGenerationResources.close_step
+RECEIVING_CHILDREN = {
+    "release": NATIVE_CLOSE,
+    "retain": NATIVE_CLOSE,
+    "generation": GENERATION_CLOSE,
+}
 
 
 def native_dimensions(callback):
@@ -134,7 +146,7 @@ class Recorder:
         self.native_connections = []
         self.callbacks = 0
         self.metadata = {}
-        for operation in (DROP, CLOSE, NATIVE_CLOSE):
+        for operation in (DROP, CLOSE, NATIVE_CLOSE, GENERATION_CLOSE):
             binding = growth_binding(operation)
             projection = project_bindings((binding,), numeric_policy=self.numeric_policy)
             self.metadata[operation] = (
@@ -164,16 +176,16 @@ class Recorder:
                 self.add("lease_descriptor_closes")
         return result
 
-    def callback(self, action):
+    def callback(self, action, *, generation=False):
         def invoke():
             assert not self.pool_held
             self.callbacks += 1
             self.add("release_callbacks")
-            self.add("lease_release_callbacks")
+            self.add("lease_release_callbacks", int(not generation))
             was_native = self.native_active
             if self.recording() and was_native:
                 self.native_values["release_callbacks"] += 1
-            self.native_active, self.in_callback = False, True
+            self.native_active, self.in_callback = bool(generation and was_native), True
             try:
                 return action()
             finally:
@@ -199,6 +211,35 @@ class Recorder:
             tag = "release" if callback else "retain"
             node = self.sample(NATIVE_CLOSE, native_dimensions(callback), self.native_values, {})
             self.delegates[tag].append(node)
+
+    def close_generation(self, resources):
+        if not self.recording():
+            return GENERATION_CLOSE(resources)
+        assert not self.pool_held
+        records = [resources.construction.creator, resources.construction.directory]
+        if resources.capture is not None:
+            records.append(resources.capture.file)
+        if resources.restore is not None:
+            records.extend((resources.restore.file, resources.restore.directory))
+        records = {id(value): value for value in records if value is not None}.values()
+        before = [(value, value.metrics.copy()) for value in records]
+        self.native_values = {
+            bound.metric: 0 for bound in growth_binding(GENERATION_CLOSE).declaration.bounds
+        }
+        self.native_values["receiving_steps"] = self.native_values["receiving_steps_limit"] = 1
+        self.native_active = self.generation_active = True
+        try:
+            return GENERATION_CLOSE(resources)
+        finally:
+            self.native_active = self.generation_active = False
+            for value, original in before:
+                delta = value.metrics["close_calls"] - original["close_calls"]
+                self.add("closed_files", delta)
+                self.native_values["closed_files"] += delta
+                for name in ("open_calls", "dup_calls", "fstat_calls", "sync_calls"):
+                    assert value.metrics[name] == original[name]
+            node = self.sample(GENERATION_CLOSE, {"units": 1}, self.native_values, {})
+            self.delegates["generation"].append(node)
 
     def sample(self, operation, dimensions, metrics, delegates):
         binding, _projection, digest = self.metadata[operation]
@@ -264,6 +305,15 @@ class Recorder:
                     recorder.values["closed_databases"] += 1
                     recorder.native_values["closed_databases"] += 1
                 return result
+
+        capture_close = JournalImageCapture.close
+        restore_close = JournalImageRestore.close
+        construction_close = JournalConstruction.close_step
+
+        def child_close(original, actual, metric):
+            if self.recording() and getattr(self, "generation_active", False):
+                self.native_values[metric] += 1
+            return actual(original)
 
         driver = sqlite_admission._connect
         resource_close = RetainedWorkspaceResource.close
@@ -393,6 +443,28 @@ class Recorder:
                 patch.setattr(
                     JournalValidationSession, "close", lambda session: self.close(session)
                 )
+                patch.setattr(
+                    JournalGenerationResources,
+                    "close_step",
+                    lambda resources: self.close_generation(resources),
+                )
+                patch.setattr(
+                    JournalImageCapture,
+                    "close",
+                    lambda original: child_close(original, capture_close, "capture_close_calls"),
+                )
+                patch.setattr(
+                    JournalImageRestore,
+                    "close",
+                    lambda original: child_close(original, restore_close, "restore_close_calls"),
+                )
+                patch.setattr(
+                    JournalConstruction,
+                    "close_step",
+                    lambda original: child_close(
+                        original, construction_close, "construction_close_calls"
+                    ),
+                )
                 for name, metric in (
                     ("open", "path_opens"),
                     ("close", "closed_files"),
@@ -416,6 +488,7 @@ class Recorder:
         dimensions = {
             "configured_slots": current.concurrency,
             "pending_slots": len(current._slots),
+            "generation_calls": sum(value.generation is not None for value in selected),
             "release_calls": sum(
                 value.session is not None and releases(value.session) for value in selected
             ),
@@ -424,7 +497,7 @@ class Recorder:
             ),
         }
         self.values = {bound.metric: 0 for bound in growth_binding(operation).declaration.bounds}
-        self.delegates = {"release": [], "retain": []}
+        self.delegates = {tag: [] for tag in RECEIVING_CHILDREN}
         changes = {
             connection: connection.total_changes
             for connection in self.native_connections
@@ -450,11 +523,12 @@ class Recorder:
         dimensions["release_calls"] = len(self.delegates["release"])
         dimensions["retain_calls"] = len(self.delegates["retain"])
         self.values["native_close_classes"] = self.values["native_close_calls"]
-        assert self.values["lease_descriptor_closes"] == 4 * dimensions["release_calls"]
-        assert self.values["closed_databases"] == dimensions["release_calls"]
+        if not dimensions["generation_calls"]:
+            assert self.values["lease_descriptor_closes"] == 4 * dimensions["release_calls"]
+            assert self.values["closed_databases"] == dimensions["release_calls"]
         for tag, children in self.delegates.items():
             self.values[tag + "_calls"] = self.values[tag + "_calls_limit"] = len(children)
-            for bound in growth_binding(NATIVE_CLOSE).declaration.bounds:
+            for bound in growth_binding(RECEIVING_CHILDREN[tag]).declaration.bounds:
                 self.values[tag + "_" + bound.metric] = sum(
                     child["metrics"][bound.metric] for child in children
                 )

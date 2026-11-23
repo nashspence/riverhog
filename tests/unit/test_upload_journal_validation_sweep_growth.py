@@ -15,6 +15,7 @@ from sqlalchemy import select
 from tests.unit import test_upload_journal_owned_source_growth as fences
 from tests.unit import test_upload_journal_validation_release_growth as release
 from tests.unit.test_upload_journal_source_growth import octets
+from tests.unit.test_upload_journal_validation_release_growth import RECEIVING_CHILDREN
 
 SWEEP = owner.UploadJournalValidationOwner.release_stale
 SOURCE = fences.SOURCE
@@ -65,7 +66,7 @@ class Recorder(release.Recorder):
         before = self.values.copy()
         pending = len(current._slots)
         outer = self.delegates
-        self.delegates = {"release": [], "retain": []}
+        self.delegates = {tag: [] for tag in RECEIVING_CHILDREN}
         try:
             return DROP(current, key, slot)
         finally:
@@ -76,6 +77,7 @@ class Recorder(release.Recorder):
                 "pending_slots": pending,
                 "release_calls": len(children["release"]),
                 "retain_calls": len(children["retain"]),
+                "generation_calls": len(children["generation"]),
             }
             metrics = {
                 bound.metric: self.values[bound.metric] - before[bound.metric]
@@ -84,7 +86,7 @@ class Recorder(release.Recorder):
             metrics["native_close_classes"] = metrics["native_close_calls"]
             for tag, records in children.items():
                 metrics[tag + "_calls"] = metrics[tag + "_calls_limit"] = len(records)
-                for bound in growth_binding(NATIVE).declaration.bounds:
+                for bound in growth_binding(RECEIVING_CHILDREN[tag]).declaration.bounds:
                     metrics[tag + "_" + bound.metric] = sum(
                         child["metrics"][bound.metric] for child in records
                     )

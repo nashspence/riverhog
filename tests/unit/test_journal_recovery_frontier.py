@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from dataclasses import asdict, replace
 from types import SimpleNamespace
 
@@ -46,78 +46,51 @@ from tests.unit.test_upload_journal_validation_owner import finish
 NS = 1_000_000_000
 
 
-@pytest.fixture
-def origin(tmp_path, journal_constructions):
+@contextmanager
+def admitted_origin(tmp_path, journal_constructions, *, observe=lambda engine: nullcontext()):
     with retained(tmp_path, source(journal_id=JOURNAL)) as (engine, factory):
         factory.configure(autoflush=False, expire_on_commit=False)
         work, _ = ready(factory)
-        owner = UploadJournalValidationOwner(
-            factory, tmp_path / "native", construction_factory=journal_constructions.retain
-        )
-        try:
-            step = owner.advance(
-                work,
-                catalog=source_owner.admission_provenance_catalog(),
-                budget=JournalValidationBudget(work=JournalValidationWorkBudget(transitions=1)),
+        with observe(engine):
+            owner = UploadJournalValidationOwner(
+                factory, tmp_path / "native", construction_factory=journal_constructions.retain
             )
-            assert step.progressed and step.outcome is None
-            slot = owner._slots[(work.collection_id, work.journal_id, work.attempt_id)]
-            job = slot.job
-            with factory() as session:
-                control = session.get(Control, work.collection_id)
-                binding = RecoveryRootBinding.original(
-                    work.collection_id, control.construction_json
-                )
-                epoch = control.epoch
-            recovery = CollectionRecoveryAccounting(
-                factory, active_grant_limit=2, control_bytes=32768
-            )
-            # Synthetic durations exercise policy/receipts only. They are not
-            # timing observations or measured-profile qualification.
-            decision, grant, reserved = recovery.reserve(
-                binding,
-                epoch=epoch,
-                revision=0,
-                domain=JOURNAL_RECOVERY_DOMAIN,
-                owner_id=job.workspace_id,
-                owner_fence=journal_recovery_fence(binding, job),
-                useful_ns=100 * NS,
-                candidate=_candidate(),
-                guard=_guard,
-                retain_domain=lambda session: jobs.retain_recovery_owner(session, work, job),
-            )
-            assert decision.admitted and grant is not None
-            context = JournalRecoveryContext.original(binding, job, grant)
-            directory = tmp_path / "generations"
-            directory.mkdir(mode=0o700)
-            generation_construction = journal_constructions.retain()
-            storage = NativeGenerationStorage.open(
-                directory,
-                construction=generation_construction,
-                page_size=4096,
-                reader_limit=2,
-                metadata_octets=131072,
-                create=True,
-            )
-            capture = slot.session.image_capture()
             try:
-                capture.begin(
-                    storage,
-                    grant.identity,
-                    image_octets=16 * 1024**2,
-                    owner_context=context.encoded,
+                step = owner.advance(
+                    work,
+                    catalog=source_owner.admission_provenance_catalog(),
+                    budget=JournalValidationBudget(work=JournalValidationWorkBudget(transitions=1)),
                 )
-                while capture.image is None:
-                    capture.advance(page_limit=4)
-                frontier = JournalResumeFrontier(capture.image)
-                assert (
-                    storage.envelopes.read(
-                        frontier.image.identity,
-                        root=frontier.image.root,
-                        expected_digest=frontier.image.envelope_sha256,
+                assert step.progressed and step.outcome is None
+                slot = owner._slots[(work.collection_id, work.journal_id, work.attempt_id)]
+                job = slot.job
+                with factory() as session:
+                    control = session.get(Control, work.collection_id)
+                    binding = RecoveryRootBinding.original(
+                        work.collection_id, control.construction_json
                     )
-                    == frontier.image.encoded
+                    epoch = control.epoch
+                recovery = CollectionRecoveryAccounting(
+                    factory, active_grant_limit=2, control_bytes=32768
                 )
+                # Synthetic durations exercise policy/receipts only. They are not
+                # timing observations or measured-profile qualification.
+                decision, grant, reserved = recovery.reserve(
+                    binding,
+                    epoch=epoch,
+                    revision=0,
+                    domain=JOURNAL_RECOVERY_DOMAIN,
+                    owner_id=job.workspace_id,
+                    owner_fence=journal_recovery_fence(binding, job),
+                    useful_ns=100 * NS,
+                    candidate=_candidate(),
+                    guard=_guard,
+                    retain_domain=lambda session: jobs.retain_recovery_owner(session, work, job),
+                )
+                assert decision.admitted and grant is not None
+                context = JournalRecoveryContext.original(binding, job, grant)
+                generation_construction = journal_constructions.retain()
+                generation = slot.retain_generation(generation_construction)
                 yield SimpleNamespace(
                     engine=engine,
                     factory=factory,
@@ -130,18 +103,55 @@ def origin(tmp_path, journal_constructions):
                     recovery=recovery,
                     grant=grant,
                     reserved=reserved,
-                    capture=capture,
-                    storage=storage,
+                    context=context,
+                    generation=generation,
                     generation_construction=generation_construction,
-                    frontier=frontier,
+                    directory=owner.root / job.workspace_id,
                 )
             finally:
-                capture.close()
-                assert capture.received
-                storage.close()
+                owner.close()
+            assert engine.pool.checkedout() == 0
+
+
+@pytest.fixture
+def origin(tmp_path, journal_constructions):
+    with admitted_origin(tmp_path, journal_constructions) as case:
+        storage = NativeGenerationStorage.open(
+            case.directory,
+            construction=case.generation_construction,
+            page_size=4096,
+            reader_limit=2,
+            metadata_octets=131072,
+            create=True,
+            on_storage_open=case.generation.retain_storage,
+            on_storage_close=case.slot.receive_generation,
+        )
+        capture = case.slot.session.image_capture()
+        case.generation.retain_capture(capture)
+        try:
+            capture.begin(
+                storage,
+                case.grant.identity,
+                image_octets=16 * 1024**2,
+                owner_context=case.context.encoded,
+            )
+            while capture.image is None:
+                capture.advance(page_limit=4)
+            frontier = JournalResumeFrontier(capture.image)
+            assert (
+                storage.envelopes.read(
+                    frontier.image.identity,
+                    root=frontier.image.root,
+                    expected_digest=frontier.image.envelope_sha256,
+                )
+                == frontier.image.encoded
+            )
+            case.capture, case.storage, case.frontier = capture, storage, frontier
+            yield case
         finally:
-            owner.close()
-        assert engine.pool.checkedout() == 0
+            capture.close()
+            assert capture.received
+            storage.close()
 
 
 def snapshot(case):

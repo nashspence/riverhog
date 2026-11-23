@@ -37,6 +37,7 @@ from sqlite_admission import SqliteCapacity
 
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.growth_bounds import bound_envelope
+from riverhog_core.journal_generation_resources import JournalGenerationResources
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
     lease_journal_validation_workspace,
@@ -444,6 +445,7 @@ class _Slot:
     lock: Lock = field(default_factory=Lock)
     stopping: Event = field(default_factory=Event)
     construction: JournalConstruction | None = None
+    generation: JournalGenerationResources | None = None
     session: JournalValidationSession | None = None
     resources: ExitStack = field(default_factory=ExitStack)
     lease: ValidationWorkspaceLease = field(default_factory=ValidationWorkspaceLease)
@@ -461,11 +463,31 @@ class _Slot:
         if self.stopping.is_set() or self.closing:
             raise InterruptedError("Native journal validation is stopping")
 
+    def _receive_ready_workspace(self) -> None:
+        if self.construction is not None and not self.construction.dependents_received:
+            return
+        if self.generation is not None and not self.generation.dependents_received:
+            return
+        self.resources.close()
+        self.lease.close()
+
     def receive_workspace(self) -> None:
         if self.construction is not None and not self.construction.dependents_received:
             raise BlockingIOError("original Native construction dependents have not received")
-        self.resources.close()
-        self.lease.close()
+        self._receive_ready_workspace()
+
+    def receive_generation(self) -> None:
+        original = self.generation
+        if original is None or not original.construction.dependents_received:
+            raise BlockingIOError("original Native generation constructor has not received")
+        self._receive_ready_workspace()
+
+    def retain_generation(self, construction: JournalConstruction) -> JournalGenerationResources:
+        if self.closing or self.generation is not None or self.session is None:
+            raise RuntimeError("validation slot cannot replace its original Native generation")
+        original = JournalGenerationResources(construction, self.session)
+        self.generation = original
+        return original
 
     def retain_session(self, session: JournalValidationSession) -> None:
         if self.session is not None:
@@ -654,11 +676,16 @@ def _pool_declaration(mode: str) -> Declaration:
 
 
 def _release_delegates() -> tuple[tuple[str, Callable[..., Any]], ...]:
-    return (("release", JournalValidationSession.close), ("retain", JournalValidationSession.close))
+    return (
+        ("release", JournalValidationSession.close),
+        ("retain", JournalValidationSession.close),
+        ("generation", JournalGenerationResources.close_step),
+    )
 
 
 def _release_declaration(mode: str) -> Declaration:
     native = growth_binding(JournalValidationSession.close).declaration
+    generation = growth_binding(JournalGenerationResources.close_step).declaration
     lease = growth_binding(lease_journal_validation_workspace).declaration
     lease_closes = next(bound.expression for bound in lease.bounds if bound.metric == "close_calls")
     dropping = mode == "_drop"
@@ -689,6 +716,15 @@ def _release_declaration(mode: str) -> Declaration:
                 )
                 for item in native.dimensions
             ),
+        )
+
+    def generation_metric(bound: Bound) -> Expression:
+        return Expression(
+            "delegate",
+            name="generation",
+            metric=bound.metric,
+            terms=(dimension("generation_calls"),),
+            arguments=(("units", count(1)),),
         )
 
     callbacks = dimension("release_calls")
@@ -729,6 +765,11 @@ def _release_declaration(mode: str) -> Declaration:
                     "Actual other selected native close invocations, including "
                     "borrowed-reader and already-closed handles."
                 ),
+            ),
+            Dimension(
+                "generation_calls",
+                COUNT,
+                "Actual original optional generation child receiving invocations.",
             ),
         ),
         bounds=(
@@ -807,7 +848,16 @@ def _release_declaration(mode: str) -> Declaration:
                 "lease_descriptor_closes",
                 COUNT,
                 "upper",
-                descriptors,
+                add(
+                    descriptors,
+                    Expression(
+                        "product",
+                        terms=(
+                            dimension("generation_calls"),
+                            Expression("constant", value=lease_closes.value),
+                        ),
+                    ),
+                ),
                 (
                     "Callback release is a subset of the owning complete lease "
                     "lifecycle's descriptor bound."
@@ -837,9 +887,18 @@ def _release_declaration(mode: str) -> Declaration:
                     bound.metric,
                     bound.unit,
                     "upper",
-                    add(delegated("release", bound), delegated("retain", bound), descriptors)
+                    add(
+                        delegated("release", bound),
+                        delegated("retain", bound),
+                        generation_metric(bound),
+                        descriptors,
+                    )
                     if bound.metric == "closed_files"
-                    else add(delegated("release", bound), delegated("retain", bound)),
+                    else add(
+                        delegated("release", bound),
+                        delegated("retain", bound),
+                        generation_metric(bound),
+                    ),
                     (
                         "Include the actual native close primitives and all explicit "
                         "final-lease descriptor release."
@@ -877,6 +936,30 @@ def _release_declaration(mode: str) -> Declaration:
                 )
                 for tag in ("release", "retain")
                 for bound in native.bounds
+            ),
+            Bound(
+                "generation_calls",
+                COUNT,
+                "equal",
+                dimension("generation_calls"),
+                "Observe the exact original generation receiving invocation count.",
+            ),
+            Bound(
+                "generation_calls_limit",
+                COUNT,
+                "upper",
+                limit,
+                "Each selected slot retains at most one original generation child.",
+            ),
+            *(
+                Bound(
+                    "generation_" + bound.metric,
+                    bound.unit,
+                    bound.relation,
+                    generation_metric(bound),
+                    bound.meaning,
+                )
+                for bound in generation.bounds
             ),
         ),
         conditions=(
@@ -1889,6 +1972,7 @@ class UploadJournalValidationOwner:
 
     def _drop(self, key: tuple[int, str, str], slot: _Slot) -> None:
         slot.closing = True
+        generation_pending = slot.generation is not None and not slot.generation.close_step()
         if slot.session is not None:
             slot.session.close()
         if slot.construction is not None and not slot.construction.close_step():
@@ -1899,10 +1983,11 @@ class UploadJournalValidationOwner:
                     "final Native readers still retain the original storage"
                 )
             slot.session = None
-        if not slot.transferred:
-            slot.receive_workspace()
-        else:
-            slot.lease.close()
+        if generation_pending:
+            raise _NativeReceivingPending(
+                "original Native construction generation readers have not received"
+            )
+        slot.receive_workspace()
         with self._lock:
             if self._slots.get(key) is slot:
                 del self._slots[key]

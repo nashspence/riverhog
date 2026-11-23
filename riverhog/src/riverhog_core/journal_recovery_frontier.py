@@ -6,20 +6,41 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import Protocol
 
 from riverhog_canonical_json import canonical_json_bytes, format_scalar, parse_scalar
 from riverhog_provenance import JournalConstruction, JournalImage, JournalImageCapture
 
 from riverhog_core.collection_recovery_state import RecoveryGrant, RecoveryRootBinding
 
-if TYPE_CHECKING:
-    from riverhog_core.services.upload_journal_validation_jobs import ValidationJob
+
+class _RecoveryJob(Protocol):
+    @property
+    def collection_id(self) -> int | None: ...
+
+    @property
+    def workspace_id(self) -> str: ...
+
+    @property
+    def journal_id(self) -> str | None: ...
+
+    @property
+    def attempt_id(self) -> str: ...
+
+    @property
+    def source_binding_json(self) -> str: ...
+
+    @property
+    def certificate_binding_json(self) -> str: ...
+
+    @property
+    def worker_epoch(self) -> int: ...
+
 
 JOURNAL_RECOVERY_DOMAIN = "upload-journal-validation"
 
 
-def _owner(binding: RecoveryRootBinding, job: ValidationJob) -> dict[str, object]:
+def _owner(binding: RecoveryRootBinding, job: _RecoveryJob) -> dict[str, object]:
     if job.collection_id != binding.collection_id or job.journal_id is None:
         raise ValueError("journal recovery differs from its original construction")
     return {
@@ -33,7 +54,7 @@ def _owner(binding: RecoveryRootBinding, job: ValidationJob) -> dict[str, object
     }
 
 
-def journal_recovery_fence(binding: RecoveryRootBinding, job: ValidationJob) -> str:
+def journal_recovery_fence(binding: RecoveryRootBinding, job: _RecoveryJob) -> str:
     """Bind the grant to the original source and captured worker, never CAS version."""
     return hashlib.sha256(canonical_json_bytes(_owner(binding, job))).hexdigest()
 
@@ -92,7 +113,7 @@ class JournalRecoveryContext:
 
     @classmethod
     def original(
-        cls, binding: RecoveryRootBinding, job: ValidationJob, grant: RecoveryGrant
+        cls, binding: RecoveryRootBinding, job: _RecoveryJob, grant: RecoveryGrant
     ) -> JournalRecoveryContext:
         _owner(binding, job)
         if (
