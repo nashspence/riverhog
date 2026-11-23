@@ -24,6 +24,7 @@ from riverhog_growth_contracts import (
 __all__ = [
     "FileReclamationOwner",
     "FileReclamationProgress",
+    "FileReclamationReceipt",
     "InvalidWorkspaceFiles",
     "WorkspaceReclamationCapacity",
     "reclaim_retired_files",
@@ -51,6 +52,20 @@ class FileReclamationProgress:
         return self.remaining_files == 0
 
 
+@dataclass(frozen=True, slots=True)
+class FileReclamationReceipt:
+    """Completed synchronized work on one original directory and exact file set.
+
+    The original owner exposes this immutable observation only after its native
+    resources receive. It proves no worker join, disposal permission or cost
+    settlement; the composing lifecycle retains those independent obligations.
+    """
+
+    directory_identity: tuple[int, int]
+    names: tuple[bytes, ...]
+    progress: FileReclamationProgress
+
+
 def _encode_directory(directory: Path) -> bytes:
     return os.fsencode(directory)
 
@@ -76,10 +91,22 @@ class FileReclamationOwner:
         self._path = b""
         self._names: tuple[bytes, ...] = ()
         self._expected_directory_identity: tuple[int, int] | None = None
+        self._directory_identity: tuple[int, int] | None = None
+        self._receipt: FileReclamationReceipt | None = None
 
     @property
     def received(self) -> bool:
         return self._closed
+
+    @property
+    def receipt(self) -> FileReclamationReceipt | None:
+        """Return this original's synchronized work after actual receiving.
+
+        Closing an unused or failed-sync attempt never creates a receipt. An
+        uncertain close retains completed work, exposed only once that same
+        original positively receives. Reading it performs no storage work.
+        """
+        return self._receipt if self._closed else None
 
     def _receive(self) -> None:
         self._closing = True
@@ -125,6 +152,8 @@ class FileReclamationOwner:
             self._expected_directory_identity = expected_directory_identity
             self._attempted = True
             result = self._reclaim(octet_budget)
+            assert self._directory_identity is not None
+            self._receipt = FileReclamationReceipt(self._directory_identity, self._names, result)
             self._receive()
             return result
         except OSError as error:
@@ -152,6 +181,7 @@ class FileReclamationOwner:
             and (identity.st_dev, identity.st_ino) != self._expected_directory_identity
         ):
             raise InvalidWorkspaceFiles("retired workspace directory was replaced")
+        self._directory_identity = identity.st_dev, identity.st_ino
         before = _files(descriptor, self._names)
         removed_octets = removed_files = 0
         if before:

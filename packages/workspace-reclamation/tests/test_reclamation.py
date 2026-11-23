@@ -195,7 +195,7 @@ def test_uncertain_unlink_sync_reconciles_actual_absence_without_reconstruction(
             reclaim(path, names=("data",), octet_budget=7, receiver=original_receiver)
     assert not target.exists()
     original_receiver.close()
-    assert original_receiver.received
+    assert original_receiver.received and original_receiver.receipt is None
     # Absence after a lost unlink-sync reply is still volatile. A fresh
     # reconciliation must synchronize that same directory before confirmation.
     reconciler = retained_file_receivers()
@@ -205,7 +205,7 @@ def test_uncertain_unlink_sync_reconciles_actual_absence_without_reconstruction(
             reclaim(path, names=("data",), octet_budget=7, receiver=reconciler)
     assert not reconciler.received and reconciler._directory_borrow.active
     reconciler.close()
-    assert reconciler.received
+    assert reconciler.received and reconciler.receipt is None
     sync = os.fsync
     synchronized = []
 
@@ -215,11 +215,13 @@ def test_uncertain_unlink_sync_reconciles_actual_absence_without_reconstruction(
 
     with monkeypatch.context() as patch:
         patch.setattr(os, "fsync", received_sync)
-        progress = reclaim(
-            path, names=("data",), octet_budget=7, receiver=retained_file_receivers()
-        )
+        completed = retained_file_receivers()
+        progress = reclaim(path, names=("data",), octet_budget=7, receiver=completed)
     assert synchronized == [path.stat().st_ino]
     assert progress.files_reclaimed and progress.removed_octets == 0
+    assert completed.receipt is not None and completed.receipt.progress is progress
+    assert completed.receipt.directory_identity == (path.stat().st_dev, path.stat().st_ino)
+    assert completed.receipt.names == (b"data",)
 
 
 @pytest.mark.growth_witness(
@@ -277,3 +279,37 @@ def test_actual_filename_work_and_extents_vary_independently(
                     )
                     samples.append(sample)
     record_property("growth_samples", samples)
+
+
+def test_passive_receiving_cannot_manufacture_synchronized_work(retained_file_receivers):
+    original = retained_file_receivers()
+    assert not original.received and original.receipt is None
+    original.close()
+    assert original.received and original.receipt is None
+
+
+def test_received_progress_pins_actual_directory_and_exact_selection(
+    tmp_path, monkeypatch, retained_file_receivers
+):
+    directory = tmp_path / "retired"
+    directory.mkdir(mode=0o700)
+    selected = private_file(directory, "data", 17)
+    unrelated = private_file(directory, ".lease", 5)
+    pinned = directory.stat()
+    original = retained_file_receivers()
+    progress = reclaim(directory, receiver=original, names=("data", "sidecar"), octet_budget=3)
+    receipt = original.receipt
+    assert original.received and receipt is not None and receipt.progress is progress
+    assert receipt.directory_identity == (pinned.st_dev, pinned.st_ino)
+    assert receipt.names == (b"data", b"sidecar")
+    assert not receipt.progress.files_reclaimed
+    assert selected.stat().st_size == 14 and unrelated.stat().st_size == 5
+
+    def storage_work(*args, **kwargs):
+        pytest.fail("reading received work performed storage I/O")
+
+    with monkeypatch.context() as patch:
+        for name in ("open", "stat", "fstat", "fsync", "ftruncate", "unlink", "close"):
+            patch.setattr(os, name, storage_work)
+        assert original.receipt is receipt
+        assert original.receipt.progress is progress

@@ -139,7 +139,7 @@ def test_uncertain_mutation_keeps_the_same_receiver_and_never_repeats_on_close(
     assert (data.stat().st_size if data.exists() else 0) == remaining
     original.close()
     original.close()
-    assert original.received
+    assert original.received and original.receipt is None
     assert (data.stat().st_size if data.exists() else 0) == remaining
     assert semantic.read_bytes() == b"x" * 29
     with pytest.raises(RuntimeError, match="fresh retained owner"):
@@ -171,10 +171,16 @@ def test_native_close_refusal_or_lost_reply_keeps_the_original_attempt(
             reclaim(
                 directory, receiver=original, expected_directory_identity=identity, octet_budget=3
             )
-        assert not original.received and data.read_bytes() == b"x" * 14
+        assert not original.received and original.receipt is None
+        assert data.read_bytes() == b"x" * 14
         original.close()
         original.close()
         assert original.received and data.read_bytes() == b"x" * 14
+        assert original.receipt is not None
+        assert original.receipt.directory_identity == identity
+        assert original.receipt.names == tuple(name.encode() for name in NAMES)
+        assert original.receipt.progress.removed_octets == 3
+        assert not original.receipt.progress.files_reclaimed
         assert original._file.metrics["close_calls"] == 1
         assert original._directory.metrics["close_calls"] == 1
     finally:

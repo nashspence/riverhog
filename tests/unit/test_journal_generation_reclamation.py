@@ -165,6 +165,7 @@ def test_active_file_executor_cannot_lose_its_slot_or_kernel_lease(origin, monke
         assert case.owner.active_keys() == ((case.work.collection_id, case.work.journal_id),)
         assert case.generation.reclamation is original and not case.generation.received
         assert original._directory_borrow.active and original._file_borrow.active
+        assert original.receipt is None
         with leased_workspace(case.owner.root, case.job.workspace_id) as busy:
             assert busy is None
         assert snapshot(case)[0] == rejected and rejected.accounting.reserved_ns > 0
@@ -173,5 +174,8 @@ def test_active_file_executor_cannot_lose_its_slot_or_kernel_lease(origin, monke
         worker.join(timeout=10)
     assert not worker.is_alive() and len(outcomes) == 1
     assert not isinstance(outcomes[0], BaseException) and original.received
+    assert original.receipt is not None and original.receipt.directory_identity == identity
+    assert original.receipt.progress.removed_octets == 4096
+    assert not original.receipt.progress.files_reclaimed
     case.owner.close()
     assert case.generation.received and not case.owner._slots
