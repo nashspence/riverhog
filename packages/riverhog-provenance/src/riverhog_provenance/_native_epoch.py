@@ -6,12 +6,17 @@ import sqlite3
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager, nullcontext
 from functools import wraps
+from threading import Lock
 from typing import Concatenate, Protocol
 
 from sqlite_admission import observe_sqlite_execution
 
 from ._native_conductor import NativeConductor
 from ._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum, WorkReservation
+
+
+class NativeCaptureBusy(BlockingIOError):
+    """The original optional capture still excludes semantic execution."""
 
 
 class EpochContext:
@@ -40,6 +45,8 @@ class EpochContext:
         self._preparing = False
         self._work: WorkQuantum | None = None
         self._application_work: WorkReservation | None = None
+        self._admission_gate = Lock()
+        self._capture_owner: object | None = None
 
     @property
     def work(self) -> WorkQuantum | None:
@@ -98,6 +105,35 @@ class EpochContext:
         if not self.quiescent:
             raise RuntimeError("Native private epoch is already active or has a foreign writer")
 
+    def retain_capture(self, owner: object) -> None:
+        """Exclude semantic execution until this exact original capture receives."""
+        if owner is None:
+            raise TypeError("Native capture requires its exact nonempty original owner")
+        with self._admission_gate:
+            self.require_quiescent()
+            if self._execution_active or self._preparing or self._capture_owner is not None:
+                raise BlockingIOError("original Native execution or capture has not received")
+            self._capture_owner = owner
+
+    def require_capture(self, owner: object) -> None:
+        self.require_quiescent()
+        if self._capture_owner is None or self._capture_owner is not owner:
+            raise RuntimeError("Native capture requires its original exclusive hold")
+
+    def receive_capture(self, owner: object) -> None:
+        with self._admission_gate:
+            if self._capture_owner is None or self._capture_owner is not owner:
+                raise RuntimeError("Native capture requires its original exclusive hold")
+            # The final storage lease may already have received SQLite. Releasing
+            # this exact token must not query that closed original connection.
+            if self._execution_active or self._preparing or self._phase != "quiescent":
+                raise RuntimeError("original Native execution has not received")
+            self._capture_owner = None
+
+    def require_execution_available(self) -> None:
+        if self._capture_owner is not None:
+            raise NativeCaptureBusy("original Native capture has not received")
+
     def require(self, db: sqlite3.Connection) -> None:
         """Admit child mutations only within this exact original private epoch."""
         if db is not self.db or self._phase != "applying" or not db.in_transaction:
@@ -108,24 +144,27 @@ class EpochContext:
         self, check: Callable[[], None] | None, *, work: WorkQuantum | None = None
     ) -> Iterator[None]:
         """Bind one owner's bounded live-memory check for its admitted execution."""
-        self.require_quiescent()
-        if self._execution_active:
-            raise RuntimeError("the original Native execution is already active")
-        if check is not None and not callable(check):
-            raise TypeError("Native execution requires a callable check")
-        if work is not None and not isinstance(work, WorkQuantum):
-            raise TypeError("Native execution requires its explicit original work quantum")
-        if work is not None:
-            work.bind_execution(self)
-        self._execution_active, self._execution_check, self._work = True, check, work
-        self._check_failure = None
+        with self._admission_gate:
+            self.require_quiescent()
+            self.require_execution_available()
+            if self._execution_active:
+                raise RuntimeError("the original Native execution is already active")
+            if check is not None and not callable(check):
+                raise TypeError("Native execution requires a callable check")
+            if work is not None and not isinstance(work, WorkQuantum):
+                raise TypeError("Native execution requires its explicit original work quantum")
+            if work is not None:
+                work.bind_execution(self)
+            self._execution_active, self._execution_check, self._work = True, check, work
+            self._check_failure = None
         try:
             self.check()
             yield
             self.require_unit_received()
         finally:
-            self._execution_active, self._execution_check, self._work = False, None, None
-            self._check_failure = None
+            with self._admission_gate:
+                self._execution_active, self._execution_check, self._work = False, None, None
+                self._check_failure = None
 
     def require_unit_received(self) -> None:
         """Permit the next unit only after this original execution has received work."""
@@ -145,12 +184,15 @@ class EpochContext:
             yield
             return
         self.require_quiescent()
-        self._preparing = True
+        with self._admission_gate:
+            self.require_execution_available()
+            self._preparing = True
         try:
             with observe_sqlite_execution(self.db, self.check):
                 yield
         finally:
-            self._preparing = False
+            with self._admission_gate:
+                self._preparing = False
 
     def require_receiving(self, db: sqlite3.Connection) -> None:
         """Receive live control only after this exact original commit returned."""
@@ -190,11 +232,14 @@ class EpochContext:
             not isinstance(admission, WorkAmount) or not any(admission.coordinates)
         ):
             raise ValueError("Native application requires positive explicit work admission")
-        reserved = (
-            None if self._work is None or admission is None else self._work.reserve(admission)
-        )
-        self._application_work = reserved
-        self._phase = "applying"
+        with self._admission_gate:
+            self.require_quiescent()
+            self.require_execution_available()
+            reserved = (
+                None if self._work is None or admission is None else self._work.reserve(admission)
+            )
+            self._application_work = reserved
+            self._phase = "applying"
         try:
             observation = (
                 nullcontext()

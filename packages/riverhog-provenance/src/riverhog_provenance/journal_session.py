@@ -7,7 +7,7 @@ from collections.abc import Callable, Iterable, Mapping
 from contextlib import closing, nullcontext
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Any, Protocol, Self, cast
+from typing import TYPE_CHECKING, Any, Protocol, Self, cast
 
 from riverhog_canonical_json import canonical_json_bytes
 from riverhog_growth_contracts import (
@@ -27,7 +27,7 @@ from sha256_continuation import sha256_compress
 from ._entry_replay import EntryReplay, EntryReplayCapacity, ReplayBudget
 from ._entry_replay import install as install_replay
 from ._journal_prefix import JournalPrefix
-from ._native_epoch import EpochContext
+from ._native_epoch import EpochContext, NativeCaptureBusy
 from ._native_frame import NativeFrame
 from ._native_work import NativeWorkCapacity, WorkAmount, WorkQuantum
 from ._session_checkpoint import ValidationLedger, ValidationSnapshot
@@ -1388,6 +1388,10 @@ def _lifecycle_declaration(mode: str) -> Declaration:
     )
 
 
+if TYPE_CHECKING:
+    from ._journal_image import JournalImageCapture
+
+
 class JournalValidationSession:
     """Validate a caller stream through bounded, ordered native work units.
 
@@ -1764,6 +1768,7 @@ class JournalValidationSession:
             raise RuntimeError("journal validation session failed") from self._failure
         if not isinstance(budget, JournalValidationBudget):
             raise TypeError("journal validation requires its explicit work budget")
+        self._ledger.epoch.require_execution_available()
         try:
             work = WorkQuantum(
                 WorkAmount(
@@ -1804,7 +1809,7 @@ class JournalValidationSession:
                         break
                 assert after is not None
                 return self._progress(after)
-        except JournalValidationCapacity:
+        except (JournalValidationCapacity, NativeCaptureBusy):
             raise
         except BaseException as exc:
             self._failure = exc
@@ -1827,6 +1832,17 @@ class JournalValidationSession:
         if self._summary is None:
             raise RuntimeError("journal validation has no successful terminal result")
         return self._summary.borrow()
+
+    def image_capture(self) -> JournalImageCapture:
+        """Retain a passive baseline-image receiver before optional capture effects.
+
+        The composing owner supplies a surviving grant and separate generation
+        storage before beginning capture. This handle neither selects a Core
+        frontier nor provides incremental capture of later generations.
+        """
+        from ._journal_image import JournalImageCapture
+
+        return JournalImageCapture(self)
 
     @property
     def storage_received(self) -> bool:

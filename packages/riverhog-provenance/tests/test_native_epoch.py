@@ -251,3 +251,24 @@ def test_expiry_after_commit_does_not_skip_original_live_receiving(db):
 
     owner.apply(_mutation(db, "committed"), receive=receive, check=check)
     assert received == ["committed"] and owner.quiescent
+
+
+def test_capture_requires_received_execution_and_excludes_private_application(db):
+    owner = EpochContext(db)
+    original = object()
+    with pytest.raises(TypeError, match="exact nonempty original"):
+        owner.retain_capture(None)
+    with owner.execution(None):
+        assert owner.quiescent
+        with pytest.raises(BlockingIOError, match="has not received"):
+            owner.retain_capture(original)
+    owner.retain_capture(original)
+    with pytest.raises(BlockingIOError, match="capture has not received"):
+        owner.apply(_mutation(db, "refused"), receive=lambda value: None)
+    assert _rows(db) == [] and owner.quiescent
+    with pytest.raises(RuntimeError, match="original exclusive hold"):
+        owner.receive_capture(object())
+    owner.require_capture(original)
+    owner.receive_capture(original)
+    owner.apply(_mutation(db, "received"), receive=lambda value: None)
+    assert _rows(db) == [("received",)]
