@@ -46,6 +46,7 @@ def _job_declaration(mode: str) -> Declaration:
         "select_resume_frontier": 3,
         "retain_recovery_owner": 2,
         "retain_recovery_grant": 1,
+        "retain_recovery_rejection": 1,
         "acknowledge_recovery_original": 2,
         "retain_recovery_original": 1,
         "receive_recovery_original": 1,
@@ -95,7 +96,7 @@ def _job_declaration(mode: str) -> Declaration:
         else 4
         if mode == "retain_recovery_original"
         else 2
-        if mode == "retain_recovery_grant"
+        if mode in {"retain_recovery_grant", "retain_recovery_rejection"}
         else int(mode in {"publish_outcome", "outcome"})
     )
 
@@ -269,7 +270,7 @@ def _job_declaration(mode: str) -> Declaration:
                         4
                         if mode in {"select_resume_frontier", "retain_recovery_original"}
                         else 2
-                        if mode == "retain_recovery_grant"
+                        if mode in {"retain_recovery_grant", "retain_recovery_rejection"}
                         else 0,
                         dimension("control_octets"),
                     ),
@@ -842,6 +843,62 @@ def retain_recovery_grant(
 declare_growth(_job_declaration("retain_recovery_grant"))(retain_recovery_grant)
 
 
+def retain_recovery_rejection(
+    session: Session,
+    context: JournalRecoveryContext,
+    grant: RecoveryGrant,
+    *,
+    control_bytes: int,
+) -> None:
+    """Retain the exact issued context while the root fences nonpublication.
+
+    This is metadata retention, not worker join, file reclamation or cost
+    receiving. A retired source may still receive its exact original; it gains
+    no new execution authority from this callback.
+    """
+    if type(control_bytes) is not int or control_bytes < 1:
+        raise ValueError("journal rejection requires positive metadata admission")
+    if len(context.encoded) > control_bytes:
+        raise ValueError("journal rejection exceeds metadata admission")
+    current = _retain_recovery_job(session, context)
+    if (
+        current.recovery_original_json != context.encoded.decode("utf-8")
+        or current.recovery_received
+        or grant.generation is not None
+    ):
+        raise Conflict("journal rejection differs from its retained original")
+    historical = replace(
+        current,
+        collection_id=context.binding.collection_id,
+        journal_id=context.journal_id,
+        worker_epoch=context.worker_epoch,
+    )
+    if JournalRecoveryContext.original(context.binding, historical, grant) != context:
+        raise Conflict("journal rejection differs from its original grant")
+
+
+declare_growth(_job_declaration("retain_recovery_rejection"))(retain_recovery_rejection)
+
+
+def _retain_recovery_job(session: Session, context: JournalRecoveryContext) -> ValidationJob:
+    row = session.scalar(
+        select(Job).where(Job.workspace_id == context.workspace_id).with_for_update()
+    )
+    if row is None:
+        raise Conflict("original journal receiving owner is unavailable")
+    current = ValidationJob.read(row)
+    if (
+        current.attempt_id != context.attempt_id
+        or current.source_binding_json != context.source_binding_json
+        or current.certificate_binding_json != context.certificate_binding_json
+        or current.collection_id not in (None, context.binding.collection_id)
+        or current.journal_id not in (None, context.journal_id)
+        or current.worker_epoch < context.worker_epoch
+    ):
+        raise Conflict("journal receiving differs from its immutable original owner")
+    return current
+
+
 def retain_recovery_original(
     session: Session,
     receipt: JournalGenerationReceipt,
@@ -859,21 +916,7 @@ def retain_recovery_original(
     if len(receipt.encoded.encode("utf-8")) > control_bytes:
         raise ValueError("journal generation receipt exceeds metadata admission")
     context = receipt.context
-    row = session.scalar(
-        select(Job).where(Job.workspace_id == context.workspace_id).with_for_update()
-    )
-    if row is None:
-        raise Conflict("original journal receiving owner is unavailable")
-    current = ValidationJob.read(row)
-    if (
-        current.attempt_id != context.attempt_id
-        or current.source_binding_json != context.source_binding_json
-        or current.certificate_binding_json != context.certificate_binding_json
-        or current.collection_id not in (None, context.binding.collection_id)
-        or current.journal_id not in (None, context.journal_id)
-        or current.worker_epoch < context.worker_epoch
-    ):
-        raise Conflict("journal receiving differs from its immutable original owner")
+    current = _retain_recovery_job(session, context)
     if grant is None:
         if current.recovery_receipt_json != receipt.encoded:
             raise Conflict("journal receiving contradicts its immutable original receipt")

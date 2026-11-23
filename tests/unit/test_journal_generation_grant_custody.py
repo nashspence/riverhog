@@ -251,6 +251,17 @@ def test_physical_retirement_keeps_job_until_its_exact_cost_receives(
     if selected:
         adopt(case)
     else:
+        rejected = case.recovery.reject_generation(
+            case.binding,
+            revision=snapshot(case)[0].revision,
+            identity=case.grant.identity,
+            guard=_guard,
+            retain_original=lambda session, grant: jobs.retain_recovery_rejection(
+                session, case.context, grant, control_bytes=32768
+            ),
+        )
+        assert rejected.grants[0].nonpublication_proven
+        assert rejected.accounting.held_count_slots == 1
         proposed = JournalGenerationReceipt(case.context, None, 11 * NS)
         with pytest.raises(BlockingIOError, match="have not received"):
             settle(case, proposed)

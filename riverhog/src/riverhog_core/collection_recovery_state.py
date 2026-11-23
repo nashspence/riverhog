@@ -9,7 +9,7 @@ from riverhog_canonical_json import format_scalar
 from riverhog_protocol.pack_ingress import canonical_json_bytes
 from riverhog_recovery_policy import RecoveryAccounting, RecoveryPolicy
 
-_FORMAT = "riverhog-recovery-accounting/v1"
+_FORMAT = "riverhog-recovery-accounting/v2"
 
 
 def _json(value: object) -> str:
@@ -59,6 +59,7 @@ class RecoveryGrant:
     selection_actual_ns: int | None = None
     selection_reserved_ns: int | None = None
     uncertain: bool = False
+    nonpublication_proven: bool = False
 
     def document(self) -> dict[str, object]:
         return {
@@ -77,6 +78,7 @@ class RecoveryGrant:
             if self.selection_reserved_ns is None
             else _number(self.selection_reserved_ns),
             "uncertain": self.uncertain,
+            "nonpublication_proven": self.nonpublication_proven,
         }
 
 

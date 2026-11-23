@@ -21,6 +21,7 @@ from tests.unit.test_collection_recovery_accounting import (
     _root_case,
     _select,
 )
+from tests.unit.test_journal_generation_rejection import selection_rejection_race
 
 pytestmark = pytest.mark.integration
 
@@ -99,3 +100,7 @@ def test_postgres_original_receiving_survives_gate_close_and_source_retirement(
                 session.scalar(text("SELECT generation FROM recovery_domain_fixture"))
                 == "generation-a"
             )
+
+
+def test_postgres_selection_and_rejection_choose_one_original_disposition(database_url, tmp_path):
+    selection_rejection_race(tmp_path, database_url=database_url)

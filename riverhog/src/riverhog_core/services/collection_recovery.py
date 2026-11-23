@@ -82,6 +82,7 @@ def _read(control: Control, *, active_limit: int, control_bytes: int) -> Recover
                 if item["selection_reserved_ns"] is None
                 else parse_scalar("nonnegative", item["selection_reserved_ns"]),
                 uncertain=item["uncertain"],
+                nonpublication_proven=item["nonpublication_proven"],
             )
             for item in value["active_grants"]
         )
@@ -93,8 +94,11 @@ def _read(control: Control, *, active_limit: int, control_bytes: int) -> Recover
         ):
             if type(value[name]) is not bool:
                 raise ValueError("accounting flags must be booleans")
-        if any(type(grant.uncertain) is not bool for grant in grants):
-            raise ValueError("grant uncertainty must be boolean")
+        if any(
+            type(grant.uncertain) is not bool or type(grant.nonpublication_proven) is not bool
+            for grant in grants
+        ):
+            raise ValueError("grant receiving flags must be boolean")
         root = RecoveryRoot(
             binding=binding,
             policy=RecoveryPolicy.from_mapping(json.loads(control.recovery_policy_json)),
@@ -125,7 +129,8 @@ def _read(control: Control, *, active_limit: int, control_bytes: int) -> Recover
         sequences = {_sequence(root, grant.identity) for grant in grants}
         if (
             any(
-                (grant.generation is None) != (grant.selection_actual_ns is None)
+                (grant.nonpublication_proven and grant.generation is not None)
+                or (grant.generation is None) != (grant.selection_actual_ns is None)
                 or (grant.generation is None) != (grant.selection_reserved_ns is None)
                 or (
                     grant.selection_actual_ns is not None
@@ -346,6 +351,8 @@ class CollectionRecoveryAccounting:
                 return root
             self._revision(root, revision)
             self._forward(control, epoch)
+            if grant.nonpublication_proven:
+                raise Conflict("recovery generation was rejected before publication")
             if (
                 root.optional_admission_sealed
                 or grant.uncertain
@@ -376,6 +383,42 @@ class CollectionRecoveryAccounting:
                         successful_checkpoints=root.accounting.successful_checkpoints + 1,
                     ),
                     grants=_replace_grant(root, updated_grant),
+                ),
+            )
+
+    def reject_generation(
+        self,
+        binding: RecoveryRootBinding,
+        *,
+        revision: int,
+        identity: str,
+        guard: Guard,
+        retain_original: Callable[[Session, RecoveryGrant], None],
+    ) -> RecoveryRoot:
+        """Fence nonpublication before receiving the original rejected candidate.
+
+        The root lock serializes this decision with selection. An ambiguous
+        reply is reconciled by the same original, including after gate close.
+        This neither joins workers nor authorizes deletion, and it releases no
+        cost reservation or potential-success slot. Actual receiving remains
+        necessary before the original grant can leave the active set.
+        """
+        with self._locked(binding, guard) as (session, _control, root):
+            grant = _grant(root, identity)
+            if grant is None:
+                raise Conflict("recovery grant received; reconcile the original receipt")
+            if grant.generation is not None:
+                raise Conflict("selected recovery generation cannot become nonpublication")
+            retain_original(session, grant)
+            if grant.nonpublication_proven:
+                return root
+            self._revision(root, revision)
+            return self._save(
+                session,
+                root,
+                replace(
+                    root,
+                    grants=_replace_grant(root, replace(grant, nonpublication_proven=True)),
                 ),
             )
 
