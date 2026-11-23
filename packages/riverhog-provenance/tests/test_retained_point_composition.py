@@ -30,7 +30,7 @@ from test_retained_corpus_growth import Connection, Cursor, Observer, octets
 from test_retained_corpus_workspace import OwnedCorpusSource, open_workspace
 from test_source_anchor_growth import record
 
-TRANSACTION = RetainedCorpusValidator._operation
+TRANSACTION = RetainedCorpusValidator._reading
 
 
 class PointCursor(Cursor):

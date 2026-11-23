@@ -133,7 +133,13 @@ class Observer:
                 cursors.append(cursor)
             self.live = sum(not item._cleanup_complete for item in cursors)
             self.maximum_live = max(self.maximum_live, self.live)
-            return execute(cursor, query, parameters)
+            changes = cursor._owner.total_changes
+            result = execute(cursor, query, parameters)
+            written = cursor._owner.total_changes - changes
+            self.metrics["written_rows"] += written
+            if written:
+                self.metrics["written_parameter_octets"] += octets(parameters)
+            return result
 
         def read_rows(actual, many):
             def reading(cursor, *args, **kwargs):
@@ -250,6 +256,43 @@ def test_owner_checkpoint_work_does_not_scan_retained_inputs(
                 samples.append(
                     observer.sample(
                         RetainedCorpusValidator._operation,
+                        source,
+                        count,
+                        counter_octets=max(2, width),
+                    )
+                )
+    record_property("growth_samples", samples)
+
+
+@pytest.mark.growth_witness(
+    "native-retained-corpus-read-snapshot-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_provenance.corpus_workspace.RetainedCorpusValidator._reading",
+)
+def test_current_read_snapshot_has_no_checkpoint_publication(
+    journal_constructions, tmp_path, catalog, monkeypatch, record_property
+):
+    samples = []
+    for count in (0, 1, 17, 129):
+        for width in (1, 17, 129):
+            path = tmp_path / (str(count) + "-" + str(width))
+            path.mkdir(mode=0o700)
+            source = EmptySource(catalog)
+            with open_workspace(
+                path, source, create=True, journal_constructions=journal_constructions
+            ) as workspace:
+                with workspace._operation():
+                    insert(workspace._corpus, edges_for("chain", count), "derivation")
+                version = str(10 ** (width - 1))
+                workspace._db.execute("UPDATE corpus_workspace SET version=?", (version,))
+                workspace._db.commit()
+                observer = Observer()
+                with observer.observe(monkeypatch, source, workspace):
+                    with workspace._reading():
+                        pass
+                samples.append(
+                    observer.sample(
+                        RetainedCorpusValidator._reading,
                         source,
                         count,
                         counter_octets=max(2, width),

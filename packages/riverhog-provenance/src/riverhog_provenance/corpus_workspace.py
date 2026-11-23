@@ -191,7 +191,8 @@ def _restore(corpus: CanonicalCorpusValidator, raw: bytes) -> None:
 class RetainedCorpusValidator:
     """Retain Native progress under the application's current source and lease.
 
-    Every successful bounded call commits its data and checkpoint together.
+    Mutating calls commit data and checkpoint together. Point lookups retain
+    a current read snapshot without publishing a new checkpoint.
     This owner exposes no whole-corpus reset or discovery-publication grant.
     The application serializes all calls, which may move between worker threads.
     The caller retains an exact construction frame before any Native effects.
@@ -502,6 +503,34 @@ class RetainedCorpusValidator:
                 db.rollback()
                 raise
 
+    @declare_growth(lifecycle_declaration("_reading"))
+    @contextmanager
+    def _reading(self) -> Iterator[None]:
+        """Read the exact current snapshot without a recovery publication."""
+        with self._construction.execution():
+            if self._closed:
+                raise RuntimeError("retained corpus is closed")
+            self._verify_current()
+            db = self._db
+            _write(db, "BEGIN")
+            try:
+                epoch, version, checkpoint, _, _ = self._load()
+                _restore(self._corpus, checkpoint)
+                yield
+                self._verify_current()
+                current = _one(
+                    db,
+                    "SELECT worker_epoch=?,version=?,checkpoint=?,binding=? "
+                    "FROM corpus_workspace WHERE singleton=1",
+                    (str(epoch), str(version), checkpoint, self._encoded),
+                )
+                if current != (1, 1, 1, 1):
+                    raise StaleCorpusWorkspace("retained corpus checkpoint changed")
+                db.commit()
+            except BaseException:
+                db.rollback()
+                raise
+
     def _admit(self, anchor: HistoryJournalAnchor, *, selection: bool) -> None:
         admission = self._source.admit_selection if selection else self._source.admit_source
         if admission(anchor) is not True:
@@ -625,28 +654,28 @@ class RetainedCorpusValidator:
         point_declaration(
             "historical_assertion",
             growth_binding(CanonicalCorpusValidator.historical_assertion).declaration,
-            growth_binding(_operation).declaration,
+            growth_binding(_reading).declaration,
         ),
         delegates=(
             ("native", CanonicalCorpusValidator.historical_assertion),
-            ("transaction", _operation),
+            ("transaction", _reading),
         ),
     )
     def historical_assertion(
         self, anchor: HistoryJournalAnchor, object_id: str, *, byte_budget: int
     ) -> HistoricalAssertion | None:
-        with self._operation():
+        with self._reading():
             return self._corpus.historical_assertion(anchor, object_id, byte_budget=byte_budget)
 
     @declare_growth(
         point_declaration(
             "selected_delivery_support",
             growth_binding(CanonicalCorpusValidator.selected_delivery_support).declaration,
-            growth_binding(_operation).declaration,
+            growth_binding(_reading).declaration,
         ),
         delegates=(
             ("native", CanonicalCorpusValidator.selected_delivery_support),
-            ("transaction", _operation),
+            ("transaction", _reading),
         ),
     )
     def selected_delivery_support(
@@ -659,7 +688,7 @@ class RetainedCorpusValidator:
         member_role: str,
         metadata_byte_budget: int,
     ) -> SelectedDeliverySupport:
-        with self._operation():
+        with self._reading():
             return self._corpus.selected_delivery_support(
                 binding=binding,
                 artifact_id=artifact_id,

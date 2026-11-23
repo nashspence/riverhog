@@ -28,6 +28,7 @@ def _scale(value: int, name: str) -> Expression:
 
 
 def lifecycle_declaration(operation: str) -> Declaration:
+    reading = operation == "_reading"
     closing = operation == "close"
     opening = operation == "open_retained"
     dimensions = (
@@ -53,8 +54,8 @@ def lifecycle_declaration(operation: str) -> Declaration:
         ),
     )
     limits = {
-        "sql_statements": 0 if closing else 64 if opening else 7,
-        "returned_rows": 0 if closing else 8 if opening else 3,
+        "sql_statements": 0 if closing else 64 if opening else 6 if reading else 7,
+        "returned_rows": 0 if closing else 8 if opening else 4 if reading else 3,
         "source_checks": 0 if closing else 2,
         "source_frame_reads": 0,
         "full_assertion_reads": 0,
@@ -166,11 +167,18 @@ def lifecycle_declaration(operation: str) -> Declaration:
                 "checkpoint_encoded_octets",
                 OCTETS,
                 "upper",
-                _number(0, OCTETS) if closing else _scale(2, "checkpoint_octets"),
-                "Canonical round-trip admission and the one next checkpoint.",
+                _number(0, OCTETS) if closing else _scale(1 if reading else 2, "checkpoint_octets"),
+                "Canonical admission of the current checkpoint."
+                if reading
+                else "Canonical round-trip admission and the one next checkpoint.",
             ),
         )
     )
+    if reading:
+        bounds.extend(
+            Bound(metric, unit, "equal", _number(0, unit), "Read snapshots never publish state.")
+            for metric, unit in (("written_rows", COUNT), ("written_parameter_octets", OCTETS))
+        )
     return Declaration(
         id="riverhog-provenance.retained-corpus-"
         + operation.strip("_").replace("_", "-")
@@ -187,6 +195,8 @@ def lifecycle_declaration(operation: str) -> Declaration:
         if opening
         else "close its sole native handle"
         if closing
+        else "release the read snapshot after fresh currentness checks"
+        if reading
         else "commit or roll back the body and its parent checkpoint together",
         dimensions=dimensions,
         bounds=tuple(bounds),
@@ -941,7 +951,7 @@ def semantic_declaration(native: Declaration, transaction: Declaration) -> Decla
 
 
 def point_declaration(operation: str, native: Declaration, transaction: Declaration) -> Declaration:
-    """Charge the complete retained transaction around one exact Native lookup."""
+    """Charge one current read snapshot and its exact Native point lookup."""
 
     def call(slot: str, declaration: Declaration, metric: str) -> Expression:
         return Expression(
@@ -984,16 +994,16 @@ def point_declaration(operation: str, native: Declaration, transaction: Declarat
         Bound(
             "written_rows",
             COUNT,
-            "upper",
-            _number(1),
-            "The read-only Native body is followed by at most one parent checkpoint write.",
+            "equal",
+            _number(0),
+            "The Native body and current owner snapshot perform no persistent writes.",
         ),
         Bound(
             "written_parameter_octets",
             OCTETS,
-            "upper",
-            call("transaction", transaction, "parameter_octets"),
-            "All persistent writes belong to the owner checkpoint compare-and-swap.",
+            "equal",
+            _number(0, OCTETS),
+            "Point lookups publish no checkpoint or semantic state.",
         ),
     ]
     for metric in ("sql_statements", "returned_rows", "parameter_octets"):
@@ -1042,7 +1052,7 @@ def point_declaration(operation: str, native: Declaration, transaction: Declarat
         subjects=("riverhog_provenance.corpus_workspace.RetainedCorpusValidator." + operation,),
         scope="one current retained Native exact historical point lookup",
         starts_at="receive exact selection coordinates and explicit payload admission",
-        ends_at="return detached original support and atomically publish the parent checkpoint",
+        ends_at="return detached original support after current read-snapshot receiving",
         dimensions=(
             *transaction.dimensions,
             *native.dimensions,
@@ -1060,7 +1070,7 @@ def point_declaration(operation: str, native: Declaration, transaction: Declarat
             "Exact source coordinates and half-open effective intervals remain Native-owned.",
             "Absent or retired objects do not scan earlier assertions or fall back to old values.",
             "Lookup results retain their original assertion and entry support coordinates.",
-            "Failure rolls back the parent checkpoint without changing earlier confirmed work.",
+            "Lookups and failures leave the parent checkpoint and semantic state unchanged.",
             "A point result grants no global validation, member relevance or current access.",
         ),
         limitations=(
