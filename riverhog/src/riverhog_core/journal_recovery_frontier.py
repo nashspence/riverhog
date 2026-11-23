@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from riverhog_canonical_json import canonical_json_bytes, format_scalar, parse_scalar
-from riverhog_provenance import JournalImage
+from riverhog_provenance import JournalConstruction, JournalImage, JournalImageCapture
 
 from riverhog_core.collection_recovery_state import RecoveryGrant, RecoveryRootBinding
 
@@ -186,3 +186,72 @@ class JournalResumeFrontier:
             return frontier
         except (TypeError, ValueError, KeyError, AttributeError, RecursionError) as error:
             raise ValueError("invalid original journal resume frontier") from error
+
+
+@dataclass(frozen=True, slots=True)
+class JournalGenerationReceipt:
+    """Immutable selected-original cost, after its actual Native receiving.
+
+    This value proves no catalog publication. The surviving root and job must
+    independently reconcile the same selected generation before accepting it.
+    """
+
+    context: JournalRecoveryContext
+    generation: str
+    total_actual_ns: int
+    encoded: str = field(init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        if (
+            type(self.generation) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", self.generation) is None
+        ):
+            raise ValueError("journal receiving requires its exact selected generation")
+        object.__setattr__(
+            self,
+            "encoded",
+            canonical_json_bytes(
+                {
+                    "format": "riverhog-upload-journal-generation-receipt/v1",
+                    "context": self.context.encoded.decode("utf-8"),
+                    "generation": self.generation,
+                    "total_actual_ns": format_scalar("nonnegative", self.total_actual_ns),
+                }
+            ).decode("utf-8"),
+        )
+
+    @classmethod
+    def from_original(
+        cls,
+        capture: JournalImageCapture,
+        construction: JournalConstruction,
+        *,
+        total_actual_ns: int,
+    ) -> JournalGenerationReceipt:
+        frontier = JournalResumeFrontier(capture.received_image(construction))
+        return cls(frontier.context, frontier.generation, total_actual_ns)
+
+    @classmethod
+    def from_json(cls, raw: str, *, control_bytes: int) -> JournalGenerationReceipt:
+        if type(control_bytes) is not int or control_bytes < 1:
+            raise ValueError("journal receiving requires positive metadata admission")
+        if type(raw) is not str or len(raw.encode("utf-8")) > control_bytes:
+            raise ValueError("journal generation receipt exceeds metadata admission")
+        try:
+            value = json.loads(raw)
+            if (
+                type(value) is not dict
+                or set(value) != {"format", "context", "generation", "total_actual_ns"}
+                or value["format"] != "riverhog-upload-journal-generation-receipt/v1"
+            ):
+                raise ValueError("journal generation receipt format differs")
+            receipt = cls(
+                JournalRecoveryContext.from_bytes(value["context"].encode("utf-8")),
+                value["generation"],
+                parse_scalar("nonnegative", value["total_actual_ns"]),
+            )
+            if receipt.encoded != raw:
+                raise ValueError("journal generation receipt is not canonical")
+            return receipt
+        except (TypeError, ValueError, KeyError, AttributeError, RecursionError) as error:
+            raise ValueError("invalid original journal generation receipt") from error

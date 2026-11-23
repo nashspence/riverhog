@@ -90,9 +90,10 @@ def origin(tmp_path, journal_constructions):
             context = JournalRecoveryContext.original(binding, job, grant)
             directory = tmp_path / "generations"
             directory.mkdir(mode=0o700)
+            generation_construction = journal_constructions.retain()
             storage = NativeGenerationStorage.open(
                 directory,
-                construction=journal_constructions.retain(),
+                construction=generation_construction,
                 page_size=4096,
                 reader_limit=2,
                 metadata_octets=131072,
@@ -130,6 +131,8 @@ def origin(tmp_path, journal_constructions):
                     grant=grant,
                     reserved=reserved,
                     capture=capture,
+                    storage=storage,
+                    generation_construction=generation_construction,
                     frontier=frontier,
                 )
             finally:

@@ -1,6 +1,6 @@
 """Opaque-artifact provenance, independent of paths, hosts and storage models."""
 
-from ._journal_image import JournalImage
+from ._journal_image import JournalImage, JournalImageCapture
 from .common import (
     artifact,
     assertion,
@@ -126,6 +126,7 @@ from .sources import BytesSource, SegmentSource, StreamSource
 
 __all__ = [
     "JournalImage",
+    "JournalImageCapture",
     "JournalConstruction",
     "CorpusReplayBinding",
     "CorpusConstruction",

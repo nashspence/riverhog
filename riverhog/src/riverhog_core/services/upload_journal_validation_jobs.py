@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import asdict, dataclass
-from typing import Any
+from dataclasses import asdict, dataclass, replace
+from typing import Any, Literal
 from uuid import uuid4
 
 from riverhog_canonical_json import canonical_json_bytes
@@ -19,16 +19,24 @@ from riverhog_growth_contracts import (
     declare_growth,
 )
 from riverhog_protocol.errors import Conflict
-from riverhog_provenance import JournalValidationObservation
+from riverhog_provenance import (
+    JournalConstruction,
+    JournalImageCapture,
+    JournalValidationObservation,
+)
 from sqlalchemy import select, update
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, SessionTransaction
 from state_schema import read_snapshot
 
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_journal_validation_models import JournalValidationJobRecord as Job
 from riverhog_core.catalog_models import CollectionUploadProvenanceJournalRecord as Journal
 from riverhog_core.collection_recovery_state import RecoveryGrant
-from riverhog_core.journal_recovery_frontier import JournalRecoveryContext, JournalResumeFrontier
+from riverhog_core.journal_recovery_frontier import (
+    JournalGenerationReceipt,
+    JournalRecoveryContext,
+    JournalResumeFrontier,
+)
 
 from . import collection_uploads as source_owner
 
@@ -38,6 +46,8 @@ def _job_declaration(mode: str) -> Declaration:
         "select_job": 4,
         "select_resume_frontier": 3,
         "retain_recovery_owner": 2,
+        "retain_recovery_original": 1,
+        "receive_recovery_original": 1,
         "claim_worker": 2,
         "activate_worker": 2,
         "worker_current": 2,
@@ -49,6 +59,7 @@ def _job_declaration(mode: str) -> Declaration:
     mutations = {
         "select_job": 2,
         "select_resume_frontier": 1,
+        "receive_recovery_original": 1,
         "claim_worker": 1,
         "activate_worker": 1,
         "publish_outcome": 1,
@@ -68,9 +79,19 @@ def _job_declaration(mode: str) -> Declaration:
             }
         )
     )
-    decodes = 6 if mode == "select_resume_frontier" else int(mode == "outcome")
+    decodes = (
+        6
+        if mode == "select_resume_frontier"
+        else 2
+        if mode == "retain_recovery_original"
+        else int(mode == "outcome")
+    )
     encodes = (
-        12 if mode == "select_resume_frontier" else int(mode in {"publish_outcome", "outcome"})
+        12
+        if mode == "select_resume_frontier"
+        else 4
+        if mode == "retain_recovery_original"
+        else int(mode in {"publish_outcome", "outcome"})
     )
 
     def dimension(name: str) -> Expression:
@@ -240,7 +261,8 @@ def _job_declaration(mode: str) -> Declaration:
                 add(
                     octets(16 * versions),
                     scale(
-                        4 if mode == "select_resume_frontier" else 0, dimension("control_octets")
+                        4 if mode in {"select_resume_frontier", "retain_recovery_original"} else 0,
+                        dimension("control_octets"),
                     ),
                 ),
                 (
@@ -351,6 +373,7 @@ class ValidationJob:
     outcome_json: str | None
     failure: str | None
     resume_frontier_json: str | None = None
+    recovery_receipt_json: str | None = None
 
     @classmethod
     def read(cls, row: Job) -> ValidationJob:
@@ -761,3 +784,161 @@ declare_growth(_job_declaration("outcome"))(outcome)
 declare_growth(_job_declaration("select_resume_frontier"))(select_resume_frontier)
 
 declare_growth(_job_declaration("retain_recovery_owner"))(retain_recovery_owner)
+
+
+def retain_recovery_original(
+    session: Session,
+    receipt: JournalGenerationReceipt,
+    grant: RecoveryGrant | None,
+    *,
+    control_bytes: int,
+) -> ValidationJob:
+    """Retain receiving truth without granting a historical worker new work.
+
+    Called after the surviving root lock and the caller's current permission
+    guard. Source retirement and a newer worker cannot erase original costs.
+    """
+    if type(control_bytes) is not int or control_bytes < 1:
+        raise ValueError("journal receiving requires positive metadata admission")
+    if len(receipt.encoded.encode("utf-8")) > control_bytes:
+        raise ValueError("journal generation receipt exceeds metadata admission")
+    context = receipt.context
+    row = session.scalar(
+        select(Job).where(Job.workspace_id == context.workspace_id).with_for_update()
+    )
+    if row is None:
+        raise Conflict("original journal receiving owner is unavailable")
+    current = ValidationJob.read(row)
+    if (
+        current.attempt_id != context.attempt_id
+        or current.source_binding_json != context.source_binding_json
+        or current.certificate_binding_json != context.certificate_binding_json
+        or current.collection_id not in (None, context.binding.collection_id)
+        or current.journal_id not in (None, context.journal_id)
+        or current.worker_epoch < context.worker_epoch
+    ):
+        raise Conflict("journal receiving differs from its immutable original owner")
+    if grant is None:
+        if current.recovery_receipt_json != receipt.encoded:
+            raise Conflict("journal receiving contradicts its immutable original receipt")
+    else:
+        historical = replace(
+            current,
+            collection_id=context.binding.collection_id,
+            journal_id=context.journal_id,
+            worker_epoch=context.worker_epoch,
+        )
+        if (
+            JournalRecoveryContext.original(context.binding, historical, grant) != context
+            or grant.generation != receipt.generation
+        ):
+            raise Conflict("journal receiving has no matching selected original grant")
+        previous = current.recovery_receipt_json
+        if previous is not None and previous != receipt.encoded:
+            original = JournalGenerationReceipt.from_json(previous, control_bytes=control_bytes)
+            before, after = original.context, context
+            prefix = context.binding.grant_prefix
+            if (
+                before.binding != after.binding
+                or before.workspace_id != after.workspace_id
+                or before.journal_id != after.journal_id
+                or before.attempt_id != after.attempt_id
+                or before.source_binding_json != after.source_binding_json
+                or before.certificate_binding_json != after.certificate_binding_json
+                or before.worker_epoch > after.worker_epoch
+                or int(before.grant_identity[len(prefix) :])
+                >= int(after.grant_identity[len(prefix) :])
+            ):
+                raise Conflict("journal receiving would replace a conflicting original receipt")
+    return current
+
+
+def receive_recovery_original(
+    session: Session,
+    current: ValidationJob,
+    receipt: JournalGenerationReceipt,
+    grant: RecoveryGrant | None,
+) -> Literal["published"]:
+    """Record one exact receipt in the same transaction as root cost receiving."""
+    if current.recovery_receipt_json == receipt.encoded:
+        return "published"
+    if grant is None:
+        raise Conflict("original journal receipt cannot be manufactured after receiving")
+    if grant.identity != receipt.context.grant_identity or grant.generation != receipt.generation:
+        raise Conflict("journal receipt differs from its retained selected grant")
+    changed = session.execute(
+        update(Job)
+        .where(
+            *_identity(current),
+            Job.recovery_receipt_json == current.recovery_receipt_json,
+        )
+        .values(recovery_receipt_json=receipt.encoded)
+        .returning(Job.workspace_id)
+    ).scalar_one_or_none()
+    if changed != current.workspace_id:
+        raise Conflict("original journal receiving owner changed")
+    # Cost receiving owns this independent receipt CAS. It cannot invalidate a
+    # still-live semantic job version or alter its frontier/terminal outcome.
+    return "published"
+
+
+class JournalGenerationReceiving:
+    """One exact original callback pair for the surviving root transaction."""
+
+    def __init__(
+        self,
+        receipt: JournalGenerationReceipt,
+        *,
+        control_bytes: int,
+        capture: JournalImageCapture | None = None,
+        construction: JournalConstruction | None = None,
+    ) -> None:
+        if (capture is None) != (construction is None):
+            raise TypeError("journal receiving requires both exact Native originals")
+        self.receipt, self.control_bytes = receipt, control_bytes
+        self.capture, self.construction = capture, construction
+        self._session: Session | None = None
+        self._transaction: SessionTransaction | None = None
+        self._job: ValidationJob | None = None
+        self._grant: RecoveryGrant | None = None
+
+    def retain(self, session: Session, grant: RecoveryGrant | None) -> None:
+        self._session = None
+        self._transaction = None
+        if grant is not None:
+            if self.capture is None or self.construction is None:
+                raise Conflict("original Native receiving proof is unavailable")
+            image = self.capture.received_image(self.construction)
+            if (
+                image.envelope_sha256 != self.receipt.generation
+                or image.owner_context != self.receipt.context.encoded
+            ):
+                raise Conflict("Native receiving differs from the original Core receipt")
+        self._job = retain_recovery_original(
+            session, self.receipt, grant, control_bytes=self.control_bytes
+        )
+        self._grant, self._session = grant, session
+        self._transaction = session.get_transaction()
+
+    def receive(
+        self, session: Session, identity: str, total_actual_ns: int
+    ) -> Literal["published"]:
+        try:
+            if (
+                self._session is not session
+                or self._transaction is None
+                or session.get_transaction() is not self._transaction
+                or not self._transaction.is_active
+                or self._job is None
+                or identity != self.receipt.context.grant_identity
+                or total_actual_ns != self.receipt.total_actual_ns
+            ):
+                raise Conflict("journal receiving lacks its same-transaction original retention")
+            return receive_recovery_original(session, self._job, self.receipt, self._grant)
+        finally:
+            self._session = self._job = self._grant = None
+            self._transaction = None
+
+
+declare_growth(_job_declaration("retain_recovery_original"))(retain_recovery_original)
+declare_growth(_job_declaration("receive_recovery_original"))(receive_recovery_original)

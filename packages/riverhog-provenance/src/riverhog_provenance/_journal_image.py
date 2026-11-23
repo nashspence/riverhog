@@ -25,6 +25,7 @@ from ._generation_page_map import GenerationPageMap
 from ._generation_storage import NativeGenerationStorage
 from ._native_storage import NativeStorageLease
 from .errors import IncompleteSourceError, JournalValidationCapacity
+from .journal_construction import JournalConstruction
 from .journal_store import InvalidJournalWorkspace
 
 if TYPE_CHECKING:
@@ -354,6 +355,24 @@ class JournalImageCapture:
     @property
     def received(self) -> bool:
         return self.phase == "received"
+
+    def received_image(self, construction: JournalConstruction) -> JournalImage:
+        """Return this original image only after its exact resources received.
+
+        Catalog selection and cost authority remain with the application owner.
+        Receiving a different or still reader-pinned construction proves nothing.
+        """
+        if not isinstance(construction, JournalConstruction):
+            raise TypeError("Native image receiving requires its original construction")
+        if self.image is None:
+            raise RuntimeError("Native capture has no completed image to receive")
+        if (
+            not self.received
+            or construction.storage is not self._storage
+            or not construction.received
+        ):
+            raise BlockingIOError("original Native generation resources have not received")
+        return self.image
 
     def close(self) -> None:
         """Retry the same original receiving; intent never releases a hold."""
