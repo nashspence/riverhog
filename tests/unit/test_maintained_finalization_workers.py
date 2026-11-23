@@ -263,12 +263,37 @@ def _routing_snapshot(case):
     }
 
 
+@pytest.mark.parametrize("delayed_receiving", (False, True))
 def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
-    tmp_path, monkeypatch, database_url=None
+    tmp_path, monkeypatch, delayed_receiving, database_url=None
 ):
     with _metadata_case(tmp_path, monkeypatch, count=1, database_url=database_url) as (case, prior):
         service = case.service
         service._requeue_finalization_step(prior)
+        clock = [monotonic()]
+        monkeypatch.setattr(registry_module, "monotonic", lambda: clock[0])
+        interrupted = []
+        if delayed_receiving:
+            import sqlite3
+
+            from riverhog_core.services.immutable_archive_admission import ImmutableArchiveAdmission
+            from sqlalchemy.exc import OperationalError
+
+            report = ImmutableArchiveAdmission.report
+
+            def delayed_report(admission, admitted, *args, **kwargs):
+                if admitted.prepared.collection_id == case.collection_id and not interrupted:
+                    context = service._archive_finalizers._contexts[case.collection_id]
+                    interrupted.append(context.owner)
+                    context.resume_after = clock[0] + 3600
+                    raise OperationalError(
+                        "controlled original report contention",
+                        {},
+                        sqlite3.OperationalError("database is locked"),
+                    )
+                return report(admission, admitted, *args, **kwargs)
+
+            monkeypatch.setattr(ImmutableArchiveAdmission, "report", delayed_report)
         other = _sibling(case, monkeypatch)
         with session_scope(case.factory) as session:
             prefix = session.get(Upload, case.collection_id).archive_storage_prefix
@@ -285,6 +310,17 @@ def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
 
         monkeypatch.setattr(case.physical, "execute_write", hold)
 
+        def advance_retry_clock():
+            # Retry due times schedule the original; they do not receive it.
+            # A held provider retains its own context lock, so never wait here.
+            for context in tuple(service._archive_finalizers._contexts.values()):
+                if context.lock.acquire(blocking=False):
+                    try:
+                        if context.owner is not None and context.owner.has_pending:
+                            clock[0] = max(clock[0], context.resume_after)
+                    finally:
+                        context.lock.release()
+
         def join_independent():
             for slot in tuple(service._archive_execution._slots.values()):
                 if (
@@ -298,6 +334,7 @@ def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
                 else:
                     slot.worker.join(timeout=10)
                     assert not slot.worker.is_alive()
+            advance_retry_clock()
 
         try:
             for _ in range(256):
@@ -306,7 +343,9 @@ def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
                 if entered.is_set():
                     break
             else:
-                pytest.fail("the actual metadata provider was not entered")
+                pytest.fail(
+                    "the actual metadata provider was not entered: " + repr(_routing_snapshot(case))
+                )
             claim = _claim_snapshot(case)[6]
             with session_scope(case.factory) as session:
                 _writer(session, defer_if_busy=True)
@@ -326,7 +365,10 @@ def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
                 if _published(case, other.collection_id):
                     break
             else:
-                pytest.fail("independent collection was stalled by a held provider")
+                pytest.fail(
+                    "independent collection was stalled by a held provider: "
+                    + repr(_routing_snapshot(other))
+                )
             assert not release.is_set() and len(blocked) == 1
             assert _claim_snapshot(case)[6] == claim and not _published(case)
         finally:
@@ -334,6 +376,7 @@ def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
             _join(case)
         for _ in range(256):
             drive_finalization_turn(service)
+            advance_retry_clock()
             if _published(case):
                 break
         else:
@@ -341,6 +384,8 @@ def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
                 "the original collection did not resume after provider receiving: "
                 + repr(_routing_snapshot(case))
             )
+        assert bool(interrupted) is delayed_receiving
+        assert all(not owner.has_pending for owner in interrupted)
 
 
 def test_maintained_coordinator_defers_real_parent_writer_contention(

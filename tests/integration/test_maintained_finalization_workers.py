@@ -30,7 +30,7 @@ def test_postgres_maintained_wait_allows_independent_publication(
     tmp_path, monkeypatch, database_url
 ):
     checks.test_maintained_provider_wait_leaves_an_independent_collection_progressing(
-        tmp_path, monkeypatch, database_url=database_url
+        tmp_path, monkeypatch, delayed_receiving=False, database_url=database_url
     )
 
 
