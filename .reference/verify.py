@@ -8,13 +8,17 @@ import itertools
 import json
 import os
 import platform
+import shutil
 import subprocess
 import sys
 import time
 from pathlib import Path
 
-SOURCE = "3d039b382ee33d66c6049dd69e498169aa75bf6d"
+SOURCE = "0b25c7c67f7b3ee8787d8d753d4b6d585e8cea1f"
+PREVIOUS_REFERENCE = "3dce6780c4883ad96cb32ff3f7ef80883fef6528"
 PHYSICAL = "riverhog/src/riverhog_core/services/physical_execution.py"
+WORKER = "packages/retained-resource/src/retained_resource/worker.py"
+NATIVE = "packages/retained-resource/native/worker.c"
 TESTS = (
     "packages/retained-resource/tests",
     "tests/unit/test_archive_upload_execution.py",
@@ -36,6 +40,9 @@ TESTS = (
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence", required=True, type=Path)
+    parser.add_argument(
+        "--broader", action="store_true", help="include all workspace-boundary tests"
+    )
     args = parser.parse_args()
     root = Path.cwd().resolve()
     packet = Path(__file__).resolve().parent
@@ -66,30 +73,48 @@ def main() -> int:
     for relative, entry in manifest["files"].items():
         if hashlib.sha256((root / relative).read_bytes()).hexdigest() != entry["sha256"]:
             parser.error(f"proposal content differs: {relative}")
+    uv_version = subprocess.check_output(["uv", "--version"], text=True).strip()
+    if uv_version.split()[1] != "0.11.24":
+        parser.error(f"use the repository's pinned uv 0.11.24; found {uv_version}")
     output.mkdir(parents=True, exist_ok=False)
     report = {
         "source": SOURCE,
+        "previous_reference": PREVIOUS_REFERENCE,
+        "suite_scope": "broader" if args.broader else "focused",
         "patch_sha256": manifest["patch_sha256"],
         "python": sys.version,
+        "uv_version": uv_version,
+        "uv_executable": shutil.which("uv"),
+        "uv_cache_dir": os.environ.get("UV_CACHE_DIR"),
+        "verifier_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "platform": platform.platform(),
         "libc": platform.libc_ver(),
         "checks": [],
         "baseline_observations": [],
+        "previous_startup_observations": [],
     }
 
     def save() -> None:
         (output / "results.json").write_text(json.dumps(report, indent=2) + "\n")
 
-    def run(name: str, command: list[str], *, expected_code: int = 0) -> str:
+    def run(
+        name: str,
+        command: list[str],
+        *,
+        expected_code: int = 0,
+        cwd: Path = root,
+        input_text: str | None = None,
+    ) -> str:
         started = time.monotonic()
         completed = subprocess.run(
             command,
-            cwd=root,
+            cwd=cwd,
             env=os.environ.copy(),
             text=True,
+            input=input_text,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            timeout=900,
+            timeout=1800 if args.broader else 900,
         )
         elapsed = time.monotonic() - started
         (output / f"{name}.log").write_text(completed.stdout)
@@ -97,6 +122,7 @@ def main() -> int:
             {
                 "name": name,
                 "command": command,
+                "cwd": str(cwd),
                 "exit_code": completed.returncode,
                 "expected_exit_code": expected_code,
                 "elapsed_seconds": round(elapsed, 3),
@@ -157,6 +183,68 @@ def main() -> int:
         expected_code=1,
     )
     assert '"safe": false' in rejected and "AssertionError" in rejected
+
+    # Materialize the exact prior proposed Python wrapper and Core owner from
+    # their immutable reference, never a synthetic waiting replacement. Its
+    # native implementation must remain identical for this causal comparison.
+    prior_manifest = json.loads(
+        subprocess.check_output(
+            ["git", "show", f"{PREVIOUS_REFERENCE}:.reference/proposal-manifest.json"]
+        )
+    )
+    prior_patch = subprocess.check_output(
+        ["git", "show", f"{PREVIOUS_REFERENCE}:.reference/implementation.patch"]
+    )
+    assert hashlib.sha256(prior_patch).hexdigest() == prior_manifest["patch_sha256"]
+    assert manifest["files"][NATIVE]["sha256"] == prior_manifest["files"][NATIVE]["sha256"]
+    previous = output / "previous-proposal"
+    (previous / PHYSICAL).parent.mkdir(parents=True)
+    (previous / PHYSICAL).write_bytes(
+        subprocess.check_output(["git", "show", f"{prior_manifest['source_sha']}:{PHYSICAL}"])
+    )
+    run("previous-proposal-init", ["git", "init", "--quiet"], cwd=previous)
+    run(
+        "previous-proposal-materialize",
+        ["git", "apply", f"--include={WORKER}", f"--include={PHYSICAL}"],
+        cwd=previous,
+        input_text=prior_patch.decode(),
+    )
+    for path in (WORKER, PHYSICAL):
+        assert (
+            hashlib.sha256((previous / path).read_bytes()).hexdigest()
+            == prior_manifest["files"][path]["sha256"]
+        )
+    report["previous_proposal"] = {
+        "reference_sha": PREVIOUS_REFERENCE,
+        "source_sha": prior_manifest["source_sha"],
+        "patch_sha256": prior_manifest["patch_sha256"],
+        "files_verified": {
+            path: prior_manifest["files"][path] for path in (WORKER, PHYSICAL, NATIVE)
+        },
+    }
+    for kind in ("collection", "workspace"):
+        command = [
+            sys.executable,
+            "-m",
+            "tests.support.physical_bootstrap_probe",
+            "--mode",
+            "held",
+            "--kind",
+            kind,
+            "--worker",
+            str(previous / WORKER),
+            "--implementation",
+            str(previous / PHYSICAL),
+            "--expect",
+            "unsafe",
+        ]
+        observation = json.loads(run(f"previous-startup-{kind}", command).splitlines()[-1])
+        report["previous_startup_observations"].append(observation)
+        save()
+    command[-1] = "safe"
+    rejected = run("previous-startup-required-safety-fails", command, expected_code=1)
+    assert '"safe": false' in rejected and "AssertionError" in rejected
+
     python_files = sorted(path for path in expected if path.endswith((".py", ".pyi")))
     run("diff-check", ["git", "diff", "--check"])
     run("ruff", [sys.executable, "-m", "ruff", "check", *python_files])
@@ -180,8 +268,15 @@ def main() -> int:
     conditions = dict(os.environ)
     bind_numeric_environment(conditions, qualification_numeric_policy())
     os.environ.update(conditions)
+    tests = TESTS
+    if args.broader:
+        tests = tuple(
+            path for path in TESTS if not path.startswith("tests/unit/test_workspace_boundaries.py")
+        )
+        tests += ("tests/unit/test_workspace_boundaries.py",)
+    scope = "broader" if args.broader else "focused"
     run(
-        "focused-tests",
+        f"{scope}-tests",
         [
             sys.executable,
             "-m",
@@ -189,14 +284,26 @@ def main() -> int:
             "-q",
             "-o",
             "junit_family=legacy",
-            f"--junitxml={output / 'focused-tests.xml'}",
+            f"--junitxml={output / (scope + '-tests.xml')}",
             "--maxfail=1",
-            *TESTS,
+            *tests,
         ],
     )
     for relative, entry in manifest["files"].items():
         if hashlib.sha256((root / relative).read_bytes()).hexdigest() != entry["sha256"]:
             raise SystemExit(f"source changed during validation: {relative}")
+    final_source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    final_paths = set(
+        subprocess.check_output(["git", "diff", "--name-only", "HEAD"], text=True).splitlines()
+    ) | set(
+        subprocess.check_output(
+            ["git", "ls-files", "--others", "--exclude-standard"], text=True
+        ).splitlines()
+    )
+    if final_source != SOURCE or final_paths != expected:
+        raise SystemExit("source identity or proposed path set changed during validation")
+    if hashlib.sha256(Path(__file__).read_bytes()).hexdigest() != report["verifier_sha256"]:
+        raise SystemExit("verifier changed during validation")
     report["completed"] = True
     save()
     return 0

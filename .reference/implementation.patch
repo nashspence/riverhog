@@ -1,5 +1,5 @@
 diff --git a/.gitignore b/.gitignore
-index 78388d5f34aabe2ac1eeb3549bdaa1fd9e35b0ce..6c5dc723389e2cf39cfe7579b059c85de99c8186 100644
+index 78388d5f..6c5dc723 100644
 --- a/.gitignore
 +++ b/.gitignore
 @@ -19,3 +19,5 @@ mise.local.toml
@@ -9,7 +9,7 @@ index 78388d5f34aabe2ac1eeb3549bdaa1fd9e35b0ce..6c5dc723389e2cf39cfe7579b059c85d
 +/packages/retained-resource/src/retained_resource/_worker_native*.so
 +/packages/retained-resource/src/retained_resource/_worker_native*.pyd
 diff --git a/packages/retained-resource/hatch_build.py b/packages/retained-resource/hatch_build.py
-index e2eed9b807fbe5164d16076f7fa81d978604d5ba..eba70d0bc27e1eb003deac6195e18d823a635b2d 100644
+index e2eed9b8..eba70d0b 100644
 --- a/packages/retained-resource/hatch_build.py
 +++ b/packages/retained-resource/hatch_build.py
 @@ -29,25 +29,36 @@ class CustomBuildHook(BuildHookInterface):
@@ -56,7 +56,7 @@ index e2eed9b807fbe5164d16076f7fa81d978604d5ba..eba70d0bc27e1eb003deac6195e18d82
              self._build_scratch = None
 diff --git a/packages/retained-resource/native/worker.c b/packages/retained-resource/native/worker.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..3c55d9584f0c0aaa347026518d165c7edd8554e7
+index 00000000..3c55d958
 --- /dev/null
 +++ b/packages/retained-resource/native/worker.c
 @@ -0,0 +1,507 @@
@@ -568,7 +568,7 @@ index 0000000000000000000000000000000000000000..3c55d9584f0c0aaa347026518d165c7e
 +    return module;
 +}
 diff --git a/packages/retained-resource/pyproject.toml b/packages/retained-resource/pyproject.toml
-index a55e9e11e3235475d9c7ec0562d9a075173d2146..4332a1013b4d7388a52dc49e28d35ea183d66ec3 100644
+index a55e9e11..4332a101 100644
 --- a/packages/retained-resource/pyproject.toml
 +++ b/packages/retained-resource/pyproject.toml
 @@ -5,11 +5,11 @@ build-backend = "hatchling.build"
@@ -586,7 +586,7 @@ index a55e9e11e3235475d9c7ec0562d9a075173d2146..4332a1013b4d7388a52dc49e28d35ea1
  maintainers = [{ name = "Nash Spence" }]
  classifiers = [
 diff --git a/packages/retained-resource/src/retained_resource/__init__.py b/packages/retained-resource/src/retained_resource/__init__.py
-index 84c5e517ab8a6ab2b18c9d85c934d09359f6e649..85f5d192b67592b1c9dd9965466b868d25da55ea 100644
+index 84c5e517..f17ce0d1 100644
 --- a/packages/retained-resource/src/retained_resource/__init__.py
 +++ b/packages/retained-resource/src/retained_resource/__init__.py
 @@ -2,7 +2,8 @@
@@ -603,11 +603,11 @@ index 84c5e517ab8a6ab2b18c9d85c934d09359f6e649..85f5d192b67592b1c9dd9965466b868d
  
  if TYPE_CHECKING or sys.platform in {"linux", "darwin", "win32"}:
      from ._native import Borrow, Resource
-+    from .worker import Worker
++    from .worker import Worker, WorkerBootstrapError
  else:
  
      class Resource:
-@@ -27,6 +29,10 @@ else:
+@@ -27,6 +29,13 @@ else:
                  "retained POSIX borrowing requires native Linux, Darwin or Windows UCRT"
              )
  
@@ -615,18 +615,21 @@ index 84c5e517ab8a6ab2b18c9d85c934d09359f6e649..85f5d192b67592b1c9dd9965466b868d
 +        def __new__(cls, *_args: Any, **_kwargs: Any) -> Any:
 +            raise RuntimeError("retained worker exit requires a qualified native backend")
 +
++    class WorkerBootstrapError(RuntimeError):
++        """The original native worker exited without Python acknowledgement."""
++
  
  class Group:
      """A bounded reverse-dependency receiving list, never a destructor stack.
-@@ -91,4 +97,4 @@ class Group:
+@@ -91,4 +100,4 @@ class Group:
          return self.received
  
  
 -__all__ = ["Resource", "Borrow", "Group"]
-+__all__ = ["Resource", "Borrow", "Group", "Worker"]
++__all__ = ["Resource", "Borrow", "Group", "Worker", "WorkerBootstrapError"]
 diff --git a/packages/retained-resource/src/retained_resource/_worker_native.pyi b/packages/retained-resource/src/retained_resource/_worker_native.pyi
 new file mode 100644
-index 0000000000000000000000000000000000000000..02e02924d10581e7ac345a7f99ba424b19560eaf
+index 00000000..02e02924
 --- /dev/null
 +++ b/packages/retained-resource/src/retained_resource/_worker_native.pyi
 @@ -0,0 +1,18 @@
@@ -650,10 +653,10 @@ index 0000000000000000000000000000000000000000..02e02924d10581e7ac345a7f99ba424b
 +    def metrics(self) -> dict[str, int]: ...
 diff --git a/packages/retained-resource/src/retained_resource/worker.py b/packages/retained-resource/src/retained_resource/worker.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..146d633604b1fa4dcd7ee8492abf1ea49fa8204e
+index 00000000..f61dc2be
 --- /dev/null
 +++ b/packages/retained-resource/src/retained_resource/worker.py
-@@ -0,0 +1,119 @@
+@@ -0,0 +1,180 @@
 +"""Retain a native worker exit receipt independently of Python join sentinels.
 +
 +This bootstrap adapter is deliberately specific to GIL-enabled CPython 3.12.
@@ -675,6 +678,10 @@ index 0000000000000000000000000000000000000000..146d633604b1fa4dcd7ee8492abf1ea4
 +from ._worker_native import WorkerHandle
 +
 +
++class WorkerBootstrapError(RuntimeError):
++    """The original native worker exited without Python acknowledgement."""
++
++
 +class Worker(threading.Thread):
 +    """A single native worker whose known exit survives lost Python replies.
 +
@@ -685,6 +692,8 @@ index 0000000000000000000000000000000000000000..146d633604b1fa4dcd7ee8492abf1ea4
 +
 +    The Thread base supplies bootstrap bookkeeping, never liveness evidence.
 +    This is not a general replacement for threading.Thread on other runtimes.
++    Start acknowledges native creation only; Python identity and registration
++    become available asynchronously on the original worker.
 +    """
 +
 +    def __init__(
@@ -699,9 +708,36 @@ index 0000000000000000000000000000000000000000..146d633604b1fa4dcd7ee8492abf1ea4
 +            raise RuntimeError("retained worker bootstrap requires qualified CPython 3.12")
 +        if daemon is not False:
 +            raise ValueError("retained workers require explicit non-daemon receiving")
-+        super().__init__(target=target, args=args, name=name, daemon=False)
++        # Only fixed pending identity belongs to coordination. Thread.__init__
++        # also inserts into the global dangling WeakSet, whose pending-removal
++        # drain may visit unrelated originals. Run that initializer on the
++        # retained worker, before its ordinary runtime bootstrap instead.
++        self._name = name
++        self._ident = None
++        self._native_id = None
++        self._tstate_lock = None
++        self._started = threading.Event()
++        self._is_stopped = False
++        self._daemonic = False
++        self._initialized = True
++        self._bootstrap_spec: tuple[Callable[..., object], tuple[Any, ...]] | None = (
++            target,
++            args,
++        )
 +        # The native constructor has no worker effect. Retention precedes start.
-+        self._exit_owner = WorkerHandle(self._bootstrap)  # type: ignore[attr-defined]
++        self._exit_owner = WorkerHandle(self._bootstrap_owned)
++
++    @property
++    def daemon(self) -> bool:
++        return False
++
++    @daemon.setter
++    def daemon(self, value: bool) -> None:
++        if value is not False:
++            raise ValueError("retained workers require explicit non-daemon receiving")
++        if self.started:
++            raise RuntimeError("cannot set daemon status of a started native worker")
++        self._daemonic = False
 +
 +    @property
 +    def started(self) -> bool:
@@ -725,33 +761,61 @@ index 0000000000000000000000000000000000000000..146d633604b1fa4dcd7ee8492abf1ea4
 +        return self._exit_owner.exception
 +
 +    def start(self) -> None:
++        """Create the retained native worker without waiting for its bootstrap."""
 +        if self.started:
 +            raise RuntimeError("retained workers can only be started once")
-+        # These are the pinned runtime's existing bootstrap registries. Retaining
-+        # the normal Thread identity prevents one immortal alien-thread entry per
-+        # callback that asks threading.current_thread().
++        # Native creation and reply uncertainty have their own retained outcome.
++        # Registry acquisition, bootstrap acknowledgement and cleanup are worker
++        # work: none may delay the coordinator's submission or unrelated polls.
++        self._exit_owner.start()
++
++    def _bootstrap_owned(self) -> None:
++        # Run only on the original native worker. The slot and native self-pin
++        # already retain it, even while the runtime registry lock is occupied.
++        # The pinned bootstrap still establishes the normal Thread identity,
++        # tracing/profile hooks and non-daemon shutdown sentinel before user work.
 +        try:
++            spec = self._bootstrap_spec
++            assert spec is not None
++            acknowledgement = self._started
++            try:
++                super().__init__(target=spec[0], args=spec[1], name=self._name, daemon=False)
++            finally:
++                # Preserve the fixed pending flag even if initialization fails.
++                # Its observation becomes final only after native receiving.
++                self._started = acknowledgement
++            self._bootstrap_spec = None
++            del spec
 +            with threading._active_limbo_lock:  # type: ignore[attr-defined]
 +                threading._limbo[self] = self  # type: ignore[attr-defined]
-+            self._exit_owner.start()
-+        except BaseException:
-+            if not self.started:
-+                with threading._active_limbo_lock:  # type: ignore[attr-defined]
-+                    threading._limbo.pop(self, None)  # type: ignore[attr-defined]
-+            raise
-+        # Startup acknowledgement is not creation evidence: interruption here
-+        # leaves started true and the original native owner retained.
-+        while not self._started.wait(0.01):  # type: ignore[attr-defined]
-+            # A timed-out observation may race with acknowledgement and exit.
-+            # After positive native receiving, the bootstrap event is stable.
-+            if self.poll() and not self._started.is_set():  # type: ignore[attr-defined]
-+                raise RuntimeError("original worker bootstrap exited before acknowledgement") from (
-+                    self.bootstrap_exception
-+                )
++            self._bootstrap()  # type: ignore[attr-defined]
++        finally:
++            # An exception before normal active registration must not leave a
++            # limbo reference. Cleanup may wait only on this original worker;
++            # a successful native exit receipt includes its completion.
++            with threading._active_limbo_lock:  # type: ignore[attr-defined]
++                if threading._limbo.get(self) is self:  # type: ignore[attr-defined]
++                    del threading._limbo[self]  # type: ignore[attr-defined]
++
++    def _delete(self) -> None:
++        # CPython calls this even when bootstrap fails before active insertion.
++        # Exact-owner removal preserves the original exception instead of
++        # replacing it with a missing-entry KeyError or removing another owner.
++        ident = threading.get_ident()
++        with threading._active_limbo_lock:  # type: ignore[attr-defined]
++            if threading._active.get(ident) is self:  # type: ignore[attr-defined]
++                del threading._active[ident]  # type: ignore[attr-defined]
 +
 +    def poll(self) -> bool:
 +        """Receive the original native exit with at most one zero-wait probe."""
-+        return self._exit_owner.poll()
++        received = self._exit_owner.poll()
++        # Only native receiving makes bootstrap evidence final. This is one
++        # nonwaiting flag observation, never an acknowledgement wait or receipt.
++        if received and self.started and not self._started.is_set():
++            raise WorkerBootstrapError(
++                "original worker bootstrap exited before acknowledgement"
++            ) from (self.bootstrap_exception)
++        return received
 +
 +    def is_alive(self) -> bool:
 +        # Do not call Thread.is_alive/_wait_for_tstate_lock on this object.
@@ -775,11 +839,13 @@ index 0000000000000000000000000000000000000000..146d633604b1fa4dcd7ee8492abf1ea4
 +            wake.wait(0.01 if remaining is None else min(0.01, remaining))
 diff --git a/packages/retained-resource/src/retained_resource/worker_growth.py b/packages/retained-resource/src/retained_resource/worker_growth.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..a2541044d417d77160801fb80ecf12dfe0533949
+index 00000000..89ba2278
 --- /dev/null
 +++ b/packages/retained-resource/src/retained_resource/worker_growth.py
-@@ -0,0 +1,72 @@
-+"""Actual native entries for one original worker acquisition or receive probe."""
+@@ -0,0 +1,149 @@
++"""Actual native and caller-owned wrapper work for one worker control call."""
++
++from collections.abc import Callable
 +
 +from riverhog_growth_contracts import (
 +    COUNT,
@@ -791,6 +857,7 @@ index 0000000000000000000000000000000000000000..a2541044d417d77160801fb80ecf12df
 +)
 +
 +from ._worker_native import WorkerHandle
++from .worker import Worker
 +
 +
 +def declaration(operation: str) -> Declaration:
@@ -851,8 +918,82 @@ index 0000000000000000000000000000000000000000..a2541044d417d77160801fb80ecf12df
 +@declare_growth(declaration("poll"))
 +def poll(owner: WorkerHandle) -> bool:
 +    return owner.poll()
++
++
++def coordination_declaration(operation: str) -> Declaration:
++    if operation not in {"construct_worker", "start_worker", "poll_worker"}:
++        raise ValueError("worker coordination operation is not declared")
++    starting = operation == "start_worker"
++    polling = operation == "poll_worker"
++    limits = {
++        "start_calls": 1 if starting else 0,
++        "poll_calls": 1 if polling else 0,
++        "join_calls": 1 if polling else 0,
++        "wait_calls": 1 if polling else 0,
++        "close_calls": 1 if polling else 0,
++        "exit_receipts": 1 if polling else 0,
++        "coordinator_wait_calls": 0,
++        "coordinator_registry_acquires": 0,
++        "coordinator_registry_steps": 0,
++        "coordinator_registry_enumerations": 0,
++        "coordinator_weakref_retirements": 0,
++        "coordinator_weakref_cleanup_steps": 0,
++        "acknowledgement_probes": 1 if polling else 0,
++    }
++    return Declaration(
++        id=f"retained-resource.{operation.replace('_', '-')}.growth/v1",
++        authority="retained-resource",
++        subjects=(f"retained_resource.worker_growth.{operation}",),
++        scope="one public worker construction, start or nonwaiting receive on the coordinator",
++        starts_at="worker identity admission or original-owner retention before native effects",
++        ends_at="recorded native outcome or bounded final-bootstrap diagnosis",
++        dimensions=(
++            Dimension("unrelated_workers", COUNT, "Unrelated retained originals, never scanned."),
++        ),
++        bounds=tuple(
++            Bound(
++                name,
++                COUNT,
++                "equal" if limit == 0 else "upper",
++                Expression("constant", value=limit, unit=COUNT),
++                "Actual native entries and coordinator flag, wait or registry operations.",
++            )
++            for name, limit in limits.items()
++        ),
++        conditions=(
++            "The admitted GIL-enabled CPython bootstrap adapter and native backend.",
++            "One startup coordinator retains the worker before its native creation.",
++        ),
++        invariants=(
++            "Startup acknowledges native creation, not Python bootstrap completion.",
++            "Construction retains fixed pending identity; registration belongs to the worker.",
++            "No acknowledgement wait or bootstrap registry operation belongs to coordination.",
++            "Native receiving precedes the single final-bootstrap flag observation.",
++            "Failed bootstrap retains its original diagnosis; no semantic result is invented.",
++        ),
++        limitations=(
++            "Worker-owned bootstrap, cleanup, callbacks and thread-local destruction may wait.",
++            "Native API entries do not bound internal scheduler or allocator latency.",
++            "Explicit blocking shutdown joins have a separate execution-owned lifetime.",
++        ),
++    )
++
++
++@declare_growth(coordination_declaration("construct_worker"))
++def construct_worker(target: Callable[[], object]) -> Worker:
++    return Worker(target=target)
++
++
++@declare_growth(coordination_declaration("start_worker"))
++def start_worker(owner: Worker) -> None:
++    owner.start()
++
++
++@declare_growth(coordination_declaration("poll_worker"))
++def poll_worker(owner: Worker) -> bool:
++    return owner.poll()
 diff --git a/packages/retained-resource/tests/test_wheel_build.py b/packages/retained-resource/tests/test_wheel_build.py
-index a09ff0ee46d4972732d2b17c2dae3a4e2e9e4a51..f75990fb8df3cffc27d266562fdbf9610ed1e208 100644
+index a09ff0ee..f75990fb 100644
 --- a/packages/retained-resource/tests/test_wheel_build.py
 +++ b/packages/retained-resource/tests/test_wheel_build.py
 @@ -83,6 +83,20 @@ else:
@@ -910,10 +1051,10 @@ index a09ff0ee46d4972732d2b17c2dae3a4e2e9e4a51..f75990fb8df3cffc27d266562fdbf961
          python = environment / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 diff --git a/packages/retained-resource/tests/test_worker_growth.py b/packages/retained-resource/tests/test_worker_growth.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..caabbbc2c2728ec403d32d8c7e0b0afc1616a8da
+index 00000000..083dcae8
 --- /dev/null
 +++ b/packages/retained-resource/tests/test_worker_growth.py
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,244 @@
 +"""Count actual native start/receive primitives without timing-based assertions."""
 +
 +from __future__ import annotations
@@ -927,6 +1068,7 @@ index 0000000000000000000000000000000000000000..caabbbc2c2728ec403d32d8c7e0b0afc
 +from riverhog_growth_contracts import growth_binding, project_bindings, validate_execution_samples
 +
 +from scripts.validation_numeric import numeric_policy_from_environment
++from tests.support.worker_coordination import observe_worker_coordination
 +from tests.support.workspace_reclamation import execution_sample
 +
 +pytestmark = pytest.mark.skipif(
@@ -1034,12 +1176,135 @@ index 0000000000000000000000000000000000000000..caabbbc2c2728ec403d32d8c7e0b0afc
 +            },
 +        },
 +    )
++
++
++@pytest.mark.growth_witness(
++    "retained-resource.worker-coordination-work",
++    gates=("unit", "linux-qualification", "native-ubuntu-24.04", "native-windows-2025"),
++)
++def test_public_worker_controls_measure_wait_registry_and_acknowledgement_work(
++    monkeypatch, record_property
++):
++    from retained_resource import Worker, WorkerBootstrapError
++    from retained_resource.worker_growth import construct_worker, poll_worker, start_worker
++
++    operations = (construct_worker, start_worker, poll_worker)
++    policy = numeric_policy_from_environment(os.environ)
++    projection = project_bindings(
++        tuple(growth_binding(operation) for operation in operations), numeric_policy=policy
++    )
++    samples = []
++
++    def observe(operation, argument, population):
++        binding = growth_binding(operation)
++        before = argument.metrics
++        caught = None
++        with observe_worker_coordination(monkeypatch) as coordination:
++            try:
++                result = operation(argument)
++            except WorkerBootstrapError as error:
++                result, caught = None, error
++        worker = argument
++        after = worker.metrics
++        metrics = {
++            bound.metric: (
++                coordination[bound.metric]
++                if bound.metric in coordination
++                else after[bound.metric] - before[bound.metric]
++            )
++            for bound in binding.declaration.bounds
++        }
++        value = execution_sample(
++            binding, projection, {"unrelated_workers": population}, metrics, {}
++        )
++        validate_execution_samples(
++            projection, binding.declaration.id, [value], numeric_policy=policy
++        )
++        samples.append(value)
++        return caught if caught is not None else result
++
++    def construct(population):
++        binding = growth_binding(construct_worker)
++        with observe_worker_coordination(monkeypatch) as coordination:
++            worker = construct_worker(lambda: None)
++        metrics = {
++            bound.metric: (
++                coordination[bound.metric]
++                if bound.metric in coordination
++                else worker.metrics[bound.metric]
++            )
++            for bound in binding.declaration.bounds
++        }
++        value = execution_sample(
++            binding, projection, {"unrelated_workers": population}, metrics, {}
++        )
++        validate_execution_samples(
++            projection, binding.declaration.id, [value], numeric_policy=policy
++        )
++        samples.append(value)
++        return worker
++
++    def held_bootstrap(actual, entered, release, failure):
++        def boot():
++            entered.set()
++            assert release.wait(10)
++            if failure is not None:
++                raise failure
++            actual()
++
++        return boot
++
++    for population in (1, 17, 257):
++        unrelated = [Worker(target=lambda: None) for _ in range(population)]
++        for failed in (False, True):
++            worker = construct(population)
++            entered, release = threading.Event(), threading.Event()
++            failure = SystemExit("original bootstrap failure") if failed else None
++            worker._bootstrap = held_bootstrap(worker._bootstrap, entered, release, failure)
++            try:
++                observe(start_worker, worker, population)
++                assert entered.wait(5)
++                assert worker.started and not worker._started.is_set()
++                for _ in range(17):
++                    assert observe(poll_worker, worker, population) is False
++                release.set()
++                deadline = time.monotonic() + 10
++                while (result := observe(poll_worker, worker, population)) is False:
++                    assert time.monotonic() < deadline
++                    threading.Event().wait(0.001)
++                for _ in range(17):
++                    result = observe(poll_worker, worker, population)
++                    if failed:
++                        assert isinstance(result, WorkerBootstrapError)
++                        assert result.__cause__ is failure
++                    else:
++                        assert result is True
++                assert worker.received
++                assert worker.metrics["start_calls"] == worker.metrics["exit_receipts"] == 1
++                assert all(original.metrics["start_calls"] == 0 for original in unrelated)
++            finally:
++                release.set()
++                deadline = time.monotonic() + 10
++                while not worker._exit_owner.poll():
++                    assert time.monotonic() < deadline
++                    threading.Event().wait(0.001)
++    record_property("growth_samples", samples)
++    record_property(
++        "growth_observations",
++        {
++            "operations": len(samples),
++            **{
++                metric: sum(sample["metrics"][metric] for sample in samples)
++                for metric in samples[0]["metrics"]
++            },
++        },
++    )
 diff --git a/packages/retained-resource/tests/test_worker_receiving.py b/packages/retained-resource/tests/test_worker_receiving.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..6cef480db3dce61cd6dc4c3c5d95571cfd173d41
+index 00000000..f6d10b0d
 --- /dev/null
 +++ b/packages/retained-resource/tests/test_worker_receiving.py
-@@ -0,0 +1,443 @@
+@@ -0,0 +1,759 @@
 +"""Original native worker outcomes survive interruption and receiving retries."""
 +
 +from __future__ import annotations
@@ -1054,6 +1319,8 @@ index 0000000000000000000000000000000000000000..6cef480db3dce61cd6dc4c3c5d95571c
 +from pathlib import Path
 +
 +import pytest
++
++from tests.support.worker_coordination import observe_worker_coordination
 +
 +SUPPORTED = sys.platform in {"linux", "win32"}
 +
@@ -1460,6 +1727,320 @@ index 0000000000000000000000000000000000000000..6cef480db3dce61cd6dc4c3c5d95571c
 +    assert reference() is None
 +
 +
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++def test_public_start_returns_before_original_bootstrap_acknowledgement(monkeypatch):
++    from retained_resource import Worker
++
++    entered, release = threading.Event(), threading.Event()
++    observed = []
++
++    class HeldBootstrap(Worker):
++        def _bootstrap(self):
++            entered.set()
++            assert release.wait(10)
++            super()._bootstrap()
++
++    worker = HeldBootstrap(target=lambda: observed.append(threading.current_thread()))
++    try:
++        with observe_worker_coordination(monkeypatch) as metrics:
++            worker.start()
++        assert metrics == dict.fromkeys(metrics, 0)
++        assert entered.wait(5)
++        assert worker.started and not worker._started.is_set() and not worker.received
++        assert observed == []
++        with observe_worker_coordination(monkeypatch) as metrics:
++            assert not worker.poll()
++        assert metrics == dict.fromkeys(metrics, 0)
++        with pytest.raises(ValueError, match="non-daemon"):
++            worker.daemon = True
++        with pytest.raises(RuntimeError, match="started native worker"):
++            worker.daemon = False
++        assert worker.daemon is False
++    finally:
++        release.set()
++        if worker.started:
++            worker.join(timeout=10)
++    assert worker.received and observed == [worker]
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++@pytest.mark.parametrize("pending", (False, True))
++def test_public_coordination_observer_counts_actual_weakref_retirement(monkeypatch, pending):
++    registry = weakref.WeakSet()
++    retained, retired = threading.Thread(), threading.Thread()
++    registry.update((retained, retired))
++    reference = weakref.ref(retired)
++    marker = object()
++    if pending:
++        registry._iterating.add(marker)
++    try:
++        with monkeypatch.context() as patch:
++            patch.setattr(threading, "_dangling", registry)
++            with observe_worker_coordination(patch) as metrics:
++                del retired
++            assert reference() is None
++            assert metrics == {
++                name: int(name == "coordinator_weakref_retirements") for name in metrics
++            }
++            assert len(registry._pending_removals) == int(pending)
++            assert len(registry.data) == 1 + int(pending)
++    finally:
++        registry._iterating.discard(marker)
++        registry._commit_removals()
++    assert list(registry) == [retained]
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++def test_pending_thread_weakref_cleanup_belongs_to_original_worker(monkeypatch):
++    from retained_resource import Worker
++
++    registry = weakref.WeakSet()
++    initialized, release = threading.Event(), threading.Event()
++    actual_init = threading.Thread.__init__
++    cleanup_threads = []
++    original = []
++
++    def held_init(thread, *args, **kwargs):
++        if isinstance(thread, Worker):
++            initialized.set()
++            assert release.wait(10)
++        return actual_init(thread, *args, **kwargs)
++
++    class Pending(list):
++        def pop(self, *args):
++            cleanup_threads.append(threading.get_ident())
++            return super().pop(*args)
++
++    worker = None
++    with monkeypatch.context() as patch:
++        patch.setattr(threading, "_dangling", registry)
++        seeds = [threading.Thread() for _ in range(18)]
++        iteration = iter(registry)
++        retained = next(iteration)
++        seeds.clear()
++        assert len(registry._pending_removals) == 17
++        registry._pending_removals = Pending(registry._pending_removals)
++        patch.setattr(threading.Thread, "__init__", held_init)
++        try:
++            with observe_worker_coordination(patch) as metrics:
++                worker = Worker(target=lambda: original.append(threading.current_thread()))
++                acknowledgement = worker._started
++                worker.start()
++            assert metrics == dict.fromkeys(metrics, 0)
++            assert initialized.wait(5)
++            assert len(registry._pending_removals) == 17 and cleanup_threads == []
++            with observe_worker_coordination(patch) as metrics:
++                assert not worker.poll()
++            assert metrics == dict.fromkeys(metrics, 0)
++            release.set()
++            worker.join(timeout=10)
++            assert worker.received and worker._started is acknowledgement
++            assert original == [worker] and not registry._pending_removals
++            assert cleanup_threads == [worker.ident] * 18
++        finally:
++            release.set()
++            if worker is not None and worker.started:
++                worker.join(timeout=10)
++            iteration.close()
++        assert retained in registry
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++@pytest.mark.parametrize("lock_name", ("_active_limbo_lock", "_shutdown_locks_lock"))
++def test_public_creation_start_and_poll_do_not_wait_on_runtime_registries(monkeypatch, lock_name):
++    from retained_resource import Worker
++
++    original_lock = getattr(threading, lock_name)
++    held, attempted, release = threading.Event(), threading.Event(), threading.Event()
++    observed = []
++
++    def hold():
++        with original_lock:
++            held.set()
++            assert release.wait(10)
++
++    holder = threading.Thread(target=hold)
++    holder.start()
++    assert held.wait(5)
++
++    class AttemptedLock:
++        def acquire(self, *args, **kwargs):
++            attempted.set()
++            return original_lock.acquire(*args, **kwargs)
++
++        def release(self):
++            return original_lock.release()
++
++        def __enter__(self):
++            self.acquire()
++            return self
++
++        def __exit__(self, *_args):
++            self.release()
++
++    worker = None
++    try:
++        with monkeypatch.context() as patch:
++            patch.setattr(threading, lock_name, AttemptedLock())
++            with observe_worker_coordination(patch) as metrics:
++                worker = Worker(target=lambda: observed.append(threading.current_thread()))
++                worker.start()
++            assert metrics == dict.fromkeys(metrics, 0)
++            assert worker.started and attempted.wait(5)
++            assert not worker._started.is_set() and observed == []
++            with observe_worker_coordination(patch) as metrics:
++                for _ in range(17):
++                    assert not worker.poll()
++            assert metrics == dict.fromkeys(metrics, 0)
++    finally:
++        release.set()
++        holder.join(timeout=10)
++        assert not holder.is_alive()
++        if worker is not None and worker.started:
++            worker.join(timeout=10)
++    assert worker is not None and worker.received and observed == [worker]
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++@pytest.mark.parametrize("fault", ("after_start", "signal_after_start"))
++def test_public_start_reply_loss_does_not_wait_or_replace_original(
++    monkeypatch, fault_worker_native, fault
++):
++    from retained_resource import Worker
++    from retained_resource import worker as worker_source
++
++    monkeypatch.setattr(worker_source, "WorkerHandle", fault_worker_native.WorkerHandle)
++    entered, release = threading.Event(), threading.Event()
++    calls = []
++
++    class HeldBootstrap(Worker):
++        def _bootstrap(self):
++            entered.set()
++            assert release.wait(10)
++            super()._bootstrap()
++
++    worker = HeldBootstrap(target=lambda: calls.append("original"))
++    worker._exit_owner._test_fault(fault)
++    expected = KeyboardInterrupt if fault.startswith("signal") else RuntimeError
++    try:
++        with observe_worker_coordination(monkeypatch) as metrics, pytest.raises(expected):
++            worker.start()
++        assert metrics == dict.fromkeys(metrics, 0)
++        assert worker.started and entered.wait(5)
++        assert not worker._started.is_set() and worker.metrics["start_calls"] == 1
++        with pytest.raises(RuntimeError, match="only be started once"):
++            worker.start()
++        with observe_worker_coordination(monkeypatch) as metrics:
++            assert not worker.poll()
++        assert metrics == dict.fromkeys(metrics, 0)
++    finally:
++        release.set()
++        if worker.started:
++            worker.join(timeout=10)
++    assert worker.received and calls == ["original"]
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++def test_public_before_start_refusal_never_enters_runtime_limbo(monkeypatch, fault_worker_native):
++    from retained_resource import Worker
++    from retained_resource import worker as worker_source
++
++    monkeypatch.setattr(worker_source, "WorkerHandle", fault_worker_native.WorkerHandle)
++    worker = Worker(target=lambda: pytest.fail("refused worker executed"))
++    worker._exit_owner._test_fault("before_start")
++    with (
++        observe_worker_coordination(monkeypatch) as metrics,
++        pytest.raises(RuntimeError, match="before-start"),
++    ):
++        worker.start()
++    assert metrics == dict.fromkeys(metrics, 0)
++    assert not worker.started and worker.metrics["start_calls"] == 0
++    assert worker not in threading._limbo
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++def test_public_thread_initialization_failure_preserves_pending_flag_and_original_error(
++    monkeypatch,
++):
++    from retained_resource import Worker, WorkerBootstrapError
++
++    failure = MemoryError("original runtime registration allocation failed")
++    original_registry = threading._dangling
++    observed = []
++
++    class RefusedRegistry:
++        def add(self, worker):
++            raise failure
++
++        def __getattr__(self, name):
++            return getattr(original_registry, name)
++
++    with monkeypatch.context() as patch:
++        patch.setattr(threading, "_dangling", RefusedRegistry())
++        with observe_worker_coordination(patch) as metrics:
++            worker = Worker(target=lambda: observed.append("unexpected callback"))
++            acknowledgement = worker._started
++            worker.start()
++        assert metrics == dict.fromkeys(metrics, 0)
++        receive(worker._exit_owner)
++    assert worker.received and worker.bootstrap_exception is failure
++    assert worker._started is acknowledgement and not acknowledgement.is_set()
++    assert worker not in threading._limbo and observed == []
++    with (
++        observe_worker_coordination(monkeypatch) as metrics,
++        pytest.raises(
++            WorkerBootstrapError, match="bootstrap exited before acknowledgement"
++        ) as error,
++    ):
++        worker.poll()
++    assert error.value.__cause__ is failure
++    assert metrics == {name: int(name == "acknowledgement_probes") for name in metrics}
++
++
++@pytest.mark.skipif(not SUPPORTED, reason="bounded worker receiving backend")
++def test_public_bootstrap_failure_is_diagnosed_only_after_exit_and_preserves_other_owner(
++    monkeypatch,
++):
++    from retained_resource import Worker
++
++    failure = SystemExit("original bootstrap failed before acknowledgement")
++    retained = threading.current_thread()
++    observed = []
++
++    class FailedBootstrap(Worker):
++        def _set_ident(self):
++            self.failed_ident = threading.get_ident()
++            with threading._active_limbo_lock:
++                threading._active[self.failed_ident] = retained
++            raise failure
++
++    worker = FailedBootstrap(target=lambda: observed.append("unexpected callback"))
++    try:
++        with observe_worker_coordination(monkeypatch) as metrics:
++            worker.start()
++        assert metrics == dict.fromkeys(metrics, 0)
++        receive(worker._exit_owner)
++        assert worker.received and worker.bootstrap_exception is failure
++        assert not worker._started.is_set() and worker not in threading._limbo
++        assert threading._active[worker.failed_ident] is retained
++        for _ in range(3):
++            with (
++                observe_worker_coordination(monkeypatch) as metrics,
++                pytest.raises(
++                    RuntimeError, match="bootstrap exited before acknowledgement"
++                ) as error,
++            ):
++                worker.poll()
++            assert error.value.__cause__ is failure
++            assert metrics == {name: int(name == "acknowledgement_probes") for name in metrics}
++        assert observed == [] and worker.metrics["exit_receipts"] == 1
++    finally:
++        if hasattr(worker, "failed_ident"):
++            with threading._active_limbo_lock:
++                if threading._active.get(worker.failed_ident) is retained:
++                    del threading._active[worker.failed_ident]
++
++
 +def test_received_exception_cycle_can_release_after_original_receiving(worker_native):
 +    class Callback:
 +        def __call__(self):
@@ -1484,7 +2065,7 @@ index 0000000000000000000000000000000000000000..6cef480db3dce61cd6dc4c3c5d95571c
 +    with pytest.raises(RuntimeError, match="no Darwin backend"):
 +        WorkerHandle(lambda: pytest.fail("unsupported worker dispatched"))
 diff --git a/riverhog/src/riverhog_core/services/physical_execution.py b/riverhog/src/riverhog_core/services/physical_execution.py
-index ef161cde4353ef80401796a526702f1b2c8d7b73..6a67a99fc8c057d779ba9a42118e57734018f8a4 100644
+index ef161cde..eaa27c8f 100644
 --- a/riverhog/src/riverhog_core/services/physical_execution.py
 +++ b/riverhog/src/riverhog_core/services/physical_execution.py
 @@ -8,9 +8,10 @@ from collections import OrderedDict
@@ -1495,7 +2076,7 @@ index ef161cde4353ef80401796a526702f1b2c8d7b73..6a67a99fc8c057d779ba9a42118e5773
 +from threading import Lock
  from typing import Literal, overload
  
-+from retained_resource import Worker
++from retained_resource import Worker, WorkerBootstrapError
  from riverhog_protocol.errors import Conflict
  
  from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
@@ -1517,20 +2098,25 @@ index ef161cde4353ef80401796a526702f1b2c8d7b73..6a67a99fc8c057d779ba9a42118e5773
                  target=_run, args=(work, future), name="physical-execution", daemon=False
              )
              slot = _Slot(key, target_incarnation, terminal, owner, identity, future, worker)
-@@ -268,9 +269,9 @@ class PhysicalExecutionOwner:
+@@ -266,11 +267,14 @@ class PhysicalExecutionOwner:
+             self._counts[terminal] += 1
+             self._targets[target] = self._targets.get(target, 0) + 1
              try:
++                # Start records native creation only. Runtime registration and
++                # bootstrap acknowledgement stay on the original worker, outside
++                # this coordination lock; pending bootstrap keeps its slot.
                  worker.start()
              except BaseException:
 -                # A started worker remains charged even if startup acknowledgement
 -                # failed. Only an original thread that never started is withdrawn.
 -                if worker.ident is None:
 +                # Native creation is recorded before the Python reply. An unknown
-+                # startup acknowledgement keeps the exact original slot charged.
++                # creation reply keeps the exact original slot charged.
 +                if not worker.started:
                      self._remove(slot)
                  raise
              return "submitted"
-@@ -289,7 +290,7 @@ class PhysicalExecutionOwner:
+@@ -289,7 +293,7 @@ class PhysicalExecutionOwner:
                  return "untracked"
              if slot.key != key:
                  raise Conflict("physical execution retains another original scope")
@@ -1539,7 +2125,7 @@ index ef161cde4353ef80401796a526702f1b2c8d7b73..6a67a99fc8c057d779ba9a42118e5773
                  return "running"
              return "awaiting-join" if slot.future.done() else "outcome-missing"
          finally:
-@@ -345,11 +346,12 @@ class PhysicalExecutionOwner:
+@@ -345,11 +349,12 @@ class PhysicalExecutionOwner:
                  assert slot.owner is owner
                  if isinstance(slot.key, PhysicalWorkspaceExecutionKey) != workspace:
                      raise PhysicalExecutionOccupied("physical receiver has another execution kind")
@@ -1555,7 +2141,7 @@ index ef161cde4353ef80401796a526702f1b2c8d7b73..6a67a99fc8c057d779ba9a42118e5773
                  if not slot.future.done():
                      # Missing original evidence stays charged. A dead local
                      # thread cannot supply an invented successful outcome.
-@@ -401,7 +403,7 @@ class PhysicalExecutionOwner:
+@@ -401,11 +406,24 @@ class PhysicalExecutionOwner:
          """Stop submission and join physical workers without dropping outcomes."""
          with self._lock:
              workers = tuple(slot.worker for slot in self._slots.values())
@@ -1563,41 +2149,84 @@ index ef161cde4353ef80401796a526702f1b2c8d7b73..6a67a99fc8c057d779ba9a42118e5773
 +            if any(worker.is_current for worker in workers):
                  raise RuntimeError("upload worker cannot join its own execution owner")
              self._closed = True
++        bootstrap_error: WorkerBootstrapError | None = None
          for worker in workers:
+-            worker.join()
++            try:
++                worker.join()
++            except WorkerBootstrapError as error:
++                if not worker.received:
++                    raise
++                # This diagnostic already includes a positive native receipt.
++                # Receive later originals before reporting it; all slots and
++                # their original outcomes remain retained. Unknown native states
++                # and coordinator interruption still propagate immediately.
++                if bootstrap_error is None:
++                    bootstrap_error = error
++        if bootstrap_error is not None:
++            raise bootstrap_error
+ 
+ 
+ declare_workspace_execution_growth(PhysicalExecutionOwner.try_submit_workspace, collect=False)
 diff --git a/riverhog/src/riverhog_core/services/physical_workspace_growth.py b/riverhog/src/riverhog_core/services/physical_workspace_growth.py
-index 52adcbcdcb9cc8dc96328ee2a82cb20b2d3bd727..9e630557201a57295241e6d0ec7c4279605b2267 100644
+index 52adcbcd..3ba76232 100644
 --- a/riverhog/src/riverhog_core/services/physical_workspace_growth.py
 +++ b/riverhog/src/riverhog_core/services/physical_workspace_growth.py
-@@ -29,8 +29,7 @@ def declare_workspace_execution_growth(operation: Callable[..., Any], *, collect
+@@ -29,8 +29,14 @@ def declare_workspace_execution_growth(operation: Callable[..., Any], *, collect
          "mapping_enumerations": count(0),
          "workers_constructed": count(0) if collect else count(1),
          "workers_started": count(0) if collect else count(1),
 -        "worker_liveness_calls": scale(2, quantum) if collect else count(0),
 -        "worker_join_calls": quantum if collect else count(0),
 +        "worker_receive_calls": quantum if collect else count(0),
++        "coordinator_wait_calls": count(0),
++        "coordinator_registry_acquires": count(0),
++        "coordinator_registry_steps": count(0),
++        "coordinator_registry_enumerations": count(0),
++        "coordinator_weakref_cleanup_steps": count(0),
++        "coordinator_weakref_retirements": quantum if collect else count(0),
++        "acknowledgement_probes": quantum if collect else count(0),
          "results_received": quantum if collect else count(0),
      }
      name = "collect_workspace" if collect else "try_submit_workspace"
-@@ -59,7 +58,7 @@ def declare_workspace_execution_growth(operation: Callable[..., Any], *, collect
+@@ -57,9 +63,15 @@ def declare_workspace_execution_growth(operation: Callable[..., Any], *, collect
+                 Bound(
+                     metric,
                      COUNT,
-                     "equal" if metric == "mapping_enumerations" else "upper",
+-                    "equal" if metric == "mapping_enumerations" else "upper",
++                    "equal"
++                    if metric == "mapping_enumerations"
++                    or (
++                        metric.startswith("coordinator_")
++                        and metric != "coordinator_weakref_retirements"
++                    )
++                    else "upper",
                      expression,
 -                    "Actual mapping, thread and receiving primitives.",
-+                    "Actual mapping, worker creation and native receiving probes.",
++                    "Actual mapping, native worker, Python wait and runtime registry primitives.",
                  )
                  for metric, expression in limits.items()
              ),
-@@ -92,7 +91,7 @@ def declare_workspace_execution_growth(operation: Callable[..., Any], *, collect
+@@ -92,12 +104,15 @@ def declare_workspace_execution_growth(operation: Callable[..., Any], *, collect
          invariants=(
              "Workspace work shares global and per-target terminal allowances.",
              "Only the selected receiver's rotating bucket is inspected.",
 -            "Published Future results stay charged until the actual worker joins.",
 +            "Published Future results stay charged until original native exit receiving.",
++            "Submission performs no bootstrap acknowledgement or Python registry wait.",
++            "Runtime bootstrap registration and cleanup belong to the original worker.",
++            "Collection retires at most one own weak reference per removed original.",
              "Retries preserve the original receiver, target and identity.",
              "Execution join grants no resource or terminal disposal authority.",
          ),
+         limitations=(
+-            "Mapping/hash internals and thread latency remain backend work.",
++            "Mapping/hash internals and native creation latency remain backend work.",
+             "Callbacks, handle receiving and resource ledgers have separate scopes.",
+         ),
+     )
 diff --git a/scripts/ci_qualification.py b/scripts/ci_qualification.py
-index 67a4bd5cd6d0679aabcdbbfd88aa49c35bb2bcfc..ef7ce5daff7c272cc15201e9047bce50cf258254 100644
+index 67a4bd5c..ef7ce5da 100644
 --- a/scripts/ci_qualification.py
 +++ b/scripts/ci_qualification.py
 @@ -58,6 +58,8 @@ NATIVE_TESTS = (
@@ -1609,9 +2238,362 @@ index 67a4bd5cd6d0679aabcdbbfd88aa49c35bb2bcfc..ef7ce5daff7c272cc15201e9047bce50
      "packages/retained-resource/tests/test_wheel_build.py",
      "tests/platform/test_native_provenance.py",
      "tests/unit/test_cli_upload_source_hashing.py",
+diff --git a/tests/support/physical_bootstrap_probe.py b/tests/support/physical_bootstrap_probe.py
+new file mode 100644
+index 00000000..a8a70c41
+--- /dev/null
++++ b/tests/support/physical_bootstrap_probe.py
+@@ -0,0 +1,347 @@
++"""Isolated ownership and coordination witnesses around actual native bootstrap."""
++
++from __future__ import annotations
++
++import argparse
++import importlib.util
++import json
++import signal
++import sys
++import threading
++from pathlib import Path
++from time import monotonic, sleep
++
++from riverhog_core.archive_execution_tuning import ArchiveExecutionTuning
++
++from tests.support.physical_exit_probe import await_native_exit, load_source
++
++
++def select_source(implementation, worker):
++    source = load_source(implementation)
++    if worker is not None:
++        spec = importlib.util.spec_from_file_location(
++            "retained_resource._bootstrap_probe_original", worker
++        )
++        assert spec is not None and spec.loader is not None
++        module = importlib.util.module_from_spec(spec)
++        sys.modules[spec.name] = module
++        spec.loader.exec_module(module)
++        source.Worker = module.Worker
++    return source
++
++
++def receive_native(worker):
++    """Explicitly receive native exit even when bootstrap diagnostics remain."""
++    deadline = monotonic() + 10
++    while not worker._exit_owner.poll():
++        assert monotonic() < deadline, "original native bootstrap worker did not exit"
++        sleep(0.001)
++
++
++def exercise(*, mode, kind, implementation=None, worker=None):
++    source = select_source(implementation, worker)
++    actual_worker = source.Worker
++    module = sys.modules[actual_worker.__module__]
++    native_factory = module.WorkerHandle
++    entered, release, submitted = threading.Event(), threading.Event(), threading.Event()
++    native_ids, submit_outcomes, calls = [], [], []
++    original, ready_value, fresh_value = object(), object(), object()
++    original_identity, ready_identity, fresh_identity = object(), object(), object()
++    receiver, ready_receiver, fresh_receiver = object(), object(), object()
++    failure = RuntimeError("original bootstrap failed before acknowledgement")
++    terminal = kind == "workspace"
++    pool = source.PhysicalExecutionOwner(
++        ArchiveExecutionTuning(
++            forward_workers=3,
++            forward_workers_per_target=3,
++            terminal_workers=3,
++            terminal_workers_per_target=3,
++        )
++    )
++
++    def original_work():
++        calls.append(original_identity)
++        return original
++
++    class ControlledBootstrap(actual_worker):
++        def __init__(self, **arguments):
++            self.held_original = arguments["args"][0] is original_work
++            super().__init__(**arguments)
++
++        def _bootstrap(self):
++            if self.held_original:
++                native_ids.append(threading.get_native_id())
++                entered.set()
++                if mode == "failure":
++                    raise failure
++                assert release.wait(15), "original bootstrap was not explicitly released"
++            return super()._bootstrap()
++
++    class InterruptedStart:
++        def __init__(self, original_handle):
++            self.original = original_handle
++
++        def start(self):
++            self.original.start()
++            # The real native owner has created and recorded the original.
++            # Deliver an actual signal before its Python startup reply returns.
++            signal.raise_signal(signal.SIGINT)
++
++        def __getattr__(self, name):
++            return getattr(self.original, name)
++
++    def create_native(target):
++        handle = native_factory(target)
++        if getattr(target.__self__, "held_original", False):
++            return InterruptedStart(handle)
++        return handle
++
++    def key(number):
++        if terminal:
++            return source.PhysicalWorkspaceExecutionKey(f"{number:032x}", "a" * 64)
++        return source.PhysicalExecutionKey(number, "a" * 64)
++
++    def submit(number, callback, owner, identity):
++        arguments = dict(target_incarnation="local", work=callback, owner=owner, identity=identity)
++        if terminal:
++            return pool.try_submit_workspace(key(number), **arguments)
++        return pool.try_submit(key(number), terminal=False, **arguments)
++
++    def collect(owner):
++        if terminal:
++            return pool.collect_workspace(limit=1, owner=owner)
++        return pool.collect(limit=1, owner=owner)
++
++    def coordinator():
++        try:
++            submit_outcomes.append(submit(2, original_work, receiver, original_identity))
++        except BaseException as error:
++            submit_outcomes.append(error)
++        finally:
++            submitted.set()
++
++    report = {"mode": mode, "kind": kind}
++    submitting = None
++    closing = None
++    late_release = threading.Event()
++    diagnosed = []
++    try:
++        assert submit(1, lambda: ready_value, ready_receiver, ready_identity) == "submitted"
++        ready = pool._slots[key(1)]
++        ready.worker.join(timeout=5)
++        assert ready.worker.received and ready.future.done()
++        source.Worker = ControlledBootstrap
++        if mode == "interrupted":
++            module.WorkerHandle = create_native
++            coordinator()
++            assert len(submit_outcomes) == 1 and isinstance(submit_outcomes[0], KeyboardInterrupt)
++            module.WorkerHandle = native_factory
++        else:
++            submitting = threading.Thread(target=coordinator, daemon=False)
++            submitting.start()
++        assert entered.wait(5), "original native bootstrap did not enter its controlled boundary"
++        # This rendezvous is a watchdog, not a product latency target. Its gate
++        # remains held throughout every independent coordination observation.
++        returned = submitted.wait(5)
++        slot = pool._slots[key(2)]
++        report["submission_returned_before_release"] = returned
++        report["bootstrap_acknowledged_before_release"] = slot.worker._started.is_set()
++        report["original_native_creation_recorded"] = slot.worker.started
++        report["original_native_start_calls"] = slot.worker.metrics["start_calls"]
++        report["coordinator_sigint_received"] = (
++            mode == "interrupted"
++            and len(submit_outcomes) == 1
++            and isinstance(submit_outcomes[0], KeyboardInterrupt)
++        )
++        report["original_future_done_before_release"] = slot.future.done()
++        report["ready_status_before_release"] = pool.status(key(1))
++        early_ready = collect(ready_receiver)
++        report["ready_outcomes_before_release"] = len(early_ready)
++        if early_ready:
++            assert early_ready[0].result() is ready_value
++            assert early_ready[0].identity is ready_identity
++        fresh_submission = submit(3, lambda: fresh_value, fresh_receiver, fresh_identity)
++        report["fresh_submission_before_release"] = fresh_submission
++        early_fresh = ()
++        if fresh_submission == "submitted":
++            fresh = pool._slots[key(3)]
++            fresh.worker.join(timeout=5)
++            early_fresh = collect(fresh_receiver)
++            assert len(early_fresh) == 1 and early_fresh[0].result() is fresh_value
++            assert early_fresh[0].identity is fresh_identity
++        report["fresh_outcomes_before_release"] = len(early_fresh)
++        report["original_slot_retained"] = pool._slots[key(2)] is slot
++        report["original_capacity_retained"] = (
++            pool._counts[terminal] >= 1 and pool._targets[(terminal, "local")] >= 1
++        )
++
++        if mode == "failure":
++            receive_native(slot.worker)
++            assert slot.worker.bootstrap_exception is failure
++            before = slot.worker.metrics
++            for action in (
++                lambda: pool.status(key(2)),
++                lambda: collect(receiver),
++                lambda: collect(receiver),
++            ):
++                try:
++                    action()
++                except RuntimeError as error:
++                    assert error.__cause__ is failure
++                    assert "before acknowledgement" in str(error)
++                    diagnosed.append(error)
++            later_value, later_identity = object(), object()
++            later_entered, later_joined, close_returned = (
++                threading.Event(),
++                threading.Event(),
++                threading.Event(),
++            )
++            close_errors = []
++
++            def later_work():
++                later_entered.set()
++                assert late_release.wait(15), "later independent original was not released"
++                return later_value
++
++            assert submit(4, later_work, receiver, later_identity) == "submitted"
++            assert later_entered.wait(5)
++            later = pool._slots[key(4)]
++            actual_join = later.worker.join
++
++            def join_later(timeout=None):
++                later_joined.set()
++                return actual_join(timeout)
++
++            later.worker.join = join_later
++
++            def close_all():
++                try:
++                    pool.close()
++                except RuntimeError as error:
++                    assert error.__cause__ is failure
++                    close_errors.append(error)
++                finally:
++                    close_returned.set()
++
++            closing = threading.Thread(target=close_all, daemon=False)
++            closing.start()
++            drains_later = later_joined.wait(5) and not close_returned.is_set()
++            late_release.set()
++            closing.join(timeout=6)
++            assert not closing.is_alive(), "original shutdown coordinator was not received"
++            receive_native(later.worker)
++            diagnosed.extend(close_errors)
++            report["shutdown_received_later_original_before_diagnostic"] = drains_later
++            report["shutdown_reported_original_cause"] = len(close_errors) == 1
++            try:
++                collect(receiver)
++            except RuntimeError as error:
++                assert error.__cause__ is failure
++                diagnosed.append(error)
++            (later_completion,) = collect(receiver)
++            assert later_completion.result() is later_value
++            assert later_completion.identity is later_identity
++            report["same_owner_ready_outcome_received"] = True
++            after = slot.worker.metrics
++            report["original_bootstrap_diagnoses"] = len(diagnosed)
++            report["no_duplicate_native_join"] = after["join_calls"] == before["join_calls"]
++            report["semantic_future_remains_unset"] = not slot.future.done()
++            report["failed_original_remains_charged"] = (
++                pool._slots[key(2)] is slot and pool._counts[terminal] == 1
++            )
++            report["original_work_never_called"] = not calls
++            assert slot.worker.received
++        else:
++            assert not release.is_set()
++            report["native_alive_before_release"] = Path(
++                f"/proc/self/task/{native_ids[0]}"
++            ).exists()
++            assert not calls and not slot.future.done()
++            release.set()
++            if submitting is not None:
++                submitting.join(timeout=6)
++                assert not submitting.is_alive()
++            slot.worker.join(timeout=5)
++            await_native_exit(native_ids[0])
++            (completion,) = collect(receiver)
++            assert completion.result() is original and completion.identity is original_identity
++            assert calls == [original_identity]
++            if not early_ready:
++                (completion,) = collect(ready_receiver)
++                assert completion.result() is ready_value and completion.identity is ready_identity
++            assert pool._counts[terminal] == 0 and not pool._targets
++            assert collect(receiver) == ()
++            report["original_outcome_received_once"] = True
++        report["safe"] = (
++            returned
++            and not report["bootstrap_acknowledged_before_release"]
++            and not report["original_future_done_before_release"]
++            and report["ready_status_before_release"] == "awaiting-join"
++            and len(early_ready) == len(early_fresh) == 1
++            and fresh_submission == "submitted"
++            and report["original_slot_retained"]
++            and report["original_capacity_retained"]
++            and report["original_native_start_calls"] == 1
++        )
++        if mode == "failure":
++            report["safe"] = (
++                report["safe"]
++                and submit_outcomes == ["submitted"]
++                and len(diagnosed) == 5
++                and report["no_duplicate_native_join"]
++                and report["semantic_future_remains_unset"]
++                and report["failed_original_remains_charged"]
++                and report["shutdown_received_later_original_before_diagnostic"]
++                and report["shutdown_reported_original_cause"]
++            )
++        return report
++    finally:
++        release.set()
++        late_release.set()
++        module.WorkerHandle = native_factory
++        source.Worker = actual_worker
++        if submitting is not None:
++            submitting.join(timeout=6)
++            assert not submitting.is_alive(), "original submission coordinator was not received"
++        if closing is not None:
++            closing.join(timeout=6)
++            assert not closing.is_alive(), "original shutdown coordinator was not received"
++        for slot in tuple(pool._slots.values()):
++            receive_native(slot.worker)
++        if mode == "failure":
++            # Native workers are received; an unset semantic outcome remains
++            # deliberately retained with its exact original bootstrap diagnostic.
++            try:
++                pool.close()
++            except RuntimeError as error:
++                assert error.__cause__ is failure
++        else:
++            pool.close()
++        for native_id in native_ids:
++            await_native_exit(native_id)
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--mode", choices=("held", "interrupted", "failure"), required=True)
++    parser.add_argument("--kind", choices=("workspace", "collection"), default="workspace")
++    parser.add_argument("--implementation", type=Path)
++    parser.add_argument("--worker", type=Path)
++    parser.add_argument("--expect", choices=("safe", "unsafe", "observe"), default="safe")
++    args = parser.parse_args()
++    if sys.platform != "linux":
++        raise RuntimeError("this original native thread witness requires Linux /proc")
++    signal.signal(signal.SIGINT, signal.default_int_handler)
++    report = exercise(
++        mode=args.mode,
++        kind=args.kind,
++        implementation=args.implementation,
++        worker=args.worker,
++    )
++    print(json.dumps(report, sort_keys=True), flush=True)
++    if args.expect != "observe":
++        assert report["safe"] is (args.expect == "safe"), report
++
++
++if __name__ == "__main__":
++    main()
 diff --git a/tests/support/physical_exit_probe.py b/tests/support/physical_exit_probe.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..fe026de1546651aa2ee2923f8c2f7e15453f1849
+index 00000000..fe026de1
 --- /dev/null
 +++ b/tests/support/physical_exit_probe.py
 @@ -0,0 +1,301 @@
@@ -1918,7 +2900,7 @@ index 0000000000000000000000000000000000000000..fe026de1546651aa2ee2923f8c2f7e15
 +    main()
 diff --git a/tests/support/physical_retirement_exit_probe.py b/tests/support/physical_retirement_exit_probe.py
 new file mode 100644
-index 0000000000000000000000000000000000000000..4658fe02426e6212ebdf92e35981277f06d70fc9
+index 00000000..4658fe02
 --- /dev/null
 +++ b/tests/support/physical_retirement_exit_probe.py
 @@ -0,0 +1,103 @@
@@ -2025,8 +3007,233 @@ index 0000000000000000000000000000000000000000..4658fe02426e6212ebdf92e35981277f
 +        raise RuntimeError("this native-thread identity witness requires Linux /proc")
 +    signal.signal(signal.SIGINT, signal.default_int_handler)
 +    print(json.dumps(exercise(Path(sys.argv[1])), sort_keys=True), flush=True)
+diff --git a/tests/support/worker_coordination.py b/tests/support/worker_coordination.py
+new file mode 100644
+index 00000000..074ed9c0
+--- /dev/null
++++ b/tests/support/worker_coordination.py
+@@ -0,0 +1,219 @@
++"""Observe caller-owned worker wrapper primitives without delaying real workers."""
++
++from __future__ import annotations
++
++import threading
++import time
++from collections.abc import MutableMapping
++from contextlib import contextmanager
++
++COORDINATION_METRICS = (
++    "coordinator_wait_calls",
++    "coordinator_registry_acquires",
++    "coordinator_registry_steps",
++    "coordinator_registry_enumerations",
++    "coordinator_weakref_retirements",
++    "coordinator_weakref_cleanup_steps",
++    "acknowledgement_probes",
++)
++
++
++@contextmanager
++def observe_worker_coordination(monkeypatch):
++    """Count actual calling-thread operations, not worker-owned bootstrap work.
++
++    Forbidden waits and registry acquisitions fail at their actual entry so a
++    regression cannot deadlock the test behind an intentionally held bootstrap.
++    Mapping proxies forward to original dictionaries; no registrations are copied
++    or lost when the observation ends while a real worker is still running.
++    Weak-reference callbacks retire their own registry entry by one direct set
++    discard or pending-list append; draining the pending list is separate work.
++    """
++    from retained_resource import Worker
++
++    caller = threading.get_ident()
++    metrics = dict.fromkeys(COORDINATION_METRICS, 0)
++
++    def record(name):
++        if threading.get_ident() == caller:
++            metrics[name] += 1
++            return True
++        return False
++
++    def forbidden_wait(actual):
++        def observed(*args, **kwargs):
++            if record("coordinator_wait_calls"):
++                raise AssertionError("worker coordination entered a waiting primitive")
++            return actual(*args, **kwargs)
++
++        return observed
++
++    class RegistryLock:
++        def __init__(self, actual):
++            self.actual = actual
++
++        def acquire(self, *args, **kwargs):
++            if record("coordinator_registry_acquires"):
++                raise AssertionError("worker coordination acquired a bootstrap registry lock")
++            return self.actual.acquire(*args, **kwargs)
++
++        def release(self):
++            return self.actual.release()
++
++        def __enter__(self):
++            self.acquire()
++            return self
++
++        def __exit__(self, *_args):
++            self.release()
++
++        def __getattr__(self, name):
++            return getattr(self.actual, name)
++
++    class Registry(MutableMapping):
++        def __init__(self, actual):
++            self.actual = actual
++
++        def __getitem__(self, key):
++            record("coordinator_registry_steps")
++            return self.actual[key]
++
++        def __setitem__(self, key, value):
++            record("coordinator_registry_steps")
++            self.actual[key] = value
++
++        def __delitem__(self, key):
++            record("coordinator_registry_steps")
++            del self.actual[key]
++
++        def __contains__(self, key):
++            record("coordinator_registry_steps")
++            return key in self.actual
++
++        def __len__(self):
++            record("coordinator_registry_steps")
++            return len(self.actual)
++
++        def __iter__(self):
++            record("coordinator_registry_enumerations")
++            return iter(self.actual)
++
++        def get(self, key, default=None):
++            record("coordinator_registry_steps")
++            return self.actual.get(key, default)
++
++        def pop(self, key, *args):
++            record("coordinator_registry_steps")
++            return self.actual.pop(key, *args)
++
++        def values(self):
++            record("coordinator_registry_enumerations")
++            return self.actual.values()
++
++        def items(self):
++            record("coordinator_registry_enumerations")
++            return self.actual.items()
++
++        def keys(self):
++            record("coordinator_registry_enumerations")
++            return self.actual.keys()
++
++        def copy(self):
++            record("coordinator_registry_enumerations")
++            return self.actual.copy()
++
++    class WeakRegistry:
++        def __init__(self, actual):
++            self.actual = actual
++
++        def add(self, value):
++            record("coordinator_registry_steps")
++            return self.actual.add(value)
++
++        def discard(self, value):
++            record("coordinator_registry_steps")
++            return self.actual.discard(value)
++
++        def __len__(self):
++            record("coordinator_registry_steps")
++            return len(self.actual)
++
++        def __contains__(self, value):
++            record("coordinator_registry_steps")
++            return value in self.actual
++
++        def __iter__(self):
++            record("coordinator_registry_enumerations")
++            return iter(self.actual)
++
++        def __getattr__(self, name):
++            return getattr(self.actual, name)
++
++    class PendingRemovals:
++        def __init__(self, actual):
++            self.actual = actual
++
++        def __len__(self):
++            record("coordinator_registry_steps")
++            return len(self.actual)
++
++        def pop(self, *args):
++            record("coordinator_weakref_cleanup_steps")
++            return self.actual.pop(*args)
++
++        def append(self, value):
++            record("coordinator_weakref_retirements")
++            return self.actual.append(value)
++
++        def __iter__(self):
++            record("coordinator_registry_enumerations")
++            return iter(self.actual)
++
++    class WeakData:
++        def __init__(self, actual):
++            self.actual = actual
++
++        def discard(self, value):
++            record("coordinator_weakref_retirements")
++            return self.actual.discard(value)
++
++        def __len__(self):
++            record("coordinator_registry_steps")
++            return len(self.actual)
++
++        def __contains__(self, value):
++            record("coordinator_registry_steps")
++            return value in self.actual
++
++        def __iter__(self):
++            record("coordinator_registry_enumerations")
++            return iter(self.actual)
++
++        def __getattr__(self, name):
++            return getattr(self.actual, name)
++
++    actual_is_set = threading.Event.is_set
++
++    def is_set(event):
++        record("acknowledgement_probes")
++        return actual_is_set(event)
++
++    with monkeypatch.context() as patch:
++        dangling = threading._dangling
++        patch.setattr(dangling, "_pending_removals", PendingRemovals(dangling._pending_removals))
++        patch.setattr(dangling, "data", WeakData(dangling.data))
++        patch.setattr(threading, "_dangling", WeakRegistry(dangling))
++        for name in ("_active_limbo_lock", "_shutdown_locks_lock"):
++            patch.setattr(threading, name, RegistryLock(getattr(threading, name)))
++        for name in ("_active", "_limbo"):
++            patch.setattr(threading, name, Registry(getattr(threading, name)))
++        for owner, name in (
++            (threading.Event, "wait"),
++            (threading.Condition, "wait"),
++            (threading.Thread, "join"),
++            (Worker, "join"),
++            (time, "sleep"),
++        ):
++            patch.setattr(owner, name, forbidden_wait(getattr(owner, name)))
++        patch.setattr(threading.Event, "is_set", is_set)
++        yield metrics
 diff --git a/tests/unit/test_archive_payload_input.py b/tests/unit/test_archive_payload_input.py
-index 9956524c67518e7acb49271d715f83487f674529..3ad0a2aaf6758c6a16b4628aaef6ac280c1e849d 100644
+index 9956524c..3ad0a2aa 100644
 --- a/tests/unit/test_archive_payload_input.py
 +++ b/tests/unit/test_archive_payload_input.py
 @@ -189,13 +189,13 @@ def test_input_release_requires_actual_original_worker_join(owned, monkeypatch):
@@ -2064,7 +3271,7 @@ index 9956524c67518e7acb49271d715f83487f674529..3ad0a2aaf6758c6a16b4628aaef6ac28
          _submit(
              registry, payload, create=lambda: _Actor(payload), advance=lambda owner: owner.advance()
 diff --git a/tests/unit/test_archive_upload_execution.py b/tests/unit/test_archive_upload_execution.py
-index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5b0ac0a16 100644
+index f2cdb597..0fccf11f 100644
 --- a/tests/unit/test_archive_upload_execution.py
 +++ b/tests/unit/test_archive_upload_execution.py
 @@ -1,8 +1,12 @@
@@ -2080,7 +3287,7 @@ index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5
  from types import SimpleNamespace
  
  import pytest
-@@ -61,6 +65,145 @@ def _joined(owner):
+@@ -61,6 +65,172 @@ def _joined(owner):
          assert not slot.worker.is_alive()
  
  
@@ -2164,69 +3371,96 @@ index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5
 +    assert pool.collect(limit=1, owner=receiver) == ()
 +
 +
-+def test_bootstrap_acknowledgement_between_wait_timeout_and_exit_is_not_failure(owned, monkeypatch):
-+    class AcknowledgedAfterTimeout(source.Worker):
++def test_native_start_does_not_observe_or_wait_for_bootstrap_acknowledgement(owned, monkeypatch):
++    class UnobservedBootstrap(source.Worker):
 +        def start(self):
-+            original_wait = self._started.wait
++            original_wait, original_is_set = self._started.wait, self._started.is_set
++            caller = threading.get_ident()
 +
-+            def expired_wait(timeout=None):
-+                # A wait may expire immediately before its event is set. Make
-+                # that ordering deterministic while using the actual native
-+                # worker and its original bootstrap acknowledgement/exit.
-+                assert original_wait(5)
-+                deadline = monotonic() + 5
-+                while not self.poll():
-+                    assert monotonic() < deadline
-+                    sleep(0.001)
-+                self._started.wait = original_wait
-+                return False
++            def waiting(timeout=None):
++                assert threading.get_ident() != caller, "native start waited for bootstrap"
++                return original_wait(timeout)
 +
-+            self._started.wait = expired_wait
++            def observed():
++                assert threading.get_ident() != caller, "native start inspected bootstrap"
++                return original_is_set()
++
++            self._started.wait, self._started.is_set = waiting, observed
 +            try:
 +                return super().start()
 +            finally:
-+                self._started.wait = original_wait
++                self._started.wait, self._started.is_set = original_wait, original_is_set
 +
-+    monkeypatch.setattr(source, "Worker", AcknowledgedAfterTimeout)
++    monkeypatch.setattr(source, "Worker", UnobservedBootstrap)
 +    pool = owned.make()
 +    value = object()
 +    assert _submit(pool, 1, lambda: value) == "submitted"
 +    slot = pool._slots[_key()]
 +    assert slot.worker.metrics["start_calls"] == 1
++    slot.worker.join(timeout=5)
 +    (completion,) = pool.collect(limit=1, owner=None)
 +    assert completion.result() is value
 +
 +
-+def test_interrupted_bootstrap_registration_withdraws_only_positive_nonstart(owned, monkeypatch):
++def test_worker_owned_registry_failure_preserves_original_diagnostic_and_slot(monkeypatch):
 +    created = []
++    failure = KeyboardInterrupt("bootstrap registration reply interrupted")
 +
 +    class OriginalWorker(source.Worker):
 +        def __init__(self, **arguments):
 +            super().__init__(**arguments)
 +            created.append(self)
 +
-+    class LostRegistrationReply(dict):
-+        def __setitem__(self, key, value):
-+            super().__setitem__(key, value)
-+            raise KeyboardInterrupt("bootstrap registration reply interrupted")
++    class LostRegistrationReply:
++        def __init__(self, actual):
++            self.actual = actual
 +
-+    pool = owned.make()
++        def __setitem__(self, key, value):
++            self.actual[key] = value
++            if isinstance(key, OriginalWorker):
++                raise failure
++
++        def __delitem__(self, key):
++            del self.actual[key]
++
++        def get(self, key, default=None):
++            return self.actual.get(key, default)
++
++        def __contains__(self, key):
++            return key in self.actual
++
++    pool = PhysicalExecutionOwner(ArchiveExecutionTuning())
 +    registry = LostRegistrationReply(threading._limbo)
 +    with monkeypatch.context() as patch:
 +        patch.setattr(source, "Worker", OriginalWorker)
 +        patch.setattr(threading, "_limbo", registry)
-+        with pytest.raises(KeyboardInterrupt, match="registration reply"):
-+            _submit(pool, 1, lambda: pytest.fail("unstarted work was dispatched"))
++        assert (
++            _submit(pool, 1, lambda: pytest.fail("failed bootstrap dispatched work")) == "submitted"
++        )
++        slot = pool._slots[_key()]
++        deadline = monotonic() + 5
++        while not slot.worker._exit_owner.poll():
++            assert monotonic() < deadline
++            sleep(0.001)
 +        assert len(created) == 1 and created[0] not in registry
-+        assert not created[0].started and created[0].metrics["start_calls"] == 0
-+        assert pool.status(_key()) == "untracked"
-+        assert pool._counts == {False: 0, True: 0} and not pool._targets
++        assert created[0].started and created[0].received
++        assert created[0].bootstrap_exception is failure
++        for action in (
++            lambda: pool.status(_key()),
++            lambda: pool.collect(limit=1, owner=None),
++            pool.close,
++        ):
++            with pytest.raises(RuntimeError, match="before acknowledgement") as observed:
++                action()
++            assert observed.value.__cause__ is failure
++        assert pool._slots[_key()] is slot and not slot.future.done()
++        assert pool._counts[False] == pool._targets[(False, "target-a")] == 1
 +
 +
  def test_forward_exhaustion_preserves_target_isolation_and_terminal_headroom(owned):
      owner = owned.make(
          forward_workers=2,
-@@ -156,7 +299,7 @@ def test_retained_turn_cannot_be_reinterpreted_as_another_construction_or_lane(o
+@@ -156,7 +326,7 @@ def test_retained_turn_cannot_be_reinterpreted_as_another_construction_or_lane(o
  def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, monkeypatch):
      returned = threading.Event()
      release = owned.event()
@@ -2235,7 +3469,7 @@ index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5
  
      class RetainedThread(actual_thread):
          def run(self):
-@@ -164,7 +307,7 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
+@@ -164,7 +334,7 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
              returned.set()
              assert release.wait(10), "fixture failed to release worker exit"
  
@@ -2244,7 +3478,7 @@ index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5
      owner = owned.make(forward_workers=1)
      assert not owner.has_unreceived_work()
      with owner._lock:
-@@ -181,16 +324,16 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
+@@ -181,16 +351,16 @@ def test_published_future_is_not_physical_worker_join_or_free_capacity(owned, mo
      release.set()
      _joined(owner)
      assert owner.has_unreceived_work()
@@ -2268,7 +3502,7 @@ index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5
      assert result.result() is original and not owner.has_unreceived_work()
      assert _submit(owner, 2, lambda: None) == "submitted"
  
-@@ -237,7 +380,7 @@ def test_poll_and_submission_defer_under_registry_contention_without_waiting(own
+@@ -237,7 +407,7 @@ def test_poll_and_submission_defer_under_registry_contention_without_waiting(own
  
  @pytest.mark.parametrize("after_start", [False, True])
  def test_startup_failure_releases_only_a_worker_that_never_started(owned, monkeypatch, after_start):
@@ -2277,7 +3511,7 @@ index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5
      release = owned.event()
      entered = threading.Event()
  
-@@ -247,11 +390,11 @@ def test_startup_failure_releases_only_a_worker_that_never_started(owned, monkey
+@@ -247,11 +417,11 @@ def test_startup_failure_releases_only_a_worker_that_never_started(owned, monkey
                  super().start()
              raise RuntimeError("synthetic startup acknowledgement failure")
  
@@ -2291,7 +3525,7 @@ index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5
      if after_start:
          assert entered.wait(5)
          assert (
-@@ -450,17 +593,17 @@ def test_receiver_identity_keeps_foreign_results_and_capacity_charged(owned, mon
+@@ -450,17 +620,17 @@ def test_receiver_identity_keeps_foreign_results_and_capacity_charged(owned, mon
      _joined(pool)
      foreign = pool._slots[_key(1)]
  
@@ -2314,7 +3548,7 @@ index f2cdb597c115b2cc5d5e996c0c9f2d05433a6649..5071b053983d43008e2f85bad15226e5
      assert (
          pool.try_submit(
 diff --git a/tests/unit/test_archive_upload_terminal_registry.py b/tests/unit/test_archive_upload_terminal_registry.py
-index f43d4fe7f5eebd10f2a57d5496614ce6a5d7f2c5..46cb203f105ee3ad4f543e6494588bea2e159f50 100644
+index f43d4fe7..46cb203f 100644
 --- a/tests/unit/test_archive_upload_terminal_registry.py
 +++ b/tests/unit/test_archive_upload_terminal_registry.py
 @@ -229,7 +229,7 @@ def test_positive_thread_nonentry_releases_unused_terminal_reservation(tmp_path,
@@ -2336,10 +3570,10 @@ index f43d4fe7f5eebd10f2a57d5496614ce6a5d7f2c5..46cb203f105ee3ad4f543e6494588bea
              _submit(registry, key, case.incarnation)
      assert context.received and context.actor is original
 diff --git a/tests/unit/test_ci_qualification.py b/tests/unit/test_ci_qualification.py
-index c81f1eaf2fe0f79b04e31c7363cf113e96b366a3..5ebaa02e25821df3ad5eb8292e45f0ddab86ad1b 100644
+index c81f1eaf..f133f2d7 100644
 --- a/tests/unit/test_ci_qualification.py
 +++ b/tests/unit/test_ci_qualification.py
-@@ -984,12 +984,15 @@ def test_native_qualification_retains_structured_results_without_repeating_work(
+@@ -984,12 +984,16 @@ def test_native_qualification_retains_structured_results_without_repeating_work(
  
  
  @pytest.mark.parametrize("runner", ["ubuntu-24.04", "macos-15", "windows-2025"])
@@ -2355,10 +3589,11 @@ index c81f1eaf2fe0f79b04e31c7363cf113e96b366a3..5ebaa02e25821df3ad5eb8292e45f0dd
 +    expected = set(make.growth_witnesses)
 +    if runner in {"ubuntu-24.04", "windows-2025"}:
 +        expected.add("retained-resource.native-worker-work")
++        expected.add("retained-resource.worker-coordination-work")
 +    assert set(native.growth_witnesses) == expected
      assert native.growth_declarations == make.growth_declarations
 diff --git a/tests/unit/test_discovery_retirement_registry.py b/tests/unit/test_discovery_retirement_registry.py
-index 4148926f76f9d539db81d16679e48b96a52646a0..f655651a38e6de2ea4ebebf815b0fd2c668934cc 100644
+index 4148926f..f655651a 100644
 --- a/tests/unit/test_discovery_retirement_registry.py
 +++ b/tests/unit/test_discovery_retirement_registry.py
 @@ -103,7 +103,7 @@ def test_published_result_and_closed_actor_wait_for_actual_worker_exit(
@@ -2416,7 +3651,7 @@ index 4148926f76f9d539db81d16679e48b96a52646a0..f655651a38e6de2ea4ebebf815b0fd2c
              assert returned.wait(5)
              assert actor.received and original.owner.received
 diff --git a/tests/unit/test_journal_retirement_registry.py b/tests/unit/test_journal_retirement_registry.py
-index d057fd1ec2c9b05480828ec93a0df49261b06135..1d79cfebdcad477ff3b216660de37e45e2156a59 100644
+index d057fd1e..1d79cfeb 100644
 --- a/tests/unit/test_journal_retirement_registry.py
 +++ b/tests/unit/test_journal_retirement_registry.py
 @@ -1,6 +1,9 @@
@@ -2480,10 +3715,68 @@ index d057fd1ec2c9b05480828ec93a0df49261b06135..1d79cfebdcad477ff3b216660de37e45
      tmp_path, cleanups, monkeypatch
  ):
 diff --git a/tests/unit/test_physical_workspace_execution.py b/tests/unit/test_physical_workspace_execution.py
-index 7418df88f74fbf3cae02e3a73ede9ebd98c78610..977694fdf1571d57bec55237f9f155d3754bdc74 100644
+index 7418df88..21e39200 100644
 --- a/tests/unit/test_physical_workspace_execution.py
 +++ b/tests/unit/test_physical_workspace_execution.py
-@@ -115,7 +115,7 @@ def test_workspace_original_cannot_be_adopted_or_replaced(owned, change):
+@@ -1,5 +1,8 @@
+ from __future__ import annotations
+ 
++import json
++import subprocess
++import sys
+ import threading
+ 
+ import pytest
+@@ -28,6 +31,48 @@ def submit(pool, receiver, original, number=1, *, work=lambda: None, target="loc
+     )
+ 
+ 
++@pytest.mark.skipif(sys.platform != "linux", reason="native bootstrap witness uses Linux /proc")
++@pytest.mark.parametrize("kind", ("workspace", "collection"))
++@pytest.mark.parametrize("mode", ("held", "interrupted", "failure"))
++def test_bootstrap_never_blocks_independent_physical_coordination(kind, mode, record_property):
++    process = subprocess.run(
++        [
++            sys.executable,
++            "-m",
++            "tests.support.physical_bootstrap_probe",
++            "--kind",
++            kind,
++            "--mode",
++            mode,
++            "--expect",
++            "safe",
++        ],
++        capture_output=True,
++        text=True,
++        timeout=40,
++    )
++    assert process.returncode == 0, (process.stdout + process.stderr)[-6000:]
++    receipt = json.loads(process.stdout.strip().splitlines()[-1])
++    assert receipt["safe"] and receipt["submission_returned_before_release"]
++    assert not receipt["bootstrap_acknowledged_before_release"]
++    assert receipt["original_native_creation_recorded"]
++    assert receipt["original_native_start_calls"] == 1
++    assert receipt["coordinator_sigint_received"] is (mode == "interrupted")
++    assert receipt["ready_outcomes_before_release"] == 1
++    assert receipt["fresh_submission_before_release"] == "submitted"
++    assert receipt["fresh_outcomes_before_release"] == 1
++    assert receipt["original_slot_retained"] and receipt["original_capacity_retained"]
++    if mode == "failure":
++        assert receipt["semantic_future_remains_unset"]
++        assert receipt["failed_original_remains_charged"] and receipt["no_duplicate_native_join"]
++        assert receipt["shutdown_received_later_original_before_diagnostic"]
++        assert receipt["shutdown_reported_original_cause"]
++        assert receipt["same_owner_ready_outcome_received"]
++    else:
++        assert receipt["native_alive_before_release"] and receipt["original_outcome_received_once"]
++    record_property("physical_bootstrap_receipt", receipt)
++
++
+ def test_workspace_and_archive_share_global_terminal_capacity(owned):
+     pool = owned.make(terminal_workers=1)
+     receiver, original = object(), object()
+@@ -115,7 +160,7 @@ def test_workspace_original_cannot_be_adopted_or_replaced(owned, change):
  
  
  def test_workspace_future_completion_waits_for_actual_worker_join(owned, monkeypatch):
@@ -2492,7 +3785,7 @@ index 7418df88f74fbf3cae02e3a73ede9ebd98c78610..977694fdf1571d57bec55237f9f155d3
      release, returned = owned.event(), threading.Event()
  
      class LateExit(actual_thread):
-@@ -124,7 +124,7 @@ def test_workspace_future_completion_waits_for_actual_worker_join(owned, monkeyp
+@@ -124,7 +169,7 @@ def test_workspace_future_completion_waits_for_actual_worker_join(owned, monkeyp
              returned.set()
              assert release.wait(10)
  
@@ -2501,7 +3794,7 @@ index 7418df88f74fbf3cae02e3a73ede9ebd98c78610..977694fdf1571d57bec55237f9f155d3
      pool = owned.make(terminal_workers=1)
      receiver, original, value = object(), object(), object()
      assert submit(pool, receiver, original, work=lambda: value) == "submitted"
-@@ -134,16 +134,16 @@ def test_workspace_future_completion_waits_for_actual_worker_join(owned, monkeyp
+@@ -134,16 +179,16 @@ def test_workspace_future_completion_waits_for_actual_worker_join(owned, monkeyp
      release.set()
      _joined(pool)
      slot = pool._slots[key()]
@@ -2525,7 +3818,7 @@ index 7418df88f74fbf3cae02e3a73ede9ebd98c78610..977694fdf1571d57bec55237f9f155d3
      assert submit(pool, receiver, object(), 2) == "submitted"
  
  
-@@ -176,7 +176,7 @@ def test_wrong_receiving_kind_cannot_remove_the_original_workspace(owned):
+@@ -176,7 +221,7 @@ def test_wrong_receiving_kind_cannot_remove_the_original_workspace(owned):
  
  @pytest.mark.parametrize("after_start", (False, True))
  def test_workspace_startup_uncertainty_preserves_started_execution(owned, monkeypatch, after_start):
@@ -2534,7 +3827,7 @@ index 7418df88f74fbf3cae02e3a73ede9ebd98c78610..977694fdf1571d57bec55237f9f155d3
      release, entered = owned.event(), threading.Event()
  
      class FailedStart(actual_thread):
-@@ -185,12 +185,12 @@ def test_workspace_startup_uncertainty_preserves_started_execution(owned, monkey
+@@ -185,12 +230,12 @@ def test_workspace_startup_uncertainty_preserves_started_execution(owned, monkey
                  super().start()
              raise OSError("actual startup reply uncertain")
  
@@ -2550,10 +3843,31 @@ index 7418df88f74fbf3cae02e3a73ede9ebd98c78610..977694fdf1571d57bec55237f9f155d3
          assert entered.wait(5)
          assert submit(pool, receiver, original) == "retained"
 diff --git a/tests/unit/test_physical_workspace_execution_growth.py b/tests/unit/test_physical_workspace_execution_growth.py
-index 7f03a80f930abaa31bd79aad6f6c02f41f706495..22a2d0c07e6923d57e606c84242617920efcd94b 100644
+index 7f03a80f..01a73b37 100644
 --- a/tests/unit/test_physical_workspace_execution_growth.py
 +++ b/tests/unit/test_physical_workspace_execution_growth.py
-@@ -31,8 +31,7 @@ def observed(pool, monkeypatch):
+@@ -1,8 +1,11 @@
+ from __future__ import annotations
+ 
+ import os
++import threading
++import weakref
++from _weakrefset import _IterationGuard
+ from collections import OrderedDict
+-from contextlib import contextmanager
++from contextlib import contextmanager, nullcontext
+ from dataclasses import asdict, is_dataclass
+ 
+ import pytest
+@@ -12,6 +15,7 @@ from riverhog_growth_contracts import growth_binding, project_bindings, validate
+ 
+ from scripts.validation_numeric import numeric_policy_from_environment
+ from tests.support.catalog_work import octets
++from tests.support.worker_coordination import COORDINATION_METRICS, observe_worker_coordination
+ from tests.support.workspace_reclamation import execution_sample
+ from tests.unit.test_physical_workspace_execution import key
+ 
+@@ -31,10 +35,10 @@ def observed(pool, monkeypatch):
              "mapping_enumerations",
              "workers_constructed",
              "workers_started",
@@ -2562,8 +3876,11 @@ index 7f03a80f930abaa31bd79aad6f6c02f41f706495..22a2d0c07e6923d57e606c8424261792
 +            "worker_receive_calls",
              "results_received",
              "payload_octets",
++            *COORDINATION_METRICS,
          ),
-@@ -107,7 +106,7 @@ def observed(pool, monkeypatch):
+         0,
+     )
+@@ -107,7 +111,7 @@ def observed(pool, monkeypatch):
      class CountedOrder(Counted, OrderedDict):
          pass
  
@@ -2572,7 +3889,7 @@ index 7f03a80f930abaa31bd79aad6f6c02f41f706495..22a2d0c07e6923d57e606c8424261792
  
      class CountedThread(actual_thread):
          def __init__(self, *args, **kwargs):
-@@ -115,8 +114,11 @@ def observed(pool, monkeypatch):
+@@ -115,40 +119,50 @@ def observed(pool, monkeypatch):
              super().__init__(*args, **kwargs)
  
          def start(self):
@@ -2584,22 +3901,26 @@ index 7f03a80f930abaa31bd79aad6f6c02f41f706495..22a2d0c07e6923d57e606c8424261792
 +            finally:
 +                metrics["workers_started"] += self.metrics["start_calls"] - before
  
-     originals = {name: getattr(pool, name) for name in ("_slots", "_poll", "_counts", "_targets")}
+-    originals = {name: getattr(pool, name) for name in ("_slots", "_poll", "_counts", "_targets")}
++    mapping_names = ("_slots", "_poll", "_counts", "_targets")
      try:
-@@ -126,23 +128,22 @@ def observed(pool, monkeypatch):
+-        for name, value in originals.items():
++        for name in mapping_names:
++            value = getattr(pool, name)
+             if name == "_poll":
+                 value = {k: CountedOrder(v) for k, v in value.items()}
              setattr(pool, name, CountedDict(value))
++            # Only the replacement owning mapping may retain original slots.
++            # Keeping a second dictionary hides Worker finalization in collect.
++            del value
          with monkeypatch.context() as patch:
              patch.setattr(owner, "OrderedDict", CountedOrder)
 -            patch.setattr(owner, "Thread", CountedThread)
 -            # Existing actual workers are joined. Count only the observed
 -            # pool's zero-wait liveness/join primitives, never fixture waits.
-+            patch.setattr(owner, "Worker", CountedThread)
-+            # Existing actual native workers are received. Count only the
-+            # pool's zero-wait receive primitives, never fixture waits.
-             for slot in originals["_slots"].values():
+-            for slot in originals["_slots"].values():
 -                actual_alive, actual_join = slot.worker.is_alive, slot.worker.join
-+                actual_receive = slot.worker.poll
- 
+-
 -                def alive(_actual=actual_alive):
 -                    metrics["worker_liveness_calls"] += 1
 -                    return _actual()
@@ -2608,25 +3929,91 @@ index 7f03a80f930abaa31bd79aad6f6c02f41f706495..22a2d0c07e6923d57e606c8424261792
 -                    metrics["worker_join_calls"] += 1
 -                    assert timeout == 0
 -                    return _actual(timeout=timeout)
-+                def receive(_actual=actual_receive, _worker=slot.worker):
-+                    before = _worker.metrics["poll_calls"]
-+                    try:
-+                        return _actual()
-+                    finally:
-+                        calls = _worker.metrics["poll_calls"] - before
-+                        assert calls == 1
-+                        metrics["worker_receive_calls"] += calls
- 
+-
 -                patch.setattr(slot.worker, "is_alive", alive)
 -                patch.setattr(slot.worker, "join", joined)
-+                patch.setattr(slot.worker, "poll", receive)
++            patch.setattr(owner, "Worker", CountedThread)
++            # Existing actual native workers are received. Count only the
++            # pool's zero-wait receive primitives, never fixture waits. Class
++            # interception keeps no bound methods or extra Worker references.
++            actual_receive = actual_thread.poll
++
++            def receive(worker):
++                before = worker.metrics["poll_calls"]
++                try:
++                    return actual_receive(worker)
++                finally:
++                    calls = worker.metrics["poll_calls"] - before
++                    assert calls == 1
++                    metrics["worker_receive_calls"] += calls
++
++            patch.setattr(actual_thread, "poll", receive)
              active = True
-             yield metrics
+-            yield metrics
++            with observe_worker_coordination(monkeypatch) as coordinator_metrics:
++                try:
++                    yield metrics
++                finally:
++                    metrics.update(coordinator_metrics)
      finally:
-@@ -314,5 +315,5 @@ def test_measured_workspace_receiving(monkeypatch, record_property):
+         active = False
+         # Restore ordinary owning mappings without invoking observed iteration.
+-        for name in originals:
++        for name in mapping_names:
+             current = getattr(pool, name)
+             copied = dict.copy(current)
+             if name == "_poll":
+@@ -173,6 +187,36 @@ def seed(pool, count, target, receiver, *, start=1):
+         assert not pool._slots[key(number)].worker.is_alive()
+ 
+ 
++@pytest.mark.parametrize("iteration_pending", (False, True))
++def test_receiving_observation_includes_actual_original_worker_retirement(
++    monkeypatch, iteration_pending
++):
++    pool = owner.PhysicalExecutionOwner(
++        ArchiveExecutionTuning(terminal_workers=3, terminal_workers_per_target=3)
++    )
++    receiver = object()
++    try:
++        seed(pool, 3, "local", receiver)
++        originals = tuple(weakref.ref(pool._slots[key(number)].worker) for number in range(1, 4))
++        # Use the actual WeakSet iterator guard without retaining a yielded
++        # Worker. Both direct discard and deferred append are real callbacks.
++        guard = _IterationGuard(threading._dangling) if iteration_pending else nullcontext()
++        with guard:
++            pending = len(threading._dangling._pending_removals)
++            with observed(pool, monkeypatch) as metrics:
++                results = pool.collect_workspace(limit=3, owner=receiver)
++            assert len(results) == 3 and all(original() is None for original in originals)
++            assert metrics["coordinator_weakref_retirements"] == 3
++            assert metrics["coordinator_weakref_cleanup_steps"] == 0
++            assert metrics["coordinator_registry_steps"] == 0
++            assert len(threading._dangling._pending_removals) - pending == (
++                3 if iteration_pending else 0
++            )
++        assert not pool._slots and pool._counts[True] == 0
++    finally:
++        pool.close()
++
++
+ def sample(binding, projection, dimensions, metrics):
+     value = execution_sample(binding, projection, dimensions, metrics, {})
+     validate_execution_samples(
+@@ -285,6 +329,7 @@ def test_measured_workspace_receiving(monkeypatch, record_property):
+                         results = pool.collect_workspace(limit=quantum, owner=receiver)
+                         metrics["results_received"] = len(results)
+                     assert len(results) == quantum
++                    assert metrics["coordinator_weakref_retirements"] == quantum
+                     assert all(
+                         value.owner is receiver and value.result() is None for value in results
+                     )
+@@ -314,5 +359,7 @@ def test_measured_workspace_receiving(monkeypatch, record_property):
          "one/three-result receiving quanta. Real serially started/joined threads remain "
          "charged until receiving. All actual mapping primitives and full keys are counted, "
          "whole-pool enumeration is forbidden, foreign originals remain charged and every "
 -        "observed join is zero-wait. Worker bodies remain outside coordination.",
-+        "observed receive is zero-wait. Worker bodies remain outside coordination.",
++        "observed receive is zero-wait. Actual caller waits and bootstrap registry work "
++        "are observed and forbidden; original Worker weakref retirement and acknowledgement "
++        "flags are bounded by the receiving quantum. Worker bodies remain outside coordination.",
      )

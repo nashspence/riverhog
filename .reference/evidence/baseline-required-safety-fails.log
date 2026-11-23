@@ -2,9 +2,9 @@
 Traceback (most recent call last):
   File "<frozen runpy>", line 198, in _run_module_as_main
   File "<frozen runpy>", line 88, in _run_code
-  File "/workspace/scratch/661f61f2cc53/riverhog-patch-check/tests/support/physical_exit_probe.py", line 301, in <module>
+  File "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check/tests/support/physical_exit_probe.py", line 301, in <module>
     main()
-  File "/workspace/scratch/661f61f2cc53/riverhog-patch-check/tests/support/physical_exit_probe.py", line 297, in main
+  File "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check/tests/support/physical_exit_probe.py", line 297, in main
     assert report["safe"] is (args.expect == "safe"), report
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 AssertionError: {'kind': 'workspace', 'tail': 'target', 'outcome': 'success', 'independent_received_while_original_held': True, 'coordinator_interruptions': 1, 'future_done': True, 'native_alive_after_interrupt': True, 'worker_reports_alive_after_interrupt': False, 'tail_held_after_interrupt': True, 'status_after_interrupt': 'awaiting-join', 'outcomes_before_exit': 1, 'capacity_before_exit': 0, 'target_capacity_before_exit': 0, 'original_slot_retained': False, 'foreign_receiver_empty': True, 'shared_lease_available_before_exit': None, 'shared_lease_available_after_exit': None, 'outcomes_after_exit': 0, 'exact_original_outcome_received': True, 'original_native_exit_received': True, 'safe': False}

@@ -1,0 +1,10 @@
+{"bootstrap_acknowledged_before_release": false, "coordinator_sigint_received": false, "fresh_outcomes_before_release": 0, "fresh_submission_before_release": "busy", "kind": "workspace", "mode": "held", "native_alive_before_release": true, "original_capacity_retained": true, "original_future_done_before_release": false, "original_native_creation_recorded": true, "original_native_start_calls": 1, "original_outcome_received_once": true, "original_slot_retained": true, "ready_outcomes_before_release": 0, "ready_status_before_release": "busy", "safe": false, "submission_returned_before_release": false}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check/tests/support/physical_bootstrap_probe.py", line 347, in <module>
+    main()
+  File "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check/tests/support/physical_bootstrap_probe.py", line 343, in main
+    assert report["safe"] is (args.expect == "safe"), report
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'mode': 'held', 'kind': 'workspace', 'submission_returned_before_release': False, 'bootstrap_acknowledged_before_release': False, 'original_native_creation_recorded': True, 'original_native_start_calls': 1, 'coordinator_sigint_received': False, 'original_future_done_before_release': False, 'ready_status_before_release': 'busy', 'ready_outcomes_before_release': 0, 'fresh_submission_before_release': 'busy', 'fresh_outcomes_before_release': 0, 'original_slot_retained': True, 'original_capacity_retained': True, 'native_alive_before_release': True, 'original_outcome_received_once': True, 'safe': False}

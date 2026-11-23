@@ -1,7 +1,13 @@
 {
-  "source": "3d039b382ee33d66c6049dd69e498169aa75bf6d",
-  "patch_sha256": "6d8e1caa441e2433972405755b0db3d8d4a0cc6a16585d09b8e267fa8363e46d",
+  "source": "0b25c7c67f7b3ee8787d8d753d4b6d585e8cea1f",
+  "previous_reference": "3dce6780c4883ad96cb32ff3f7ef80883fef6528",
+  "suite_scope": "broader",
+  "patch_sha256": "a61491159fad48e70f9c81f0680a78b4a5c03528b46bd71961a5b7b4312a0598",
   "python": "3.12.3 (main, Apr 15 2024, 18:25:56) [Clang 17.0.6 ]",
+  "uv_version": "uv 0.11.24 (x86_64-unknown-linux-gnu)",
+  "uv_executable": "/workspace/scratch/939b84c043b0/996-toolchain/bootstrap/bin/uv",
+  "uv_cache_dir": "/workspace/scratch/939b84c043b0/996-toolchain/cache",
+  "verifier_sha256": "ca49818c3768e4f6a353796dcbd0cafba23c5ce102b79a41577f17d62cf27a40",
   "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
   "libc": [
     "glibc",
@@ -11,7 +17,7 @@
     {
       "name": "baseline-collection-target-success",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "tests.support.physical_exit_probe",
         "--kind",
@@ -21,20 +27,21 @@
         "--outcome",
         "success",
         "--implementation",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/original-physical-execution.py",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/original-physical-execution.py",
         "--lease-root",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/baseline-collection-target-success-lease",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/baseline-collection-target-success-lease",
         "--expect",
         "unsafe"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 5.308
+      "elapsed_seconds": 6.511
     },
     {
       "name": "baseline-collection-target-failure",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "tests.support.physical_exit_probe",
         "--kind",
@@ -44,20 +51,21 @@
         "--outcome",
         "failure",
         "--implementation",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/original-physical-execution.py",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/original-physical-execution.py",
         "--lease-root",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/baseline-collection-target-failure-lease",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/baseline-collection-target-failure-lease",
         "--expect",
         "unsafe"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 4.669
+      "elapsed_seconds": 4.312
     },
     {
       "name": "baseline-collection-thread-local-success",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "tests.support.physical_exit_probe",
         "--kind",
@@ -67,20 +75,21 @@
         "--outcome",
         "success",
         "--implementation",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/original-physical-execution.py",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/original-physical-execution.py",
         "--lease-root",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/baseline-collection-thread-local-success-lease",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/baseline-collection-thread-local-success-lease",
         "--expect",
         "unsafe"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 4.92
+      "elapsed_seconds": 4.608
     },
     {
       "name": "baseline-collection-thread-local-failure",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "tests.support.physical_exit_probe",
         "--kind",
@@ -90,20 +99,21 @@
         "--outcome",
         "failure",
         "--implementation",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/original-physical-execution.py",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/original-physical-execution.py",
         "--lease-root",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/baseline-collection-thread-local-failure-lease",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/baseline-collection-thread-local-failure-lease",
         "--expect",
         "unsafe"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 5.129
+      "elapsed_seconds": 4.367
     },
     {
       "name": "baseline-workspace-target-success",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "tests.support.physical_exit_probe",
         "--kind",
@@ -113,20 +123,21 @@
         "--outcome",
         "success",
         "--implementation",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/original-physical-execution.py",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/original-physical-execution.py",
         "--lease-root",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/baseline-workspace-target-success-lease",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/baseline-workspace-target-success-lease",
         "--expect",
         "unsafe"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 4.617
+      "elapsed_seconds": 4.626
     },
     {
       "name": "baseline-workspace-target-failure",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "tests.support.physical_exit_probe",
         "--kind",
@@ -136,20 +147,21 @@
         "--outcome",
         "failure",
         "--implementation",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/original-physical-execution.py",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/original-physical-execution.py",
         "--lease-root",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/baseline-workspace-target-failure-lease",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/baseline-workspace-target-failure-lease",
         "--expect",
         "unsafe"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 5.181
+      "elapsed_seconds": 4.359
     },
     {
       "name": "baseline-workspace-thread-local-success",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "tests.support.physical_exit_probe",
         "--kind",
@@ -159,20 +171,21 @@
         "--outcome",
         "success",
         "--implementation",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/original-physical-execution.py",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/original-physical-execution.py",
         "--lease-root",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/baseline-workspace-thread-local-success-lease",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/baseline-workspace-thread-local-success-lease",
         "--expect",
         "unsafe"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 4.501
+      "elapsed_seconds": 4.27
     },
     {
       "name": "baseline-workspace-thread-local-failure",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "tests.support.physical_exit_probe",
         "--kind",
@@ -182,20 +195,21 @@
         "--outcome",
         "failure",
         "--implementation",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/original-physical-execution.py",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/original-physical-execution.py",
         "--lease-root",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/baseline-workspace-thread-local-failure-lease",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/baseline-workspace-thread-local-failure-lease",
         "--expect",
         "unsafe"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 4.553
+      "elapsed_seconds": 4.538
     },
     {
       "name": "baseline-required-safety-fails",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "tests.support.physical_exit_probe",
         "--kind",
@@ -205,13 +219,105 @@
         "--outcome",
         "success",
         "--implementation",
-        "/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/original-physical-execution.py",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/original-physical-execution.py",
         "--expect",
         "safe"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 1,
       "expected_exit_code": 1,
-      "elapsed_seconds": 4.79
+      "elapsed_seconds": 4.287
+    },
+    {
+      "name": "previous-proposal-init",
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/previous-proposal",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.009
+    },
+    {
+      "name": "previous-proposal-materialize",
+      "command": [
+        "git",
+        "apply",
+        "--include=packages/retained-resource/src/retained_resource/worker.py",
+        "--include=riverhog/src/riverhog_core/services/physical_execution.py"
+      ],
+      "cwd": "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/previous-proposal",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 0.004
+    },
+    {
+      "name": "previous-startup-collection",
+      "command": [
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
+        "-m",
+        "tests.support.physical_bootstrap_probe",
+        "--mode",
+        "held",
+        "--kind",
+        "collection",
+        "--worker",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/previous-proposal/packages/retained-resource/src/retained_resource/worker.py",
+        "--implementation",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/previous-proposal/riverhog/src/riverhog_core/services/physical_execution.py",
+        "--expect",
+        "unsafe"
+      ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 9.554
+    },
+    {
+      "name": "previous-startup-workspace",
+      "command": [
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
+        "-m",
+        "tests.support.physical_bootstrap_probe",
+        "--mode",
+        "held",
+        "--kind",
+        "workspace",
+        "--worker",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/previous-proposal/packages/retained-resource/src/retained_resource/worker.py",
+        "--implementation",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/previous-proposal/riverhog/src/riverhog_core/services/physical_execution.py",
+        "--expect",
+        "safe"
+      ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "elapsed_seconds": 9.509
+    },
+    {
+      "name": "previous-startup-required-safety-fails",
+      "command": [
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
+        "-m",
+        "tests.support.physical_bootstrap_probe",
+        "--mode",
+        "held",
+        "--kind",
+        "workspace",
+        "--worker",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/previous-proposal/packages/retained-resource/src/retained_resource/worker.py",
+        "--implementation",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/previous-proposal/riverhog/src/riverhog_core/services/physical_execution.py",
+        "--expect",
+        "safe"
+      ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "elapsed_seconds": 9.328
     },
     {
       "name": "diff-check",
@@ -220,14 +326,15 @@
         "diff",
         "--check"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 0.007
+      "elapsed_seconds": 0.148
     },
     {
       "name": "ruff",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "ruff",
         "check",
@@ -242,8 +349,10 @@
         "riverhog/src/riverhog_core/services/physical_execution.py",
         "riverhog/src/riverhog_core/services/physical_workspace_growth.py",
         "scripts/ci_qualification.py",
+        "tests/support/physical_bootstrap_probe.py",
         "tests/support/physical_exit_probe.py",
         "tests/support/physical_retirement_exit_probe.py",
+        "tests/support/worker_coordination.py",
         "tests/unit/test_archive_payload_input.py",
         "tests/unit/test_archive_upload_execution.py",
         "tests/unit/test_archive_upload_terminal_registry.py",
@@ -253,14 +362,15 @@
         "tests/unit/test_physical_workspace_execution.py",
         "tests/unit/test_physical_workspace_execution_growth.py"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 0.035
+      "elapsed_seconds": 0.117
     },
     {
       "name": "format",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "ruff",
         "format",
@@ -276,8 +386,10 @@
         "riverhog/src/riverhog_core/services/physical_execution.py",
         "riverhog/src/riverhog_core/services/physical_workspace_growth.py",
         "scripts/ci_qualification.py",
+        "tests/support/physical_bootstrap_probe.py",
         "tests/support/physical_exit_probe.py",
         "tests/support/physical_retirement_exit_probe.py",
+        "tests/support/worker_coordination.py",
         "tests/unit/test_archive_payload_input.py",
         "tests/unit/test_archive_upload_execution.py",
         "tests/unit/test_archive_upload_terminal_registry.py",
@@ -287,34 +399,36 @@
         "tests/unit/test_physical_workspace_execution.py",
         "tests/unit/test_physical_workspace_execution_growth.py"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 0.034
+      "elapsed_seconds": 0.051
     },
     {
       "name": "mypy",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "mypy",
         "packages/retained-resource/src/retained_resource",
         "riverhog/src/riverhog_core/services/physical_execution.py",
         "riverhog/src/riverhog_core/services/physical_workspace_growth.py"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 0.984
+      "elapsed_seconds": 13.097
     },
     {
-      "name": "focused-tests",
+      "name": "broader-tests",
       "command": [
-        "/workspace/scratch/661f61f2cc53/1005-final-env/bin/python",
+        "/workspace/scratch/661f61f2cc53/1005-startup-final-env/bin/python",
         "-m",
         "pytest",
         "-q",
         "-o",
         "junit_family=legacy",
-        "--junitxml=/workspace/scratch/661f61f2cc53/1005-focused-final-evidence/focused-tests.xml",
+        "--junitxml=/workspace/scratch/661f61f2cc53/1005-startup-final-v2-evidence/broader-tests.xml",
         "--maxfail=1",
         "packages/retained-resource/tests",
         "tests/unit/test_archive_upload_execution.py",
@@ -326,14 +440,13 @@
         "tests/unit/test_physical_workspace_execution_growth.py",
         "tests/unit/test_ci_qualification.py",
         "tests/unit/test_native_make_evidence.py",
-        "tests/unit/test_workspace_boundaries.py::test_implementation_projects_do_not_cross_owner_boundaries",
-        "tests/unit/test_workspace_boundaries.py::test_shared_packages_do_not_import_implementation_projects",
-        "tests/unit/test_workspace_boundaries.py::test_core_dependency_graphs_are_acyclic",
-        "tests/unit/test_dependency_policy.py"
+        "tests/unit/test_dependency_policy.py",
+        "tests/unit/test_workspace_boundaries.py"
       ],
+      "cwd": "/workspace/scratch/661f61f2cc53/riverhog-startup-final-check",
       "exit_code": 0,
       "expected_exit_code": 0,
-      "elapsed_seconds": 169.772
+      "elapsed_seconds": 1151.346
     }
   ],
   "baseline_observations": [
@@ -522,6 +635,65 @@
       "worker_reports_alive_after_interrupt": false
     }
   ],
+  "previous_startup_observations": [
+    {
+      "bootstrap_acknowledged_before_release": false,
+      "coordinator_sigint_received": false,
+      "fresh_outcomes_before_release": 0,
+      "fresh_submission_before_release": "busy",
+      "kind": "collection",
+      "mode": "held",
+      "native_alive_before_release": true,
+      "original_capacity_retained": true,
+      "original_future_done_before_release": false,
+      "original_native_creation_recorded": true,
+      "original_native_start_calls": 1,
+      "original_outcome_received_once": true,
+      "original_slot_retained": true,
+      "ready_outcomes_before_release": 0,
+      "ready_status_before_release": "busy",
+      "safe": false,
+      "submission_returned_before_release": false
+    },
+    {
+      "bootstrap_acknowledged_before_release": false,
+      "coordinator_sigint_received": false,
+      "fresh_outcomes_before_release": 0,
+      "fresh_submission_before_release": "busy",
+      "kind": "workspace",
+      "mode": "held",
+      "native_alive_before_release": true,
+      "original_capacity_retained": true,
+      "original_future_done_before_release": false,
+      "original_native_creation_recorded": true,
+      "original_native_start_calls": 1,
+      "original_outcome_received_once": true,
+      "original_slot_retained": true,
+      "ready_outcomes_before_release": 0,
+      "ready_status_before_release": "busy",
+      "safe": false,
+      "submission_returned_before_release": false
+    }
+  ],
   "baseline_owner_sha256": "fdba1ac2bceb0b7cf60c93c60c4bf9ae7952cbed7b7cd4f0b702a94f7f81ecbc",
+  "previous_proposal": {
+    "reference_sha": "3dce6780c4883ad96cb32ff3f7ef80883fef6528",
+    "source_sha": "3d039b382ee33d66c6049dd69e498169aa75bf6d",
+    "patch_sha256": "6d8e1caa441e2433972405755b0db3d8d4a0cc6a16585d09b8e267fa8363e46d",
+    "files_verified": {
+      "packages/retained-resource/src/retained_resource/worker.py": {
+        "sha256": "706cd6c7530609828659c7a5493b7eff3713f2f5e3465e9441de125543385b4d",
+        "bytes": 5273
+      },
+      "riverhog/src/riverhog_core/services/physical_execution.py": {
+        "sha256": "95121688a3e63d8b01be5ebcceacdad743fa0a9ecf4a54659cbade01f7a24467",
+        "bytes": 16002
+      },
+      "packages/retained-resource/native/worker.c": {
+        "sha256": "af6dc802e586c618bc05f58a9317cae49f246d9aa66f0757cd1159b9d6bb5a1f",
+        "bytes": 19261
+      }
+    }
+  },
   "completed": true
 }
