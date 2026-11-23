@@ -334,3 +334,42 @@ def test_actual_slot_receiving_composes_generation_and_working_resources(
                 finally:
                     if reader is not None:
                         reader.close()
+
+
+def test_live_slot_retains_its_original_directory_custody(origin):
+    from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
+
+    case = origin
+    custody = case.slot.custody
+    assert custody is not None and custody.directory == case.directory
+    assert custody._resources[1] is case.slot.lease.directory
+    pinned = case.directory.stat()
+    assert custody.directory_identity() == (pinned.st_dev, pinned.st_ino)
+    with pytest.raises(RuntimeError, match="original workspace custody"):
+        case.slot.retain_custody(custody)
+    assert case.slot.custody is custody
+    case.owner.close()
+    assert case.slot.custody is custody and not custody.verify_current()
+    with pytest.raises(LostJournalValidationWorkspace, match="custody"):
+        custody.directory_identity()
+
+
+def test_live_slot_never_pins_a_replacement_directory(origin):
+    from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
+
+    case = origin
+    custody = case.slot.custody
+    original = case.directory.with_name("original-directory")
+    case.directory.rename(original)
+    try:
+        case.directory.mkdir(mode=0o700)
+        with pytest.raises(LostJournalValidationWorkspace, match="custody"):
+            custody.directory_identity()
+        assert not custody.verify_current()
+    finally:
+        case.directory.rmdir()
+        original.rename(case.directory)
+    assert custody.verify_current()
+    assert case.slot.custody is custody
+    pinned = case.directory.stat()
+    assert custody.directory_identity() == (pinned.st_dev, pinned.st_ino)

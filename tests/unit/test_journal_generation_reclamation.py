@@ -17,8 +17,7 @@ pytestmark = pytest.mark.skipif(os.name != "posix", reason="POSIX generation fil
 def test_actual_rejected_native_store_disposal_preserves_live_semantic_execution(origin):
     case = origin
     directory = case.directory
-    pinned = directory.stat()
-    identity = pinned.st_dev, pinned.st_ino
+    identity = case.slot.custody.directory_identity()
     rejected = reject(case)
     reader = case.storage.roots.borrow(
         case.frontier.image.identity, expected_root=case.frontier.image.root
@@ -93,7 +92,7 @@ def test_live_slot_keeps_its_exact_file_receiver_and_lease_after_uncertain_clean
     monkeypatch.setattr(files_owner, "Resource", native.Resource)
     monkeypatch.setattr(files_owner, "Borrow", native.Borrow)
     original = case.generation.retain_reclamation()
-    pinned = case.directory.stat()
+    identity = case.slot.custody.directory_identity()
 
     def refused_sync(_descriptor):
         raise OSError(errno.ENOSPC, "injected original extent sync")
@@ -104,7 +103,7 @@ def test_live_slot_keeps_its_exact_file_receiver_and_lease_after_uncertain_clean
             reclaim(
                 case.directory,
                 receiver=original,
-                expected_directory_identity=(pinned.st_dev, pinned.st_ino),
+                expected_directory_identity=identity,
                 octet_budget=4096,
             )
     size = (case.directory / "generations.sqlite3").stat().st_size
@@ -133,7 +132,7 @@ def test_active_file_executor_cannot_lose_its_slot_or_kernel_lease(origin, monke
     rejected = reject(case)
     assert case.generation.close_step()
     original = case.generation.retain_reclamation()
-    pinned = case.directory.stat()
+    identity = case.slot.custody.directory_identity()
     entered, release = Event(), Event()
     truncate = os.ftruncate
     outcomes = []
@@ -149,7 +148,7 @@ def test_active_file_executor_cannot_lose_its_slot_or_kernel_lease(origin, monke
                 reclaim(
                     case.directory,
                     receiver=original,
-                    expected_directory_identity=(pinned.st_dev, pinned.st_ino),
+                    expected_directory_identity=identity,
                     octet_budget=4096,
                 )
             )

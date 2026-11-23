@@ -300,8 +300,22 @@ class ValidationWorkspaceCustody:
     _held: bool = True
 
     def verify_current(self) -> bool:
+        return self._current_directory() is not None
+
+    def directory_identity(self) -> tuple[int, int]:
+        """Pin the original held directory, never a replacement at its pathname.
+
+        The identity records no receiving or disposal authority. The caller
+        must retain this exact live lease through any admitted file operation.
+        """
+        identity = self._current_directory()
+        if identity is None:
+            raise LostJournalValidationWorkspace("original validation custody is no longer held")
+        return identity.st_dev, identity.st_ino
+
+    def _current_directory(self) -> os.stat_result | None:
         if not self._held:
-            return False
+            return None
         try:
             if not all(
                 original.owner.state == "live"
@@ -311,7 +325,7 @@ class ValidationWorkspaceCustody:
                     self._resources, (self._root, self._owner, self._lease), strict=True
                 )
             ):
-                return False
+                return None
             descriptors = (
                 _private_directory(self._root),
                 _private_directory(self._owner),
@@ -322,13 +336,14 @@ class ValidationWorkspaceCustody:
                 os.stat(self.directory.name, dir_fd=self._root, follow_symlinks=False),
                 os.stat(".lease", dir_fd=self._owner, follow_symlinks=False),
             )
-            return all(
+            current = all(
                 (descriptor.st_dev, descriptor.st_ino, descriptor.st_mode)
                 == (entry.st_dev, entry.st_ino, entry.st_mode)
                 for descriptor, entry in zip(descriptors, entries, strict=True)
             )
+            return descriptors[1] if current else None
         except (OSError, LostJournalValidationWorkspace):
-            return False
+            return None
 
 
 def _select_workspace(
@@ -502,19 +517,21 @@ def lease_journal_validation_workspace(
         receiver.finish()
 
 
-def _custody_declaration() -> Declaration:
+def _custody_declaration(mode: str) -> Declaration:
     def count(value: int) -> Expression:
         return Expression("constant", value=value, unit=COUNT)
 
     return Declaration(
-        id="riverhog-server.validation-workspace-current.growth/v1",
-        authority="riverhog-server",
-        subjects=(
-            "riverhog_core.journal_validation_workspace.ValidationWorkspaceCustody.verify_current",
+        id=(
+            "riverhog-server.validation-workspace-current.growth/v1"
+            if mode == "verify_current"
+            else "riverhog-server.validation-workspace-directory-identity.growth/v1"
         ),
+        authority="riverhog-server",
+        subjects=("riverhog_core.journal_validation_workspace.ValidationWorkspaceCustody." + mode,),
         scope="one exact held root, directory and kernel lease identity check",
         starts_at="receive descriptor custody from the successful selected lease context",
-        ends_at="return current or reject closed, missing, replaced or incompatible custody",
+        ends_at="return current identity or reject closed, replaced or incompatible custody",
         dimensions=(
             Dimension("root_path_octets", OCTETS, "Complete native encoded absolute root path."),
             Dimension("workspace_identity_octets", OCTETS, "Exact selected directory identity."),
@@ -575,7 +592,10 @@ def _custody_declaration() -> Declaration:
     )
 
 
-declare_growth(_custody_declaration())(ValidationWorkspaceCustody.verify_current)
+for _custody_mode in ("verify_current", "directory_identity"):
+    declare_growth(_custody_declaration(_custody_mode))(
+        getattr(ValidationWorkspaceCustody, _custody_mode)
+    )
 
 
 declare_growth(_lease_declaration())(lease_journal_validation_workspace)

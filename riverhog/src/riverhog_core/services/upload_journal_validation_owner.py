@@ -41,6 +41,7 @@ from riverhog_core.journal_generation_resources import JournalGenerationResource
 from riverhog_core.journal_recovery_frontier import JournalRecoveryContext
 from riverhog_core.journal_validation_workspace import (
     LostJournalValidationWorkspace,
+    ValidationWorkspaceCustody,
     lease_journal_validation_workspace,
 )
 from riverhog_core.journal_validation_workspace_lease import ValidationWorkspaceLease
@@ -450,6 +451,7 @@ class _Slot:
     session: JournalValidationSession | None = None
     resources: ExitStack = field(default_factory=ExitStack)
     lease: ValidationWorkspaceLease = field(default_factory=ValidationWorkspaceLease)
+    custody: ValidationWorkspaceCustody | None = None
     transferred: bool = False
     closing: bool = False
     receiving_failed: bool = False
@@ -458,6 +460,16 @@ class _Slot:
     source: _OwnedSource | None = None
     work: source_owner._UploadJournalValidationWork | None = None
     catalog_sha256: str | None = None
+
+    def retain_custody(self, custody: ValidationWorkspaceCustody) -> None:
+        if (
+            not isinstance(custody, ValidationWorkspaceCustody)
+            or self.custody is not None
+            or self.job is None
+            or custody.directory.name != self.job.workspace_id
+        ):
+            raise RuntimeError("validation slot requires its original workspace custody")
+        self.custody = custody
 
     def check_execution(self) -> None:
         """Observe only this original slot's live stop request during Native work."""
@@ -2126,6 +2138,7 @@ class UploadJournalValidationOwner:
                 receiver=slot.lease,
                 create=job.state == "opening",
                 creation_current=lambda: jobs.creation_current(self.factory, source, creation_job),
+                on_custody=slot.retain_custody,
             )
         )
         if directory is None:

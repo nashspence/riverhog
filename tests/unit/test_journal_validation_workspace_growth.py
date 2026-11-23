@@ -493,15 +493,22 @@ def test_actual_workspace_lease_bounds_complete_enter_exit_and_kernel_custody(
     lease_samples(tmp_path / "leases", samples=samples)
 
 
-def measure_custody(custody, root, *, expected):
+def measure_custody(custody, root, *, expected, mode="verify_current"):
     recorder = Recorder()
     recorder.root = root
-    binding = growth_binding(owner.ValidationWorkspaceCustody.verify_current)
+    binding = growth_binding(getattr(owner.ValidationWorkspaceCustody, mode))
     projection = project_bindings(
         (binding,), numeric_policy=numeric_policy_from_environment(os.environ)
     )
+    pinned = os.stat(custody._owner) if custody._held else None
     with recorder.observe():
-        assert custody.verify_current() is expected
+        if mode == "verify_current":
+            assert custody.verify_current() is expected
+        elif expected:
+            assert custody.directory_identity() == (pinned.st_dev, pinned.st_ino)
+        else:
+            with pytest.raises(owner.LostJournalValidationWorkspace, match="custody"):
+                custody.directory_identity()
     sample = {
         "declaration": binding.declaration.id,
         "declaration_sha256": hashlib.sha256(
@@ -525,13 +532,12 @@ def measure_custody(custody, root, *, expected):
     return sample
 
 
-@pytest.mark.growth_witness(
-    "riverhog-validation-workspace-current-work/v1",
-    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
-    operation="riverhog_core.journal_validation_workspace.ValidationWorkspaceCustody.verify_current",
-)
-def test_measured_descriptor_custody_currentness(tmp_path, record_property):
+def custody_samples(tmp_path, record_property, *, mode):
     samples = []
+
+    def observe(custody, root, *, expected):
+        return measure_custody(custody, root, expected=expected, mode=mode)
+
     for index, (depth, siblings, payload) in enumerate(
         [
             (1, 0, 0),
@@ -547,17 +553,17 @@ def test_measured_descriptor_custody_currentness(tmp_path, record_property):
         captured = []
         measure(case.root, expected=case.root / ONE, custody_callback=captured.append)
         assert not captured[0].verify_current()
-        samples.append(measure_custody(captured[0], case.root, expected=False))
+        samples.append(observe(captured[0], case.root, expected=False))
         with leased_workspace(case.root, ONE, on_custody=captured.append):
             custody = captured[-1]
             before = snapshot(case)
-            samples.append(measure_custody(custody, case.root, expected=True))
+            samples.append(observe(custody, case.root, expected=True))
             assert snapshot(case) == before
             (case.root / ONE / ".lease").unlink()
             before = snapshot(case)
-            samples.append(measure_custody(custody, case.root, expected=False))
+            samples.append(observe(custody, case.root, expected=False))
             assert snapshot(case) == before
-        samples.append(measure_custody(custody, case.root, expected=False))
+        samples.append(observe(custody, case.root, expected=False))
     for fault in ("root", "directory", "lease-mode"):
         case = setup(tmp_path / fault)
         captured = []
@@ -570,5 +576,23 @@ def test_measured_descriptor_custody_currentness(tmp_path, record_property):
                 (case.root / ONE).mkdir(mode=0o700)
             else:
                 (case.root / ONE / ".lease").chmod(0o644)
-            samples.append(measure_custody(captured[0], case.root, expected=False))
+            samples.append(observe(captured[0], case.root, expected=False))
     record_property("growth_samples", samples)
+
+
+@pytest.mark.growth_witness(
+    "riverhog-validation-workspace-current-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.journal_validation_workspace.ValidationWorkspaceCustody.verify_current",
+)
+def test_measured_descriptor_custody_currentness(tmp_path, record_property):
+    custody_samples(tmp_path, record_property, mode="verify_current")
+
+
+@pytest.mark.growth_witness(
+    "riverhog-validation-workspace-directory-identity-work/v1",
+    gates=("unit", "unit-unit", "check-in", "linux-qualification"),
+    operation="riverhog_core.journal_validation_workspace.ValidationWorkspaceCustody.directory_identity",
+)
+def test_measured_original_directory_identity(tmp_path, record_property):
+    custody_samples(tmp_path, record_property, mode="directory_identity")
