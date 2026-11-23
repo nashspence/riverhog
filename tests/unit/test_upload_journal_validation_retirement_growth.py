@@ -410,7 +410,7 @@ def measure(
         files_operation = native_reclamation.reclaim_retired_files
         file_children = []
 
-        def files(directory, *, receiver, names, octet_budget):
+        def files(directory, *, receiver, names, octet_budget, expected_directory_identity=None):
             nonlocal receive_inputs
             with fs.paused():
                 encoded = tuple(os.fsencode(name) for name in names)
@@ -426,7 +426,11 @@ def measure(
             attempt_start = len(fs.attempts)
             try:
                 return files_operation(
-                    directory, receiver=receiver, names=names, octet_budget=octet_budget
+                    directory,
+                    receiver=receiver,
+                    names=names,
+                    octet_budget=octet_budget,
+                    expected_directory_identity=expected_directory_identity,
                 )
             finally:
                 actual = differences(fs.metrics, child_beginning)
