@@ -1,0 +1,244 @@
+{
+  "kind": "source-index",
+  "snapshot": {
+    "client_date": "2026-11-25",
+    "timezone": "America/Los_Angeles",
+    "retrieval_utc_date": "2026-11-26",
+    "scope": "Pinned source review and mutable issue/API snapshots; not executed product qualification."
+  },
+  "owner": "https://github.com/nashspence/riverhog/issues/1006",
+  "repositories": [
+    {
+      "repository": "nashspence/riverhog",
+      "role": "audited base",
+      "ref": "main",
+      "commit": "be483fd6d567616d5fcd355202d61f1e682efe75",
+      "tree": "044a0e1e3eecf0b4183836017269fc208b6603d2",
+      "url": "https://github.com/nashspence/riverhog/tree/be483fd6d567616d5fcd355202d61f1e682efe75"
+    },
+    {
+      "repository": "nashspence/riverhog",
+      "role": "later inspected, not qualified here",
+      "ref": "codex/994-durability",
+      "commit": "0b25c7c67f7b3ee8787d8d753d4b6d585e8cea1f",
+      "url": "https://github.com/nashspence/riverhog/pull/1001"
+    },
+    {
+      "repository": "nashspence/all",
+      "role": "merged shared implementation and active prepared-v2 resource",
+      "ref": "main",
+      "commit": "29d2af516a91d762094da1da55c71d07d79e095c",
+      "tree": "93b8538a2c409b211a2758f6e37c21e4bb6a1080",
+      "qualified_performance_source": "5086428a29871eeb267ea7225537aa0225930bac",
+      "url": "https://github.com/nashspence/all/tree/29d2af516a91d762094da1da55c71d07d79e095c"
+    },
+    {
+      "repository": "nashspence/proffer",
+      "role": "handoff/publication/disposition schema and validator",
+      "ref": "main",
+      "commit": "2ce5e15c3191fcdc2be70213c0170f57c852a883",
+      "tree": "2a0c37a9a45e5f9fc37957ad056a9c8fc1a2e8f8",
+      "url": "https://github.com/nashspence/proffer/tree/2ce5e15c3191fcdc2be70213c0170f57c852a883"
+    }
+  ],
+  "primary_files": {
+    "riverhog": [
+      "AGENTS.md",
+      "tests/unit/test_entrypoints.py",
+      "release.toml",
+      "scripts/performance_measurement.py",
+      "scripts/validation_evidence.py",
+      "scripts/ci_qualification.py",
+      "scripts/ci_actions.py",
+      "scripts/workflow_evidence.py",
+      "scripts/qualification_source.py",
+      ".github/workflows/ci.yml",
+      ".github/workflows/validation-evidence.yml",
+      "packages/riverhog-client/src/riverhog_client/producer.py",
+      "tests/support/qualification/publication_geometry.py",
+      "tests/support/qualification/publication_profile.py",
+      "tests/support/qualification/canonical_history_scale.py",
+      "scripts/test_filesystem_recovery_qualification.sh"
+    ],
+    "all": [
+      "docs/performance.md",
+      "docs/prepared-storage.md",
+      "docs/storage-profile-enrollment.md",
+      "all_policy/performance/contracts.py",
+      "all_policy/performance/runner.py",
+      "all_policy/performance/worker.py",
+      "all_policy/performance/profiles.py",
+      "all_policy/performance/prepared_storage.py",
+      "examples/performance/limits.json",
+      "examples/performance/bindings.json",
+      ".github/workflows/storage-profile-refresh.yml",
+      "pyproject.toml"
+    ],
+    "proffer": [
+      "README.md",
+      "AGENTS.md",
+      "schema/proffer.schema.json",
+      "check.py",
+      "requirements-dev.txt",
+      "tests/test_contract.py",
+      "tests/fixtures/"
+    ]
+  },
+  "mutable_issue_evidence": [
+    {
+      "url": "https://github.com/nashspence/all/issues/64",
+      "scope": "Requested shared policy and remaining consumer authority/adoption requirements"
+    },
+    {
+      "url": "https://github.com/nashspence/all/pull/65",
+      "scope": "Merged common implementation"
+    },
+    {
+      "url": "https://github.com/nashspence/all/issues/66",
+      "scope": "Completed prepared-v2 enrollment"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/903",
+      "scope": "Reference publication convention"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/991",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/994",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/995",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/996",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/997",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/998",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/999",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/1000",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/1002",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/1003",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/1004",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/1005",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/988",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/989",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/963",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/964",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/469",
+      "scope": "Current issue surface; see ISSUE_TRANSITION.md for bounded read scope and historical source qualifications"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/964#issuecomment-7051823492",
+      "scope": "Latest remaining whole-path/downstream acceptance statement despite closed state"
+    },
+    {
+      "url": "https://github.com/nashspence/riverhog/issues/1005#issuecomment-7104400529",
+      "scope": "Unadopted latest worker-exit reference f38e8af52d30f092621fa596fc1343dd621233ae"
+    }
+  ],
+  "native_relationship_evidence": [
+    {
+      "url": "https://api.github.com/repos/nashspence/riverhog/issues/991/dependencies/blocked_by",
+      "observed": [
+        {
+          "number": 994,
+          "id": 6425185371
+        }
+      ]
+    },
+    {
+      "url": "https://api.github.com/repos/nashspence/riverhog/issues/994/dependencies/blocking",
+      "observed": [
+        {
+          "number": 991,
+          "id": 6371177415
+        }
+      ]
+    },
+    {
+      "url": "https://api.github.com/repos/nashspence/riverhog/issues/994/sub_issues",
+      "observed_numbers": [
+        995,
+        996,
+        997,
+        998,
+        999,
+        1000,
+        1005
+      ]
+    },
+    {
+      "url": "https://api.github.com/repos/nashspence/riverhog/issues/994/dependencies/blocked_by",
+      "observed": []
+    },
+    {
+      "url": "https://api.github.com/repos/nashspence/riverhog/issues/1005/dependencies/blocking",
+      "observed": [
+        {
+          "number": 996,
+          "id": 6425220550
+        }
+      ]
+    }
+  ],
+  "external_platform_contracts": [
+    "https://docs.github.com/en/rest/issues/issue-dependencies",
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch",
+    "https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run",
+    "https://docs.github.com/en/actions/concepts/security/github_token",
+    "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging"
+  ],
+  "proposed_patch": {
+    "path": ".reference/proposed/agents-policy.patch",
+    "base_guide_blob": "a6fbdc69c2e1b5957b3bdb54e36e4b6f900c59b8",
+    "base_guide_sha256": "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3",
+    "proposed_guide_sha256": "81c6b02535bf50db10440647667e66f8fc768a0e10abf04971311e4584d413c8",
+    "proposed_words": 2053,
+    "unchanged_word_cap": 2100,
+    "scope": "Guide and existing owning tests only; no active runner/workflow or product integration."
+  },
+  "limits": "Issue bodies and comments can change; re-read only relevant newer decisions before integration. A pinned source or schema-valid record supplies identity, not numerical authority or product acceptance."
+}
+

@@ -1,0 +1,118 @@
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -58,7 +58,7 @@
+ 
+ ## Bound the work, not the archive
+ 
+-Large collections should not require processing everything at once. *Bounded work* handles a limited portion at a time; a page of results does not limit the total number of results. Long operations progress through bounded steps that can resume after interruption.
++Large collections should not require processing everything at once. *Bounded work* handles a limited portion at a time; a page of results does not limit the total number of results. Long operations declare interruption and recovery behavior with their owning contracts. A scheduler yield does not itself require a durable checkpoint.
+ 
+ Do not introduce a total limit unless the owning contract declares it. Resource limits may explicitly reject, delay, or slow work, but must not silently omit data. Limits that depend on the deployment and affect accepted work belong in operator configuration.
+ 
+@@ -74,7 +74,7 @@
+ 
+ Reason about these bounds and test them with the maintained implementation. Include difficult inputs, resource limits being reached, interruptions, and retries. Do not hide repeated whole-resource work behind batching, concurrency, or caches.
+ 
+-Violating a declared growth bound is a validation failure. Machine-dependent timing targets remain performance observations, not product guarantees. Neither permits incomplete results, weaker custody or authorization, or hidden total-size limits.
++Violating a declared growth bound is a validation failure. Approved production time budgets separately govern complete operations in qualified environments. Validation-runtime observations remain advisory. Neither permits incomplete results, weaker custody or authorization, or hidden total-size limits.
+ 
+ In short, **bound total work as well as each step, and test the bound rather than trusting a small successful run.**
+ 
+@@ -112,29 +112,23 @@
+ 
+ In short, **replace obsolete pre-v1 database structures without sacrificing durable data or support for future upgrades.**
+ 
+-## Measure performance without creating gates
++## Enforce production performance budgets
+ 
+-A performance target is a nonbinding goal for measured speed or elapsed time. Unlike a declared growth bound, it is not a contract. Missing a target does not fail validation.
++Material production operations have owned workloads, complete-work boundaries, approved raw wall-clock budgets, and qualified execution profiles. The [shared budget contract](https://github.com/nashspence/all/blob/29d2af516a91d762094da1da55c71d07d79e095c/docs/performance.md) owns acceptance: all three complete observations must meet their budget. Invalid evidence, incomplete execution, a budget miss, or missing qualification cannot pass.
+ 
+-Use `make profile` as the shared entry point for maintained profiling scenarios. Add new scenarios there rather than creating separate developer-facing commands. Their implementations remain with their owners.
++Budget authority and environment enrollment remain outside the candidate checkout. Candidate code cannot approve its own budget or change the workload boundary. Include required hashing, authorization, encryption, persistence, finalization, cleanup, and resource receiving in the promised lifecycle.
+ 
+-Report verified work, elapsed time, actual rates, and measurement conditions. Compare only against matching measured references. An unavailable comparison is neither a pass nor a failure. Invalid evidence and failed execution remain errors.
++Use `make profile` for maintained scenarios; keep operation adapters with their owners. Report verified work, elapsed time, and measurement conditions. The [measurement rules](scripts/performance_measurement.py) and [profiling tests](tests/unit/test_transfer_profile_script.py) also maintain advisory comparisons against matching references; these do not replace budget acceptance.
+ 
+-The [measurement rules](scripts/performance_measurement.py) and [profiling tests](tests/unit/test_transfer_profile_script.py) define the precise behavior.
+-
+-In short, **growth bounds are enforced contracts; performance targets are observations, never gates.**
++Each operation owns its durability and recovery design. Choose the simplest implementation meeting its promises and budgets; no universal replay target, checkpoint ratio, or persistence on every yield is required. Preserve protected commitments and test interruption, retry, and resource custody.
+ 
+ ## Account for validation evidence
+ 
+-Checks record their results and timing as they run, without repeating work just to measure it. The [shared qualification definitions](scripts/ci_qualification.py) identify the work and its conditions without replacing contracts owned by individual operations.
++Checks record results and timing as they run, without repeating work just to measure it. The [qualification definitions](scripts/ci_qualification.py) identify work and conditions without replacing operation contracts.
+ 
+-Keep correctness, growth-contract conformance, and elapsed-time observations separate. Correctness failures, growth violations, and invalid required evidence fail validation. A valid timing miss does not.
++Keep correctness, growth conformance, production-budget verdicts, and validation-runtime observations distinct. Correctness failures, growth violations, failed required budgets, and invalid required evidence fail validation. Ordinary test or CI duration targets remain advisory; a valid miss does not block work or require approval.
+ 
+-Report elapsed time even when no numerical target or comparable reference exists. Use credible performance evidence to recommend investigation or improvement. The stronger the evidence and the more serious its likely consequences, the stronger the recommendation may be.
+-
+-Record significant findings and recommendations in GitHub. Performance targets do not create approval-to-proceed conditions or authorize weakening required tests, workloads, or safety limits.
+-
+-In short, **validation evidence establishes compliance; performance observations inform judgment.**
++Record elapsed time without requiring a target or comparable reference. Record significant findings in GitHub. Neither performance goals nor budget failures authorize weakening required tests, workloads, or safety limits.
+ 
+ ## Validate the change you actually deliver
+ 
+@@ -157,7 +151,7 @@
+ 
+ After pushing, watch that exact commit’s required GitHub Actions checks through completion. Fix failures before handing work back. A skipped or blocked check is not a pass; report the gap rather than claiming complete validation. Do not remove required coverage or weaken a check merely to make a result green.
+ 
+-Include correctness results, required growth evidence, and timing observations in the handoff. Record significant performance concerns as evidence-backed recommendations, not validation failures or approval conditions.
++Include correctness, growth evidence, required production-budget verdicts, and timing observations in the handoff. Identify failed or unqualified required production work explicitly. Ordinary validation-runtime concerns remain evidence-backed recommendations.
+ 
+ In short, **validate the actual change through every required gate, not a nearby version or a convenient subset.**
+ 
+--- a/tests/unit/test_entrypoints.py
++++ b/tests/unit/test_entrypoints.py
+@@ -109,7 +109,7 @@
+     ("relative", "expected_sha256"),
+     [
+         ("README.md", "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"),
+-        ("AGENTS.md", "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3"),
++        ("AGENTS.md", "81c6b02535bf50db10440647667e66f8fc768a0e10abf04971311e4584d413c8"),
+     ],
+ )
+ def test_onboarding_document_requires_explicit_revision(
+@@ -214,23 +214,27 @@
+     assert REPO / "packages/state-schema" in _local_links(REPO / "AGENTS.md")
+ 
+ 
+-def test_agents_requires_growth_validation_without_machine_timing_guarantees() -> None:
++def test_agents_separates_growth_and_production_budgets_from_runtime() -> None:
+     growth = _guide_section("Preserve declared growth bounds")
+     assert "*linear growth*" in growth
+     assert "Violating a declared growth bound is a validation failure." in growth
+-    assert "Machine-dependent timing targets remain performance observations" in growth
+-    assert "not product guarantees" in growth
+-
+-
+-def test_agents_separates_required_validation_evidence_from_advisory_performance() -> None:
+-    measurement = _guide_section("Measure performance without creating gates")
++    assert "Approved production time budgets" in growth
++    assert "Validation-runtime observations remain advisory." in growth
++
++
++def test_agents_requires_shared_production_budget_authority_and_project_durability() -> None:
++    measurement = _guide_section("Enforce production performance budgets")
+     evidence = _guide_section("Account for validation evidence")
+     handoff = _guide_section("Validate the change you actually deliver")
+-    assert "a nonbinding goal" in measurement
+-    assert "Missing a target does not fail validation." in measurement
+-    assert "required evidence fail validation" in evidence
+-    assert "A valid timing miss does not." in evidence
+-    assert "not validation failures or approval conditions" in handoff
++    assert "approved raw wall-clock budgets" in measurement
++    assert "all three complete observations must meet their budget" in measurement
++    assert "outside the candidate checkout" in measurement
++    assert "Each operation owns its durability and recovery design." in measurement
++    assert "no universal replay target, checkpoint ratio" in measurement
++    assert "failed required budgets, and invalid required evidence fail validation" in evidence
++    assert "Ordinary test or CI duration targets remain advisory" in evidence
++    assert "does not block work or require approval" in evidence
++    assert "failed or unqualified required production work" in handoff
+     assert REPO / "scripts/ci_qualification.py" in _local_links(REPO / "AGENTS.md")
+ 
+ 
