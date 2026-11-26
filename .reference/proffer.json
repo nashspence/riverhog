@@ -1,12 +1,12 @@
 {
   "kind": "handoff",
   "issue": "https://github.com/nashspence/riverhog/issues/1006",
-  "purpose": "Research and propose the finite policy/issue/runner transition that retires #1000's prescribed strategy, adopts all#64 and resumes #991's repository-wide performance campaign while retaining scoped safety and release obligations.",
+  "purpose": "Research and propose the finite transition retiring the entire #994 program and #995–#1000, adopting all#64 and resuming #991 with newly scoped outcomes, independently justified safety obligations and release acceptance.",
   "producer": [
     "OpenAI ChatGPT, GPT-6 Astra Pro; primary producer and same-model policy/source, shared-integration and issue-transition research agents; reasoning effort not exposed."
   ],
   "requester": "Riverhog maintainer (nashspence), current conversation: contribute an issue with a researched nashspence/proffer handoff for the integration agent.",
-  "first_step": "Read .reference/HANDOFF.md and proposed/agents-policy.patch; reconcile current main and PR #1001 against the stated pins, record the authoritative working source/first action in the owning issue, then begin policy/source and first real-publication binding work.",
+  "first_step": "Read .reference/HANDOFF.md and proposed/agents-policy.patch; reconcile current main against the audited base and use it for continuation. Treat PR #1001 as optional justified salvage, record the source/first action in #1006, and begin whole-program retirement plus policy and real-publication binding work.",
   "source": {
     "repository": "nashspence/riverhog",
     "base": {
@@ -88,7 +88,11 @@
     "The first complete production operation must retain supported KDF/polling/storage/authentication settings, complete custody and fresh useful work; historical test fixtures are not direct acceptance bindings.",
     "Prepared v2 provides its stated synchronized configuration/timing scope, not physical power-loss or independent-device proof. Affected native/backend/platform and release obligations survive.",
     "Existing issues are not closed or superseded by this reference publication alone; the new issue instructs the integration agent to make and verify the scoped transition.",
-    "Publication and consumer disposition records belong in the owning issue. This schema-valid handoff is evaluation input, not independent product acceptance."
-  ]
+    "Publication and consumer disposition records belong in the owning issue. This schema-valid handoff is evaluation input, not independent product acceptance.",
+    "The maintainer clarified retirement of all #994 and #995–#1000. Their old implementation owners/checklists do not persist; only independently required outcomes or relevant unresolved defects transfer. PR #1001 salvage is optional and may adopt no code."
+  ],
+  "supersedes": {
+    "url": "https://github.com/nashspence/riverhog/tree/6979a8c5c6947d4db3c8e2ed3f95a7454bf5a8bf",
+    "commit": "6979a8c5c6947d4db3c8e2ed3f95a7454bf5a8bf"
+  }
 }
-

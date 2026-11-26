@@ -228,7 +228,8 @@
     "https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch",
     "https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28#create-a-check-run",
     "https://docs.github.com/en/actions/concepts/security/github_token",
-    "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging"
+    "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging",
+    "https://docs.github.com/en/rest/issues/sub-issues"
   ],
   "proposed_patch": {
     "path": ".reference/proposed/agents-policy.patch",
@@ -239,6 +240,10 @@
     "unchanged_word_cap": 2100,
     "scope": "Guide and existing owning tests only; no active runner/workflow or product integration."
   },
-  "limits": "Issue bodies and comments can change; re-read only relevant newer decisions before integration. A pinned source or schema-valid record supplies identity, not numerical authority or product acceptance."
+  "limits": "Issue bodies and comments can change; re-read only relevant newer decisions before integration. A pinned source or schema-valid record supplies identity, not numerical authority or product acceptance.",
+  "scope_clarification": {
+    "request": "Abandon all of #994, not only #1000.",
+    "effect": "Retire #994 and #995–#1000; use #991/newly scoped owners. Preserve independent defects/outcomes and an optional PR1001 source checkpoint; no inherited old checklist.",
+    "superseded_reference": "6979a8c5c6947d4db3c8e2ed3f95a7454bf5a8bf"
+  }
 }
-

@@ -1,6 +1,6 @@
 # Validation scope
 
-This reference publication was checked as a handoff and proposed patch. It is not Riverhog production qualification.
+This corrected reference publication supersedes `6979a8c5c6947d4db3c8e2ed3f95a7454bf5a8bf` after the maintainer clarified retirement of the entire #994 program. It was checked as a handoff and proposed patch. It is not Riverhog production qualification.
 
 ## Checks prepared for this publication
 
@@ -8,7 +8,7 @@ This reference publication was checked as a handoff and proposed patch. It is no
 - This handoff record: `python research/proffer/check.py handoff/.reference/proffer.json`.
 - Proposed patch: `git apply --check .reference/proposed/agents-policy.patch` against exact fetched `AGENTS.md` and `tests/unit/test_entrypoints.py` from Riverhog main `be483fd6d567616d5fcd355202d61f1e682efe75`, followed by application in a temporary verification tree, exact comparison to the proposed files, Python syntax parsing and guide checksum/word-limit checks.
 - Reference inventory: UTF-8 file inventory, relative local links, artifact membership and absence of unresolved issue-number placeholders.
-- Publication: after GitHub tree/commit/branch creation, compare every reference blob to the supplied archive inventory and verify that every product root entry and sole parent match the audited base. Validate the publication record with the same Proffer checker and post it to the owning issue.
+- Publication: after GitHub tree/commit/branch creation, compare every reference blob to the supplied archive inventory and verify that every product root entry matches the audited base and that the single parent is the explicitly superseded reference commit, whose parent is that base. Validate the publication record with the same Proffer checker and post it to the owning issue.
 
 Actual results and exact publication identity are recorded in the owning issue's publication comment. The publication and consumer disposition are intentionally not embedded in the commit they identify.
 

@@ -8,7 +8,7 @@ Research snapshot: 2026-11-26 UTC. Read-only source review; no consumer campaign
 - [all#66](https://github.com/nashspence/all/issues/66) is closed completed and expressly approves `public-linux-x64-4cpu-prepared-ext4-v2` for small storage-dependent CI timing in Riverhog/Fishhat.
 - Qualified performance implementation source: `5086428a29871eeb267ea7225537aa0225930bac`. Enrollment and #65 report byte-identical activated performance modules.
 - [all#64](https://github.com/nashspence/all/issues/64) remains open: shared delivery complete, consumer numerical contracts/bindings/required paths and later-date core-profile maintenance still pending.
-- The older ed6c2dd consumer handoff is useful for Riverhog owner mapping but predates approved storage enrollment and #65 merge. Do not copy its obsolete “no enrollment / main has no runner” status into the new handoff.
+- The older ed6c2dd consumer handoff is useful for historical source mapping; active operation ownership and acceptance outcomes are selected anew under #991 but predates approved storage enrollment and #65 merge. Do not copy its obsolete “no enrollment / main has no runner” status into the new handoff.
 
 Pinned primary sources:
 1. [performance contract](https://github.com/nashspence/all/blob/29d2af516a91d762094da1da55c71d07d79e095c/docs/performance.md)
@@ -113,6 +113,8 @@ New first integrated Riverhog case should be a complete fresh 16-member `Collect
 
 ## Startable versus blocked acceptance
 
+The maintainer abandons the entire #994 program, including #995–#1000. Shared-runner adoption and #991’s newly scoped operation outcomes do not depend on completing those issues. PR #1001 is preserved only as optional source/evidence material; salvage does not retain its architecture or acceptance program. Continue from verified main, selecting independently useful changes explicitly.
+
 Start now: adopt the new policy/precedence, reconcile stale instructions, inventory material operations, define/propose numerical contracts, implement/review thin bindings and actual backend topology, integrate pinned shared runner/paired resource, improve real production operations, retain misses/failures and useful existing safety/growth evidence.
 
 Acceptance requires: independently approved numerical limits and semantic binding; real trusted required workflow and exact-candidate evidence consumer; actual admitted resources; all three complete correct raw observations within limits; preserved applicable native fault/custody/recovery evidence. No source-only proposal, central primitive results, green structural policy job, or mere shared-package installation clears these.
@@ -145,7 +147,7 @@ Primary GitHub platform sources for the above mechanics:
 
 ## Finite first contract proposal and budget decisions
 
-Preserve #991's established fixture geometry for the first actual product binding: **16 × 65,536-byte payloads**, F16/C1/K2/Q1 (shared root16, shared claim1, retained journals2, required1). The policy research traced this to #991 and `publication_geometry.py` at the pinned Riverhog revision, blob `760567488ec926d74cc4bfcb596d04e5faa78e98`. Each repeat must publish fresh identified members/history at the approved extent. Use bounded approved output verification per observation, and retain applicable exact-source fresh/warm/evicted Native and independent recovery qualification after removal of source/upload scratch separately; do not repeat the entire expensive proof inside every verification phase. Confirm the new preparation actually stages the required journal/history topology on real prepared-ext4 resources; changing only labels is insufficient. The central4KiB primitive witness does not define this fixture.
+Preserve #991's established fixture geometry for the first actual product binding: **16 × 65,536-byte payloads**, F16/C1/K2/Q1 (shared root16, shared claim1, retained journals2, required1). The policy research traced this to #991 and `publication_geometry.py` at the pinned Riverhog revision, blob `760567488ec926d74cc4bfcb596d04e5faa78e98`. Each repeat must publish fresh identified members/history at the approved extent. Use bounded approved output verification per observation, and retain applicable exact-source fresh/warm/evicted Native and independent recovery qualification after removal of source/upload scratch separately; do not repeat the entire expensive proof inside every verification phase. Confirm the new preparation actually stages the required journal/history topology on real prepared-ext4 resources; changing only labels is insufficient. These are retained #991 fixture dimensions, not a required production retention architecture or a commitment to complete #994. Approve production durability/recovery outcomes independently. The central4KiB primitive witness does not define this fixture.
 
 | Proposed operation ID | Mode | Approved timing boundary | Numerical design input |
 | --- | --- | --- | --- |
