@@ -305,29 +305,48 @@ def test_timer_finds_new_work_without_a_notification(monkeypatch):
         loop = asyncio.get_running_loop()
         uploads = _Uploads()
         container = SimpleNamespace(collection_uploads=uploads)
-        idle, found = asyncio.Event(), asyncio.Event()
+        found, followed_up = loop.create_future(), loop.create_future()
         ready = False
         turns = []
+        waits, notifications = [], []
+
+        class ObservedWake(api_app._ArchiveMaintenanceWake):
+            async def wait(self, delay_seconds):
+                nonlocal ready
+                waits.append(delay_seconds)
+                if len(waits) == 2:
+                    # Introduce work after startup returns, before the real timer wait.
+                    assert delay_seconds > 0
+                    assert turns == [(True, False)]
+                    ready = True
+                notified = await super().wait(delay_seconds)
+                notifications.append(notified)
+                return notified
 
         def process(selected, *, startup_recovery=False, execution_only=False):
             nonlocal ready
             turns.append((startup_recovery, execution_only))
-            if len(turns) == 1:
-                loop.call_soon_threadsafe(idle.set)
             if ready:
                 ready = False
-                loop.call_soon_threadsafe(found.set)
+                loop.call_soon_threadsafe(found.set_result, tuple(turns))
                 return True
+            if len(turns) == 3:
+                loop.call_soon_threadsafe(followed_up.set_result, tuple(turns))
             return False
 
+        monkeypatch.setattr(api_app, "_ArchiveMaintenanceWake", ObservedWake)
         monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
         task = _start(lambda: container, interval=0.1)
         try:
-            await asyncio.wait_for(idle.wait(), timeout=5)
-            ready = True
-            await asyncio.wait_for(found.wait(), timeout=5)
-            await asyncio.sleep(0.02)
-            assert turns == [(True, False), (False, False), (False, False)]
+            assert await asyncio.wait_for(found, timeout=5) == ((True, False), (False, False))
+            assert await asyncio.wait_for(followed_up, timeout=5) == (
+                (True, False),
+                (False, False),
+                (False, False),
+            )
+            assert waits[0] == waits[2] == 0
+            assert waits[1] > 0
+            assert notifications[:3] == [False, False, False]
         finally:
             await _cancel(task)
 
