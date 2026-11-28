@@ -212,3 +212,34 @@ def test_non_capacity_failures_keep_their_meaning(
             raise OSError(errno.EIO, "I/O error")
     assert failure.value.errno == errno.EIO
     assert list(temporary_root.iterdir()) == []
+
+
+def test_member_relevance_schema_is_published_atomically(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    temporary_root = tmp_path / "scratch"
+    temporary_root.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(temporary_root))
+    connect = sqlite3.connect
+    visible = []
+
+    def traced(path, **options):
+        db = connect(path, **options)
+
+        def observed(statement):
+            if statement.startswith("CREATE "):
+                reader = connect(path)
+                try:
+                    visible.append(reader.execute("SELECT name FROM sqlite_master").fetchall())
+                finally:
+                    reader.close()
+
+        db.set_trace_callback(observed)
+        return db
+
+    monkeypatch.setattr(sqlite3, "connect", traced)
+    with MemberRelevance() as relevance:
+        assert visible and all(not schema for schema in visible)
+        assert not relevance.db.in_transaction
+        assert relevance.db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+    assert list(temporary_root.iterdir()) == []

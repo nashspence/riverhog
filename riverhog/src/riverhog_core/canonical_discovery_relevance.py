@@ -174,6 +174,7 @@ class MemberRelevance(Mapping[RelevanceKey, frozenset[str]]):
             self.db.execute("PRAGMA cache_size = -512")
             self.db.execute("PRAGMA temp_store = FILE")
             self.db.executescript(
+                "BEGIN;"
                 "CREATE TABLE scopes(journal TEXT, prefix TEXT, assertion TEXT, scope TEXT, "
                 "PRIMARY KEY(journal, prefix, assertion, scope));"
                 "CREATE TABLE snapshots(journal TEXT, prefix TEXT, anchor BLOB, "
@@ -187,6 +188,7 @@ class MemberRelevance(Mapping[RelevanceKey, frozenset[str]]):
                 "own INTEGER, done INTEGER, "
                 "PRIMARY KEY(history, extent));"
                 "CREATE INDEX pending_views ON views(done) WHERE done = 0;"
+                "COMMIT;"
             )
         except BaseException:
             self._scratch.__exit__(*sys.exc_info())
