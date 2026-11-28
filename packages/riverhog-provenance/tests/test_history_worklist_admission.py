@@ -380,3 +380,63 @@ def test_history_pending_selection_retains_uncertain_cursor_close(roots, monkeyp
     assert len(cursors) == 1
     closure.close()
     assert cursors[0].closes == 2 and population.active == 0 and not roots[0].exists()
+
+
+def test_history_schema_is_published_atomically(roots):
+    population, handles, visible = Population(), [], []
+
+    def factory(path):
+        db = population(path)
+
+        def observed(statement):
+            if statement.startswith("CREATE "):
+                reader = owner.sqlite3.connect(path)
+                try:
+                    visible.append(reader.execute("SELECT name FROM sqlite_master").fetchall())
+                finally:
+                    reader.close()
+
+        db.set_trace_callback(observed)
+        return db
+
+    with opened(factory, handles) as closure:
+        assert visible and all(not schema for schema in visible)
+        assert not closure._db.in_transaction
+        reader = owner.sqlite3.connect(roots[0] / "closure.sqlite3")
+        try:
+            assert reader.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+        finally:
+            reader.close()
+    assert population.active == 0 and not roots[0].exists()
+
+
+def test_history_partial_schema_failure_keeps_transaction_with_unreceived_connection(roots):
+    population, handles = Population(), []
+
+    def factory(path):
+        db = population(path)
+        created = 0
+
+        def authorize(action, *_args):
+            nonlocal created
+            if action == owner.sqlite3.SQLITE_CREATE_TABLE:
+                created += 1
+                if created == 2:
+                    return owner.sqlite3.SQLITE_DENY
+            return owner.sqlite3.SQLITE_OK
+
+        db.set_authorizer(authorize)
+        db.close_failures = 1
+        return db
+
+    with pytest.raises(OSError, match="close unconfirmed"):
+        opened(factory, handles)
+    assert population.active == 1 and len(handles) == 1
+    assert population.connections[0].in_transaction
+    reader = owner.sqlite3.connect(roots[0] / "closure.sqlite3")
+    try:
+        assert reader.execute("SELECT name FROM sqlite_master").fetchall() == []
+    finally:
+        reader.close()
+    handles[0].close()
+    assert population.active == 0 and not roots[0].exists()
