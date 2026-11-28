@@ -1,98 +1,75 @@
 {
   "kind": "handoff",
   "issue": "https://github.com/nashspence/riverhog/issues/1006",
-  "purpose": "Research and propose the finite transition retiring the entire #994 program and #995–#1000, adopting all#64 and resuming #991 with newly scoped outcomes, independently justified safety obligations and release acceptance.",
+  "purpose": "Make all#68 the first-adoption contract for Riverhog's repo-wide work-accounting and latency campaign: remove accidental cost, preserve required outcomes, retire all of #994, and qualify a small real operation using independently approved absolute maxima.",
   "producer": [
-    "OpenAI ChatGPT, GPT-6 Astra Pro; primary producer and same-model policy/source, shared-integration and issue-transition research agents; reasoning effort not exposed."
+    "OpenAI ChatGPT, GPT-6 Astra Pro",
+    "Same-model delegated source, issue-surface and experiment reviewers"
   ],
-  "requester": "Riverhog maintainer (nashspence), current conversation: contribute an issue with a researched nashspence/proffer handoff for the integration agent.",
-  "first_step": "Read .reference/HANDOFF.md and proposed/agents-policy.patch; reconcile current main against the audited base and use it for continuation. Treat PR #1001 as optional justified salvage, record the source/first action in #1006, and begin whole-program retirement plus policy and real-publication binding work.",
+  "requester": "Riverhog maintainer in the current conversation; requested cross-repository alignment, researched Proffer handoff and surrounding issue updates.",
+  "first_step": "Read HANDOFF.md and POLICY.md; account for one actual complete publication path on current main, obtain a matched F1/F2 baseline, and identify one measured excess cost to remove. Do not start another runtime, registry, compiler or broad test matrix.",
   "source": {
     "repository": "nashspence/riverhog",
     "base": {
-      "ref": "main",
+      "ref": "refs/heads/main",
       "commit": "be483fd6d567616d5fcd355202d61f1e682efe75"
     },
     "work_state": "patches",
     "later_inspected": {
-      "ref": "codex/994-durability",
+      "ref": "refs/heads/codex/994-durability",
       "commit": "0b25c7c67f7b3ee8787d8d753d4b6d585e8cea1f"
     }
   },
   "artifacts": [
     ".reference/HANDOFF.md",
     ".reference/POLICY.md",
+    ".reference/INTEGRATION.md",
+    ".reference/EXPERIMENT.md",
     ".reference/ISSUE_TRANSITION.md",
     ".reference/ISSUE_UPDATES.md",
-    ".reference/INTEGRATION.md",
     ".reference/SOURCES.json",
     ".reference/VALIDATION.md",
+    ".reference/proffer.json",
     ".reference/proposed/agents-policy.patch",
-    ".reference/proffer.json"
+    ".reference/evidence/experiment.json"
   ],
   "checks": [
     {
-      "command": "python -m unittest discover -s tests (in pinned Proffer source snapshot)",
-      "result": "passed",
-      "source": {
-        "kind": "commit",
-        "id": "2ce5e15c3191fcdc2be70213c0170f57c852a883"
-      },
-      "environment": "Linux; Python 3.12.14; jsonschema 4.26.0",
-      "notes": "Three Proffer contract tests. Source snapshot fetched from this commit; not Riverhog runtime tests."
-    },
-    {
-      "command": "python research/proffer/check.py handoff/.reference/proffer.json",
+      "command": "git apply --check, then git apply proposed/agents-policy.patch on isolated audited-main bytes; compare outputs and parse proposed Python AST",
       "result": "passed",
       "source": {
         "kind": "worktree",
-        "details": "The .reference payload supplied for this publication; its exact archive inventory and published commit are bound in the owning issue publication record."
+        "details": "Reference-only policy proposal: patch SHA256 e1a2925c668d1a231c7c5d4f0588ce20516ce0768beb71f17156df4fb68f4962 against be483fd6d567616d5fcd355202d61f1e682efe75 exact base bytes"
       },
-      "environment": "Linux; Python 3.12.14; jsonschema 4.26.0; checker/schema pinned to proffer@2ce5e15c3191fcdc2be70213c0170f57c852a883",
-      "notes": "Schema/format validation only; does not verify factual truth or authorize integration."
+      "environment": "Isolated Linux local copies; no production checkout mutation",
+      "notes": "Guide 2093 words under 2100; 13 extracted guide-focused policy/hash checks passed. This was not full pytest."
     },
     {
-      "command": "git apply --check followed by apply/byte comparison, proposed Python AST parse, guide SHA256 and unchanged 2100-word limit",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest -v test_latency_compare",
       "result": "passed",
       "source": {
         "kind": "worktree",
-        "details": "Temporary validation tree containing exact AGENTS.md and tests/unit/test_entrypoints.py fetched from Riverhog be483fd6d567616d5fcd355202d61f1e682efe75, plus the supplied reference patch."
+        "details": "Reviewed attached harness from ZIP SHA256 18e804b58bcd21623eba726d2b965ca01e268cae4b89f157d858246ef8794534"
       },
-      "environment": "Linux; Git; Python 3.12.14",
-      "notes": "Proposed guide is 2053 words. Product-policy test execution and full repository qualification were not run."
+      "environment": "Python 3.12.14; Linux x64",
+      "notes": "11 tests passed; synthetic/harness checks only, not product execution or profile qualification."
     },
     {
-      "command": "Reference artifact inventory, relative-link and unresolved issue-placeholder checks",
-      "result": "passed",
-      "source": {
-        "kind": "worktree",
-        "details": "The exact .reference payload supplied for publication; per-file digests and unchanged product tree are verified in the owning issue publication record."
-      },
-      "environment": "Linux; Python 3.12.14"
-    },
-    {
-      "command": "Riverhog product lint/unit/distribution/image/full CI; PR #1001 runtime qualification",
+      "command": "Full Riverhog suite, production shared performance cohort and live performance-status",
       "result": "not-run",
-      "reason": "This contribution adds a researched reference packet and proposed patch, not integrated product changes. Integration must qualify its actual final source."
-    },
-    {
-      "command": "Shared prepared-v2 admission and first production budget cohort; large/native/backend/platform/provider/release qualification",
-      "result": "not-run",
-      "reason": "No production timing or qualification is claimed. The approved resource exists, but independent Riverhog numerical contracts, semantic binding and actual acceptance workflow remain integration work."
+      "reason": "Reference handoff task; no real-operation binding or numerical authority is integrated. Attachment contains zero completed product observations."
     }
   ],
   "limitations": [
-    "Only .reference files are added to the audited main tree; proposed product changes exist as a patch and are not applied to product paths.",
-    "Later integration PR source was inspected, not tested. Earlier passing heads and shared primitive witnesses do not qualify the eventual Riverhog candidate.",
-    "Six warm/cold p1/p2/p4 raw numerical limits remain unresolved independent design decisions; no valid active contract or approval is invented.",
-    "The first complete production operation must retain supported KDF/polling/storage/authentication settings, complete custody and fresh useful work; historical test fixtures are not direct acceptance bindings.",
-    "Prepared v2 provides its stated synchronized configuration/timing scope, not physical power-loss or independent-device proof. Affected native/backend/platform and release obligations survive.",
-    "Existing issues are not closed or superseded by this reference publication alone; the new issue instructs the integration agent to make and verify the scoped transition.",
-    "Publication and consumer disposition records belong in the owning issue. This schema-valid handoff is evaluation input, not independent product acceptance.",
-    "The maintainer clarified retirement of all #994 and #995–#1000. Their old implementation owners/checklists do not persist; only independently required outcomes or relevant unresolved defects transfer. PR #1001 salvage is optional and may adopt no code."
+    "Reference-only proposal, not permission to merge or proof of product acceptance; do not merge the reference branch.",
+    "all#68 and #69 are implemented at the inspected pin, but real Riverhog adoption can justify a small reviewed shared refinement. Current profile approval must be rechecked at execution.",
+    "The attachment supports hypotheses and model-only accounting; it does not prove marginal product cost, safe sync removal or an accepted product budget.",
+    "C/P/D/L envelopes constrain complete configurations, not isolated feature cost. Core can still contain accidental work.",
+    "The proposed first p1 warm/cold pilot narrows initial adoption explicitly; p2/p4, distinct periodic/recovery and large-collection scope remain owned follow-ups, not passed or silently waived.",
+    "Native issue relationship actions require separate readback; the owning issue's publication record states actual completion or remaining capability gaps."
   ],
   "supersedes": {
-    "url": "https://github.com/nashspence/riverhog/tree/6979a8c5c6947d4db3c8e2ed3f95a7454bf5a8bf",
-    "commit": "6979a8c5c6947d4db3c8e2ed3f95a7454bf5a8bf"
+    "url": "https://github.com/nashspence/riverhog/tree/11a6014a9fd1ed537379a3ce101136b53c884537",
+    "commit": "11a6014a9fd1ed537379a3ce101136b53c884537"
   }
 }

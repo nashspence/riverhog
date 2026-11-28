@@ -1,28 +1,39 @@
-# Validation scope
+# What was verified
 
-This corrected reference publication supersedes `6979a8c5c6947d4db3c8e2ed3f95a7454bf5a8bf` after the maintainer clarified retirement of the entire #994 program. It was checked as a handoff and proposed patch. It is not Riverhog production qualification.
+This is reference research and a policy proposal. It contains no production implementation, product performance result, shared profile admission or release authorization.
 
-## Checks prepared for this publication
+## Source and attachment
 
-- Proffer's own three contract tests: `python -m unittest discover -s tests` in the source snapshot of `nashspence/proffer@2ce5e15c3191fcdc2be70213c0170f57c852a883`.
-- This handoff record: `python research/proffer/check.py handoff/.reference/proffer.json`.
-- Proposed patch: `git apply --check .reference/proposed/agents-policy.patch` against exact fetched `AGENTS.md` and `tests/unit/test_entrypoints.py` from Riverhog main `be483fd6d567616d5fcd355202d61f1e682efe75`, followed by application in a temporary verification tree, exact comparison to the proposed files, Python syntax parsing and guide checksum/word-limit checks.
-- Reference inventory: UTF-8 file inventory, relative local links, artifact membership and absence of unresolved issue-number placeholders.
-- Publication: after GitHub tree/commit/branch creation, compare every reference blob to the supplied archive inventory and verify that every product root entry matches the audited base and that the single parent is the explicitly superseded reference commit, whose parent is that base. Validate the publication record with the same Proffer checker and post it to the owning issue.
+Repository source, issue bodies/comments, PR state and native relationship reads were inspected at the pins in [SOURCES.json](SOURCES.json). Published surrounding-surface changes are linked in [ISSUE_UPDATES.md](ISSUE_UPDATES.md). The owning #1006 publication comment supplies final branch/inventory and native relationship verification.
 
-Actual results and exact publication identity are recorded in the owning issue's publication comment. The publication and consumer disposition are intentionally not embedded in the commit they identify.
+The supplied ZIP was safely inventoried: 23 files, 33,599 compressed bytes and 82,139 uncompressed bytes; no traversal or symlink entries. Its SHA256 is `18e804b58bcd21623eba726d2b965ca01e268cae4b89f157d858246ef8794534`. Source/patch identities, preflight status and toy-model summaries were checked against the archived evidence. Both product comparison records have zero samples. The deterministic model terminal digest is `95ef7eaf9f07634418aa01aad72bf357c6b88f908ef43163dfc200338754d31c`.
 
-## Environment and limits
+After reviewing the harness, `PYTHONDONTWRITEBYTECODE=1 python -m unittest -v test_latency_compare` passed 11 tests on Python 3.12.14, Linux x64. This exercises synthetic receipts, geometry, failure handling and in-memory SQLite/thread-counting behavior. It does not execute Riverhog or a qualified storage profile. The microbenchmark itself and unsafe proxy were not rerun.
 
-Local reference validation uses Linux, Python 3.12.14 and jsonschema 4.26.0 (within Proffer's declared range). This is not the approved prepared-v2 timing environment, which requires Python 3.12.16 and its GitHub resource contract.
+## Policy proposal
 
-The guide proposal is 2,053 words, below the unchanged 2,100-word cap, and updates the existing explicit guide hash and conflicting policy assertions. Passing patch/syntax/schema checks does not establish the complete Riverhog test suite, shared resource admission, production-operation behavior or required-check enforcement.
+The proposed patch changes only AGENTS.md and its existing tests/unit/test_entrypoints.py owner.
 
-Not run by this contribution: Riverhog lint/unit/distribution/image/full CI qualification; PR #1001 runtime tests; prepared-resource setup or timing cohorts; complete publication benchmarks; native/backend/platform fault campaigns; provider or release operations. Six independent production budget values and their approved semantic binding remain unresolved integration inputs. The reference contains no active fake limits JSON.
+- `git apply --check` and application passed against isolated exact-byte copies of audited main. Applied results match the readable proposal bytes.
+- The guide has 2,093 words under the unchanged 2,100-word cap; its proposed SHA256 is `4a1ce07ab0faa4be42ed101790e4c0fd54476ad23c2fc9f55ed2839f9abe1e39`.
+- The patch SHA256 is `e1a2925c668d1a231c7c5d4f0588ce20516ce0768beb71f17156df4fb68f4962`.
+- Python AST parsing passed. Thirteen guide-focused checks passed, including the compactness/hash test and existing policy-source, gate, custody, durable-state and authorization checks plus the amended work-account/production-budget clauses.
+- These functions were extracted from the proposed test file and executed against the isolated proposed guide. This is not a full repository pytest result.
+- Source authority, work tracking, component boundaries, custody/independent recovery, coordination, pre-v1 policy, durable-state and release/provider authorization sections remain unchanged. README's hash and the guide word limit remain unchanged.
+- The supplied local snapshots had an extra final blank line. Removing only that extra newline in isolated copies restored the independently known base hashes recorded in SOURCES.json; those exact bytes were used for application checks.
 
-## Repeat after adapting into product source
+The checks demonstrate a coherent, applicable policy amendment. They do not demonstrate source suppression, a real feature witness, integrated acceptance or a passing product operation.
 
-Use the repository's pinned tools, focused tests of changed owners, retained failure/interruption/receiving tests and actual final-source required CI. Validate the integrated authority/workflow/adapter through shared verdicts, including correct pass, complete miss, unqualified resource/authority, incomplete timeout, stale candidate and missing evidence. Existing ordinary suite-timing tests must still show that advisory duration misses do not fail validation.
+## Reference and publication
 
-The consumer must report which exact source ran which checks. An inspected newer branch, earlier passing commit, central primitive witness, structural policy job or schema-valid Proffer record is not that evidence.
+The handoff is validated with the Proffer checker/schema at `2ce5e15c3191fcdc2be70213c0170f57c852a883`. Relative document links and the declared artifact inventory are checked before publication.
 
+The publisher appends to the existing reference branch without force. Its reference-only tree must preserve every product root entry at audited main and the old reference commit in ancestry. The supplied archive and published .reference inventory are compared by path, mode and bytes; publication and supersession records are validated and posted in #1006 after the actual commit exists.
+
+This file does not pre-assert remote verification or native UI success. The exact remote commit and outcomes belong to the owning issue's publication record.
+
+## Not run or claimed
+
+No full Riverhog suite, real publication timing, complete backend/provider/platform qualification, shared twelve-worker campaign, live performance-status call or product acceptance verdict was run here. No new numerical C/P/D/L authority was approved. The attached failed preflight and model-only results cannot fill those gaps.
+
+The integration agent should perform only checks needed for the chosen change and applicable repository gates, then retain exact-source evidence. Do not rerun every historical campaign simply because it appears in the research.
