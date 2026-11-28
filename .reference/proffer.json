@@ -1,0 +1,109 @@
+{
+  "kind": "handoff",
+  "issue": "https://github.com/nashspence/riverhog/issues/991",
+  "purpose": "Finite post-commit publication readiness wake proposal: remove unnecessary idle cadence without changing durable selection, original receiving, retry or shared performance authority.",
+  "producer": [
+    "OpenAI ChatGPT, GPT-6 Astra Pro",
+    "Three same-model source, race and evidence reviewers"
+  ],
+  "requester": "Riverhog integration agent in issue comment 7233398358; explicitly commissioned by maintainer nashspence in ChatGPT.",
+  "first_step": "Review HANDOFF.md and DESIGN.md, reconcile the six-file patch with current integration source, then run the small maintained activation/readiness/wake tests. Do not merge the reference branch.",
+  "source": {
+    "repository": "nashspence/riverhog",
+    "base": {
+      "ref": "refs/heads/main",
+      "commit": "40cf854adc346421b161a03e7a79a8cb5e0e3632"
+    },
+    "work_state": "patches",
+    "later_inspected": {
+      "ref": "refs/heads/codex/1006-recovery-integration",
+      "commit": "4d1bd1b7ead7c638e4a80137def7d406937098aa"
+    }
+  },
+  "artifacts": [
+    ".reference/DESIGN.md",
+    ".reference/EVIDENCE.md",
+    ".reference/HANDOFF.md",
+    ".reference/SOURCES.json",
+    ".reference/VALIDATION.md",
+    ".reference/evidence/growth-samples.json.gz",
+    ".reference/evidence/idle-wake.json",
+    ".reference/evidence/validation.json",
+    ".reference/experiments/idle_wake_probe.py",
+    ".reference/proffer.json",
+    ".reference/proposed/idle-activation.patch"
+  ],
+  "checks": [
+    {
+      "command": "python -m pytest -q --junitxml=../focused-results.xml -o junit_family=legacy tests/unit/test_archive_maintenance_readiness.py tests/unit/test_archive_maintenance_wake.py tests/unit/test_archive_maintenance_activation.py tests/unit/test_archive_write_reaper.py tests/unit/test_finalization_terminal_admission.py tests/unit/test_finalization_due_selection.py tests/unit/test_archive_upload_execution.py::test_published_future_is_not_physical_worker_join_or_free_capacity tests/unit/test_archive_upload_execution.py::test_forward_exhaustion_preserves_target_isolation_and_terminal_headroom tests/unit/test_archive_upload_execution.py::test_terminal_target_limit_leaves_independent_terminal_work_available tests/unit/test_finalization_claim_registration.py::test_actual_claim_registration_resolves_rollback_and_lost_commit_reply tests/unit/test_finalization_claim_registration.py::test_fresh_claim_waits_for_unacknowledged_original_workflow_receiver tests/unit/test_archive_finalizer_resumption.py::test_original_resumption_obeys_the_existing_maintenance_cadence tests/unit/test_archive_finalizer_resumption.py::test_maintenance_cannot_retire_a_healthy_result_before_actual_worker_exit tests/unit/test_archive_upload_maintenance.py::test_terminal_backoff_and_capacity_leave_an_independent_construction_progressing",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile.",
+      "notes": "68 passed in 82.38s: 28 new and 40 selected existing cases."
+    },
+    {
+      "command": "Bind existing qualification_numeric_policy via bind_numeric_environment, then pytest tests/unit/test_upload_journal_service_coordination_growth.py::test_actual_service_readiness_scheduling_owns_complete_transaction (exact snippet in VALIDATION.md)",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile.",
+      "notes": "1 passed in 20.85s; 238 samples of existing growth contract. No numeric resource value or production budget changed."
+    },
+    {
+      "command": "python -m ruff check and python -m ruff format --check on the six changed files in SOURCES.json",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile."
+    },
+    {
+      "command": "python -m mypy riverhog/src/riverhog_api/app.py riverhog/src/riverhog_core/services/collection_uploads.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile."
+    },
+    {
+      "command": "git diff --check; git apply --check and actual git apply on isolated main; SHA256 comparison of six outputs",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile."
+    },
+    {
+      "command": "idle_wake_probe.py --repo CHECKOUT --baseline-app REQUESTED_SOURCE_APP --output NEW_FILE (exact command in EVIDENCE.md)",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile.",
+      "notes": "Six finite old/new reaper and actual Core selector observations; narrowed maintenance body; no publication timing."
+    },
+    {
+      "command": "Full make lint/unit/build/distribution/platform qualification, changed-source PR CI and merge checkout, matched production publication timing, shared budget/profile acceptance",
+      "result": "not-run",
+      "reason": "Finite reference proposal; these remain owned by the actual integration rail. No qualification/budget pass or new large-run gate is claimed."
+    }
+  ],
+  "limitations": [
+    "Reference product tree is unchanged at the audited main base; apply/adapt the patch through normal integration, not by merging the reference branch.",
+    "The real timeline lacks queue-commit/session-exit timestamps; 14.845s is reported post-PUT overlap, not proved eligibility delay or guaranteed saving.",
+    "The 400ms probe measures a narrowed actual Core selector/reaper fixture, with candidate point transition in both modes. No provider, crypto, worker, complete finalization or publication time is measured.",
+    "Actual activation/receiving test proves first finalizer activation and original receiving with low-cost unit fixtures, not complete real-path publication.",
+    "One live local callback binding per service; timer handles unhinted/cross-process work; existing once-per-reaper startup recovery is unchanged.",
+    "A hint grants no execution, resource-release, retry, custody or acknowledgement authority. No physical executor or admission capacity is changed.",
+    "Complete current-source qualification and a matched real diagnostic remain for integration. The separate neutral-history request and later completed-stage necessity review are not included."
+  ]
+}

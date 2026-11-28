@@ -1,0 +1,1090 @@
+diff --git a/riverhog/src/riverhog_api/app.py b/riverhog/src/riverhog_api/app.py
+index 44440c31..551ae555 100644
+--- a/riverhog/src/riverhog_api/app.py
++++ b/riverhog/src/riverhog_api/app.py
+@@ -186,6 +186,55 @@ def _process_archive_maintenance(
+     return progressed > 0
+ 
+ 
++class _ArchiveMaintenanceWake:
++    """One coalesced local hint, including notifications before the next wait."""
++
++    def __init__(self) -> None:
++        self._loop = asyncio.get_running_loop()
++        self._event = asyncio.Event()
++        self._lock = threading.Lock()
++        self._pending = False
++        self._closed = False
++
++    def notify(self) -> None:
++        with self._lock:
++            if self._closed or self._pending:
++                return
++            self._pending = True
++            try:
++                self._loop.call_soon_threadsafe(self._publish)
++            except RuntimeError:
++                # Loop shutdown can lose this hint; it owns no durable work.
++                self._pending = False
++
++    def _publish(self) -> None:
++        with self._lock:
++            if not self._closed and self._pending:
++                self._event.set()
++
++    async def wait(self, delay_seconds: float) -> bool:
++        if delay_seconds > 0:
++            try:
++                async with asyncio.timeout(delay_seconds):
++                    await self._event.wait()
++            except TimeoutError:
++                pass
++        else:
++            await asyncio.sleep(0)
++        # Consume before the sweep. A later notification, including during that
++        # sweep, remains pending. Queued stale callbacks cannot resurrect it.
++        with self._lock:
++            pending = self._pending
++            self._pending = False
++            self._event.clear()
++            return pending
++
++    def close(self) -> None:
++        with self._lock:
++            self._closed = True
++            self._pending = False
++
++
+ async def _run_archive_upload_reaper(
+     container_provider: Callable[[], ServiceContainer | None],
+     *,
+@@ -201,42 +250,59 @@ async def _run_archive_upload_reaper(
+     delay_seconds = 0.0
+     next_full_sweep = 0.0
+     loop = asyncio.get_running_loop()
+-    while True:
+-        try:
+-            await asyncio.sleep(delay_seconds)
+-            container = container_provider()
+-            if container is None:
+-                delay_seconds = interval_seconds
+-                continue
+-            full_sweep = startup_recovery or loop.time() >= next_full_sweep
+-            current_startup_recovery = startup_recovery
+-            startup_recovery = False
+-            async with operation_lock:
+-                progressed = await asyncio.to_thread(
+-                    _process_archive_maintenance,
+-                    container,
+-                    startup_recovery=current_startup_recovery,
+-                    execution_only=not full_sweep,
++    wake = _ArchiveMaintenanceWake()
++    binding = contextlib.ExitStack()
++    bound_uploads = None
++    try:
++        while True:
++            try:
++                awakened = await wake.wait(delay_seconds)
++                container = container_provider()
++                if container is None:
++                    delay_seconds = interval_seconds
++                    continue
++                changed_owner = container.collection_uploads is not bound_uploads
++                if changed_owner:
++                    binding.close()
++                    bound_uploads = None
++                    binding.enter_context(
++                        container.collection_uploads.archive_maintenance_wakeup(wake.notify)
++                    )
++                    bound_uploads = container.collection_uploads
++                full_sweep = (
++                    startup_recovery or changed_owner or awakened or loop.time() >= next_full_sweep
+                 )
+-            now = loop.time()
+-            if full_sweep:
+-                next_full_sweep = now + (0.0 if progressed else interval_seconds)
+-            elif progressed:
+-                # A received workflow may have made unrelated catalog work due.
+-                next_full_sweep = now
+-            if progressed:
+-                delay_seconds = 0.0
+-            else:
+-                delay_seconds = max(0.0, next_full_sweep - now)
+-                if container.collection_uploads.has_unreceived_archive_work():
+-                    # This local hint selects cadence only. Receiving still
+-                    # requires the original physical join and semantic owner.
+-                    delay_seconds = min(delay_seconds, receive_seconds)
+-        except asyncio.CancelledError:
+-            raise
+-        except Exception:  # pragma: no cover - defensive background task logging
+-            _LOG.exception("archive maintenance reaper sweep failed")
+-            delay_seconds = interval_seconds
++                current_startup_recovery = startup_recovery
++                startup_recovery = False
++                async with operation_lock:
++                    progressed = await asyncio.to_thread(
++                        _process_archive_maintenance,
++                        container,
++                        startup_recovery=current_startup_recovery,
++                        execution_only=not full_sweep,
++                    )
++                now = loop.time()
++                if full_sweep:
++                    next_full_sweep = now + (0.0 if progressed else interval_seconds)
++                elif progressed:
++                    # A received workflow may have made unrelated catalog work due.
++                    next_full_sweep = now
++                if progressed:
++                    delay_seconds = 0.0
++                else:
++                    delay_seconds = max(0.0, next_full_sweep - now)
++                    if container.collection_uploads.has_unreceived_archive_work():
++                        # This local hint selects cadence only. Receiving still
++                        # requires the original physical join and semantic owner.
++                        delay_seconds = min(delay_seconds, receive_seconds)
++            except asyncio.CancelledError:
++                raise
++            except Exception:  # pragma: no cover - defensive background task logging
++                _LOG.exception("archive maintenance reaper sweep failed")
++                delay_seconds = interval_seconds
++    finally:
++        wake.close()
++        binding.close()
+ 
+ 
+ async def _run_retrieval_restore_reaper(
+diff --git a/riverhog/src/riverhog_core/services/collection_uploads.py b/riverhog/src/riverhog_core/services/collection_uploads.py
+index 25129310..b4000e33 100644
+--- a/riverhog/src/riverhog_core/services/collection_uploads.py
++++ b/riverhog/src/riverhog_core/services/collection_uploads.py
+@@ -8,6 +8,7 @@ import secrets
+ import uuid
+ from collections import OrderedDict
+ from collections.abc import Callable, Generator, Iterator, Mapping, Sequence
++from contextlib import contextmanager
+ from dataclasses import dataclass, replace
+ from datetime import timedelta
+ from functools import partial
+@@ -490,6 +491,20 @@ if TYPE_CHECKING:
+ class SqlAlchemyCollectionUploadService:
+     """Own direct-to-final collection ingress and its final catalog transaction."""
+ 
++    _archive_maintenance_wakeup: Callable[[], None] | None = None
++
++    @contextmanager
++    def archive_maintenance_wakeup(self, wakeup: Callable[[], None]) -> Iterator[None]:
++        """Bind one local cadence hint; durable selection retains all authority."""
++        if self._archive_maintenance_wakeup is not None:
++            raise RuntimeError("archive maintenance wakeup is already bound")
++        self._archive_maintenance_wakeup = wakeup
++        try:
++            yield
++        finally:
++            if self._archive_maintenance_wakeup is wakeup:
++                self._archive_maintenance_wakeup = None
++
+     def __init__(
+         self,
+         config: RuntimeConfig,
+@@ -3643,7 +3658,7 @@ class SqlAlchemyCollectionUploadService:
+             # SQLite reads need not hold a writer lock, and a PostgreSQL parent
+             # wait can outlive the joined gate's snapshot. Match the original
+             # readiness facts and current admission in this atomic transition.
+-            session.execute(
++            changed = session.execute(
+                 update(CollectionUploadRecord)
+                 .where(
+                     CollectionUploadRecord.collection_id == collection_id,
+@@ -3667,7 +3682,21 @@ class SqlAlchemyCollectionUploadService:
+                 )
+                 .values(**_finalization_ready_values(now=now))
+                 .execution_options(synchronize_session=False)
+-            ).close()
++            )
++            try:
++                scheduled = cast(CursorResult[Any], changed).rowcount == 1
++            finally:
++                changed.close()
++        # The conditional transition, commit and session receiving must finish
++        # before a hint can prompt independent due selection on another thread.
++        wakeup = self._archive_maintenance_wakeup
++        if scheduled and wakeup is not None:
++            try:
++                wakeup()
++            except Exception:
++                # A lost local hint cannot undo durable work or invent a failed
++                # acknowledgement. The ordinary timer still discovers the row.
++                _LOG.exception("archive maintenance wake hint failed")
+ 
+     def _reconcile_sealed_volume_receipts(self, collection_id: int) -> None:
+         for _ in range(64):
+diff --git a/tests/unit/test_archive_maintenance_activation.py b/tests/unit/test_archive_maintenance_activation.py
+new file mode 100644
+index 00000000..189566cf
+--- /dev/null
++++ b/tests/unit/test_archive_maintenance_activation.py
+@@ -0,0 +1,164 @@
++from __future__ import annotations
++
++import asyncio
++import threading
++from datetime import timedelta
++
++import pytest
++from riverhog_api import app as api_app
++from riverhog_core.services import physical_execution
++
++from tests.unit.test_archive_maintenance_wake import _idle_container
++from tests.unit.test_collection_upload_preparation import _case
++from tests.unit.test_collection_uploads import _bind_primary
++from tests.unit.test_finalization_claim_readiness import _seal
++
++
++def test_idle_reaper_activates_committed_work_and_keeps_original_until_join(
++    tmp_path, monkeypatch, record_property
++):
++    with _case(tmp_path, "segment", artifact_count=1) as case:
++        _bind_primary(case.service, case.collection_id, format(1, "064x"), case.content)
++        service = case.service
++        pool = service._archive_execution
++        release = threading.Event()
++        captured = []
++        received = []
++        joins = []
++        notifications = []
++        original_thread = physical_execution.Thread
++        original_submit = pool.try_submit
++        original_collect = pool.collect
++
++        async def exercise():
++            loop = asyncio.get_running_loop()
++            idle, returned, receiving, swept_after_hint = (asyncio.Event() for _ in range(4))
++            original_wake = api_app._ArchiveMaintenanceWake
++            original_process = api_app._process_archive_maintenance
++            sweeps = []
++            hint_sweep_target = None
++
++            class ObservedWake(original_wake):
++                def notify(self):
++                    notifications.append("hint")
++                    super().notify()
++
++                async def wait(self, delay_seconds):
++                    if delay_seconds > 1000:
++                        idle.set()
++                    elif delay_seconds > 0 and captured and captured[0].future.done():
++                        receiving.set()
++                    return await super().wait(delay_seconds)
++
++            class HeldExitThread(original_thread):
++                def run(self):
++                    super().run()
++                    loop.call_soon_threadsafe(returned.set)
++                    assert release.wait(10), "test did not release the original worker exit"
++
++            def submit(key, **arguments):
++                if arguments.get("owner") is service._archive_finalizers and not captured:
++                    with monkeypatch.context() as patch:
++                        patch.setattr(physical_execution, "Thread", HeldExitThread)
++                        outcome = original_submit(key, **arguments)
++                    if outcome == "submitted":
++                        captured.append(pool._slots[key])
++                    return outcome
++                return original_submit(key, **arguments)
++
++            def collect(*, limit, owner):
++                outcomes = original_collect(limit=limit, owner=owner)
++                for outcome in outcomes:
++                    if captured and outcome._future is captured[0].future:
++                        received.append(outcome)
++                return outcomes
++
++            def process(container, *, startup_recovery=False, execution_only=False):
++                progressed = original_process(
++                    container, startup_recovery=startup_recovery, execution_only=execution_only
++                )
++                sweeps.append((startup_recovery, execution_only, progressed))
++                if (
++                    hint_sweep_target is not None
++                    and sum(not turn[1] for turn in sweeps) >= hint_sweep_target
++                ):
++                    loop.call_soon_threadsafe(swept_after_hint.set)
++                return progressed
++
++            monkeypatch.setattr(api_app, "_ArchiveMaintenanceWake", ObservedWake)
++            monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
++            monkeypatch.setattr(pool, "try_submit", submit)
++            monkeypatch.setattr(pool, "collect", collect)
++            container = _idle_container()
++            container.collection_uploads = service
++            task = asyncio.create_task(
++                api_app._run_archive_upload_reaper(
++                    lambda: container,
++                    sweep_interval=timedelta(days=1),
++                    receive_interval=timedelta(milliseconds=10),
++                    operation_lock=asyncio.Lock(),
++                )
++            )
++            try:
++                await asyncio.wait_for(idle.wait(), timeout=10)
++                assert not captured and not pool.has_unreceived_work()
++                idle_sweeps = len(sweeps)
++                # These are the real complete and payload-unit entry points.
++                # The last one commits point readiness and emits the hint.
++                await asyncio.to_thread(_seal, case)
++                await asyncio.wait_for(returned.wait(), timeout=10)
++                assert len(captured) == 1 and notifications == ["hint"]
++                original = captured[0]
++                assert original.future.done() and original.worker.is_alive()
++                result = original.future.result()
++                assert result.progressed
++                assert pool._slots[original.key] is original and received == []
++                await asyncio.wait_for(receiving.wait(), timeout=10)
++
++                # A further wake reconsiders ordinary work, but cannot treat the
++                # original Future's result as a physical worker receipt.
++                hint_sweep_target = sum(not turn[1] for turn in sweeps) + 1
++                service._archive_maintenance_wakeup()
++                await asyncio.wait_for(swept_after_hint.wait(), timeout=10)
++                assert pool._slots[original.key] is original
++                assert original.worker.is_alive() and received == []
++                assert service.has_unreceived_archive_work()
++                record_property(
++                    "idle_activation",
++                    {
++                        "fallback_seconds": 86400,
++                        "idle_sweeps": idle_sweeps,
++                        "durable_transition_hints": 1,
++                        "fresh_claim_workers": len(captured),
++                        "held_original_preserved_after_another_hint": True,
++                    },
++                )
++            finally:
++                task.cancel()
++                with pytest.raises(asyncio.CancelledError):
++                    await task
++                release.set()
++            assert service._archive_maintenance_wakeup is None
++
++        try:
++            asyncio.run(exercise())
++            original = captured[0]
++            original.worker.join(timeout=10)
++            assert not original.worker.is_alive()
++            actual_join = original.worker.join
++
++            def joined(timeout=None):
++                joins.append(timeout)
++                actual_join(timeout)
++
++            monkeypatch.setattr(original.worker, "join", joined)
++            assert service.process_due_archive_uploads(limit=1) >= 1
++            assert len(received) == 1
++            assert received[0]._future is original.future
++            assert received[0].result() is original.future.result()
++            assert joins == [0]
++            assert original.key not in pool._slots
++            assert not pool.has_unreceived_work()
++            record_property("original_physical_join_and_receiving", True)
++        finally:
++            release.set()
+diff --git a/tests/unit/test_archive_maintenance_readiness.py b/tests/unit/test_archive_maintenance_readiness.py
+new file mode 100644
+index 00000000..8f73e367
+--- /dev/null
++++ b/tests/unit/test_archive_maintenance_readiness.py
+@@ -0,0 +1,235 @@
++from __future__ import annotations
++
++from contextlib import contextmanager
++
++import pytest
++from riverhog_core.catalog_db import session_scope
++from riverhog_core.catalog_models import CollectionArchiveObjectUploadRecord as Volume
++from riverhog_core.catalog_models import CollectionUploadRecord as Upload
++from riverhog_core.services import collection_uploads as owner
++from sqlalchemy import event
++from time_formats import utc_timestamp_now
++
++from tests.unit import test_finalization_terminal_admission as terminal_tests
++from tests.unit.test_collection_upload_preparation import _case
++from tests.unit.test_finalization_claim_readiness import _seal
++
++
++def _ready_again(case):
++    with session_scope(case.factory) as session:
++        upload = session.get(Upload, case.collection_id)
++        upload.state, upload.archive_phase = "uploading", "uploading"
++        upload.archive_next_attempt_at = None
++
++
++def _state(case):
++    with session_scope(case.factory) as session:
++        upload = session.get(Upload, case.collection_id)
++        return upload.state, upload.archive_phase, upload.archive_next_attempt_at
++
++
++def test_readiness_hint_follows_original_transaction_commit_and_close(tmp_path, monkeypatch):
++    with _case(tmp_path, "segment", artifact_count=1) as case:
++        _seal(case)
++        _ready_again(case)
++        original_scope = owner.session_scope
++        trace = []
++        captured = []
++
++        @contextmanager
++        def observe_scope(factory):
++            with original_scope(factory) as session:
++                captured.append(session)
++                original_close = session.close
++
++                def close():
++                    original_close()
++                    trace.append("closed")
++
++                session.close = close
++                yield session
++            trace.append("exited")
++
++        def wake():
++            assert trace == ["closed", "exited"]
++            assert len(captured) == 1 and not captured[0].in_transaction()
++            state, phase, due = _state(case)
++            assert (state, phase) == ("finalizing", "finalization_queued")
++            assert due is not None
++            trace.append("hint")
++
++        with monkeypatch.context() as patch:
++            patch.setattr(owner, "session_scope", observe_scope)
++            with case.service.archive_maintenance_wakeup(wake):
++                case.service._schedule_finalization_if_ready(case.collection_id)
++        assert trace == ["closed", "exited", "hint"]
++        assert case.service._finalization_due.select(utc_timestamp_now(), limit=1) == (
++            case.collection_id,
++        )
++
++
++@pytest.mark.parametrize("failure", ("rollback", "lost-reply"))
++def test_unconfirmed_transition_has_no_hint_and_timer_can_rediscover(
++    tmp_path, monkeypatch, failure
++):
++    with _case(tmp_path, "segment", artifact_count=1) as case:
++        _seal(case)
++        _ready_again(case)
++        original_scope = owner.session_scope
++        hints = []
++
++        @contextmanager
++        def interrupted_scope(factory):
++            with original_scope(factory) as session:
++                yield session
++                if failure == "rollback":
++                    raise OSError("readiness transaction rolled back")
++            raise OSError("committed readiness reply lost")
++
++        with case.service.archive_maintenance_wakeup(lambda: hints.append("hint")):
++            with monkeypatch.context() as patch:
++                patch.setattr(owner, "session_scope", interrupted_scope)
++                with pytest.raises(OSError):
++                    case.service._schedule_finalization_if_ready(case.collection_id)
++            assert hints == []
++            if failure == "rollback":
++                assert _state(case) == ("uploading", "uploading", None)
++                assert case.service._finalization_due.select(utc_timestamp_now(), limit=1) == ()
++                assert case.service._schedule_ready_finalizations(limit=1) == 1
++            else:
++                assert _state(case)[:2] == ("finalizing", "finalization_queued")
++            assert case.service._finalization_due.select(utc_timestamp_now(), limit=1) == (
++                case.collection_id,
++            )
++        assert hints == []
++
++
++@pytest.mark.parametrize("change", ("terminal", "readiness", "planner"))
++def test_lost_atomic_readiness_race_does_not_emit_another_hint(tmp_path, monkeypatch, change):
++    original_case = terminal_tests._case
++    hints = []
++
++    @contextmanager
++    def observed_case(*args, **kwargs):
++        with original_case(*args, **kwargs) as case:
++            with case.service.archive_maintenance_wakeup(lambda: hints.append("hint")):
++                yield case
++
++    monkeypatch.setattr(terminal_tests, "_case", observed_case)
++    terminal_tests.test_point_readiness_matches_current_facts_in_its_atomic_update(
++        tmp_path, monkeypatch, change
++    )
++    # The existing race witness first completes one real upload, then changes
++    # current facts after the point readiness read and before its atomic update.
++    assert hints == ["hint"]
++
++
++@pytest.mark.parametrize("missing", ("completion", "payload", "count", "bytes", "volume"))
++def test_incomplete_source_never_announces_finalization_readiness(tmp_path, missing):
++    with _case(tmp_path, "segment", artifact_count=1) as case:
++        if missing == "payload":
++            case.service.complete(case.collection_id)
++        elif missing != "completion":
++            _seal(case)
++            _ready_again(case)
++            with session_scope(case.factory) as session:
++                upload = session.get(Upload, case.collection_id)
++                if missing == "count":
++                    upload.artifact_count += 1
++                elif missing == "bytes":
++                    upload.payload_sealed_artifact_bytes = 0
++                else:
++                    session.get(Volume, (case.collection_id, case.object_id)).state = "planned"
++        hints = []
++        with case.service.archive_maintenance_wakeup(lambda: hints.append("hint")):
++            case.service._schedule_finalization_if_ready(case.collection_id)
++        assert hints == []
++        assert case.service._finalization_due.select(utc_timestamp_now(), limit=1) == ()
++
++
++def test_selected_terminal_never_announces_fresh_finalization(tmp_path):
++    with terminal_tests._terminal_case(tmp_path, phase="ready") as case:
++        hints = []
++        before = _state(case)
++        with case.service.archive_maintenance_wakeup(lambda: hints.append("hint")):
++            case.service._schedule_finalization_if_ready(case.collection_id)
++        assert hints == [] and _state(case) == before
++
++
++def test_hint_adds_no_catalog_work_and_duplicate_does_not_notify(tmp_path, record_property):
++    with _case(tmp_path, "segment", artifact_count=1) as case:
++        _seal(case)
++        engine = case.factory.kw["bind"]
++        statements = []
++        hints = []
++
++        def statement(_connection, _cursor, text, *_args):
++            statements.append(text)
++
++        observations = []
++        for bound in (False, True):
++            _ready_again(case)
++            statements.clear()
++            event.listen(engine, "before_cursor_execute", statement)
++            try:
++                if bound:
++                    with case.service.archive_maintenance_wakeup(
++                        lambda: hints.append(len(statements))
++                    ):
++                        case.service._schedule_finalization_if_ready(case.collection_id)
++                else:
++                    case.service._schedule_finalization_if_ready(case.collection_id)
++            finally:
++                event.remove(engine, "before_cursor_execute", statement)
++            observations.append(tuple(statements))
++        assert observations[0] == observations[1]
++        assert len(observations[0]) == 3
++        assert hints == [3]
++        with case.service.archive_maintenance_wakeup(lambda: hints.append(-1)):
++            case.service._schedule_finalization_if_ready(case.collection_id)
++        assert hints == [3]
++        record_property("readiness_sql_statements_without_and_with_hint", [3, 3])
++
++
++def test_callback_failure_preserves_committed_success_and_unbinding(tmp_path, caplog):
++    with _case(tmp_path, "segment", artifact_count=1) as case:
++        _seal(case)
++        _ready_again(case)
++        failure = OSError("local wake receiver unavailable")
++        attempts = []
++
++        def broken():
++            attempts.append("original")
++            raise failure
++
++        with case.service.archive_maintenance_wakeup(broken):
++            case.service._schedule_finalization_if_ready(case.collection_id)
++        assert attempts == ["original"]
++        assert _state(case)[:2] == ("finalizing", "finalization_queued")
++        assert any(record.exc_info and record.exc_info[1] is failure for record in caplog.records)
++        _ready_again(case)
++        case.service._schedule_finalization_if_ready(case.collection_id)
++        assert attempts == ["original"]
++        _ready_again(case)
++        with case.service.archive_maintenance_wakeup(lambda: attempts.append("replacement")):
++            case.service._schedule_finalization_if_ready(case.collection_id)
++        assert attempts == ["original", "replacement"]
++
++
++def test_binding_rejects_another_live_receiver_and_detaches_after_failure():
++    service = object.__new__(owner.SqlAlchemyCollectionUploadService)
++
++    def first():
++        pass
++
++    def second():
++        pass
++
++    with pytest.raises(OSError, match="owner scope failed"):
++        with service.archive_maintenance_wakeup(first):
++            with pytest.raises(RuntimeError):
++                with service.archive_maintenance_wakeup(second):
++                    pytest.fail("another live receiver replaced the original")
++            raise OSError("owner scope failed")
++    with service.archive_maintenance_wakeup(second):
++        pass
+diff --git a/tests/unit/test_archive_maintenance_wake.py b/tests/unit/test_archive_maintenance_wake.py
+new file mode 100644
+index 00000000..c1f2d12a
+--- /dev/null
++++ b/tests/unit/test_archive_maintenance_wake.py
+@@ -0,0 +1,421 @@
++from __future__ import annotations
++
++import asyncio
++import threading
++from contextlib import contextmanager
++from datetime import timedelta
++from types import SimpleNamespace
++from unittest.mock import Mock
++
++import pytest
++from riverhog_api import app as api_app
++
++
++class _Uploads:
++    def __init__(self, *, active=False):
++        self.active = active
++        self.callback = None
++        self.bindings = 0
++        self.detachments = 0
++
++    @contextmanager
++    def archive_maintenance_wakeup(self, callback):
++        assert self.callback is None
++        self.callback = callback
++        self.bindings += 1
++        try:
++            yield
++        finally:
++            assert self.callback is callback
++            self.callback = None
++            self.detachments += 1
++
++    def has_unreceived_archive_work(self):
++        return self.active
++
++    def notify(self):
++        assert self.callback is not None
++        self.callback()
++
++
++def _start(container_provider, *, interval=86400, receive=0.01):
++    return asyncio.create_task(
++        api_app._run_archive_upload_reaper(
++            container_provider,
++            sweep_interval=timedelta(seconds=interval),
++            receive_interval=timedelta(seconds=receive),
++            operation_lock=asyncio.Lock(),
++        )
++    )
++
++
++async def _cancel(task):
++    task.cancel()
++    with pytest.raises(asyncio.CancelledError):
++        await task
++
++
++@pytest.mark.parametrize("before_wait", (False, True))
++def test_thread_notification_survives_wait_registration(before_wait):
++    async def exercise():
++        wake = api_app._ArchiveMaintenanceWake()
++        try:
++            if before_wait:
++                await asyncio.to_thread(wake.notify)
++            waiting = asyncio.create_task(wake.wait(86400))
++            await asyncio.sleep(0)
++            if not before_wait:
++                assert not waiting.done()
++                await asyncio.to_thread(wake.notify)
++            assert await asyncio.wait_for(waiting, timeout=5)
++            assert not await wake.wait(0)
++        finally:
++            wake.close()
++
++    asyncio.run(exercise())
++
++
++def test_burst_coalesces_before_delivery_and_stale_delivery_cannot_repeat_it(monkeypatch):
++    async def exercise():
++        loop = asyncio.get_running_loop()
++        wake = api_app._ArchiveMaintenanceWake()
++        queued = []
++        with monkeypatch.context() as patch:
++            patch.setattr(loop, "call_soon_threadsafe", lambda callback: queued.append(callback))
++            for _ in range(1024):
++                wake.notify()
++            assert len(queued) == 1
++            assert await wake.wait(0)
++            queued.pop()()
++            assert not await wake.wait(0)
++            wake.notify()
++            assert len(queued) == 1
++            queued.pop()()
++            assert await wake.wait(0)
++            assert not await wake.wait(0)
++        wake.close()
++
++    asyncio.run(exercise())
++
++
++def test_wait_cancellation_preserves_a_later_notification():
++    async def exercise():
++        wake = api_app._ArchiveMaintenanceWake()
++        waiting = asyncio.create_task(wake.wait(86400))
++        await asyncio.sleep(0)
++        await _cancel(waiting)
++        wake.notify()
++        assert await asyncio.wait_for(wake.wait(86400), timeout=5)
++        assert not await wake.wait(0)
++        wake.close()
++
++    asyncio.run(exercise())
++
++
++def test_closed_wake_ignores_queued_and_late_notifications(monkeypatch):
++    async def exercise():
++        loop = asyncio.get_running_loop()
++        wake = api_app._ArchiveMaintenanceWake()
++        queued = []
++        with monkeypatch.context() as patch:
++            patch.setattr(loop, "call_soon_threadsafe", lambda callback: queued.append(callback))
++            wake.notify()
++            assert len(queued) == 1
++            wake.close()
++            queued.pop()()
++            wake.notify()
++            assert not queued
++            assert not await wake.wait(0)
++
++    asyncio.run(exercise())
++
++
++def test_idle_wait_retains_its_timer_fallback():
++    async def exercise():
++        wake = api_app._ArchiveMaintenanceWake()
++        try:
++            assert not await asyncio.wait_for(wake.wait(0.001), timeout=5)
++        finally:
++            wake.close()
++
++    asyncio.run(exercise())
++
++
++def test_notification_during_a_sweep_remains_pending_for_the_next_full_sweep(monkeypatch):
++    async def exercise():
++        loop = asyncio.get_running_loop()
++        uploads = _Uploads()
++        container = SimpleNamespace(collection_uploads=uploads)
++        entered, finished = asyncio.Event(), asyncio.Event()
++        release = threading.Event()
++        turns = []
++
++        def process(selected, *, startup_recovery=False, execution_only=False):
++            assert selected is container
++            turns.append((startup_recovery, execution_only))
++            if len(turns) == 1:
++                loop.call_soon_threadsafe(entered.set)
++                assert release.wait(5)
++            else:
++                loop.call_soon_threadsafe(finished.set)
++            return False
++
++        monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
++        task = _start(lambda: container)
++        try:
++            await asyncio.wait_for(entered.wait(), timeout=5)
++            uploads.notify()
++            release.set()
++            await asyncio.wait_for(finished.wait(), timeout=5)
++            await asyncio.sleep(0.02)
++            assert turns == [(True, False), (False, False)]
++        finally:
++            release.set()
++            await _cancel(task)
++        assert uploads.bindings == uploads.detachments == 1
++
++    asyncio.run(exercise())
++
++
++def test_fresh_hint_interrupts_receiving_cadence_with_a_full_sweep(monkeypatch):
++    async def exercise():
++        loop = asyncio.get_running_loop()
++        uploads = _Uploads(active=True)
++        container = SimpleNamespace(collection_uploads=uploads)
++        receiving, finished = asyncio.Event(), asyncio.Event()
++        turns = []
++
++        def process(selected, *, startup_recovery=False, execution_only=False):
++            turns.append("receive" if execution_only else "sweep")
++            if len(turns) == 2:
++                loop.call_soon_threadsafe(receiving.set)
++            if len(turns) > 2 and not execution_only:
++                uploads.active = False
++                loop.call_soon_threadsafe(finished.set)
++            return False
++
++        monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
++        task = _start(lambda: container, receive=0.1)
++        try:
++            await asyncio.wait_for(receiving.wait(), timeout=5)
++            uploads.notify()
++            await asyncio.wait_for(finished.wait(), timeout=5)
++            await asyncio.sleep(0.02)
++            assert turns == ["sweep", "receive", "sweep"]
++        finally:
++            await _cancel(task)
++
++    asyncio.run(exercise())
++
++
++def _idle_container():
++    uploads = _Uploads()
++    for name in (
++        "requeue_interrupted_finalizations_for_startup",
++        "requeue_interrupted_orphan_discards_for_startup",
++        "process_due_provenance_journal_validations",
++        "process_due_custody_receipts",
++        "process_due_finalizations",
++        "reap_expired_custody_transfers",
++    ):
++        setattr(uploads, name, Mock(return_value=0))
++
++    def service(*names):
++        return SimpleNamespace(**{name: Mock(return_value=0) for name in names})
++
++    return SimpleNamespace(
++        collection_uploads=uploads,
++        collection_workflows=service(
++            "requeue_interrupted_disposition_sets_for_startup",
++            "reap_expired_claims",
++            "process_due_disposition_sets",
++            "process_due_outcome_sets",
++        ),
++        archive_copy_jobs=service("requeue_interrupted_jobs_for_startup", "process_due"),
++        collection_deletions=service("process_due"),
++        collection_descriptions=service("requeue_interrupted_for_startup", "process_due"),
++        collection_tags=service("requeue_interrupted_for_startup", "process_due"),
++        retrieval=service(
++            "request_cache_accounting_reconciliation_for_startup",
++            "process_cache_accounting_reconciliation",
++        ),
++        lifecycle_events=service("reap_expired_contexts"),
++        catalog_sync=service("reap_expired_history"),
++    )
++
++
++def test_stale_burst_runs_one_full_bounded_sweep_including_unrelated_owners(
++    monkeypatch, record_property
++):
++    async def exercise():
++        loop = asyncio.get_running_loop()
++        container = _idle_container()
++        registrations = SimpleNamespace(process_due=Mock(return_value=0))
++        monkeypatch.setattr(api_app, "CollectionRegistrationOwner", lambda service: registrations)
++        swept = asyncio.Event()
++
++        def finished_sweep():
++            loop.call_soon_threadsafe(swept.set)
++            return 0
++
++        container.lifecycle_events.reap_expired_contexts.side_effect = finished_sweep
++        task = _start(lambda: container)
++        try:
++            await asyncio.wait_for(swept.wait(), timeout=5)
++            swept.clear()
++            for _ in range(1024):
++                container.collection_uploads.notify()
++            await asyncio.wait_for(swept.wait(), timeout=5)
++            await asyncio.sleep(0.02)
++            steady = [
++                registrations.process_due,
++                container.collection_uploads.process_due_provenance_journal_validations,
++                container.collection_uploads.process_due_custody_receipts,
++                container.catalog_sync.reap_expired_history,
++                container.collection_uploads.process_due_finalizations,
++                container.collection_uploads.reap_expired_custody_transfers,
++                container.collection_workflows.reap_expired_claims,
++                container.collection_workflows.process_due_disposition_sets,
++                container.collection_workflows.process_due_outcome_sets,
++                container.collection_deletions.process_due,
++                container.retrieval.process_cache_accounting_reconciliation,
++                container.archive_copy_jobs.process_due,
++                container.collection_descriptions.process_due,
++                container.collection_tags.process_due,
++                container.lifecycle_events.reap_expired_contexts,
++            ]
++            assert len(steady) == 15 and [call.call_count for call in steady] == [2] * 15
++            record_property("coalesced_notifications", 1024)
++            record_property("full_sweeps_including_startup", 2)
++            record_property("steady_owner_method_calls", sum(call.call_count for call in steady))
++            assert (
++                container.collection_uploads.requeue_interrupted_finalizations_for_startup.call_count
++                == 1
++            )
++            registrations.process_due.assert_called_with(limit=1)
++            container.collection_uploads.process_due_finalizations.assert_called_with(limit=1)
++        finally:
++            await _cancel(task)
++
++    asyncio.run(exercise())
++
++
++def test_timer_finds_new_work_without_a_notification(monkeypatch):
++    async def exercise():
++        loop = asyncio.get_running_loop()
++        uploads = _Uploads()
++        container = SimpleNamespace(collection_uploads=uploads)
++        idle, found = asyncio.Event(), asyncio.Event()
++        ready = False
++        turns = []
++
++        def process(selected, *, startup_recovery=False, execution_only=False):
++            nonlocal ready
++            turns.append((startup_recovery, execution_only))
++            if len(turns) == 1:
++                loop.call_soon_threadsafe(idle.set)
++            if ready:
++                ready = False
++                loop.call_soon_threadsafe(found.set)
++                return True
++            return False
++
++        monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
++        task = _start(lambda: container, interval=0.1)
++        try:
++            await asyncio.wait_for(idle.wait(), timeout=5)
++            ready = True
++            await asyncio.wait_for(found.wait(), timeout=5)
++            await asyncio.sleep(0.02)
++            assert turns == [(True, False), (False, False), (False, False)]
++        finally:
++            await _cancel(task)
++
++    asyncio.run(exercise())
++
++
++def test_provider_change_rebinds_owner_and_shutdown_ignores_late_hint(monkeypatch):
++    async def exercise():
++        loop = asyncio.get_running_loop()
++        first = SimpleNamespace(collection_uploads=_Uploads())
++        second = SimpleNamespace(collection_uploads=_Uploads())
++        selected = first
++        swept = asyncio.Event()
++        turns = []
++
++        def process(container, *, startup_recovery=False, execution_only=False):
++            turns.append((container, startup_recovery, execution_only))
++            loop.call_soon_threadsafe(swept.set)
++            return False
++
++        monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
++        task = _start(lambda: selected)
++        try:
++            await asyncio.wait_for(swept.wait(), timeout=5)
++            swept.clear()
++            selected = second
++            first.collection_uploads.notify()
++            await asyncio.wait_for(swept.wait(), timeout=5)
++            assert turns == [(first, True, False), (second, False, False)]
++            assert first.collection_uploads.callback is None
++            assert first.collection_uploads.bindings == first.collection_uploads.detachments == 1
++            assert second.collection_uploads.bindings == 1
++            late = second.collection_uploads.callback
++        finally:
++            await _cancel(task)
++        assert second.collection_uploads.detachments == 1
++        assert second.collection_uploads.callback is None
++        late()
++        await asyncio.sleep(0)
++        assert len(turns) == 2
++
++    asyncio.run(exercise())
++
++
++def test_failed_provider_binding_can_return_to_and_rebind_the_original_owner(monkeypatch):
++    async def exercise():
++        loop = asyncio.get_running_loop()
++        first = SimpleNamespace(collection_uploads=_Uploads())
++        second = SimpleNamespace(collection_uploads=_Uploads())
++        selected = first
++        swept, attempted = asyncio.Event(), asyncio.Event()
++        foreign_callback = Mock()
++        turns = []
++
++        def provider():
++            if selected is second:
++                attempted.set()
++            return selected
++
++        def process(container, *, startup_recovery=False, execution_only=False):
++            turns.append(container)
++            assert not execution_only
++            loop.call_soon_threadsafe(swept.set)
++            return False
++
++        monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
++        with second.collection_uploads.archive_maintenance_wakeup(foreign_callback):
++            task = _start(provider, interval=0.1)
++            try:
++                await asyncio.wait_for(swept.wait(), timeout=5)
++                swept.clear()
++                selected = second
++                first.collection_uploads.notify()
++                await asyncio.wait_for(attempted.wait(), timeout=5)
++                assert first.collection_uploads.callback is None
++                assert second.collection_uploads.callback is foreign_callback
++                selected = first
++                await asyncio.wait_for(swept.wait(), timeout=5)
++                assert turns == [first, first]
++                assert first.collection_uploads.bindings == 2
++                assert first.collection_uploads.detachments == 1
++                assert first.collection_uploads.callback is not None
++            finally:
++                await _cancel(task)
++            assert first.collection_uploads.detachments == 2
++            assert second.collection_uploads.callback is foreign_callback
++            assert second.collection_uploads.detachments == 0
++            foreign_callback.assert_not_called()
++        assert second.collection_uploads.detachments == 1
++
++    asyncio.run(exercise())
+diff --git a/tests/unit/test_archive_write_reaper.py b/tests/unit/test_archive_write_reaper.py
+index 8d07ab98..c91d537c 100644
+--- a/tests/unit/test_archive_write_reaper.py
++++ b/tests/unit/test_archive_write_reaper.py
+@@ -1,6 +1,7 @@
+ from __future__ import annotations
+ 
+ import asyncio
++from contextlib import nullcontext
+ from datetime import timedelta
+ from types import SimpleNamespace
+ from typing import cast
+@@ -123,6 +124,7 @@ def test_archive_maintenance_drains_bounded_progress_before_idle_interval(monkey
+             ServiceContainer,
+             SimpleNamespace(
+                 collection_uploads=SimpleNamespace(
++                    archive_maintenance_wakeup=lambda callback: nullcontext(),
+                     requeue_interrupted_finalizations_for_startup=zero,
+                     requeue_interrupted_orphan_discards_for_startup=zero,
+                     process_due_provenance_journal_validations=zero,
+@@ -267,7 +269,10 @@ def test_archive_reaper_receives_active_workers_without_repeating_unrelated_swee
+ 
+         monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
+         container = SimpleNamespace(
+-            collection_uploads=SimpleNamespace(has_unreceived_archive_work=lambda: active[0])
++            collection_uploads=SimpleNamespace(
++                archive_maintenance_wakeup=lambda callback: nullcontext(),
++                has_unreceived_archive_work=lambda: active[0],
++            )
+         )
+         task = asyncio.create_task(
+             api_app._run_archive_upload_reaper(

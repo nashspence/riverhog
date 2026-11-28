@@ -1,0 +1,80 @@
+{
+  "scope": "Actual old/new reaper, real Core point transition and claim selector, synthetic valid catalog facts; maintenance narrowed to selector. Not a production publication benchmark.",
+  "baseline_api_sha256": "fb3776d921576a7ee8625837364c29fdf5305f792aea53e77c6dea27d092e1c0",
+  "candidate_and_fixture_sha256": {
+    "riverhog/src/riverhog_api/app.py": "63bb796b942951555f7c80619104e0cc77e8a788995d96e6d45e6de3a77e9026",
+    "riverhog/src/riverhog_core/services/collection_uploads.py": "8a40fc4050deb438461e53c3d6afd3b1e472a4b1bbb06d17bfba7959f5791e04",
+    "tests/unit/test_finalization_readiness_growth.py": "6a26dfb6f155ccda8fd827c630db5263af224e75f6b0b1e7d675b1a622f1aed7"
+  },
+  "probe_sha256": "8b5c040a9037a1c9181c49446777ef9f801e9f32cd95f555e6da5db2f5d17fcb",
+  "source_unchanged_during_probe": true,
+  "qualification": false,
+  "observations": [
+    {
+      "mode": "baseline",
+      "repeat": 1,
+      "fallback_seconds": 0.4,
+      "post_commit_to_claim_seconds": 0.38378544700026396,
+      "wake_listener_bound": false,
+      "control_calls_through_first_claim": 2,
+      "full_sweeps_through_first_claim": 2,
+      "one_current_claim": true
+    },
+    {
+      "mode": "wake",
+      "repeat": 1,
+      "fallback_seconds": 0.4,
+      "post_commit_to_claim_seconds": 0.003406979000828869,
+      "wake_listener_bound": true,
+      "control_calls_through_first_claim": 2,
+      "full_sweeps_through_first_claim": 2,
+      "one_current_claim": true
+    },
+    {
+      "mode": "baseline",
+      "repeat": 2,
+      "fallback_seconds": 0.4,
+      "post_commit_to_claim_seconds": 0.3852678850007578,
+      "wake_listener_bound": false,
+      "control_calls_through_first_claim": 2,
+      "full_sweeps_through_first_claim": 2,
+      "one_current_claim": true
+    },
+    {
+      "mode": "wake",
+      "repeat": 2,
+      "fallback_seconds": 0.4,
+      "post_commit_to_claim_seconds": 0.0032754309995652875,
+      "wake_listener_bound": true,
+      "control_calls_through_first_claim": 2,
+      "full_sweeps_through_first_claim": 2,
+      "one_current_claim": true
+    },
+    {
+      "mode": "baseline",
+      "repeat": 3,
+      "fallback_seconds": 0.4,
+      "post_commit_to_claim_seconds": 0.1739353270004358,
+      "wake_listener_bound": false,
+      "control_calls_through_first_claim": 2,
+      "full_sweeps_through_first_claim": 2,
+      "one_current_claim": true
+    },
+    {
+      "mode": "wake",
+      "repeat": 3,
+      "fallback_seconds": 0.4,
+      "post_commit_to_claim_seconds": 0.0035167759997420944,
+      "wake_listener_bound": true,
+      "control_calls_through_first_claim": 2,
+      "full_sweeps_through_first_claim": 2,
+      "one_current_claim": true
+    }
+  ],
+  "limits": [
+    "0.4s fallback is a finite test configuration, not a proposed production polling change.",
+    "The narrowed maintenance body excludes the other existing owner calls; maintained tests separately count all 15.",
+    "No provider, crypto, physical worker, full finalization or publication time is measured.",
+    "Baseline uses the unmodified requested-source reaper. Both modes use the candidate point transition; its unbound hint adds no SQL or authority."
+  ]
+}

@@ -1,0 +1,696 @@
+{
+  "tested_source": {
+    "kind": "worktree",
+    "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+  },
+  "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile.",
+  "pytest_result_transcription": "Derived from actual JUnit cases; host/path metadata omitted. Test names, outcomes, times and measured properties retained.",
+  "results": [
+    {
+      "input": "focused-results.xml",
+      "tests": 68,
+      "seconds": 82.377,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_readiness_hint_follows_original_transaction_commit_and_close",
+          "seconds": 1.043,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_unconfirmed_transition_has_no_hint_and_timer_can_rediscover[rollback]",
+          "seconds": 0.882,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_unconfirmed_transition_has_no_hint_and_timer_can_rediscover[lost-reply]",
+          "seconds": 0.85,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_lost_atomic_readiness_race_does_not_emit_another_hint[terminal]",
+          "seconds": 0.672,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_lost_atomic_readiness_race_does_not_emit_another_hint[readiness]",
+          "seconds": 0.966,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_lost_atomic_readiness_race_does_not_emit_another_hint[planner]",
+          "seconds": 0.677,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_incomplete_source_never_announces_finalization_readiness[completion]",
+          "seconds": 0.79,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_incomplete_source_never_announces_finalization_readiness[payload]",
+          "seconds": 0.505,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_incomplete_source_never_announces_finalization_readiness[count]",
+          "seconds": 0.892,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_incomplete_source_never_announces_finalization_readiness[bytes]",
+          "seconds": 0.652,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_incomplete_source_never_announces_finalization_readiness[volume]",
+          "seconds": 0.914,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_selected_terminal_never_announces_fresh_finalization",
+          "seconds": 0.89,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_hint_adds_no_catalog_work_and_duplicate_does_not_notify",
+          "seconds": 0.597,
+          "result": "passed",
+          "properties": {
+            "readiness_sql_statements_without_and_with_hint": [
+              3,
+              3
+            ]
+          }
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_callback_failure_preserves_committed_success_and_unbinding",
+          "seconds": 0.923,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_readiness",
+          "test": "test_binding_rejects_another_live_receiver_and_detaches_after_failure",
+          "seconds": 0.002,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_thread_notification_survives_wait_registration[False]",
+          "seconds": 0.003,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_thread_notification_survives_wait_registration[True]",
+          "seconds": 0.003,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_burst_coalesces_before_delivery_and_stale_delivery_cannot_repeat_it",
+          "seconds": 0.002,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_wait_cancellation_preserves_a_later_notification",
+          "seconds": 0.002,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_closed_wake_ignores_queued_and_late_notifications",
+          "seconds": 0.002,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_idle_wait_retains_its_timer_fallback",
+          "seconds": 0.003,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_notification_during_a_sweep_remains_pending_for_the_next_full_sweep",
+          "seconds": 0.023,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_fresh_hint_interrupts_receiving_cadence_with_a_full_sweep",
+          "seconds": 0.124,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_stale_burst_runs_one_full_bounded_sweep_including_unrelated_owners",
+          "seconds": 0.025,
+          "result": "passed",
+          "properties": {
+            "coalesced_notifications": 1024,
+            "full_sweeps_including_startup": 2,
+            "steady_owner_method_calls": 30
+          }
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_timer_finds_new_work_without_a_notification",
+          "seconds": 0.134,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_provider_change_rebinds_owner_and_shutdown_ignores_late_hint",
+          "seconds": 0.003,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_wake",
+          "test": "test_failed_provider_binding_can_return_to_and_rebind_the_original_owner",
+          "seconds": 0.105,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_maintenance_activation",
+          "test": "test_idle_reaper_activates_committed_work_and_keeps_original_until_join",
+          "seconds": 11.839,
+          "result": "passed",
+          "properties": {
+            "idle_activation": {
+              "fallback_seconds": 86400,
+              "idle_sweeps": 1,
+              "durable_transition_hints": 1,
+              "fresh_claim_workers": 1,
+              "held_original_preserved_after_another_hint": true
+            },
+            "original_physical_join_and_receiving": true
+          }
+        },
+        {
+          "module": "tests.unit.test_archive_write_reaper",
+          "test": "test_archive_maintenance_sweep_recovers_and_processes_collection_finalizations",
+          "seconds": 0.002,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_write_reaper",
+          "test": "test_archive_maintenance_drains_bounded_progress_before_idle_interval",
+          "seconds": 0.005,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_write_reaper",
+          "test": "test_retrieval_restore_poll_and_cache_cleanup_have_independent_cadences",
+          "seconds": 0.005,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_write_reaper",
+          "test": "test_retrieval_restore_reaper_drains_restartable_steps_before_idle_interval",
+          "seconds": 0.004,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_write_reaper",
+          "test": "test_archive_reaper_receives_active_workers_without_repeating_unrelated_sweeps",
+          "seconds": 0.053,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_selected_terminal_excludes_fresh_finalization_claims[queued]",
+          "seconds": 0.911,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_selected_terminal_excludes_fresh_finalization_claims[retry]",
+          "seconds": 0.604,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_selected_terminal_prevents_readiness_and_startup_requeue[batch]",
+          "seconds": 0.937,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_selected_terminal_prevents_readiness_and_startup_requeue[point]",
+          "seconds": 0.595,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_selected_terminal_prevents_readiness_and_startup_requeue[startup]",
+          "seconds": 1.016,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_selected_terminal_fences_new_catalog_finalization_steps[_stage_next_member_histories]",
+          "seconds": 0.962,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_selected_terminal_fences_new_catalog_finalization_steps[_advance_provenance_closure_validation]",
+          "seconds": 0.619,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_selected_terminal_fences_new_catalog_finalization_steps[_advance_archive_tree_checkpoint]",
+          "seconds": 1.025,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_selected_terminal_fences_new_catalog_finalization_steps[_advance_catalog_projection]",
+          "seconds": 0.952,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_terminal_fence_precedes_published_root_and_copy_handoff",
+          "seconds": 0.633,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_point_readiness_matches_current_facts_in_its_atomic_update[terminal]",
+          "seconds": 0.97,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_point_readiness_matches_current_facts_in_its_atomic_update[readiness]",
+          "seconds": 0.629,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_terminal_admission",
+          "test": "test_point_readiness_matches_current_facts_in_its_atomic_update[planner]",
+          "seconds": 1.002,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_selection_skips_inactive_and_future_backlogs[0-0]",
+          "seconds": 0.513,
+          "result": "passed",
+          "properties": {
+            "inactive_parents": 0,
+            "future_parents": 0,
+            "due_parents": 0,
+            "selected_rows": 0,
+            "sqlite_vm_steps": 45
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_selection_skips_inactive_and_future_backlogs[0-32]",
+          "seconds": 0.506,
+          "result": "passed",
+          "properties": {
+            "inactive_parents": 32,
+            "future_parents": 32,
+            "due_parents": 0,
+            "selected_rows": 0,
+            "sqlite_vm_steps": 49
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_selection_skips_inactive_and_future_backlogs[0-1000]",
+          "seconds": 1.168,
+          "result": "passed",
+          "properties": {
+            "inactive_parents": 1000,
+            "future_parents": 1000,
+            "due_parents": 0,
+            "selected_rows": 0,
+            "sqlite_vm_steps": 49
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_selection_skips_inactive_and_future_backlogs[1-0]",
+          "seconds": 0.506,
+          "result": "passed",
+          "properties": {
+            "inactive_parents": 0,
+            "future_parents": 0,
+            "due_parents": 1,
+            "selected_rows": 1,
+            "sqlite_vm_steps": 56
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_selection_skips_inactive_and_future_backlogs[1-32]",
+          "seconds": 0.495,
+          "result": "passed",
+          "properties": {
+            "inactive_parents": 32,
+            "future_parents": 32,
+            "due_parents": 1,
+            "selected_rows": 1,
+            "sqlite_vm_steps": 57
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_selection_skips_inactive_and_future_backlogs[1-1000]",
+          "seconds": 0.861,
+          "result": "passed",
+          "properties": {
+            "inactive_parents": 1000,
+            "future_parents": 1000,
+            "due_parents": 1,
+            "selected_rows": 1,
+            "sqlite_vm_steps": 57
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_selection_skips_inactive_and_future_backlogs[7-0]",
+          "seconds": 0.961,
+          "result": "passed",
+          "properties": {
+            "inactive_parents": 0,
+            "future_parents": 0,
+            "due_parents": 7,
+            "selected_rows": 2,
+            "sqlite_vm_steps": 63
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_selection_skips_inactive_and_future_backlogs[7-32]",
+          "seconds": 0.554,
+          "result": "passed",
+          "properties": {
+            "inactive_parents": 32,
+            "future_parents": 32,
+            "due_parents": 7,
+            "selected_rows": 2,
+            "sqlite_vm_steps": 63
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_selection_skips_inactive_and_future_backlogs[7-1000]",
+          "seconds": 0.828,
+          "result": "passed",
+          "properties": {
+            "inactive_parents": 1000,
+            "future_parents": 1000,
+            "due_parents": 7,
+            "selected_rows": 2,
+            "sqlite_vm_steps": 63
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_rotating_due_hints_give_each_busy_candidate_a_bounded_fair_visit[1]",
+          "seconds": 0.518,
+          "result": "passed",
+          "properties": {
+            "due_parents": 1,
+            "fair_visits": 2,
+            "selection_sqlite_vm_steps": 220
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_rotating_due_hints_give_each_busy_candidate_a_bounded_fair_visit[17]",
+          "seconds": 0.88,
+          "result": "passed",
+          "properties": {
+            "due_parents": 17,
+            "fair_visits": 34,
+            "selection_sqlite_vm_steps": 1212
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_rotating_due_hints_give_each_busy_candidate_a_bounded_fair_visit[129]",
+          "seconds": 0.659,
+          "result": "passed",
+          "properties": {
+            "due_parents": 129,
+            "fair_visits": 258,
+            "selection_sqlite_vm_steps": 8156
+          }
+        },
+        {
+          "module": "tests.unit.test_finalization_due_selection",
+          "test": "test_due_pages_cross_timestamp_groups_and_wrap_with_bounded_queries",
+          "seconds": 0.51,
+          "result": "passed",
+          "properties": {
+            "selected_page_sizes": [
+              4,
+              3,
+              4
+            ],
+            "bounded_select_counts": [
+              1,
+              2,
+              3
+            ]
+          }
+        },
+        {
+          "module": "tests.unit.test_archive_upload_execution",
+          "test": "test_published_future_is_not_physical_worker_join_or_free_capacity",
+          "seconds": 0.003,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_upload_execution",
+          "test": "test_forward_exhaustion_preserves_target_isolation_and_terminal_headroom",
+          "seconds": 0.003,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_upload_execution",
+          "test": "test_terminal_target_limit_leaves_independent_terminal_work_available",
+          "seconds": 0.002,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_claim_registration",
+          "test": "test_actual_claim_registration_resolves_rollback_and_lost_commit_reply[False]",
+          "seconds": 10.488,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_claim_registration",
+          "test": "test_actual_claim_registration_resolves_rollback_and_lost_commit_reply[True]",
+          "seconds": 10.59,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_finalization_claim_registration",
+          "test": "test_fresh_claim_waits_for_unacknowledged_original_workflow_receiver",
+          "seconds": 10.588,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_finalizer_resumption",
+          "test": "test_original_resumption_obeys_the_existing_maintenance_cadence",
+          "seconds": 0.003,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_finalizer_resumption",
+          "test": "test_maintenance_cannot_retire_a_healthy_result_before_actual_worker_exit",
+          "seconds": 0.002,
+          "result": "passed",
+          "properties": {}
+        },
+        {
+          "module": "tests.unit.test_archive_upload_maintenance",
+          "test": "test_terminal_backoff_and_capacity_leave_an_independent_construction_progressing",
+          "seconds": 0.522,
+          "result": "passed",
+          "properties": {}
+        }
+      ]
+    },
+    {
+      "input": "growth-results.xml",
+      "tests": 1,
+      "seconds": 20.852,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        {
+          "module": "tests.unit.test_upload_journal_service_coordination_growth",
+          "test": "test_actual_service_readiness_scheduling_owns_complete_transaction",
+          "seconds": 18.017,
+          "result": "passed",
+          "properties": {
+            "growth_samples_count": 238
+          }
+        }
+      ]
+    }
+  ],
+  "growth_samples": {
+    "path": "evidence/growth-samples.json.gz",
+    "samples": 238,
+    "raw_bytes": 498210,
+    "raw_sha256": "52723c3979721d0277eb5ea2fd6acf72ed8e360b28be4db00be9e8afba70f3b7",
+    "compressed_bytes": 6447,
+    "compressed_sha256": "9dcbd298e3a98cf14f9d64c35c0d296c462b5f8afbadf431480cb3817b40ef0c"
+  },
+  "checks": [
+    {
+      "command": "python -m pytest -q --junitxml=../focused-results.xml -o junit_family=legacy tests/unit/test_archive_maintenance_readiness.py tests/unit/test_archive_maintenance_wake.py tests/unit/test_archive_maintenance_activation.py tests/unit/test_archive_write_reaper.py tests/unit/test_finalization_terminal_admission.py tests/unit/test_finalization_due_selection.py tests/unit/test_archive_upload_execution.py::test_published_future_is_not_physical_worker_join_or_free_capacity tests/unit/test_archive_upload_execution.py::test_forward_exhaustion_preserves_target_isolation_and_terminal_headroom tests/unit/test_archive_upload_execution.py::test_terminal_target_limit_leaves_independent_terminal_work_available tests/unit/test_finalization_claim_registration.py::test_actual_claim_registration_resolves_rollback_and_lost_commit_reply tests/unit/test_finalization_claim_registration.py::test_fresh_claim_waits_for_unacknowledged_original_workflow_receiver tests/unit/test_archive_finalizer_resumption.py::test_original_resumption_obeys_the_existing_maintenance_cadence tests/unit/test_archive_finalizer_resumption.py::test_maintenance_cannot_retire_a_healthy_result_before_actual_worker_exit tests/unit/test_archive_upload_maintenance.py::test_terminal_backoff_and_capacity_leave_an_independent_construction_progressing",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile.",
+      "notes": "68 passed in 82.38s: 28 new and 40 selected existing cases."
+    },
+    {
+      "command": "Bind existing qualification_numeric_policy via bind_numeric_environment, then pytest tests/unit/test_upload_journal_service_coordination_growth.py::test_actual_service_readiness_scheduling_owns_complete_transaction (exact snippet in VALIDATION.md)",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile.",
+      "notes": "1 passed in 20.85s; 238 samples of existing growth contract. No numeric resource value or production budget changed."
+    },
+    {
+      "command": "python -m ruff check and python -m ruff format --check on the six changed files in SOURCES.json",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile."
+    },
+    {
+      "command": "python -m mypy riverhog/src/riverhog_api/app.py riverhog/src/riverhog_core/services/collection_uploads.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile."
+    },
+    {
+      "command": "git diff --check; git apply --check and actual git apply on isolated main; SHA256 comparison of six outputs",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile."
+    },
+    {
+      "command": "idle_wake_probe.py --repo CHECKOUT --baseline-app REQUESTED_SOURCE_APP --output NEW_FILE (exact command in EVIDENCE.md)",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "4d1bd1b7ead7c638e4a80137def7d406937098aa plus proposed/idle-activation.patch (SHA256 8dee0b33c82cd42954758a76ac66797171b50ff44178a66032d5ad14d0901d9b); exact six outputs in SOURCES.json. Patch also actually applied to main 40cf854adc346421b161a03e7a79a8cb5e0e3632 with identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3; SQLite 3.45.1; uv 0.11.24 locked workspace; Ruff 0.16.0 and mypy 2.3.0. Existing low-cost unit fixture, not the production KDF18/PostgreSQL/filesystem profile.",
+      "notes": "Six finite old/new reaper and actual Core selector observations; narrowed maintenance body; no publication timing."
+    },
+    {
+      "command": "Full make lint/unit/build/distribution/platform qualification, changed-source PR CI and merge checkout, matched production publication timing, shared budget/profile acceptance",
+      "result": "not-run",
+      "reason": "Finite reference proposal; these remain owned by the actual integration rail. No qualification/budget pass or new large-run gate is claimed."
+    }
+  ],
+  "initial_unconfigured_growth_attempt": {
+    "result": "failed",
+    "reason": "Missing qualification numeric-resource environment before contract evaluation.",
+    "resolution": "Rerun passed after binding the unmodified source-owned qualification_numeric_policy."
+  },
+  "limitations": [
+    "Reference product tree is unchanged at the audited main base; apply/adapt the patch through normal integration, not by merging the reference branch.",
+    "The real timeline lacks queue-commit/session-exit timestamps; 14.845s is reported post-PUT overlap, not proved eligibility delay or guaranteed saving.",
+    "The 400ms probe measures a narrowed actual Core selector/reaper fixture, with candidate point transition in both modes. No provider, crypto, worker, complete finalization or publication time is measured.",
+    "Actual activation/receiving test proves first finalizer activation and original receiving with low-cost unit fixtures, not complete real-path publication.",
+    "One live local callback binding per service; timer handles unhinted/cross-process work; existing once-per-reaper startup recovery is unchanged.",
+    "A hint grants no execution, resource-release, retry, custody or acknowledgement authority. No physical executor or admission capacity is changed.",
+    "Complete current-source qualification and a matched real diagnostic remain for integration. The separate neutral-history request and later completed-stage necessity review are not included."
+  ]
+}
