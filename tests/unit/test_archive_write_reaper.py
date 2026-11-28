@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from contextlib import nullcontext
 from datetime import timedelta
 from types import SimpleNamespace
 from typing import cast
@@ -123,6 +124,7 @@ def test_archive_maintenance_drains_bounded_progress_before_idle_interval(monkey
             ServiceContainer,
             SimpleNamespace(
                 collection_uploads=SimpleNamespace(
+                    archive_maintenance_wakeup=lambda callback: nullcontext(),
                     requeue_interrupted_finalizations_for_startup=zero,
                     requeue_interrupted_orphan_discards_for_startup=zero,
                     process_due_provenance_journal_validations=zero,
@@ -267,7 +269,10 @@ def test_archive_reaper_receives_active_workers_without_repeating_unrelated_swee
 
         monkeypatch.setattr(api_app, "_process_archive_maintenance", process)
         container = SimpleNamespace(
-            collection_uploads=SimpleNamespace(has_unreceived_archive_work=lambda: active[0])
+            collection_uploads=SimpleNamespace(
+                archive_maintenance_wakeup=lambda callback: nullcontext(),
+                has_unreceived_archive_work=lambda: active[0],
+            )
         )
         task = asyncio.create_task(
             api_app._run_archive_upload_reaper(
