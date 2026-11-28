@@ -1,0 +1,211 @@
+{
+  "repository": "nashspence/riverhog",
+  "audited_main": "60612eded1e0e4e5188c28a84697435eb969fad0",
+  "request": "https://github.com/nashspence/riverhog/issues/991#issuecomment-7234184351",
+  "source_phase_account": "https://github.com/nashspence/riverhog/issues/991#issuecomment-7233382688",
+  "convention": "https://github.com/nashspence/riverhog/issues/903",
+  "policy_owner": "https://github.com/nashspence/riverhog/issues/1006",
+  "proffer": {
+    "commit": "2ce5e15c3191fcdc2be70213c0170f57c852a883",
+    "schema_url": "https://github.com/nashspence/proffer/blob/2ce5e15c3191fcdc2be70213c0170f57c852a883/schema/proffer.schema.json"
+  },
+  "source_relationship": {
+    "audited_main": "60612eded1e0e4e5188c28a84697435eb969fad0",
+    "request_linked_source": "4d1bd1b7ead7c638e4a80137def7d406937098aa",
+    "phase_account_source": "8d278b6f7bc443a9919bcc5a6409a647cfd20f43",
+    "files": {
+      "riverhog/src/riverhog_core/services/collection_uploads.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "40bbee6baed4c66b27efb8aee2acf2e5ff75426dee788188ffd23df65a548aaf",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "8a40fc4050deb438461e53c3d6afd3b1e472a4b1bbb06d17bfba7959f5791e04"
+        },
+        "request_equals_main": false,
+        "phase_equals_main": false
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_replay.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_epochs.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_topology.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_union.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_rank.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_certificates.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_source.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "6ecd01d9a9fb3c85d50433e89f73bbdaaaebd9dde5b1586566ae66258a8f5d3c",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "6ecd01d9a9fb3c85d50433e89f73bbdaaaebd9dde5b1586566ae66258a8f5d3c",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "6ecd01d9a9fb3c85d50433e89f73bbdaaaebd9dde5b1586566ae66258a8f5d3c"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_validation_jobs.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "88a559651019da9251fbe905f53bd1bae4ac7f612d966bedd0077e8819cdf36f"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_result.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "859e67acc10bde42546b6d9ba3fb5d2021f68aac9dd03750b640520a669d9e81",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "859e67acc10bde42546b6d9ba3fb5d2021f68aac9dd03750b640520a669d9e81",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "859e67acc10bde42546b6d9ba3fb5d2021f68aac9dd03750b640520a669d9e81"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "packages/state-schema/src/state_schema/__init__.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "160c72afd77f752fd22bb1a46d772bff1fa6cf2c8088f7be6556440e73e46a1e",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "160c72afd77f752fd22bb1a46d772bff1fa6cf2c8088f7be6556440e73e46a1e",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "160c72afd77f752fd22bb1a46d772bff1fa6cf2c8088f7be6556440e73e46a1e"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "packages/riverhog-provenance/src/riverhog_provenance/journal_session.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "8d3be9330aeb3e6fb7fd61c19d0d8fe7e1b83cffeb681521173c498b9a876118"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      },
+      "packages/riverhog-provenance/src/riverhog_provenance/replay_binding.py": {
+        "sha256": {
+          "4d1bd1b7ead7c638e4a80137def7d406937098aa": "4962269506075fc54a64c658309390563dbf4b98118057bb19fc150f2fc39bd6",
+          "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "4962269506075fc54a64c658309390563dbf4b98118057bb19fc150f2fc39bd6",
+          "60612eded1e0e4e5188c28a84697435eb969fad0": "4962269506075fc54a64c658309390563dbf4b98118057bb19fc150f2fc39bd6"
+        },
+        "request_equals_main": true,
+        "phase_equals_main": true
+      }
+    },
+    "validation_unit": {
+      "sha256": {
+        "4d1bd1b7ead7c638e4a80137def7d406937098aa": "448f9b312c19d4f28ebd1c84ce62786deebe8d3cada683d1acb87bd75a986e57",
+        "8d278b6f7bc443a9919bcc5a6409a647cfd20f43": "448f9b312c19d4f28ebd1c84ce62786deebe8d3cada683d1acb87bd75a986e57",
+        "60612eded1e0e4e5188c28a84697435eb969fad0": "448f9b312c19d4f28ebd1c84ce62786deebe8d3cada683d1acb87bd75a986e57"
+      },
+      "all_identical": true
+    }
+  },
+  "candidate_application": {
+    "base": "60612eded1e0e4e5188c28a84697435eb969fad0",
+    "patch_sha256": "13ae35722fb887ff5420a721de14ab0faa6793e327bade7d8712bc3177cfffae",
+    "paths": {
+      "riverhog/src/riverhog_core/services/collection_uploads.py": {
+        "sha256": "70af3f63e1ea4b5d8b7cb064862911d295143cdeee39e463f0c95fee883fec2f",
+        "bytes": 447459,
+        "reproduced_exactly": true
+      },
+      "riverhog/src/riverhog_core/services/upload_journal_replay.py": {
+        "sha256": "293b5b302f3e50cf8de105fda32081675a70c43c6bcae78485c374dc0cf291a0",
+        "bytes": 9691,
+        "reproduced_exactly": true
+      },
+      "tests/unit/test_upload_journal_prepared_continuation.py": {
+        "sha256": "56c2cc380c387503dfe517b9988a602e82f1b35794e7b07790cac997227aafe1",
+        "bytes": 14492,
+        "reproduced_exactly": true
+      },
+      "tests/unit/test_upload_journal_service_unit_growth.py": {
+        "sha256": "f845b18d801a5fb63381c56be0b51e0c92e0794be5bc37e5ed3f99615ed35f45",
+        "bytes": 32237,
+        "reproduced_exactly": true
+      }
+    }
+  },
+  "native_environment": {
+    "native_extension_sha256": "10c7998c103c7c3a714ac2e39fcc58632576e2c624279fbc9573cfdaa6c7832e",
+    "native_build_source_sha256": {
+      "packages/retained-resource/pyproject.toml": "4e064a3e859cc1eececbf4a37f98c014bb42c64f5fbbe6a183d5cfcd360bc15b",
+      "packages/retained-resource/hatch_build.py": "fc0d2ea21e5f3e1c4ef2f610b859c5cc26686ccbe301ecc1a90e4ac2548b972e",
+      "packages/retained-resource/native/owner.c": "1df636f3fe180cc76c723f08d575fc14ba421bb5742d306d1e5c2e3e6e6f6bea"
+    },
+    "native_budget": {
+      "rows": 64,
+      "octets": 33619968,
+      "source_octets": 65536
+    }
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "sqlite": "3.45.1",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "pytest": "9.1.1",
+    "loaded": {
+      "riverhog_core.services.collection_uploads": "/workspace/scratch/bb67e7d17f43/research_v7/repo/riverhog/src/riverhog_core/services/collection_uploads.py",
+      "riverhog_core.services.upload_journal_replay": "/workspace/scratch/bb67e7d17f43/research_v7/repo/riverhog/src/riverhog_core/services/upload_journal_replay.py",
+      "riverhog_provenance.journal_session": "/workspace/scratch/bb67e7d17f43/research_v7/repo/packages/riverhog-provenance/src/riverhog_provenance/journal_session.py",
+      "retained_resource._native": "/workspace/scratch/bb67e7d17f43/research_v7/repo/packages/retained-resource/src/retained_resource/_native.cpython-312-x86_64-linux-gnu.so"
+    },
+    "native_extension_sha256": "10c7998c103c7c3a714ac2e39fcc58632576e2c624279fbc9573cfdaa6c7832e"
+  },
+  "uv_lock_sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24",
+  "product_tree": "unchanged audited main; proposed implementation exists only as .reference patch",
+  "earlier_independent_handoffs": {
+    "activation": "d585db245229c5807b5b71198ab17b950547fdae",
+    "neutral_history": "8cd508e89fce3ff7ef40d97b2d216bd52bbedbd0"
+  }
+}

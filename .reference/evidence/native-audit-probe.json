@@ -1,0 +1,37 @@
+{
+  "base": "60612eded1e0e4e5188c28a84697435eb969fad0",
+  "source_relationship": "all imported Core owner files match the clean audited base",
+  "source_identities_sha256": {
+    "riverhog/src/riverhog_core/services/collection_uploads.py": "8a40fc4050deb438461e53c3d6afd3b1e472a4b1bbb06d17bfba7959f5791e04",
+    "riverhog/src/riverhog_core/services/upload_journal_certificates.py": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5",
+    "riverhog/src/riverhog_core/services/upload_journal_epochs.py": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6",
+    "riverhog/src/riverhog_core/services/upload_journal_rank.py": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a",
+    "riverhog/src/riverhog_core/services/upload_journal_replay.py": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47",
+    "riverhog/src/riverhog_core/services/upload_journal_topology.py": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7",
+    "riverhog/src/riverhog_core/services/upload_journal_union.py": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3"
+  },
+  "script_sha256": "5d0e5b4d5064cb1a873f899ad659525e4e5e33b70d9cd6dab6d1a9dd6cd28fc1",
+  "cold_shortcut_counterexamples": [
+    {
+      "field": "algorithm",
+      "original_restoration_rejected": "journal epoch checkpoint binding differs from its attempt",
+      "binding_verifier_current": true,
+      "cold_certificate_froze_changed_manifest": true,
+      "catalog_connections_checked_out": 0
+    },
+    {
+      "field": "topology_algorithm",
+      "original_restoration_rejected": "topology checkpoint binding differs from its attempt",
+      "binding_verifier_current": true,
+      "cold_certificate_froze_changed_manifest": true,
+      "catalog_connections_checked_out": 0
+    }
+  ],
+  "point_query_dialects": {
+    "sqlite": "SELECT collection_upload_provenance_epoch_scans.replay_binding_json \nFROM collection_upload_provenance_journals LEFT OUTER JOIN collection_upload_provenance_epoch_scans ON collection_upload_provenance_epoch_scans.collection_id = collection_upload_provenance_journals.collection_id AND collection_upload_provenance_epoch_scans.journal_id = collection_upload_provenance_journals.journal_id AND collection_upload_provenance_epoch_scans.attempt_id = ? AND collection_upload_provenance_epoch_scans.directory_id = ? \nWHERE collection_upload_provenance_journals.collection_id = ? AND collection_upload_provenance_journals.journal_id = ? AND collection_upload_provenance_journals.state = ? AND collection_upload_provenance_journals.accepted_bytes = ? AND collection_upload_provenance_journals.bytes = ? AND collection_upload_provenance_journals.sha256 = ? AND collection_upload_provenance_journals.capture_source_bytes = ? AND collection_upload_provenance_journals.capture_source_sha256 = ? AND collection_upload_provenance_journals.capture_attempt_id = ? AND collection_upload_provenance_journals.capture_directory_id = ? AND collection_upload_provenance_journals.capture_algorithm = ? AND collection_upload_provenance_journals.capture_phase = ? AND collection_upload_provenance_journals.capture_version = ? AND collection_upload_provenance_journals.capture_byte_offset = ? AND collection_upload_provenance_journals.capture_frame_start IS NULL AND collection_upload_provenance_journals.capture_frame_count = ? AND collection_upload_provenance_journals.capture_failure IS NULL",
+    "postgresql": "SELECT collection_upload_provenance_epoch_scans.replay_binding_json \nFROM collection_upload_provenance_journals LEFT OUTER JOIN collection_upload_provenance_epoch_scans ON collection_upload_provenance_epoch_scans.collection_id = collection_upload_provenance_journals.collection_id AND collection_upload_provenance_epoch_scans.journal_id = collection_upload_provenance_journals.journal_id AND collection_upload_provenance_epoch_scans.attempt_id = %(attempt_id_1)s AND collection_upload_provenance_epoch_scans.directory_id = %(directory_id_1)s \nWHERE collection_upload_provenance_journals.collection_id = %(collection_id_1)s AND collection_upload_provenance_journals.journal_id = %(journal_id_1)s AND collection_upload_provenance_journals.state = %(state_1)s AND collection_upload_provenance_journals.accepted_bytes = %(accepted_bytes_1)s AND collection_upload_provenance_journals.bytes = %(bytes_1)s AND collection_upload_provenance_journals.sha256 = %(sha256_1)s AND collection_upload_provenance_journals.capture_source_bytes = %(capture_source_bytes_1)s AND collection_upload_provenance_journals.capture_source_sha256 = %(capture_source_sha256_1)s AND collection_upload_provenance_journals.capture_attempt_id = %(capture_attempt_id_1)s AND collection_upload_provenance_journals.capture_directory_id = %(capture_directory_id_1)s AND collection_upload_provenance_journals.capture_algorithm = %(capture_algorithm_1)s AND collection_upload_provenance_journals.capture_phase = %(capture_phase_1)s AND collection_upload_provenance_journals.capture_version = %(capture_version_1)s AND collection_upload_provenance_journals.capture_byte_offset = %(capture_byte_offset_1)s AND collection_upload_provenance_journals.capture_frame_start IS NULL AND collection_upload_provenance_journals.capture_frame_count = %(capture_frame_count_1)s AND collection_upload_provenance_journals.capture_failure IS NULL"
+  },
+  "postgresql_executed": false,
+  "all_temporary_fixture_directories_removed": true,
+  "scope": "metadata admission counterexamples; no incorrect semantic output claim"
+}

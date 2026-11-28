@@ -1,0 +1,113 @@
+{
+  "kind": "handoff",
+  "issue": "https://github.com/nashspence/riverhog/issues/991",
+  "purpose": "Consolidate completed journal preparation through the existing exact attempt-bound replay probe, retaining each necessary checkpoint/last-record restoration and unchanged Native currentness/receiving.",
+  "producer": [
+    "OpenAI ChatGPT; GPT-6 Astra Pro; inherited-model collaborating agents; no unexposed effort setting asserted."
+  ],
+  "requester": "Repository maintainer for the Riverhog integration agent; focused comment7234184351.",
+  "first_step": "Read DESIGN.md, reconcile current main, apply the whole proposed/prepared-continuation.patch in an isolated integration checkout, and use VALIDATION.md focused checks and the normal PR rail.",
+  "source": {
+    "repository": "nashspence/riverhog",
+    "base": {
+      "ref": "main",
+      "commit": "60612eded1e0e4e5188c28a84697435eb969fad0"
+    },
+    "work_state": "patches"
+  },
+  "artifacts": [
+    "DESIGN.md",
+    "EVIDENCE.md",
+    "HANDOFF.md",
+    "SOURCES.json",
+    "VALIDATION.md",
+    "evidence/development-observations.json.gz",
+    "evidence/growth-samples.json.gz",
+    "evidence/maintained-properties.json.gz",
+    "evidence/native-audit-probe.json",
+    "evidence/preparation-baseline.json.gz",
+    "evidence/preparation-candidate.json.gz",
+    "evidence/preparation-comparison.json",
+    "evidence/preparation-fixtures.json.gz",
+    "evidence/validation.json",
+    "experiments/compare_preparation.py",
+    "experiments/native_audit_probe.py",
+    "experiments/preparation_probe.py",
+    "proffer.json",
+    "proposed/prepared-continuation.patch"
+  ],
+  "checks": [
+    {
+      "command": "Pinned pytest: test_upload_journal_prepared_continuation.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed/prepared-continuation.patch, SHA256 13ae35722fb887ff5420a721de14ab0faa6793e327bade7d8712bc3177cfffae. Final collection_uploads SHA256 70af3f63e1ea4b5d8b7cb064862911d295143cdeee39e463f0c95fee883fec2f; replay SHA256 293b5b302f3e50cf8de105fda32081675a70c43c6bcae78485c374dc0cf291a0; four changed-file identities in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; unchanged locked dependencies and qualification numeric policy; same-source retained-resource native build. PostgreSQL runtime and approved Actions environment not executed.",
+      "notes": "30 final-source cases; 61.60s; absence/deferred, source and binding races, complete checkpoint corruption/repair, cold rejection, same original warm session, closed owner, restart and lost accepted workspace."
+    },
+    {
+      "command": "Pinned pytest: nine existing epoch/topology/union/rank/replay/Native handoff/owner/custody/certificate files",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed/prepared-continuation.patch, SHA256 13ae35722fb887ff5420a721de14ab0faa6793e327bade7d8712bc3177cfffae. Final collection_uploads SHA256 70af3f63e1ea4b5d8b7cb064862911d295143cdeee39e463f0c95fee883fec2f; replay SHA256 293b5b302f3e50cf8de105fda32081675a70c43c6bcae78485c374dc0cf291a0; four changed-file identities in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; unchanged locked dependencies and qualification numeric policy; same-source retained-resource native build. PostgreSQL runtime and approved Actions environment not executed.",
+      "notes": "220 cases; 470.77s. Pytest exit0. Post-run whole-worktree guard flagged changes only in the unselected new test file; explicit scoped verification confirms production and all nine executed test files unchanged. New file separately qualified after final edits."
+    },
+    {
+      "command": "Pinned pytest: test_upload_journal_service_unit_growth.py with junit_family=legacy",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposal before one caller-expression line wrap; caller SHA256 eb5cfa563f02179551435b8d5c578364f89f61a6953c6c6e9bdd58735e79c56e; replay/test files are final-byte identical. Earlier caller bytes reconstructed/hash-verified, full AST including docstrings equal final; exact relationship in evidence/validation.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; unchanged locked dependencies and qualification numeric policy; same-source retained-resource native build. PostgreSQL runtime and approved Actions environment not executed.",
+      "notes": "5 cases; 329.05s; 20 top-level execution samples and two import-order cases. No numerical bound, delegate or resource condition changed."
+    },
+    {
+      "command": "preparation_probe.py on exact baseline and final candidate; compare_preparation.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed/prepared-continuation.patch, SHA256 13ae35722fb887ff5420a721de14ab0faa6793e327bade7d8712bc3177cfffae. Final collection_uploads SHA256 70af3f63e1ea4b5d8b7cb064862911d295143cdeee39e463f0c95fee883fec2f; replay SHA256 293b5b302f3e50cf8de105fda32081675a70c43c6bcae78485c374dc0cf291a0; four changed-file identities in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; unchanged locked dependencies and qualification numeric policy; same-source retained-resource native build. PostgreSQL runtime and approved Actions environment not executed.",
+      "notes": "Six pairs/12 observations; same exact input bytes, Native budgets and selected Native currentness/checkpoint/progress counts; exact terminal anchors and original receiving. SQL counters cover validation-unit calls; final close receiving asserted separately."
+    },
+    {
+      "command": "native_audit_probe.py --repo clean audited baseline",
+      "result": "passed",
+      "source": {
+        "kind": "commit",
+        "id": "60612eded1e0e4e5188c28a84697435eb969fad0"
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; unchanged locked dependencies and qualification numeric policy; same-source retained-resource native build. PostgreSQL runtime and approved Actions environment not executed.",
+      "notes": "Two metadata counterexamples reproduced; actual existing point query compiled for SQLite/PostgreSQL. Source checked against Git before/after, connections returned and directories removed. No damaged semantic publication or live PostgreSQL claim."
+    },
+    {
+      "command": "Pinned Ruff0.16.0 check/format on four changed files; mypy2.3.0 on both production owners; git diff --check; isolated exact-base patch application",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed/prepared-continuation.patch, SHA256 13ae35722fb887ff5420a721de14ab0faa6793e327bade7d8712bc3177cfffae. Final collection_uploads SHA256 70af3f63e1ea4b5d8b7cb064862911d295143cdeee39e463f0c95fee883fec2f; replay SHA256 293b5b302f3e50cf8de105fda32081675a70c43c6bcae78485c374dc0cf291a0; four changed-file identities in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; unchanged locked dependencies and qualification numeric policy; same-source retained-resource native build. PostgreSQL runtime and approved Actions environment not executed.",
+      "notes": "All passed; all four applied files match candidate hashes. Proffer schema check separately passed."
+    },
+    {
+      "command": "Full make lint/unit/build/dist, current-source/tested-merge PR CI, installed/platform/PostgreSQL execution and approved production operation budget qualification",
+      "result": "not-run",
+      "reason": "Finite external reference. Integration owner retains normal complete qualification and separately approved available/current/comparable Actions operation limits."
+    }
+  ],
+  "limitations": [
+    "Reference input only; product tree unchanged. No implementation acceptance, full current-source/tested-merge CI or installed/platform qualification.",
+    "No new Native state/cache/database/pool/budget. Required per-turn checkpoint/last-record restoration remains; cold Native construction retains independent restoration.",
+    "SQLite actual-caller work counts are journal-frame/source geometry, not file throughput, production elapsed or shared budget/profile acceptance. PostgreSQL query compilation is not runtime execution.",
+    "Positive snapshots are not locks across execution; exact source/worker/manifest and publication fences retain authority.",
+    "Growth evidence has an explicitly verified formatting-only caller relationship; final paired observations and focused cases execute exact final production bytes."
+  ]
+}

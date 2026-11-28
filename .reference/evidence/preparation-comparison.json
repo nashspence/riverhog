@@ -1,0 +1,801 @@
+{
+  "probe_sha256": "44362602156602f75561451ec83d38fde02e0f398b31044071b44df119e62d95",
+  "fixture_sha256": "feca43005339cd672195c4033572ff3629d6492160010e2db58976d3845eec87",
+  "raw_sha256": {
+    "baseline": "4101cb9638896befccf97527272c22d04c06392080d8317e9d42c0e4945d58fd",
+    "candidate": "a628936f4be12cd873e1de3f177510f57c2cff9e5363d43da6a50b5b5a85d5d0"
+  },
+  "baseline_source": {
+    "riverhog/src/riverhog_core/services/collection_uploads.py": "8a40fc4050deb438461e53c3d6afd3b1e472a4b1bbb06d17bfba7959f5791e04",
+    "riverhog/src/riverhog_core/services/upload_journal_replay.py": "cb630c091304f81cffce3dd67d23bf28debd49e622f157b7c033823ed86d5c47",
+    "riverhog/src/riverhog_core/services/upload_journal_certificates.py": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5",
+    "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa",
+    "riverhog/src/riverhog_core/services/upload_journal_epochs.py": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6",
+    "riverhog/src/riverhog_core/services/upload_journal_topology.py": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7",
+    "riverhog/src/riverhog_core/services/upload_journal_union.py": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3",
+    "riverhog/src/riverhog_core/services/upload_journal_rank.py": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a"
+  },
+  "candidate_source": {
+    "riverhog/src/riverhog_core/services/collection_uploads.py": "70af3f63e1ea4b5d8b7cb064862911d295143cdeee39e463f0c95fee883fec2f",
+    "riverhog/src/riverhog_core/services/upload_journal_replay.py": "293b5b302f3e50cf8de105fda32081675a70c43c6bcae78485c374dc0cf291a0",
+    "riverhog/src/riverhog_core/services/upload_journal_certificates.py": "5968364c594fabf22c41c9f6cdb2005837b6c9739d47d614d4821999b43cf9b5",
+    "riverhog/src/riverhog_core/services/upload_journal_validation_owner.py": "b6cca4bf4e5de83ef1a9dc1ca44c4bc2cfacb2d59b3345dbd0d801bfbe90b9aa",
+    "riverhog/src/riverhog_core/services/upload_journal_epochs.py": "13480b9e44345d3cd003b53e2dc60671b1078bc3f5445cb78a7b44373ca316c6",
+    "riverhog/src/riverhog_core/services/upload_journal_topology.py": "8c0effaf70c2171dff1e9dc11fc01b0a805d2028c28cac94e9d03cc3c2228cf7",
+    "riverhog/src/riverhog_core/services/upload_journal_union.py": "866b96ac6ed7b76263b12fd89fd308d5476dc76562f73f3f9acbb2fd2e58c1d3",
+    "riverhog/src/riverhog_core/services/upload_journal_rank.py": "91a52a84520442fb2ead342e5aa182926b5c7e1305878eefa0b66b0a8c09539a"
+  },
+  "observations": [
+    {
+      "case": "frames-1",
+      "source_bytes": 4913,
+      "frames": 1,
+      "corrections": 0,
+      "unrelated": 0,
+      "service_turns": 107,
+      "native_turns": 107,
+      "calls": {
+        "admission.completed_preparation": [
+          0,
+          107
+        ],
+        "current.graph_certificate": [
+          219,
+          219
+        ],
+        "current.replay_probe": [
+          329,
+          542
+        ],
+        "current.source": [
+          328,
+          328
+        ],
+        "current.worker": [
+          325,
+          325
+        ],
+        "native.advance": [
+          107,
+          107
+        ],
+        "native.checkpoint_fence": [
+          107,
+          107
+        ],
+        "native.checkpoint_load": [
+          319,
+          319
+        ],
+        "native.progress": [
+          108,
+          108
+        ],
+        "native.session_advance": [
+          107,
+          107
+        ],
+        "preparation.epoch": [
+          107,
+          1
+        ],
+        "preparation.rank": [
+          107,
+          1
+        ],
+        "preparation.replay": [
+          107,
+          1
+        ],
+        "preparation.topology": [
+          107,
+          1
+        ],
+        "preparation.union": [
+          107,
+          1
+        ],
+        "prepare.binding_publication": [
+          107,
+          1
+        ],
+        "publish.native_progress": [
+          108,
+          108
+        ],
+        "publish.terminal": [
+          1,
+          1
+        ],
+        "restore.epoch": [
+          107,
+          107
+        ],
+        "restore.rank": [
+          220,
+          114
+        ],
+        "restore.topology": [
+          107,
+          107
+        ],
+        "restore.union": [
+          328,
+          116
+        ]
+      },
+      "catalog_application_statements": [
+        5624,
+        4672
+      ],
+      "catalog_selects": [
+        3954,
+        3001
+      ],
+      "catalog_commits": [
+        771,
+        453
+      ],
+      "catalog_updates": [
+        125,
+        125
+      ],
+      "catalog_inserts": [
+        7,
+        7
+      ],
+      "native_turn_currentness_and_checkpoint_counts_unchanged": true,
+      "preparation_helpers_absent_after_first_native_turn": true,
+      "exact_terminal_anchor": true,
+      "all_original_constructions_and_storage_received": true
+    },
+    {
+      "case": "frames-2",
+      "source_bytes": 6064,
+      "frames": 2,
+      "corrections": 0,
+      "unrelated": 0,
+      "service_turns": 142,
+      "native_turns": 141,
+      "calls": {
+        "admission.completed_preparation": [
+          0,
+          142
+        ],
+        "current.graph_certificate": [
+          289,
+          289
+        ],
+        "current.replay_probe": [
+          435,
+          717
+        ],
+        "current.source": [
+          434,
+          434
+        ],
+        "current.worker": [
+          429,
+          429
+        ],
+        "native.advance": [
+          141,
+          141
+        ],
+        "native.checkpoint_fence": [
+          141,
+          141
+        ],
+        "native.checkpoint_load": [
+          419,
+          419
+        ],
+        "native.progress": [
+          142,
+          142
+        ],
+        "native.session_advance": [
+          141,
+          141
+        ],
+        "preparation.epoch": [
+          142,
+          2
+        ],
+        "preparation.rank": [
+          141,
+          1
+        ],
+        "preparation.replay": [
+          141,
+          1
+        ],
+        "preparation.topology": [
+          142,
+          2
+        ],
+        "preparation.union": [
+          141,
+          1
+        ],
+        "prepare.binding_publication": [
+          141,
+          1
+        ],
+        "publish.native_progress": [
+          142,
+          142
+        ],
+        "publish.terminal": [
+          1,
+          1
+        ],
+        "restore.epoch": [
+          142,
+          142
+        ],
+        "restore.rank": [
+          288,
+          148
+        ],
+        "restore.topology": [
+          142,
+          142
+        ],
+        "restore.union": [
+          432,
+          152
+        ]
+      },
+      "catalog_application_statements": [
+        7422,
+        6166
+      ],
+      "catalog_selects": [
+        5219,
+        3961
+      ],
+      "catalog_commits": [
+        1016,
+        596
+      ],
+      "catalog_updates": [
+        165,
+        165
+      ],
+      "catalog_inserts": [
+        7,
+        7
+      ],
+      "native_turn_currentness_and_checkpoint_counts_unchanged": true,
+      "preparation_helpers_absent_after_first_native_turn": true,
+      "exact_terminal_anchor": true,
+      "all_original_constructions_and_storage_received": true
+    },
+    {
+      "case": "frames-4",
+      "source_bytes": 8366,
+      "frames": 4,
+      "corrections": 0,
+      "unrelated": 0,
+      "service_turns": 213,
+      "native_turns": 209,
+      "calls": {
+        "admission.completed_preparation": [
+          0,
+          213
+        ],
+        "current.graph_certificate": [
+          429,
+          429
+        ],
+        "current.replay_probe": [
+          647,
+          1068
+        ],
+        "current.source": [
+          646,
+          646
+        ],
+        "current.worker": [
+          637,
+          637
+        ],
+        "native.advance": [
+          209,
+          209
+        ],
+        "native.checkpoint_fence": [
+          209,
+          209
+        ],
+        "native.checkpoint_load": [
+          619,
+          619
+        ],
+        "native.progress": [
+          210,
+          210
+        ],
+        "native.session_advance": [
+          209,
+          209
+        ],
+        "preparation.epoch": [
+          213,
+          5
+        ],
+        "preparation.rank": [
+          209,
+          1
+        ],
+        "preparation.replay": [
+          209,
+          1
+        ],
+        "preparation.topology": [
+          213,
+          5
+        ],
+        "preparation.union": [
+          210,
+          2
+        ],
+        "prepare.binding_publication": [
+          209,
+          1
+        ],
+        "publish.native_progress": [
+          210,
+          210
+        ],
+        "publish.terminal": [
+          1,
+          1
+        ],
+        "restore.epoch": [
+          213,
+          213
+        ],
+        "restore.rank": [
+          424,
+          216
+        ],
+        "restore.topology": [
+          213,
+          213
+        ],
+        "restore.union": [
+          640,
+          224
+        ]
+      },
+      "catalog_application_statements": [
+        11035,
+        9173
+      ],
+      "catalog_selects": [
+        7762,
+        5895
+      ],
+      "catalog_commits": [
+        1508,
+        884
+      ],
+      "catalog_updates": [
+        245,
+        245
+      ],
+      "catalog_inserts": [
+        7,
+        7
+      ],
+      "native_turn_currentness_and_checkpoint_counts_unchanged": true,
+      "preparation_helpers_absent_after_first_native_turn": true,
+      "exact_terminal_anchor": true,
+      "all_original_constructions_and_storage_received": true
+    },
+    {
+      "case": "correction-epochs-2",
+      "source_bytes": 9327,
+      "frames": 5,
+      "corrections": 1,
+      "unrelated": 0,
+      "service_turns": 388,
+      "native_turns": 381,
+      "calls": {
+        "admission.completed_preparation": [
+          0,
+          388
+        ],
+        "current.graph_certificate": [
+          775,
+          775
+        ],
+        "current.replay_probe": [
+          1167,
+          1935
+        ],
+        "current.source": [
+          1166,
+          1166
+        ],
+        "current.worker": [
+          1155,
+          1155
+        ],
+        "native.advance": [
+          381,
+          381
+        ],
+        "native.checkpoint_fence": [
+          381,
+          381
+        ],
+        "native.checkpoint_load": [
+          1133,
+          1133
+        ],
+        "native.progress": [
+          382,
+          382
+        ],
+        "native.session_advance": [
+          381,
+          381
+        ],
+        "preparation.epoch": [
+          388,
+          8
+        ],
+        "preparation.rank": [
+          381,
+          1
+        ],
+        "preparation.replay": [
+          381,
+          1
+        ],
+        "preparation.topology": [
+          388,
+          8
+        ],
+        "preparation.union": [
+          384,
+          4
+        ],
+        "prepare.binding_publication": [
+          381,
+          1
+        ],
+        "publish.native_progress": [
+          382,
+          382
+        ],
+        "publish.terminal": [
+          1,
+          1
+        ],
+        "restore.epoch": [
+          388,
+          388
+        ],
+        "restore.rank": [
+          774,
+          394
+        ],
+        "restore.topology": [
+          388,
+          388
+        ],
+        "restore.union": [
+          1166,
+          406
+        ]
+      },
+      "catalog_application_statements": [
+        21549,
+        17385
+      ],
+      "catalog_selects": [
+        15633,
+        11461
+      ],
+      "catalog_commits": [
+        2739,
+        1599
+      ],
+      "catalog_updates": [
+        435,
+        435
+      ],
+      "catalog_inserts": [
+        11,
+        11
+      ],
+      "native_turn_currentness_and_checkpoint_counts_unchanged": true,
+      "preparation_helpers_absent_after_first_native_turn": true,
+      "exact_terminal_anchor": true,
+      "all_original_constructions_and_storage_received": true
+    },
+    {
+      "case": "source-octets-65537",
+      "source_bytes": 70902,
+      "frames": 1,
+      "corrections": 0,
+      "unrelated": 0,
+      "service_turns": 125,
+      "native_turns": 124,
+      "calls": {
+        "admission.completed_preparation": [
+          0,
+          124
+        ],
+        "current.graph_certificate": [
+          254,
+          254
+        ],
+        "current.replay_probe": [
+          382,
+          629
+        ],
+        "current.source": [
+          381,
+          381
+        ],
+        "current.worker": [
+          377,
+          377
+        ],
+        "native.advance": [
+          124,
+          124
+        ],
+        "native.checkpoint_fence": [
+          124,
+          124
+        ],
+        "native.checkpoint_load": [
+          369,
+          369
+        ],
+        "native.progress": [
+          125,
+          125
+        ],
+        "native.session_advance": [
+          124,
+          124
+        ],
+        "preparation.epoch": [
+          124,
+          1
+        ],
+        "preparation.rank": [
+          124,
+          1
+        ],
+        "preparation.replay": [
+          124,
+          1
+        ],
+        "preparation.topology": [
+          124,
+          1
+        ],
+        "preparation.union": [
+          124,
+          1
+        ],
+        "prepare.binding_publication": [
+          124,
+          1
+        ],
+        "publish.native_progress": [
+          125,
+          125
+        ],
+        "publish.terminal": [
+          1,
+          1
+        ],
+        "restore.epoch": [
+          124,
+          124
+        ],
+        "restore.rank": [
+          254,
+          131
+        ],
+        "restore.topology": [
+          124,
+          124
+        ],
+        "restore.union": [
+          379,
+          133
+        ]
+      },
+      "catalog_application_statements": [
+        6522,
+        5417
+      ],
+      "catalog_selects": [
+        4584,
+        3478
+      ],
+      "catalog_commits": [
+        891,
+        522
+      ],
+      "catalog_updates": [
+        143,
+        143
+      ],
+      "catalog_inserts": [
+        8,
+        8
+      ],
+      "native_turn_currentness_and_checkpoint_counts_unchanged": true,
+      "preparation_helpers_absent_after_first_native_turn": true,
+      "exact_terminal_anchor": true,
+      "all_original_constructions_and_storage_received": true
+    },
+    {
+      "case": "unrelated-journals-1025",
+      "source_bytes": 4913,
+      "frames": 1,
+      "corrections": 0,
+      "unrelated": 1025,
+      "service_turns": 107,
+      "native_turns": 107,
+      "calls": {
+        "admission.completed_preparation": [
+          0,
+          107
+        ],
+        "current.graph_certificate": [
+          219,
+          219
+        ],
+        "current.replay_probe": [
+          329,
+          542
+        ],
+        "current.source": [
+          328,
+          328
+        ],
+        "current.worker": [
+          325,
+          325
+        ],
+        "native.advance": [
+          107,
+          107
+        ],
+        "native.checkpoint_fence": [
+          107,
+          107
+        ],
+        "native.checkpoint_load": [
+          319,
+          319
+        ],
+        "native.progress": [
+          108,
+          108
+        ],
+        "native.session_advance": [
+          107,
+          107
+        ],
+        "preparation.epoch": [
+          107,
+          1
+        ],
+        "preparation.rank": [
+          107,
+          1
+        ],
+        "preparation.replay": [
+          107,
+          1
+        ],
+        "preparation.topology": [
+          107,
+          1
+        ],
+        "preparation.union": [
+          107,
+          1
+        ],
+        "prepare.binding_publication": [
+          107,
+          1
+        ],
+        "publish.native_progress": [
+          108,
+          108
+        ],
+        "publish.terminal": [
+          1,
+          1
+        ],
+        "restore.epoch": [
+          107,
+          107
+        ],
+        "restore.rank": [
+          220,
+          114
+        ],
+        "restore.topology": [
+          107,
+          107
+        ],
+        "restore.union": [
+          328,
+          116
+        ]
+      },
+      "catalog_application_statements": [
+        5624,
+        4672
+      ],
+      "catalog_selects": [
+        3954,
+        3001
+      ],
+      "catalog_commits": [
+        771,
+        453
+      ],
+      "catalog_updates": [
+        125,
+        125
+      ],
+      "catalog_inserts": [
+        7,
+        7
+      ],
+      "native_turn_currentness_and_checkpoint_counts_unchanged": true,
+      "preparation_helpers_absent_after_first_native_turn": true,
+      "exact_terminal_anchor": true,
+      "all_original_constructions_and_storage_received": true
+    }
+  ],
+  "unchanged_observed_native_calls": [
+    "native.advance",
+    "native.session_advance",
+    "native.progress",
+    "native.checkpoint_load",
+    "native.checkpoint_fence",
+    "current.source",
+    "current.worker",
+    "current.graph_certificate",
+    "publish.native_progress",
+    "publish.terminal"
+  ],
+  "all_probe_workspaces_removed": true,
+  "native_extension_sha256": "10c7998c103c7c3a714ac2e39fcc58632576e2c624279fbc9573cfdaa6c7832e",
+  "native_build_source_sha256": {
+    "packages/retained-resource/pyproject.toml": "4e064a3e859cc1eececbf4a37f98c014bb42c64f5fbbe6a183d5cfcd360bc15b",
+    "packages/retained-resource/hatch_build.py": "fc0d2ea21e5f3e1c4ef2f610b859c5cc26686ccbe301ecc1a90e4ac2548b972e",
+    "packages/retained-resource/native/owner.c": "1df636f3fe180cc76c723f08d575fc14ba421bb5742d306d1e5c2e3e6e6f6bea"
+  },
+  "native_budget": {
+    "rows": 64,
+    "octets": 33619968,
+    "source_octets": 65536
+  },
+  "limitations": [
+    "Only complete small actual validation-unit paths on SQLite were executed.",
+    "SQL totals are SQLAlchemy execution events, including explicit snapshot BEGIN, not every driver primitive.",
+    "Commit/rollback counts are actual SQLAlchemy transaction events, separate from execution-event totals.",
+    "Native currentness/checkpoint counts are selected wrappers; Native SQLite statements and filesystem primitives are not counted here.",
+    "Catalog event counters cover validation-unit calls; final service-close receiving is asserted but its primitives are outside these counters.",
+    "No production KDF, archive publication, PostgreSQL runtime, elapsed-time or whole-path growth acceptance is established.",
+    "Correction fixture adds a frame as well as a correction; it does not isolate epoch cost from frame count."
+  ]
+}

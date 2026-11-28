@@ -1,0 +1,530 @@
+diff --git a/riverhog/src/riverhog_core/services/collection_uploads.py b/riverhog/src/riverhog_core/services/collection_uploads.py
+index b4000e33..cd8a5607 100644
+--- a/riverhog/src/riverhog_core/services/collection_uploads.py
++++ b/riverhog/src/riverhog_core/services/collection_uploads.py
+@@ -2163,31 +2163,36 @@ class SqlAlchemyCollectionUploadService:
+         )
+         if validation is None:
+             return
+-        from .upload_journal_epochs import advance_upload_journal_epoch_scan
++        from .upload_journal_replay import (
++            is_upload_journal_replay_prepared,
++            prepare_upload_journal_replay,
++        )
+ 
+-        if not advance_upload_journal_epoch_scan(self._session_factory, validation):
+-            return
+-        from .upload_journal_topology import advance_upload_journal_topology_capture
++        catalog = admission_provenance_catalog()
++        if not is_upload_journal_replay_prepared(
++            self._session_factory, validation, catalog=catalog
++        ):
++            from .upload_journal_epochs import advance_upload_journal_epoch_scan
+ 
+-        if not advance_upload_journal_topology_capture(self._session_factory, validation):
+-            return
+-        from .upload_journal_union import advance_upload_journal_epoch_union
++            if not advance_upload_journal_epoch_scan(self._session_factory, validation):
++                return
++            from .upload_journal_topology import advance_upload_journal_topology_capture
+ 
+-        if not advance_upload_journal_epoch_union(self._session_factory, validation):
+-            return
+-        from .upload_journal_rank import advance_upload_journal_epoch_rank
++            if not advance_upload_journal_topology_capture(self._session_factory, validation):
++                return
++            from .upload_journal_union import advance_upload_journal_epoch_union
+ 
+-        if not advance_upload_journal_epoch_rank(self._session_factory, validation):
+-            return
+-        from .upload_journal_replay import prepare_upload_journal_replay
++            if not advance_upload_journal_epoch_union(self._session_factory, validation):
++                return
++            from .upload_journal_rank import advance_upload_journal_epoch_rank
+ 
+-        if not prepare_upload_journal_replay(
+-            self._session_factory, validation, catalog=admission_provenance_catalog()
+-        ):
+-            return
+-        step = self._journal_validation_owner.advance(
+-            validation, catalog=admission_provenance_catalog()
+-        )
++            if not advance_upload_journal_epoch_rank(self._session_factory, validation):
++                return
++            if not prepare_upload_journal_replay(
++                self._session_factory, validation, catalog=catalog
++            ):
++                return
++        step = self._journal_validation_owner.advance(validation, catalog=catalog)
+         if step.outcome is not None:
+             _commit_upload_journal_validation(self._session_factory, validation, step.outcome)
+ 
+@@ -9493,7 +9498,9 @@ def _service_validation_unit_declaration() -> Declaration:
+             statements,
+             (
+                 "At most 64 frame publications, 64 fact insertions, four union transitions and "
+-                "sixteen rank transitions sharing 64 row items, plus indexed source-page probes."
++                "sixteen rank transitions sharing 64 row items, plus indexed source-page probes. "
++                "Completed preparation uses point binding probes and one restoration of each "
++                "independently required checkpoint."
+             ),
+         ),
+         "driver_statements": (
+@@ -9772,6 +9779,11 @@ def _service_validation_unit_declaration() -> Declaration:
+             ),
+         ),
+         invariants=(
++            (
++                "Only a positive exact replay binding admits completed preparation; missing or "
++                "deferred bindings retain bounded preparation. Consolidation preserves fresh "
++                "checkpoint and last-record checks without repeating preparation advancement."
++            ),
+             (
+                 "Source bytes, algorithm, attempt, version and cursor fences remain exact at "
+                 "publication; stale or invalid findings cannot become semantic authority."
+diff --git a/riverhog/src/riverhog_core/services/upload_journal_replay.py b/riverhog/src/riverhog_core/services/upload_journal_replay.py
+index f16d14ce..80aac635 100644
+--- a/riverhog/src/riverhog_core/services/upload_journal_replay.py
++++ b/riverhog/src/riverhog_core/services/upload_journal_replay.py
+@@ -87,6 +87,48 @@ def prepare_upload_journal_replay(
+     return _commit_binding(factory, work, binding)
+ 
+ 
++def is_upload_journal_replay_prepared(
++    factory: SessionFactory,
++    source: source_owner._UploadJournalValidationWork,
++    *,
++    catalog: ContractCatalog,
++) -> bool:
++    """Restore each completed checkpoint once before a prepared Native turn.
++
++    A current source without its exact binding is not positive readiness. Unbound,
++    unfinished and deferred preparation remains with the bounded producers.
++    Last-record checks remain necessary even when the checkpoint headers agree.
++    Native still owns its independent source, worker and frozen-manifest fences.
++    """
++    current, raw = _probe(factory, source)
++    if not current or raw is None:
++        return False
++    binding = _binding(source, catalog)
++    if JournalReplayBinding.from_json(raw) != binding:
++        raise RuntimeError("retained replay inputs differ from the selected attempt")
++
++    from . import upload_journal_epochs as epochs
++    from . import upload_journal_topology as topology
++
++    scan = epochs._begin_scan(factory, source)
++    if scan is None or scan.state != "complete":
++        return False
++    captured = topology._begin(factory, source)
++    if captured is None or captured.state != "complete":
++        return False
++    work = rank._begin(factory, source)
++    if (
++        work is None
++        or work.state != "complete"
++        or not scan.version == captured.version == work.parent.version
++    ):
++        return False
++    current, raw = _probe(factory, source)
++    if raw is not None and JournalReplayBinding.from_json(raw) != binding:
++        raise RuntimeError("retained replay inputs differ from the selected attempt")
++    return current and raw is not None
++
++
+ @declare_growth(
+     Declaration(
+         id="riverhog-server.sqlite-journal-replay-binding.growth/v1",
+diff --git a/tests/unit/test_upload_journal_prepared_continuation.py b/tests/unit/test_upload_journal_prepared_continuation.py
+new file mode 100644
+index 00000000..2b9ab522
+--- /dev/null
++++ b/tests/unit/test_upload_journal_prepared_continuation.py
+@@ -0,0 +1,331 @@
++from __future__ import annotations
++
++import copy
++from contextlib import contextmanager
++from dataclasses import replace
++
++import pytest
++from riverhog_core.journal_validation_workspace import LostJournalValidationWorkspace
++from riverhog_core.services import collection_uploads as owner
++from riverhog_core.services import upload_journal_epochs as epochs
++from riverhog_core.services import upload_journal_rank as rank
++from riverhog_core.services import upload_journal_replay as replay
++from riverhog_core.services import upload_journal_topology as topology
++from riverhog_core.services import upload_journal_union as union
++from riverhog_provenance import append_assertions, assertion, new_id, reference, validate_journal
++from sqlalchemy import update
++
++from tests.unit.test_journal_capture import retained, validation_service
++from tests.unit.test_journal_replay_binding import progress, ready
++from tests.unit.test_journal_summary_consumers import source
++from tests.unit.test_journal_validation_handoff import complete_capture, terminal
++from tests.unit.test_staged_journal_range import JOURNAL, Journal
++from tests.unit.test_upload_journal_validation_owner import selected
++
++
++@contextmanager
++def admitted(root):
++    raw = source(journal_id=JOURNAL)
++    with validate_journal(raw) as summary:
++        old = summary.graph["artifacts"][0]
++        who = summary.tail.document["recorded_by_agent_id"]
++    artifacts, relations = [], []
++    for _ in range(3):
++        new = copy.deepcopy(old)
++        new["id"], new["assertion_id"] = new_id(), new_id()
++        artifacts.append(new)
++        relations.append(
++            assertion(
++                "specialization",
++                who,
++                specific=reference(new["id"], "artifact"),
++                general=reference(old["id"], "artifact"),
++            )
++        )
++        old = new
++    raw = append_assertions(
++        raw, {"artifacts": artifacts, "relations": relations}, recorded_by_agent_id=who
++    )
++    with retained(root, raw) as (engine, factory):
++        work = ready(factory)
++        assert replay.prepare_upload_journal_replay(
++            factory, work, catalog=owner.admission_provenance_catalog()
++        )
++        yield engine, factory, work
++
++
++def prepared(factory, work):
++    return replay.is_upload_journal_replay_prepared(
++        factory, work, catalog=owner.admission_provenance_catalog()
++    )
++
++
++def warm(service, factory):
++    for _ in range(2):
++        service._advance_provenance_journal_validation_unit(1, JOURNAL)
++    job = selected(factory)
++    assert job.state == "active" and job.worker_epoch == 1
++    assert service._journal_validation_owner.active_keys() == ((1, JOURNAL),)
++    return job
++
++
++@pytest.mark.parametrize("state", ["absent", "unbound", "deferred"])
++def test_current_source_without_complete_binding_keeps_original_preparation(
++    tmp_path, monkeypatch, state
++):
++    raw = b"\x1e{\n" if state == "deferred" else source(journal_id=JOURNAL)
++    with retained(tmp_path, raw) as (engine, factory):
++        work = complete_capture(factory) if state == "absent" else ready(factory)
++        if state == "deferred":
++            assert replay.prepare_upload_journal_replay(
++                factory, work, catalog=owner.admission_provenance_catalog()
++            )
++        assert replay._probe(factory, work) == (True, None)
++
++        def no_restoration(*_args, **_kwargs):
++            raise AssertionError("unbound source cannot enter completed restoration")
++
++        with monkeypatch.context() as patch:
++            patch.setattr(epochs, "_begin_scan", no_restoration)
++            patch.setattr(topology, "_begin", no_restoration)
++            patch.setattr(rank, "_begin", no_restoration)
++            assert not prepared(factory, work)
++        assert engine.pool.checkedout() == 0
++        with validation_service(factory, tmp_path / "native") as service:
++            service._advance_provenance_journal_validation_unit(1, JOURNAL)
++            assert terminal(factory)["anchor"] is None
++
++
++@pytest.mark.parametrize(
++    "field,value",
++    [
++        ("capture_attempt_id", "replacement-attempt"),
++        ("capture_directory_id", "replacement-directory"),
++        ("capture_version", 999),
++        ("sha256", "f" * 64),
++        ("capture_phase", "scanning"),
++    ],
++)
++def test_stale_prepared_source_cannot_start_restoration(tmp_path, monkeypatch, field, value):
++    with admitted(tmp_path) as (engine, factory, work):
++        with factory() as session, session.begin():
++            session.execute(update(Journal).values({field: value}))
++
++        def forbidden(*_args, **_kwargs):
++            raise AssertionError("stale source entered checkpoint restoration")
++
++        monkeypatch.setattr(epochs, "_begin_scan", forbidden)
++        assert not prepared(factory, work)
++        assert engine.pool.checkedout() == 0 and terminal(factory)["anchor"] is None
++
++
++@pytest.mark.parametrize("fault", ["missing", "changed", "malformed"])
++def test_binding_rechecked_after_completed_restoration(tmp_path, monkeypatch, fault):
++    with admitted(tmp_path) as (engine, factory, work):
++        original = rank._begin
++        before = progress(factory)
++        replacement = (
++            None
++            if fault == "missing"
++            else "{}"
++            if fault == "malformed"
++            else replace(
++                replay._binding(work, owner.admission_provenance_catalog()),
++                source_sha256="f" * 64,
++            ).to_json()
++        )
++
++        def change_binding(*args, **kwargs):
++            result = original(*args, **kwargs)
++            with factory() as session, session.begin():
++                session.execute(update(replay.Scan).values(replay_binding_json=replacement))
++            return result
++
++        with monkeypatch.context() as patch:
++            patch.setattr(rank, "_begin", change_binding)
++            if fault == "missing":
++                assert not prepared(factory, work)
++            else:
++                with pytest.raises(RuntimeError, match="retained"):
++                    prepared(factory, work)
++        with factory() as session, session.begin():
++            session.execute(update(replay.Scan).values(replay_binding_json=before[1]))
++        assert prepared(factory, work)
++        assert progress(factory) == before and engine.pool.checkedout() == 0
++
++
++def test_changed_checkpoint_version_cannot_mix_prepared_snapshots(tmp_path, monkeypatch):
++    with admitted(tmp_path) as (engine, factory, work):
++        original = topology._begin
++
++        def changed(*args, **kwargs):
++            result = original(*args, **kwargs)
++            with factory() as session, session.begin():
++                session.get(replay.Scan, (1, JOURNAL)).version += 1
++            return result
++
++        with monkeypatch.context() as patch:
++            patch.setattr(topology, "_begin", changed)
++            assert not prepared(factory, work)
++        assert prepared(factory, work)
++        assert engine.pool.checkedout() == 0
++
++
++@contextmanager
++def damaged_preparation(factory, work, fault):
++    with factory() as session, session.begin():
++        scan = session.get(replay.Scan, (1, JOURNAL))
++        field = {
++            "epoch-algorithm": "algorithm",
++            "topology-algorithm": "topology_algorithm",
++            "union-algorithm": "union_algorithm",
++            "rank-algorithm": "rank_algorithm",
++            "topology-header": "topology_cursor_json",
++            "union-header": "union_cursor_json",
++            "rank-header": "rank_cursor_json",
++        }.get(fault)
++        if field is not None:
++            row = scan
++        elif fault == "epoch-frame":
++            row = session.get(epochs.Frame, (1, JOURNAL, work.directory_id, scan.next_frame - 1))
++            field = "epoch_ordinal"
++        elif fault == "topology-fact":
++            last = topology.TopologyCaptureCheckpoint.from_json(scan.topology_cursor_json).last
++            assert last is not None
++            row = session.get(topology.Fact, (1, JOURNAL, work.attempt_id, *last[:3]))
++        elif fault == "union-arc":
++            last = union._decode(scan.union_cursor_json).last_arc
++            assert last is not None
++            row = session.get(union.Arc, (1, JOURNAL, work.attempt_id, *last))
++        elif fault == "rank-vertex":
++            last = rank._decode(scan.rank_cursor_json).last_vertex
++            assert last is not None
++            row = session.get(rank.Ranked, (1, JOURNAL, work.attempt_id, *last[:3]))
++        else:
++            assert fault == "rank-graph"
++            last = rank._decode(scan.rank_cursor_json).last_graph
++            assert last is not None
++            row = session.get(rank.Result, (1, JOURNAL, work.attempt_id, *last[:2]))
++        assert row is not None
++        model = type(row)
++        original = {column.key: getattr(row, column.key) for column in model.__table__.columns}
++        if field is not None:
++            setattr(row, field, row.epoch_ordinal + 1 if fault == "epoch-frame" else "malformed")
++        else:
++            session.delete(row)
++    try:
++        yield
++    finally:
++        with factory() as session, session.begin():
++            session.merge(model(**original))
++
++
++@pytest.mark.parametrize(
++    "fault",
++    [
++        "epoch-algorithm",
++        "topology-algorithm",
++        "union-algorithm",
++        "rank-algorithm",
++        "topology-header",
++        "union-header",
++        "rank-header",
++        "epoch-frame",
++        "topology-fact",
++        "union-arc",
++        "rank-vertex",
++        "rank-graph",
++    ],
++)
++def test_actual_prepared_caller_rejects_corruption_and_retries_same_native_owner(tmp_path, fault):
++    with admitted(tmp_path) as (engine, factory, work):
++        with validation_service(factory, tmp_path / "native") as service:
++            before = warm(service, factory)
++            key = (1, JOURNAL, work.attempt_id)
++            original = service._journal_validation_owner._slots[key].session
++            with damaged_preparation(factory, work, fault):
++                with pytest.raises(RuntimeError):
++                    service._advance_provenance_journal_validation_unit(1, JOURNAL)
++                assert selected(factory) == before
++                assert service._journal_validation_owner._slots[key].session is original
++                assert terminal(factory)["anchor"] is None and engine.pool.checkedout() == 0
++            service._advance_provenance_journal_validation_unit(1, JOURNAL)
++            after = selected(factory)
++            assert after.worker_epoch == before.worker_epoch
++            assert after.progress_json != before.progress_json
++            assert service._journal_validation_owner._slots[key].session is original
++        assert engine.pool.checkedout() == 0 and not service._journal_validation_owner.active_keys()
++
++
++def test_missing_binding_reenters_original_preparation_and_invalidates_warm_manifest(
++    tmp_path, monkeypatch
++):
++    with admitted(tmp_path) as (engine, factory, _work):
++        with validation_service(factory, tmp_path / "native") as service:
++            before = warm(service, factory)
++            original = replay.prepare_upload_journal_replay
++            calls = []
++
++            def observed(*args, **kwargs):
++                calls.append(True)
++                return original(*args, **kwargs)
++
++            monkeypatch.setattr(replay, "prepare_upload_journal_replay", observed)
++            with factory() as session, session.begin():
++                session.execute(update(replay.Scan).values(replay_binding_json=None))
++            with pytest.raises(LostJournalValidationWorkspace):
++                service._advance_provenance_journal_validation_unit(1, JOURNAL)
++            assert calls == [True] and progress(factory)[1] is not None
++            after = selected(factory)
++            assert after.state == "lost" and after.progress_json == before.progress_json
++            assert terminal(factory)["anchor"] is None
++        assert engine.pool.checkedout() == 0
++
++
++def test_closed_native_owner_does_not_gain_lifetime_from_prepared_binding(tmp_path):
++    with admitted(tmp_path) as (engine, factory, _work):
++        with validation_service(factory, tmp_path / "native") as service:
++            before = warm(service, factory)
++            service._journal_validation_owner.close()
++            with pytest.raises(RuntimeError, match="closed"):
++                service._advance_provenance_journal_validation_unit(1, JOURNAL)
++            assert selected(factory) == before and terminal(factory)["anchor"] is None
++        assert engine.pool.checkedout() == 0
++
++
++@pytest.mark.parametrize("fault", ["epoch-algorithm", "topology-algorithm"])
++def test_bound_cold_source_still_restores_preparation_before_constructing_native(tmp_path, fault):
++    with admitted(tmp_path) as (engine, factory, work):
++        with validation_service(factory, tmp_path / "native") as service:
++            with damaged_preparation(factory, work, fault):
++                with pytest.raises(RuntimeError, match="binding"):
++                    service._advance_provenance_journal_validation_unit(1, JOURNAL)
++                assert not service._journal_validation_owner.active_keys()
++                assert terminal(factory)["anchor"] is None
++            service._advance_provenance_journal_validation_unit(1, JOURNAL)
++            assert selected(factory).state == "active"
++        assert engine.pool.checkedout() == 0
++
++
++@pytest.mark.parametrize("lost", [False, True])
++def test_prepared_service_restart_preserves_native_workspace_contract(tmp_path, lost):
++    root = tmp_path / "native"
++    with admitted(tmp_path) as (engine, factory, _work):
++        with validation_service(factory, root) as service:
++            before = warm(service, factory)
++        database = root / before.workspace_id / "snapshot.sqlite3"
++        assert database.is_file()
++        if lost:
++            database.unlink()
++        with validation_service(factory, root) as replacement:
++            if lost:
++                with pytest.raises(LostJournalValidationWorkspace):
++                    replacement._advance_provenance_journal_validation_unit(1, JOURNAL)
++                assert selected(factory).state == "lost" and not database.exists()
++            else:
++                replacement._advance_provenance_journal_validation_unit(1, JOURNAL)
++                after = selected(factory)
++                assert after.worker_epoch == before.worker_epoch + 1
++                assert after.state == "active" and after.progress_json != before.progress_json
++            assert terminal(factory)["anchor"] is None
++        assert engine.pool.checkedout() == 0
+diff --git a/tests/unit/test_upload_journal_service_unit_growth.py b/tests/unit/test_upload_journal_service_unit_growth.py
+index 97d7bc6d..171851c2 100644
+--- a/tests/unit/test_upload_journal_service_unit_growth.py
++++ b/tests/unit/test_upload_journal_service_unit_growth.py
+@@ -294,6 +294,7 @@ class UnitRecorder:
+         self.children = None
+         self.interrupt = False
+         self.native_calls = 0
++        self.preparation_calls = defaultdict(int)
+         lifecycle, implementation = native.opening.native_helpers()
+         self.lifecycle, self.implementation = lifecycle, implementation
+         import importlib
+@@ -437,6 +438,7 @@ class UnitRecorder:
+         self.parts = []
+         self.children = {tag: [] for tag in CHILDREN}
+         self.interrupt = interrupt
++        self.preparation_calls = defaultdict(int)
+         error = None
+         try:
+             with pytest.MonkeyPatch.context() as patch:
+@@ -450,6 +452,20 @@ class UnitRecorder:
+                     "advance",
+                     lambda selected, work, **kwargs: self.advanced(selected, work, **kwargs),
+                 )
++                for module, name in (
++                    (epochs, "advance_upload_journal_epoch_scan"),
++                    (topology, "advance_upload_journal_topology_capture"),
++                    (union, "advance_upload_journal_epoch_union"),
++                    (rank, "advance_upload_journal_epoch_rank"),
++                    (replay, "prepare_upload_journal_replay"),
++                ):
++                    operation = getattr(module, name)
++
++                    def preparation(*args, selected=operation, label=name, **kwargs):
++                        self.preparation_calls[label] += 1
++                        return selected(*args, **kwargs)
++
++                    patch.setattr(module, name, preparation)
+                 patch.setattr(owner, "advance_journal_framing", self.framed)
+                 patch.setattr(
+                     epochs,
+@@ -585,9 +601,14 @@ def test_real_validation_service_units(tmp_path, record_property):
+             recorder = UnitRecorder(case, current)
+             first = len(samples)
+             prepared = 0
++            admitted = False
+             for _ in range(100):
+                 observed = recorder.measure()
+                 samples.append(observed)
++                if admitted:
++                    assert not recorder.preparation_calls
++                if recorder.native_calls:
++                    admitted = True
+                 if terminal(case.factory)["state"] != "validating":
+                     break
+                 if recorder.native_calls in {1, 2} and prepared != recorder.native_calls:
