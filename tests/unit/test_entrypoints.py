@@ -109,7 +109,7 @@ def test_onboarding_routes_directly_between_the_two_root_documents() -> None:
     ("relative", "expected_sha256"),
     [
         ("README.md", "8453410441ad4ad1bf7c9bd86f53105546fce8d91fe211cebefba8e783d5f1a2"),
-        ("AGENTS.md", "8f79807cd6c515dd7e6a6414d443fd5f509ed6c0ee935b3d9cd1493c1f6772b3"),
+        ("AGENTS.md", "4a1ce07ab0faa4be42ed101790e4c0fd54476ad23c2fc9f55ed2839f9abe1e39"),
     ],
 )
 def test_onboarding_document_requires_explicit_revision(
@@ -214,23 +214,58 @@ def test_agents_preserves_supported_database_upgrades_and_durable_state() -> Non
     assert REPO / "packages/state-schema" in _local_links(REPO / "AGENTS.md")
 
 
-def test_agents_requires_growth_validation_without_machine_timing_guarantees() -> None:
+def test_agents_separates_growth_and_production_budgets_from_runtime() -> None:
     growth = _guide_section("Preserve declared growth bounds")
     assert "*linear growth*" in growth
     assert "Violating a declared growth bound is a validation failure." in growth
-    assert "Machine-dependent timing targets remain performance observations" in growth
-    assert "not product guarantees" in growth
+    assert "Approved production budgets" in growth
+    assert "Validation-runtime observations remain advisory." in growth
 
 
-def test_agents_separates_required_validation_evidence_from_advisory_performance() -> None:
-    measurement = _guide_section("Measure performance without creating gates")
+def test_agents_requires_work_accounting_and_shared_budget_authority() -> None:
+    work = _guide_section("Account for production work and budgets")
+    assert "Account for significant work" in work
+    assert "Justify required work; simplify or remove accidental repetition and machinery" in work
+    assert "Budget, binding and profile authority remains outside candidate code." in work
+    assert "Require current shared profile approval and admission." in work
+    assert "All three correct complete raw observations must fit the approved limit" in work
+    assert "report their maximum" in work
+    assert (
+        "Missing qualification, incomparable evidence, failed execution and misses cannot pass"
+    ) in work
+    assert "Measure the production implementation; do not introduce an alternate executor." in work
+
+
+def test_agents_scopes_optional_allowances_to_complete_configurations() -> None:
+    work = _guide_section("Account for production work and budgets")
+    assert "Suppress disabled optional producers at their source" in work
+    assert "through existing owned configuration" in work
+    assert "progress, resumability and logging beside a positive core budget" in work
+    assert "Inapplicable and zero allowance are different declarations." in work
+    assert "complete-configuration envelopes: core plus enabled allowances" in work
+    assert "These do not prove separate overhead caps" in work
+    assert "unused core headroom can hide optional cost" in work
+    assert "each applicable option including zero allowance" in work
+    assert "jointly supported options together" in work
+    assert "Verify real activity and absence per observation." in work
+    assert (
+        "Include optional preparation, output, checkpointing, synchronization and completion "
+        "in the measured boundary."
+    ) in work
+
+
+def test_agents_keeps_suite_timing_advisory_and_recovery_owned() -> None:
+    work = _guide_section("Account for production work and budgets")
     evidence = _guide_section("Account for validation evidence")
     handoff = _guide_section("Validate the change you actually deliver")
-    assert "a nonbinding goal" in measurement
-    assert "Missing a target does not fail validation." in measurement
-    assert "required evidence fail validation" in evidence
-    assert "A valid timing miss does not." in evidence
-    assert "not validation failures or approval conditions" in handoff
+    assert "Each operation owns its recovery promises" in work
+    assert (
+        "no universal replay target, checkpoint ratio or persistence-on-yield is required"
+    ) in work
+    assert "failed required budgets and invalid required evidence fail validation" in evidence
+    assert "Ordinary test or CI duration targets remain advisory" in evidence
+    assert "a valid miss does not block work or require approval" in evidence
+    assert "failed or unqualified required production work" in handoff
     assert REPO / "scripts/ci_qualification.py" in _local_links(REPO / "AGENTS.md")
 
 
