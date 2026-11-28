@@ -1,0 +1,132 @@
+{
+  "kind": "handoff",
+  "issue": "https://github.com/nashspence/riverhog/issues/991",
+  "purpose": "Answer the focused independent-recovery descriptor-preparation request with one recovery-owned proposal, actual-caller work evidence and finite integration guidance, continuing the accounting/simplification campaign.",
+  "producer": [
+    "OpenAI ChatGPT, GPT-6 Astra Pro (primary author and publisher)",
+    "Three same-model source, accounting and test reviewers"
+  ],
+  "requester": "Riverhog integration agent in issue comment 7231803772; explicitly commissioned by maintainer nashspence in ChatGPT.",
+  "first_step": "Read HANDOFF.md and the snapshot boundary in DESIGN.md, reconcile the patch with current #1008, then run the new small actual-caller tests. Do not merge the reference branch.",
+  "source": {
+    "repository": "nashspence/riverhog",
+    "base": {
+      "ref": "refs/heads/main",
+      "commit": "be483fd6d567616d5fcd355202d61f1e682efe75"
+    },
+    "work_state": "patches",
+    "later_inspected": {
+      "ref": "refs/heads/codex/1006-work-account",
+      "commit": "382870b8ce3072c962f57a72cd9842984474002c"
+    }
+  },
+  "artifacts": [
+    ".reference/DESIGN.md",
+    ".reference/EVIDENCE.md",
+    ".reference/HANDOFF.md",
+    ".reference/INTEGRATION.md",
+    ".reference/SOURCES.json",
+    ".reference/VALIDATION.md",
+    ".reference/evidence/binding-boundary.json.gz",
+    ".reference/evidence/count-comparison.json.gz",
+    ".reference/evidence/counts.json",
+    ".reference/evidence/validation.json",
+    ".reference/experiments/descriptor_probe.py",
+    ".reference/proffer.json",
+    ".reference/proposed/prepared-recovery.patch"
+  ],
+  "checks": [
+    {
+      "command": "python -m pytest -q some-implementations/riverhog/recovery/tests/test_prepared_provenance.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "Main be483fd6d567616d5fcd355202d61f1e682efe75 plus proposed/prepared-recovery.patch; exact four output SHA256s in SOURCES.json. Patch actually applied to 382870b8ce3072c962f57a72cd9842984474002c with byte-identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3 / SQLite 3.45.1; uv 0.11.24 locked workspace (Ruff 0.16.0, mypy 2.3.0); official age/batchpass 1.3.1 for encrypted cases.",
+      "notes": "33 passed in 1.58s; no age availability skip."
+    },
+    {
+      "command": "python -m pytest -q some-implementations/riverhog/recovery/tests/test_recovery.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "Main be483fd6d567616d5fcd355202d61f1e682efe75 plus proposed/prepared-recovery.patch; exact four output SHA256s in SOURCES.json. Patch actually applied to 382870b8ce3072c962f57a72cd9842984474002c with byte-identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3 / SQLite 3.45.1; uv 0.11.24 locked workspace (Ruff 0.16.0, mypy 2.3.0); official age/batchpass 1.3.1 for encrypted cases.",
+      "notes": "18 passed in 148.35s. Existing low-cost fixture log_n=1; not production-condition timing."
+    },
+    {
+      "command": "python -m pytest -q tests/unit/test_provenance_archive_read.py some-implementations/riverhog/recovery/tests/test_publication.py tests/unit/test_workspace_boundaries.py::test_implementation_projects_do_not_cross_owner_boundaries tests/unit/test_workspace_boundaries.py::test_every_implementation_project_and_module_has_exactly_one_owner tests/unit/test_workspace_boundaries.py::test_shared_packages_do_not_import_implementation_projects",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "Main be483fd6d567616d5fcd355202d61f1e682efe75 plus proposed/prepared-recovery.patch; exact four output SHA256s in SOURCES.json. Patch actually applied to 382870b8ce3072c962f57a72cd9842984474002c with byte-identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3 / SQLite 3.45.1; uv 0.11.24 locked workspace (Ruff 0.16.0, mypy 2.3.0); official age/batchpass 1.3.1 for encrypted cases.",
+      "notes": "15 passed in 4.18s; not the complete workspace-boundary suite."
+    },
+    {
+      "command": "python -m ruff check some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool some-implementations/riverhog/recovery/tests/test_prepared_provenance.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "Main be483fd6d567616d5fcd355202d61f1e682efe75 plus proposed/prepared-recovery.patch; exact four output SHA256s in SOURCES.json. Patch actually applied to 382870b8ce3072c962f57a72cd9842984474002c with byte-identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3 / SQLite 3.45.1; uv 0.11.24 locked workspace (Ruff 0.16.0, mypy 2.3.0); official age/batchpass 1.3.1 for encrypted cases."
+    },
+    {
+      "command": "python -m ruff format --check some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool some-implementations/riverhog/recovery/tests/test_prepared_provenance.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "Main be483fd6d567616d5fcd355202d61f1e682efe75 plus proposed/prepared-recovery.patch; exact four output SHA256s in SOURCES.json. Patch actually applied to 382870b8ce3072c962f57a72cd9842984474002c with byte-identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3 / SQLite 3.45.1; uv 0.11.24 locked workspace (Ruff 0.16.0, mypy 2.3.0); official age/batchpass 1.3.1 for encrypted cases.",
+      "notes": "10 files already formatted."
+    },
+    {
+      "command": "python -m mypy some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "Main be483fd6d567616d5fcd355202d61f1e682efe75 plus proposed/prepared-recovery.patch; exact four output SHA256s in SOURCES.json. Patch actually applied to 382870b8ce3072c962f57a72cd9842984474002c with byte-identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3 / SQLite 3.45.1; uv 0.11.24 locked workspace (Ruff 0.16.0, mypy 2.3.0); official age/batchpass 1.3.1 for encrypted cases."
+    },
+    {
+      "command": "git diff --check; isolated git apply --check and git apply; SHA256 comparison of all four outputs",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "Main be483fd6d567616d5fcd355202d61f1e682efe75 plus proposed/prepared-recovery.patch; exact four output SHA256s in SOURCES.json. Patch actually applied to 382870b8ce3072c962f57a72cd9842984474002c with byte-identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3 / SQLite 3.45.1; uv 0.11.24 locked workspace (Ruff 0.16.0, mypy 2.3.0); official age/batchpass 1.3.1 for encrypted cases.",
+      "notes": "Actual application to 382870b8ce3072c962f57a72cd9842984474002c matches tested output bytes."
+    },
+    {
+      "command": "descriptor_probe.py --include-stage (default axes/sizes); descriptor_probe.py --include-stage --axes bindings --sizes 512 513",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "Main be483fd6d567616d5fcd355202d61f1e682efe75 plus proposed/prepared-recovery.patch; exact four output SHA256s in SOURCES.json. Patch actually applied to 382870b8ce3072c962f57a72cd9842984474002c with byte-identical outputs."
+      },
+      "environment": "Linux x86_64; Python 3.12.3 / SQLite 3.45.1; uv 0.11.24 locked workspace (Ruff 0.16.0, mypy 2.3.0); official age/batchpass 1.3.1 for encrypted cases.",
+      "notes": "44 actual-reader and 34 actual-stage observations; reproduction commands and limitations in EVIDENCE.md. No elapsed time measured."
+    },
+    {
+      "command": "Full make lint, repository unit/build/distribution and installed/platform qualification; changed-source PR CI; matched real encrypted wall-clock comparison",
+      "result": "not-run",
+      "reason": "Finite reference proposal. These remain with actual integration source and the existing owning work; no qualification or performance pass is claimed."
+    }
+  ],
+  "limitations": [
+    "This reference branch changes only .reference/; apply/adapt the patch through the authorized integration rail, not by merging the reference branch.",
+    "The prepared metadata is an immutable authenticated selected-root snapshot within one attempt. Payload/structure access and the existing mutable description/tag-head fence remain fresh.",
+    "Counts are at the authenticated plaintext boundary; no encrypted whole-recovery speedup, minimum time, 1,000-member slope or numerical budget approval follows.",
+    "Existing encrypted tests use log_n=1 and are correctness/compatibility checks. Full current-source CI/installed/platform and matched production-condition recovery timing remain unperformed.",
+    "A broader workspace-boundary pytest run was interrupted during the generated dependency fixture (exit 130), with no suite result. Three relevant ownership guards subsequently passed independently.",
+    "The new tests do not establish complete mapping/history growth, whole-recovery memory bounds or universal operating-system cleanup-failure qualification. SQLite B-tree insertion/search costs remain.",
+    "No new runtime dependency, package, registry, product profiling entry point, workflow or global prerequisite is introduced. #1007 retains downstream whole-path/growth/recovery acceptance; #1006/all#68 retains shared/numerical adoption."
+  ]
+}

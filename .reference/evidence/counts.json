@@ -1,0 +1,144 @@
+{
+  "format": "riverhog-recovery-preparation-evidence/v1",
+  "base_commit": "be483fd6d567616d5fcd355202d61f1e682efe75",
+  "candidate_files_sha256": {
+    "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_index.py": "5409c24082d8523f1795b993558ad17f5e62b1357f7db69e18f1621a5224bc6c",
+    "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py": "8a7baf160c3617169b9208b4ff1a94793fbde36d0e0f1f1fcaa4287bf1a4815d",
+    "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py": "58b5d0f2b9feee57314d0c5fe0f1e7d5fd62e2a0e8a587a28802eebeba05b525",
+    "some-implementations/riverhog/recovery/tests/test_prepared_provenance.py": "02baef2da5da4f626d6df4a573ee5feb39082e12b1b8e041a3743199ed40c95f"
+  },
+  "probe_sha256": "f7d11e2f7981f6b6a309bd2b50f731e9380f8b232d03e0ebb49939e4a83fffdb",
+  "fixture_sha256": "02baef2da5da4f626d6df4a573ee5feb39082e12b1b8e041a3743199ed40c95f",
+  "source_files_unchanged_during_each_probe": true,
+  "observations": 78,
+  "raw_files": [
+    {
+      "path": "evidence/count-comparison.json.gz",
+      "compressed_bytes": 59748,
+      "compressed_sha256": "0238cc37d8503f53c08fe39e5bfb3b654122b6294593b10e128c22fb33d65220",
+      "raw_bytes": 2338559,
+      "raw_sha256": "eb4a95f3fcba717b4eb396192487a9e93480d808ba853760321d8096749acf44",
+      "reader_observations": 40,
+      "actual_stage_observations": 30
+    },
+    {
+      "path": "evidence/binding-boundary.json.gz",
+      "compressed_bytes": 9640,
+      "compressed_sha256": "3aaadfb073e48aaa0ffc9d5c4ca76e6c822c662468bb26f7b5be21bbb7611005",
+      "raw_bytes": 207239,
+      "raw_sha256": "7485ec33e33c1ef227d1400454513ad50d41661dcd79ef89b73ec02bc6d61bdf",
+      "reader_observations": 4,
+      "actual_stage_observations": 4
+    }
+  ],
+  "actual_stage_table": [
+    {
+      "journals": 1,
+      "descriptors_including_terminal": 4,
+      "baseline_stage_descriptor_reads": 20,
+      "prepared_stage_descriptor_reads": 4,
+      "baseline_stage_plus_bindings_descriptor_reads": 32,
+      "prepared_stage_plus_bindings_descriptor_reads": 4,
+      "baseline_header_ranges_descriptor_reads": 16,
+      "prepared_header_ranges_index_rows": 4,
+      "prepared_header_ranges_vm_steps": 53,
+      "prepared_index_build_vm_steps": 358
+    },
+    {
+      "journals": 2,
+      "descriptors_including_terminal": 6,
+      "baseline_stage_descriptor_reads": 42,
+      "prepared_stage_descriptor_reads": 6,
+      "baseline_stage_plus_bindings_descriptor_reads": 60,
+      "prepared_stage_plus_bindings_descriptor_reads": 6,
+      "baseline_header_ranges_descriptor_reads": 36,
+      "prepared_header_ranges_index_rows": 8,
+      "prepared_header_ranges_vm_steps": 88,
+      "prepared_index_build_vm_steps": 420
+    },
+    {
+      "journals": 4,
+      "descriptors_including_terminal": 10,
+      "baseline_stage_descriptor_reads": 110,
+      "prepared_stage_descriptor_reads": 10,
+      "baseline_stage_plus_bindings_descriptor_reads": 140,
+      "prepared_stage_plus_bindings_descriptor_reads": 10,
+      "baseline_header_ranges_descriptor_reads": 100,
+      "prepared_header_ranges_index_rows": 16,
+      "prepared_header_ranges_vm_steps": 158,
+      "prepared_index_build_vm_steps": 544
+    },
+    {
+      "journals": 8,
+      "descriptors_including_terminal": 18,
+      "baseline_stage_descriptor_reads": 342,
+      "prepared_stage_descriptor_reads": 18,
+      "baseline_stage_plus_bindings_descriptor_reads": 396,
+      "prepared_stage_plus_bindings_descriptor_reads": 18,
+      "baseline_header_ranges_descriptor_reads": 324,
+      "prepared_header_ranges_index_rows": 32,
+      "prepared_header_ranges_vm_steps": 298,
+      "prepared_index_build_vm_steps": 792
+    },
+    {
+      "journals": 16,
+      "descriptors_including_terminal": 34,
+      "baseline_stage_descriptor_reads": 1190,
+      "prepared_stage_descriptor_reads": 34,
+      "baseline_stage_plus_bindings_descriptor_reads": 1292,
+      "prepared_stage_plus_bindings_descriptor_reads": 34,
+      "baseline_header_ranges_descriptor_reads": 1156,
+      "prepared_header_ranges_index_rows": 64,
+      "prepared_header_ranges_vm_steps": 578,
+      "prepared_index_build_vm_steps": 1288
+    }
+  ],
+  "binding_page_boundary": [
+    {
+      "bindings": 512,
+      "descriptors_including_terminal": 6,
+      "baseline_total_descriptor_reads": 60,
+      "prepared_total_descriptor_reads": 6,
+      "binding_payload_reads": 2,
+      "stage_index_rows": 8,
+      "binding_index_rows": 2
+    },
+    {
+      "bindings": 513,
+      "descriptors_including_terminal": 7,
+      "baseline_total_descriptor_reads": 70,
+      "prepared_total_descriptor_reads": 7,
+      "binding_payload_reads": 4,
+      "stage_index_rows": 8,
+      "binding_index_rows": 4
+    }
+  ],
+  "selected_structures": {
+    "archive_fixed": true,
+    "selected_counts": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "result": "Only selected structure source reads change; these stay fresh. Other descriptor/journal/binding dimensions stay fixed."
+  },
+  "query_plans": [
+    {
+      "details": [
+        "SEARCH volumes USING INDEX volume_journals (journal=?)"
+      ],
+      "sql": "SELECT kind, body FROM volumes WHERE journal = ? ORDER BY sequence"
+    },
+    {
+      "details": [
+        "SEARCH volumes USING INDEX volume_kinds (kind=?)"
+      ],
+      "sql": "SELECT kind, body FROM volumes WHERE kind = ? ORDER BY sequence"
+    }
+  ],
+  "qualification": false,
+  "elapsed_time_measured": false,
+  "scope": "Actual reader APIs and actual semantic journal staging, at the authenticated plaintext boundary; no whole encrypted recovery speedup, complete mapping/growth or shared budget qualification."
+}

@@ -1,0 +1,173 @@
+{
+  "scope": "Finite independent recovery preparation reference; source hashes identify inputs, not whole-repository qualification.",
+  "base": {
+    "repository": "nashspence/riverhog",
+    "commit": "be483fd6d567616d5fcd355202d61f1e682efe75",
+    "tree": "044a0e1e3eecf0b4183836017269fc208b6603d2"
+  },
+  "later_inspected": {
+    "ref": "refs/heads/codex/1006-work-account",
+    "commit": "382870b8ce3072c962f57a72cd9842984474002c",
+    "pr": "https://github.com/nashspence/riverhog/pull/1008",
+    "product_source_identical_to_base": true,
+    "changed_paths": [
+      "AGENTS.md",
+      "tests/unit/test_entrypoints.py"
+    ]
+  },
+  "proffer": {
+    "repository": "nashspence/proffer",
+    "commit": "2ce5e15c3191fcdc2be70213c0170f57c852a883",
+    "schema_url": "https://github.com/nashspence/proffer/blob/2ce5e15c3191fcdc2be70213c0170f57c852a883/schema/proffer.schema.json"
+  },
+  "source_files": [
+    {
+      "role": "independent reader and complete descriptor validation",
+      "path": "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py",
+      "sha256": "c9fd2ff18a93ae7945ca13747a94719b46d6ddcf0bbda46b73e727b338485a75"
+    },
+    {
+      "role": "actual independent recovery staging, mapping and snapshot fence",
+      "path": "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py",
+      "sha256": "8e4b587dcf68b80e8c89f524a223fa120ef0c2393ce33e3b848cb5862394373b"
+    },
+    {
+      "role": "unchanged independent encrypted object access",
+      "path": "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_archive_io.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_archive_io.py",
+      "sha256": "b8b12057e7b88e53fdda04271fe8a8d207c8860cbf9a5a510a236f3419cb5158"
+    },
+    {
+      "role": "prepared Core reader precedent and different binding proof interface",
+      "path": "riverhog/src/riverhog_core/provenance_archive_read.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/riverhog/src/riverhog_core/provenance_archive_read.py",
+      "sha256": "841267665607f96ff86343d1dd7171eadcbe9de1f663ffba4b0091a36c191870"
+    },
+    {
+      "role": "existing Core disposable metadata index mechanism",
+      "path": "riverhog/src/riverhog_core/provenance_metadata_index.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/riverhog/src/riverhog_core/provenance_metadata_index.py",
+      "sha256": "29018d2e378d35ce787668c1ae6fd896b1449c0a1c6163a9c4d39414d3e709c0"
+    },
+    {
+      "role": "neutral SQLite-backed history store",
+      "path": "packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py",
+      "sha256": "8944750139fcfa22ad19e30f8f5e90402e7306534db67bf4cba51bc8e648f5ea"
+    },
+    {
+      "role": "neutral selected history closure",
+      "path": "packages/riverhog-provenance/src/riverhog_provenance/history.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/packages/riverhog-provenance/src/riverhog_provenance/history.py",
+      "sha256": "508b1c77b2941453317f2cac2acce8f30b3c63adb3e5da766520de830b881442"
+    },
+    {
+      "role": "existing prepared Core reader proofs",
+      "path": "tests/unit/test_provenance_archive_read.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/tests/unit/test_provenance_archive_read.py",
+      "sha256": "e053e6dbb3268d9c7a84f1f370d2e4fc8d61463b3836482bc28799ffb46fb37f"
+    },
+    {
+      "role": "existing encrypted full-recovery regression cases",
+      "path": "some-implementations/riverhog/recovery/tests/test_recovery.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/some-implementations/riverhog/recovery/tests/test_recovery.py",
+      "sha256": "c88c7a12fe4f7968df9c0491e29721a6f8a94d7e2345c26a4a96f858e9da5702"
+    },
+    {
+      "role": "existing independent publication receiving",
+      "path": "some-implementations/riverhog/recovery/tests/test_publication.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/some-implementations/riverhog/recovery/tests/test_publication.py",
+      "sha256": "8d370faac1da4a5a30b37152c77057baac8a553f3edd5e3be180b5b5d62a33da"
+    },
+    {
+      "role": "owner and dependency-direction guards",
+      "path": "tests/unit/test_workspace_boundaries.py",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/tests/unit/test_workspace_boundaries.py",
+      "sha256": "6e79b83d5a2440692a0f7e956eec195c4ab39e8e3732a84b3ff8a7620c74c9d8"
+    },
+    {
+      "role": "locked Python dependencies",
+      "path": "uv.lock",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/uv.lock",
+      "sha256": "16b64145aa11bfbd6d2076a7a5adc783ed7d2e000237f9c31e9977ef48815f24"
+    },
+    {
+      "role": "pinned official age archive identity",
+      "path": "mise.lock",
+      "url": "https://github.com/nashspence/riverhog/blob/be483fd6d567616d5fcd355202d61f1e682efe75/mise.lock",
+      "sha256": "4cc8be44172720c07ef6585d104961c718cf108952e587a4fa627e00e1d699db"
+    }
+  ],
+  "issue_sources": [
+    {
+      "role": "owning focused design request",
+      "url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-7231803772"
+    },
+    {
+      "role": "reference branch and publication convention",
+      "url": "https://github.com/nashspence/riverhog/issues/903"
+    },
+    {
+      "role": "real-path observations and intrusive trace; separate from proposed counts",
+      "url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-7231967781"
+    },
+    {
+      "role": "separate finalization fixture; no matched subtraction",
+      "url": "https://github.com/nashspence/riverhog/issues/991#issuecomment-7232111045"
+    },
+    {
+      "role": "integration source and resolved native relationships",
+      "url": "https://github.com/nashspence/riverhog/issues/1006#issuecomment-7231335261"
+    },
+    {
+      "role": "existing policy proposal disposition",
+      "url": "https://github.com/nashspence/riverhog/issues/1006#issuecomment-7231460480"
+    },
+    {
+      "role": "downstream whole-path/growth/recovery acceptance owner",
+      "url": "https://github.com/nashspence/riverhog/issues/1007"
+    },
+    {
+      "role": "shared elapsed-time contract adoption work remains separate",
+      "url": "https://github.com/nashspence/all/issues/68"
+    }
+  ],
+  "proposed_patch": {
+    "path": "proposed/prepared-recovery.patch",
+    "sha256": "35d118a706b9cf8729d5c6d67c018ff7e838e0237e7e4634c2fa436d26035936",
+    "files_sha256": {
+      "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_index.py": "5409c24082d8523f1795b993558ad17f5e62b1357f7db69e18f1621a5224bc6c",
+      "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py": "8a7baf160c3617169b9208b4ff1a94793fbde36d0e0f1f1fcaa4287bf1a4815d",
+      "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py": "58b5d0f2b9feee57314d0c5fe0f1e7d5fd62e2a0e8a587a28802eebeba05b525",
+      "some-implementations/riverhog/recovery/tests/test_prepared_provenance.py": "02baef2da5da4f626d6df4a573ee5feb39082e12b1b8e041a3743199ed40c95f"
+    }
+  },
+  "probe": {
+    "path": "experiments/descriptor_probe.py",
+    "sha256": "f7d11e2f7981f6b6a309bd2b50f731e9380f8b232d03e0ebb49939e4a83fffdb",
+    "fixture_path": "some-implementations/riverhog/recovery/tests/test_prepared_provenance.py",
+    "fixture_sha256": "02baef2da5da4f626d6df4a573ee5feb39082e12b1b8e041a3743199ed40c95f"
+  },
+  "raw_count_evidence": [
+    {
+      "path": "evidence/count-comparison.json.gz",
+      "compressed_bytes": 59748,
+      "compressed_sha256": "0238cc37d8503f53c08fe39e5bfb3b654122b6294593b10e128c22fb33d65220",
+      "raw_bytes": 2338559,
+      "raw_sha256": "eb4a95f3fcba717b4eb396192487a9e93480d808ba853760321d8096749acf44",
+      "reader_observations": 40,
+      "actual_stage_observations": 30
+    },
+    {
+      "path": "evidence/binding-boundary.json.gz",
+      "compressed_bytes": 9640,
+      "compressed_sha256": "3aaadfb073e48aaa0ffc9d5c4ca76e6c822c662468bb26f7b5be21bbb7611005",
+      "raw_bytes": 207239,
+      "raw_sha256": "7485ec33e33c1ef227d1400454513ad50d41661dcd79ef89b73ec02bc6d61bdf",
+      "reader_observations": 4,
+      "actual_stage_observations": 4
+    }
+  ]
+}

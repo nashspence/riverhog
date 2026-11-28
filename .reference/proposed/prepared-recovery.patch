@@ -1,0 +1,1702 @@
+diff --git a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_index.py b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_index.py
+new file mode 100644
+index 00000000..a55619b2
+--- /dev/null
++++ b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_index.py
+@@ -0,0 +1,163 @@
++"""Attempt-owned seek index for an independently verified descriptor sequence."""
++
++from __future__ import annotations
++
++import shutil
++import sqlite3
++import tempfile
++from collections.abc import Callable, Iterator
++from pathlib import Path
++from typing import Self
++
++from riverhog_archive_contracts import (
++    ProvenanceTerminalDocument,
++    ProvenanceVolumeDocument,
++    format_archive_sequence,
++)
++
++Document = ProvenanceVolumeDocument | ProvenanceTerminalDocument
++
++
++class ProvenanceMetadataIndex:
++    """Keep original cursors and storage until their actual close is confirmed.
++
++    Rows are disposable projections, never archive authority. Only a complete
++    verified scan may seal the index. No payload or structure bytes are cached.
++    """
++
++    def __init__(
++        self, workspace: Path, *, on_storage_open: Callable[[Self], None] | None = None
++    ) -> None:
++        self._closing = False
++        self._ready = False
++        self._connection_closed = False
++        self._directory_removed = False
++        self._cursors: set[sqlite3.Cursor] = set()
++        self._root = Path(tempfile.mkdtemp(prefix="provenance-metadata-", dir=workspace))
++        try:
++            self._db = sqlite3.connect(self._root / "metadata.sqlite3")
++        except BaseException:
++            self._remove_directory()
++            raise
++        retained = False
++        try:
++            if on_storage_open is not None:
++                on_storage_open(self)
++                retained = True
++            self._run(
++                "PRAGMA cache_size = -512; PRAGMA temp_store = FILE; "
++                "CREATE TABLE volumes(sequence TEXT PRIMARY KEY, kind TEXT, "
++                "journal TEXT, body BLOB); "
++                "CREATE INDEX volume_journals ON volumes(journal, sequence); "
++                "CREATE INDEX volume_kinds ON volumes(kind, sequence);",
++                script=True,
++            )
++        except BaseException:
++            if not retained:
++                self.close()
++            raise
++
++    def require_open(self) -> None:
++        if self._closing:
++            raise RuntimeError("provenance metadata index is closed")
++
++    def _remove_directory(self) -> None:
++        try:
++            shutil.rmtree(self._root)
++        except FileNotFoundError:
++            if self._root.exists():
++                raise
++
++    def _close_cursor(self, cursor: sqlite3.Cursor) -> None:
++        if cursor in self._cursors:
++            try:
++                cursor.close()
++            except BaseException:
++                self._closing = True
++                raise
++            self._cursors.remove(cursor)
++
++    def close(self) -> None:
++        self._closing = True
++        for cursor in tuple(self._cursors):
++            self._close_cursor(cursor)
++        if not self._connection_closed:
++            self._db.close()
++            self._connection_closed = True
++        if not self._directory_removed:
++            self._remove_directory()
++            self._directory_removed = True
++
++    def _run(
++        self, statement: str, parameters: tuple[object, ...] = (), *, script: bool = False
++    ) -> None:
++        self.require_open()
++        cursor = (
++            self._db.executescript(statement) if script else self._db.execute(statement, parameters)
++        )
++        self._cursors.add(cursor)
++        try:
++            self.require_open()
++        finally:
++            self._close_cursor(cursor)
++
++    def remember(self, document: Document) -> None:
++        self.require_open()
++        if self._ready:
++            raise RuntimeError("provenance metadata index is sealed")
++        if isinstance(document, ProvenanceTerminalDocument):
++            kind, journal_id = "terminal", None
++        else:
++            kind, journal_id = document.payload.kind, document.journal_id
++        self._run(
++            "INSERT INTO volumes VALUES (?, ?, ?, ?)",
++            (
++                format_archive_sequence(document.sequence),
++                kind,
++                journal_id,
++                document.to_json_bytes(),
++            ),
++        )
++
++    def seal(self) -> None:
++        self.require_open()
++        self._db.commit()
++        self._run("PRAGMA query_only = ON")
++        self._ready = True
++
++    def descriptors(
++        self, *, journal_id: str | None = None, kind: str | None = None
++    ) -> Iterator[Document]:
++        self.require_open()
++        if not self._ready:
++            raise RuntimeError("provenance metadata index is not ready")
++        # Journal identities occur only on journal rows, as the admitted scan
++        # proved. Do not offer the planner a competing kind-wide index here.
++        values: tuple[str, ...]
++        if journal_id is not None:
++            where, values = " WHERE journal = ?", (journal_id,)
++        elif kind is not None:
++            where, values = " WHERE kind = ?", (kind,)
++        else:
++            where, values = "", ()
++        cursor = self._db.execute(
++            "SELECT kind, body FROM volumes" + where + " ORDER BY sequence", values
++        )
++        self._cursors.add(cursor)
++        try:
++            while True:
++                self.require_open()
++                row = cursor.fetchone()
++                if row is None:
++                    break
++                selected_kind, raw = row
++                if kind is not None and selected_kind != kind:
++                    continue
++                document = (
++                    ProvenanceTerminalDocument.from_json_bytes(raw)
++                    if selected_kind == "terminal"
++                    else ProvenanceVolumeDocument.from_json_bytes(raw)
++                )
++                yield document
++        finally:
++            self._close_cursor(cursor)
+diff --git a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py
+index 7d30409c..5d7e4c18 100644
+--- a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py
++++ b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/_provenance_reader.py
+@@ -8,9 +8,10 @@ bytes. It retains only one descriptor and one payload segment at a time.
+ from __future__ import annotations
+ 
+ import hashlib
+-from collections.abc import Callable, Iterator, Mapping
++from collections.abc import Callable, Generator, Iterator, Mapping
+ from dataclasses import dataclass
+-from typing import Any, cast
++from pathlib import Path
++from typing import Any, Self, cast
+ 
+ from riverhog_archive_contracts import (
+     PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
+@@ -31,6 +32,8 @@ from riverhog_archive_contracts import (
+ )
+ from riverhog_canonical_json import require_canonical_json
+ 
++from ._provenance_index import ProvenanceMetadataIndex
++
+ ObjectReader = Callable[[str], Iterator[bytes]]
+ 
+ 
+@@ -46,10 +49,15 @@ class ProvenanceArchiveSummary:
+ 
+ def _read_bounded(chunks: Iterator[bytes], maximum: int) -> bytes:
+     content = bytearray()
+-    for chunk in chunks:
+-        if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
+-            raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
+-        content.extend(chunk)
++    try:
++        for chunk in chunks:
++            if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
++                raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
++            content.extend(chunk)
++    finally:
++        close = getattr(chunks, "close", None)
++        if close is not None:
++            close()
+     return bytes(content)
+ 
+ 
+@@ -67,7 +75,12 @@ class CanonicalProvenanceArchiveReader:
+         self._archive_generation = archive_generation
+         self._artifact_set_sha256 = artifact_set_sha256
+ 
+-    def _root(self) -> ProvenanceRootDocument:
++    def prepare(self, *, workspace: Path) -> PreparedCanonicalProvenanceArchiveReader:
++        """Create one new, root-bound recovery attempt; never reuse its projection."""
++
++        return PreparedCanonicalProvenanceArchiveReader(self, workspace=workspace)
++
++    def _read_root(self) -> tuple[bytes, ProvenanceRootDocument]:
+         raw = _read_bounded(
+             self._read_object("provenance/root.json.age"), PROVENANCE_METADATA_BYTES_MAX
+         )
+@@ -79,10 +92,13 @@ class CanonicalProvenanceArchiveReader:
+             or root.artifact_set_sha256 != self._artifact_set_sha256
+         ):
+             raise ProvenanceArchiveReadError("provenance root names another archive")
+-        return root
++        return raw, root
++
++    def _root(self) -> ProvenanceRootDocument:
++        return self._read_root()[1]
+ 
+     def _descriptors(
+-        self,
++        self, *, journal_id: str | None = None, kind: str | None = None
+     ) -> Iterator[ProvenanceVolumeDocument | ProvenanceTerminalDocument]:
+         sequence = 0
+         while True:
+@@ -95,12 +111,16 @@ class CanonicalProvenanceArchiveReader:
+                 terminal = ProvenanceTerminalDocument.from_json_bytes(raw)
+                 if terminal.sequence != sequence:
+                     raise ProvenanceArchiveReadError("provenance terminal sequence changed")
+-                yield terminal
++                if journal_id is None and kind is None:
++                    yield terminal
+                 return
+             document = ProvenanceVolumeDocument.from_json_bytes(raw)
+             if document.sequence != sequence:
+                 raise ProvenanceArchiveReadError("provenance volume sequence changed")
+-            yield document
++            if (journal_id is None or document.journal_id == journal_id) and (
++                kind is None or document.payload.kind == kind
++            ):
++                yield document
+             sequence += 1
+ 
+     def scan(self) -> ProvenanceArchiveSummary:
+@@ -180,7 +200,7 @@ class CanonicalProvenanceArchiveReader:
+ 
+     def iter_journal_range(
+         self, journal_id: str, *, offset: int = 0, size: int | None = None
+-    ) -> Iterator[bytes]:
++    ) -> Generator[bytes, None, None]:
+         """Read exact journal bytes; every touched segment is verified in full."""
+ 
+         self.scan()
+@@ -194,7 +214,7 @@ class CanonicalProvenanceArchiveReader:
+         journal_sha256: str | None = None
+         full_digest = hashlib.sha256() if offset == 0 and size is None else None
+         emitted = 0
+-        for document in self._descriptors():
++        for document in self._descriptors(journal_id=journal_id, kind="journal"):
+             if isinstance(document, ProvenanceTerminalDocument):
+                 break
+             if document.payload.kind != "journal" or document.journal_id != journal_id:
+@@ -238,7 +258,7 @@ class CanonicalProvenanceArchiveReader:
+ 
+         self.scan()
+         result: tuple[int, str] | None = None
+-        for document in self._descriptors():
++        for document in self._descriptors(journal_id=journal_id, kind="journal"):
+             if isinstance(document, ProvenanceTerminalDocument):
+                 break
+             if document.payload.kind != "journal" or document.journal_id != journal_id:
+@@ -253,12 +273,12 @@ class CanonicalProvenanceArchiveReader:
+             raise ProvenanceArchiveReadError("provenance journal is absent")
+         return result
+ 
+-    def iter_journal_headers(self) -> Iterator[tuple[str, int, str]]:
++    def iter_journal_headers(self) -> Generator[tuple[str, int, str], None, None]:
+         """Enumerate root-selected journal identities and fixity without payloads."""
+ 
+         self.scan()
+         previous: str | None = None
+-        for document in self._descriptors():
++        for document in self._descriptors(kind="journal"):
+             if isinstance(document, ProvenanceTerminalDocument):
+                 return
+             if document.payload.kind != "journal" or document.journal_id == previous:
+@@ -294,7 +314,7 @@ class CanonicalProvenanceArchiveReader:
+ 
+     def _iter_bindings(self) -> Iterator[MemberHistoryBinding]:
+         last_id: str | None = None
+-        for document in self._descriptors():
++        for document in self._descriptors(kind="bindings"):
+             if isinstance(document, ProvenanceTerminalDocument):
+                 return
+             if document.payload.kind != "bindings":
+@@ -339,6 +359,105 @@ class CanonicalProvenanceArchiveReader:
+                 yield binding
+ 
+ 
++class PreparedCanonicalProvenanceArchiveReader(CanonicalProvenanceArchiveReader):
++    """A completely verified metadata snapshot for one selected-root attempt.
++
++    Payload and selected-structure access stays fresh and fixity checked. The
++    captured descriptors do not assert that a source has remained unmodified;
++    they bind every subsequent object read to the originally selected root.
++    """
++
++    def __init__(self, source: CanonicalProvenanceArchiveReader, *, workspace: Path) -> None:
++        super().__init__(
++            source._read_object,
++            expected_root_sha256=source._expected_root_sha256,
++            archive_generation=source._archive_generation,
++            artifact_set_sha256=source._artifact_set_sha256,
++        )
++        self._workspace = workspace
++        self._metadata_index: ProvenanceMetadataIndex | None = None
++        self._summary: ProvenanceArchiveSummary | None = None
++        self._root_bytes = b""
++        self._entered = False
++        self._closed = False
++
++    def __enter__(self) -> Self:
++        if self._entered or self._closed:
++            raise RuntimeError("prepared provenance reader cannot be reused")
++        self._entered = True
++        try:
++            self._metadata_index = ProvenanceMetadataIndex(
++                self._workspace, on_storage_open=self._retain_index
++            )
++            summary = super().scan()
++            self._metadata_index.seal()
++            self._summary = summary
++        except BaseException:
++            self.close()
++            raise
++        return self
++
++    def _retain_index(self, index: ProvenanceMetadataIndex) -> None:
++        self._metadata_index = index
++
++    def __exit__(self, *_exc: object) -> None:
++        self.close()
++
++    def close(self) -> None:
++        self._closed = True
++        if self._metadata_index is not None:
++            self._metadata_index.close()
++            self._metadata_index = None
++
++    @property
++    def root_bytes(self) -> bytes:
++        self.scan()
++        return self._root_bytes
++
++    def scan(self) -> ProvenanceArchiveSummary:
++        if self._closed or self._metadata_index is None or self._summary is None:
++            raise RuntimeError("prepared provenance reader is not open")
++        self._metadata_index.require_open()
++        return self._summary
++
++    def _root(self) -> ProvenanceRootDocument:
++        if self._summary is not None:
++            return self.scan().root
++        raw, root = self._read_root()
++        self._root_bytes = raw
++        return root
++
++    def _descriptors(
++        self, *, journal_id: str | None = None, kind: str | None = None
++    ) -> Iterator[ProvenanceVolumeDocument | ProvenanceTerminalDocument]:
++        if self._metadata_index is None or self._closed:
++            raise RuntimeError("prepared provenance reader is not open")
++        if self._summary is None:
++            for document in super()._descriptors():
++                self._metadata_index.remember(document)
++                yield document
++        else:
++            yield from self._metadata_index.descriptors(journal_id=journal_id, kind=kind)
++
++    def read_structure(self, path: str) -> Iterator[bytes]:
++        self.scan()
++        for chunk in super().read_structure(path):
++            self.scan()
++            yield chunk
++
++    def iter_journal_range(
++        self, journal_id: str, *, offset: int = 0, size: int | None = None
++    ) -> Generator[bytes, None, None]:
++        for chunk in super().iter_journal_range(journal_id, offset=offset, size=size):
++            self.scan()
++            yield chunk
++
++    def _iter_bindings(self) -> Iterator[MemberHistoryBinding]:
++        for binding in super()._iter_bindings():
++            self.scan()
++            yield binding
++
++
+ __all__ = [
+     "CanonicalProvenanceArchiveReader",
+     "ProvenanceArchiveReadError",
+diff --git a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py
+index 6e16344e..4687deb3 100644
+--- a/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py
++++ b/some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py
+@@ -9,13 +9,13 @@ import shutil
+ import sqlite3
+ import tempfile
+ from collections.abc import Iterator, Mapping
++from contextlib import closing, contextmanager
+ from dataclasses import dataclass
+ from pathlib import Path
+ from typing import Any, Literal, cast
+ 
+ from riverhog_archive_contracts import (
+     ARCHIVE_ROOT_DOCUMENT_BYTES_MAX,
+-    PROVENANCE_METADATA_BYTES_MAX,
+     RECOVERY_DESCRIPTOR_PATH,
+     RETAINED_HISTORY_EXTENT,
+     CollectionArchiveManifest,
+@@ -53,7 +53,10 @@ from riverhog_provenance import (
+ from ._archive_io import EncryptedArchive, archive_file, sha256_file
+ from ._metadata import stage_metadata
+ from ._payloads import stage_payloads
+-from ._provenance_reader import CanonicalProvenanceArchiveReader
++from ._provenance_reader import (
++    CanonicalProvenanceArchiveReader,
++    PreparedCanonicalProvenanceArchiveReader,
++)
+ from ._publication import publish_complete_recovery
+ 
+ 
+@@ -233,63 +236,64 @@ def _prefix_chunks(path: Path, byte_count: int) -> Iterator[bytes]:
+             yield chunk
+ 
+ 
++@contextmanager
+ def _stage_provenance(
+     selection: _ArchiveSelection,
+     *,
+     staging: Path,
+     scratch: Path,
+-) -> tuple[CanonicalProvenanceArchiveReader, sqlite3.Connection, int]:
+-    reader = CanonicalProvenanceArchiveReader(
++) -> Iterator[tuple[PreparedCanonicalProvenanceArchiveReader, sqlite3.Connection, int]]:
++    source = CanonicalProvenanceArchiveReader(
+         selection.encrypted.iter_plaintext,
+         expected_root_sha256=selection.manifest.provenance.identity,
+         archive_generation=selection.manifest.archive_generation,
+         artifact_set_sha256=selection.manifest.artifact_set_sha256,
+     )
+-    scanned = reader.scan()
+-    if scanned.root.binding_count != selection.manifest.artifacts:
+-        raise RecoveryError("provenance binding coverage differs from artifact set")
+-    root_raw = selection.encrypted.read_bounded(
+-        selection.manifest.provenance.root.path, PROVENANCE_METADATA_BYTES_MAX
+-    )
+-    _write_exact(staging, ("structure", "provenance-root.json"), root_raw)
+-    journals = sqlite3.connect(scratch / "journals.sqlite3")
+-    journals.execute("DROP TABLE IF EXISTS journals")
+-    journals.execute(
+-        "CREATE TABLE journals (journal_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
+-        "sha256 TEXT NOT NULL, path TEXT NOT NULL)"
+-    )
+-    count = 0
+-    for journal_id, byte_count, sha256 in reader.iter_journal_headers():
+-        components = shared_journal_components(sha256)
+-        output = staging.joinpath(*components)
+-        output.parent.mkdir(parents=True, exist_ok=True)
+-        digest = hashlib.sha256()
+-        copied = 0
+-        with output.open("xb") as stream:
+-            for chunk in reader.iter_journal_range(journal_id):
+-                stream.write(chunk)
+-                copied += len(chunk)
+-                digest.update(chunk)
+-            stream.flush()
+-            os.fsync(stream.fileno())
+-        if (copied, digest.hexdigest()) != (byte_count, sha256):
+-            raise RecoveryError("canonical journal differs from selected archive")
+-        journals.execute(
+-            "INSERT INTO journals VALUES (?, ?, ?, ?)",
+-            (journal_id, byte_count, sha256, str(output)),
+-        )
+-        count += 1
+-    journals.commit()
+-    # The entire selected set must resolve exact foreign/fork references. Unknown
+-    # optional profile payloads remain exact even without their application code.
+-    with CanonicalCorpusValidator() as corpus:
+-        for (path,) in journals.execute("SELECT path FROM journals ORDER BY journal_id"):
+-            with validate_journal_chunks(
+-                _file_chunks(Path(path)), require_profiles=False
+-            ) as summary:
+-                corpus.add(summary)
+-        corpus.validate()
+-    return reader, journals, count
++    with source.prepare(workspace=scratch) as reader:
++        if reader.scan().root.binding_count != selection.manifest.artifacts:
++            raise RecoveryError("provenance binding coverage differs from artifact set")
++        _write_exact(staging, ("structure", "provenance-root.json"), reader.root_bytes)
++        with closing(sqlite3.connect(scratch / "journals.sqlite3")) as journals:
++            with closing(journals.cursor()) as cursor:
++                cursor.execute("DROP TABLE IF EXISTS journals")
++                cursor.execute(
++                    "CREATE TABLE journals (journal_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
++                    "sha256 TEXT NOT NULL, path TEXT NOT NULL)"
++                )
++                count = 0
++                with closing(reader.iter_journal_headers()) as headers:
++                    for journal_id, byte_count, sha256 in headers:
++                        components = shared_journal_components(sha256)
++                        output = staging.joinpath(*components)
++                        output.parent.mkdir(parents=True, exist_ok=True)
++                        digest = hashlib.sha256()
++                        copied = 0
++                        with output.open("xb") as stream:
++                            with closing(reader.iter_journal_range(journal_id)) as chunks:
++                                for chunk in chunks:
++                                    stream.write(chunk)
++                                    copied += len(chunk)
++                                    digest.update(chunk)
++                            stream.flush()
++                            os.fsync(stream.fileno())
++                        if (copied, digest.hexdigest()) != (byte_count, sha256):
++                            raise RecoveryError("canonical journal differs from selected archive")
++                        cursor.execute(
++                            "INSERT INTO journals VALUES (?, ?, ?, ?)",
++                            (journal_id, byte_count, sha256, str(output)),
++                        )
++                        count += 1
++                journals.commit()
++                # The entire selected set must resolve exact foreign/fork references.
++                # Unknown optional profile payloads remain exact without application code.
++                with CanonicalCorpusValidator() as corpus:
++                    for (path,) in cursor.execute("SELECT path FROM journals ORDER BY journal_id"):
++                        with validate_journal_chunks(
++                            _file_chunks(Path(path)), require_profiles=False
++                        ) as summary:
++                            corpus.add(summary)
++                    corpus.validate()
++            yield reader, journals, count
+ 
+ 
+ def _file_chunks(path: Path) -> Iterator[bytes]:
+@@ -362,134 +366,140 @@ def _stage_mapping(
+     rules: DestinationRules,
+     mode: Literal["declared-hints", "id-layout"],
+ ) -> tuple[int, int]:
+-    selected = sqlite3.connect(scratch / "selected.sqlite3")
+-    selected.execute("DROP TABLE IF EXISTS selected")
+-    selected.execute(
+-        "CREATE TABLE selected (artifact_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
+-        "sha256 TEXT NOT NULL, binding_json BLOB NOT NULL, hint_json BLOB, "
+-        "support_json BLOB NOT NULL)"
+-    )
+-    members = payloads.execute(
+-        "SELECT artifact_id, bytes, sha256 FROM artifacts ORDER BY artifact_id"
+-    )
+-    count = 0
+-
+-    def advice() -> Iterator[MemberAdvice]:
+-        for artifact_id, raw_hint in selected.execute(
+-            "SELECT artifact_id, hint_json FROM selected ORDER BY artifact_id"
+-        ):
+-            yield MemberAdvice(
+-                str(artifact_id), json.loads(raw_hint) if raw_hint is not None else None
++    with (
++        closing(sqlite3.connect(scratch / "selected.sqlite3")) as selected,
++        closing(payloads.cursor()) as members,
++    ):
++        selected.execute("DROP TABLE IF EXISTS selected")
++        selected.execute(
++            "CREATE TABLE selected (artifact_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
++            "sha256 TEXT NOT NULL, binding_json BLOB NOT NULL, hint_json BLOB, "
++            "support_json BLOB NOT NULL)"
++        )
++        members.execute("SELECT artifact_id, bytes, sha256 FROM artifacts ORDER BY artifact_id")
++        count = 0
++
++        def advice() -> Iterator[MemberAdvice]:
++            with closing(
++                selected.execute("SELECT artifact_id, hint_json FROM selected ORDER BY artifact_id")
++            ) as cursor:
++                for artifact_id, raw_hint in cursor:
++                    yield MemberAdvice(
++                        str(artifact_id), json.loads(raw_hint) if raw_hint is not None else None
++                    )
++
++        def read_journal(journal_id: str, end: int | None) -> Iterator[bytes]:
++            with closing(
++                journals.execute("SELECT path FROM journals WHERE journal_id = ?", (journal_id,))
++            ) as cursor:
++                row = cursor.fetchone()
++            if row is None:
++                raise RecoveryError("member history selects an absent shared journal")
++            yield from (
++                _file_chunks(Path(row[0])) if end is None else _prefix_chunks(Path(row[0]), end)
+             )
+ 
+-    def read_journal(journal_id: str, end: int | None) -> Iterator[bytes]:
+-        row = journals.execute(
+-            "SELECT path FROM journals WHERE journal_id = ?", (journal_id,)
+-        ).fetchone()
+-        if row is None:
+-            raise RecoveryError("member history selects an absent shared journal")
+-        yield from _file_chunks(Path(row[0])) if end is None else _prefix_chunks(Path(row[0]), end)
+-
+-    with MemberHistoryClosure(
+-        MemberHistoryStore(reader.read_structure),
+-        read_journal,
+-        member_role=COLLECTION_MEMBER_ROLE,
+-    ) as closure:
+-        for member, raw_binding in zip(members, reader.iter_bindings(), strict=True):
+-            artifact_id, byte_count, sha256 = str(member[0]), int(member[1]), str(member[2])
+-            history_binding = MemberHistoryBinding.from_mapping(raw_binding)
+-            if (history_binding.artifact_id, history_binding.bytes, history_binding.sha256) != (
+-                artifact_id,
+-                byte_count,
+-                sha256,
+-            ):
+-                raise RecoveryError("member history differs from exact archive member fixity")
+-            closure.resolve(history_binding, extent=RETAINED_HISTORY_EXTENT)
+-            history = closure.store.descriptor(history_binding)
+-            binding = CollectionArtifactProvenanceBindingDocument.model_validate(
+-                {
+-                    "artifact_id": artifact_id,
+-                    **history.primary.to_mapping(),
+-                }
+-            )
+-            if binding.artifact_id != artifact_id:
+-                raise RecoveryError("primary binding differs from archive artifact order")
+-            hint, support = _selected_advice(
+-                binding=binding,
+-                byte_count=byte_count,
+-                sha256=sha256,
+-                journals=journals,
+-                staging=staging,
+-            )
+-            selected.execute(
+-                "INSERT INTO selected VALUES (?, ?, ?, ?, ?, ?)",
+-                (
++        with MemberHistoryClosure(
++            MemberHistoryStore(reader.read_structure),
++            read_journal,
++            member_role=COLLECTION_MEMBER_ROLE,
++        ) as closure:
++            for member, raw_binding in zip(members, reader.iter_bindings(), strict=True):
++                artifact_id, byte_count, sha256 = str(member[0]), int(member[1]), str(member[2])
++                history_binding = MemberHistoryBinding.from_mapping(raw_binding)
++                if (history_binding.artifact_id, history_binding.bytes, history_binding.sha256) != (
+                     artifact_id,
+                     byte_count,
+                     sha256,
+-                    canonical_json_bytes(history_binding.to_mapping()),
+-                    canonical_json_bytes(hint) if hint is not None else None,
+-                    canonical_json_bytes(support),
+-                ),
+-            )
+-            count += 1
+-        for raw in closure.structure_objects():
+-            identity = provenance_structure_identity(raw)
+-            components = ("structure", *identity.relative_path.removesuffix(".age").split("/"))
+-            if not rules.fits(components):
+-                raise RecoveryError("destination cannot represent required history structure")
+-            _write_exact(staging, components, raw)
+-        for (journal_id,) in journals.execute(
+-            "SELECT journal_id FROM journals ORDER BY journal_id"
+-        ):
+-            if not closure.contains_journal(journal_id):
+-                raise RecoveryError("provenance corpus contains an unselected unrelated journal")
+-    selected.commit()
+-    planned = plan_materialization_spooled(advice(), rules=rules, state=selected, mode=mode)
+-    mapped = 0
+-    with (staging / "recovery-members.jsonseq").open("xb") as mapping:
+-        for plan in planned:
+-            row = selected.execute(
+-                "SELECT bytes, sha256, binding_json, hint_json, support_json "
+-                "FROM selected WHERE artifact_id = ?",
+-                (plan.artifact_id,),
+-            ).fetchone()
+-            if row is None:
+-                raise RecoveryError("materialization plan lost an artifact")
+-            byte_count, sha256 = int(row[0]), str(row[1])
+-            _copy_exact(
+-                staging,
+-                plan.components,
+-                scratch / "artifact-spool" / plan.artifact_id,
+-                expected_bytes=byte_count,
+-                expected_sha256=sha256,
+-            )
+-            record = {
+-                "artifact_id": plan.artifact_id,
+-                "bytes": str(byte_count),
+-                "sha256": sha256,
+-                "components": list(plan.components),
+-                "sidecar": list(plan.sidecar_components),
+-                "reason": plan.reason,
+-                "materialization_hint": json.loads(row[3]) if row[3] is not None else None,
+-                "support": json.loads(row[4]),
+-                "binding": json.loads(row[2]),
+-                "history": [
+-                    "structure",
+-                    "provenance",
+-                    "history",
+-                    json.loads(row[2])["history_sha256"][:2],
+-                    json.loads(row[2])["history_sha256"] + ".json",
+-                ],
+-            }
+-            mapping.write(canonical_json_bytes(record) + b"\n")
+-            mapped += 1
+-        mapping.flush()
+-        os.fsync(mapping.fileno())
+-    selected.close()
+-    if mapped != count:
+-        raise RecoveryError("materialization plan is incomplete")
+-    return count, mapped
++                ):
++                    raise RecoveryError("member history differs from exact archive member fixity")
++                closure.resolve(history_binding, extent=RETAINED_HISTORY_EXTENT)
++                history = closure.store.descriptor(history_binding)
++                binding = CollectionArtifactProvenanceBindingDocument.model_validate(
++                    {
++                        "artifact_id": artifact_id,
++                        **history.primary.to_mapping(),
++                    }
++                )
++                if binding.artifact_id != artifact_id:
++                    raise RecoveryError("primary binding differs from archive artifact order")
++                hint, support = _selected_advice(
++                    binding=binding,
++                    byte_count=byte_count,
++                    sha256=sha256,
++                    journals=journals,
++                    staging=staging,
++                )
++                selected.execute(
++                    "INSERT INTO selected VALUES (?, ?, ?, ?, ?, ?)",
++                    (
++                        artifact_id,
++                        byte_count,
++                        sha256,
++                        canonical_json_bytes(history_binding.to_mapping()),
++                        canonical_json_bytes(hint) if hint is not None else None,
++                        canonical_json_bytes(support),
++                    ),
++                )
++                count += 1
++            for raw in closure.structure_objects():
++                identity = provenance_structure_identity(raw)
++                components = ("structure", *identity.relative_path.removesuffix(".age").split("/"))
++                if not rules.fits(components):
++                    raise RecoveryError("destination cannot represent required history structure")
++                _write_exact(staging, components, raw)
++            for (journal_id,) in journals.execute(
++                "SELECT journal_id FROM journals ORDER BY journal_id"
++            ):
++                if not closure.contains_journal(journal_id):
++                    raise RecoveryError(
++                        "provenance corpus contains an unselected unrelated journal"
++                    )
++        selected.commit()
++        planned = plan_materialization_spooled(advice(), rules=rules, state=selected, mode=mode)
++        mapped = 0
++        with (staging / "recovery-members.jsonseq").open("xb") as mapping:
++            for plan in planned:
++                row = selected.execute(
++                    "SELECT bytes, sha256, binding_json, hint_json, support_json "
++                    "FROM selected WHERE artifact_id = ?",
++                    (plan.artifact_id,),
++                ).fetchone()
++                if row is None:
++                    raise RecoveryError("materialization plan lost an artifact")
++                byte_count, sha256 = int(row[0]), str(row[1])
++                _copy_exact(
++                    staging,
++                    plan.components,
++                    scratch / "artifact-spool" / plan.artifact_id,
++                    expected_bytes=byte_count,
++                    expected_sha256=sha256,
++                )
++                record = {
++                    "artifact_id": plan.artifact_id,
++                    "bytes": str(byte_count),
++                    "sha256": sha256,
++                    "components": list(plan.components),
++                    "sidecar": list(plan.sidecar_components),
++                    "reason": plan.reason,
++                    "materialization_hint": json.loads(row[3]) if row[3] is not None else None,
++                    "support": json.loads(row[4]),
++                    "binding": json.loads(row[2]),
++                    "history": [
++                        "structure",
++                        "provenance",
++                        "history",
++                        json.loads(row[2])["history_sha256"][:2],
++                        json.loads(row[2])["history_sha256"] + ".json",
++                    ],
++                }
++                mapping.write(canonical_json_bytes(record) + b"\n")
++                mapped += 1
++            mapping.flush()
++            os.fsync(mapping.fileno())
++        if mapped != count:
++            raise RecoveryError("materialization plan is incomplete")
++        return count, mapped
+ 
+ 
+ def _required_layout_fits(rules: DestinationRules) -> None:
+@@ -537,7 +547,6 @@ def recover_archive(
+         shutil.rmtree(staging)
+     staging.mkdir(mode=0o700)
+     payload_state: sqlite3.Connection | None = None
+-    journal_state: sqlite3.Connection | None = None
+     try:
+         selection = _select_archive(
+             archive_dir,
+@@ -565,47 +574,47 @@ def recover_archive(
+             and selected_metadata.head_sha256 != expected_tag_head_sha256
+         ):
+             raise RecoveryError("selected tag head differs from trusted expectation")
+-        reader, journal_state, journal_count = _stage_provenance(
+-            selection, staging=staging, scratch=scratch
+-        )
+-        payload_summary, payload_state = stage_payloads(
+-            selection.encrypted, manifest=selection.manifest, scratch=scratch
+-        )
+-        covered, mapped = _stage_mapping(
+-            payloads=payload_state,
+-            reader=reader,
+-            journals=journal_state,
+-            staging=staging,
+-            scratch=scratch,
+-            rules=rules,
+-            mode=layout_mode,
+-        )
+-        if covered != payload_summary.artifacts or mapped != covered:
+-            raise RecoveryError("recovery mapping does not cover every artifact")
+-        _write_exact(staging, ("structure", "archive.json"), selection.manifest_bytes)
+-        if _metadata_ciphertext_pins(selection.archive) != metadata_pins_before:
+-            raise RecoveryError("selected metadata changed during recovery; retry the snapshot")
+-        receipt = {
+-            "format": "riverhog-complete-recovery/v1",
+-            "complete": True,
+-            "archive_root_sha256": selection.archive_root_sha256,
+-            "artifact_set_sha256": payload_summary.artifact_set_sha256,
+-            "provenance_identity": selection.manifest.provenance.identity,
+-            "metadata_pins": selected_metadata.pins(),
+-            "metadata_freshness": "selected-copy-heads-not-global-latest",
+-            "layout_mode": layout_mode,
+-            "artifacts": payload_summary.artifacts,
+-            "bytes": str(payload_summary.bytes),
+-            "volumes": payload_summary.volumes,
+-            "provenance_journals": journal_count,
+-            "tags": selected_metadata.tag_count,
+-            "mapping_sha256": sha256_file(staging / "recovery-members.jsonseq")[1],
+-        }
+-        _write_exact(staging, ("recovery.json",), canonical_json_bytes(receipt))
+-        payload_state.close()
+-        journal_state.close()
+-        payload_state = None
+-        journal_state = None
++        with _stage_provenance(selection, staging=staging, scratch=scratch) as (
++            reader,
++            journal_state,
++            journal_count,
++        ):
++            payload_summary, payload_state = stage_payloads(
++                selection.encrypted, manifest=selection.manifest, scratch=scratch
++            )
++            covered, mapped = _stage_mapping(
++                payloads=payload_state,
++                reader=reader,
++                journals=journal_state,
++                staging=staging,
++                scratch=scratch,
++                rules=rules,
++                mode=layout_mode,
++            )
++            if covered != payload_summary.artifacts or mapped != covered:
++                raise RecoveryError("recovery mapping does not cover every artifact")
++            _write_exact(staging, ("structure", "archive.json"), selection.manifest_bytes)
++            if _metadata_ciphertext_pins(selection.archive) != metadata_pins_before:
++                raise RecoveryError("selected metadata changed during recovery; retry the snapshot")
++            receipt = {
++                "format": "riverhog-complete-recovery/v1",
++                "complete": True,
++                "archive_root_sha256": selection.archive_root_sha256,
++                "artifact_set_sha256": payload_summary.artifact_set_sha256,
++                "provenance_identity": selection.manifest.provenance.identity,
++                "metadata_pins": selected_metadata.pins(),
++                "metadata_freshness": "selected-copy-heads-not-global-latest",
++                "layout_mode": layout_mode,
++                "artifacts": payload_summary.artifacts,
++                "bytes": str(payload_summary.bytes),
++                "volumes": payload_summary.volumes,
++                "provenance_journals": journal_count,
++                "tags": selected_metadata.tag_count,
++                "mapping_sha256": sha256_file(staging / "recovery-members.jsonseq")[1],
++            }
++            _write_exact(staging, ("recovery.json",), canonical_json_bytes(receipt))
++            payload_state.close()
++            payload_state = None
+         if output.exists() or output.is_symlink():
+             raise RecoveryError("recovery output appeared before completion")
+         publish_complete_recovery(staging, output)
+@@ -636,8 +645,6 @@ def recover_archive(
+     finally:
+         if payload_state is not None:
+             payload_state.close()
+-        if journal_state is not None:
+-            journal_state.close()
+ 
+ 
+ class RecoveredCollectionTags:
+diff --git a/some-implementations/riverhog/recovery/tests/test_prepared_provenance.py b/some-implementations/riverhog/recovery/tests/test_prepared_provenance.py
+new file mode 100644
+index 00000000..27f0cde8
+--- /dev/null
++++ b/some-implementations/riverhog/recovery/tests/test_prepared_provenance.py
+@@ -0,0 +1,762 @@
++"""Small plaintext proofs for independent root-bound preparation and its real caller.
++
++These tests exercise the authenticated-plaintext object boundary. Official age
++and complete archive recovery remain covered by test_recovery.py.
++"""
++
++from __future__ import annotations
++
++import hashlib
++import sqlite3
++from collections import Counter
++from collections.abc import Iterator
++from dataclasses import dataclass, replace
++from pathlib import Path
++from types import SimpleNamespace
++from typing import Any
++
++import a_riverhog_recovery_tool._provenance_reader as archive_read
++import a_riverhog_recovery_tool.recovery as recovery
++import pytest
++from riverhog_archive_contracts import (
++    MEMBER_HISTORY_IMPORTS_SCHEMA,
++    MEMBER_HISTORY_ROOTS_SCHEMA,
++    PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
++    PROVENANCE_BINDINGS_FORMAT,
++    HistoryJournalAnchor,
++    MemberHistoryBinding,
++    MemberHistoryDocument,
++    MemberHistoryPrimary,
++    MemberHistoryRoot,
++    ProvenancePayload,
++    ProvenanceRootDocument,
++    ProvenanceTerminalDocument,
++    ProvenanceVolumeDocument,
++    RecordPage,
++    RecordSetCommitment,
++    binding_tree_commitment,
++    history_record_page_object_path,
++    member_history_object_path,
++    ordered_provenance_commitment,
++)
++from riverhog_canonical_json import canonical_json_bytes
++from riverhog_provenance import assertion, create_journal
++
++
++def _sha(raw: bytes) -> str:
++    return hashlib.sha256(raw).hexdigest()
++
++
++def _urn(value: int) -> str:
++    return f"urn:uuid:00000000-0000-4000-8000-{value:012x}"
++
++
++@dataclass
++class ArchiveCase:
++    root: ProvenanceRootDocument
++    objects: dict[str, bytes]
++    journals: dict[str, bytes]
++    descriptors: tuple[ProvenanceVolumeDocument | ProvenanceTerminalDocument, ...]
++    bindings: tuple[MemberHistoryBinding, ...]
++    structure_paths: tuple[str, ...]
++
++
++def make_archive_case(
++    *,
++    journals: int = 2,
++    segments: int = 2,
++    bindings: int = 1,
++    semantic_journals: bool = False,
++) -> ArchiveCase:
++    """Build bounded structural inputs; optionally use real valid canonical journals."""
++    assert journals > 0 and segments > 0 and bindings > 0
++    generation, artifact_set = "a" * 64, "b" * 64
++    journal_bytes: dict[str, bytes] = {}
++    for index in range(journals):
++        journal_id = _urn(index + 1)
++        if semantic_journals:
++            who = _urn(1000 + index)
++            raw = create_journal(
++                {
++                    "agents": [
++                        assertion(
++                            "agent",
++                            who,
++                            object_id=who,
++                            assertion_id=_urn(2000 + index),
++                            kind="software",
++                            name="prepared-reader-fixture",
++                        )
++                    ]
++                },
++                recorded_by_agent_id=who,
++                journal_id=journal_id,
++                entry_id=_urn(3000 + index),
++                recorded_at="2026-01-01T00:00:00Z",
++            )
++        else:
++            raw = f"journal-{index:04d}|".encode() * max(4, segments)
++        journal_bytes[journal_id] = raw
++
++    objects: dict[str, bytes] = {}
++    final_bindings = []
++    ids = tuple(journal_bytes)
++    for index in range(bindings):
++        journal_id = ids[index % len(ids)]
++        raw = journal_bytes[journal_id]
++        anchor = HistoryJournalAnchor(
++            journal_id, _urn(3000 + index % len(ids)), 0, "d" * 64, _sha(raw), len(raw)
++        )
++        selected = MemberHistoryRoot(anchor, "bound")
++        roots = RecordSetCommitment(MEMBER_HISTORY_ROOTS_SCHEMA)
++        roots.update(selected.key, selected.to_mapping())
++        roots_ref = roots.ref()
++        imports_ref = RecordSetCommitment(MEMBER_HISTORY_IMPORTS_SCHEMA).ref()
++        history = MemberHistoryDocument(
++            f"{index + 1:064x}",
++            1,
++            "c" * 64,
++            MemberHistoryPrimary(anchor, _urn(4000 + index)),
++            roots_ref,
++            imports_ref,
++        )
++        document = history.to_json_bytes()
++        objects[member_history_object_path(history.identity)] = document
++        for page in (
++            RecordPage(
++                roots_ref, 0, ({"key": selected.key, "value": selected.to_mapping()},), False
++            ),
++            RecordPage(roots_ref, 1, (), True),
++            RecordPage(imports_ref, 0, (), True),
++        ):
++            objects[
++                history_record_page_object_path(page.authority.records_sha256, page.ordinal)
++            ] = page.to_json_bytes()
++        final_bindings.append(
++            MemberHistoryBinding(
++                history.artifact_id, history.bytes, history.sha256, history.identity, len(document)
++            )
++        )
++    structure_paths = tuple(sorted(objects))
++    descriptors: list[ProvenanceVolumeDocument | ProvenanceTerminalDocument] = []
++
++    def add(payload: bytes, kind: str, **extra: Any) -> None:
++        sequence = len(descriptors)
++        document = ProvenanceVolumeDocument(
++            generation,
++            artifact_set,
++            sequence,
++            ProvenancePayload(kind, sequence, len(payload), _sha(payload)),
++            **extra,
++        )
++        descriptors.append(document)
++        objects[document.metadata_path] = document.to_json_bytes()
++        objects[document.payload.path] = payload
++
++    page_size = PROVENANCE_BINDING_PAGE_MEMBERS_MAX
++    for start in range(0, len(final_bindings), page_size):
++        page = final_bindings[start : start + page_size]
++        add(
++            canonical_json_bytes(
++                {
++                    "format": PROVENANCE_BINDINGS_FORMAT,
++                    "bindings": [row.to_mapping() for row in page],
++                }
++            ),
++            "bindings",
++            first_artifact_id=page[0].artifact_id,
++            last_artifact_id=page[-1].artifact_id,
++            binding_count=len(page),
++        )
++    for journal_id, raw in journal_bytes.items():
++        boundaries = [len(raw) * index // segments for index in range(segments + 1)]
++        assert all(a < b for a, b in zip(boundaries, boundaries[1:], strict=False))
++        for start, stop in zip(boundaries, boundaries[1:], strict=False):
++            add(
++                raw[start:stop],
++                "journal",
++                journal_id=journal_id,
++                journal_offset=start,
++                journal_bytes=len(raw),
++                journal_sha256=_sha(raw),
++            )
++    terminal = ProvenanceTerminalDocument(generation, artifact_set, len(descriptors))
++    descriptors.append(terminal)
++    objects[terminal.metadata_path] = terminal.to_json_bytes()
++    root = ProvenanceRootDocument(
++        generation,
++        artifact_set,
++        _urn(5000),
++        binding_count=bindings,
++        binding_tree_sha256=binding_tree_commitment(final_bindings).root_sha256,
++        journal_count=journals,
++        ordered_volume_sha256=ordered_provenance_commitment(descriptors),
++    )
++    objects["provenance/root.json.age"] = root.to_json_bytes()
++    return ArchiveCase(
++        root, objects, journal_bytes, tuple(descriptors), tuple(final_bindings), structure_paths
++    )
++
++
++class PlaintextSource:
++    """Observe real callback consumption; retain iterators to rule out GC cleanup."""
++
++    def __init__(self, objects: dict[str, bytes]) -> None:
++        self.objects = objects
++        self.opens: Counter[str] = Counter()
++        self.closed: Counter[str] = Counter()
++        self.streams: list[Iterator[bytes]] = []
++        self.failure: str | None = None
++
++    def __call__(self, path: str) -> Iterator[bytes]:
++        def body() -> Iterator[bytes]:
++            self.opens[path] += 1
++            try:
++                raw = self.objects[path]
++                middle = max(1, len(raw) // 2)
++                yield raw[:middle]
++                if path == self.failure:
++                    raise OSError("injected object read failure")
++                yield raw[middle:]
++            finally:
++                self.closed[path] += 1
++
++        stream = body()
++        self.streams.append(stream)
++        return stream
++
++    iter_plaintext = __call__
++
++    def read_bounded(self, path: str, maximum: int) -> bytes:
++        stream = self(path)
++        try:
++            raw = b"".join(stream)
++            if len(raw) > maximum:
++                raise ValueError("fixture object exceeds bound")
++            return raw
++        finally:
++            stream.close()
++
++
++def _reader(case: ArchiveCase, source: PlaintextSource, **changes: str):
++    return archive_read.CanonicalProvenanceArchiveReader(
++        source,
++        expected_root_sha256=changes.get("root", case.root.identity),
++        archive_generation=changes.get("generation", case.root.archive_generation),
++        artifact_set_sha256=changes.get("artifact_set", case.root.artifact_set_sha256),
++    )
++
++
++def _selection(case: ArchiveCase, source: PlaintextSource):
++    return SimpleNamespace(
++        encrypted=source,
++        manifest=SimpleNamespace(
++            provenance=SimpleNamespace(
++                identity=case.root.identity, root=SimpleNamespace(path="provenance/root.json.age")
++            ),
++            archive_generation=case.root.archive_generation,
++            artifact_set_sha256=case.root.artifact_set_sha256,
++            artifacts=case.root.binding_count,
++        ),
++    )
++
++
++@pytest.mark.parametrize(
++    "journals,segments,bindings",
++    [(1, 1, 1), (4, 1, 1), (2, 7, 1), (2, 1, 17), (1, 1, 513)],
++)
++def test_complete_prepared_reads_visit_source_descriptors_once(
++    tmp_path: Path, journals: int, segments: int, bindings: int
++) -> None:
++    case = make_archive_case(journals=journals, segments=segments, bindings=bindings)
++    source = PlaintextSource(case.objects)
++    with _reader(case, source).prepare(workspace=tmp_path) as prepared:
++        assert prepared.scan().root == case.root
++        assert prepared.root_bytes == case.root.to_json_bytes()
++        headers = list(prepared.iter_journal_headers())
++        assert headers == [
++            (journal_id, len(raw), _sha(raw)) for journal_id, raw in case.journals.items()
++        ]
++        for journal_id, raw in case.journals.items():
++            assert prepared.journal_metadata(journal_id) == (len(raw), _sha(raw))
++            assert b"".join(prepared.iter_journal_range(journal_id)) == raw
++        assert list(prepared.iter_bindings()) == [row.to_mapping() for row in case.bindings]
++        for path in case.structure_paths[:3]:
++            assert b"".join(prepared.read_structure(path)) == case.objects[path]
++        # Repeat metadata lookups in this attempt; no bounded byte-cache loophole.
++        for journal_id in reversed(case.journals):
++            prepared.journal_metadata(journal_id)
++        assert source.opens["provenance/root.json.age"] == 1
++        assert all(source.opens[document.metadata_path] == 1 for document in case.descriptors)
++    assert source.closed == source.opens
++    assert list(tmp_path.iterdir()) == []
++
++
++def test_prepared_root_is_an_attempt_snapshot_and_next_attempt_rechecks(tmp_path: Path) -> None:
++    case = make_archive_case()
++    source = PlaintextSource(case.objects)
++    reader = _reader(case, source)
++    with reader.prepare(workspace=tmp_path) as prepared:
++        case.objects["provenance/root.json.age"] = b"{}"
++        assert prepared.root_bytes == case.root.to_json_bytes()
++        assert prepared.scan().root == case.root
++        assert source.opens["provenance/root.json.age"] == 1
++    with pytest.raises(archive_read.ProvenanceArchiveReadError, match="root"):
++        with reader.prepare(workspace=tmp_path):
++            pytest.fail("a changed root cannot create a new prepared attempt")
++    assert source.opens["provenance/root.json.age"] == 2
++    assert source.closed == source.opens
++
++
++@pytest.mark.parametrize("field", ["root", "generation", "artifact_set"])
++def test_prepare_rejects_wrong_selected_authority(tmp_path: Path, field: str) -> None:
++    case = make_archive_case()
++    source = PlaintextSource(case.objects)
++    with pytest.raises(archive_read.ProvenanceArchiveReadError):
++        with _reader(case, source, **{field: "f" * 64}).prepare(workspace=tmp_path):
++            pytest.fail("wrong selected authority became ready")
++    assert source.closed == source.opens
++    assert list(tmp_path.iterdir()) == []
++
++
++@pytest.mark.parametrize("fault", ["missing-terminal", "wrong-sequence", "truncated-journal"])
++def test_incomplete_descriptor_sequence_cannot_become_ready(tmp_path: Path, fault: str) -> None:
++    case = make_archive_case()
++    if fault == "missing-terminal":
++        del case.objects[case.descriptors[-1].metadata_path]
++    else:
++        document = case.descriptors[-2]
++        assert isinstance(document, ProvenanceVolumeDocument)
++        changed = (
++            replace(
++                document,
++                sequence=document.sequence + 1,
++                payload=replace(document.payload, sequence=document.sequence + 1),
++            )
++            if fault == "wrong-sequence"
++            else replace(document, journal_bytes=document.journal_bytes + 1)
++        )
++        case.objects[document.metadata_path] = changed.to_json_bytes()
++    source = PlaintextSource(case.objects)
++    with pytest.raises((archive_read.ProvenanceArchiveReadError, ValueError, KeyError)):
++        with _reader(case, source).prepare(workspace=tmp_path):
++            pytest.fail("an incomplete sequence became ready")
++    assert source.closed == source.opens
++    assert list(tmp_path.iterdir()) == []
++
++
++@pytest.mark.parametrize("fault", ["changed", "missing", "interrupted"])
++def test_prepared_payload_is_checked_fresh_and_failed_stream_is_received(
++    tmp_path: Path, fault: str
++) -> None:
++    case = make_archive_case(journals=1, segments=2)
++    source = PlaintextSource(case.objects)
++    document = next(
++        row
++        for row in case.descriptors
++        if isinstance(row, ProvenanceVolumeDocument) and row.payload.kind == "journal"
++    )
++    original = case.objects[document.payload.path]
++    with _reader(case, source).prepare(workspace=tmp_path) as prepared:
++        if fault == "changed":
++            case.objects[document.payload.path] = original[:-1] + b"!"
++        elif fault == "missing":
++            del case.objects[document.payload.path]
++        else:
++            source.failure = document.payload.path
++        with pytest.raises((archive_read.ProvenanceArchiveReadError, KeyError, OSError)):
++            list(prepared.iter_journal_range(next(iter(case.journals))))
++        assert source.closed == source.opens
++        case.objects[document.payload.path] = original
++        source.failure = None
++        assert b"".join(prepared.iter_journal_range(next(iter(case.journals)))) == next(
++            iter(case.journals.values())
++        )
++
++
++def test_prepared_structure_is_selected_and_checked_without_descriptor_rescan(
++    tmp_path: Path,
++) -> None:
++    case = make_archive_case(bindings=17)
++    source = PlaintextSource(case.objects)
++    path = member_history_object_path(case.bindings[0].history_sha256)
++    untouched = member_history_object_path(case.bindings[-1].history_sha256)
++    with _reader(case, source).prepare(workspace=tmp_path) as prepared:
++        assert b"".join(prepared.read_structure(path)) == case.objects[path]
++        case.objects[path] = b"{}"
++        with pytest.raises((archive_read.ProvenanceArchiveReadError, ValueError)):
++            list(prepared.read_structure(path))
++        assert source.opens[path] == 2
++        assert source.opens[untouched] == 0
++        assert all(source.opens[row.metadata_path] == 1 for row in case.descriptors)
++    assert source.closed == source.opens
++
++
++def test_bounded_read_explicitly_closes_retained_oversized_source() -> None:
++    closed: list[bool] = []
++
++    def chunks() -> Iterator[bytes]:
++        try:
++            yield b"too large"
++            yield b"never reached"
++        finally:
++            closed.append(True)
++
++    retained = chunks()
++    with pytest.raises(archive_read.ProvenanceArchiveReadError, match="bounded"):
++        archive_read._read_bounded(retained, 1)
++    assert closed == [True]
++
++
++def test_partial_index_iterator_cannot_outlive_prepared_owner(tmp_path: Path) -> None:
++    case = make_archive_case(journals=4)
++    source = PlaintextSource(case.objects)
++    with _reader(case, source).prepare(workspace=tmp_path) as prepared:
++        headers = prepared.iter_journal_headers()
++        assert next(headers)[0] == next(iter(case.journals))
++    with pytest.raises((RuntimeError, sqlite3.ProgrammingError)):
++        next(headers)
++    headers.close()
++    assert list(tmp_path.iterdir()) == []
++
++
++@pytest.mark.parametrize(
++    "journals,segments,bindings", [(1, 1, 1), (4, 1, 1), (1, 3, 1), (1, 1, 17)]
++)
++def test_actual_stage_provenance_reuses_preparation_and_receives_owned_state(
++    tmp_path: Path,
++    monkeypatch: pytest.MonkeyPatch,
++    journals: int,
++    segments: int,
++    bindings: int,
++) -> None:
++    case = make_archive_case(
++        journals=journals, segments=segments, bindings=bindings, semantic_journals=True
++    )
++    source = PlaintextSource(case.objects)
++    index_rows = 0
++    journal_queries: Counter[str] = Counter()
++    connect = sqlite3.connect
++
++    class ObservedCursor(sqlite3.Cursor):
++        def execute(self, statement, parameters=(), /):
++            if statement.lstrip().upper().startswith("SELECT"):
++                selected = [value for value in parameters if value in case.journals]
++                if selected:
++                    journal_queries.update(selected)
++                    plan = sqlite3.Connection.execute(
++                        self.connection, "EXPLAIN QUERY PLAN " + statement, parameters
++                    )
++                    try:
++                        details = [row[3] for row in plan.fetchall()]
++                    finally:
++                        plan.close()
++                    # Matching returned rows alone would miss SQL filtering a
++                    # whole-index scan. Require a seek on the requested journal,
++                    # without binding this regression to an index name.
++                    assert any("SEARCH " in row and "journal=?" in row for row in details)
++                    assert not any("SCAN " in row for row in details)
++            return super().execute(statement, parameters)
++
++        def fetchone(self):
++            nonlocal index_rows
++            row = super().fetchone()
++            index_rows += row is not None
++            return row
++
++        def fetchmany(self, size=None):
++            nonlocal index_rows
++            rows = super().fetchmany() if size is None else super().fetchmany(size)
++            index_rows += len(rows)
++            return rows
++
++        def fetchall(self):
++            nonlocal index_rows
++            rows = super().fetchall()
++            index_rows += len(rows)
++            return rows
++
++        def __next__(self):
++            nonlocal index_rows
++            row = super().__next__()
++            index_rows += 1
++            return row
++
++    class ObservedConnection(sqlite3.Connection):
++        def cursor(self, *args, **kwargs):
++            kwargs.setdefault("factory", ObservedCursor)
++            return super().cursor(*args, **kwargs)
++
++        def execute(self, statement, parameters=(), /):
++            return self.cursor().execute(statement, parameters)
++
++    def observed_connect(database: Any, *args: Any, **kwargs: Any):
++        if Path(str(database)).name == "metadata.sqlite3":
++            kwargs["factory"] = ObservedConnection
++        return connect(database, *args, **kwargs)
++
++    monkeypatch.setattr(sqlite3, "connect", observed_connect)
++    staging, scratch = tmp_path / "output", tmp_path / "scratch"
++    staging.mkdir()
++    scratch.mkdir()
++    with recovery._stage_provenance(_selection(case, source), staging=staging, scratch=scratch) as (
++        prepared,
++        state,
++        count,
++    ):
++        assert count == len(case.journals)
++        rows = state.execute("SELECT journal_id, bytes, sha256, path FROM journals").fetchall()
++        assert len(rows) == count
++        for journal_id, byte_count, digest, path in rows:
++            raw = case.journals[journal_id]
++            assert (byte_count, digest, Path(path).read_bytes()) == (len(raw), _sha(raw), raw)
++        assert (staging / "structure" / "provenance-root.json").read_bytes() == prepared.root_bytes
++        assert list(prepared.iter_bindings()) == [row.to_mapping() for row in case.bindings]
++        selected = case.structure_paths[0]
++        assert b"".join(prepared.read_structure(selected)) == case.objects[selected]
++        assert all(source.opens[path] == 0 for path in case.structure_paths[1:])
++        assert source.opens["provenance/root.json.age"] == 1
++        assert all(source.opens[row.metadata_path] == 1 for row in case.descriptors)
++        # Header enumeration and journal staging together visit journal rows at
++        # most twice; complete binding verification/exposure has the same bound.
++        # Neither another journal nor a selected structure may multiply that work.
++        assert 0 < index_rows <= 2 * (len(case.descriptors) - 1)
++        assert journal_queries == Counter({journal_id: 1 for journal_id in case.journals})
++    with pytest.raises(sqlite3.ProgrammingError):
++        state.execute("SELECT 1")
++    assert source.closed == source.opens
++
++
++def test_actual_stage_failure_closes_unreturned_journal_connection(
++    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
++) -> None:
++    case = make_archive_case(journals=1, semantic_journals=True)
++    source = PlaintextSource(case.objects)
++    source.failure = next(
++        row.payload.path
++        for row in case.descriptors
++        if isinstance(row, ProvenanceVolumeDocument) and row.payload.kind == "journal"
++    )
++    staging, scratch = tmp_path / "output", tmp_path / "scratch"
++    staging.mkdir()
++    scratch.mkdir()
++    connections: list[sqlite3.Connection] = []
++    connect = sqlite3.connect
++
++    def tracked_connect(database: Any, *args: Any, **kwargs: Any):
++        connection = connect(database, *args, **kwargs)
++        if Path(str(database)).name == "journals.sqlite3":
++            connections.append(connection)
++        return connection
++
++    monkeypatch.setattr(recovery.sqlite3, "connect", tracked_connect)
++    with pytest.raises(OSError, match="injected object read failure"):
++        with recovery._stage_provenance(_selection(case, source), staging=staging, scratch=scratch):
++            pytest.fail("partial journal was accepted")
++    assert len(connections) == 1
++    with pytest.raises(sqlite3.ProgrammingError):
++        connections[0].execute("SELECT 1")
++    assert source.closed == source.opens
++
++
++def test_prepared_ranges_preserve_exact_bounds(tmp_path: Path) -> None:
++    case = make_archive_case(journals=1, segments=7)
++    source = PlaintextSource(case.objects)
++    journal_id, raw = next(iter(case.journals.items()))
++    with _reader(case, source).prepare(workspace=tmp_path) as prepared:
++        assert b"".join(prepared.iter_journal_range(journal_id, offset=3, size=17)) == raw[3:20]
++        assert b"".join(prepared.iter_journal_range(journal_id, offset=len(raw), size=0)) == b""
++        for arguments in ({"offset": -1}, {"size": -1}, {"offset": len(raw) + 1}):
++            with pytest.raises(archive_read.ProvenanceArchiveReadError):
++                list(prepared.iter_journal_range(journal_id, **arguments))
++
++
++def test_binding_tree_is_verified_before_any_binding_is_exposed(tmp_path: Path) -> None:
++    case = make_archive_case(bindings=17)
++    case.root = replace(case.root, binding_tree_sha256="f" * 64)
++    case.objects["provenance/root.json.age"] = case.root.to_json_bytes()
++    source = PlaintextSource(case.objects)
++    with _reader(case, source).prepare(workspace=tmp_path) as prepared:
++        stream = prepared.iter_bindings()
++        with pytest.raises(archive_read.ProvenanceArchiveReadError, match="tree"):
++            next(stream)
++    assert source.closed == source.opens
++
++
++@pytest.mark.parametrize("target", ["cursor", "connection"])
++@pytest.mark.parametrize("after_effect", [False, True])
++def test_uncertain_close_retains_original_storage_until_retry(
++    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, target: str, after_effect: bool
++) -> None:
++    case = make_archive_case(journals=2)
++    source = PlaintextSource(case.objects)
++    cursors = []
++    connections = []
++    connect = sqlite3.connect
++
++    class TrackedCursor(sqlite3.Cursor):
++        failures = 0
++        close_calls = 0
++
++        def close(self):
++            self.close_calls += 1
++            if self.failures:
++                self.failures -= 1
++                if after_effect:
++                    super().close()
++                raise OSError("cursor close unconfirmed")
++            return super().close()
++
++    class TrackedConnection(sqlite3.Connection):
++        failures = 0
++        close_calls = 0
++
++        def execute(self, statement, parameters=(), /):
++            cursor = self.cursor(factory=TrackedCursor)
++            if statement.startswith("SELECT kind, body FROM volumes"):
++                cursors.append(cursor)
++            return cursor.execute(statement, parameters)
++
++        def executescript(self, statement, /):
++            return self.cursor(factory=TrackedCursor).executescript(statement)
++
++        def close(self):
++            self.close_calls += 1
++            if self.failures:
++                self.failures -= 1
++                if after_effect:
++                    super().close()
++                raise OSError("connection close unconfirmed")
++            return super().close()
++
++    def tracked_connect(database, *args, **kwargs):
++        connection = connect(database, *args, **kwargs, factory=TrackedConnection)
++        connections.append(connection)
++        return connection
++
++    monkeypatch.setattr(sqlite3, "connect", tracked_connect)
++    prepared = _reader(case, source).prepare(workspace=tmp_path)
++    with pytest.raises(OSError, match=f"{target} close unconfirmed"):
++        with prepared:
++            headers = prepared.iter_journal_headers()
++            next(headers)
++            assert len(connections) == len(cursors) == 1
++            if target == "cursor":
++                cursors[0].failures = 1
++            else:
++                connections[0].failures = 1
++    assert list(tmp_path.iterdir()), "unconfirmed receiving must retain original scratch"
++    assert connections[0].close_calls == (0 if target == "cursor" else 1)
++    with pytest.raises(RuntimeError):
++        prepared.scan()
++    prepared.close()
++    assert list(tmp_path.iterdir()) == []
++    assert connections[0].close_calls == (1 if target == "cursor" else 2)
++    headers.close()
++
++
++def test_two_or_more_buffered_bindings_cannot_escape_a_closed_owner(tmp_path: Path) -> None:
++    case = make_archive_case(bindings=3)
++    source = PlaintextSource(case.objects)
++    with _reader(case, source).prepare(workspace=tmp_path) as prepared:
++        stream = prepared.iter_bindings()
++        assert next(stream) == case.bindings[0].to_mapping()
++        prepared.close()
++        with pytest.raises(RuntimeError, match="not open|closed"):
++            next(stream)
++        stream.close()
++    assert source.closed == source.opens
++    assert list(tmp_path.iterdir()) == []
++
++
++@pytest.mark.parametrize("operation", ["journal", "structure"])
++def test_source_callback_close_prevents_buffered_payload_or_structure_yield(
++    tmp_path: Path, operation: str
++) -> None:
++    case = make_archive_case(journals=1)
++    source = PlaintextSource(case.objects)
++    if operation == "journal":
++        target = next(
++            row.payload.path
++            for row in case.descriptors
++            if isinstance(row, ProvenanceVolumeDocument) and row.payload.kind == "journal"
++        )
++    else:
++        target = member_history_object_path(case.bindings[0].history_sha256)
++    owner = []
++    triggered = []
++
++    def read(path: str) -> Iterator[bytes]:
++        stream = source(path)
++        try:
++            for chunk in stream:
++                if path == target and not triggered:
++                    triggered.append(path)
++                    owner[0].close()
++                yield chunk
++        finally:
++            stream.close()
++
++    reader = archive_read.CanonicalProvenanceArchiveReader(
++        read,
++        expected_root_sha256=case.root.identity,
++        archive_generation=case.root.archive_generation,
++        artifact_set_sha256=case.root.artifact_set_sha256,
++    )
++    with reader.prepare(workspace=tmp_path) as prepared:
++        owner.append(prepared)
++        stream = (
++            prepared.iter_journal_range(next(iter(case.journals)))
++            if operation == "journal"
++            else prepared.read_structure(target)
++        )
++        with pytest.raises(RuntimeError, match="not open|closed"):
++            next(stream)
++        stream.close()
++    assert triggered == [target]
++    assert source.closed == source.opens
++    assert list(tmp_path.iterdir()) == []
++
++
++def test_schema_failure_retains_the_original_unconfirmed_connection_for_retry(
++    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
++) -> None:
++    case = make_archive_case()
++    source = PlaintextSource(case.objects)
++    connections = []
++    connect = sqlite3.connect
++
++    class SetupFailureConnection(sqlite3.Connection):
++        close_calls = 0
++
++        def executescript(self, statement, /):
++            cursor = super().executescript(statement)
++            cursor.close()
++            raise ValueError("injected schema initialization failure")
++
++        def close(self):
++            self.close_calls += 1
++            if self.close_calls == 1:
++                raise OSError("original connection close unconfirmed")
++            return super().close()
++
++    def tracked_connect(database, *args, **kwargs):
++        connection = connect(database, *args, **kwargs, factory=SetupFailureConnection)
++        connections.append(connection)
++        return connection
++
++    monkeypatch.setattr(sqlite3, "connect", tracked_connect)
++    prepared = _reader(case, source).prepare(workspace=tmp_path)
++    with pytest.raises(OSError, match="original connection close unconfirmed") as failure:
++        with prepared:
++            pytest.fail("failed schema setup cannot publish a prepared owner")
++    assert isinstance(failure.value.__context__, ValueError)
++    assert str(failure.value.__context__) == "injected schema initialization failure"
++    assert len(connections) == 1 and connections[0].close_calls == 1
++    assert list(tmp_path.iterdir()), "unconfirmed constructor storage must remain owned"
++    assert not source.opens
++    prepared.close()
++    assert connections[0].close_calls == 2
++    assert list(tmp_path.iterdir()) == []
++    with pytest.raises(sqlite3.ProgrammingError):
++        connections[0].execute("SELECT 1")
