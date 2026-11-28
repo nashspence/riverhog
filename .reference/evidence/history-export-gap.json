@@ -1,0 +1,64 @@
+{
+  "baseline_commit": "60612eded1e0e4e5188c28a84697435eb969fad0",
+  "baseline_source": {
+    "history_sha256": "d74cbb716c48a318b241a528a6e60aa1aac87146d1a4df90fbd09d1496a9259e",
+    "store_sha256": "8944750139fcfa22ad19e30f8f5e90402e7306534db67bf4cba51bc8e648f5ea"
+  },
+  "candidate_source": {
+    "history_sha256": "ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222",
+    "store_sha256": "d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf"
+  },
+  "scope": "real neutral Store/Closure and complete fixture; no encrypted provider or product timing",
+  "observations": [
+    {
+      "owner": "baseline",
+      "removed_roots": 1,
+      "same_deterministic_path": true,
+      "original_sha256": "be7d589d21f68571d2f5b47c24eb7964fc9c9447b491850e8eb64e72b835b76c",
+      "changed_sha256": "c71455fc950089cf1bb99c3517614a271180811ffda2ac5824868d854c8ce566",
+      "second_member_requested": false,
+      "export_error": null,
+      "changed_bytes_exported": true,
+      "full_descriptor_error": "member history record set is incomplete or changed",
+      "closure_scratch_removed": true
+    },
+    {
+      "owner": "baseline",
+      "removed_roots": 1,
+      "same_deterministic_path": true,
+      "original_sha256": "802049da13be879e45a5cc6be95617126791b75104dd59ab332d60346b53013f",
+      "changed_sha256": "1f385aa9a3dfa337228a8c3390d0cc0ca17718e005abfb1b2444ce845fe06f91",
+      "second_member_requested": true,
+      "second_member_error": "member history record set is incomplete or changed",
+      "export_error": null,
+      "changed_bytes_exported": true,
+      "full_descriptor_error": "member history record set is incomplete or changed",
+      "closure_scratch_removed": true
+    },
+    {
+      "owner": "candidate",
+      "removed_roots": 1,
+      "same_deterministic_path": true,
+      "original_sha256": "fd8844edcc96f078e230393e33ccf4b9896580b3eeca3a98c344d36f90eed6d7",
+      "changed_sha256": "c3e12dcd462a11711fee087f04836cbc81e86e553404a8a498fe0e4d6cfcd38e",
+      "second_member_requested": false,
+      "export_error": "history structure bytes differ from their admitted identity",
+      "changed_bytes_exported": false,
+      "full_descriptor_error": "member history record set is incomplete or changed",
+      "closure_scratch_removed": true
+    },
+    {
+      "owner": "candidate",
+      "removed_roots": 1,
+      "same_deterministic_path": true,
+      "original_sha256": "e30d38a3792223928b56fcc28adde9f74116c5b3b7bb675e8bcb596d08094978",
+      "changed_sha256": "f0563d4022b27c2f742d25f9aa5e2b805c7278ec7eac2989a6ad7bb557dfa5b6",
+      "second_member_requested": true,
+      "second_member_error": null,
+      "export_error": "history structure bytes differ from their admitted identity",
+      "changed_bytes_exported": false,
+      "full_descriptor_error": "member history record set is incomplete or changed",
+      "closure_scratch_removed": true
+    }
+  ]
+}

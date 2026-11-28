@@ -1,0 +1,1461 @@
+{
+  "audited_base": "60612eded1e0e4e5188c28a84697435eb969fad0",
+  "passed_cases": 270,
+  "checks": [
+    {
+      "command": "Pinned pytest: archive-contract test_history_heads_admission.py and test_member_history.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch before final export guard; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 e76c10642fdd8e371d83bae7a994026be7f18c9988065892c632b08a98151f00. Final executable delta is exactly one post-read _require_open call; a docstring clarifies existing detached owners."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "70 cases. The Store owner and these tests are byte-identical in the final proposal; these checks do not execute the changed closure guard."
+    },
+    {
+      "command": "Pinned pytest with qualification_numeric_policy: 13 history/client/recovery/Core test files; exclude unchanged generic >4MiB cache test",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch before final export guard; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 e76c10642fdd8e371d83bae7a994026be7f18c9988065892c632b08a98151f00. Final executable delta is exactly one post-read _require_open call; a docstring clarifies existing detached owners."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "173 cases; 1 deselected; 739.84s. Includes all 18 encrypted recovery cases and actual Core imported-history receiving/growth/cache-pressure cases. The exact subsequent guard delta is recorded, not described as this run testing final bytes."
+    },
+    {
+      "command": "Pinned pytest: test_history_selection_work.py, test_history_structure_identity.py, two selected Core live read-fence tests",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222; all changed-file hashes in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "27 final-source cases including the reproduced close-during-read defect; all 25 new closure cases are repeated on final bytes."
+    },
+    {
+      "command": "history_probe.py --mode all against final source",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222; all changed-file hashes in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "40 observations: 34 neutral + 6 actual encrypted recovery. Exact full output and original outer age/source/SQLite receiving. Candidate hashes unchanged; workspace removed."
+    },
+    {
+      "command": "history_export_gap_probe.py against exact baseline and final source",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222; all changed-file hashes in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "Four final observations reproduce original same-authority changed-page export and final rejection. No object timing qualification."
+    },
+    {
+      "command": "Pinned Ruff check/format on eight changed files; focused mypy on both production owners; git diff --check",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222; all changed-file hashes in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "No dependency, lock, schema-format, KDF or resource-budget edits."
+    },
+    {
+      "command": "Complete make lint/unit/build/dist, product PR tested-merge CI, installed/platform and approved production-budget qualification",
+      "result": "not-run",
+      "reason": "Finite external reference only. The normal integration owner retains complete current-source qualification and independently approved production operation/binding/profile requirements."
+    }
+  ],
+  "final_production_sha256": {
+    "packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py": "d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf",
+    "packages/riverhog-provenance/src/riverhog_provenance/history.py": "ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222"
+  },
+  "broader_run_closure_sha256": "e76c10642fdd8e371d83bae7a994026be7f18c9988065892c632b08a98151f00",
+  "broader_to_final_executable_delta": "One self._require_open() after fresh bounded structural read; canonical comparison, SQL, selection work and receiving otherwise byte-identical. Separate docstring clarification is non-executable.",
+  "suites": [
+    {
+      "junit": "store-results.xml",
+      "junit_sha256": "1ebb63322e17cdc4b751415ee97691fb8d9a29bbe246ab61748f2e9ec12adefa",
+      "cases": [
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_precedes_sql_and_streaming_and_cleanup_precedes_imports[1]",
+          "seconds": 0.005,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_precedes_sql_and_streaming_and_cleanup_precedes_imports[129]",
+          "seconds": 0.018,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_precedes_sql_and_streaming_and_cleanup_precedes_imports[385]",
+          "seconds": 0.044,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_refusal_retains_factory_owned_files_before_any_root_page[False]",
+          "seconds": 0.024,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_refusal_retains_factory_owned_files_before_any_root_page[True]",
+          "seconds": 0.016,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_default_connect_failure_removes_only_owned_directory",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_initialization_retains_actual_close_ready_owner_on_failure[None-retention]",
+          "seconds": 0.026,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_initialization_retains_actual_close_ready_owner_on_failure[None-settings]",
+          "seconds": 0.025,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_initialization_retains_actual_close_ready_owner_on_failure[None-schema]",
+          "seconds": 0.023,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_initialization_retains_actual_close_ready_owner_on_failure[False-retention]",
+          "seconds": 0.021,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_initialization_retains_actual_close_ready_owner_on_failure[False-settings]",
+          "seconds": 0.017,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_initialization_retains_actual_close_ready_owner_on_failure[False-schema]",
+          "seconds": 0.034,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_initialization_retains_actual_close_ready_owner_on_failure[True-retention]",
+          "seconds": 0.032,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_initialization_retains_actual_close_ready_owner_on_failure[True-settings]",
+          "seconds": 0.025,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_initialization_retains_actual_close_ready_owner_on_failure[True-schema]",
+          "seconds": 0.016,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_retention_callback_close_failure_is_not_retried[False]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_retention_callback_close_failure_is_not_retried[True]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_retention_callback_cannot_return_closed_owner",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_context_exit_does_not_retry_explicit_unknown_close[False]",
+          "seconds": 0.019,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_context_exit_does_not_retry_explicit_unknown_close[True]",
+          "seconds": 0.019,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_directory_uncertainty_blocks_imports_without_double_connection_release[False]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_directory_uncertainty_blocks_imports_without_double_connection_release[True]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_uncertain_cursor_prevents_later_sql_connection_close_and_import_reads[False-settings]",
+          "seconds": 0.02,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_uncertain_cursor_prevents_later_sql_connection_close_and_import_reads[False-schema]",
+          "seconds": 0.017,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_uncertain_cursor_prevents_later_sql_connection_close_and_import_reads[False-root]",
+          "seconds": 0.016,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_uncertain_cursor_prevents_later_sql_connection_close_and_import_reads[True-settings]",
+          "seconds": 0.02,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_uncertain_cursor_prevents_later_sql_connection_close_and_import_reads[True-schema]",
+          "seconds": 0.019,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_uncertain_cursor_prevents_later_sql_connection_close_and_import_reads[True-root]",
+          "seconds": 0.03,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_closed_by_root_source_cannot_finish_or_read_imports[False]",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_closed_by_root_source_cannot_finish_or_read_imports[True]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_preserves_exact_history_rejection_and_clean_retry[missing-primary]",
+          "seconds": 0.007,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_preserves_exact_history_rejection_and_clean_retry[retained-primary]",
+          "seconds": 0.008,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_preserves_exact_history_rejection_and_clean_retry[conflicting-heads]",
+          "seconds": 0.009,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_preserves_exact_history_rejection_and_clean_retry[root-key]",
+          "seconds": 0.007,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_preserves_exact_history_rejection_and_clean_retry[root-authority]",
+          "seconds": 0.007,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_preserves_exact_history_rejection_and_clean_retry[root-terminal]",
+          "seconds": 0.007,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_preserves_exact_history_rejection_and_clean_retry[import-key]",
+          "seconds": 0.007,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_admission_preserves_exact_history_rejection_and_clean_retry[import-terminal]",
+          "seconds": 0.006,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_commit_failure_cannot_expose_imports_and_known_cleanup_allows_retry[False]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_heads_commit_failure_cannot_expose_imports_and_known_cleanup_allows_retry[True]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_store_forwards_verification_ports_for_each_exact_descriptor_read",
+          "seconds": 0.006,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_store_retainer_keeps_unknown_close_charged_across_independent_reads[False]",
+          "seconds": 0.028,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_store_retainer_keeps_unknown_close_charged_across_independent_reads[True]",
+          "seconds": 0.024,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_builder_separately_admits_and_retains_selection_and_verification",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_builder_retains_uncertain_heads_before_handoff_and_freezes_all_work[False-completion]",
+          "seconds": 0.022,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_builder_retains_uncertain_heads_before_handoff_and_freezes_all_work[False-retention]",
+          "seconds": 0.033,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_builder_retains_uncertain_heads_before_handoff_and_freezes_all_work[True-completion]",
+          "seconds": 0.045,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_builder_retains_uncertain_heads_before_handoff_and_freezes_all_work[True-retention]",
+          "seconds": 0.032,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_builder_retains_heads_directory_phase_without_reclosing_its_connection[False]",
+          "seconds": 0.005,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_builder_retains_heads_directory_phase_without_reclosing_its_connection[True]",
+          "seconds": 0.005,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_builder_retries_failed_verification_after_confirmed_child_cleanup",
+          "seconds": 0.006,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_builder_can_be_closed_from_child_retention_before_any_child_sql",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_root_source_interruption_releases_heads_without_reading_imports",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_store_source_proof_preserves_exact_binding_before_admitted_history_verification",
+          "seconds": 0.007,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_store_descriptor_stages_each_fresh_page_once_after_its_record_checks",
+          "seconds": 0.019,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_store_page_staging_is_tentative_until_complete_commitment_and_cleanup",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_store_callback_interruption_receives_heads_and_retries_fresh",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_store_narrow_descriptor_read_never_admits_missing_sets_or_another_binding",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_bounded_history_read_receives_original_iterator_on_every_exit[None]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_bounded_history_read_receives_original_iterator_on_every_exit[oversized]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_bounded_history_read_receives_original_iterator_on_every_exit[type]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_bounded_history_read_receives_original_iterator_on_every_exit[interrupted]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_bounded_history_read_requires_original_close_acknowledgement[False]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_history_heads_admission::test_bounded_history_read_requires_original_close_acknowledgement[True]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_member_history::test_history_validation_closes_database_before_removing_scratch[False]",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_member_history::test_history_validation_closes_database_before_removing_scratch[True]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_member_history::test_builder_and_store_preserve_large_selection_across_pages_without_order_dependence",
+          "seconds": 0.353,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_member_history::test_member_history_commits_exact_primary_and_bounded_sets",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_member_history::test_member_history_rejects_missing_primary_and_conflicting_heads",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-archive-contracts.tests.test_member_history::test_inherited_history_retains_source_scope_proof_and_selected_extent",
+          "seconds": 0.001,
+          "outcome": "passed"
+        }
+      ],
+      "passed": 70,
+      "seconds": 1.264,
+      "notes": "70 archive-contract cases; final Store source unchanged."
+    },
+    {
+      "junit": "integration-results.xml",
+      "junit_sha256": "a7162d6e5bcf6778fd32683169f4577211ea8f211ff826717689a15a337bb658",
+      "cases": [
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_history_reuses_validation_with_fresh_reads_and_isolated_views",
+          "seconds": 0.801,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_history_validation_reuse_rejects_changed_bytes_fences_and_anchors[bytes]",
+          "seconds": 0.615,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_history_validation_reuse_rejects_changed_bytes_fences_and_anchors[short]",
+          "seconds": 0.658,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_history_validation_reuse_rejects_changed_bytes_fences_and_anchors[read_fence]",
+          "seconds": 0.7,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_history_validation_reuse_rejects_changed_bytes_fences_and_anchors[anchor]",
+          "seconds": 0.813,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_documentary_reference_index_reuses_parsing_with_complete_fenced_reads",
+          "seconds": 0.395,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_invalid_cold_reference_closes_its_provider_and_does_not_poison_retry",
+          "seconds": 0.401,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[bytes]",
+          "seconds": 0.415,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[short]",
+          "seconds": 0.416,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[read_fence]",
+          "seconds": 0.381,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[entry]",
+          "seconds": 0.414,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[object]",
+          "seconds": 0.382,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history::test_documentary_reference_reuse_preserves_exact_identity_and_current_read_fences[assertion]",
+          "seconds": 0.382,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_worklist_admits_before_schema_and_copies_exact_membership",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_factory_refusal_preserves_independent_unreturned_custody[worklist-False]",
+          "seconds": 0.15,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_factory_refusal_preserves_independent_unreturned_custody[worklist-True]",
+          "seconds": 0.142,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_factory_refusal_preserves_independent_unreturned_custody[copy-False]",
+          "seconds": 0.142,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_factory_refusal_preserves_independent_unreturned_custody[copy-True]",
+          "seconds": 0.141,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_default_connection_failure_removes_only_its_directory[worklist]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_default_connection_failure_removes_only_its_directory[copy]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_initialization_failure_retains_close_ready_owner[None-schema]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_initialization_failure_retains_close_ready_owner[None-retention]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_initialization_failure_retains_close_ready_owner[False-schema]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_initialization_failure_retains_close_ready_owner[False-retention]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_initialization_failure_retains_close_ready_owner[True-schema]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_initialization_failure_retains_close_ready_owner[True-retention]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_uncertain_close_freezes_execution_without_context_retry[False-worklist]",
+          "seconds": 0.158,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_uncertain_close_freezes_execution_without_context_retry[False-copy]",
+          "seconds": 0.141,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_uncertain_close_freezes_execution_without_context_retry[True-worklist]",
+          "seconds": 0.165,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_uncertain_close_freezes_execution_without_context_retry[True-copy]",
+          "seconds": 0.163,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_directory_retry_does_not_repeat_confirmed_connection_close[False-worklist]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_directory_retry_does_not_repeat_confirmed_connection_close[False-copy]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_directory_retry_does_not_repeat_confirmed_connection_close[True-worklist]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_directory_retry_does_not_repeat_confirmed_connection_close[True-copy]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_suspended_rows_stop_before_another_step[False-journal_anchors]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_suspended_rows_stop_before_another_step[False-snapshots]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_suspended_rows_stop_before_another_step[True-journal_anchors]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_suspended_rows_stop_before_another_step[True-snapshots]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_copy_backup_failure_discards_returned_copy_before_retry[False]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_copy_backup_failure_discards_returned_copy_before_retry[True]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_cache_eviction_retains_failed_and_new_summary[False]",
+          "seconds": 20.128,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_cache_eviction_retains_failed_and_new_summary[True]",
+          "seconds": 19.57,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_pending_selection_retains_uncertain_cursor_close[history-False]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_pending_selection_retains_uncertain_cursor_close[history-True]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_pending_selection_retains_uncertain_cursor_close[snapshot-False]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_pending_selection_retains_uncertain_cursor_close[snapshot-True]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_schema_is_published_atomically",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_worklist_admission::test_history_partial_schema_failure_keeps_transaction_with_unreceived_connection",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_admits_and_retains_each_actual_reader_without_reopening",
+          "seconds": 0.634,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_refusal_precedes_source_iteration_and_preserves_factory_files[False]",
+          "seconds": 0.579,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_refusal_precedes_source_iteration_and_preserves_factory_files[True]",
+          "seconds": 0.585,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_initialization_and_handoff_failure_release_confirmed_storage[schema]",
+          "seconds": 0.398,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_initialization_and_handoff_failure_release_confirmed_storage[constructor]",
+          "seconds": 0.41,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_initialization_and_handoff_failure_release_confirmed_storage[result]",
+          "seconds": 0.606,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_initialization_and_handoff_failure_release_confirmed_storage[borrow]",
+          "seconds": 0.664,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_final_cache_close_retains_real_connection_for_explicit_retry[False]",
+          "seconds": 0.743,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_final_cache_close_retains_real_connection_for_explicit_retry[True]",
+          "seconds": 0.76,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_borrow_handoff_retains_uncertain_reader_close[False]",
+          "seconds": 0.602,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_borrow_handoff_retains_uncertain_reader_close[True]",
+          "seconds": 0.597,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[bytes-False]",
+          "seconds": 0.419,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[bytes-True]",
+          "seconds": 0.585,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[short-False]",
+          "seconds": 0.395,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[short-True]",
+          "seconds": 0.596,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[anchor-False]",
+          "seconds": 0.587,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[anchor-True]",
+          "seconds": 0.779,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[fence-False]",
+          "seconds": 0.599,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_snapshot_admission::test_history_snapshot_admission_preserves_exact_identity_and_live_source_fences[fence-True]",
+          "seconds": 0.666,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_admits_before_query_setup_and_preserves_exact_read_only_projection",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_refusal_retains_factory_owned_image_and_unreturned_connection[False]",
+          "seconds": 0.16,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_refusal_retains_factory_owned_image_and_unreturned_connection[True]",
+          "seconds": 0.143,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_default_connection_failure_cleans_its_image",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_image_write_failure_releases_owned_files_before_admission[False]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_image_write_failure_releases_owned_files_before_admission[True]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_initialization_retains_close_ready_owner_through_cleanup_failure[None-retention]",
+          "seconds": 0.151,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_initialization_retains_close_ready_owner_through_cleanup_failure[None-settings]",
+          "seconds": 0.162,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_initialization_retains_close_ready_owner_through_cleanup_failure[False-retention]",
+          "seconds": 0.169,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_initialization_retains_close_ready_owner_through_cleanup_failure[False-settings]",
+          "seconds": 0.165,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_initialization_retains_close_ready_owner_through_cleanup_failure[True-retention]",
+          "seconds": 0.151,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_initialization_retains_close_ready_owner_through_cleanup_failure[True-settings]",
+          "seconds": 0.166,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_retention_callback_close_failure_does_not_trigger_implicit_retry[False]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_retention_callback_close_failure_does_not_trigger_implicit_retry[True]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_retention_callback_cannot_return_closed_owner",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_explicit_uncertain_close_is_not_retried_by_context_exit[False]",
+          "seconds": 0.199,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_explicit_uncertain_close_is_not_retried_by_context_exit[True]",
+          "seconds": 0.178,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_directory_retry_never_releases_connection_twice[False]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_directory_retry_never_releases_connection_twice[True]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_closing_freezes_queries_and_suspended_rows_before_another_step[False]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_closing_freezes_queries_and_suspended_rows_before_another_step[True]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_retains_uncertain_query_cursor_until_explicit_cleanup[False-all]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_retains_uncertain_query_cursor_until_explicit_cleanup[False-one]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_retains_uncertain_query_cursor_until_explicit_cleanup[False-contains]",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_retains_uncertain_query_cursor_until_explicit_cleanup[True-all]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_retains_uncertain_query_cursor_until_explicit_cleanup[True-one]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_membership_admission::test_membership_retains_uncertain_query_cursor_until_explicit_cleanup[True-contains]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_pending_growth::test_actual_history_pending_selection_skips_completed_work",
+          "seconds": 2.126,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_pending_growth::test_actual_snapshot_pending_selection_skips_completed_work",
+          "seconds": 2.184,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_pending_growth::test_pending_selection_closes_cursor_on_failure_and_preserves_retry[_pending_history]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_pending_growth::test_pending_selection_closes_cursor_on_failure_and_preserves_retry[_pending_snapshot]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_pending_growth::test_actual_sqlite_interruption_keeps_the_obligation_pending[_pending_history]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_pending_growth::test_actual_sqlite_interruption_keeps_the_obligation_pending[_pending_snapshot]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-client.tests.test_processing_provenance::test_claimed_provenance_verifies_member_root_and_streams_exact_journal",
+          "seconds": 2.696,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-client.tests.test_processing_provenance::test_claimed_provenance_rejects_unselected_artifact_and_changed_root",
+          "seconds": 2.294,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-client.tests.test_processing_provenance::test_claimed_provenance_resolves_only_exact_foreign_assertions",
+          "seconds": 3.032,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-client.tests.test_processing_provenance::test_history_closure_keeps_retracted_late_bytes_and_does_not_widen_extent",
+          "seconds": 5.019,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-client.tests.test_processing_provenance::test_history_transfer_reuses_one_validated_selection_and_preserves_retained_context",
+          "seconds": 5.203,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-client.tests.test_processing_provenance::test_claimed_history_replay_checks_root_and_next_selection_reads_fresh_objects",
+          "seconds": 3.549,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-client.tests.test_processing_provenance::test_derivative_import_retains_late_input_history_and_checks_exact_source_state",
+          "seconds": 6.282,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_full_recovery_preserves_explicit_supplementary_history_and_structural_sets[declared-hints]",
+          "seconds": 10.735,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_full_recovery_preserves_explicit_supplementary_history_and_structural_sets[id-layout]",
+          "seconds": 10.868,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_full_recovery_cannot_substitute_payload_plus_primary_for_missing_selected_history",
+          "seconds": 7.666,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_full_recovery_preserves_inherited_late_history_without_the_source_archive[declared-hints]",
+          "seconds": 18.84,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_full_recovery_preserves_inherited_late_history_without_the_source_archive[id-layout]",
+          "seconds": 18.874,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_complete_recovery_preserves_members_history_description_and_tags",
+          "seconds": 9.805,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_id_layout_keeps_same_four_contents",
+          "seconds": 4.423,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_equal_hints_fall_back_for_every_conflicting_artifact",
+          "seconds": 9.587,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_long_valid_hint_falls_back_in_default_recovery_and_keeps_id_layout_parity",
+          "seconds": 13.874,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_unset_and_absent_description_are_distinct_valid_states[False-None]",
+          "seconds": 9.758,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_unset_and_absent_description_are_distinct_valid_states[True-None]",
+          "seconds": 9.693,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_missing_required_tag_head_fails_without_completion",
+          "seconds": 0.007,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_missing_tag_node_fails_without_completion",
+          "seconds": 0.023,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_metadata_head_change_during_transfer_requires_new_snapshot",
+          "seconds": 4.525,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_trusted_expected_identifiers_detect_an_older_or_other_copy",
+          "seconds": 4.484,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_existing_output_is_never_overwritten",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_failed_write_leaves_no_complete_output_and_retry_can_finish",
+          "seconds": 8.922,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_recovery::test_metadata_only_commands_remain_partial_and_exact",
+          "seconds": 0.034,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_complete_prepared_reads_visit_source_descriptors_once[1-1-1]",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_complete_prepared_reads_visit_source_descriptors_once[4-1-1]",
+          "seconds": 0.005,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_complete_prepared_reads_visit_source_descriptors_once[2-7-1]",
+          "seconds": 0.008,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_complete_prepared_reads_visit_source_descriptors_once[2-1-17]",
+          "seconds": 0.009,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_complete_prepared_reads_visit_source_descriptors_once[1-1-513]",
+          "seconds": 0.154,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepared_root_is_an_attempt_snapshot_and_next_attempt_rechecks",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepare_rejects_wrong_selected_authority[root]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepare_rejects_wrong_selected_authority[generation]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepare_rejects_wrong_selected_authority[artifact_set]",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_incomplete_descriptor_sequence_cannot_become_ready[missing-terminal]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_incomplete_descriptor_sequence_cannot_become_ready[wrong-sequence]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_incomplete_descriptor_sequence_cannot_become_ready[truncated-journal]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepared_payload_is_checked_fresh_and_failed_stream_is_received[changed]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepared_payload_is_checked_fresh_and_failed_stream_is_received[missing]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepared_payload_is_checked_fresh_and_failed_stream_is_received[interrupted]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepared_structure_is_selected_and_checked_without_descriptor_rescan",
+          "seconds": 0.007,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_bounded_read_explicitly_closes_retained_oversized_source",
+          "seconds": 0.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_partial_index_iterator_cannot_outlive_prepared_owner",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_actual_stage_provenance_reuses_preparation_and_receives_owned_state[1-1-1]",
+          "seconds": 0.124,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_actual_stage_provenance_reuses_preparation_and_receives_owned_state[4-1-1]",
+          "seconds": 0.437,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_actual_stage_provenance_reuses_preparation_and_receives_owned_state[1-3-1]",
+          "seconds": 0.116,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_actual_stage_provenance_reuses_preparation_and_receives_owned_state[1-1-17]",
+          "seconds": 0.122,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_actual_stage_failure_closes_unreturned_journal_connection",
+          "seconds": 0.058,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepared_ranges_preserve_exact_bounds",
+          "seconds": 0.005,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_binding_tree_is_verified_before_any_binding_is_exposed",
+          "seconds": 0.007,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_uncertain_close_retains_original_storage_until_retry[False-cursor]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_uncertain_close_retains_original_storage_until_retry[False-connection]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_uncertain_close_retains_original_storage_until_retry[True-cursor]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_uncertain_close_retains_original_storage_until_retry[True-connection]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_two_or_more_buffered_bindings_cannot_escape_a_closed_owner",
+          "seconds": 0.004,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_source_callback_close_prevents_buffered_payload_or_structure_yield[journal]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_source_callback_close_prevents_buffered_payload_or_structure_yield[structure]",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_schema_failure_retains_the_original_unconfirmed_connection_for_retry",
+          "seconds": 0.002,
+          "outcome": "passed"
+        },
+        {
+          "id": "some-implementations.riverhog.recovery.tests.test_prepared_provenance::test_prepared_index_schema_is_published_atomically",
+          "seconds": 0.003,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_member_history_finalization::test_final_history_and_encrypted_structure_resume_without_changing_early_primary",
+          "seconds": 3.449,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_member_history_discovery::test_native_index_reads_late_bound_claim_without_assigning_it_to_a_sibling",
+          "seconds": 8.532,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_member_history_discovery::test_selected_completion_retraction_cannot_resurrect_a_late_member_claim",
+          "seconds": 6.517,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_receiving::test_imported_terminal_receives_original_commit_or_rebuilds_rolled_back_attempt[False]",
+          "seconds": 29.245,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_receiving::test_imported_terminal_receives_original_commit_or_rebuilds_rolled_back_attempt[True]",
+          "seconds": 26.886,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_finalization::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[0]",
+          "seconds": 120.986,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_finalization::test_complete_terminal_import_work_depends_on_distinct_source_not_fanout[4096]",
+          "seconds": 121.812,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_finalization::test_finalizer_checks_current_tail_after_the_selected_imported_primary",
+          "seconds": 30.51,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_finalization::test_imported_primary_resolver_keeps_exact_proof_state_and_requested_extent[bound-and-required-history]",
+          "seconds": 3.297,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_finalization::test_imported_primary_resolver_keeps_exact_proof_state_and_requested_extent[complete-retained-history]",
+          "seconds": 4.066,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_finalization::test_imported_primary_point_facts_survive_real_summary_capacity[entry-count]",
+          "seconds": 7.178,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_finalization::test_imported_primary_point_facts_survive_real_summary_capacity[source-octets]",
+          "seconds": 95.386,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_finalization::test_terminal_import_rechecks_current_source_and_job_after_raw_validation",
+          "seconds": 31.956,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_imported_history_growth::test_current_imported_primary_composes_actual_catalog_and_historical_point_work",
+          "seconds": 8.238,
+          "outcome": "passed"
+        }
+      ],
+      "passed": 173,
+      "seconds": 739.833,
+      "notes": "173 broader cases on the pre-guard closure; only subsequent executable change is the post-read open check, verified on final source below."
+    },
+    {
+      "junit": "final-guard-results.xml",
+      "junit_sha256": "76a96c4f1f27ceb5fea0b59a108d5431557cf1d21df74db7dc5d8e975f60719e",
+      "cases": [
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_selection_counts_unique_history_work_and_shared_import_edges[dimensions0]",
+          "seconds": 0.908,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_selection_counts_unique_history_work_and_shared_import_edges[dimensions1]",
+          "seconds": 0.997,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_selection_counts_unique_history_work_and_shared_import_edges[dimensions2]",
+          "seconds": 22.677,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_selection_counts_unique_history_work_and_shared_import_edges[dimensions3]",
+          "seconds": 1.487,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_selection_counts_unique_history_work_and_shared_import_edges[dimensions4]",
+          "seconds": 1.224,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_selection_counts_unique_history_work_and_shared_import_edges[dimensions5]",
+          "seconds": 1.192,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_selection_counts_unique_history_work_and_shared_import_edges[dimensions6]",
+          "seconds": 1.161,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_selection_counts_unique_history_work_and_shared_import_edges[dimensions7]",
+          "seconds": 22.865,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_late_inherited_failure_restores_prior_membership_and_rechecks_retry[resolve]",
+          "seconds": 1.14,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_late_inherited_failure_restores_prior_membership_and_rechecks_retry[resolve_import]",
+          "seconds": 1.304,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_interruption_does_not_admit_partial_selection_and_retry_reads_fresh[page_fence]",
+          "seconds": 1.054,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_interruption_does_not_admit_partial_selection_and_retry_reads_fresh[staging]",
+          "seconds": 1.04,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_interruption_does_not_admit_partial_selection_and_retry_reads_fresh[journal_fence]",
+          "seconds": 1.167,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_repeated_history_identity_requires_the_same_complete_binding[bound-and-required-history]",
+          "seconds": 0.801,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_repeated_history_identity_requires_the_same_complete_binding[complete-retained-history]",
+          "seconds": 0.784,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_bound_then_retained_keeps_full_selected_and_inherited_history",
+          "seconds": 1.768,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_resolutions_retain_the_owned_transaction_across_membership_image_commit",
+          "seconds": 0.981,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_uncertain_selection_cursor_close_freezes_owner_until_original_receiving[False]",
+          "seconds": 0.79,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_selection_work::test_uncertain_selection_cursor_close_freezes_owner_until_original_receiving[True]",
+          "seconds": 0.732,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_structure_identity::test_fresh_export_rejects_changed_page_after_shared_history_admission[False]",
+          "seconds": 1.403,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_structure_identity::test_fresh_export_rejects_changed_page_after_shared_history_admission[True]",
+          "seconds": 1.392,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_structure_identity::test_checked_structure_codecs_preserve_exact_admitted_canonical_bytes",
+          "seconds": 1.001,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_structure_identity::test_structure_export_receives_original_source_before_exposing_its_bytes[False]",
+          "seconds": 0.788,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_structure_identity::test_structure_export_receives_original_source_before_exposing_its_bytes[True]",
+          "seconds": 0.73,
+          "outcome": "passed"
+        },
+        {
+          "id": "packages.riverhog-provenance.tests.test_history_structure_identity::test_structure_export_cannot_yield_after_source_callback_closes_owner",
+          "seconds": 0.769,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_published_provenance_access::test_live_read_fences_prevent_disclosure_after_archive_io[key-revoked-stream]",
+          "seconds": 7.556,
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.unit.test_published_provenance_access::test_stream_continuation_rechecks_revocation_after_cached_member_closure",
+          "seconds": 8.602,
+          "outcome": "passed"
+        }
+      ],
+      "passed": 27,
+      "seconds": 90.341,
+      "notes": "Final source: all 25 new neutral closure cases plus two existing Core live-fence cases."
+    }
+  ],
+  "deselected": [
+    "packages/riverhog-provenance/tests/test_history.py::test_journals_larger_than_history_validation_cache_remain_accepted"
+  ],
+  "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+  "age_archive_sha256": "bdc69c09cbdd6cf8b1f333d372a1f58247b3a33146406333e30c0f26e8f51377"
+}

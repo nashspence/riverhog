@@ -1,0 +1,74 @@
+{
+  "request": "https://github.com/nashspence/riverhog/issues/991#issuecomment-7233007754",
+  "audited_base": "60612eded1e0e4e5188c28a84697435eb969fad0",
+  "requested_implementation": "8d278b6f7bc443a9919bcc5a6409a647cfd20f43",
+  "source_relationship": {
+    "audited_main": "60612eded1e0e4e5188c28a84697435eb969fad0",
+    "request_source": "8d278b6f7bc443a9919bcc5a6409a647cfd20f43",
+    "source_files": [
+      {
+        "path": "packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py",
+        "request_sha256": "8944750139fcfa22ad19e30f8f5e90402e7306534db67bf4cba51bc8e648f5ea",
+        "main_sha256": "8944750139fcfa22ad19e30f8f5e90402e7306534db67bf4cba51bc8e648f5ea",
+        "identical": true
+      },
+      {
+        "path": "packages/riverhog-provenance/src/riverhog_provenance/history.py",
+        "request_sha256": "d74cbb716c48a318b241a528a6e60aa1aac87146d1a4df90fbd09d1496a9259e",
+        "main_sha256": "d74cbb716c48a318b241a528a6e60aa1aac87146d1a4df90fbd09d1496a9259e",
+        "identical": true
+      },
+      {
+        "path": "some-implementations/riverhog/recovery/src/a_riverhog_recovery_tool/recovery.py",
+        "request_sha256": "58b5d0f2b9feee57314d0c5fe0f1e7d5fd62e2a0e8a587a28802eebeba05b525",
+        "main_sha256": "58b5d0f2b9feee57314d0c5fe0f1e7d5fd62e2a0e8a587a28802eebeba05b525",
+        "identical": true
+      },
+      {
+        "path": "riverhog/src/riverhog_core/canonical_discovery_relevance.py",
+        "request_sha256": "2b98786eb046d5c60dfdbcd11412719e8b07e93b566ae2c4fb6c90994e587e21",
+        "main_sha256": "2b98786eb046d5c60dfdbcd11412719e8b07e93b566ae2c4fb6c90994e587e21",
+        "identical": true
+      }
+    ],
+    "runtime": {
+      "python": "3.12.3",
+      "sqlite": "3.45.1",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+      "age": "1.3.1",
+      "uv": "0.11.24"
+    }
+  },
+  "candidate_files_sha256": {
+    "packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py": "d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf",
+    "packages/riverhog-archive-contracts/tests/test_history_heads_admission.py": "a1680048cf336c11086f5493e0d019f96d21ecf3e1ef63394c562fb2975cf011",
+    "packages/riverhog-provenance/src/riverhog_provenance/history.py": "ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222",
+    "packages/riverhog-provenance/tests/test_history_membership_admission.py": "18171d50cfb836906a2d3a115423bb7de691c9fd9f5ae93771a38da89a03832b",
+    "packages/riverhog-provenance/tests/test_history_selection_work.py": "6b6fa45fa61c16f46d51f00d18c98518eee62003f2b3d77c4fac7b15cf1892b0",
+    "packages/riverhog-provenance/tests/test_history_structure_identity.py": "c18ce08b5baf5a0c0dd98c3090845f391a55256bf1245ed3b7353931b1d94b70",
+    "packages/riverhog-provenance/tests/test_history_worklist_admission.py": "7f2030693e494b596fd7e2fe9b6cf5cf28de9f108a5fbbd1cd1a2f40c4e57e2e",
+    "tests/support/neutral_history.py": "65ccabe95c3d576eb8658d0d0c0f21f960978485ace892fbbff3a9c6f0323e33"
+  },
+  "patch_sha256": "b91f515317be9f3f486d144c8eaec3d1191fc850ed8614d4c3bb753e75027f47",
+  "proffer_schema": {
+    "commit": "2ce5e15c3191fcdc2be70213c0170f57c852a883",
+    "url": "https://github.com/nashspence/proffer"
+  },
+  "issue_sources": [
+    "https://github.com/nashspence/riverhog/issues/991#issuecomment-7233007754",
+    "https://github.com/nashspence/riverhog/issues/991#issuecomment-7233006671",
+    "https://github.com/nashspence/riverhog/issues/991#issuecomment-7234184351",
+    "https://github.com/nashspence/riverhog/issues/991#issuecomment-7237763015",
+    "https://github.com/nashspence/riverhog/issues/1006#issuecomment-7237764539",
+    "https://github.com/nashspence/riverhog/issues/903",
+    "https://github.com/nashspence/riverhog/issues/1006",
+    "https://github.com/nashspence/all/issues/68"
+  ],
+  "upstream_primary_sources": [
+    "https://github.com/FiloSottile/age/blob/v1.3.1/scrypt.go",
+    "https://github.com/FiloSottile/age/blob/v1.3.1/go.mod",
+    "https://github.com/golang/crypto/blob/v0.45.0/scrypt/scrypt.go",
+    "https://github.com/FiloSottile/age/blob/v1.3.1/cmd/age-plugin-batchpass/plugin-batchpass.go",
+    "https://github.com/FiloSottile/age/blob/v1.3.1/plugin/client.go"
+  ]
+}

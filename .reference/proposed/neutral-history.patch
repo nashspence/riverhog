@@ -1,0 +1,1396 @@
+diff --git a/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py b/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py
+index 38e52d49..65d2fd95 100644
+--- a/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py
++++ b/packages/riverhog-archive-contracts/src/riverhog_archive_contracts/history_store.py
+@@ -3,7 +3,8 @@
+ from __future__ import annotations
+ 
+ import sqlite3
+-from collections.abc import Callable, Iterable, Iterator
++from collections.abc import Callable, Generator, Iterable, Iterator
++from contextlib import closing
+ 
+ from .member_history import (
+     BOUND_HISTORY_EXTENT,
+@@ -23,12 +24,18 @@ from .structural_record_set import PAGE_BYTES_MAX, RecordPage, RecordSetRef
+ 
+ 
+ def read_bounded_history_object(chunks: Iterable[bytes], maximum: int) -> bytes:
++    source = iter(chunks)
+     content = bytearray()
+-    for chunk in chunks:
+-        if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
+-            raise ValueError("history object exceeds its bounded contract")
+-        content.extend(chunk)
+-    return bytes(content)
++    try:
++        for chunk in source:
++            if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
++                raise ValueError("history object exceeds its bounded contract")
++            content.extend(chunk)
++        return bytes(content)
++    finally:
++        close = getattr(source, "close", None)
++        if close is not None:
++            close()
+ 
+ 
+ class MemberHistoryStore:
+@@ -52,7 +59,7 @@ class MemberHistoryStore:
+         self._connection_factory = connection_factory
+         self._on_storage_open = on_storage_open
+ 
+-    def pages(self, authority: RecordSetRef) -> Iterator[RecordPage]:
++    def pages(self, authority: RecordSetRef) -> Generator[RecordPage, None, None]:
+         for ordinal in range(authority.record_count + 1):
+             page = RecordPage.from_json_bytes(
+                 read_bounded_history_object(
+@@ -69,20 +76,49 @@ class MemberHistoryStore:
+                 return
+         raise ValueError("member history set lacks its terminal")
+ 
+-    def descriptor(self, binding: MemberHistoryBinding) -> MemberHistoryDocument:
+-        history = binding.verify_descriptor(
++    def read_descriptor(self, binding: MemberHistoryBinding) -> MemberHistoryDocument:
++        """Read the exact bound descriptor, without admitting either complete set.
++
++        The caller must still verify roots, imports and required journals before
++        exposing a successful history selection. No prior source read is reused.
++        """
++        return binding.verify_descriptor(
+             read_bounded_history_object(
+                 self.read_object(member_history_object_path(binding.history_sha256)),
+                 binding.history_bytes,
+             )
+         )
+-        verify_member_history_sets(
+-            history,
+-            root_pages=self.pages(history.roots),
+-            import_pages=self.pages(history.imports),
+-            connection_factory=self._connection_factory,
+-            on_storage_open=self._on_storage_open,
+-        )
++
++    def descriptor(
++        self,
++        binding: MemberHistoryBinding,
++        *,
++        stage_page: Callable[[RecordPage], None] | None = None,
++    ) -> MemberHistoryDocument:
++        """Admit the descriptor and both complete sets from fresh source reads.
++
++        A page callback may stage tentative work in the caller's owned scratch.
++        It runs after that page's records have been checked, before the complete
++        set commitment is known. The caller must roll back staged work on any
++        failure and expose it only after this call and resource receiving finish.
++        """
++        history = self.read_descriptor(binding)
++
++        def pages(authority: RecordSetRef) -> Generator[RecordPage, None, None]:
++            with closing(self.pages(authority)) as source:
++                for page in source:
++                    yield page
++                    if stage_page is not None:
++                        stage_page(page)
++
++        with closing(pages(history.roots)) as roots, closing(pages(history.imports)) as imports:
++            verify_member_history_sets(
++                history,
++                root_pages=roots,
++                import_pages=imports,
++                connection_factory=self._connection_factory,
++                on_storage_open=self._on_storage_open,
++            )
+         return history
+ 
+     def roots(self, binding: MemberHistoryBinding, *, extent: str) -> Iterator[MemberHistoryRoot]:
+@@ -101,7 +137,8 @@ class MemberHistoryStore:
+             for row in page.records:
+                 yield MemberHistoryImport.from_mapping(row["value"])
+ 
+-    def source_proof(self, imported: MemberHistoryImport) -> SourceMemberHistoryBindingProof:
++    def read_source_proof(self, imported: MemberHistoryImport) -> SourceMemberHistoryBindingProof:
++        """Read exact source membership, without admitting the bound history sets."""
+         proof = SourceMemberHistoryBindingProof.from_json_bytes(
+             read_bounded_history_object(
+                 self.read_object(
+@@ -111,6 +148,10 @@ class MemberHistoryStore:
+             )
+         )
+         proof.verify_import(imported)
++        return proof
++
++    def source_proof(self, imported: MemberHistoryImport) -> SourceMemberHistoryBindingProof:
++        proof = self.read_source_proof(imported)
+         self.descriptor(proof.binding)
+         return proof
+ 
+diff --git a/packages/riverhog-archive-contracts/tests/test_history_heads_admission.py b/packages/riverhog-archive-contracts/tests/test_history_heads_admission.py
+index 88714ff0..f7ad51ee 100644
+--- a/packages/riverhog-archive-contracts/tests/test_history_heads_admission.py
++++ b/packages/riverhog-archive-contracts/tests/test_history_heads_admission.py
+@@ -3,6 +3,7 @@ from __future__ import annotations
+ import gc
+ import hashlib
+ import shutil
++from collections import Counter
+ from dataclasses import replace
+ from pathlib import Path
+ from types import SimpleNamespace
+@@ -35,6 +36,7 @@ from riverhog_archive_contracts import (
+     verify_member_history_sets,
+ )
+ from riverhog_archive_contracts import member_history as owner
++from riverhog_archive_contracts.history_store import read_bounded_history_object
+ 
+ from tests.support.sqlite_admission import Capacity, Population
+ 
+@@ -852,3 +854,171 @@ def test_store_source_proof_preserves_exact_binding_before_admitted_history_veri
+     with pytest.raises(ValueError):
+         store.source_proof(replace(selected, source_archive_root_sha256="f" * 64))
+     assert len(population.connections) == 1 and not roots[0].exists()
++    value.objects.pop(provenance_structure_identity(value.descriptor.to_json_bytes()).relative_path)
++    assert store.read_source_proof(selected) == proof
++    with pytest.raises(KeyError):
++        store.source_proof(selected)
++    with pytest.raises(ValueError):
++        store.read_source_proof(replace(selected, source_archive_root_sha256="f" * 64))
++    assert len(population.connections) == 1
++
++
++def test_store_descriptor_stages_each_fresh_page_once_after_its_record_checks(roots):
++    value = selection(PAGE_RECORDS_MAX + 1)
++    population, handles, reads, staged = Population(limit=1), [], [], []
++
++    def read(path):
++        reads.append(path)
++        yield value.objects[path]
++
++    store = MemberHistoryStore(read, connection_factory=population, on_storage_open=handles.append)
++    assert store.descriptor(value.binding, stage_page=staged.append) == value.descriptor
++    assert staged == [*value.root_pages, *value.import_pages]
++    assert Counter(reads) == Counter({path: 1 for path in value.objects})
++    assert len(handles) == 1 and handles[0].cleanup_complete and population.active == 0
++    assert not roots[0].exists()
++
++
++def test_store_page_staging_is_tentative_until_complete_commitment_and_cleanup(roots):
++    value = selection()
++    page = value.root_pages[0]
++    changed = replace(page, records=tuple(row for row in page.records if row != page.records[1]))
++    value.objects[provenance_structure_identity(page.to_json_bytes()).relative_path] = (
++        changed.to_json_bytes()
++    )
++    population, handles, staged = Population(), [], []
++    store = MemberHistoryStore(
++        lambda path: (value.objects[path],),
++        connection_factory=population,
++        on_storage_open=handles.append,
++    )
++    with pytest.raises(ValueError, match="incomplete or changed"):
++        store.descriptor(value.binding, stage_page=staged.append)
++    assert staged == [changed, value.root_pages[-1]]
++    assert handles[0].cleanup_complete and population.active == 0
++    assert not roots[0].exists()
++
++
++def test_store_callback_interruption_receives_heads_and_retries_fresh(roots):
++    value = selection()
++    population, handles, reads = Population(), [], []
++
++    def read(path):
++        reads.append(path)
++        return (value.objects[path],)
++
++    def interrupted(_page):
++        raise InterruptedError("staging interrupted")
++
++    store = MemberHistoryStore(read, connection_factory=population, on_storage_open=handles.append)
++    with pytest.raises(InterruptedError, match="staging interrupted"):
++        store.descriptor(value.binding, stage_page=interrupted)
++    assert len(reads) == 2 and handles[0].cleanup_complete and population.active == 0
++    assert store.descriptor(value.binding) == value.descriptor
++    assert len(handles) == 2 and all(heads.cleanup_complete for heads in handles)
++    assert all(not path.exists() for path in roots)
++    assert (
++        Counter(reads)[
++            provenance_structure_identity(value.descriptor.to_json_bytes()).relative_path
++        ]
++        == 2
++    )
++
++
++def test_store_narrow_descriptor_read_never_admits_missing_sets_or_another_binding(roots):
++    value = selection()
++    descriptor_path = provenance_structure_identity(value.descriptor.to_json_bytes()).relative_path
++    population, reads = Population(), []
++
++    def read(path):
++        reads.append(path)
++        return (value.objects[path],)
++
++    store = MemberHistoryStore(read, connection_factory=population)
++    assert store.read_descriptor(value.binding) == value.descriptor
++    assert reads == [descriptor_path] and not population.connections
++    with pytest.raises(ValueError, match="another member"):
++        store.read_descriptor(replace(value.binding, artifact_id="f" * 64))
++    value.objects.pop(
++        provenance_structure_identity(value.root_pages[-1].to_json_bytes()).relative_path
++    )
++    assert store.read_descriptor(value.binding) == value.descriptor
++    with pytest.raises(KeyError):
++        store.descriptor(value.binding)
++    value.objects[descriptor_path] += b" "
++    with pytest.raises(ValueError, match="bounded contract"):
++        store.read_descriptor(value.binding)
++    assert population.active == 0 and not roots[0].exists()
++
++
++@pytest.mark.parametrize("failure", [None, "oversized", "type", "interrupted"])
++def test_bounded_history_read_receives_original_iterator_on_every_exit(tmp_path, failure):
++    path = tmp_path / "history"
++    path.write_bytes(b"history")
++
++    class Stream:
++        def __init__(self):
++            self.original = path.open("rb")
++            self.closes = 0
++            self.reads = 0
++
++        def __iter__(self):
++            return self
++
++        def __next__(self):
++            self.reads += 1
++            if failure == "type":
++                return bytearray(b"history")
++            if failure == "interrupted" and self.reads == 2:
++                raise InterruptedError("source interrupted")
++            chunk = self.original.read(3)
++            if not chunk:
++                raise StopIteration
++            return chunk
++
++        def close(self):
++            self.closes += 1
++            self.original.close()
++
++    source = Stream()
++    if failure is None:
++        assert read_bounded_history_object(source, 7) == b"history"
++    else:
++        with pytest.raises(InterruptedError if failure == "interrupted" else ValueError):
++            read_bounded_history_object(source, 1 if failure == "oversized" else 7)
++    assert source.closes == 1 and source.original.closed
++
++
++@pytest.mark.parametrize("after", [False, True])
++def test_bounded_history_read_requires_original_close_acknowledgement(tmp_path, after):
++    path = tmp_path / "history"
++    path.write_bytes(b"history")
++
++    class Stream:
++        def __init__(self):
++            self.original = path.open("rb")
++            self.closes = 0
++
++        def __iter__(self):
++            return self
++
++        def __next__(self):
++            chunk = self.original.read(3)
++            if not chunk:
++                raise StopIteration
++            return chunk
++
++        def close(self):
++            self.closes += 1
++            if self.closes == 1:
++                if after:
++                    self.original.close()
++                raise OSError("source close unconfirmed")
++            self.original.close()
++
++    source = Stream()
++    with pytest.raises(OSError, match="source close unconfirmed"):
++        read_bounded_history_object(source, 7)
++    assert source.closes == 1 and source.original.closed is after
++    source.close()
++    assert source.closes == 2 and source.original.closed
+diff --git a/packages/riverhog-provenance/src/riverhog_provenance/history.py b/packages/riverhog-provenance/src/riverhog_provenance/history.py
+index b335e2b5..63fd38e9 100644
+--- a/packages/riverhog-provenance/src/riverhog_provenance/history.py
++++ b/packages/riverhog-provenance/src/riverhog_provenance/history.py
+@@ -7,6 +7,7 @@ import shutil
+ import sqlite3
+ from collections import OrderedDict
+ from collections.abc import Callable, Iterable, Iterator, Mapping
++from contextlib import contextmanager
+ from dataclasses import dataclass
+ from pathlib import Path
+ from tempfile import mkdtemp
+@@ -14,12 +15,15 @@ from typing import Any, Self, cast
+ 
+ from riverhog_archive_contracts import (
+     BOUND_HISTORY_EXTENT,
++    MEMBER_HISTORY_ROOTS_SCHEMA,
+     RETAINED_HISTORY_EXTENT,
+     HistoryJournalAnchor,
+     MemberHistoryBinding,
+     MemberHistoryDocument,
+     MemberHistoryImport,
++    MemberHistoryRoot,
+     MemberHistoryStore,
++    RecordPage,
+     history_record_page_object_path,
+     member_history_object_path,
+     provenance_structure_identity,
+@@ -372,6 +376,13 @@ class MemberHistoryClosure:
+     resolver's entire lifetime. Source binding proofs, requested extents, exact
+     State comparison and complete history traversal remain here. Without that
+     resolver every import retains the authenticated provider read fence.
++
++    One resolution stages bounded pages in the existing worklist. Those rows
++    remain tentative until all selected and inherited sets and their original
++    readers have been verified and received. Each import reads its exact proof
++    and descriptor afresh; complete set validation belongs to the deduplicated
++    history obligation. Reuse remains local to this closure; detached membership
++    images and borrowed readers retain their separate custody.
+     """
+ 
+     def __init__(
+@@ -427,7 +438,7 @@ class MemberHistoryClosure:
+                 "CREATE TABLE snapshots (identity TEXT PRIMARY KEY, anchor BLOB, done INTEGER);"
+                 "CREATE INDEX pending_snapshots ON snapshots(done) WHERE done = 0;"
+                 "CREATE TABLE journals (identity TEXT PRIMARY KEY, size TEXT, anchor BLOB);"
+-                "CREATE TABLE objects (path TEXT PRIMARY KEY);"
++                "CREATE TABLE objects (path TEXT PRIMARY KEY, sha256 TEXT, size INTEGER);"
+                 "CREATE TABLE reference_journals "
+                 "(identity TEXT PRIMARY KEY, sha256 TEXT, size TEXT);"
+                 "CREATE TABLE reference_assertions (journal TEXT, entry TEXT, sequence TEXT, "
+@@ -515,8 +526,10 @@ class MemberHistoryClosure:
+                 raise
+             self._cursors.remove(cursor)
+ 
+-    def _pending_row(self, statement: str) -> tuple[Any, ...] | None:
+-        cursor = self._execute(statement)
++    def _pending_row(
++        self, statement: str, parameters: tuple[Any, ...] = ()
++    ) -> tuple[Any, ...] | None:
++        cursor = self._execute(statement, parameters)
+         self._cursors.add(cursor)
+         try:
+             self._require_open()
+@@ -524,31 +537,52 @@ class MemberHistoryClosure:
+         finally:
+             self._release_cursor(cursor)
+ 
+-    def _object(self, path: str) -> None:
++    def _write(self, statement: str, parameters: tuple[Any, ...] = ()) -> None:
++        cursor = self._execute(statement, parameters)
++        self._cursors.add(cursor)
++        self._release_cursor(cursor)
++
++    def _object(self, path: str, content: bytes) -> None:
+         self._require_open()
+-        self._execute("INSERT OR IGNORE INTO objects VALUES (?)", (path,))
++        identity = (hashlib.sha256(content).hexdigest(), len(content))
++        existing = self._pending_row("SELECT sha256, size FROM objects WHERE path = ?", (path,))
++        if existing is not None:
++            if existing != identity:
++                raise ProvenanceValidationError(
++                    "history structure bytes differ from their admitted identity"
++                )
++            return
++        self._write("INSERT INTO objects VALUES (?, ?, ?)", (path, *identity))
+ 
+     def _history(self, binding: MemberHistoryBinding, extent: str) -> None:
+         self._require_open()
+         if extent not in (BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT):
+             raise ValueError("unsupported history request extent")
+-        self._execute(
++        encoded = canonical_json_bytes(binding.to_mapping())
++        existing = self._pending_row(
++            "SELECT binding FROM histories WHERE identity = ? LIMIT 1", (binding.history_sha256,)
++        )
++        if existing is not None and existing[0] != encoded:
++            raise ProvenanceValidationError(
++                "member history binding differs from its exact identity"
++            )
++        self._write(
+             "INSERT OR IGNORE INTO histories VALUES (?, ?, ?, 0)",
+-            (binding.history_sha256, extent, canonical_json_bytes(binding.to_mapping())),
++            (binding.history_sha256, extent, encoded),
+         )
+ 
+     def _snapshot(self, anchor: HistoryJournalAnchor) -> None:
+         self._require_open()
+         encoded = canonical_json_bytes(anchor.to_mapping())
+-        self._execute(
++        self._write(
+             "INSERT OR IGNORE INTO snapshots VALUES (?, ?, 0)",
+             (hashlib.sha256(encoded).hexdigest(), encoded),
+         )
+-        old = self._execute(
++        old = self._pending_row(
+             "SELECT size FROM journals WHERE identity = ?", (anchor.journal_id,)
+-        ).fetchone()
++        )
+         if old is None or int(old[0]) < anchor.prefix_bytes:
+-            self._execute(
++            self._write(
+                 "INSERT OR REPLACE INTO journals VALUES (?, ?, ?)",
+                 (anchor.journal_id, str(anchor.prefix_bytes), encoded),
+             )
+@@ -708,41 +742,55 @@ class MemberHistoryClosure:
+ 
+     def _visit_history(self, binding: MemberHistoryBinding, extent: str) -> None:
+         self._require_open()
+-        history = self.store.descriptor(binding)
+-        self._object(member_history_object_path(binding.history_sha256))
+-        for authority in (history.roots, history.imports):
+-            for page in self.store.pages(authority):
+-                self._object(
+-                    history_record_page_object_path(authority.records_sha256, page.ordinal)
+-                )
+-        for selected in self.store.roots(binding, extent=extent):
+-            self._snapshot(selected.journal)
+-        for imported in self.store.imports(binding):
++        history = self.store.descriptor(
++            binding,
++            stage_page=lambda page: self._stage_history_page(binding, extent, page),
++        )
++        self._object(member_history_object_path(binding.history_sha256), history.to_json_bytes())
++
++    def _stage_history_page(
++        self, binding: MemberHistoryBinding, extent: str, page: RecordPage
++    ) -> None:
++        self._object(
++            history_record_page_object_path(page.authority.records_sha256, page.ordinal),
++            page.to_json_bytes(),
++        )
++        if page.authority.schema_id == MEMBER_HISTORY_ROOTS_SCHEMA:
++            for row in page.records:
++                selected = MemberHistoryRoot.from_mapping(row["value"])
++                if extent == RETAINED_HISTORY_EXTENT or selected.inclusion == "bound":
++                    self._snapshot(selected.journal)
++            return
++        for row in page.records:
++            imported = MemberHistoryImport.from_mapping(row["value"])
+             source_binding = self._accept_import(imported)
+-            self._execute(
++            self._write(
+                 "INSERT OR IGNORE INTO imports VALUES (?, ?)",
+                 (binding.history_sha256, source_binding.history_sha256),
+             )
+-            cycle = self._execute(
++            cycle = self._pending_row(
+                 "WITH RECURSIVE descendants(id) AS (SELECT target FROM imports WHERE source = ? "
+                 "UNION SELECT target FROM imports JOIN descendants ON source = id) "
+                 "SELECT 1 FROM descendants WHERE id = ? LIMIT 1",
+                 (binding.history_sha256, binding.history_sha256),
+-            ).fetchone()
++            )
+             if cycle:
+                 raise ProvenanceValidationError("cyclic member-history imports")
+ 
+     def _accept_import(self, imported: MemberHistoryImport) -> MemberHistoryBinding:
+         self._require_open()
+-        proof = self.store.source_proof(imported)
+-        source = self.store.descriptor(proof.binding)
++        proof = self.store.read_source_proof(imported)
++        source = self.store.read_descriptor(proof.binding)
+         if self._imported_primary_state is None:
+             state = self._read_imported_primary_state(source)
+         else:
+             state = self._imported_primary_state(source)
+         if state != imported.input_state:
+             raise ProvenanceValidationError("imported State differs from the source primary")
+-        self._object(source_binding_proof_object_path(imported.source_binding_proof_sha256))
++        self._object(
++            source_binding_proof_object_path(imported.source_binding_proof_sha256),
++            proof.to_json_bytes(),
++        )
+         self._history(proof.binding, imported.extent)
+         return proof.binding
+ 
+@@ -760,20 +808,39 @@ class MemberHistoryClosure:
+ 
+     def resolve_import(self, imported: MemberHistoryImport) -> None:
+         """Validate an accepted early input selection, before output H can be sealed."""
+-        self._require_open()
+-        self._accept_import(imported)
+-        self._drain()
++        with self._selection():
++            self._accept_import(imported)
++            self._drain()
+ 
+     def resolve(self, binding: MemberHistoryBinding, *, extent: str) -> None:
+-        self._require_open()
+-        self._history(binding, extent)
+-        self._drain()
++        with self._selection():
++            self._history(binding, extent)
++            self._drain()
+ 
+     def resolve_snapshot(self, anchor: HistoryJournalAnchor) -> None:
+         """Validate early construction custody without claiming a finalized H."""
++        with self._selection():
++            self._snapshot(anchor)
++            self._drain()
++
++    @contextmanager
++    def _selection(self) -> Iterator[None]:
+         self._require_open()
+-        self._snapshot(anchor)
+-        self._drain()
++        if not self._db.in_transaction:
++            self._write("BEGIN")
++        self._write("SAVEPOINT history_selection")
++        try:
++            yield
++            self._write("RELEASE history_selection")
++        except BaseException:
++            if not self._closing:
++                try:
++                    self._write("ROLLBACK TO history_selection")
++                    self._write("RELEASE history_selection")
++                except BaseException:
++                    self._closing = True
++                    raise
++            raise
+ 
+     @declare_growth(_pending_declaration("history"))
+     def _pending_history(self) -> tuple[str, str, bytes] | None:
+@@ -805,7 +872,7 @@ class MemberHistoryClosure:
+                 self._visit_history(
+                     MemberHistoryBinding.from_mapping(require_canonical_json(encoded)), requested
+                 )
+-                self._execute(
++                self._write(
+                     "UPDATE histories SET done = 1 WHERE identity = ? AND extent = ?",
+                     (identity, requested),
+                 )
+@@ -827,7 +894,7 @@ class MemberHistoryClosure:
+                 parent = summary.frames[0].document["body"]["journal"].get("forked_from")
+                 if parent is not None:
+                     self._snapshot(HistoryJournalAnchor.from_mapping(parent))
+-                self._execute("UPDATE snapshots SET done = 1 WHERE identity = ?", (identity,))
++                self._write("UPDATE snapshots SET done = 1 WHERE identity = ?", (identity,))
+ 
+     def journal_anchors(self) -> Iterator[HistoryJournalAnchor]:
+         """Largest required exact prefix per journal, never a substituted current head."""
+@@ -898,8 +965,15 @@ class MemberHistoryClosure:
+ 
+     def structure_objects(self) -> Iterator[bytes]:
+         self._require_open()
+-        for (path,) in self._rows("SELECT path FROM objects ORDER BY path"):
+-            content = read_bounded_history_object(self.store.read_object(path), 4 * 1024 * 1024)
++        for path, digest, size in self._rows(
++            "SELECT path, sha256, size FROM objects ORDER BY path"
++        ):
++            content = read_bounded_history_object(self.store.read_object(path), size)
++            self._require_open()
++            if len(content) != size or hashlib.sha256(content).hexdigest() != digest:
++                raise ProvenanceValidationError(
++                    "history structure bytes differ from their admitted identity"
++                )
+             if provenance_structure_identity(content).relative_path != path:
+                 raise ProvenanceValidationError("history structure path differs from its bytes")
+             yield content
+diff --git a/packages/riverhog-provenance/tests/test_history_membership_admission.py b/packages/riverhog-provenance/tests/test_history_membership_admission.py
+index 62069cc9..25019f84 100644
+--- a/packages/riverhog-provenance/tests/test_history_membership_admission.py
++++ b/packages/riverhog-provenance/tests/test_history_membership_admission.py
+@@ -31,7 +31,7 @@ def image():
+     ) as closure:
+         for number in (2, 1):
+             closure._snapshot(anchor(number))
+-        closure._object("exact-structure-object")
++        closure._object("exact-structure-object", b"exact bytes")
+         result = closure.membership_image(max_bytes=1024 * 1024)
+         assert result is not None
+         return result
+diff --git a/packages/riverhog-provenance/tests/test_history_worklist_admission.py b/packages/riverhog-provenance/tests/test_history_worklist_admission.py
+index 64073dc1..14578626 100644
+--- a/packages/riverhog-provenance/tests/test_history_worklist_admission.py
++++ b/packages/riverhog-provenance/tests/test_history_worklist_admission.py
+@@ -73,7 +73,7 @@ def test_history_worklist_admits_before_schema_and_copies_exact_membership(roots
+         assert population.connections[0].execute("PRAGMA cache_size").fetchone() == (-512,)
+         for number in (2, 1):
+             closure._snapshot(selected(number))
+-        closure._object("exact-structural-object")
++        closure._object("exact-structural-object", b"exact bytes")
+         assert closure.membership_image(max_bytes=0) is None
+         assert len(population.attempts) == 1
+         image = closure.membership_image(max_bytes=1024 * 1024)
+diff --git a/packages/riverhog-provenance/tests/test_history_selection_work.py b/packages/riverhog-provenance/tests/test_history_selection_work.py
+new file mode 100644
+index 00000000..461efcc8
+--- /dev/null
++++ b/packages/riverhog-provenance/tests/test_history_selection_work.py
+@@ -0,0 +1,348 @@
++"""Complete neutral selections consume verified pages once within one owned attempt."""
++
++from __future__ import annotations
++
++import sqlite3
++from collections import Counter
++from dataclasses import replace
++
++import pytest
++from riverhog_archive_contracts import (
++    BOUND_HISTORY_EXTENT,
++    RETAINED_HISTORY_EXTENT,
++    MemberHistoryStore,
++    RecordPage,
++    history_record_page_object_path,
++    member_history_object_path,
++    source_binding_proof_object_path,
++)
++from riverhog_provenance import MemberHistoryClosure, ProvenanceValidationError
++
++from tests.support.neutral_history import history_fixture
++
++
++def _page_paths(material, authority):
++    for ordinal in range(authority.record_count + 1):
++        path = history_record_page_object_path(authority.records_sha256, ordinal)
++        yield path
++        if RecordPage.from_json_bytes(material.objects[path]).terminal:
++            return
++    raise AssertionError("fixture has no terminal")
++
++
++def _membership(closure):
++    values = {}
++    for table in (
++        "histories",
++        "imports",
++        "snapshots",
++        "journals",
++        "objects",
++        "reference_journals",
++        "reference_assertions",
++    ):
++        cursor = closure._db.execute(f"SELECT * FROM {table} ORDER BY rowid")
++        try:
++            values[table] = cursor.fetchall()
++        finally:
++            cursor.close()
++    return values
++
++
++@pytest.mark.parametrize(
++    "dimensions",
++    [
++        {},
++        {"members": 4},
++        {"roots": 129},
++        {"private_imports": 4},
++        {"shared_ancestors": 4},
++        {"shared_ancestors": 1, "depth": 4},
++        {"members": 4, "shared_ancestors": 1},
++        {"members": 4, "shared_ancestors": 1, "source_roots": 129},
++    ],
++)
++def test_selection_counts_unique_history_work_and_shared_import_edges(dimensions, record_property):
++    material = history_fixture(**dimensions)
++    reads, received, journals, journal_receipts = Counter(), Counter(), Counter(), Counter()
++    heads, statements = [], []
++
++    def read(path):
++        reads[path] += 1
++        try:
++            raw = material.objects[path]
++            for offset in range(0, len(raw), 137):
++                yield raw[offset : offset + 137]
++        finally:
++            received[path] += 1
++
++    def journal(identity, end):
++        journals[identity] += 1
++        try:
++            yield material.journals[identity][:end]
++        finally:
++            journal_receipts[identity] += 1
++
++    expected = Counter()
++    for history in material.histories.values():
++        expected[member_history_object_path(history.identity)] += 1
++        for authority in (history.roots, history.imports):
++            expected.update(_page_paths(material, authority))
++    for imported in material.imports:
++        expected[member_history_object_path(imported.source_history_sha256)] += 1
++        expected[source_binding_proof_object_path(imported.source_binding_proof_sha256)] += 1
++
++    with MemberHistoryClosure(
++        MemberHistoryStore(read, on_storage_open=heads.append),
++        journal,
++        member_role="urn:test:member",
++    ) as closure:
++        closure._db.set_trace_callback(statements.append)
++        for binding in material.bindings:
++            closure.resolve(binding, extent=RETAINED_HISTORY_EXTENT)
++            assert closure._db.in_transaction
++        assert not any(query == "COMMIT" for query in statements)
++        assert reads == received == expected
++        assert journals == journal_receipts
++        assert sum(journals.values()) == len(material.journals) + len(material.imports)
++        assert len(heads) == len(material.histories)
++        assert all(head.cleanup_complete for head in heads)
++        assert set(closure.journal_anchors()) == set(material.expected_anchors)
++        membership = _membership(closure)
++        assert all(row[-1] == 1 for row in membership["histories"])
++        assert all(row[-1] == 1 for row in membership["snapshots"])
++        assert len(membership["histories"]) == len(material.histories)
++        assert len(membership["imports"]) == len(material.imports)
++        source_reads = sum(reads.values())
++        cycle_queries = sum(query.startswith("WITH RECURSIVE descendants") for query in statements)
++        binding_queries = sum(
++            query.startswith("SELECT binding FROM histories") for query in statements
++        )
++        assert cycle_queries == len(material.imports)
++        assert binding_queries == len(material.bindings) + len(material.imports)
++        # Export remains a new authenticated read of every unique structural object.
++        assert list(closure.structure_objects()) == [
++            material.objects[path] for path in sorted(material.objects)
++        ]
++        assert reads == received == expected + Counter(material.objects.keys())
++    assert closure._connection_closed and closure._directory_removed and not closure._cursors
++    record_property(
++        "work_observations",
++        {
++            "dimensions": dimensions,
++            "selected_members": len(material.bindings),
++            "unique_histories": len(material.histories),
++            "import_edges": len(material.imports),
++            "unique_structure_objects": len(material.objects),
++            "selection_structure_reads": source_reads,
++            "export_structure_reads": len(material.objects),
++            "journal_reads": sum(journals.values()),
++            "heads_admissions_and_receipts": len(heads),
++            "cycle_queries": cycle_queries,
++            "binding_queries": binding_queries,
++            "selection_commits": 0,
++        },
++    )
++
++
++@pytest.mark.parametrize("entrypoint", ["resolve", "resolve_import"])
++def test_late_inherited_failure_restores_prior_membership_and_rechecks_retry(entrypoint):
++    material = history_fixture(shared_ancestors=1, source_roots=3)
++    imported = material.imports[-1]
++    source = material.histories[imported.source_history_sha256]
++    terminal = tuple(_page_paths(material, source.roots))[-1]
++    original = material.objects.pop(terminal)
++    denied = False
++    proof_path = source_binding_proof_object_path(imported.source_binding_proof_sha256)
++    reads = Counter()
++
++    def read(path):
++        reads[path] += 1
++        yield material.objects[path]
++        if denied and path == proof_path:
++            raise PermissionError("current source proof fence revoked")
++
++    with MemberHistoryClosure(
++        MemberHistoryStore(read),
++        lambda identity, end: (material.journals[identity][:end],),
++        member_role="urn:test:member",
++    ) as closure:
++        closure.resolve_snapshot(material.expected_anchors[0])
++        before = _membership(closure)
++
++        def selected():
++            if entrypoint == "resolve":
++                closure.resolve(material.bindings[0], extent=RETAINED_HISTORY_EXTENT)
++            else:
++                closure.resolve_import(imported)
++
++        with pytest.raises(KeyError):
++            selected()
++        assert _membership(closure) == before
++        assert list(closure.structure_objects()) == []
++        material.objects[terminal] = original
++        denied = True
++        with pytest.raises(PermissionError, match="fence revoked"):
++            selected()
++        assert _membership(closure) == before
++        denied = False
++        selected()
++        assert set(closure.journal_anchors()) == set(material.expected_anchors)
++        assert reads[proof_path] == 3
++
++
++@pytest.mark.parametrize("failure", ["page_fence", "staging", "journal_fence"])
++def test_interruption_does_not_admit_partial_selection_and_retry_reads_fresh(monkeypatch, failure):
++    material = history_fixture(roots=3)
++    history = material.histories[material.bindings[0].history_sha256]
++    terminal = tuple(_page_paths(material, history.imports))[-1]
++    active = True
++    reads, received = Counter(), Counter()
++
++    def read(path):
++        reads[path] += 1
++        try:
++            yield material.objects[path]
++            if active and failure == "page_fence" and path == terminal:
++                raise InterruptedError("page read fence interrupted")
++        finally:
++            received[path] += 1
++
++    def journal(identity, end):
++        try:
++            yield material.journals[identity][:end]
++        finally:
++            if active and failure == "journal_fence":
++                raise InterruptedError("journal read fence interrupted")
++
++    with MemberHistoryClosure(
++        MemberHistoryStore(read), journal, member_role="urn:test:member"
++    ) as closure:
++        before = _membership(closure)
++        original = closure._snapshot
++
++        def snapshot(anchor):
++            original(anchor)
++            if active and failure == "staging":
++                raise InterruptedError("page staging interrupted")
++
++        monkeypatch.setattr(closure, "_snapshot", snapshot)
++        with pytest.raises(InterruptedError):
++            closure.resolve(material.bindings[0], extent=RETAINED_HISTORY_EXTENT)
++        assert _membership(closure) == before
++        assert reads == received
++        active = False
++        closure.resolve(material.bindings[0], extent=RETAINED_HISTORY_EXTENT)
++        assert set(closure.journal_anchors()) == set(material.expected_anchors)
++        assert reads[member_history_object_path(history.identity)] == 2
++        assert reads == received
++
++
++@pytest.mark.parametrize("extent", [BOUND_HISTORY_EXTENT, RETAINED_HISTORY_EXTENT])
++def test_repeated_history_identity_requires_the_same_complete_binding(extent):
++    material = history_fixture()
++    binding = material.bindings[0]
++    reads = Counter()
++
++    def read(path):
++        reads[path] += 1
++        yield material.objects[path]
++
++    with MemberHistoryClosure(
++        MemberHistoryStore(read),
++        lambda identity, end: (material.journals[identity][:end],),
++        member_role="urn:test:member",
++    ) as closure:
++        closure.resolve(binding, extent=BOUND_HISTORY_EXTENT)
++        before = _membership(closure)
++        prior_reads = reads.copy()
++        with pytest.raises(ProvenanceValidationError, match="binding differs"):
++            closure.resolve(replace(binding, bytes=binding.bytes + 1), extent=extent)
++        assert _membership(closure) == before and reads == prior_reads
++        closure.resolve(binding, extent=extent)
++
++
++def test_bound_then_retained_keeps_full_selected_and_inherited_history():
++    material = history_fixture(roots=3, shared_ancestors=1, source_roots=3)
++    binding = material.bindings[0]
++    with MemberHistoryClosure(
++        MemberHistoryStore(lambda path: (material.objects[path],)),
++        lambda identity, end: (material.journals[identity][:end],),
++        member_role="urn:test:member",
++    ) as closure:
++        closure.resolve(binding, extent=BOUND_HISTORY_EXTENT)
++        bound = set(closure.journal_anchors())
++        closure.resolve(binding, extent=RETAINED_HISTORY_EXTENT)
++        retained = set(closure.journal_anchors())
++        assert bound < retained == set(material.expected_anchors)
++        assert len(_membership(closure)["histories"]) == len(material.histories) + 1
++        assert set(closure.structure_objects()) == set(material.objects.values())
++
++
++def test_resolutions_retain_the_owned_transaction_across_membership_image_commit():
++    material = history_fixture(members=2)
++    statements = []
++    with MemberHistoryClosure(
++        MemberHistoryStore(lambda path: (material.objects[path],)),
++        lambda identity, end: (material.journals[identity][:end],),
++        member_role="urn:test:member",
++    ) as closure:
++        closure._db.set_trace_callback(statements.append)
++        closure.resolve(material.bindings[0], extent=RETAINED_HISTORY_EXTENT)
++        assert closure._db.in_transaction
++        assert statements.count("BEGIN") == 1 and statements.count("COMMIT") == 0
++        assert closure.membership_image(max_bytes=1024 * 1024) is not None
++        assert not closure._db.in_transaction and statements.count("COMMIT") == 1
++        closure.resolve(material.bindings[1], extent=RETAINED_HISTORY_EXTENT)
++        assert closure._db.in_transaction
++        assert statements.count("BEGIN") == 2 and statements.count("COMMIT") == 1
++
++
++@pytest.mark.parametrize("after", [False, True])
++def test_uncertain_selection_cursor_close_freezes_owner_until_original_receiving(after):
++    material = history_fixture()
++    cursors, connections = [], []
++
++    class UncertainCursor:
++        def __init__(self, actual):
++            self.actual, self.close_calls = actual, 0
++
++        def close(self):
++            self.close_calls += 1
++            if self.close_calls == 1:
++                if after:
++                    self.actual.close()
++                raise OSError("selection cursor close unconfirmed")
++            self.actual.close()
++
++    class Connection(sqlite3.Connection):
++        def execute(self, statement, parameters=()):
++            actual = super().execute(statement, parameters)
++            if statement == "RELEASE history_selection":
++                cursor = UncertainCursor(actual)
++                cursors.append(cursor)
++                return cursor
++            return actual
++
++    def connect(path):
++        actual = sqlite3.connect(path, factory=Connection)
++        connections.append(actual)
++        return actual
++
++    owner = MemberHistoryClosure(
++        MemberHistoryStore(lambda path: (material.objects[path],)),
++        lambda identity, end: (material.journals[identity][:end],),
++        member_role="urn:test:member",
++        connection_factory=connect,
++    )
++    with pytest.raises(OSError, match="cursor close unconfirmed"), owner:
++        owner.resolve(material.bindings[0], extent=RETAINED_HISTORY_EXTENT)
++    assert owner._closing and owner._root.exists() and owner._cursors == {cursors[0]}
++    assert cursors[0].close_calls == 1
++    with pytest.raises(RuntimeError, match="closed"):
++        list(owner.journal_anchors())
++    owner.close()
++    assert cursors[0].close_calls == 2 and not owner._cursors
++    assert owner._connection_closed and owner._directory_removed and not owner._root.exists()
++    with pytest.raises(sqlite3.ProgrammingError, match="closed"):
++        connections[0].execute("SELECT 1")
+diff --git a/packages/riverhog-provenance/tests/test_history_structure_identity.py b/packages/riverhog-provenance/tests/test_history_structure_identity.py
+new file mode 100644
+index 00000000..5aa40d3d
+--- /dev/null
++++ b/packages/riverhog-provenance/tests/test_history_structure_identity.py
+@@ -0,0 +1,182 @@
++from __future__ import annotations
++
++from collections import Counter
++from dataclasses import replace
++
++import pytest
++from riverhog_archive_contracts import (
++    RETAINED_HISTORY_EXTENT,
++    MemberHistoryDocument,
++    MemberHistoryStore,
++    RecordPage,
++    SourceMemberHistoryBindingProof,
++    history_record_page_object_path,
++    provenance_structure_identity,
++)
++from riverhog_provenance import MemberHistoryClosure, ProvenanceValidationError
++
++from tests.support.neutral_history import history_fixture
++
++
++@pytest.mark.parametrize("terminal", [False, True])
++def test_fresh_export_rejects_changed_page_after_shared_history_admission(terminal):
++    fixture = history_fixture(members=2, shared_ancestors=1, source_roots=2)
++    source = fixture.histories[fixture.imports[0].source_history_sha256]
++    path = history_record_page_object_path(source.roots.records_sha256, 0)
++    reads = Counter()
++
++    def read(selected):
++        reads[selected] += 1
++        return (fixture.objects[selected],)
++
++    def opened():
++        return MemberHistoryClosure(
++            MemberHistoryStore(read),
++            lambda journal_id, end: (fixture.journals[journal_id][:end],),
++            member_role="urn:test:member",
++        )
++
++    with opened() as closure:
++        closure.resolve(fixture.bindings[0], extent=RETAINED_HISTORY_EXTENT)
++        original = fixture.objects[path]
++        page = RecordPage.from_json_bytes(original)
++        rows = tuple(
++            row
++            for row in page.records
++            if row["value"]["journal"] == source.primary.journal.to_mapping()
++        )
++        assert len(rows) == 1 < len(page.records)
++        changed = replace(page, records=() if terminal else rows, terminal=terminal).to_json_bytes()
++        assert provenance_structure_identity(changed).relative_path == path
++        fixture.objects[path] = changed
++        before = reads[path]
++        closure.resolve(fixture.bindings[1], extent=RETAINED_HISTORY_EXTENT)
++        assert reads[path] == before
++
++        exported = []
++        with pytest.raises(ProvenanceValidationError, match="admitted identity"):
++            for content in closure.structure_objects():
++                exported.append(content)
++        assert reads[path] == before + 1
++        assert changed not in exported and not closure._cursors
++
++        with opened() as fresh:
++            with pytest.raises(ValueError, match="incomplete or changed"):
++                fresh.resolve(fixture.bindings[0], extent=RETAINED_HISTORY_EXTENT)
++            assert not fresh.contains_structure_object(path)
++            assert tuple(fresh.journal_anchors()) == ()
++            fresh_root = fresh._root
++        assert not fresh_root.exists()
++
++        fixture.objects[path] = original
++        assert set(closure.structure_objects()) == set(fixture.objects.values())
++        root = closure._root
++    assert not root.exists()
++
++
++def test_checked_structure_codecs_preserve_exact_admitted_canonical_bytes():
++    fixture = history_fixture(members=2, roots=3, shared_ancestors=1, source_roots=2)
++    types = {
++        "history": MemberHistoryDocument,
++        "record-page": RecordPage,
++        "source-proof": SourceMemberHistoryBindingProof,
++    }
++    seen = set()
++    for path, content in fixture.objects.items():
++        identity = provenance_structure_identity(content)
++        assert identity.relative_path == path
++        seen.add(identity.kind)
++        assert types[identity.kind].from_json_bytes(content).to_json_bytes() == content
++    assert seen == set(types)
++
++
++@pytest.mark.parametrize("after", [False, True])
++def test_structure_export_receives_original_source_before_exposing_its_bytes(tmp_path, after):
++    fixture = history_fixture()
++    selected = fixture.histories[fixture.bindings[0].history_sha256]
++    target = history_record_page_object_path(selected.roots.records_sha256, 0)
++    path = tmp_path / "page.json"
++    path.write_bytes(fixture.objects[target])
++    streams = []
++    exporting = False
++
++    class Stream:
++        def __init__(self):
++            self.original = path.open("rb")
++            self.closes = 0
++            self.fail = not streams
++
++        def __iter__(self):
++            return self
++
++        def __next__(self):
++            content = self.original.read(128)
++            if not content:
++                raise StopIteration
++            return content
++
++        def close(self):
++            self.closes += 1
++            if self.fail and self.closes == 1:
++                if after:
++                    self.original.close()
++                raise OSError("original source close unconfirmed")
++            self.original.close()
++
++    def read(selected_path):
++        if exporting and selected_path == target:
++            stream = Stream()
++            streams.append(stream)
++            return stream
++        return (fixture.objects[selected_path],)
++
++    with MemberHistoryClosure(
++        MemberHistoryStore(read),
++        lambda journal_id, end: (fixture.journals[journal_id][:end],),
++        member_role="urn:test:member",
++    ) as closure:
++        closure.resolve(fixture.bindings[0], extent=RETAINED_HISTORY_EXTENT)
++        exporting = True
++        exported = []
++        with pytest.raises(OSError, match="original source close unconfirmed"):
++            for content in closure.structure_objects():
++                exported.append(content)
++        assert fixture.objects[target] not in exported and not closure._cursors
++        original = streams[0]
++        assert original.closes == 1 and original.original.closed is after
++        original.close()
++        assert original.closes == 2 and original.original.closed
++        assert set(closure.structure_objects()) == set(fixture.objects.values())
++        assert streams[1].closes == 1 and streams[1].original.closed
++        root = closure._root
++    assert not root.exists()
++
++
++def test_structure_export_cannot_yield_after_source_callback_closes_owner(tmp_path):
++    fixture = history_fixture()
++    exporting = False
++    streams = []
++
++    def read(selected_path):
++        if exporting:
++            source_path = tmp_path / "selected-structure.json"
++            source_path.write_bytes(fixture.objects[selected_path])
++            original = source_path.open("rb")
++            streams.append(original)
++            closure.close()
++            return original
++        return (fixture.objects[selected_path],)
++
++    with MemberHistoryClosure(
++        MemberHistoryStore(read),
++        lambda journal_id, end: (fixture.journals[journal_id][:end],),
++        member_role="urn:test:member",
++    ) as closure:
++        closure.resolve(fixture.bindings[0], extent=RETAINED_HISTORY_EXTENT)
++        root = closure._root
++        exporting = True
++        with pytest.raises(RuntimeError, match="closed"):
++            next(closure.structure_objects())
++        assert len(streams) == 1 and streams[0].closed
++        assert closure._connection_closed and closure._directory_removed
++        assert not closure._cursors and not root.exists()
+diff --git a/tests/support/neutral_history.py b/tests/support/neutral_history.py
+new file mode 100644
+index 00000000..fd51dfd8
+--- /dev/null
++++ b/tests/support/neutral_history.py
+@@ -0,0 +1,222 @@
++"""Finite neutral histories with independently selectable structural dimensions."""
++
++from __future__ import annotations
++
++import hashlib
++from dataclasses import dataclass
++from typing import Any
++
++from riverhog_archive_contracts import (
++    RETAINED_HISTORY_EXTENT,
++    ArchiveProvenanceIdentity,
++    CollectionArchiveManifest,
++    CollectionArtifactSetIdentity,
++    HistoryJournalAnchor,
++    MemberHistoryBinding,
++    MemberHistoryBuilder,
++    MemberHistoryDocument,
++    MemberHistoryImport,
++    MemberHistoryPrimary,
++    MemberHistoryRoot,
++    ProvenanceRootDocument,
++    ProvenanceRootIdentity,
++    SourceMemberHistoryBindingProof,
++    binding_tree_commitment,
++    provenance_structure_identity,
++)
++from riverhog_provenance import (
++    BoundedSourceObserver,
++    BytesSource,
++    assertion,
++    create_journal,
++    external_reference,
++    new_id,
++    reference,
++    validate_journal,
++)
++
++
++@dataclass
++class NeutralHistory:
++    objects: dict[str, bytes]
++    journals: dict[str, bytes]
++    bindings: tuple[MemberHistoryBinding, ...]
++    histories: dict[str, MemberHistoryDocument]
++    proofs: dict[str, SourceMemberHistoryBindingProof]
++    imports: tuple[MemberHistoryImport, ...]
++    expected_anchors: tuple[HistoryJournalAnchor, ...]
++    primary_state: dict[str, Any]
++
++
++def history_fixture(
++    *,
++    members: int = 1,
++    roots: int = 1,
++    private_imports: int = 0,
++    shared_ancestors: int = 0,
++    source_roots: int = 1,
++    depth: int = 1,
++    imported_extent: str = RETAINED_HISTORY_EXTENT,
++) -> NeutralHistory:
++    """Build actual journals, descriptors, complete sets and source binding proofs.
++
++    Selected members share one valid primary journal and optional documentary
++    roots. Source histories have their own shared documentary roots. Each top
++    member imports its private sources plus the common ancestors; every source
++    may itself import a chain of ``depth`` histories. Sharing a journal does not
++    merge primary delivery identities or selected history extents.
++    """
++
++    assert members >= 1 and roots >= 1 and source_roots >= 1 and depth >= 1
++    assert private_imports >= 0 and shared_ancestors >= 0
++    source_count = (members * private_imports + shared_ancestors) * depth
++    payload = b"neutral member bytes"
++    byte_count, digest = len(payload), hashlib.sha256(payload).hexdigest()
++    ids = tuple(f"{number + 1:064x}" for number in range(members + source_count))
++    observed = BoundedSourceObserver().observe(BytesSource(payload))
++    graph, who = observed.graph_fragment(), observed.observer_agent_id
++    context = assertion("context", who, kind="delivery")
++    associations = {
++        identity: assertion(
++            "delivery_association",
++            who,
++            delivery_context_id=context["id"],
++            slot={"kind": "text", "text": identity},
++            role="urn:test:member",
++            state=reference(observed.state_id, "state"),
++            verification_observation_id=next(
++                row["id"] for row in graph["descriptions"] if row["type"] == "observation"
++            ),
++        )
++        for identity in ids
++    }
++    graph["contexts"] = [*graph.get("contexts", ()), context]
++    graph["delivery_associations"] = list(associations.values())
++    raw = create_journal(graph, recorded_by_agent_id=who)
++    with validate_journal(raw) as summary:
++        primary_anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
++        primary_state = external_reference(summary, observed.state_id)
++    journals = {primary_anchor.journal_id: raw}
++    anchors = [primary_anchor]
++
++    def documentary(count: int) -> tuple[HistoryJournalAnchor, ...]:
++        result = []
++        for _ in range(count):
++            agent_id = new_id()
++            raw = create_journal(
++                {
++                    "agents": [
++                        assertion(
++                            "agent", agent_id, object_id=agent_id, kind="software", name="recorder"
++                        )
++                    ]
++                },
++                recorded_by_agent_id=agent_id,
++            )
++            with validate_journal(raw) as summary:
++                anchor = HistoryJournalAnchor.from_mapping(summary.anchor)
++            journals[anchor.journal_id] = raw
++            result.append(anchor)
++            anchors.append(anchor)
++        return tuple(result)
++
++    selected_roots = documentary(roots - 1)
++    inherited_roots = documentary(source_roots - 1) if source_count else ()
++    objects: dict[str, bytes] = {}
++    histories: dict[str, MemberHistoryDocument] = {}
++    proofs: dict[str, SourceMemberHistoryBindingProof] = {}
++    all_imports = []
++
++    def seal(
++        identity: str,
++        extra_roots: tuple[HistoryJournalAnchor, ...],
++        selected_imports: tuple[MemberHistoryImport, ...],
++    ) -> MemberHistoryBinding:
++        with MemberHistoryBuilder(
++            artifact_id=identity,
++            bytes=byte_count,
++            sha256=digest,
++            primary=MemberHistoryPrimary(primary_anchor, associations[identity]["id"]),
++        ) as builder:
++            for ordinal, anchor in enumerate(extra_roots):
++                builder.add_root(MemberHistoryRoot(anchor, "retained" if ordinal % 2 else "bound"))
++            for imported in selected_imports:
++                builder.add_import(imported)
++            binding, history = builder.seal()
++            for raw in builder.objects():
++                objects[provenance_structure_identity(raw).relative_path] = raw
++        histories[binding.history_sha256] = history
++        all_imports.extend(selected_imports)
++        return binding
++
++    def source_import(binding: MemberHistoryBinding) -> MemberHistoryImport:
++        provenance = ProvenanceRootDocument(
++            archive_generation="1" * 64,
++            artifact_set_sha256=hashlib.sha256(binding.artifact_id.encode()).hexdigest(),
++            delivery_context_id=context["id"],
++            binding_count=1,
++            binding_tree_sha256=binding_tree_commitment((binding,)).root_sha256,
++            journal_count=source_roots,
++            ordered_volume_sha256="3" * 64,
++        )
++        archive = CollectionArchiveManifest(
++            archive_generation=provenance.archive_generation,
++            artifact_set=CollectionArtifactSetIdentity(
++                1, byte_count, provenance.artifact_set_sha256
++            ),
++            ordered_volume_sha256="4" * 64,
++            provenance=ArchiveProvenanceIdentity(
++                provenance.identity,
++                ProvenanceRootIdentity(
++                    id="provenance-root",
++                    kind="provenance-root",
++                    path="provenance/root.json.age",
++                    plaintext_bytes=len(provenance.to_json_bytes()),
++                    sha256=provenance.identity,
++                    stored_bytes=1234,
++                    stored_sha256="5" * 64,
++                ),
++            ),
++        )
++        proof = SourceMemberHistoryBindingProof(
++            "6" * 64, 7, archive.to_json_bytes(), provenance.to_json_bytes(), binding, 0, ()
++        )
++        raw = proof.to_json_bytes()
++        objects[provenance_structure_identity(raw).relative_path] = raw
++        proofs[binding.history_sha256] = proof
++        return MemberHistoryImport(
++            source_identity=proof.source_identity,
++            source_collection_id=proof.collection_id,
++            source_archive_root_sha256=hashlib.sha256(proof.archive_root).hexdigest(),
++            source_artifact_set_sha256=provenance.artifact_set_sha256,
++            source_artifact_id=binding.artifact_id,
++            source_history_sha256=binding.history_sha256,
++            source_binding_proof_sha256=proof.identity,
++            extent=imported_extent,
++            input_state=primary_state,
++        )
++
++    next_source = iter(ids[members:])
++
++    def chain() -> MemberHistoryImport:
++        inherited: tuple[MemberHistoryImport, ...] = ()
++        for _ in range(depth):
++            imported = source_import(seal(next(next_source), inherited_roots, inherited))
++            inherited = (imported,)
++        return inherited[0]
++
++    shared = tuple(chain() for _ in range(shared_ancestors))
++    bindings = tuple(
++        seal(identity, selected_roots, (*shared, *(chain() for _ in range(private_imports))))
++        for identity in ids[:members]
++    )
++    return NeutralHistory(
++        objects,
++        journals,
++        bindings,
++        histories,
++        proofs,
++        tuple(all_imports),
++        tuple(anchors),
++        primary_state,
++    )

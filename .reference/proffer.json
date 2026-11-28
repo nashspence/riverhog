@@ -1,0 +1,106 @@
+{
+  "kind": "handoff",
+  "issue": "https://github.com/nashspence/riverhog/issues/991",
+  "purpose": "Reduce repeated complete neutral-history traversals within existing closure ownership, with exact fresh export and finite source/receiving evidence.",
+  "producer": [
+    "OpenAI ChatGPT; GPT-6 Astra Pro; inherited-model collaborating agents; no unexposed effort setting asserted."
+  ],
+  "requester": "Repository maintainer for the Riverhog integration agent; focused comment 7233007754.",
+  "first_step": "Read DESIGN.md, reconcile current main, then apply the whole proposed/neutral-history.patch and run VALIDATION.md focused checks through the normal integration rail.",
+  "source": {
+    "repository": "nashspence/riverhog",
+    "base": {
+      "ref": "main",
+      "commit": "60612eded1e0e4e5188c28a84697435eb969fad0"
+    },
+    "work_state": "patches"
+  },
+  "artifacts": [
+    "HANDOFF.md",
+    "DESIGN.md",
+    "EVIDENCE.md",
+    "VALIDATION.md",
+    "SOURCES.json",
+    "proposed/neutral-history.patch",
+    "experiments/history_probe.py",
+    "experiments/history_export_gap_probe.py",
+    "evidence/validation.json",
+    "evidence/history-counts.json.gz",
+    "evidence/history-export-gap.json",
+    "evidence/growth-properties.json.gz",
+    "evidence/development-observations.json.gz"
+  ],
+  "checks": [
+    {
+      "command": "Pinned pytest: archive-contract test_history_heads_admission.py and test_member_history.py",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch before final export guard; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 e76c10642fdd8e371d83bae7a994026be7f18c9988065892c632b08a98151f00. Final executable delta is exactly one post-read _require_open call; a docstring clarifies existing detached owners."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "70 cases. The Store owner and these tests are byte-identical in the final proposal; these checks do not execute the changed closure guard."
+    },
+    {
+      "command": "Pinned pytest with qualification_numeric_policy: 13 history/client/recovery/Core test files; exclude unchanged generic >4MiB cache test",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch before final export guard; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 e76c10642fdd8e371d83bae7a994026be7f18c9988065892c632b08a98151f00. Final executable delta is exactly one post-read _require_open call; a docstring clarifies existing detached owners."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "173 cases; 1 deselected; 739.84s. Includes all 18 encrypted recovery cases and actual Core imported-history receiving/growth/cache-pressure cases. The exact subsequent guard delta is recorded, not described as this run testing final bytes."
+    },
+    {
+      "command": "Pinned pytest: test_history_selection_work.py, test_history_structure_identity.py, two selected Core live read-fence tests",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222; all changed-file hashes in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "27 final-source cases including the reproduced close-during-read defect; all 25 new closure cases are repeated on final bytes."
+    },
+    {
+      "command": "history_probe.py --mode all against final source",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222; all changed-file hashes in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "40 observations: 34 neutral + 6 actual encrypted recovery. Exact full output and original outer age/source/SQLite receiving. Candidate hashes unchanged; workspace removed."
+    },
+    {
+      "command": "history_export_gap_probe.py against exact baseline and final source",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222; all changed-file hashes in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "Four final observations reproduce original same-authority changed-page export and final rejection. No object timing qualification."
+    },
+    {
+      "command": "Pinned Ruff check/format on eight changed files; focused mypy on both production owners; git diff --check",
+      "result": "passed",
+      "source": {
+        "kind": "worktree",
+        "details": "60612eded1e0e4e5188c28a84697435eb969fad0 plus proposed patch; Store SHA256 d4cc182516917c28d42014009946f25a662627606bd903f989e6de85238034bf; Closure SHA256 ee9fd5f8e7ff893d2fbba158108c4b417317ee36f77866938e5aed1bcac82222; all changed-file hashes in SOURCES.json."
+      },
+      "environment": "Linux x86_64; CPython 3.12.3; SQLite 3.45.1; uv 0.11.24 and unchanged uv.lock; official age/batchpass 1.3.1 for encrypted recovery; fixture KDF log_n=1.",
+      "notes": "No dependency, lock, schema-format, KDF or resource-budget edits."
+    },
+    {
+      "command": "Complete make lint/unit/build/dist, product PR tested-merge CI, installed/platform and approved production-budget qualification",
+      "result": "not-run",
+      "reason": "Finite external reference only. The normal integration owner retains complete current-source qualification and independently approved production operation/binding/profile requirements."
+    }
+  ],
+  "limitations": [
+    "Reference input only; product tree remains audited main. No merge, implementation approval, full integration CI or installed/platform qualification.",
+    "Encrypted count fixtures use KDF log_n=1. No production elapsed-time, marginal-cost, canonical-pilot or shared budget/profile acceptance.",
+    "Distinct histories sharing identical sets, per-edge fresh primary journal reads and recursive cycle-query work remain; no complete closure/whole-path growth claim.",
+    "Recovery caller descriptor pass, fresh export, authorization/root and mutable metadata-head fences remain. No worker-width, KDF, format or shared authority change."
+  ]
+}
