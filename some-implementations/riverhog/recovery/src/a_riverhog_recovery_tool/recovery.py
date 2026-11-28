@@ -9,13 +9,13 @@ import shutil
 import sqlite3
 import tempfile
 from collections.abc import Iterator, Mapping
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, cast
 
 from riverhog_archive_contracts import (
     ARCHIVE_ROOT_DOCUMENT_BYTES_MAX,
-    PROVENANCE_METADATA_BYTES_MAX,
     RECOVERY_DESCRIPTOR_PATH,
     RETAINED_HISTORY_EXTENT,
     CollectionArchiveManifest,
@@ -53,7 +53,10 @@ from riverhog_provenance import (
 from ._archive_io import EncryptedArchive, archive_file, sha256_file
 from ._metadata import stage_metadata
 from ._payloads import stage_payloads
-from ._provenance_reader import CanonicalProvenanceArchiveReader
+from ._provenance_reader import (
+    CanonicalProvenanceArchiveReader,
+    PreparedCanonicalProvenanceArchiveReader,
+)
 from ._publication import publish_complete_recovery
 
 
@@ -233,63 +236,64 @@ def _prefix_chunks(path: Path, byte_count: int) -> Iterator[bytes]:
             yield chunk
 
 
+@contextmanager
 def _stage_provenance(
     selection: _ArchiveSelection,
     *,
     staging: Path,
     scratch: Path,
-) -> tuple[CanonicalProvenanceArchiveReader, sqlite3.Connection, int]:
-    reader = CanonicalProvenanceArchiveReader(
+) -> Iterator[tuple[PreparedCanonicalProvenanceArchiveReader, sqlite3.Connection, int]]:
+    source = CanonicalProvenanceArchiveReader(
         selection.encrypted.iter_plaintext,
         expected_root_sha256=selection.manifest.provenance.identity,
         archive_generation=selection.manifest.archive_generation,
         artifact_set_sha256=selection.manifest.artifact_set_sha256,
     )
-    scanned = reader.scan()
-    if scanned.root.binding_count != selection.manifest.artifacts:
-        raise RecoveryError("provenance binding coverage differs from artifact set")
-    root_raw = selection.encrypted.read_bounded(
-        selection.manifest.provenance.root.path, PROVENANCE_METADATA_BYTES_MAX
-    )
-    _write_exact(staging, ("structure", "provenance-root.json"), root_raw)
-    journals = sqlite3.connect(scratch / "journals.sqlite3")
-    journals.execute("DROP TABLE IF EXISTS journals")
-    journals.execute(
-        "CREATE TABLE journals (journal_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
-        "sha256 TEXT NOT NULL, path TEXT NOT NULL)"
-    )
-    count = 0
-    for journal_id, byte_count, sha256 in reader.iter_journal_headers():
-        components = shared_journal_components(sha256)
-        output = staging.joinpath(*components)
-        output.parent.mkdir(parents=True, exist_ok=True)
-        digest = hashlib.sha256()
-        copied = 0
-        with output.open("xb") as stream:
-            for chunk in reader.iter_journal_range(journal_id):
-                stream.write(chunk)
-                copied += len(chunk)
-                digest.update(chunk)
-            stream.flush()
-            os.fsync(stream.fileno())
-        if (copied, digest.hexdigest()) != (byte_count, sha256):
-            raise RecoveryError("canonical journal differs from selected archive")
-        journals.execute(
-            "INSERT INTO journals VALUES (?, ?, ?, ?)",
-            (journal_id, byte_count, sha256, str(output)),
-        )
-        count += 1
-    journals.commit()
-    # The entire selected set must resolve exact foreign/fork references. Unknown
-    # optional profile payloads remain exact even without their application code.
-    with CanonicalCorpusValidator() as corpus:
-        for (path,) in journals.execute("SELECT path FROM journals ORDER BY journal_id"):
-            with validate_journal_chunks(
-                _file_chunks(Path(path)), require_profiles=False
-            ) as summary:
-                corpus.add(summary)
-        corpus.validate()
-    return reader, journals, count
+    with source.prepare(workspace=scratch) as reader:
+        if reader.scan().root.binding_count != selection.manifest.artifacts:
+            raise RecoveryError("provenance binding coverage differs from artifact set")
+        _write_exact(staging, ("structure", "provenance-root.json"), reader.root_bytes)
+        with closing(sqlite3.connect(scratch / "journals.sqlite3")) as journals:
+            with closing(journals.cursor()) as cursor:
+                cursor.execute("DROP TABLE IF EXISTS journals")
+                cursor.execute(
+                    "CREATE TABLE journals (journal_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
+                    "sha256 TEXT NOT NULL, path TEXT NOT NULL)"
+                )
+                count = 0
+                with closing(reader.iter_journal_headers()) as headers:
+                    for journal_id, byte_count, sha256 in headers:
+                        components = shared_journal_components(sha256)
+                        output = staging.joinpath(*components)
+                        output.parent.mkdir(parents=True, exist_ok=True)
+                        digest = hashlib.sha256()
+                        copied = 0
+                        with output.open("xb") as stream:
+                            with closing(reader.iter_journal_range(journal_id)) as chunks:
+                                for chunk in chunks:
+                                    stream.write(chunk)
+                                    copied += len(chunk)
+                                    digest.update(chunk)
+                            stream.flush()
+                            os.fsync(stream.fileno())
+                        if (copied, digest.hexdigest()) != (byte_count, sha256):
+                            raise RecoveryError("canonical journal differs from selected archive")
+                        cursor.execute(
+                            "INSERT INTO journals VALUES (?, ?, ?, ?)",
+                            (journal_id, byte_count, sha256, str(output)),
+                        )
+                        count += 1
+                journals.commit()
+                # The entire selected set must resolve exact foreign/fork references.
+                # Unknown optional profile payloads remain exact without application code.
+                with CanonicalCorpusValidator() as corpus:
+                    for (path,) in cursor.execute("SELECT path FROM journals ORDER BY journal_id"):
+                        with validate_journal_chunks(
+                            _file_chunks(Path(path)), require_profiles=False
+                        ) as summary:
+                            corpus.add(summary)
+                    corpus.validate()
+            yield reader, journals, count
 
 
 def _file_chunks(path: Path) -> Iterator[bytes]:
@@ -362,134 +366,140 @@ def _stage_mapping(
     rules: DestinationRules,
     mode: Literal["declared-hints", "id-layout"],
 ) -> tuple[int, int]:
-    selected = sqlite3.connect(scratch / "selected.sqlite3")
-    selected.execute("DROP TABLE IF EXISTS selected")
-    selected.execute(
-        "CREATE TABLE selected (artifact_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
-        "sha256 TEXT NOT NULL, binding_json BLOB NOT NULL, hint_json BLOB, "
-        "support_json BLOB NOT NULL)"
-    )
-    members = payloads.execute(
-        "SELECT artifact_id, bytes, sha256 FROM artifacts ORDER BY artifact_id"
-    )
-    count = 0
+    with (
+        closing(sqlite3.connect(scratch / "selected.sqlite3")) as selected,
+        closing(payloads.cursor()) as members,
+    ):
+        selected.execute("DROP TABLE IF EXISTS selected")
+        selected.execute(
+            "CREATE TABLE selected (artifact_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL, "
+            "sha256 TEXT NOT NULL, binding_json BLOB NOT NULL, hint_json BLOB, "
+            "support_json BLOB NOT NULL)"
+        )
+        members.execute("SELECT artifact_id, bytes, sha256 FROM artifacts ORDER BY artifact_id")
+        count = 0
 
-    def advice() -> Iterator[MemberAdvice]:
-        for artifact_id, raw_hint in selected.execute(
-            "SELECT artifact_id, hint_json FROM selected ORDER BY artifact_id"
-        ):
-            yield MemberAdvice(
-                str(artifact_id), json.loads(raw_hint) if raw_hint is not None else None
+        def advice() -> Iterator[MemberAdvice]:
+            with closing(
+                selected.execute("SELECT artifact_id, hint_json FROM selected ORDER BY artifact_id")
+            ) as cursor:
+                for artifact_id, raw_hint in cursor:
+                    yield MemberAdvice(
+                        str(artifact_id), json.loads(raw_hint) if raw_hint is not None else None
+                    )
+
+        def read_journal(journal_id: str, end: int | None) -> Iterator[bytes]:
+            with closing(
+                journals.execute("SELECT path FROM journals WHERE journal_id = ?", (journal_id,))
+            ) as cursor:
+                row = cursor.fetchone()
+            if row is None:
+                raise RecoveryError("member history selects an absent shared journal")
+            yield from (
+                _file_chunks(Path(row[0])) if end is None else _prefix_chunks(Path(row[0]), end)
             )
 
-    def read_journal(journal_id: str, end: int | None) -> Iterator[bytes]:
-        row = journals.execute(
-            "SELECT path FROM journals WHERE journal_id = ?", (journal_id,)
-        ).fetchone()
-        if row is None:
-            raise RecoveryError("member history selects an absent shared journal")
-        yield from _file_chunks(Path(row[0])) if end is None else _prefix_chunks(Path(row[0]), end)
-
-    with MemberHistoryClosure(
-        MemberHistoryStore(reader.read_structure),
-        read_journal,
-        member_role=COLLECTION_MEMBER_ROLE,
-    ) as closure:
-        for member, raw_binding in zip(members, reader.iter_bindings(), strict=True):
-            artifact_id, byte_count, sha256 = str(member[0]), int(member[1]), str(member[2])
-            history_binding = MemberHistoryBinding.from_mapping(raw_binding)
-            if (history_binding.artifact_id, history_binding.bytes, history_binding.sha256) != (
-                artifact_id,
-                byte_count,
-                sha256,
-            ):
-                raise RecoveryError("member history differs from exact archive member fixity")
-            closure.resolve(history_binding, extent=RETAINED_HISTORY_EXTENT)
-            history = closure.store.descriptor(history_binding)
-            binding = CollectionArtifactProvenanceBindingDocument.model_validate(
-                {
-                    "artifact_id": artifact_id,
-                    **history.primary.to_mapping(),
-                }
-            )
-            if binding.artifact_id != artifact_id:
-                raise RecoveryError("primary binding differs from archive artifact order")
-            hint, support = _selected_advice(
-                binding=binding,
-                byte_count=byte_count,
-                sha256=sha256,
-                journals=journals,
-                staging=staging,
-            )
-            selected.execute(
-                "INSERT INTO selected VALUES (?, ?, ?, ?, ?, ?)",
-                (
+        with MemberHistoryClosure(
+            MemberHistoryStore(reader.read_structure),
+            read_journal,
+            member_role=COLLECTION_MEMBER_ROLE,
+        ) as closure:
+            for member, raw_binding in zip(members, reader.iter_bindings(), strict=True):
+                artifact_id, byte_count, sha256 = str(member[0]), int(member[1]), str(member[2])
+                history_binding = MemberHistoryBinding.from_mapping(raw_binding)
+                if (history_binding.artifact_id, history_binding.bytes, history_binding.sha256) != (
                     artifact_id,
                     byte_count,
                     sha256,
-                    canonical_json_bytes(history_binding.to_mapping()),
-                    canonical_json_bytes(hint) if hint is not None else None,
-                    canonical_json_bytes(support),
-                ),
-            )
-            count += 1
-        for raw in closure.structure_objects():
-            identity = provenance_structure_identity(raw)
-            components = ("structure", *identity.relative_path.removesuffix(".age").split("/"))
-            if not rules.fits(components):
-                raise RecoveryError("destination cannot represent required history structure")
-            _write_exact(staging, components, raw)
-        for (journal_id,) in journals.execute(
-            "SELECT journal_id FROM journals ORDER BY journal_id"
-        ):
-            if not closure.contains_journal(journal_id):
-                raise RecoveryError("provenance corpus contains an unselected unrelated journal")
-    selected.commit()
-    planned = plan_materialization_spooled(advice(), rules=rules, state=selected, mode=mode)
-    mapped = 0
-    with (staging / "recovery-members.jsonseq").open("xb") as mapping:
-        for plan in planned:
-            row = selected.execute(
-                "SELECT bytes, sha256, binding_json, hint_json, support_json "
-                "FROM selected WHERE artifact_id = ?",
-                (plan.artifact_id,),
-            ).fetchone()
-            if row is None:
-                raise RecoveryError("materialization plan lost an artifact")
-            byte_count, sha256 = int(row[0]), str(row[1])
-            _copy_exact(
-                staging,
-                plan.components,
-                scratch / "artifact-spool" / plan.artifact_id,
-                expected_bytes=byte_count,
-                expected_sha256=sha256,
-            )
-            record = {
-                "artifact_id": plan.artifact_id,
-                "bytes": str(byte_count),
-                "sha256": sha256,
-                "components": list(plan.components),
-                "sidecar": list(plan.sidecar_components),
-                "reason": plan.reason,
-                "materialization_hint": json.loads(row[3]) if row[3] is not None else None,
-                "support": json.loads(row[4]),
-                "binding": json.loads(row[2]),
-                "history": [
-                    "structure",
-                    "provenance",
-                    "history",
-                    json.loads(row[2])["history_sha256"][:2],
-                    json.loads(row[2])["history_sha256"] + ".json",
-                ],
-            }
-            mapping.write(canonical_json_bytes(record) + b"\n")
-            mapped += 1
-        mapping.flush()
-        os.fsync(mapping.fileno())
-    selected.close()
-    if mapped != count:
-        raise RecoveryError("materialization plan is incomplete")
-    return count, mapped
+                ):
+                    raise RecoveryError("member history differs from exact archive member fixity")
+                closure.resolve(history_binding, extent=RETAINED_HISTORY_EXTENT)
+                history = closure.store.descriptor(history_binding)
+                binding = CollectionArtifactProvenanceBindingDocument.model_validate(
+                    {
+                        "artifact_id": artifact_id,
+                        **history.primary.to_mapping(),
+                    }
+                )
+                if binding.artifact_id != artifact_id:
+                    raise RecoveryError("primary binding differs from archive artifact order")
+                hint, support = _selected_advice(
+                    binding=binding,
+                    byte_count=byte_count,
+                    sha256=sha256,
+                    journals=journals,
+                    staging=staging,
+                )
+                selected.execute(
+                    "INSERT INTO selected VALUES (?, ?, ?, ?, ?, ?)",
+                    (
+                        artifact_id,
+                        byte_count,
+                        sha256,
+                        canonical_json_bytes(history_binding.to_mapping()),
+                        canonical_json_bytes(hint) if hint is not None else None,
+                        canonical_json_bytes(support),
+                    ),
+                )
+                count += 1
+            for raw in closure.structure_objects():
+                identity = provenance_structure_identity(raw)
+                components = ("structure", *identity.relative_path.removesuffix(".age").split("/"))
+                if not rules.fits(components):
+                    raise RecoveryError("destination cannot represent required history structure")
+                _write_exact(staging, components, raw)
+            for (journal_id,) in journals.execute(
+                "SELECT journal_id FROM journals ORDER BY journal_id"
+            ):
+                if not closure.contains_journal(journal_id):
+                    raise RecoveryError(
+                        "provenance corpus contains an unselected unrelated journal"
+                    )
+        selected.commit()
+        planned = plan_materialization_spooled(advice(), rules=rules, state=selected, mode=mode)
+        mapped = 0
+        with (staging / "recovery-members.jsonseq").open("xb") as mapping:
+            for plan in planned:
+                row = selected.execute(
+                    "SELECT bytes, sha256, binding_json, hint_json, support_json "
+                    "FROM selected WHERE artifact_id = ?",
+                    (plan.artifact_id,),
+                ).fetchone()
+                if row is None:
+                    raise RecoveryError("materialization plan lost an artifact")
+                byte_count, sha256 = int(row[0]), str(row[1])
+                _copy_exact(
+                    staging,
+                    plan.components,
+                    scratch / "artifact-spool" / plan.artifact_id,
+                    expected_bytes=byte_count,
+                    expected_sha256=sha256,
+                )
+                record = {
+                    "artifact_id": plan.artifact_id,
+                    "bytes": str(byte_count),
+                    "sha256": sha256,
+                    "components": list(plan.components),
+                    "sidecar": list(plan.sidecar_components),
+                    "reason": plan.reason,
+                    "materialization_hint": json.loads(row[3]) if row[3] is not None else None,
+                    "support": json.loads(row[4]),
+                    "binding": json.loads(row[2]),
+                    "history": [
+                        "structure",
+                        "provenance",
+                        "history",
+                        json.loads(row[2])["history_sha256"][:2],
+                        json.loads(row[2])["history_sha256"] + ".json",
+                    ],
+                }
+                mapping.write(canonical_json_bytes(record) + b"\n")
+                mapped += 1
+            mapping.flush()
+            os.fsync(mapping.fileno())
+        if mapped != count:
+            raise RecoveryError("materialization plan is incomplete")
+        return count, mapped
 
 
 def _required_layout_fits(rules: DestinationRules) -> None:
@@ -537,7 +547,6 @@ def recover_archive(
         shutil.rmtree(staging)
     staging.mkdir(mode=0o700)
     payload_state: sqlite3.Connection | None = None
-    journal_state: sqlite3.Connection | None = None
     try:
         selection = _select_archive(
             archive_dir,
@@ -565,47 +574,47 @@ def recover_archive(
             and selected_metadata.head_sha256 != expected_tag_head_sha256
         ):
             raise RecoveryError("selected tag head differs from trusted expectation")
-        reader, journal_state, journal_count = _stage_provenance(
-            selection, staging=staging, scratch=scratch
-        )
-        payload_summary, payload_state = stage_payloads(
-            selection.encrypted, manifest=selection.manifest, scratch=scratch
-        )
-        covered, mapped = _stage_mapping(
-            payloads=payload_state,
-            reader=reader,
-            journals=journal_state,
-            staging=staging,
-            scratch=scratch,
-            rules=rules,
-            mode=layout_mode,
-        )
-        if covered != payload_summary.artifacts or mapped != covered:
-            raise RecoveryError("recovery mapping does not cover every artifact")
-        _write_exact(staging, ("structure", "archive.json"), selection.manifest_bytes)
-        if _metadata_ciphertext_pins(selection.archive) != metadata_pins_before:
-            raise RecoveryError("selected metadata changed during recovery; retry the snapshot")
-        receipt = {
-            "format": "riverhog-complete-recovery/v1",
-            "complete": True,
-            "archive_root_sha256": selection.archive_root_sha256,
-            "artifact_set_sha256": payload_summary.artifact_set_sha256,
-            "provenance_identity": selection.manifest.provenance.identity,
-            "metadata_pins": selected_metadata.pins(),
-            "metadata_freshness": "selected-copy-heads-not-global-latest",
-            "layout_mode": layout_mode,
-            "artifacts": payload_summary.artifacts,
-            "bytes": str(payload_summary.bytes),
-            "volumes": payload_summary.volumes,
-            "provenance_journals": journal_count,
-            "tags": selected_metadata.tag_count,
-            "mapping_sha256": sha256_file(staging / "recovery-members.jsonseq")[1],
-        }
-        _write_exact(staging, ("recovery.json",), canonical_json_bytes(receipt))
-        payload_state.close()
-        journal_state.close()
-        payload_state = None
-        journal_state = None
+        with _stage_provenance(selection, staging=staging, scratch=scratch) as (
+            reader,
+            journal_state,
+            journal_count,
+        ):
+            payload_summary, payload_state = stage_payloads(
+                selection.encrypted, manifest=selection.manifest, scratch=scratch
+            )
+            covered, mapped = _stage_mapping(
+                payloads=payload_state,
+                reader=reader,
+                journals=journal_state,
+                staging=staging,
+                scratch=scratch,
+                rules=rules,
+                mode=layout_mode,
+            )
+            if covered != payload_summary.artifacts or mapped != covered:
+                raise RecoveryError("recovery mapping does not cover every artifact")
+            _write_exact(staging, ("structure", "archive.json"), selection.manifest_bytes)
+            if _metadata_ciphertext_pins(selection.archive) != metadata_pins_before:
+                raise RecoveryError("selected metadata changed during recovery; retry the snapshot")
+            receipt = {
+                "format": "riverhog-complete-recovery/v1",
+                "complete": True,
+                "archive_root_sha256": selection.archive_root_sha256,
+                "artifact_set_sha256": payload_summary.artifact_set_sha256,
+                "provenance_identity": selection.manifest.provenance.identity,
+                "metadata_pins": selected_metadata.pins(),
+                "metadata_freshness": "selected-copy-heads-not-global-latest",
+                "layout_mode": layout_mode,
+                "artifacts": payload_summary.artifacts,
+                "bytes": str(payload_summary.bytes),
+                "volumes": payload_summary.volumes,
+                "provenance_journals": journal_count,
+                "tags": selected_metadata.tag_count,
+                "mapping_sha256": sha256_file(staging / "recovery-members.jsonseq")[1],
+            }
+            _write_exact(staging, ("recovery.json",), canonical_json_bytes(receipt))
+            payload_state.close()
+            payload_state = None
         if output.exists() or output.is_symlink():
             raise RecoveryError("recovery output appeared before completion")
         publish_complete_recovery(staging, output)
@@ -636,8 +645,6 @@ def recover_archive(
     finally:
         if payload_state is not None:
             payload_state.close()
-        if journal_state is not None:
-            journal_state.close()
 
 
 class RecoveredCollectionTags:

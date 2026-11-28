@@ -419,6 +419,7 @@ class MemberHistoryClosure:
             self._require_open()
             self._db.execute("PRAGMA cache_size = -512")
             self._db.executescript(
+                "BEGIN;"
                 "CREATE TABLE histories (identity TEXT, extent TEXT, binding BLOB, done INTEGER, "
                 "PRIMARY KEY(identity, extent));"
                 "CREATE INDEX pending_histories ON histories(done) WHERE done = 0;"
@@ -432,6 +433,7 @@ class MemberHistoryClosure:
                 "CREATE TABLE reference_assertions (journal TEXT, entry TEXT, sequence TEXT, "
                 "json_sha256 TEXT, assertion TEXT, object TEXT, type TEXT, prefix_sha256 TEXT, "
                 "prefix_bytes TEXT, PRIMARY KEY(journal, entry, assertion));"
+                "COMMIT;"
             )
         except BaseException:
             if not self._closing:
