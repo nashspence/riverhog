@@ -8,9 +8,10 @@ bytes. It retains only one descriptor and one payload segment at a time.
 from __future__ import annotations
 
 import hashlib
-from collections.abc import Callable, Iterator, Mapping
+from collections.abc import Callable, Generator, Iterator, Mapping
 from dataclasses import dataclass
-from typing import Any, cast
+from pathlib import Path
+from typing import Any, Self, cast
 
 from riverhog_archive_contracts import (
     PROVENANCE_BINDING_PAGE_MEMBERS_MAX,
@@ -31,6 +32,8 @@ from riverhog_archive_contracts import (
 )
 from riverhog_canonical_json import require_canonical_json
 
+from ._provenance_index import ProvenanceMetadataIndex
+
 ObjectReader = Callable[[str], Iterator[bytes]]
 
 
@@ -46,10 +49,15 @@ class ProvenanceArchiveSummary:
 
 def _read_bounded(chunks: Iterator[bytes], maximum: int) -> bytes:
     content = bytearray()
-    for chunk in chunks:
-        if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
-            raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
-        content.extend(chunk)
+    try:
+        for chunk in chunks:
+            if type(chunk) is not bytes or len(content) + len(chunk) > maximum:
+                raise ProvenanceArchiveReadError("provenance object exceeds its bounded contract")
+            content.extend(chunk)
+    finally:
+        close = getattr(chunks, "close", None)
+        if close is not None:
+            close()
     return bytes(content)
 
 
@@ -67,7 +75,12 @@ class CanonicalProvenanceArchiveReader:
         self._archive_generation = archive_generation
         self._artifact_set_sha256 = artifact_set_sha256
 
-    def _root(self) -> ProvenanceRootDocument:
+    def prepare(self, *, workspace: Path) -> PreparedCanonicalProvenanceArchiveReader:
+        """Create one new, root-bound recovery attempt; never reuse its projection."""
+
+        return PreparedCanonicalProvenanceArchiveReader(self, workspace=workspace)
+
+    def _read_root(self) -> tuple[bytes, ProvenanceRootDocument]:
         raw = _read_bounded(
             self._read_object("provenance/root.json.age"), PROVENANCE_METADATA_BYTES_MAX
         )
@@ -79,10 +92,13 @@ class CanonicalProvenanceArchiveReader:
             or root.artifact_set_sha256 != self._artifact_set_sha256
         ):
             raise ProvenanceArchiveReadError("provenance root names another archive")
-        return root
+        return raw, root
+
+    def _root(self) -> ProvenanceRootDocument:
+        return self._read_root()[1]
 
     def _descriptors(
-        self,
+        self, *, journal_id: str | None = None, kind: str | None = None
     ) -> Iterator[ProvenanceVolumeDocument | ProvenanceTerminalDocument]:
         sequence = 0
         while True:
@@ -95,12 +111,16 @@ class CanonicalProvenanceArchiveReader:
                 terminal = ProvenanceTerminalDocument.from_json_bytes(raw)
                 if terminal.sequence != sequence:
                     raise ProvenanceArchiveReadError("provenance terminal sequence changed")
-                yield terminal
+                if journal_id is None and kind is None:
+                    yield terminal
                 return
             document = ProvenanceVolumeDocument.from_json_bytes(raw)
             if document.sequence != sequence:
                 raise ProvenanceArchiveReadError("provenance volume sequence changed")
-            yield document
+            if (journal_id is None or document.journal_id == journal_id) and (
+                kind is None or document.payload.kind == kind
+            ):
+                yield document
             sequence += 1
 
     def scan(self) -> ProvenanceArchiveSummary:
@@ -180,7 +200,7 @@ class CanonicalProvenanceArchiveReader:
 
     def iter_journal_range(
         self, journal_id: str, *, offset: int = 0, size: int | None = None
-    ) -> Iterator[bytes]:
+    ) -> Generator[bytes, None, None]:
         """Read exact journal bytes; every touched segment is verified in full."""
 
         self.scan()
@@ -194,7 +214,7 @@ class CanonicalProvenanceArchiveReader:
         journal_sha256: str | None = None
         full_digest = hashlib.sha256() if offset == 0 and size is None else None
         emitted = 0
-        for document in self._descriptors():
+        for document in self._descriptors(journal_id=journal_id, kind="journal"):
             if isinstance(document, ProvenanceTerminalDocument):
                 break
             if document.payload.kind != "journal" or document.journal_id != journal_id:
@@ -238,7 +258,7 @@ class CanonicalProvenanceArchiveReader:
 
         self.scan()
         result: tuple[int, str] | None = None
-        for document in self._descriptors():
+        for document in self._descriptors(journal_id=journal_id, kind="journal"):
             if isinstance(document, ProvenanceTerminalDocument):
                 break
             if document.payload.kind != "journal" or document.journal_id != journal_id:
@@ -253,12 +273,12 @@ class CanonicalProvenanceArchiveReader:
             raise ProvenanceArchiveReadError("provenance journal is absent")
         return result
 
-    def iter_journal_headers(self) -> Iterator[tuple[str, int, str]]:
+    def iter_journal_headers(self) -> Generator[tuple[str, int, str], None, None]:
         """Enumerate root-selected journal identities and fixity without payloads."""
 
         self.scan()
         previous: str | None = None
-        for document in self._descriptors():
+        for document in self._descriptors(kind="journal"):
             if isinstance(document, ProvenanceTerminalDocument):
                 return
             if document.payload.kind != "journal" or document.journal_id == previous:
@@ -294,7 +314,7 @@ class CanonicalProvenanceArchiveReader:
 
     def _iter_bindings(self) -> Iterator[MemberHistoryBinding]:
         last_id: str | None = None
-        for document in self._descriptors():
+        for document in self._descriptors(kind="bindings"):
             if isinstance(document, ProvenanceTerminalDocument):
                 return
             if document.payload.kind != "bindings":
@@ -337,6 +357,105 @@ class CanonicalProvenanceArchiveReader:
                     raise ProvenanceArchiveReadError("provenance bindings are not member ordered")
                 last_id = binding.artifact_id
                 yield binding
+
+
+class PreparedCanonicalProvenanceArchiveReader(CanonicalProvenanceArchiveReader):
+    """A completely verified metadata snapshot for one selected-root attempt.
+
+    Payload and selected-structure access stays fresh and fixity checked. The
+    captured descriptors do not assert that a source has remained unmodified;
+    they bind every subsequent object read to the originally selected root.
+    """
+
+    def __init__(self, source: CanonicalProvenanceArchiveReader, *, workspace: Path) -> None:
+        super().__init__(
+            source._read_object,
+            expected_root_sha256=source._expected_root_sha256,
+            archive_generation=source._archive_generation,
+            artifact_set_sha256=source._artifact_set_sha256,
+        )
+        self._workspace = workspace
+        self._metadata_index: ProvenanceMetadataIndex | None = None
+        self._summary: ProvenanceArchiveSummary | None = None
+        self._root_bytes = b""
+        self._entered = False
+        self._closed = False
+
+    def __enter__(self) -> Self:
+        if self._entered or self._closed:
+            raise RuntimeError("prepared provenance reader cannot be reused")
+        self._entered = True
+        try:
+            self._metadata_index = ProvenanceMetadataIndex(
+                self._workspace, on_storage_open=self._retain_index
+            )
+            summary = super().scan()
+            self._metadata_index.seal()
+            self._summary = summary
+        except BaseException:
+            self.close()
+            raise
+        return self
+
+    def _retain_index(self, index: ProvenanceMetadataIndex) -> None:
+        self._metadata_index = index
+
+    def __exit__(self, *_exc: object) -> None:
+        self.close()
+
+    def close(self) -> None:
+        self._closed = True
+        if self._metadata_index is not None:
+            self._metadata_index.close()
+            self._metadata_index = None
+
+    @property
+    def root_bytes(self) -> bytes:
+        self.scan()
+        return self._root_bytes
+
+    def scan(self) -> ProvenanceArchiveSummary:
+        if self._closed or self._metadata_index is None or self._summary is None:
+            raise RuntimeError("prepared provenance reader is not open")
+        self._metadata_index.require_open()
+        return self._summary
+
+    def _root(self) -> ProvenanceRootDocument:
+        if self._summary is not None:
+            return self.scan().root
+        raw, root = self._read_root()
+        self._root_bytes = raw
+        return root
+
+    def _descriptors(
+        self, *, journal_id: str | None = None, kind: str | None = None
+    ) -> Iterator[ProvenanceVolumeDocument | ProvenanceTerminalDocument]:
+        if self._metadata_index is None or self._closed:
+            raise RuntimeError("prepared provenance reader is not open")
+        if self._summary is None:
+            for document in super()._descriptors():
+                self._metadata_index.remember(document)
+                yield document
+        else:
+            yield from self._metadata_index.descriptors(journal_id=journal_id, kind=kind)
+
+    def read_structure(self, path: str) -> Iterator[bytes]:
+        self.scan()
+        for chunk in super().read_structure(path):
+            self.scan()
+            yield chunk
+
+    def iter_journal_range(
+        self, journal_id: str, *, offset: int = 0, size: int | None = None
+    ) -> Generator[bytes, None, None]:
+        for chunk in super().iter_journal_range(journal_id, offset=offset, size=size):
+            self.scan()
+            yield chunk
+
+    def _iter_bindings(self) -> Iterator[MemberHistoryBinding]:
+        for binding in super()._iter_bindings():
+            self.scan()
+            yield binding
 
 
 __all__ = [
