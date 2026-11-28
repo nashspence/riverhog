@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import threading
 from concurrent.futures import ThreadPoolExecutor
-from time import monotonic
+from time import monotonic, sleep
 from types import SimpleNamespace
 
 import pytest
@@ -242,13 +242,20 @@ def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
                     assert not slot.worker.is_alive()
 
         try:
-            for _ in range(256):
+            # Retained work can defer after real writer contention. A count of
+            # fast coordinator turns does not give its retry timer time to expire.
+            deadline = monotonic() + 120
+            while True:
                 service.process_due_finalizations()
                 join_independent()
                 if entered.is_set():
                     break
-            else:
-                pytest.fail("the actual metadata provider was not entered")
+                if monotonic() >= deadline:
+                    pytest.fail(
+                        "the actual metadata provider was not entered: "
+                        + repr(_routing_snapshot(case))
+                    )
+                sleep(0.01)
             claim = _claim_snapshot(case)[6]
             with session_scope(case.factory) as session:
                 _writer(session, defer_if_busy=True)
@@ -262,27 +269,34 @@ def test_maintained_provider_wait_leaves_an_independent_collection_progressing(
                 )
             with ThreadPoolExecutor(max_workers=1) as workers:
                 assert workers.submit(service.process_due_finalizations).result(timeout=5) >= 0
-            for _ in range(256):
+            deadline = monotonic() + 60
+            while True:
                 service.process_due_finalizations()
                 join_independent()
                 if _published(case, other.collection_id):
                     break
-            else:
-                pytest.fail("independent collection was stalled by a held provider")
+                if monotonic() >= deadline:
+                    pytest.fail(
+                        "independent collection was stalled by a held provider: "
+                        + repr(_routing_snapshot(other))
+                    )
+                sleep(0.01)
             assert not release.is_set() and len(blocked) == 1
             assert _claim_snapshot(case)[6] == claim and not _published(case)
         finally:
             release.set()
             _join(case)
-        for _ in range(256):
+        deadline = monotonic() + 120
+        while True:
             drive_finalization_turn(service)
             if _published(case):
                 break
-        else:
-            pytest.fail(
-                "the original collection did not resume after provider receiving: "
-                + repr(_routing_snapshot(case))
-            )
+            if monotonic() >= deadline:
+                pytest.fail(
+                    "the original collection did not resume after provider receiving: "
+                    + repr(_routing_snapshot(case))
+                )
+            sleep(0.01)
 
 
 def test_maintained_coordinator_defers_real_parent_writer_contention(
