@@ -186,6 +186,55 @@ def _process_archive_maintenance(
     return progressed > 0
 
 
+class _ArchiveMaintenanceWake:
+    """One coalesced local hint, including notifications before the next wait."""
+
+    def __init__(self) -> None:
+        self._loop = asyncio.get_running_loop()
+        self._event = asyncio.Event()
+        self._lock = threading.Lock()
+        self._pending = False
+        self._closed = False
+
+    def notify(self) -> None:
+        with self._lock:
+            if self._closed or self._pending:
+                return
+            self._pending = True
+            try:
+                self._loop.call_soon_threadsafe(self._publish)
+            except RuntimeError:
+                # Loop shutdown can lose this hint; it owns no durable work.
+                self._pending = False
+
+    def _publish(self) -> None:
+        with self._lock:
+            if not self._closed and self._pending:
+                self._event.set()
+
+    async def wait(self, delay_seconds: float) -> bool:
+        if delay_seconds > 0:
+            try:
+                async with asyncio.timeout(delay_seconds):
+                    await self._event.wait()
+            except TimeoutError:
+                pass
+        else:
+            await asyncio.sleep(0)
+        # Consume before the sweep. A later notification, including during that
+        # sweep, remains pending. Queued stale callbacks cannot resurrect it.
+        with self._lock:
+            pending = self._pending
+            self._pending = False
+            self._event.clear()
+            return pending
+
+    def close(self) -> None:
+        with self._lock:
+            self._closed = True
+            self._pending = False
+
+
 async def _run_archive_upload_reaper(
     container_provider: Callable[[], ServiceContainer | None],
     *,
@@ -201,42 +250,59 @@ async def _run_archive_upload_reaper(
     delay_seconds = 0.0
     next_full_sweep = 0.0
     loop = asyncio.get_running_loop()
-    while True:
-        try:
-            await asyncio.sleep(delay_seconds)
-            container = container_provider()
-            if container is None:
-                delay_seconds = interval_seconds
-                continue
-            full_sweep = startup_recovery or loop.time() >= next_full_sweep
-            current_startup_recovery = startup_recovery
-            startup_recovery = False
-            async with operation_lock:
-                progressed = await asyncio.to_thread(
-                    _process_archive_maintenance,
-                    container,
-                    startup_recovery=current_startup_recovery,
-                    execution_only=not full_sweep,
+    wake = _ArchiveMaintenanceWake()
+    binding = contextlib.ExitStack()
+    bound_uploads = None
+    try:
+        while True:
+            try:
+                awakened = await wake.wait(delay_seconds)
+                container = container_provider()
+                if container is None:
+                    delay_seconds = interval_seconds
+                    continue
+                changed_owner = container.collection_uploads is not bound_uploads
+                if changed_owner:
+                    binding.close()
+                    bound_uploads = None
+                    binding.enter_context(
+                        container.collection_uploads.archive_maintenance_wakeup(wake.notify)
+                    )
+                    bound_uploads = container.collection_uploads
+                full_sweep = (
+                    startup_recovery or changed_owner or awakened or loop.time() >= next_full_sweep
                 )
-            now = loop.time()
-            if full_sweep:
-                next_full_sweep = now + (0.0 if progressed else interval_seconds)
-            elif progressed:
-                # A received workflow may have made unrelated catalog work due.
-                next_full_sweep = now
-            if progressed:
-                delay_seconds = 0.0
-            else:
-                delay_seconds = max(0.0, next_full_sweep - now)
-                if container.collection_uploads.has_unreceived_archive_work():
-                    # This local hint selects cadence only. Receiving still
-                    # requires the original physical join and semantic owner.
-                    delay_seconds = min(delay_seconds, receive_seconds)
-        except asyncio.CancelledError:
-            raise
-        except Exception:  # pragma: no cover - defensive background task logging
-            _LOG.exception("archive maintenance reaper sweep failed")
-            delay_seconds = interval_seconds
+                current_startup_recovery = startup_recovery
+                startup_recovery = False
+                async with operation_lock:
+                    progressed = await asyncio.to_thread(
+                        _process_archive_maintenance,
+                        container,
+                        startup_recovery=current_startup_recovery,
+                        execution_only=not full_sweep,
+                    )
+                now = loop.time()
+                if full_sweep:
+                    next_full_sweep = now + (0.0 if progressed else interval_seconds)
+                elif progressed:
+                    # A received workflow may have made unrelated catalog work due.
+                    next_full_sweep = now
+                if progressed:
+                    delay_seconds = 0.0
+                else:
+                    delay_seconds = max(0.0, next_full_sweep - now)
+                    if container.collection_uploads.has_unreceived_archive_work():
+                        # This local hint selects cadence only. Receiving still
+                        # requires the original physical join and semantic owner.
+                        delay_seconds = min(delay_seconds, receive_seconds)
+            except asyncio.CancelledError:
+                raise
+            except Exception:  # pragma: no cover - defensive background task logging
+                _LOG.exception("archive maintenance reaper sweep failed")
+                delay_seconds = interval_seconds
+    finally:
+        wake.close()
+        binding.close()
 
 
 async def _run_retrieval_restore_reaper(

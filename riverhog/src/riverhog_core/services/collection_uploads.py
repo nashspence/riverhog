@@ -8,6 +8,7 @@ import secrets
 import uuid
 from collections import OrderedDict
 from collections.abc import Callable, Generator, Iterator, Mapping, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from datetime import timedelta
 from functools import partial
@@ -489,6 +490,20 @@ if TYPE_CHECKING:
 
 class SqlAlchemyCollectionUploadService:
     """Own direct-to-final collection ingress and its final catalog transaction."""
+
+    _archive_maintenance_wakeup: Callable[[], None] | None = None
+
+    @contextmanager
+    def archive_maintenance_wakeup(self, wakeup: Callable[[], None]) -> Iterator[None]:
+        """Bind one local cadence hint; durable selection retains all authority."""
+        if self._archive_maintenance_wakeup is not None:
+            raise RuntimeError("archive maintenance wakeup is already bound")
+        self._archive_maintenance_wakeup = wakeup
+        try:
+            yield
+        finally:
+            if self._archive_maintenance_wakeup is wakeup:
+                self._archive_maintenance_wakeup = None
 
     def __init__(
         self,
@@ -3643,7 +3658,7 @@ class SqlAlchemyCollectionUploadService:
             # SQLite reads need not hold a writer lock, and a PostgreSQL parent
             # wait can outlive the joined gate's snapshot. Match the original
             # readiness facts and current admission in this atomic transition.
-            session.execute(
+            changed = session.execute(
                 update(CollectionUploadRecord)
                 .where(
                     CollectionUploadRecord.collection_id == collection_id,
@@ -3667,7 +3682,21 @@ class SqlAlchemyCollectionUploadService:
                 )
                 .values(**_finalization_ready_values(now=now))
                 .execution_options(synchronize_session=False)
-            ).close()
+            )
+            try:
+                scheduled = cast(CursorResult[Any], changed).rowcount == 1
+            finally:
+                changed.close()
+        # The conditional transition, commit and session receiving must finish
+        # before a hint can prompt independent due selection on another thread.
+        wakeup = self._archive_maintenance_wakeup
+        if scheduled and wakeup is not None:
+            try:
+                wakeup()
+            except Exception:
+                # A lost local hint cannot undo durable work or invent a failed
+                # acknowledgement. The ordinary timer still discovers the row.
+                _LOG.exception("archive maintenance wake hint failed")
 
     def _reconcile_sealed_volume_receipts(self, collection_id: int) -> None:
         for _ in range(64):
